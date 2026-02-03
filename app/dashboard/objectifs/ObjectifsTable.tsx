@@ -164,7 +164,11 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
 
 function DeleteGoalButton({ goalId }: { goalId: string }) {
   return (
-    <form action={deleteGoal.bind(null, goalId)}>
+    <form
+      action={async () => {
+        await deleteGoal(goalId)
+      }}
+    >
       <button
         type="submit"
         className="text-sm text-red-600 dark:text-red-400 hover:underline"
