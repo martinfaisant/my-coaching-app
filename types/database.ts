@@ -9,3 +9,18 @@ export type Profile = {
   created_at: string
   updated_at: string
 }
+
+export type SportType = 'course' | 'musculation' | 'natation' | 'velo'
+
+export type Workout = {
+  id: string
+  athlete_id: string
+  date: string
+  sport_type: SportType
+  title: string
+  description: string
+  athlete_comment?: string | null
+  athlete_comment_at?: string | null
+  created_at: string
+  updated_at: string
+}
