@@ -92,7 +92,7 @@ export function CalendarView({
       const weekStart = new Date(startMonday)
       weekStart.setDate(weekStart.getDate() + w * 7)
       const monthLabel = MONTHS_FR[weekStart.getMonth()]
-      const days: { dateStr: string; label: string; dayName: string; isToday: boolean }[] = []
+      const days: { dateStr: string; label: string; dayName: string; isToday: boolean; isPast: boolean }[] = []
       const todayStr = toDateStr(today)
       for (let d = 0; d < 7; d++) {
         const day = new Date(weekStart)
