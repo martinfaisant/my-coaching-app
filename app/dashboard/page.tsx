@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { createClient } from '@/utils/supabase/server'
 import { getCurrentUserWithProfile } from '@/utils/auth'
 import { CalendarView } from '@/components/CalendarView'
+import { ProfileMenu } from '@/components/ProfileMenu'
 import type { Profile, Workout } from '@/types/database'
 
 const ROLE_LABELS: Record<Profile['role'], string> = {
@@ -50,12 +51,7 @@ export default async function DashboardPage() {
             <h1 className="text-lg font-semibold text-slate-900 dark:text-white">
               Mon calendrier d&apos;entraînement
             </h1>
-            <Link
-              href="/"
-              className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-            >
-              Accueil
-            </Link>
+            <ProfileMenu />
           </div>
         </header>
 
@@ -86,18 +82,12 @@ export default async function DashboardPage() {
       .order('created_at', { ascending: false })
     visibleProfiles = (data ?? []) as Profile[]
   } else if (current.profile.role === 'coach') {
-    const { data: mine } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('user_id', current.id)
-      .single()
     const { data: athletes } = await supabase
       .from('profiles')
       .select('*')
       .eq('coach_id', current.id)
       .order('email')
-    const list = [mine, ...(athletes ?? [])].filter(Boolean) as Profile[]
-    visibleProfiles = list
+    visibleProfiles = (athletes ?? []) as Profile[]
   } else {
     visibleProfiles = [current.profile as Profile]
   }
@@ -109,12 +99,7 @@ export default async function DashboardPage() {
           <h1 className="text-lg font-semibold text-slate-900 dark:text-white">
             Tableau de bord
           </h1>
-          <Link
-            href="/"
-            className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-          >
-            Accueil
-          </Link>
+          <ProfileMenu />
         </div>
       </header>
 
@@ -140,28 +125,55 @@ export default async function DashboardPage() {
             {current.profile.role === 'admin'
               ? 'Tous les membres'
               : current.profile.role === 'coach'
-                ? 'Mon profil et mes athlètes'
+                ? 'Mes athlètes'
                 : 'Mon profil'}
           </h2>
           <ul className="mt-4 space-y-3">
             {visibleProfiles.map((p) => {
               const isAthleteOfMine = current.profile.role === 'coach' && p.coach_id === current.id
+              const displayName = (p.full_name?.trim() || p.email) as string
+              const athleteHref = `/dashboard/athletes/${p.user_id}`
+
+              if (isAthleteOfMine) {
+                return (
+                  <li key={p.user_id}>
+                    <Link
+                      href={athleteHref}
+                      className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:border-slate-300 dark:hover:border-slate-600 transition cursor-pointer group"
+                    >
+                      <div>
+                        <p className="font-medium text-slate-900 dark:text-white group-hover:text-slate-700 dark:group-hover:text-slate-200">
+                          {displayName}
+                        </p>
+                        <p className="text-sm text-slate-500 dark:text-slate-400">
+                          {ROLE_LABELS[p.role]}
+                          {p.coach_id && ' (athlète)'}
+                        </p>
+                      </div>
+                      <svg
+                        className="h-5 w-5 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 flex-shrink-0"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="m9 18 6-6-6-6" />
+                      </svg>
+                    </Link>
+                  </li>
+                )
+              }
+
               return (
                 <li
                   key={p.user_id}
                   className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4"
                 >
                   <div>
-                    {isAthleteOfMine ? (
-                      <Link
-                        href={`/dashboard/athletes/${p.user_id}`}
-                        className="font-medium text-slate-900 dark:text-white hover:underline"
-                      >
-                        {p.email}
-                      </Link>
-                    ) : (
-                      <p className="font-medium text-slate-900 dark:text-white">{p.email}</p>
-                    )}
+                    <p className="font-medium text-slate-900 dark:text-white">{p.email}</p>
                     <p className="text-sm text-slate-500 dark:text-slate-400">
                       {ROLE_LABELS[p.role]}
                       {p.coach_id && ' (athlète)'}

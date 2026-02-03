@@ -11,6 +11,36 @@ const SPORT_LABELS: Record<SportType, string> = {
   velo: 'Vélo',
 }
 
+const SPORT_COLORS: Record<
+  SportType,
+  { bg: string; border: string; text: string; comment: string }
+> = {
+  course: {
+    bg: 'bg-amber-100 dark:bg-amber-900/40',
+    border: 'border-amber-200 dark:border-amber-800',
+    text: 'text-amber-800 dark:text-amber-200',
+    comment: 'text-amber-700 dark:text-amber-300',
+  },
+  musculation: {
+    bg: 'bg-violet-100 dark:bg-violet-900/40',
+    border: 'border-violet-200 dark:border-violet-800',
+    text: 'text-violet-800 dark:text-violet-200',
+    comment: 'text-violet-700 dark:text-violet-300',
+  },
+  natation: {
+    bg: 'bg-sky-100 dark:bg-sky-900/40',
+    border: 'border-sky-200 dark:border-sky-800',
+    text: 'text-sky-800 dark:text-sky-200',
+    comment: 'text-sky-700 dark:text-sky-300',
+  },
+  velo: {
+    bg: 'bg-emerald-100 dark:bg-emerald-900/40',
+    border: 'border-emerald-200 dark:border-emerald-800',
+    text: 'text-emerald-800 dark:text-emerald-200',
+    comment: 'text-emerald-700 dark:text-emerald-300',
+  },
+}
+
 const DAY_NAMES = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']
 
 function getWeekMonday(d: Date): Date {
@@ -50,25 +80,29 @@ export function CalendarView({
     const startMonday = new Date(currentMonday)
     startMonday.setDate(startMonday.getDate() - 7)
 
-    const weeks: { label: string; days: { dateStr: string; label: string; isToday: boolean }[] }[] = []
+    const MONTHS_FR = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre']
+    const weeks: { label: string; monthLabel: string; days: { dateStr: string; label: string; dayName: string; isToday: boolean }[] }[] = []
     const weekLabels = ['Semaine précédente', 'Semaine actuelle', 'Semaine suivante']
 
     for (let w = 0; w < 3; w++) {
       const weekStart = new Date(startMonday)
       weekStart.setDate(weekStart.getDate() + w * 7)
-      const days: { dateStr: string; label: string; isToday: boolean }[] = []
+      const monthLabel = MONTHS_FR[weekStart.getMonth()]
+      const days: { dateStr: string; label: string; dayName: string; isToday: boolean }[] = []
       for (let d = 0; d < 7; d++) {
         const day = new Date(weekStart)
         day.setDate(day.getDate() + d)
         const dateStr = toDateStr(day)
         const isToday = toDateStr(today) === dateStr
+        const dayIndex = (day.getDay() + 6) % 7
         days.push({
           dateStr,
           label: day.getDate().toString(),
+          dayName: DAY_NAMES[dayIndex],
           isToday,
         })
       }
-      weeks.push({ label: weekLabels[w], days })
+      weeks.push({ label: weekLabels[w], monthLabel, days })
     }
 
     return { startMonday, weeks }
@@ -103,14 +137,21 @@ export function CalendarView({
           <section key={wi}>
             <h3 className="text-sm font-semibold text-slate-600 dark:text-slate-400 mb-3">
               {week.label}
+              <span className="font-normal text-slate-500 dark:text-slate-500 ml-1.5">
+                — {week.monthLabel}
+              </span>
             </h3>
             <div className="grid grid-cols-7 gap-2">
-              {DAY_NAMES.map((name) => (
+              {week.days.map((day) => (
                 <div
-                  key={name}
-                  className="text-center text-xs font-medium text-slate-500 dark:text-slate-400 py-1"
+                  key={`header-${day.dateStr}`}
+                  className={`text-center text-xs font-medium py-1 ${
+                    day.isToday
+                      ? 'text-emerald-600 dark:text-emerald-400 font-semibold'
+                      : 'text-slate-500 dark:text-slate-400'
+                  }`}
                 >
-                  {name}
+                  {day.dayName} {day.label}
                 </div>
               ))}
               {week.days.map((day) => {
@@ -118,9 +159,9 @@ export function CalendarView({
                 return (
                   <div
                     key={day.dateStr}
-                    className={`min-h-[120px] rounded-xl border p-2 ${
+                    className={`min-h-[120px] rounded-xl border p-2 relative flex flex-col ${
                       day.isToday
-                        ? 'border-slate-400 dark:border-slate-500 bg-slate-100 dark:bg-slate-800/50'
+                        ? 'z-10 ring-2 ring-emerald-500 dark:ring-emerald-400 ring-offset-2 dark:ring-offset-slate-950 border-emerald-500 dark:border-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 shadow-lg'
                         : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900'
                     } ${canEdit ? 'cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50' : ''}`}
                     onClick={() => openDay(day.dateStr)}
@@ -137,33 +178,38 @@ export function CalendarView({
                         : undefined
                     }
                   >
-                    <div className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                      {day.label}
-                    </div>
-                    <div className="mt-2 space-y-1">
-                      {dayWorkouts.map((w) => (
-                        <div
-                          key={w.id}
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            openWorkout(day.dateStr, w)
-                          }}
-                          className={`rounded-lg px-2 py-1.5 text-xs ${
-                            canEdit
-                              ? 'cursor-pointer hover:ring-2 hover:ring-slate-400 dark:hover:ring-slate-500'
-                              : ''
-                          } bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-800`}
-                          role={canEdit ? 'button' : undefined}
-                        >
-                          <span className="font-medium">{SPORT_LABELS[w.sport_type]}</span>
-                          <span className="ml-1 truncate block">{w.title}</span>
-                          {(w.athlete_comment ?? null) && (
-                            <span className="mt-0.5 block truncate text-emerald-700 dark:text-emerald-300 italic">
-                              💬 {w.athlete_comment}
-                            </span>
-                          )}
-                        </div>
-                      ))}
+                    <div className={`space-y-1 flex flex-col flex-1 min-h-0 ${canEdit && dayWorkouts.length === 0 ? 'items-center justify-center' : ''}`}>
+                      {canEdit && dayWorkouts.length === 0 && (
+                        <span className="text-2xl font-light text-slate-300 dark:text-slate-600" aria-hidden>
+                          +
+                        </span>
+                      )}
+                      {dayWorkouts.map((w) => {
+                        const colors = SPORT_COLORS[w.sport_type]
+                        return (
+                          <div
+                            key={w.id}
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              openWorkout(day.dateStr, w)
+                            }}
+                            className={`rounded-lg px-2 py-1.5 text-xs border ${
+                              canEdit
+                                ? 'cursor-pointer hover:ring-2 hover:ring-slate-400 dark:hover:ring-slate-500'
+                                : ''
+                            } ${colors.bg} ${colors.border} ${colors.text}`}
+                            role={canEdit ? 'button' : undefined}
+                          >
+                            <span className="font-medium">{SPORT_LABELS[w.sport_type]}</span>
+                            <span className="ml-1 truncate block">{w.title}</span>
+                            {(w.athlete_comment ?? null) && (
+                              <span className={`mt-0.5 block truncate italic ${colors.comment}`}>
+                                💬 {w.athlete_comment}
+                              </span>
+                            )}
+                          </div>
+                        )
+                      })}
                     </div>
                   </div>
                 )
