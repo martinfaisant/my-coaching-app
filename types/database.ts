@@ -12,6 +12,16 @@ export type Profile = {
 
 export type SportType = 'course' | 'musculation' | 'natation' | 'velo'
 
+export type Goal = {
+  id: string
+  athlete_id: string
+  date: string
+  race_name: string
+  distance: string
+  is_primary: boolean
+  created_at: string
+}
+
 export type Workout = {
   id: string
   athlete_id: string

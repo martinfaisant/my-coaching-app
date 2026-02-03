@@ -18,6 +18,17 @@ const SPORT_OPTIONS: { value: SportType; label: string }[] = [
   { value: 'velo', label: 'Vélo' },
 ]
 
+function formatDateFr(dateStr: string): string {
+  const d = new Date(dateStr + 'T12:00:00')
+  const s = d.toLocaleDateString('fr-FR', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  })
+  return s.charAt(0).toUpperCase() + s.slice(1)
+}
+
 type WorkoutModalProps = {
   isOpen: boolean
   onClose: () => void
@@ -142,6 +153,10 @@ export function WorkoutModal({
         <form action={action} className="p-6 space-y-4">
           <input type="hidden" name="date" value={date} />
           {isEdit && <input type="hidden" name="workout_id" value={workout.id} />}
+
+          <p className="text-sm text-slate-600 dark:text-slate-400">
+            {formatDateFr(date)}
+          </p>
 
           <div>
             <label htmlFor="sport_type" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">

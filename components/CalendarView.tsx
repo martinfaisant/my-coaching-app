@@ -52,8 +52,12 @@ function getWeekMonday(d: Date): Date {
   return date
 }
 
+/** Date au format YYYY-MM-DD en heure locale (évite le décalage UTC). */
 function toDateStr(d: Date): string {
-  return d.toISOString().slice(0, 10)
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
 }
 
 type CalendarViewProps = {
@@ -81,7 +85,7 @@ export function CalendarView({
     startMonday.setDate(startMonday.getDate() - 7)
 
     const MONTHS_FR = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre']
-    const weeks: { label: string; monthLabel: string; days: { dateStr: string; label: string; dayName: string; isToday: boolean }[] }[] = []
+    const weeks: { label: string; monthLabel: string; days: { dateStr: string; label: string; dayName: string; isToday: boolean; isPast: boolean }[] }[] = []
     const weekLabels = ['Semaine précédente', 'Semaine actuelle', 'Semaine suivante']
 
     for (let w = 0; w < 3; w++) {
@@ -89,17 +93,20 @@ export function CalendarView({
       weekStart.setDate(weekStart.getDate() + w * 7)
       const monthLabel = MONTHS_FR[weekStart.getMonth()]
       const days: { dateStr: string; label: string; dayName: string; isToday: boolean }[] = []
+      const todayStr = toDateStr(today)
       for (let d = 0; d < 7; d++) {
         const day = new Date(weekStart)
         day.setDate(day.getDate() + d)
         const dateStr = toDateStr(day)
-        const isToday = toDateStr(today) === dateStr
+        const isToday = todayStr === dateStr
+        const isPast = dateStr < todayStr
         const dayIndex = (day.getDay() + 6) % 7
         days.push({
           dateStr,
           label: day.getDate().toString(),
           dayName: DAY_NAMES[dayIndex],
           isToday,
+          isPast,
         })
       }
       weeks.push({ label: weekLabels[w], monthLabel, days })
@@ -117,8 +124,8 @@ export function CalendarView({
     return map
   }, [workouts])
 
-  const openDay = (dateStr: string) => {
-    if (!canEdit) return
+  const openDay = (dateStr: string, isPast: boolean) => {
+    if (!canEdit || isPast) return
     setModalDate(dateStr)
     setModalWorkout(null)
     setModalOpen(true)
@@ -156,6 +163,8 @@ export function CalendarView({
               ))}
               {week.days.map((day) => {
                 const dayWorkouts = workoutsByDate[day.dateStr] ?? []
+                const canAddWorkout = canEdit && !day.isPast && dayWorkouts.length === 0
+                const isCellClickable = canEdit && (!day.isPast || dayWorkouts.length > 0)
                 return (
                   <div
                     key={day.dateStr}
@@ -163,23 +172,23 @@ export function CalendarView({
                       day.isToday
                         ? 'z-10 ring-2 ring-emerald-500 dark:ring-emerald-400 ring-offset-2 dark:ring-offset-slate-950 border-emerald-500 dark:border-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 shadow-lg'
                         : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900'
-                    } ${canEdit ? 'cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50' : ''}`}
-                    onClick={() => openDay(day.dateStr)}
-                    role={canEdit ? 'button' : undefined}
-                    tabIndex={canEdit ? 0 : undefined}
+                    } ${isCellClickable ? 'cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50' : ''}`}
+                    onClick={() => openDay(day.dateStr, day.isPast)}
+                    role={isCellClickable ? 'button' : undefined}
+                    tabIndex={isCellClickable ? 0 : undefined}
                     onKeyDown={
-                      canEdit
+                      isCellClickable
                         ? (e) => {
                             if (e.key === 'Enter' || e.key === ' ') {
                               e.preventDefault()
-                              openDay(day.dateStr)
+                              openDay(day.dateStr, day.isPast)
                             }
                           }
                         : undefined
                     }
                   >
-                    <div className={`space-y-1 flex flex-col flex-1 min-h-0 ${canEdit && dayWorkouts.length === 0 ? 'items-center justify-center' : ''}`}>
-                      {canEdit && dayWorkouts.length === 0 && (
+                    <div className={`space-y-1 flex flex-col flex-1 min-h-0 ${canAddWorkout ? 'items-center justify-center' : canEdit && dayWorkouts.length === 0 ? 'items-center justify-center' : ''}`}>
+                      {canAddWorkout && (
                         <span className="text-2xl font-light text-slate-300 dark:text-slate-600" aria-hidden>
                           +
                         </span>

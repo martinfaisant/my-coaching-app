@@ -1,11 +1,18 @@
 'use client'
 
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useState, useEffect, useRef } from 'react'
+import { createClient } from '@/utils/supabase/client'
 
-export function ProfileMenu() {
+type ProfileMenuProps = {
+  showObjectifsLink?: boolean
+}
+
+export function ProfileMenu({ showObjectifsLink = false }: ProfileMenuProps) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
+  const router = useRouter()
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -16,6 +23,14 @@ export function ProfileMenu() {
     if (open) document.addEventListener('click', handleClickOutside)
     return () => document.removeEventListener('click', handleClickOutside)
   }, [open])
+
+  async function handleLogout() {
+    setOpen(false)
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    router.push('/')
+    router.refresh()
+  }
 
   return (
     <div className="relative" ref={ref}>
@@ -50,6 +65,22 @@ export function ProfileMenu() {
           >
             Mes informations
           </Link>
+          {showObjectifsLink && (
+            <Link
+              href="/dashboard/objectifs"
+              onClick={() => setOpen(false)}
+              className="block px-4 py-2.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+            >
+              Mes objectifs
+            </Link>
+          )}
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="block w-full px-4 py-2.5 text-left text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border-t border-slate-200 dark:border-slate-700"
+          >
+            Déconnexion
+          </button>
         </div>
       )}
     </div>

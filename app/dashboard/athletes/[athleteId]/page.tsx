@@ -3,7 +3,7 @@ import { createClient } from '@/utils/supabase/server'
 import { getCurrentUserWithProfile } from '@/utils/auth'
 import { redirect } from 'next/navigation'
 import { CalendarView } from '@/components/CalendarView'
-import type { Workout } from '@/types/database'
+import type { Workout, Goal } from '@/types/database'
 
 type PageProps = { params: Promise<{ athleteId: string }> }
 
@@ -63,6 +63,12 @@ export default async function AthleteCalendarPage({ params }: PageProps) {
     .order('date')
     .order('created_at')
 
+  const { data: goals } = await supabase
+    .from('goals')
+    .select('*')
+    .eq('athlete_id', athleteId)
+    .order('date', { ascending: true })
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
       <header className="sticky top-0 z-40 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md">
@@ -91,6 +97,55 @@ export default async function AthleteCalendarPage({ params }: PageProps) {
           canEdit={true}
           pathToRevalidate={`/dashboard/athletes/${athleteId}`}
         />
+
+        <section className="mt-8 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-3">
+            Objectifs de l&apos;athlète
+          </h2>
+          {(goals?.length ?? 0) > 0 ? (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-slate-200 dark:border-slate-700 text-left text-slate-500 dark:text-slate-400">
+                    <th className="py-2 pr-4">Date</th>
+                    <th className="py-2 pr-4">Course</th>
+                    <th className="py-2 pr-4">Distance</th>
+                    <th className="py-2">Type</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(goals as Goal[]).map((g) => (
+                    <tr
+                      key={g.id}
+                      className="border-b border-slate-100 dark:border-slate-800 last:border-0"
+                    >
+                      <td className="py-2 pr-4 text-slate-700 dark:text-slate-300">
+                        {new Date(g.date).toLocaleDateString('fr-FR', {
+                          day: 'numeric',
+                          month: 'short',
+                          year: 'numeric',
+                        })}
+                      </td>
+                      <td className="py-2 pr-4 text-slate-700 dark:text-slate-300">
+                        {g.race_name}
+                      </td>
+                      <td className="py-2 pr-4 text-slate-700 dark:text-slate-300">
+                        {g.distance}
+                      </td>
+                      <td className="py-2 text-slate-600 dark:text-slate-400">
+                        {g.is_primary ? 'Principal' : 'Secondaire'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <p className="text-sm text-slate-500 dark:text-slate-400 py-2">
+              L&apos;athlète n&apos;a pas défini d&apos;objectif.
+            </p>
+          )}
+        </section>
       </main>
     </div>
   )

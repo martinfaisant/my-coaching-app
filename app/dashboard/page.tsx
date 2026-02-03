@@ -51,7 +51,7 @@ export default async function DashboardPage() {
             <h1 className="text-lg font-semibold text-slate-900 dark:text-white">
               Mon calendrier d&apos;entraînement
             </h1>
-            <ProfileMenu />
+            <ProfileMenu showObjectifsLink />
           </div>
         </header>
 
