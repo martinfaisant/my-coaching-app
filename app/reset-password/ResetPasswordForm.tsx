@@ -24,9 +24,9 @@ export function ResetPasswordForm() {
       const hasHash = hash && (hash.includes('access_token') || hash.includes('type=recovery'))
 
       // Écouter les changements d'authentification
-      let subscription: { unsubscribe: () => void } | null = null
-      
-      subscription = supabase.auth.onAuthStateChange(async (event, session) => {
+      const {
+        data: { subscription },
+      } = supabase.auth.onAuthStateChange(async (event, session) => {
         if (event === 'PASSWORD_RECOVERY' || (event === 'SIGNED_IN' && session)) {
           setIsValidSession(true)
         }
@@ -71,7 +71,7 @@ export function ResetPasswordForm() {
       check()
 
       return () => {
-        subscription?.unsubscribe()
+        subscription.unsubscribe()
       }
     }
 
