@@ -62,3 +62,34 @@ export async function signup(_prevState: SignupState, formData: FormData) {
 
   redirect('/dashboard')
 }
+
+export type ResetPasswordState = {
+  error?: string
+  success?: string
+}
+
+/** Envoyer un email de réinitialisation de mot de passe. */
+export async function resetPassword(
+  _prevState: ResetPasswordState,
+  formData: FormData
+): Promise<ResetPasswordState> {
+  const email = formData.get('email') as string
+
+  if (!email?.trim()) {
+    return { error: 'Email requis.' }
+  }
+
+  const supabase = await createClient()
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${siteUrl}/reset-password`,
+  })
+
+  if (error) {
+    return { error: error.message }
+  }
+
+  return {
+    success: 'Un lien de réinitialisation a été envoyé à votre adresse email.',
+  }
+}

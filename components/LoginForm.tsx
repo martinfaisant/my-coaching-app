@@ -4,8 +4,10 @@ import { useState, useActionState } from 'react'
 import {
   login,
   signup,
+  resetPassword,
   type LoginState,
   type SignupState,
+  type ResetPasswordState,
 } from '@/app/login/actions'
 import type { AuthModalMode } from './LoginModal'
 
@@ -19,6 +21,13 @@ export function LoginForm({ mode }: LoginFormProps) {
   const [loginState, loginAction] = useActionState<LoginState, FormData>(login, {})
   const [signupState, signupAction] = useActionState<SignupState, FormData>(signup, {})
   const [signupRole, setSignupRole] = useState<SignupRole>('athlete')
+  const [showForgotPassword, setShowForgotPassword] = useState(false)
+
+  if (mode === 'login' && showForgotPassword) {
+    return (
+      <ForgotPasswordForm onBack={() => setShowForgotPassword(false)} />
+    )
+  }
 
   if (mode === 'login') {
     return (
@@ -75,6 +84,13 @@ export function LoginForm({ mode }: LoginFormProps) {
             className="w-full py-3 px-4 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-medium hover:bg-slate-800 dark:hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 transition"
           >
             Se connecter
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowForgotPassword(true)}
+            className="w-full text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 underline"
+          >
+            Mot de passe oublié
           </button>
         </form>
       </div>
@@ -179,6 +195,64 @@ export function LoginForm({ mode }: LoginFormProps) {
           className="w-full py-3 px-4 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-medium hover:bg-slate-800 dark:hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 transition"
         >
           S&apos;inscrire
+        </button>
+      </form>
+    </div>
+  )
+}
+
+function ForgotPasswordForm({ onBack }: { onBack: () => void }) {
+  const [resetState, resetAction] = useActionState<ResetPasswordState, FormData>(resetPassword, {})
+
+  return (
+    <div className="p-6 sm:p-8">
+      <h2 id="modal-title" className="text-2xl font-semibold text-slate-900 dark:text-white text-center mb-1">
+        Mot de passe oublié
+      </h2>
+      <p className="text-slate-500 dark:text-slate-400 text-sm text-center mb-6">
+        Entrez votre adresse email. Un lien de réinitialisation vous sera envoyé.
+      </p>
+
+      <form action={resetAction} className="space-y-4">
+        <div>
+          <label
+            htmlFor="reset-email"
+            className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5"
+          >
+            Email
+          </label>
+          <input
+            id="reset-email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            required
+            placeholder="vous@exemple.com"
+            className="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400 dark:focus:ring-slate-500 focus:border-transparent transition"
+          />
+        </div>
+        {resetState?.error && (
+          <p className="text-sm text-red-600 dark:text-red-400" role="alert">
+            {resetState.error}
+          </p>
+        )}
+        {resetState?.success && (
+          <p className="text-sm text-emerald-600 dark:text-emerald-400" role="alert">
+            {resetState.success}
+          </p>
+        )}
+        <button
+          type="submit"
+          className="w-full py-3 px-4 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-medium hover:bg-slate-800 dark:hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 transition"
+        >
+          Envoyer le lien de réinitialisation
+        </button>
+        <button
+          type="button"
+          onClick={onBack}
+          className="w-full text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 underline"
+        >
+          ← Retour à la connexion
         </button>
       </form>
     </div>
