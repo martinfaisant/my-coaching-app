@@ -36,7 +36,7 @@ export function RequestCoachButton({ coachId, coachName, requestStatus }: Reques
 
   if (requestStatus === 'pending') {
     return (
-      <span className="text-sm text-white0text-stone-400 font-medium">
+      <span className="text-sm text-stone-600 font-medium">
         Demande envoyée
       </span>
     )
@@ -48,7 +48,7 @@ export function RequestCoachButton({ coachId, coachName, requestStatus }: Reques
         type="button"
         onClick={() => setOpen(true)}
         disabled={isPending}
-        className="rounded-lg bg-stone-900bg-white px-4 py-2 text-sm font-medium text-whitetext-stone-900 hover:bg-palette-olivehover:bg-stone-100 transition-colors disabled:opacity-50"
+        className="rounded-lg bg-palette-forest-dark px-4 py-2 text-sm font-medium text-white border-2 border-palette-olive hover:bg-palette-olive transition-colors disabled:opacity-50"
       >
         Choisir ce coach
       </button>
@@ -96,7 +96,7 @@ export function RequestCoachButton({ coachId, coachName, requestStatus }: Reques
                   onChange={(e) => setSport(e.target.value)}
                   required
                   placeholder="Ex. Course à pied, Musculation..."
-                  className="w-full px-4 py-2.5 rounded-lg border border-stone-200border-stone-700 bg-whitebg-stone-900 text-stone-900text-white placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900focus:ring-stone-100 focus:border-transparent transition"
+                  className="w-full px-4 py-2.5 rounded-lg border-2 border-palette-forest-dark bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-olive focus:border-transparent transition"
                 />
               </div>
               <div>
@@ -110,25 +110,25 @@ export function RequestCoachButton({ coachId, coachName, requestStatus }: Reques
                   required
                   rows={4}
                   placeholder="Décrivez votre objectif ou votre besoin d'accompagnement..."
-                  className="w-full px-4 py-2.5 rounded-lg border border-stone-200border-stone-700 bg-whitebg-stone-900 text-stone-900text-white placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900focus:ring-stone-100 focus:border-transparent resize-y transition"
+                  className="w-full px-4 py-2.5 rounded-lg border-2 border-palette-forest-dark bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-olive focus:border-transparent resize-y transition"
                 />
               </div>
               {error && (
-                <p className="text-sm text-red-600text-red-400" role="alert">{error}</p>
+                <p className="text-sm text-red-600" role="alert">{error}</p>
               )}
               <div className="flex gap-3 pt-2">
                 <button
                   type="button"
                   onClick={() => setOpen(false)}
                   disabled={isPending}
-                  className="flex-1 py-2.5 rounded-lg border border-stone-200border-stone-700 text-stone-700text-stone-300 font-medium hover:bg-stone-50hover:bg-palette-olive transition-colors disabled:opacity-50"
+                  className="flex-1 py-2.5 rounded-lg border-2 border-palette-forest-dark text-stone-700 font-medium hover:bg-stone-50 transition-colors disabled:opacity-50"
                 >
                   Annuler
                 </button>
                 <button
                   type="submit"
                   disabled={isPending}
-                  className="flex-1 py-2.5 rounded-lg bg-stone-900bg-white text-whitetext-stone-900 font-medium hover:bg-palette-olivehover:bg-stone-100 transition-colors disabled:opacity-50"
+                  className="flex-1 py-2.5 rounded-lg bg-palette-forest-dark text-white font-medium border-2 border-palette-olive hover:bg-palette-olive transition-colors disabled:opacity-50"
                 >
                   {isPending ? 'Envoi...' : 'Envoyer la demande'}
                 </button>

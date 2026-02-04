@@ -200,7 +200,7 @@ export function ResetPasswordForm() {
         <button
           type="submit"
           disabled={isPending}
-          className="w-full py-2.5 px-4 rounded-lg bg-palette-forest-darkbg-white text-whitetext-stone-900 font-medium hover:bg-palette-olivehover:bg-stone-100 transition-colors disabled:opacity-50"
+          className="w-full py-2.5 px-4 rounded-lg bg-palette-forest-dark text-white font-medium border-2 border-palette-olive hover:bg-palette-olive transition-colors disabled:opacity-50"
         >
           {isPending ? 'Enregistrement...' : 'Définir le nouveau mot de passe'}
         </button>

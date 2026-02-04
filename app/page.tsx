@@ -19,9 +19,9 @@ export default function Home() {
 
   return (
     <>
-      <div className="min-h-screen bg-stone-50">
+      <div className="min-h-screen bg-background">
         {/* Header */}
-        <header className="sticky top-0 z-40 border-b border-stone-200 bg-stone-50/95 backdrop-blur-md">
+        <header className="sticky top-0 z-40 border-b border-stone-200 bg-background/95 backdrop-blur-md">
           <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
             <Link
               href="/"
@@ -87,7 +87,7 @@ export default function Home() {
 
           {/* Section valeurs / approche */}
           <section className="mt-32 grid gap-6 sm:grid-cols-3">
-            <div className="rounded-xl border border-stone-200 bg-white p-6">
+            <div className="rounded-xl border border-stone-300 p-6" style={{ backgroundColor: 'var(--card-bg)' }}>
               <h3 className="text-base font-semibold text-stone-900 mb-2">
                 Objectifs sur mesure
               </h3>
@@ -96,7 +96,7 @@ export default function Home() {
                 vos objectifs.
               </p>
             </div>
-            <div className="rounded-xl border border-stone-200 bg-white p-6">
+            <div className="rounded-xl border border-stone-300 p-6" style={{ backgroundColor: 'var(--card-bg)' }}>
               <h3 className="text-base font-semibold text-stone-900 mb-2">
                 Suivi régulier
               </h3>
@@ -105,7 +105,7 @@ export default function Home() {
                 durablement.
               </p>
             </div>
-            <div className="rounded-xl border border-stone-200 bg-white p-6">
+            <div className="rounded-xl border border-stone-300 p-6" style={{ backgroundColor: 'var(--card-bg)' }}>
               <h3 className="text-base font-semibold text-stone-900 mb-2">
                 En présentiel ou en ligne
               </h3>

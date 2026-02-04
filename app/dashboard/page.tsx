@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { createClient } from '@/utils/supabase/server'
 import { getCurrentUserWithProfile } from '@/utils/auth'
-import { CalendarView } from '@/components/CalendarView'
+import { CalendarViewWithNavigation } from '@/components/CalendarViewWithNavigation'
 import { ProfileMenu } from '@/components/ProfileMenu'
 import { RequestCoachButton } from '@/app/dashboard/RequestCoachButton'
 import { RespondToRequestButtons } from '@/app/dashboard/RespondToRequestButtons'
@@ -9,7 +9,7 @@ import {
   getMyCoachRequests,
   getPendingCoachRequests,
 } from '@/app/dashboard/actions'
-import type { Profile, Workout } from '@/types/database'
+import type { Profile, Workout, Goal } from '@/types/database'
 
 const ROLE_LABELS: Record<Profile['role'], string> = {
   athlete: 'Athlète',
@@ -45,8 +45,8 @@ export default async function DashboardPage() {
     }
 
     return (
-      <div className="min-h-screen bg-stone-50">
-        <header className="sticky top-0 z-40 border-b border-stone-100 border-stone-200/50 bg-stone-50/95 backdrop-blur-md">
+      <div className="min-h-screen bg-background">
+        <header className="sticky top-0 z-40 border-b border-stone-200/50 bg-background/95 backdrop-blur-md">
           <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
             <h1 className="text-lg font-semibold text-stone-900text-white">
               Tableau de bord
@@ -125,9 +125,15 @@ export default async function DashboardPage() {
       .order('date')
       .order('created_at')
 
+    const { data: goals } = await supabase
+      .from('goals')
+      .select('*')
+      .eq('athlete_id', current.id)
+      .order('date', { ascending: true })
+
     return (
-      <div className="min-h-screen bg-stone-50">
-        <header className="sticky top-0 z-40 border-b border-stone-100 border-stone-200/50 bg-stone-50/95 backdrop-blur-md">
+      <div className="min-h-screen bg-background">
+        <header className="sticky top-0 z-40 border-b border-stone-200/50 bg-background/95 backdrop-blur-md">
           <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
             <h1 className="text-lg font-semibold text-stone-900text-white">
               Mon calendrier d&apos;entraînement
@@ -136,15 +142,12 @@ export default async function DashboardPage() {
           </div>
         </header>
 
-        <main className="mx-auto max-w-5xl px-4 py-8">
-          <p className="text-sm text-stone-600 mb-6">
-            Vos entraînements prévus.
-          </p>
-
-          <CalendarView
+        <main className="mx-auto max-w-5xl px-4 pt-4 pb-8">
+          <CalendarViewWithNavigation
             athleteId={current.id}
             athleteEmail={current.email}
-            workouts={(workouts ?? []) as Workout[]}
+            initialWorkouts={(workouts ?? []) as Workout[]}
+            goals={(goals ?? []) as Goal[]}
             canEdit={false}
             pathToRevalidate="/dashboard"
           />
@@ -179,8 +182,8 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-stone-50">
-      <header className="sticky top-0 z-40 border-b border-stone-100 border-stone-200/50 bg-stone-50/95 backdrop-blur-md">
+    <div className="min-h-screen bg-background">
+      <header className="sticky top-0 z-40 border-b border-stone-200/50 bg-background/95 backdrop-blur-md">
         <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
           <h1 className="text-lg font-semibold text-stone-900text-white">
             Tableau de bord
@@ -199,7 +202,7 @@ export default async function DashboardPage() {
           {current.profile.role === 'admin' && (
             <Link
               href="/admin/members"
-              className="mt-4 inline-flex items-center rounded-lg bg-stone-900bg-stone-50 px-4 py-2 text-sm font-medium text-white hover:bg-palette-olivehover:bg-stone-100 transition-colors"
+              className="mt-4 inline-flex items-center rounded-lg bg-palette-forest-dark px-4 py-2 text-sm font-medium text-white border-2 border-palette-olive hover:bg-palette-olive transition-colors"
             >
               Gérer les membres et les rôles
             </Link>

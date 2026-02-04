@@ -34,9 +34,9 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
     <div className="mt-8 space-y-6">
       <form
         action={action}
-        className="rounded-xl border border-stone-100border-stone-800 bg-whitebg-palette-forest-dark/50 p-6"
+        className="rounded-xl border-2 border-palette-forest-dark bg-white p-6"
       >
-        <h2 className="text-base font-semibold text-stone-900text-white mb-5">
+        <h2 className="text-base font-semibold text-stone-900 mb-5">
           Ajouter un objectif
         </h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -51,7 +51,7 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
               type="date"
               required
               min={new Date().toISOString().slice(0, 10)}
-              className="objectifs-date-input w-full rounded-lg border border-stone-200border-stone-700 bg-whitebg-palette-forest-dark px-4 py-2.5 text-stone-900text-white focus:outline-none focus:ring-2 focus:ring-stone-900focus:ring-stone-100 focus:border-transparent transition"
+              className="objectifs-date-input w-full rounded-lg border border-2 border-palette-forest-dark bg-white px-4 py-2.5 text-stone-900 focus:outline-none focus:ring-2 focus:ring-palette-olive focus:border-transparent transition"
             />
           </div>
           <div>
@@ -64,7 +64,7 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
               type="text"
               required
               placeholder="Ex. Marathon de Paris"
-              className="w-full rounded-lg border border-stone-200border-stone-700 bg-whitebg-palette-forest-dark px-4 py-2.5 text-stone-900text-white placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900focus:ring-stone-100 focus:border-transparent transition"
+              className="w-full rounded-lg border border-2 border-palette-forest-dark bg-white px-4 py-2.5 text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-olive focus:border-transparent transition"
             />
           </div>
           <div>
@@ -77,7 +77,7 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
               type="text"
               required
               placeholder="Ex. 42 km"
-              className="w-full rounded-lg border border-stone-200border-stone-700 bg-whitebg-palette-forest-dark px-4 py-2.5 text-stone-900text-white placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900focus:ring-stone-100 focus:border-transparent transition"
+              className="w-full rounded-lg border border-2 border-palette-forest-dark bg-white px-4 py-2.5 text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-olive focus:border-transparent transition"
             />
           </div>
           <div>
@@ -86,7 +86,7 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
             </label>
             <select
               name="is_primary"
-              className="w-full rounded-lg border border-stone-200border-stone-700 bg-whitebg-palette-forest-dark px-4 py-2.5 text-stone-900text-white focus:outline-none focus:ring-2 focus:ring-stone-900focus:ring-stone-100 focus:border-transparent transition"
+              className="w-full rounded-lg border border-2 border-palette-forest-dark bg-white px-4 py-2.5 text-stone-900 focus:outline-none focus:ring-2 focus:ring-palette-olive focus:border-transparent transition"
             >
               <option value="primary">Objectif principal</option>
               <option value="secondary">Objectif secondaire</option>
@@ -103,13 +103,13 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
         )}
         <button
           type="submit"
-          className="mt-5 rounded-lg bg-palette-forest-darkbg-white px-4 py-2.5 text-sm font-medium text-whitetext-stone-900 hover:bg-palette-olivehover:bg-stone-100 transition-colors"
+          className="mt-5 rounded-lg bg-palette-forest-dark px-4 py-2.5 text-sm font-medium text-white border-2 border-palette-olive hover:bg-palette-olive transition-colors"
         >
           Ajouter
         </button>
       </form>
 
-      <div className="overflow-hidden rounded-xl border border-stone-100border-stone-800 bg-whitebg-palette-forest-dark/50">
+      <div className="overflow-hidden rounded-xl border-2 border-palette-forest-dark bg-white">
         <table className="min-w-full divide-y divide-stone-200divide-stone-700">
           <thead>
             <tr>
@@ -132,11 +132,11 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
           </thead>
           <tbody className="divide-y divide-stone-200divide-stone-700">
             {initialGoals.map((g) => (
-              <tr key={g.id} className="bg-whitebg-palette-forest-dark">
-                <td className="px-4 py-3 text-sm text-stone-900text-white">
+              <tr key={g.id} className="bg-white">
+                <td className="px-4 py-3 text-sm text-stone-900">
                   {new Date(g.date).toLocaleDateString('fr-FR')}
                 </td>
-                <td className="px-4 py-3 text-sm text-stone-900text-white">
+                <td className="px-4 py-3 text-sm text-stone-900">
                   {g.race_name}
                 </td>
                 <td className="px-4 py-3 text-sm text-stone-600text-stone-300">

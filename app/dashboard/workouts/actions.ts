@@ -154,6 +154,52 @@ export type CommentFormState = {
   success?: string
 }
 
+export async function getWorkoutsForDateRange(
+  athleteId: string,
+  startDate: string,
+  endDate: string
+) {
+  const supabase = await createClient()
+  
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) return { error: 'Non connecté.', workouts: [] }
+
+  const { data: myProfile } = await supabase
+    .from('profiles')
+    .select('role, user_id')
+    .eq('user_id', user.id)
+    .single()
+
+  const isCoach = myProfile?.role === 'coach'
+  const isAthlete = myProfile?.role === 'athlete' && user.id === athleteId
+  if (!isCoach && !isAthlete) return { error: 'Non autorisé.', workouts: [] }
+
+  if (isCoach) {
+    const { data: athleteProfile } = await supabase
+      .from('profiles')
+      .select('coach_id')
+      .eq('user_id', athleteId)
+      .single()
+    if (athleteProfile?.coach_id !== user.id) {
+      return { error: 'Non autorisé.', workouts: [] }
+    }
+  }
+
+  const { data: workouts, error } = await supabase
+    .from('workouts')
+    .select('*')
+    .eq('athlete_id', athleteId)
+    .gte('date', startDate)
+    .lte('date', endDate)
+    .order('date')
+    .order('created_at')
+
+  if (error) return { error: error.message, workouts: [] }
+  return { workouts: workouts ?? [] }
+}
+
 export async function saveWorkoutComment(
   workoutId: string,
   athleteId: string,
