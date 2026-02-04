@@ -1,8 +1,13 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f5f1eb;
+  --foreground: #1a1612;
+  --palette-forest-dark: #627e59;
+  --palette-olive: #8e9856;
+  --palette-sage: #aaaa51;
+  --palette-gold: #cbb44b;
+  --palette-amber: #c9a544;
 }
 
 @theme inline {
@@ -12,25 +17,51 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* Icône calendrier blanche sur la page Mes objectifs (mode sombre) */
-@media (prefers-color-scheme: dark) {
-  .objectifs-date-input::-webkit-calendar-picker-indicator {
-    filter: invert(1);
-  }
-}
-.dark .objectifs-date-input::-webkit-calendar-picker-indicator {
-  filter: invert(1);
-}
+/* Palette de couleurs personnalisée */
+.bg-palette-forest-dark { background-color: #627e59; }
+.bg-palette-olive { background-color: #8e9856; }
+.bg-palette-sage { background-color: #aaaa51; }
+.bg-palette-gold { background-color: #cbb44b; }
+.bg-palette-amber { background-color: #c9a544; }
+
+.text-palette-forest-dark { color: #627e59; }
+.text-palette-olive { color: #8e9856; }
+.text-palette-sage { color: #aaaa51; }
+.text-palette-gold { color: #cbb44b; }
+.text-palette-amber { color: #c9a544; }
+
+.border-palette-forest-dark { border-color: #627e59; }
+.border-palette-olive { border-color: #8e9856; }
+.border-palette-sage { border-color: #aaaa51; }
+.border-palette-gold { border-color: #cbb44b; }
+.border-palette-amber { border-color: #c9a544; }
+
+.ring-palette-forest-dark { --tw-ring-color: #627e59; }
+.ring-palette-olive { --tw-ring-color: #8e9856; }
+.ring-palette-sage { --tw-ring-color: #aaaa51; }
+.ring-palette-gold { --tw-ring-color: #cbb44b; }
+.ring-palette-amber { --tw-ring-color: #c9a544; }
+
+/* Hover states pour la palette */
+.hover\:bg-palette-olive:hover { background-color: #8e9856; }
+.hover\:bg-palette-sage:hover { background-color: #aaaa51; }
+.hover\:bg-palette-gold:hover { background-color: #cbb44b; }
+.hover\:bg-palette-amber:hover { background-color: #c9a544; }
+
+/* Opacités pour la palette */
+.bg-palette-olive\/10 { background-color: rgba(142, 152, 86, 0.1); }
+.bg-palette-olive\/20 { background-color: rgba(142, 152, 86, 0.2); }
+.bg-palette-sage\/20 { background-color: rgba(170, 170, 81, 0.2); }
+.bg-palette-gold\/20 { background-color: rgba(203, 180, 75, 0.2); }
+.bg-palette-amber\/20 { background-color: rgba(201, 165, 68, 0.2); }
+
+.border-palette-olive\/40 { border-color: rgba(142, 152, 86, 0.4); }
+.border-palette-sage\/40 { border-color: rgba(170, 170, 81, 0.4); }
+.border-palette-gold\/40 { border-color: rgba(203, 180, 75, 0.4); }
+.border-palette-amber\/40 { border-color: rgba(201, 165, 68, 0.4); }

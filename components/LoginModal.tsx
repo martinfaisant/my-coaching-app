@@ -36,16 +36,16 @@ export function LoginModal({ isOpen, mode, onClose }: LoginModalProps) {
       aria-labelledby="modal-title"
     >
       <div
-        className="absolute inset-0 bg-slate-900/60 dark:bg-black/60 backdrop-blur-sm"
+        className="absolute inset-0 bg-palette-forest-dark/50 backdrop-blur-sm"
         onClick={onClose}
         aria-hidden="true"
       />
-      <div className="relative w-full max-w-md max-h-[90vh] overflow-y-auto bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200/80 dark:border-slate-700/80">
-        <div className="sticky top-0 flex justify-end p-3 bg-white dark:bg-slate-900 rounded-t-2xl z-10">
+      <div className="relative w-full max-w-md max-h-[90vh] overflow-y-auto bg-white rounded-xl shadow-xl border border-stone-100">
+        <div className="sticky top-0 flex justify-end p-3 bg-white rounded-t-xl z-10">
           <button
             type="button"
             onClick={onClose}
-            className="p-2 rounded-xl text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800 transition"
+            className="p-2 rounded-lg text-stone-400 hover:text-stone-600 hover:bg-stone-50 transition-colors"
             aria-label="Fermer"
           >
             <svg

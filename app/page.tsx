@@ -19,28 +19,28 @@ export default function Home() {
 
   return (
     <>
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+      <div className="min-h-screen bg-stone-50">
         {/* Header */}
-        <header className="sticky top-0 z-40 border-b border-slate-200/80 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md">
-          <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4 sm:px-6">
+        <header className="sticky top-0 z-40 border-b border-stone-200 bg-stone-50/95 backdrop-blur-md">
+          <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
             <Link
               href="/"
-              className="text-lg font-semibold text-slate-900 dark:text-white tracking-tight"
+              className="text-xl font-semibold text-stone-900 tracking-tight"
             >
               Coach Pro
             </Link>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2.5">
               <button
                 type="button"
                 onClick={openLogin}
-                className="rounded-xl border border-slate-300 dark:border-slate-600 px-5 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2"
+                className="rounded-lg px-4 py-2 text-sm font-medium text-stone-700 hover:bg-stone-100 transition-colors"
               >
                 Se connecter
               </button>
               <button
                 type="button"
                 onClick={openSignup}
-                className="rounded-xl bg-slate-900 dark:bg-white px-5 py-2.5 text-sm font-medium text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 transition focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2"
+                className="rounded-lg px-4 py-2 text-sm font-medium text-white transition-colors" style={{ backgroundColor: '#627e59' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#8e9856'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#627e59'}
               >
                 Créer un compte
               </button>
@@ -49,36 +49,36 @@ export default function Home() {
         </header>
 
         {/* Hero - Présentation du coach */}
-        <main className="mx-auto max-w-5xl px-4 sm:px-6 py-16 sm:py-24">
-          <section className="flex flex-col items-center gap-12 lg:flex-row lg:items-start lg:gap-16">
+        <main className="mx-auto max-w-6xl px-4 sm:px-6 py-20 sm:py-28">
+          <section className="flex flex-col items-center gap-16 lg:flex-row lg:items-start lg:gap-20">
             <div className="flex-shrink-0">
-              <div className="h-48 w-48 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 dark:from-emerald-600 dark:to-teal-700 flex items-center justify-center shadow-xl shadow-emerald-500/20">
-                <span className="text-6xl font-bold text-white/90">JP</span>
+              <div className="h-40 w-40 rounded-3xl flex items-center justify-center shadow-lg" style={{ background: 'linear-gradient(to bottom right, #627e59, #8e9856)', boxShadow: '0 10px 15px -3px rgba(98, 126, 89, 0.1)' }}>
+                <span className="text-5xl font-bold text-white">JP</span>
               </div>
             </div>
             <div className="flex-1 text-center lg:text-left">
-              <p className="text-sm font-medium uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-2">
+              <p className="text-xs font-medium uppercase tracking-widest mb-3" style={{ color: '#627e59' }}>
                 Coach sportif personnel
               </p>
-              <h1 className="text-4xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-5xl">
+              <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-stone-900 mb-5">
                 Jean-Pierre Martin
               </h1>
-              <p className="mt-4 text-lg leading-relaxed text-slate-600 dark:text-slate-400 max-w-2xl">
+              <p className="text-lg leading-relaxed text-stone-700 max-w-2xl mb-8">
                 Coach diplômé avec plus de 10 ans d&apos;expérience, je vous accompagne pour
                 atteindre vos objectifs : perte de poids, prise de masse, préparation
                 physique ou simplement une meilleure condition au quotidien.
               </p>
-              <ul className="mt-8 flex flex-wrap justify-center lg:justify-start gap-4 text-sm text-slate-600 dark:text-slate-400">
-                <li className="flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full bg-emerald-500" />
+              <ul className="flex flex-wrap justify-center lg:justify-start gap-6 text-sm text-stone-700">
+                <li className="flex items-center gap-2.5">
+                  <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: '#627e59' }} />
                   Musculation &amp; fitness
                 </li>
-                <li className="flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                <li className="flex items-center gap-2.5">
+                  <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: '#627e59' }} />
                   Nutrition
                 </li>
-                <li className="flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                <li className="flex items-center gap-2.5">
+                  <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: '#627e59' }} />
                   Suivi personnalisé
                 </li>
               </ul>
@@ -86,30 +86,30 @@ export default function Home() {
           </section>
 
           {/* Section valeurs / approche */}
-          <section className="mt-24 grid gap-8 sm:grid-cols-3">
-            <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 p-6 shadow-sm">
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+          <section className="mt-32 grid gap-6 sm:grid-cols-3">
+            <div className="rounded-xl border border-stone-200 bg-white p-6">
+              <h3 className="text-base font-semibold text-stone-900 mb-2">
                 Objectifs sur mesure
               </h3>
-              <p className="mt-2 text-slate-600 dark:text-slate-400">
+              <p className="text-sm leading-relaxed text-stone-700">
                 Chaque programme est conçu selon votre niveau, votre emploi du temps et
                 vos objectifs.
               </p>
             </div>
-            <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 p-6 shadow-sm">
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+            <div className="rounded-xl border border-stone-200 bg-white p-6">
+              <h3 className="text-base font-semibold text-stone-900 mb-2">
                 Suivi régulier
               </h3>
-              <p className="mt-2 text-slate-600 dark:text-slate-400">
+              <p className="text-sm leading-relaxed text-stone-700">
                 Bilan régulier et ajustements pour garder la motivation et progresser
                 durablement.
               </p>
             </div>
-            <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 p-6 shadow-sm">
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+            <div className="rounded-xl border border-stone-200 bg-white p-6">
+              <h3 className="text-base font-semibold text-stone-900 mb-2">
                 En présentiel ou en ligne
               </h3>
-              <p className="mt-2 text-slate-600 dark:text-slate-400">
+              <p className="text-sm leading-relaxed text-stone-700">
                 Séances en salle, à domicile ou coaching à distance selon vos préférences.
               </p>
             </div>

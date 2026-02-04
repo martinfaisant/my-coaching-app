@@ -17,23 +17,23 @@ type MembersListProps = {
 
 export function MembersList({ profiles }: MembersListProps) {
   return (
-    <div className="mt-8 overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm">
+    <div className="mt-8 overflow-hidden rounded-xl border border-stone-200border-stone-700 bg-whitebg-palette-forest-dark shadow-sm">
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
+        <table className="min-w-full divide-y divide-stone-200divide-stone-700">
           <thead>
             <tr>
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-white0text-stone-400">
                 Email
               </th>
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-white0text-stone-400">
                 Rôle
               </th>
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-white0text-stone-400">
                 Action
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
+          <tbody className="divide-y divide-stone-200divide-stone-700">
             {profiles.map((profile) => (
               <MemberRow key={profile.user_id} profile={profile} />
             ))}
@@ -41,7 +41,7 @@ export function MembersList({ profiles }: MembersListProps) {
         </table>
       </div>
       {profiles.length === 0 && (
-        <div className="px-4 py-8 text-center text-slate-500 dark:text-slate-400">
+        <div className="px-4 py-8 text-center text-white0text-stone-400">
           Aucun membre.
         </div>
       )}
@@ -57,11 +57,11 @@ function MemberRow({
   const [state, formAction] = useActionState<UpdateRoleState, FormData>(updateMemberRole, {})
 
   return (
-    <tr className="bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800/50">
-      <td className="px-4 py-3 text-sm text-slate-900 dark:text-white">
+    <tr className="bg-whitebg-palette-forest-dark hover:bg-stone-50hover:bg-palette-olive/50">
+      <td className="px-4 py-3 text-sm text-stone-900text-white">
         {profile.email}
       </td>
-      <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-300">
+      <td className="px-4 py-3 text-sm text-stone-600text-stone-300">
         {ROLE_LABELS[profile.role]}
       </td>
       <td className="px-4 py-3">
@@ -70,7 +70,7 @@ function MemberRow({
           <select
             name="role"
             defaultValue={profile.role}
-            className="rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-1.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-500"
+            className="rounded-lg border border-stone-300border-stone-600 bg-whitebg-stone-800 px-3 py-1.5 text-sm text-stone-900text-white focus:outline-none focus:ring-2 focus:ring-stone-500"
           >
             <option value="athlete">Athlète</option>
             <option value="coach">Coach</option>
@@ -78,16 +78,16 @@ function MemberRow({
           </select>
           <button
             type="submit"
-            className="rounded-lg bg-slate-900 dark:bg-white px-3 py-1.5 text-sm font-medium text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 transition"
+            className="rounded-lg bg-palette-forest-darkbg-white px-3 py-1.5 text-sm font-medium text-whitetext-stone-900 hover:bg-palette-olivehover:bg-stone-100 transition"
           >
             Modifier
           </button>
         </form>
         {state?.error && (
-          <p className="mt-1 text-xs text-red-600 dark:text-red-400">{state.error}</p>
+          <p className="mt-1 text-xs text-red-600text-red-400">{state.error}</p>
         )}
         {state?.success && (
-          <p className="mt-1 text-xs text-emerald-600 dark:text-emerald-400">{state.success}</p>
+          <p className="mt-1 text-xs text-palette-forest-dark">{state.success}</p>
         )}
       </td>
     </tr>

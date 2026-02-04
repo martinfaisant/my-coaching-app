@@ -50,7 +50,7 @@ export function ChatModule() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="fixed bottom-6 right-6 z-40 flex items-center gap-2 rounded-full bg-slate-900 dark:bg-slate-100 px-4 py-3 text-sm font-medium text-white dark:text-slate-900 shadow-lg hover:bg-slate-800 dark:hover:bg-slate-200 transition focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2"
+        className="fixed bottom-6 right-6 z-40 flex items-center gap-2 rounded-full bg-palette-forest-darkbg-stone-100 px-4 py-3 text-sm font-medium text-whitetext-stone-900 shadow-lg hover:bg-palette-olivehover:bg-stone-200 transition focus:outline-none focus:ring-2 focus:ring-stone-500 focus:ring-offset-2"
         aria-label={label}
       >
         <svg
@@ -169,19 +169,19 @@ function ChatOverlay({ role, userId, onClose }: ChatOverlayProps) {
       aria-label="Discussion"
     >
       <div
-        className="absolute inset-0 bg-slate-900/50 dark:bg-black/50 backdrop-blur-sm"
+        className="absolute inset-0 bg-palette-forest-dark/50bg-black/50 backdrop-blur-sm"
         onClick={onClose}
         aria-hidden="true"
       />
-      <div className="relative flex flex-col w-full max-w-md h-[80vh] max-h-[600px] rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-2xl overflow-hidden">
-        <div className="flex items-center justify-between shrink-0 p-4 border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
-          <h2 className="text-lg font-semibold text-slate-900 dark:text-white truncate">
+      <div className="relative flex flex-col w-full max-w-md h-[80vh] max-h-[600px] rounded-2xl border border-stone-200border-stone-700 bg-whitebg-palette-forest-dark shadow-2xl overflow-hidden">
+        <div className="flex items-center justify-between shrink-0 p-4 border-b border-stone-200border-stone-700 bg-whitebg-palette-forest-dark">
+          <h2 className="text-lg font-semibold text-stone-900text-white truncate">
             {title}
           </h2>
           <button
             type="button"
             onClick={onClose}
-            className="p-2 rounded-xl text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+            className="p-2 rounded-xl text-white0 hover:text-stone-700 hover:bg-stone-100hover:bg-palette-olive transition"
             aria-label="Fermer"
           >
             <svg
@@ -200,7 +200,7 @@ function ChatOverlay({ role, userId, onClose }: ChatOverlayProps) {
         </div>
 
         {role === 'coach' && coachConvs.length > 0 && (
-          <div className="shrink-0 flex gap-1 p-2 border-b border-slate-200 dark:border-slate-700 overflow-x-auto">
+          <div className="shrink-0 flex gap-1 p-2 border-b border-stone-200border-stone-700 overflow-x-auto">
             {coachConvs.map((c) => (
               <button
                 key={c.id}
@@ -208,8 +208,8 @@ function ChatOverlay({ role, userId, onClose }: ChatOverlayProps) {
                 onClick={() => setSelectedConvId(c.id)}
                 className={`shrink-0 px-3 py-2 rounded-xl text-sm font-medium transition ${
                   selectedConvId === c.id
-                    ? 'bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900'
-                    : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                    ? 'bg-palette-forest-darkbg-stone-100 text-whitetext-stone-900'
+                    : 'bg-stone-100bg-stone-800 text-stone-700text-stone-300 hover:bg-stone-200hover:bg-stone-700'
                 }`}
               >
                 {c.athlete_name}
@@ -220,13 +220,13 @@ function ChatOverlay({ role, userId, onClose }: ChatOverlayProps) {
 
         <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-0">
           {loading ? (
-            <p className="text-sm text-slate-500 dark:text-slate-400">Chargement...</p>
+            <p className="text-sm text-white0text-stone-400">Chargement...</p>
           ) : role === 'athlete' && !athleteData ? (
-            <p className="text-sm text-slate-500 dark:text-slate-400">
+            <p className="text-sm text-white0text-stone-400">
               Aucun coach assigné. Vous ne pouvez pas envoyer de message pour le moment.
             </p>
           ) : role === 'coach' && coachConvs.length === 0 ? (
-            <p className="text-sm text-slate-500 dark:text-slate-400">
+            <p className="text-sm text-white0text-stone-400">
               Aucune discussion avec vos athlètes pour le moment.
             </p>
           ) : (
@@ -240,16 +240,16 @@ function ChatOverlay({ role, userId, onClose }: ChatOverlayProps) {
                   <div
                     className={`max-w-[85%] rounded-2xl px-4 py-2 ${
                       isMe
-                        ? 'bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900'
-                        : 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100'
+                        ? 'bg-palette-forest-darkbg-stone-100 text-whitetext-stone-900'
+                        : 'bg-stone-100bg-stone-800 text-stone-900text-stone-100'
                     }`}
                   >
                     <p className="text-sm whitespace-pre-wrap break-words">{m.content}</p>
                     <p
                       className={`text-xs mt-1 ${
                         isMe
-                          ? 'text-slate-400 dark:text-slate-500'
-                          : 'text-slate-500 dark:text-slate-400'
+                          ? 'text-stone-400text-white0'
+                          : 'text-white0text-stone-400'
                       }`}
                     >
                       {formatMessageTime(m.created_at)}
@@ -263,9 +263,9 @@ function ChatOverlay({ role, userId, onClose }: ChatOverlayProps) {
         </div>
 
         {(role === 'athlete' ? athleteData : currentConversationId) && (
-          <div className="shrink-0 p-4 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
+          <div className="shrink-0 p-4 border-t border-stone-100border-stone-800 bg-whitebg-palette-forest-dark">
             {sendError && (
-              <p className="text-sm text-red-600 dark:text-red-400 mb-2">{sendError}</p>
+              <p className="text-sm text-red-600text-red-400 mb-2">{sendError}</p>
             )}
             <form
               onSubmit={(e) => {
@@ -279,13 +279,13 @@ function ChatOverlay({ role, userId, onClose }: ChatOverlayProps) {
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 placeholder="Votre message..."
-                className="flex-1 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-2.5 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-500"
+                className="flex-1 rounded-lg border border-stone-200border-stone-700 bg-whitebg-palette-forest-dark px-4 py-2 text-sm text-stone-900text-white placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900focus:ring-stone-100 focus:border-transparent transition"
                 disabled={sending}
               />
               <button
                 type="submit"
                 disabled={sending || !inputValue.trim()}
-                className="shrink-0 rounded-xl bg-slate-900 dark:bg-slate-100 px-4 py-2.5 text-sm font-medium text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-500 disabled:opacity-50 transition"
+                className="shrink-0 rounded-lg bg-palette-forest-darkbg-white px-4 py-2 text-sm font-medium text-whitetext-stone-900 hover:bg-palette-olivehover:bg-stone-100 transition-colors disabled:opacity-50"
               >
                 Envoyer
               </button>

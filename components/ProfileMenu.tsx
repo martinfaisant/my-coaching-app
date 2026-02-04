@@ -37,13 +37,13 @@ export function ProfileMenu({ showObjectifsLink = false }: ProfileMenuProps) {
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-2 rounded-xl bg-slate-200 dark:bg-slate-700 px-4 py-2 text-sm font-medium text-slate-900 dark:text-white hover:bg-slate-300 dark:hover:bg-slate-600 transition focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2"
+        className="flex items-center gap-2 rounded-lg bg-stone-100bg-stone-800 px-3 py-2 text-sm font-medium text-stone-700text-stone-300 hover:bg-stone-200hover:bg-stone-700 transition-colors"
         aria-expanded={open}
         aria-haspopup="true"
       >
         Profil
         <svg
-          className={`h-4 w-4 transition ${open ? 'rotate-180' : ''}`}
+          className={`h-4 w-4 transition-transform ${open ? 'rotate-180' : ''}`}
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
           fill="none"
@@ -57,11 +57,11 @@ export function ProfileMenu({ showObjectifsLink = false }: ProfileMenuProps) {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full z-50 mt-2 w-48 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-lg py-1">
+        <div className="absolute right-0 top-full z-50 mt-2 w-48 rounded-lg border border-stone-100border-stone-800 bg-whitebg-palette-forest-dark shadow-lg py-1">
           <Link
             href="/dashboard/profile"
             onClick={() => setOpen(false)}
-            className="block px-4 py-2.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+            className="block px-4 py-2 text-sm text-stone-700text-stone-300 hover:bg-stone-50hover:bg-palette-olive transition-colors"
           >
             Mes informations
           </Link>
@@ -69,7 +69,7 @@ export function ProfileMenu({ showObjectifsLink = false }: ProfileMenuProps) {
             <Link
               href="/dashboard/objectifs"
               onClick={() => setOpen(false)}
-              className="block px-4 py-2.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+              className="block px-4 py-2 text-sm text-stone-700text-stone-300 hover:bg-stone-50hover:bg-palette-olive transition-colors"
             >
               Mes objectifs
             </Link>
@@ -77,7 +77,7 @@ export function ProfileMenu({ showObjectifsLink = false }: ProfileMenuProps) {
           <button
             type="button"
             onClick={handleLogout}
-            className="block w-full px-4 py-2.5 text-left text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border-t border-slate-200 dark:border-slate-700"
+            className="block w-full px-4 py-2 text-left text-sm text-stone-700text-stone-300 hover:bg-stone-50hover:bg-palette-olive border-t border-stone-100border-stone-800 transition-colors"
           >
             Déconnexion
           </button>
