@@ -34,3 +34,19 @@ export type Workout = {
   created_at: string
   updated_at: string
 }
+
+export type Conversation = {
+  id: string
+  coach_id: string
+  athlete_id: string
+  created_at: string
+  updated_at: string
+}
+
+export type ChatMessage = {
+  id: string
+  conversation_id: string
+  sender_id: string
+  content: string
+  created_at: string
+}

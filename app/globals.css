@@ -24,3 +24,13 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Icône calendrier blanche sur la page Mes objectifs (mode sombre) */
+@media (prefers-color-scheme: dark) {
+  .objectifs-date-input::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+  }
+}
+.dark .objectifs-date-input::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
