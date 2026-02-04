@@ -116,7 +116,7 @@ export function LoginForm({ mode }: LoginFormProps) {
               className={`flex flex-col items-center justify-center gap-1.5 rounded-lg border-2 p-4 cursor-pointer transition-all ${
                 signupRole === 'athlete'
                   ? 'border-stone-900border-white bg-stone-50 text-stone-900 shadow-sm'
-                  : 'border-stone-200border-stone-700 hover:border-stone-300hover:border-stone-600 text-stone-600'
+                  : 'border-stone-200border-stone-700 hover:border-palette-olive text-stone-600'
               }`}
             >
               <input
@@ -134,7 +134,7 @@ export function LoginForm({ mode }: LoginFormProps) {
               className={`flex flex-col items-center justify-center gap-1.5 rounded-lg border-2 p-4 cursor-pointer transition-all ${
                 signupRole === 'coach'
                   ? 'border-stone-900border-white bg-stone-50 text-stone-900 shadow-sm'
-                  : 'border-stone-200border-stone-700 hover:border-stone-300hover:border-stone-600 text-stone-600'
+                  : 'border-stone-200border-stone-700 hover:border-palette-olive text-stone-600'
               }`}
             >
               <input
@@ -192,7 +192,7 @@ export function LoginForm({ mode }: LoginFormProps) {
         )}
         <button
           type="submit"
-          className="w-full py-2.5 px-4 rounded-lg bg-palette-forest-dark text-white font-medium hover:bg-palette-olive transition-colors"
+          className="w-full py-2.5 px-4 rounded-lg bg-palette-forest-dark text-white font-medium border-2 border-palette-olive hover:bg-palette-olive transition-colors"
         >
           S&apos;inscrire
         </button>
@@ -243,7 +243,7 @@ function ForgotPasswordForm({ onBack }: { onBack: () => void }) {
         )}
         <button
           type="submit"
-          className="w-full py-2.5 px-4 rounded-lg bg-palette-forest-dark text-white font-medium hover:bg-palette-olive transition-colors"
+          className="w-full py-2.5 px-4 rounded-lg bg-palette-forest-dark text-white font-medium border-2 border-palette-olive hover:bg-palette-olive transition-colors"
         >
           Envoyer le lien de réinitialisation
         </button>

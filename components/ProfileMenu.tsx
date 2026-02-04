@@ -37,7 +37,7 @@ export function ProfileMenu({ showObjectifsLink = false }: ProfileMenuProps) {
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-2 rounded-lg bg-stone-100bg-stone-800 px-3 py-2 text-sm font-medium text-stone-700text-stone-300 hover:bg-stone-200hover:bg-stone-700 transition-colors"
+        className="flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-white bg-palette-forest-dark hover:bg-palette-olive transition-colors"
         aria-expanded={open}
         aria-haspopup="true"
       >
@@ -57,11 +57,11 @@ export function ProfileMenu({ showObjectifsLink = false }: ProfileMenuProps) {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full z-50 mt-2 w-48 rounded-lg border border-stone-100border-stone-800 bg-whitebg-palette-forest-dark shadow-lg py-1">
+        <div className="absolute right-0 top-full z-50 mt-2 w-48 rounded-lg border-2 border-palette-forest-dark bg-white shadow-lg py-1">
           <Link
             href="/dashboard/profile"
             onClick={() => setOpen(false)}
-            className="block px-4 py-2 text-sm text-stone-700text-stone-300 hover:bg-stone-50hover:bg-palette-olive transition-colors"
+            className="block px-4 py-2 text-sm text-stone-700 hover:bg-palette-olive/20 transition-colors"
           >
             Mes informations
           </Link>
@@ -69,7 +69,7 @@ export function ProfileMenu({ showObjectifsLink = false }: ProfileMenuProps) {
             <Link
               href="/dashboard/objectifs"
               onClick={() => setOpen(false)}
-              className="block px-4 py-2 text-sm text-stone-700text-stone-300 hover:bg-stone-50hover:bg-palette-olive transition-colors"
+              className="block px-4 py-2 text-sm text-stone-700 hover:bg-palette-olive/20 transition-colors"
             >
               Mes objectifs
             </Link>
@@ -77,7 +77,7 @@ export function ProfileMenu({ showObjectifsLink = false }: ProfileMenuProps) {
           <button
             type="button"
             onClick={handleLogout}
-            className="block w-full px-4 py-2 text-left text-sm text-stone-700text-stone-300 hover:bg-stone-50hover:bg-palette-olive border-t border-stone-100border-stone-800 transition-colors"
+            className="block w-full px-4 py-2 text-left text-sm text-stone-700 hover:bg-palette-olive/20 border-t-2 border-palette-forest-dark transition-colors"
           >
             Déconnexion
           </button>

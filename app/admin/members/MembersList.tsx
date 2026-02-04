@@ -57,11 +57,11 @@ function MemberRow({
   const [state, formAction] = useActionState<UpdateRoleState, FormData>(updateMemberRole, {})
 
   return (
-    <tr className="bg-whitebg-palette-forest-dark hover:bg-stone-50hover:bg-palette-olive/50">
-      <td className="px-4 py-3 text-sm text-stone-900text-white">
+    <tr className="bg-white hover:bg-stone-50">
+      <td className="px-4 py-3 text-sm text-stone-900">
         {profile.email}
       </td>
-      <td className="px-4 py-3 text-sm text-stone-600text-stone-300">
+      <td className="px-4 py-3 text-sm text-stone-600">
         {ROLE_LABELS[profile.role]}
       </td>
       <td className="px-4 py-3">
@@ -70,7 +70,7 @@ function MemberRow({
           <select
             name="role"
             defaultValue={profile.role}
-            className="rounded-lg border border-stone-300border-stone-600 bg-whitebg-stone-800 px-3 py-1.5 text-sm text-stone-900text-white focus:outline-none focus:ring-2 focus:ring-stone-500"
+            className="rounded-lg border-2 border-palette-forest-dark bg-white px-3 py-1.5 text-sm text-stone-900 focus:outline-none focus:ring-2 focus:ring-palette-olive"
           >
             <option value="athlete">Athlète</option>
             <option value="coach">Coach</option>
@@ -84,7 +84,7 @@ function MemberRow({
           </button>
         </form>
         {state?.error && (
-          <p className="mt-1 text-xs text-red-600text-red-400">{state.error}</p>
+          <p className="mt-1 text-xs text-red-600">{state.error}</p>
         )}
         {state?.success && (
           <p className="mt-1 text-xs text-palette-forest-dark">{state.success}</p>

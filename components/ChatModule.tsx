@@ -50,7 +50,7 @@ export function ChatModule() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="fixed bottom-6 right-6 z-40 flex items-center gap-2 rounded-full bg-palette-forest-darkbg-stone-100 px-4 py-3 text-sm font-medium text-whitetext-stone-900 shadow-lg hover:bg-palette-olivehover:bg-stone-200 transition focus:outline-none focus:ring-2 focus:ring-stone-500 focus:ring-offset-2"
+        className="fixed bottom-6 right-6 z-40 flex items-center gap-2 rounded-full bg-palette-forest-dark px-4 py-3 text-sm font-medium text-white shadow-lg hover:bg-palette-olive transition-colors focus:outline-none focus:ring-2 focus:ring-palette-olive focus:ring-offset-2"
         aria-label={label}
       >
         <svg
@@ -173,15 +173,15 @@ function ChatOverlay({ role, userId, onClose }: ChatOverlayProps) {
         onClick={onClose}
         aria-hidden="true"
       />
-      <div className="relative flex flex-col w-full max-w-md h-[80vh] max-h-[600px] rounded-2xl border border-stone-200border-stone-700 bg-whitebg-palette-forest-dark shadow-2xl overflow-hidden">
-        <div className="flex items-center justify-between shrink-0 p-4 border-b border-stone-200border-stone-700 bg-whitebg-palette-forest-dark">
-          <h2 className="text-lg font-semibold text-stone-900text-white truncate">
+      <div className="relative flex flex-col w-full max-w-md h-[80vh] max-h-[600px] rounded-2xl border-2 border-palette-forest-dark bg-white shadow-2xl overflow-hidden">
+        <div className="flex items-center justify-between shrink-0 p-4 border-b-2 border-palette-forest-dark bg-white">
+          <h2 className="text-lg font-semibold text-stone-900 truncate">
             {title}
           </h2>
           <button
             type="button"
             onClick={onClose}
-            className="p-2 rounded-xl text-white0 hover:text-stone-700 hover:bg-stone-100hover:bg-palette-olive transition"
+            className="p-2 rounded-xl text-stone-600 hover:text-stone-900 hover:bg-stone-100 transition"
             aria-label="Fermer"
           >
             <svg
@@ -200,16 +200,16 @@ function ChatOverlay({ role, userId, onClose }: ChatOverlayProps) {
         </div>
 
         {role === 'coach' && coachConvs.length > 0 && (
-          <div className="shrink-0 flex gap-1 p-2 border-b border-stone-200border-stone-700 overflow-x-auto">
+          <div className="shrink-0 flex gap-1 p-2 border-b-2 border-palette-forest-dark overflow-x-auto">
             {coachConvs.map((c) => (
               <button
                 key={c.id}
                 type="button"
                 onClick={() => setSelectedConvId(c.id)}
-                className={`shrink-0 px-3 py-2 rounded-xl text-sm font-medium transition ${
+                className={`shrink-0 px-3 py-2 rounded-xl text-sm font-medium transition border-2 ${
                   selectedConvId === c.id
-                    ? 'bg-palette-forest-darkbg-stone-100 text-whitetext-stone-900'
-                    : 'bg-stone-100bg-stone-800 text-stone-700text-stone-300 hover:bg-stone-200hover:bg-stone-700'
+                    ? 'bg-palette-forest-dark text-white border-palette-olive'
+                    : 'bg-stone-100 text-stone-700 border-palette-forest-dark hover:bg-stone-200'
                 }`}
               >
                 {c.athlete_name}
@@ -238,10 +238,10 @@ function ChatOverlay({ role, userId, onClose }: ChatOverlayProps) {
                   className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}
                 >
                   <div
-                    className={`max-w-[85%] rounded-2xl px-4 py-2 ${
+                    className={`max-w-[85%] rounded-2xl px-4 py-2 border-2 ${
                       isMe
-                        ? 'bg-palette-forest-darkbg-stone-100 text-whitetext-stone-900'
-                        : 'bg-stone-100bg-stone-800 text-stone-900text-stone-100'
+                        ? 'bg-palette-forest-dark text-white border-palette-olive'
+                        : 'bg-stone-100 text-stone-900 border-palette-forest-dark'
                     }`}
                   >
                     <p className="text-sm whitespace-pre-wrap break-words">{m.content}</p>
@@ -263,7 +263,7 @@ function ChatOverlay({ role, userId, onClose }: ChatOverlayProps) {
         </div>
 
         {(role === 'athlete' ? athleteData : currentConversationId) && (
-          <div className="shrink-0 p-4 border-t border-stone-100border-stone-800 bg-whitebg-palette-forest-dark">
+          <div className="shrink-0 p-4 border-t-2 border-palette-forest-dark bg-white">
             {sendError && (
               <p className="text-sm text-red-600text-red-400 mb-2">{sendError}</p>
             )}
@@ -279,13 +279,13 @@ function ChatOverlay({ role, userId, onClose }: ChatOverlayProps) {
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 placeholder="Votre message..."
-                className="flex-1 rounded-lg border border-stone-200border-stone-700 bg-whitebg-palette-forest-dark px-4 py-2 text-sm text-stone-900text-white placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900focus:ring-stone-100 focus:border-transparent transition"
+                className="flex-1 rounded-lg border-2 border-palette-forest-dark bg-white px-4 py-2 text-sm text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-olive focus:border-palette-olive transition"
                 disabled={sending}
               />
               <button
                 type="submit"
                 disabled={sending || !inputValue.trim()}
-                className="shrink-0 rounded-lg bg-palette-forest-darkbg-white px-4 py-2 text-sm font-medium text-whitetext-stone-900 hover:bg-palette-olivehover:bg-stone-100 transition-colors disabled:opacity-50"
+                className="shrink-0 rounded-lg bg-palette-forest-dark px-4 py-2 text-sm font-medium text-white border-2 border-palette-olive hover:bg-palette-olive transition-colors disabled:opacity-50"
               >
                 Envoyer
               </button>

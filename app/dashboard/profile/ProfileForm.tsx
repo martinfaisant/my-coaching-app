@@ -33,7 +33,7 @@ export function ProfileForm({ email, fullName }: ProfileFormProps) {
           type="email"
           value={email}
           readOnly
-          className="w-full px-4 py-2.5 rounded-lg border border-stone-200border-stone-700 bg-stone-50bg-stone-800/50 text-stone-600text-stone-400 cursor-not-allowed"
+          className="w-full px-4 py-2.5 rounded-lg border border-2 border-palette-forest-dark bg-stone-50 text-stone-600 cursor-not-allowed"
         />
         <p className="mt-1.5 text-xs text-white0text-stone-400">
           L&apos;email ne peut pas être modifié ici.
@@ -50,7 +50,7 @@ export function ProfileForm({ email, fullName }: ProfileFormProps) {
           type="text"
           defaultValue={firstName}
           placeholder="Votre prénom"
-          className="w-full px-4 py-2.5 rounded-lg border border-stone-200border-stone-700 bg-whitebg-palette-forest-dark text-stone-900text-white placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900focus:ring-stone-100 focus:border-transparent transition"
+          className="w-full px-4 py-2.5 rounded-lg border border-2 border-palette-forest-dark bg-whitebg-palette-forest-dark text-stone-900text-white placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-olive focus:border-transparent transition"
         />
       </div>
 
@@ -64,7 +64,7 @@ export function ProfileForm({ email, fullName }: ProfileFormProps) {
           type="text"
           defaultValue={lastName}
           placeholder="Votre nom"
-          className="w-full px-4 py-2.5 rounded-lg border border-stone-200border-stone-700 bg-whitebg-palette-forest-dark text-stone-900text-white placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900focus:ring-stone-100 focus:border-transparent transition"
+          className="w-full px-4 py-2.5 rounded-lg border border-2 border-palette-forest-dark bg-whitebg-palette-forest-dark text-stone-900text-white placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-olive focus:border-transparent transition"
         />
       </div>
 
@@ -79,7 +79,7 @@ export function ProfileForm({ email, fullName }: ProfileFormProps) {
 
       <button
         type="submit"
-        className="w-full rounded-lg bg-palette-forest-darkbg-white px-4 py-2.5 text-sm font-medium text-whitetext-stone-900 hover:bg-palette-olivehover:bg-stone-100 transition-colors"
+        className="w-full rounded-lg bg-palette-forest-dark px-4 py-2.5 text-sm font-medium text-white border-2 border-palette-olive hover:bg-palette-olive transition-colors"
       >
         Enregistrer
       </button>

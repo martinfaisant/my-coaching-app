@@ -13,7 +13,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-stone-50 to-stone-200from-stone-950to-stone-900 p-4">
       <div className="w-full max-w-md">
-        <div className="bg-whitebg-stone-900 rounded-2xl shadow-xl shadow-stone-200/50shadow-black/20 border border-stone-200/80border-stone-700/80 overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-xl shadow-stone-200/50shadow-black/20 border border-2 border-palette-forest-dark overflow-hidden">
           <div className="p-8 sm:p-10">
             <h1 className="text-2xl font-semibold text-stone-900text-white text-center mb-1">
               Connexion
@@ -37,7 +37,7 @@ export default function LoginPage() {
                   autoComplete="email"
                   required
                   placeholder="vous@exemple.com"
-                  className="w-full px-4 py-3 rounded-xl border border-stone-300border-stone-600 bg-whitebg-stone-800 text-stone-900text-white placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-400focus:ring-stone-500 focus:border-transparent transition"
+                  className="w-full px-4 py-3 rounded-xl border border-stone-300border-stone-600 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-olive focus:border-transparent transition"
                 />
               </div>
               <div>
@@ -54,7 +54,7 @@ export default function LoginPage() {
                   autoComplete="current-password"
                   required
                   placeholder="••••••••"
-                  className="w-full px-4 py-3 rounded-xl border border-stone-300border-stone-600 bg-whitebg-stone-800 text-stone-900text-white placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-400focus:ring-stone-500 focus:border-transparent transition"
+                  className="w-full px-4 py-3 rounded-xl border border-stone-300border-stone-600 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-olive focus:border-transparent transition"
                 />
               </div>
               {loginState?.error && (
@@ -72,7 +72,7 @@ export default function LoginPage() {
 
             <div className="relative my-8">
               <span className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-stone-200border-stone-700" />
+                <span className="w-full border-t border-palette-forest-dark" />
               </span>
               <span className="relative flex justify-center text-sm text-white0text-stone-400">
                 ou
@@ -140,7 +140,7 @@ export default function LoginPage() {
                   autoComplete="email"
                   required
                   placeholder="vous@exemple.com"
-                  className="w-full px-4 py-3 rounded-xl border border-stone-300border-stone-600 bg-whitebg-stone-800 text-stone-900text-white placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-400focus:ring-stone-500 focus:border-transparent transition"
+                  className="w-full px-4 py-3 rounded-xl border border-stone-300border-stone-600 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-olive focus:border-transparent transition"
                 />
               </div>
               <div>
@@ -158,7 +158,7 @@ export default function LoginPage() {
                   required
                   minLength={6}
                   placeholder="••••••••"
-                  className="w-full px-4 py-3 rounded-xl border border-stone-300border-stone-600 bg-whitebg-stone-800 text-stone-900text-white placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-400focus:ring-stone-500 focus:border-transparent transition"
+                  className="w-full px-4 py-3 rounded-xl border border-stone-300border-stone-600 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-olive focus:border-transparent transition"
                 />
               </div>
               {signupState?.error && (
