@@ -87,7 +87,7 @@ export default function Home() {
 
           {/* Section valeurs / approche */}
           <section className="mt-32 grid gap-6 sm:grid-cols-3">
-            <div className="rounded-xl border border-stone-300 p-6" style={{ backgroundColor: 'var(--card-bg)' }}>
+            <div className="rounded-xl border border-stone-300 p-6" style={{ backgroundColor: 'var(--section-bg)' }}>
               <h3 className="text-base font-semibold text-stone-900 mb-2">
                 Objectifs sur mesure
               </h3>
@@ -96,7 +96,7 @@ export default function Home() {
                 vos objectifs.
               </p>
             </div>
-            <div className="rounded-xl border border-stone-300 p-6" style={{ backgroundColor: 'var(--card-bg)' }}>
+            <div className="rounded-xl border border-stone-300 p-6" style={{ backgroundColor: 'var(--section-bg)' }}>
               <h3 className="text-base font-semibold text-stone-900 mb-2">
                 Suivi régulier
               </h3>
@@ -105,7 +105,7 @@ export default function Home() {
                 durablement.
               </p>
             </div>
-            <div className="rounded-xl border border-stone-300 p-6" style={{ backgroundColor: 'var(--card-bg)' }}>
+            <div className="rounded-xl border border-stone-300 p-6" style={{ backgroundColor: 'var(--section-bg)' }}>
               <h3 className="text-base font-semibold text-stone-900 mb-2">
                 En présentiel ou en ligne
               </h3>

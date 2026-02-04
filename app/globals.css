@@ -3,6 +3,7 @@
 :root {
   --background: #f5f1eb;
   --card-bg: #eee9e1;
+  --section-bg: #faf7f2;
   --foreground: #1a1612;
   --palette-forest-dark: #627e59;
   --palette-olive: #8e9856;
@@ -22,6 +23,15 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+.bg-section {
+  background-color: var(--section-bg);
+}
+
+/* Cases à cocher : vert de la palette au lieu du bleu par défaut */
+input[type="checkbox"] {
+  accent-color: var(--palette-forest-dark);
 }
 
 /* Palette de couleurs personnalisée */

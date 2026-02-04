@@ -115,8 +115,8 @@ export function LoginForm({ mode }: LoginFormProps) {
             <label
               className={`flex flex-col items-center justify-center gap-1.5 rounded-lg border-2 p-4 cursor-pointer transition-all ${
                 signupRole === 'athlete'
-                  ? 'border-stone-900border-white bg-stone-50 text-stone-900 shadow-sm'
-                  : 'border-stone-200border-stone-700 hover:border-palette-olive text-stone-600'
+                  ? 'border-2 border-palette-forest-dark bg-stone-50 text-stone-900'
+                  : 'border-2 border-stone-200 hover:border-stone-300 text-stone-600'
               }`}
             >
               <input
@@ -133,8 +133,8 @@ export function LoginForm({ mode }: LoginFormProps) {
             <label
               className={`flex flex-col items-center justify-center gap-1.5 rounded-lg border-2 p-4 cursor-pointer transition-all ${
                 signupRole === 'coach'
-                  ? 'border-stone-900border-white bg-stone-50 text-stone-900 shadow-sm'
-                  : 'border-stone-200border-stone-700 hover:border-palette-olive text-stone-600'
+                  ? 'border-2 border-palette-forest-dark bg-stone-50 text-stone-900'
+                  : 'border-2 border-stone-200 hover:border-stone-300 text-stone-600'
               }`}
             >
               <input
@@ -192,7 +192,7 @@ export function LoginForm({ mode }: LoginFormProps) {
         )}
         <button
           type="submit"
-          className="w-full py-2.5 px-4 rounded-lg bg-palette-forest-dark text-white font-medium border-2 border-palette-olive hover:bg-palette-olive transition-colors"
+          className="w-full rounded-lg bg-palette-forest-dark px-4 py-3 text-sm font-medium text-white hover:bg-palette-olive transition-colors focus:outline-none focus:ring-2 focus:ring-palette-olive focus:ring-offset-2"
         >
           S&apos;inscrire
         </button>

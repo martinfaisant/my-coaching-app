@@ -29,6 +29,10 @@ export default async function ProfilePage() {
         <ProfileForm
           email={current.email}
           fullName={current.profile.full_name ?? ''}
+          role={current.profile.role}
+          coachedSports={current.profile.coached_sports ?? []}
+          languages={current.profile.languages ?? []}
+          presentation={current.profile.presentation ?? ''}
         />
       </main>
     </div>

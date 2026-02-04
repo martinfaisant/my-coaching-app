@@ -168,7 +168,7 @@ export default function LoginPage() {
               )}
               <button
                 type="submit"
-                className="w-full py-3 px-4 rounded-xl bg-stone-200bg-stone-700 text-stone-900text-white font-medium hover:bg-stone-300hover:bg-stone-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-stone-500 transition"
+                className="w-full rounded-lg bg-palette-forest-dark px-4 py-3 text-sm font-medium text-white hover:bg-palette-olive transition-colors focus:outline-none focus:ring-2 focus:ring-palette-olive focus:ring-offset-2"
               >
                 S&apos;inscrire
               </button>

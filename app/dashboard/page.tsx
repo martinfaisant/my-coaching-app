@@ -3,7 +3,7 @@ import { createClient } from '@/utils/supabase/server'
 import { getCurrentUserWithProfile } from '@/utils/auth'
 import { CalendarViewWithNavigation } from '@/components/CalendarViewWithNavigation'
 import { ProfileMenu } from '@/components/ProfileMenu'
-import { RequestCoachButton } from '@/app/dashboard/RequestCoachButton'
+import { FindCoachSection } from '@/app/dashboard/FindCoachSection'
 import { RespondToRequestButtons } from '@/app/dashboard/RespondToRequestButtons'
 import {
   getMyCoachRequests,
@@ -34,21 +34,38 @@ export default async function DashboardPage() {
   if (current.profile.role === 'athlete' && !current.profile.coach_id) {
     const { data: coaches } = await supabase
       .from('profiles')
-      .select('user_id, email, full_name')
+      .select('user_id, email, full_name, coached_sports, languages, presentation')
       .eq('role', 'coach')
       .order('email')
 
     const myRequests = await getMyCoachRequests()
-    const statusByCoach = new Map<string, 'pending' | 'declined'>()
+    const statusByCoach: Record<string, 'pending' | 'declined'> = {}
     for (const r of myRequests) {
-      if (!statusByCoach.has(r.coach_id)) statusByCoach.set(r.coach_id, r.status as 'pending' | 'declined')
+      if (statusByCoach[r.coach_id] === undefined) statusByCoach[r.coach_id] = r.status as 'pending' | 'declined'
     }
+
+    const coachesForList = (coaches ?? [])
+      .filter((c) => {
+        const hasName = (c.full_name ?? '').trim() !== ''
+        const hasSports = (c.coached_sports ?? []).length > 0
+        const hasLanguages = (c.languages ?? []).length > 0
+        const hasPresentation = (c.presentation ?? '').trim() !== ''
+        return hasName && hasSports && hasLanguages && hasPresentation
+      })
+      .map((c) => ({
+        user_id: c.user_id,
+        email: c.email,
+        full_name: c.full_name,
+        coached_sports: c.coached_sports ?? null,
+        languages: c.languages ?? null,
+        presentation: c.presentation ?? null,
+      }))
 
     return (
       <div className="min-h-screen bg-background">
         <header className="sticky top-0 z-40 border-b border-stone-200/50 bg-background/95 backdrop-blur-md">
           <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
-            <h1 className="text-lg font-semibold text-stone-900text-white">
+            <h1 className="text-lg font-semibold text-stone-900">
               Tableau de bord
             </h1>
             <ProfileMenu showObjectifsLink />
@@ -56,50 +73,13 @@ export default async function DashboardPage() {
         </header>
 
         <main className="mx-auto max-w-5xl px-4 py-10">
-          <div className="rounded-xl border border-stone-100 border-stone-200 bg-white p-6 mb-8">
-            <h2 className="text-xl font-semibold text-stone-900text-white mb-2">
-              Trouver un coach
-            </h2>
-            <p className="text-sm text-stone-600 text-stone-600">
-              Envoyez une demande à un coach en renseignant votre sport et votre besoin. Le coach pourra accepter ou refuser votre demande.
+          {(coachesForList.length === 0) ? (
+            <p className="text-sm text-stone-600">
+              Aucun coach inscrit pour le moment. Revenez plus tard.
             </p>
-          </div>
-
-          <section>
-            <h3 className="text-base font-semibold text-stone-900text-white mb-4">
-              Liste des coachs
-            </h3>
-            {(coaches?.length ?? 0) === 0 ? (
-              <p className="text-sm text-stone-600">
-                Aucun coach inscrit pour le moment. Revenez plus tard.
-              </p>
-            ) : (
-              <ul className="space-y-2.5">
-                {(coaches ?? []).map((c) => (
-                  <li
-                    key={c.user_id}
-                    className="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-stone-100 border-stone-200 bg-white p-4 hover:border-stone-300 transition-colors"
-                  >
-                    <div>
-                      <p className="font-medium text-stone-900text-white">
-                        {c.full_name?.trim() || c.email}
-                      </p>
-                      {c.full_name?.trim() && (
-                        <p className="text-sm text-stone-600 mt-0.5">
-                          {c.email}
-                        </p>
-                      )}
-                    </div>
-                    <RequestCoachButton
-                      coachId={c.user_id}
-                      coachName={c.full_name?.trim() || c.email}
-                      requestStatus={statusByCoach.get(c.user_id) ?? null}
-                    />
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
+          ) : (
+            <FindCoachSection coaches={coachesForList} statusByCoach={statusByCoach} />
+          )}
         </main>
       </div>
     )
@@ -193,9 +173,9 @@ export default async function DashboardPage() {
       </header>
 
       <main className="mx-auto max-w-5xl px-4 py-10">
-        <div className="rounded-xl border border-stone-100 border-stone-200 bg-white p-6 mb-8">
-          <p className="text-sm text-stone-600 text-stone-600">
-            Bienvenue <strong className="text-stone-900text-white font-medium">{current.email}</strong>
+        <div className="rounded-xl border border-stone-200 bg-white p-6 mb-8">
+          <p className="text-sm text-stone-600">
+            Bonjour <strong className="text-stone-900 font-medium">{current.email}</strong>
             {' '}({ROLE_LABELS[current.profile.role]}).
           </p>
 

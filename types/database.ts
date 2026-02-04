@@ -1,5 +1,8 @@
 export type Role = 'athlete' | 'coach' | 'admin'
 
+/** Valeurs possibles pour "sports coachés" (Ma pratique) */
+export type CoachSport = 'course_route' | 'trail' | 'triathlon' | 'velo'
+
 export type Profile = {
   user_id: string
   email: string
@@ -8,6 +11,9 @@ export type Profile = {
   coach_id: string | null
   created_at: string
   updated_at: string
+  coached_sports?: string[] | null
+  languages?: string[] | null
+  presentation?: string | null
 }
 
 export type SportType = 'course' | 'musculation' | 'natation' | 'velo'
