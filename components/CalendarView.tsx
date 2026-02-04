@@ -16,28 +16,28 @@ const SPORT_COLORS: Record<
   { bg: string; border: string; text: string; comment: string }
 > = {
   course: {
-    bg: 'bg-amber-100 dark:bg-amber-900/40',
-    border: 'border-amber-200 dark:border-amber-800',
-    text: 'text-amber-800 dark:text-amber-200',
-    comment: 'text-amber-700 dark:text-amber-300',
+    bg: 'bg-palette-gold/20',
+    border: 'border-palette-gold/40',
+    text: 'text-palette-forest-dark',
+    comment: 'text-palette-olive',
   },
   musculation: {
-    bg: 'bg-violet-100 dark:bg-violet-900/40',
-    border: 'border-violet-200 dark:border-violet-800',
-    text: 'text-violet-800 dark:text-violet-200',
-    comment: 'text-violet-700 dark:text-violet-300',
+    bg: 'bg-palette-amber/20',
+    border: 'border-palette-amber/40',
+    text: 'text-palette-forest-dark',
+    comment: 'text-palette-olive',
   },
   natation: {
-    bg: 'bg-sky-100 dark:bg-sky-900/40',
-    border: 'border-sky-200 dark:border-sky-800',
-    text: 'text-sky-800 dark:text-sky-200',
-    comment: 'text-sky-700 dark:text-sky-300',
+    bg: 'bg-palette-sage/20',
+    border: 'border-palette-sage/40',
+    text: 'text-palette-forest-dark',
+    comment: 'text-palette-olive',
   },
   velo: {
-    bg: 'bg-emerald-100 dark:bg-emerald-900/40',
-    border: 'border-emerald-200 dark:border-emerald-800',
-    text: 'text-emerald-800 dark:text-emerald-200',
-    comment: 'text-emerald-700 dark:text-emerald-300',
+    bg: 'bg-palette-olive/20',
+    border: 'border-palette-olive/40',
+    text: 'text-palette-forest-dark',
+    comment: 'text-palette-olive',
   },
 }
 
@@ -142,9 +142,9 @@ export function CalendarView({
       <div className="mt-8 space-y-8">
         {weeks.map((week, wi) => (
           <section key={wi}>
-            <h3 className="text-sm font-semibold text-slate-600 dark:text-slate-400 mb-3">
+            <h3 className="text-sm font-semibold text-stone-600text-stone-400 mb-3">
               {week.label}
-              <span className="font-normal text-slate-500 dark:text-slate-500 ml-1.5">
+              <span className="font-normal text-stone-500text-stone-500 ml-1.5">
                 — {week.monthLabel}
               </span>
             </h3>
@@ -154,8 +154,8 @@ export function CalendarView({
                   key={`header-${day.dateStr}`}
                   className={`text-center text-xs font-medium py-1 ${
                     day.isToday
-                      ? 'text-emerald-600 dark:text-emerald-400 font-semibold'
-                      : 'text-slate-500 dark:text-slate-400'
+                      ? 'text-amber-600text-amber-400 font-semibold'
+                      : 'text-stone-500'
                   }`}
                 >
                   {day.dayName} {day.label}
@@ -170,9 +170,9 @@ export function CalendarView({
                     key={day.dateStr}
                     className={`min-h-[120px] rounded-xl border p-2 relative flex flex-col ${
                       day.isToday
-                        ? 'z-10 ring-2 ring-emerald-500 dark:ring-emerald-400 ring-offset-2 dark:ring-offset-slate-950 border-emerald-500 dark:border-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 shadow-lg'
-                        : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900'
-                    } ${isCellClickable ? 'cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50' : ''}`}
+                        ? 'z-10 ring-2 ring-palette-olive ring-offset-2 border-palette-olive bg-palette-olive/10 shadow-lg'
+                        : 'border-stone-200 bg-white'
+                    } ${isCellClickable ? 'cursor-pointer hover:bg-stone-50' : ''}`}
                     onClick={() => openDay(day.dateStr, day.isPast)}
                     role={isCellClickable ? 'button' : undefined}
                     tabIndex={isCellClickable ? 0 : undefined}
@@ -189,7 +189,7 @@ export function CalendarView({
                   >
                     <div className={`space-y-1 flex flex-col flex-1 min-h-0 ${canAddWorkout ? 'items-center justify-center' : canEdit && dayWorkouts.length === 0 ? 'items-center justify-center' : ''}`}>
                       {canAddWorkout && (
-                        <span className="text-2xl font-light text-slate-300 dark:text-slate-600" aria-hidden>
+                        <span className="text-2xl font-light text-stone-300text-stone-600" aria-hidden>
                           +
                         </span>
                       )}
@@ -204,7 +204,7 @@ export function CalendarView({
                             }}
                             className={`rounded-lg px-2 py-1.5 text-xs border ${
                               canEdit
-                                ? 'cursor-pointer hover:ring-2 hover:ring-slate-400 dark:hover:ring-slate-500'
+                                ? 'cursor-pointer hover:ring-2 hover:ring-stone-400hover:ring-stone-500'
                                 : ''
                             } ${colors.bg} ${colors.border} ${colors.text}`}
                             role={canEdit ? 'button' : undefined}

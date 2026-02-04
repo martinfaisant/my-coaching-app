@@ -23,9 +23,9 @@ export function ProfileForm({ email, fullName }: ProfileFormProps) {
   const { firstName, lastName } = parseFullName(fullName)
 
   return (
-    <form action={action} className="mt-8 space-y-6 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-sm">
+    <form action={action} className="mt-8 space-y-5 rounded-xl border border-stone-100border-stone-800 bg-whitebg-palette-forest-dark/50 p-6">
       <div>
-        <label htmlFor="email" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+        <label htmlFor="email" className="block text-sm font-medium text-stone-700text-stone-300 mb-2">
           Adresse email
         </label>
         <input
@@ -33,15 +33,15 @@ export function ProfileForm({ email, fullName }: ProfileFormProps) {
           type="email"
           value={email}
           readOnly
-          className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-800/50 text-slate-600 dark:text-slate-400 cursor-not-allowed"
+          className="w-full px-4 py-2.5 rounded-lg border border-stone-200border-stone-700 bg-stone-50bg-stone-800/50 text-stone-600text-stone-400 cursor-not-allowed"
         />
-        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+        <p className="mt-1.5 text-xs text-white0text-stone-400">
           L&apos;email ne peut pas être modifié ici.
         </p>
       </div>
 
       <div>
-        <label htmlFor="first_name" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+        <label htmlFor="first_name" className="block text-sm font-medium text-stone-700text-stone-300 mb-2">
           Prénom
         </label>
         <input
@@ -50,12 +50,12 @@ export function ProfileForm({ email, fullName }: ProfileFormProps) {
           type="text"
           defaultValue={firstName}
           placeholder="Votre prénom"
-          className="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-500"
+          className="w-full px-4 py-2.5 rounded-lg border border-stone-200border-stone-700 bg-whitebg-palette-forest-dark text-stone-900text-white placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900focus:ring-stone-100 focus:border-transparent transition"
         />
       </div>
 
       <div>
-        <label htmlFor="last_name" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+        <label htmlFor="last_name" className="block text-sm font-medium text-stone-700text-stone-300 mb-2">
           Nom
         </label>
         <input
@@ -64,13 +64,13 @@ export function ProfileForm({ email, fullName }: ProfileFormProps) {
           type="text"
           defaultValue={lastName}
           placeholder="Votre nom"
-          className="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-500"
+          className="w-full px-4 py-2.5 rounded-lg border border-stone-200border-stone-700 bg-whitebg-palette-forest-dark text-stone-900text-white placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900focus:ring-stone-100 focus:border-transparent transition"
         />
       </div>
 
       {(state?.error || state?.success) && (
         <p
-          className={`text-sm ${state.error ? 'text-red-600 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400'}`}
+          className={`text-sm ${state.error ? 'text-red-600' : 'text-palette-forest-dark600text-palette-forest-dark400'}`}
           role="alert"
         >
           {state.error || state.success}
@@ -79,7 +79,7 @@ export function ProfileForm({ email, fullName }: ProfileFormProps) {
 
       <button
         type="submit"
-        className="w-full rounded-xl bg-slate-900 dark:bg-white px-4 py-3 text-sm font-medium text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 transition"
+        className="w-full rounded-lg bg-palette-forest-darkbg-white px-4 py-2.5 text-sm font-medium text-whitetext-stone-900 hover:bg-palette-olivehover:bg-stone-100 transition-colors"
       >
         Enregistrer
       </button>

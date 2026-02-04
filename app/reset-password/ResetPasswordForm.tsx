@@ -117,10 +117,10 @@ export function ResetPasswordForm() {
   if (isValidSession === false) {
     return (
       <div className="p-8 sm:p-10">
-        <h1 className="text-2xl font-semibold text-slate-900 dark:text-white text-center mb-1">
+        <h1 className="text-2xl font-semibold text-stone-900text-white text-center mb-1">
           Lien invalide ou expiré
         </h1>
-        <p className="text-slate-500 dark:text-slate-400 text-sm text-center mb-6">
+        <p className="text-white0text-stone-400 text-sm text-center mb-6">
           Redirection vers la page de connexion...
         </p>
       </div>
@@ -130,7 +130,7 @@ export function ResetPasswordForm() {
   if (isValidSession === null) {
     return (
       <div className="p-8 sm:p-10">
-        <p className="text-slate-500 dark:text-slate-400 text-sm text-center">
+        <p className="text-white0text-stone-400 text-sm text-center">
           Vérification du lien...
         </p>
       </div>
@@ -139,18 +139,18 @@ export function ResetPasswordForm() {
 
   return (
     <div className="p-8 sm:p-10">
-      <h1 className="text-2xl font-semibold text-slate-900 dark:text-white text-center mb-1">
+      <h1 className="text-2xl font-semibold text-stone-900text-white text-center mb-1">
         Nouveau mot de passe
       </h1>
-      <p className="text-slate-500 dark:text-slate-400 text-sm text-center mb-6">
+      <p className="text-white0text-stone-400 text-sm text-center mb-6">
         Définissez votre nouveau mot de passe
       </p>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-5">
         <div>
           <label
             htmlFor="new-password"
-            className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5"
+            className="block text-sm font-medium text-stone-700text-stone-300 mb-2"
           >
             Nouveau mot de passe
           </label>
@@ -164,13 +164,13 @@ export function ResetPasswordForm() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••"
-            className="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400 dark:focus:ring-slate-500 focus:border-transparent transition"
+            className="w-full px-4 py-2.5 rounded-lg border border-stone-200border-stone-700 bg-whitebg-palette-forest-dark text-stone-900text-white placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900focus:ring-stone-100 focus:border-transparent transition"
           />
         </div>
         <div>
           <label
             htmlFor="confirm-password"
-            className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5"
+            className="block text-sm font-medium text-stone-700text-stone-300 mb-2"
           >
             Confirmer le mot de passe
           </label>
@@ -184,23 +184,23 @@ export function ResetPasswordForm() {
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             placeholder="••••••••"
-            className="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400 dark:focus:ring-slate-500 focus:border-transparent transition"
+            className="w-full px-4 py-2.5 rounded-lg border border-stone-200border-stone-700 bg-whitebg-palette-forest-dark text-stone-900text-white placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900focus:ring-stone-100 focus:border-transparent transition"
           />
         </div>
         {(localError || state?.error) && (
-          <p className="text-sm text-red-600 dark:text-red-400" role="alert">
+          <p className="text-sm text-red-600text-red-400" role="alert">
             {localError || state.error}
           </p>
         )}
         {state?.success && (
-          <p className="text-sm text-emerald-600 dark:text-emerald-400" role="alert">
+          <p className="text-sm text-palette-forest-dark" role="alert">
             {state.success}
           </p>
         )}
         <button
           type="submit"
           disabled={isPending}
-          className="w-full py-3 px-4 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-medium hover:bg-slate-800 dark:hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 transition disabled:opacity-50"
+          className="w-full py-2.5 px-4 rounded-lg bg-palette-forest-darkbg-white text-whitetext-stone-900 font-medium hover:bg-palette-olivehover:bg-stone-100 transition-colors disabled:opacity-50"
         >
           {isPending ? 'Enregistrement...' : 'Définir le nouveau mot de passe'}
         </button>

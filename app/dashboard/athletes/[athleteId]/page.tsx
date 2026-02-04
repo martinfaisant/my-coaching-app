@@ -70,12 +70,12 @@ export default async function AthleteCalendarPage({ params }: PageProps) {
     .order('date', { ascending: true })
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
-      <header className="sticky top-0 z-40 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md">
+    <div className="min-h-screen bg-stone-50bg-stone-950">
+      <header className="sticky top-0 z-40 border-b border-stone-200border-stone-800 bg-white/80bg-stone-900/80 backdrop-blur-md">
         <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
           <Link
             href="/dashboard"
-            className="text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+            className="text-sm font-medium text-stone-600text-stone-400 hover:text-stone-900hover:text-white"
           >
             ← Tableau de bord
           </Link>
@@ -83,10 +83,10 @@ export default async function AthleteCalendarPage({ params }: PageProps) {
       </header>
 
       <main className="mx-auto max-w-5xl px-4 py-6">
-        <h1 className="text-xl font-semibold text-slate-900 dark:text-white">
+        <h1 className="text-xl font-semibold text-stone-900text-white">
           Calendrier d&apos;entraînement — {athleteProfile.email}
         </h1>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+        <p className="mt-1 text-sm text-stone-500text-stone-400">
           Semaine précédente, actuelle et suivante. Cliquez sur un jour pour ajouter un entraînement, sur un entraînement pour le modifier.
         </p>
 
@@ -98,15 +98,15 @@ export default async function AthleteCalendarPage({ params }: PageProps) {
           pathToRevalidate={`/dashboard/athletes/${athleteId}`}
         />
 
-        <section className="mt-8 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
-          <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-3">
+        <section className="mt-8 rounded-xl border border-stone-200border-stone-800 bg-whitebg-stone-900 p-4">
+          <h2 className="text-lg font-semibold text-stone-900text-white mb-3">
             Objectifs de l&apos;athlète
           </h2>
           {(goals?.length ?? 0) > 0 ? (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-slate-200 dark:border-slate-700 text-left text-slate-500 dark:text-slate-400">
+                  <tr className="border-b border-stone-200border-stone-700 text-left text-stone-500text-stone-400">
                     <th className="py-2 pr-4">Date</th>
                     <th className="py-2 pr-4">Course</th>
                     <th className="py-2 pr-4">Distance</th>
@@ -117,22 +117,22 @@ export default async function AthleteCalendarPage({ params }: PageProps) {
                   {(goals as Goal[]).map((g) => (
                     <tr
                       key={g.id}
-                      className="border-b border-slate-100 dark:border-slate-800 last:border-0"
+                      className="border-b border-stone-100border-stone-800 last:border-0"
                     >
-                      <td className="py-2 pr-4 text-slate-700 dark:text-slate-300">
+                      <td className="py-2 pr-4 text-stone-700text-stone-300">
                         {new Date(g.date).toLocaleDateString('fr-FR', {
                           day: 'numeric',
                           month: 'short',
                           year: 'numeric',
                         })}
                       </td>
-                      <td className="py-2 pr-4 text-slate-700 dark:text-slate-300">
+                      <td className="py-2 pr-4 text-stone-700text-stone-300">
                         {g.race_name}
                       </td>
-                      <td className="py-2 pr-4 text-slate-700 dark:text-slate-300">
+                      <td className="py-2 pr-4 text-stone-700text-stone-300">
                         {g.distance}
                       </td>
-                      <td className="py-2 text-slate-600 dark:text-slate-400">
+                      <td className="py-2 text-stone-600text-stone-400">
                         {g.is_primary ? 'Principal' : 'Secondaire'}
                       </td>
                     </tr>
@@ -141,7 +141,7 @@ export default async function AthleteCalendarPage({ params }: PageProps) {
               </table>
             </div>
           ) : (
-            <p className="text-sm text-slate-500 dark:text-slate-400 py-2">
+            <p className="text-sm text-stone-500text-stone-400 py-2">
               L&apos;athlète n&apos;a pas défini d&apos;objectif.
             </p>
           )}

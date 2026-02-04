@@ -129,19 +129,19 @@ export function WorkoutModal({
       aria-labelledby="workout-modal-title"
     >
       <div
-        className="absolute inset-0 bg-slate-900/60 dark:bg-black/60 backdrop-blur-sm"
+        className="absolute inset-0 bg-palette-forest-dark/60bg-black/60 backdrop-blur-sm"
         onClick={onClose}
         aria-hidden="true"
       />
-      <div className="relative w-full max-w-md max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-2xl">
-        <div className="sticky top-0 flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-t-2xl z-10">
-          <h2 id="workout-modal-title" className="text-lg font-semibold text-slate-900 dark:text-white">
+      <div className="relative w-full max-w-md max-h-[90vh] overflow-y-auto rounded-2xl border border-stone-200border-stone-700 bg-whitebg-palette-forest-dark shadow-2xl">
+        <div className="sticky top-0 flex items-center justify-between p-4 border-b border-stone-200border-stone-700 bg-whitebg-palette-forest-dark rounded-t-2xl z-10">
+          <h2 id="workout-modal-title" className="text-lg font-semibold text-stone-900text-white">
             {isEdit ? 'Modifier l\'entraînement' : 'Nouvel entraînement'}
           </h2>
           <button
             type="button"
             onClick={onClose}
-            className="p-2 rounded-xl text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+            className="p-2 rounded-xl text-white0 hover:text-stone-700 hover:bg-stone-100hover:bg-palette-olive transition"
             aria-label="Fermer"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -150,16 +150,16 @@ export function WorkoutModal({
           </button>
         </div>
 
-        <form action={action} className="p-6 space-y-4">
+        <form action={action} className="p-6 space-y-5">
           <input type="hidden" name="date" value={date} />
           {isEdit && <input type="hidden" name="workout_id" value={workout.id} />}
 
-          <p className="text-sm text-slate-600 dark:text-slate-400">
+          <p className="text-sm text-stone-600text-stone-400">
             {formatDateFr(date)}
           </p>
 
           <div>
-            <label htmlFor="sport_type" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+            <label htmlFor="sport_type" className="block text-sm font-medium text-stone-700text-stone-300 mb-2">
               Type de sport
             </label>
             <select
@@ -169,7 +169,7 @@ export function WorkoutModal({
               onChange={(e) => setSportType(e.target.value as SportType)}
               required
               disabled={!canEdit}
-              className="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-500 disabled:opacity-60"
+              className="w-full px-4 py-2.5 rounded-lg border border-stone-200border-stone-700 bg-whitebg-palette-forest-dark text-stone-900text-white focus:outline-none focus:ring-2 focus:ring-stone-900focus:ring-stone-100 focus:border-transparent transition disabled:opacity-60"
             >
               {SPORT_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -180,7 +180,7 @@ export function WorkoutModal({
           </div>
 
           <div>
-            <label htmlFor="title" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+            <label htmlFor="title" className="block text-sm font-medium text-stone-700text-stone-300 mb-2">
               Titre de l&apos;exercice
             </label>
             <input
@@ -192,12 +192,12 @@ export function WorkoutModal({
               required
               disabled={!canEdit}
               placeholder="Ex. Footing 45 min"
-              className="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-500 disabled:opacity-60"
+              className="w-full px-4 py-2.5 rounded-lg border border-stone-200border-stone-700 bg-whitebg-palette-forest-dark text-stone-900text-white placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900focus:ring-stone-100 focus:border-transparent transition disabled:opacity-60"
             />
           </div>
 
           <div>
-            <label htmlFor="description" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+            <label htmlFor="description" className="block text-sm font-medium text-stone-700text-stone-300 mb-2">
               Description
             </label>
             <textarea
@@ -209,13 +209,13 @@ export function WorkoutModal({
               disabled={!canEdit}
               rows={4}
               placeholder="Détails de l'entraînement..."
-              className="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-500 disabled:opacity-60 resize-y"
+              className="w-full px-4 py-2.5 rounded-lg border border-stone-200border-stone-700 bg-whitebg-palette-forest-dark text-stone-900text-white placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900focus:ring-stone-100 focus:border-transparent resize-y transition disabled:opacity-60"
             />
           </div>
 
           {(state?.error || state?.success) && (
             <p
-              className={`text-sm ${state.error ? 'text-red-600 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400'}`}
+              className={`text-sm ${state.error ? 'text-red-600' : 'text-palette-forest-dark'}`}
               role="alert"
             >
               {state.error || state.success}
@@ -226,7 +226,7 @@ export function WorkoutModal({
             <button
               type="submit"
               disabled={!isValid}
-              className="w-full py-3 px-4 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-medium hover:bg-slate-800 dark:hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition"
+              className="w-full py-2.5 px-4 rounded-lg bg-palette-forest-darkbg-white text-whitetext-stone-900 font-medium hover:bg-palette-olivehover:bg-stone-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isEdit ? 'Enregistrer les modifications' : 'Enregistrer'}
             </button>
@@ -234,17 +234,17 @@ export function WorkoutModal({
         </form>
 
         {workout && (
-          <div className="px-6 pb-6 pt-2 border-t border-slate-200 dark:border-slate-700">
-            <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+          <div className="px-6 pb-6 pt-2 border-t border-stone-200border-stone-700">
+            <h3 className="text-sm font-medium text-stone-700text-stone-300 mb-2">
               {canEdit ? 'Commentaire de l\'athlète' : 'Votre commentaire'}
             </h3>
             {(workout.athlete_comment ?? null) ? (
-              <p className="text-sm text-slate-600 dark:text-slate-400 whitespace-pre-wrap mb-3">
+              <p className="text-sm text-stone-600text-stone-400 whitespace-pre-wrap mb-3">
                 {workout.athlete_comment}
               </p>
             ) : (
               !showCommentForm && (
-                <p className="text-sm text-slate-500 dark:text-slate-500 mb-3">
+                <p className="text-sm text-white0text-white0 mb-3">
                   Aucun commentaire.
                 </p>
               )
@@ -255,7 +255,7 @@ export function WorkoutModal({
                   <button
                     type="button"
                     onClick={() => setShowCommentForm(true)}
-                    className="rounded-xl bg-slate-200 dark:bg-slate-700 px-4 py-2 text-sm font-medium text-slate-900 dark:text-white hover:bg-slate-300 dark:hover:bg-slate-600 transition"
+                    className="rounded-xl bg-stone-200bg-stone-700 px-4 py-2 text-sm font-medium text-stone-900text-white hover:bg-stone-300hover:bg-stone-600 transition"
                   >
                     {(workout.athlete_comment ?? null) ? 'Modifier le commentaire' : 'Ajouter un commentaire'}
                   </button>
@@ -268,11 +268,11 @@ export function WorkoutModal({
                       onChange={(e) => setCommentText(e.target.value)}
                       rows={3}
                       placeholder="Saisissez votre commentaire..."
-                      className="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-500 resize-y"
+                      className="w-full px-4 py-3 rounded-xl border border-stone-300border-stone-600 bg-whitebg-stone-800 text-stone-900text-white placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-500 resize-y"
                     />
                     {(commentState?.error || commentState?.success) && (
                       <p
-                        className={`text-sm ${commentState.error ? 'text-red-600 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400'}`}
+                        className={`text-sm ${commentState.error ? 'text-red-600' : 'text-palette-forest-dark'}`}
                         role="alert"
                       >
                         {commentState.error || commentState.success}
@@ -281,14 +281,14 @@ export function WorkoutModal({
                     <div className="flex gap-2">
                       <button
                         type="submit"
-                        className="rounded-xl bg-slate-900 dark:bg-white px-4 py-2 text-sm font-medium text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 transition"
+                        className="rounded-xl bg-palette-forest-darkbg-white px-4 py-2 text-sm font-medium text-whitetext-stone-900 hover:bg-palette-olivehover:bg-stone-100 transition"
                       >
                         Sauvegarder
                       </button>
                       <button
                         type="button"
                         onClick={() => setShowCommentForm(false)}
-                        className="rounded-xl bg-slate-200 dark:bg-slate-700 px-4 py-2 text-sm font-medium text-slate-900 dark:text-white hover:bg-slate-300 dark:hover:bg-slate-600 transition"
+                        className="rounded-xl bg-stone-200bg-stone-700 px-4 py-2 text-sm font-medium text-stone-900text-white hover:bg-stone-300hover:bg-stone-600 transition"
                       >
                         Annuler
                       </button>

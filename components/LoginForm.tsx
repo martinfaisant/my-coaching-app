@@ -31,19 +31,19 @@ export function LoginForm({ mode }: LoginFormProps) {
 
   if (mode === 'login') {
     return (
-      <div className="p-6 sm:p-8">
-        <h2 id="modal-title" className="text-2xl font-semibold text-slate-900 dark:text-white text-center mb-1">
+      <div className="p-8">
+        <h2 id="modal-title" className="text-2xl font-semibold text-stone-900 text-center mb-2">
           Se connecter
         </h2>
-        <p className="text-slate-500 dark:text-slate-400 text-sm text-center mb-6">
+        <p className="text-white0 text-sm text-center mb-8">
           Entrez vos identifiants pour accéder à votre espace
         </p>
 
-        <form action={loginAction} className="space-y-4">
+        <form action={loginAction} className="space-y-5">
           <div>
             <label
               htmlFor="modal-email"
-              className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5"
+              className="block text-sm font-medium text-stone-700 mb-2"
             >
               Email
             </label>
@@ -54,13 +54,13 @@ export function LoginForm({ mode }: LoginFormProps) {
               autoComplete="email"
               required
               placeholder="vous@exemple.com"
-              className="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400 dark:focus:ring-slate-500 focus:border-transparent transition"
+              className="w-full px-4 py-2.5 rounded-lg border border-stone-200border-stone-700 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition"
             />
           </div>
           <div>
             <label
               htmlFor="modal-password"
-              className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5"
+              className="block text-sm font-medium text-stone-700 mb-2"
             >
               Mot de passe
             </label>
@@ -71,24 +71,24 @@ export function LoginForm({ mode }: LoginFormProps) {
               autoComplete="current-password"
               required
               placeholder="••••••••"
-              className="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400 dark:focus:ring-slate-500 focus:border-transparent transition"
+              className="w-full px-4 py-2.5 rounded-lg border border-stone-200border-stone-700 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition"
             />
           </div>
           {loginState?.error && (
-            <p className="text-sm text-red-600 dark:text-red-400" role="alert">
+            <p className="text-sm text-red-600text-red-400" role="alert">
               {loginState.error}
             </p>
           )}
           <button
             type="submit"
-            className="w-full py-3 px-4 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-medium hover:bg-slate-800 dark:hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 transition"
+            className="w-full py-2.5 px-4 rounded-lg bg-palette-forest-dark text-white font-medium hover:bg-palette-olive transition-colors"
           >
             Se connecter
           </button>
           <button
             type="button"
             onClick={() => setShowForgotPassword(true)}
-            className="w-full text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 underline"
+            className="w-full text-sm text-white0 hover:text-stone-700 transition-colors"
           >
             Mot de passe oublié
           </button>
@@ -98,25 +98,25 @@ export function LoginForm({ mode }: LoginFormProps) {
   }
 
   return (
-    <div className="p-6 sm:p-8">
-      <h2 id="modal-title" className="text-2xl font-semibold text-slate-900 dark:text-white text-center mb-1">
+    <div className="p-8">
+      <h2 id="modal-title" className="text-2xl font-semibold text-stone-900 text-center mb-2">
         Créer un compte
       </h2>
-      <p className="text-slate-500 dark:text-slate-400 text-sm text-center mb-6">
+      <p className="text-white0 text-sm text-center mb-8">
         Choisissez votre profil puis renseignez vos informations
       </p>
 
-      <form action={signupAction} className="space-y-4">
+      <form action={signupAction} className="space-y-5">
         <div>
-          <span className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+          <span className="block text-sm font-medium text-stone-700 mb-3">
             Je m&apos;inscris en tant que
           </span>
           <div className="grid grid-cols-2 gap-3">
             <label
-              className={`flex flex-col items-center justify-center gap-1 rounded-xl border-2 p-4 cursor-pointer transition ${
+              className={`flex flex-col items-center justify-center gap-1.5 rounded-lg border-2 p-4 cursor-pointer transition-all ${
                 signupRole === 'athlete'
-                  ? 'border-slate-900 dark:border-white bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white'
-                  : 'border-slate-200 dark:border-slate-600 hover:border-slate-300 dark:hover:border-slate-500 text-slate-600 dark:text-slate-400'
+                  ? 'border-stone-900border-white bg-stone-50 text-stone-900 shadow-sm'
+                  : 'border-stone-200border-stone-700 hover:border-stone-300hover:border-stone-600 text-stone-600'
               }`}
             >
               <input
@@ -127,14 +127,14 @@ export function LoginForm({ mode }: LoginFormProps) {
                 onChange={() => setSignupRole('athlete')}
                 className="sr-only"
               />
-              <span className="text-lg font-semibold">Athlète</span>
+              <span className="text-base font-semibold">Athlète</span>
               <span className="text-xs text-center">Suivi d&apos;entraînement</span>
             </label>
             <label
-              className={`flex flex-col items-center justify-center gap-1 rounded-xl border-2 p-4 cursor-pointer transition ${
+              className={`flex flex-col items-center justify-center gap-1.5 rounded-lg border-2 p-4 cursor-pointer transition-all ${
                 signupRole === 'coach'
-                  ? 'border-slate-900 dark:border-white bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white'
-                  : 'border-slate-200 dark:border-slate-600 hover:border-slate-300 dark:hover:border-slate-500 text-slate-600 dark:text-slate-400'
+                  ? 'border-stone-900border-white bg-stone-50 text-stone-900 shadow-sm'
+                  : 'border-stone-200border-stone-700 hover:border-stone-300hover:border-stone-600 text-stone-600'
               }`}
             >
               <input
@@ -145,7 +145,7 @@ export function LoginForm({ mode }: LoginFormProps) {
                 onChange={() => setSignupRole('coach')}
                 className="sr-only"
               />
-              <span className="text-lg font-semibold">Coach</span>
+              <span className="text-base font-semibold">Coach</span>
               <span className="text-xs text-center">Accompagner des athlètes</span>
             </label>
           </div>
@@ -153,7 +153,7 @@ export function LoginForm({ mode }: LoginFormProps) {
         <div>
           <label
             htmlFor="modal-signup-email"
-            className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5"
+            className="block text-sm font-medium text-stone-700 mb-2"
           >
             Email
           </label>
@@ -164,13 +164,13 @@ export function LoginForm({ mode }: LoginFormProps) {
             autoComplete="email"
             required
             placeholder="vous@exemple.com"
-            className="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400 dark:focus:ring-slate-500 focus:border-transparent transition"
+            className="w-full px-4 py-2.5 rounded-lg border border-stone-200border-stone-700 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition"
           />
         </div>
         <div>
           <label
             htmlFor="modal-signup-password"
-            className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5"
+            className="block text-sm font-medium text-stone-700 mb-2"
           >
             Mot de passe (min. 6 caractères)
           </label>
@@ -182,17 +182,17 @@ export function LoginForm({ mode }: LoginFormProps) {
             required
             minLength={6}
             placeholder="••••••••"
-            className="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400 dark:focus:ring-slate-500 focus:border-transparent transition"
+            className="w-full px-4 py-2.5 rounded-lg border border-stone-200border-stone-700 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition"
           />
         </div>
         {signupState?.error && (
-          <p className="text-sm text-red-600 dark:text-red-400" role="alert">
+          <p className="text-sm text-red-600text-red-400" role="alert">
             {signupState.error}
           </p>
         )}
         <button
           type="submit"
-          className="w-full py-3 px-4 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-medium hover:bg-slate-800 dark:hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 transition"
+          className="w-full py-2.5 px-4 rounded-lg bg-palette-forest-dark text-white font-medium hover:bg-palette-olive transition-colors"
         >
           S&apos;inscrire
         </button>
@@ -205,19 +205,19 @@ function ForgotPasswordForm({ onBack }: { onBack: () => void }) {
   const [resetState, resetAction] = useActionState<ResetPasswordState, FormData>(resetPassword, {})
 
   return (
-    <div className="p-6 sm:p-8">
-      <h2 id="modal-title" className="text-2xl font-semibold text-slate-900 dark:text-white text-center mb-1">
+    <div className="p-8">
+      <h2 id="modal-title" className="text-2xl font-semibold text-stone-900 text-center mb-2">
         Mot de passe oublié
       </h2>
-      <p className="text-slate-500 dark:text-slate-400 text-sm text-center mb-6">
+      <p className="text-white0 text-sm text-center mb-8">
         Entrez votre adresse email. Un lien de réinitialisation vous sera envoyé.
       </p>
 
-      <form action={resetAction} className="space-y-4">
+      <form action={resetAction} className="space-y-5">
         <div>
           <label
             htmlFor="reset-email"
-            className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5"
+            className="block text-sm font-medium text-stone-700 mb-2"
           >
             Email
           </label>
@@ -228,29 +228,29 @@ function ForgotPasswordForm({ onBack }: { onBack: () => void }) {
             autoComplete="email"
             required
             placeholder="vous@exemple.com"
-            className="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400 dark:focus:ring-slate-500 focus:border-transparent transition"
+            className="w-full px-4 py-2.5 rounded-lg border border-stone-200border-stone-700 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition"
           />
         </div>
         {resetState?.error && (
-          <p className="text-sm text-red-600 dark:text-red-400" role="alert">
+          <p className="text-sm text-red-600text-red-400" role="alert">
             {resetState.error}
           </p>
         )}
         {resetState?.success && (
-          <p className="text-sm text-emerald-600 dark:text-emerald-400" role="alert">
+          <p className="text-sm text-palette-forest-dark" role="alert">
             {resetState.success}
           </p>
         )}
         <button
           type="submit"
-          className="w-full py-3 px-4 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-medium hover:bg-slate-800 dark:hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 transition"
+          className="w-full py-2.5 px-4 rounded-lg bg-palette-forest-dark text-white font-medium hover:bg-palette-olive transition-colors"
         >
           Envoyer le lien de réinitialisation
         </button>
         <button
           type="button"
           onClick={onBack}
-          className="w-full text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 underline"
+          className="w-full text-sm text-white0 hover:text-stone-700 transition-colors"
         >
           ← Retour à la connexion
         </button>

@@ -25,7 +25,7 @@ export function RespondToRequestButtons({ requestId }: { requestId: string }) {
         type="button"
         onClick={() => handleRespond(false)}
         disabled={isPending}
-        className="rounded-xl border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition disabled:opacity-50"
+        className="rounded-lg border border-stone-200border-stone-700 px-3 py-2 text-sm font-medium text-stone-700text-stone-300 hover:bg-stone-50hover:bg-palette-olive transition-colors disabled:opacity-50"
       >
         Refuser
       </button>
@@ -33,7 +33,7 @@ export function RespondToRequestButtons({ requestId }: { requestId: string }) {
         type="button"
         onClick={() => handleRespond(true)}
         disabled={isPending}
-        className="rounded-xl bg-slate-900 dark:bg-white px-3 py-2 text-sm font-medium text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 transition disabled:opacity-50"
+        className="rounded-lg bg-stone-900bg-white px-3 py-2 text-sm font-medium text-whitetext-stone-900 hover:bg-palette-olivehover:bg-stone-100 transition-colors disabled:opacity-50"
       >
         Accepter
       </button>

@@ -45,47 +45,47 @@ export default async function DashboardPage() {
     }
 
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
-        <header className="sticky top-0 z-40 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md">
-          <div className="mx-auto flex h-14 max-w-4xl items-center justify-between px-4">
-            <h1 className="text-lg font-semibold text-slate-900 dark:text-white">
+      <div className="min-h-screen bg-stone-50">
+        <header className="sticky top-0 z-40 border-b border-stone-100 border-stone-200/50 bg-stone-50/95 backdrop-blur-md">
+          <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
+            <h1 className="text-lg font-semibold text-stone-900text-white">
               Tableau de bord
             </h1>
             <ProfileMenu showObjectifsLink />
           </div>
         </header>
 
-        <main className="mx-auto max-w-4xl px-4 py-8">
-          <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-sm">
-            <h2 className="text-xl font-semibold text-slate-900 dark:text-white">
+        <main className="mx-auto max-w-5xl px-4 py-10">
+          <div className="rounded-xl border border-stone-100 border-stone-200 bg-white p-6 mb-8">
+            <h2 className="text-xl font-semibold text-stone-900text-white mb-2">
               Trouver un coach
             </h2>
-            <p className="mt-2 text-slate-600 dark:text-slate-400">
+            <p className="text-sm text-stone-600 text-stone-600">
               Envoyez une demande à un coach en renseignant votre sport et votre besoin. Le coach pourra accepter ou refuser votre demande.
             </p>
           </div>
 
-          <section className="mt-8">
-            <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">
+          <section>
+            <h3 className="text-base font-semibold text-stone-900text-white mb-4">
               Liste des coachs
             </h3>
             {(coaches?.length ?? 0) === 0 ? (
-              <p className="text-slate-500 dark:text-slate-400">
+              <p className="text-sm text-stone-600">
                 Aucun coach inscrit pour le moment. Revenez plus tard.
               </p>
             ) : (
-              <ul className="space-y-3">
+              <ul className="space-y-2.5">
                 {(coaches ?? []).map((c) => (
                   <li
                     key={c.user_id}
-                    className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4"
+                    className="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-stone-100 border-stone-200 bg-white p-4 hover:border-stone-300 transition-colors"
                   >
                     <div>
-                      <p className="font-medium text-slate-900 dark:text-white">
+                      <p className="font-medium text-stone-900text-white">
                         {c.full_name?.trim() || c.email}
                       </p>
                       {c.full_name?.trim() && (
-                        <p className="text-sm text-slate-500 dark:text-slate-400">
+                        <p className="text-sm text-stone-600 mt-0.5">
                           {c.email}
                         </p>
                       )}
@@ -126,18 +126,18 @@ export default async function DashboardPage() {
       .order('created_at')
 
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
-        <header className="sticky top-0 z-40 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md">
+      <div className="min-h-screen bg-stone-50">
+        <header className="sticky top-0 z-40 border-b border-stone-100 border-stone-200/50 bg-stone-50/95 backdrop-blur-md">
           <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
-            <h1 className="text-lg font-semibold text-slate-900 dark:text-white">
+            <h1 className="text-lg font-semibold text-stone-900text-white">
               Mon calendrier d&apos;entraînement
             </h1>
             <ProfileMenu showObjectifsLink />
           </div>
         </header>
 
-        <main className="mx-auto max-w-5xl px-4 py-6">
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+        <main className="mx-auto max-w-5xl px-4 py-8">
+          <p className="text-sm text-stone-600 mb-6">
             Vos entraînements prévus.
           </p>
 
@@ -179,27 +179,27 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
-      <header className="sticky top-0 z-40 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md">
-        <div className="mx-auto flex h-14 max-w-4xl items-center justify-between px-4">
-          <h1 className="text-lg font-semibold text-slate-900 dark:text-white">
+    <div className="min-h-screen bg-stone-50">
+      <header className="sticky top-0 z-40 border-b border-stone-100 border-stone-200/50 bg-stone-50/95 backdrop-blur-md">
+        <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
+          <h1 className="text-lg font-semibold text-stone-900text-white">
             Tableau de bord
           </h1>
           <ProfileMenu />
         </div>
       </header>
 
-      <main className="mx-auto max-w-4xl px-4 py-8">
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-sm">
-          <p className="text-slate-600 dark:text-slate-400">
-            Bienvenue <strong className="text-slate-900 dark:text-white">{current.email}</strong>
+      <main className="mx-auto max-w-5xl px-4 py-10">
+        <div className="rounded-xl border border-stone-100 border-stone-200 bg-white p-6 mb-8">
+          <p className="text-sm text-stone-600 text-stone-600">
+            Bienvenue <strong className="text-stone-900text-white font-medium">{current.email}</strong>
             {' '}({ROLE_LABELS[current.profile.role]}).
           </p>
 
           {current.profile.role === 'admin' && (
             <Link
               href="/admin/members"
-              className="mt-4 inline-flex items-center rounded-xl bg-slate-900 dark:bg-white px-4 py-2.5 text-sm font-medium text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 transition"
+              className="mt-4 inline-flex items-center rounded-lg bg-stone-900bg-stone-50 px-4 py-2 text-sm font-medium text-white hover:bg-palette-olivehover:bg-stone-100 transition-colors"
             >
               Gérer les membres et les rôles
             </Link>
@@ -207,32 +207,32 @@ export default async function DashboardPage() {
         </div>
 
         {current.profile.role === 'coach' && pendingRequests.length > 0 && (
-          <section className="mt-8">
-            <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
+          <section className="mb-8">
+            <h2 className="text-base font-semibold text-stone-900text-white mb-2">
               Demandes en attente
             </h2>
-            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+            <p className="text-sm text-stone-600 mb-4">
               Acceptez ou refusez les demandes d&apos;athlètes qui souhaitent vous avoir comme coach.
             </p>
-            <ul className="mt-4 space-y-3">
+            <ul className="space-y-2.5">
               {pendingRequests.map((req) => (
                 <li
                   key={req.id}
-                  className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 flex flex-wrap items-start justify-between gap-4"
+                  className="rounded-lg border border-stone-100 border-stone-200 bg-white p-4 flex flex-wrap items-start justify-between gap-4 hover:border-stone-300 transition-colors"
                 >
-                  <div className="min-w-0">
-                    <p className="font-medium text-slate-900 dark:text-white">
+                  <div className="min-w-0 flex-1">
+                    <p className="font-medium text-stone-900text-white">
                       {req.athlete_name || req.athlete_email || '—'}
                     </p>
                     {req.athlete_email && req.athlete_name !== req.athlete_email && req.athlete_name !== '—' && (
-                      <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+                      <p className="text-sm text-stone-600 mt-0.5">
                         {req.athlete_email}
                       </p>
                     )}
-                    <p className="text-sm text-slate-600 dark:text-slate-300 mt-1">
+                    <p className="text-sm text-stone-600text-stone-300 mt-2">
                       <span className="font-medium">Sport :</span> {req.sport_practiced}
                     </p>
-                    <p className="text-sm text-slate-600 dark:text-slate-300 mt-0.5">
+                    <p className="text-sm text-stone-600text-stone-300 mt-1">
                       <span className="font-medium">Besoin :</span> {req.coaching_need}
                     </p>
                   </div>
@@ -243,15 +243,15 @@ export default async function DashboardPage() {
           </section>
         )}
 
-        <section className="mt-8">
-          <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
+        <section>
+          <h2 className="text-base font-semibold text-stone-900text-white mb-4">
             {current.profile.role === 'admin'
               ? 'Tous les membres'
               : current.profile.role === 'coach'
                 ? 'Mes athlètes'
                 : 'Mon profil'}
           </h2>
-          <ul className="mt-4 space-y-3">
+          <ul className="space-y-2.5">
             {visibleProfiles.map((p) => {
               const isAthleteOfMine = current.profile.role === 'coach' && p.coach_id === current.id
               const displayName = (p.full_name?.trim() || p.email) as string
@@ -262,19 +262,19 @@ export default async function DashboardPage() {
                   <li key={p.user_id}>
                     <Link
                       href={athleteHref}
-                      className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:border-slate-300 dark:hover:border-slate-600 transition cursor-pointer group"
+                      className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-stone-100 border-stone-200 bg-white p-4 hover:bg-stone-50hover:bg-stone-900 hover:border-stone-300 transition-colors group"
                     >
                       <div>
-                        <p className="font-medium text-slate-900 dark:text-white group-hover:text-slate-700 dark:group-hover:text-slate-200">
+                        <p className="font-medium text-stone-900text-white">
                           {displayName}
                         </p>
-                        <p className="text-sm text-slate-500 dark:text-slate-400">
+                        <p className="text-sm text-stone-600 mt-0.5">
                           {ROLE_LABELS[p.role]}
                           {p.coach_id && ' (athlète)'}
                         </p>
                       </div>
                       <svg
-                        className="h-5 w-5 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 flex-shrink-0"
+                        className="h-5 w-5 text-stone-400 group-hover:text-stone-600group-hover:text-stone-300 flex-shrink-0 transition-colors"
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
                         fill="none"
@@ -293,17 +293,17 @@ export default async function DashboardPage() {
               return (
                 <li
                   key={p.user_id}
-                  className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4"
+                  className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-stone-100 border-stone-200 bg-white p-4"
                 >
                   <div>
-                    <p className="font-medium text-slate-900 dark:text-white">{p.email}</p>
-                    <p className="text-sm text-slate-500 dark:text-slate-400">
+                    <p className="font-medium text-stone-900text-white">{p.email}</p>
+                    <p className="text-sm text-stone-600 mt-0.5">
                       {ROLE_LABELS[p.role]}
                       {p.coach_id && ' (athlète)'}
                     </p>
                   </div>
                   {p.user_id === current.id && (
-                    <span className="rounded-full bg-slate-200 dark:bg-slate-700 px-2.5 py-0.5 text-xs font-medium text-slate-700 dark:text-slate-300">
+                    <span className="rounded-full bg-stone-100bg-stone-800 px-2.5 py-0.5 text-xs font-medium text-stone-600 text-stone-600">
                       Vous
                     </span>
                   )}
