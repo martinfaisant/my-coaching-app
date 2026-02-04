@@ -3,12 +3,15 @@
 import { useEffect } from 'react'
 import { LoginForm } from './LoginForm'
 
+export type AuthModalMode = 'login' | 'signup'
+
 type LoginModalProps = {
   isOpen: boolean
+  mode: AuthModalMode
   onClose: () => void
 }
 
-export function LoginModal({ isOpen, onClose }: LoginModalProps) {
+export function LoginModal({ isOpen, mode, onClose }: LoginModalProps) {
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose()
@@ -61,7 +64,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
             </svg>
           </button>
         </div>
-        <LoginForm />
+        <LoginForm mode={mode} />
       </div>
     </div>
   )

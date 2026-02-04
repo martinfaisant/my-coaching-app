@@ -1,11 +1,14 @@
 'use client'
 
-import { useActionState } from 'react'
+import { useState, useActionState } from 'react'
 import { login, signup, type LoginState, type SignupState } from './actions'
+
+type SignupRole = 'athlete' | 'coach'
 
 export default function LoginPage() {
   const [loginState, loginAction] = useActionState<LoginState, FormData>(login, {})
   const [signupState, signupAction] = useActionState<SignupState, FormData>(signup, {})
+  const [signupRole, setSignupRole] = useState<SignupRole>('athlete')
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-200 dark:from-slate-950 dark:to-slate-900 p-4">
@@ -77,6 +80,52 @@ export default function LoginPage() {
             </div>
 
             <form action={signupAction} className="space-y-5">
+              <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                Créer mon compte
+              </p>
+              <div>
+                <span className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  Je m&apos;inscris en tant que
+                </span>
+                <div className="grid grid-cols-2 gap-3">
+                  <label
+                    className={`flex flex-col items-center justify-center gap-1 rounded-xl border-2 p-4 cursor-pointer transition ${
+                      signupRole === 'athlete'
+                        ? 'border-slate-900 dark:border-white bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white'
+                        : 'border-slate-200 dark:border-slate-600 hover:border-slate-300 dark:hover:border-slate-500 text-slate-600 dark:text-slate-400'
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="role"
+                      value="athlete"
+                      checked={signupRole === 'athlete'}
+                      onChange={() => setSignupRole('athlete')}
+                      className="sr-only"
+                    />
+                    <span className="text-lg font-semibold">Athlète</span>
+                    <span className="text-xs text-center">Suivi d&apos;entraînement</span>
+                  </label>
+                  <label
+                    className={`flex flex-col items-center justify-center gap-1 rounded-xl border-2 p-4 cursor-pointer transition ${
+                      signupRole === 'coach'
+                        ? 'border-slate-900 dark:border-white bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white'
+                        : 'border-slate-200 dark:border-slate-600 hover:border-slate-300 dark:hover:border-slate-500 text-slate-600 dark:text-slate-400'
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="role"
+                      value="coach"
+                      checked={signupRole === 'coach'}
+                      onChange={() => setSignupRole('coach')}
+                      className="sr-only"
+                    />
+                    <span className="text-lg font-semibold">Coach</span>
+                    <span className="text-xs text-center">Accompagner des athlètes</span>
+                  </label>
+                </div>
+              </div>
               <div>
                 <label
                   htmlFor="signup-email"

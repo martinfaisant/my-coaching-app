@@ -33,6 +33,7 @@ export type SignupState = {
 export async function signup(_prevState: SignupState, formData: FormData) {
   const email = formData.get('email') as string
   const password = formData.get('password') as string
+  const roleRaw = formData.get('role') as string
 
   if (!email?.trim() || !password) {
     return { error: 'Email et mot de passe requis.' }
@@ -42,11 +43,21 @@ export async function signup(_prevState: SignupState, formData: FormData) {
     return { error: 'Le mot de passe doit contenir au moins 6 caractères.' }
   }
 
+  const role = roleRaw === 'coach' ? 'coach' : 'athlete'
+
   const supabase = await createClient()
-  const { error } = await supabase.auth.signUp({ email, password })
+  const { data, error } = await supabase.auth.signUp({ email, password })
 
   if (error) {
     return { error: error.message }
+  }
+
+  if (data?.user) {
+    await supabase.from('profiles').insert({
+      user_id: data.user.id,
+      email: data.user.email ?? email,
+      role,
+    })
   }
 
   redirect('/dashboard')

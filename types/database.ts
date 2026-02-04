@@ -50,3 +50,16 @@ export type ChatMessage = {
   content: string
   created_at: string
 }
+
+export type CoachRequestStatus = 'pending' | 'accepted' | 'declined'
+
+export type CoachRequest = {
+  id: string
+  athlete_id: string
+  coach_id: string
+  sport_practiced: string
+  coaching_need: string
+  status: CoachRequestStatus
+  created_at: string
+  responded_at: string | null
+}

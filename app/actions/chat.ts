@@ -3,9 +3,12 @@
 import { createClient } from '@/utils/supabase/server'
 import type { Conversation, ChatMessage } from '@/types/database'
 
-export type ChatRoleResult = { role: 'athlete' | 'coach'; userId: string } | null
+export type ChatRoleResult =
+  | { role: 'athlete'; userId: string; hasCoach: boolean }
+  | { role: 'coach'; userId: string }
+  | null
 
-/** Retourne le rôle et l'id utilisateur si l'utilisateur peut voir le chat (athlete ou coach), sinon null. Pas de redirection. */
+/** Retourne le rôle et l'id utilisateur si l'utilisateur peut voir le chat (athlete avec coach, ou coach), sinon null. Pas de redirection. */
 export async function getChatRole(): Promise<ChatRoleResult> {
   const supabase = await createClient()
   const {
@@ -15,12 +18,13 @@ export async function getChatRole(): Promise<ChatRoleResult> {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('role')
+    .select('role, coach_id')
     .eq('user_id', user.id)
     .single()
 
-  if (profile?.role === 'athlete' || profile?.role === 'coach')
-    return { role: profile.role, userId: user.id }
+  if (profile?.role === 'coach') return { role: 'coach', userId: user.id }
+  if (profile?.role === 'athlete')
+    return { role: 'athlete', userId: user.id, hasCoach: !!profile.coach_id }
   return null
 }
 

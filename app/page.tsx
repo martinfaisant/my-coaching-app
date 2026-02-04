@@ -5,7 +5,17 @@ import Link from 'next/link'
 import { LoginModal } from '@/components/LoginModal'
 
 export default function Home() {
-  const [isLoginOpen, setIsLoginOpen] = useState(false)
+  const [modalOpen, setModalOpen] = useState(false)
+  const [modalMode, setModalMode] = useState<'login' | 'signup'>('login')
+
+  const openLogin = () => {
+    setModalMode('login')
+    setModalOpen(true)
+  }
+  const openSignup = () => {
+    setModalMode('signup')
+    setModalOpen(true)
+  }
 
   return (
     <>
@@ -19,13 +29,22 @@ export default function Home() {
             >
               Coach Pro
             </Link>
-            <button
-              type="button"
-              onClick={() => setIsLoginOpen(true)}
-              className="rounded-xl bg-slate-900 dark:bg-white px-5 py-2.5 text-sm font-medium text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 transition focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2"
-            >
-              Connexion
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={openLogin}
+                className="rounded-xl border border-slate-300 dark:border-slate-600 px-5 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2"
+              >
+                Se connecter
+              </button>
+              <button
+                type="button"
+                onClick={openSignup}
+                className="rounded-xl bg-slate-900 dark:bg-white px-5 py-2.5 text-sm font-medium text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 transition focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2"
+              >
+                Créer un compte
+              </button>
+            </div>
           </div>
         </header>
 
@@ -96,19 +115,14 @@ export default function Home() {
             </div>
           </section>
 
-          <div className="mt-16 text-center">
-            <button
-              type="button"
-              onClick={() => setIsLoginOpen(true)}
-              className="rounded-xl bg-emerald-600 dark:bg-emerald-500 px-8 py-3.5 text-base font-medium text-white hover:bg-emerald-700 dark:hover:bg-emerald-600 transition focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
-            >
-              Accéder à mon espace coaching
-            </button>
-          </div>
         </main>
       </div>
 
-      <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
+      <LoginModal
+        isOpen={modalOpen}
+        mode={modalMode}
+        onClose={() => setModalOpen(false)}
+      />
     </>
   )
 }

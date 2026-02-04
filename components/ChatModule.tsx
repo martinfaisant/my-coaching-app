@@ -40,6 +40,7 @@ export function ChatModule() {
   }, [])
 
   if (!chatRole) return null
+  if (chatRole.role === 'athlete' && !chatRole.hasCoach) return null
 
   const label =
     chatRole.role === 'athlete' ? 'Chater avec mon coach' : 'Discuter avec mes athlètes'
