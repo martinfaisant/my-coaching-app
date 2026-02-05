@@ -1,7 +1,20 @@
 'use client'
 
 import { useState, useMemo, useEffect } from 'react'
+import { Avatar } from '@/components/Avatar'
 import { RequestCoachButton } from './RequestCoachButton'
+
+function getInitials(fullName: string | null, email: string): string {
+  const name = (fullName ?? '').trim()
+  if (name) {
+    const parts = name.split(/\s+/).filter(Boolean)
+    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase()
+    if (parts[0].length >= 2) return parts[0].slice(0, 2).toUpperCase()
+    return parts[0][0].toUpperCase()
+  }
+  if (email.length >= 2) return email.slice(0, 2).toUpperCase()
+  return '?'
+}
 
 /** Environ 10 lignes en caractères (ordre de grandeur) pour afficher "Voir plus" */
 const PRESENTATION_LONG_THRESHOLD = 500
@@ -165,9 +178,12 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
             >
               <div className="flex flex-col gap-4 flex-1 min-h-0">
                 <div className="min-w-0 flex-1">
-                  <p className="font-medium text-stone-900">
-                    {c.full_name?.trim() || c.email}
-                  </p>
+                  <div className="flex items-center gap-3">
+                    <Avatar initials={getInitials(c.full_name ?? null, c.email)} />
+                    <p className="font-medium text-stone-900">
+                      {c.full_name?.trim() || c.email}
+                    </p>
+                  </div>
                   {(c.coached_sports?.length ?? 0) > 0 && (
                     <p className="text-xs text-stone-500 mt-2">
                       Sports : {c.coached_sports!.map(sportLabel).join(', ')}
