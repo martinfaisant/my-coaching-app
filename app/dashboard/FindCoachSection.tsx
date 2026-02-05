@@ -1,7 +1,10 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { RequestCoachButton } from './RequestCoachButton'
+
+/** Environ 10 lignes en caractères (ordre de grandeur) pour afficher "Voir plus" */
+const PRESENTATION_LONG_THRESHOLD = 500
 
 const COACHED_SPORTS_OPTIONS: { value: string; label: string }[] = [
   { value: 'course_route', label: 'Course à pied sur route' },
@@ -34,6 +37,8 @@ type FindCoachSectionProps = {
   coaches: CoachForList[]
   /** coach_id -> status (serializable from server) */
   statusByCoach: Record<string, 'pending' | 'declined'>
+  /** coach_id -> request id (for pending requests, to allow cancel) */
+  requestIdByCoach?: Record<string, string>
 }
 
 function matchesSport(coach: CoachForList, selectedSports: string[]): boolean {
@@ -48,11 +53,27 @@ function matchesLanguage(coach: CoachForList, selectedLanguages: string[]): bool
   return selectedLanguages.some((l) => coachLangs.includes(l))
 }
 
-export function FindCoachSection({ coaches, statusByCoach }: FindCoachSectionProps) {
+export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {} }: FindCoachSectionProps) {
   const [selectedSports, setSelectedSports] = useState<string[]>([])
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([])
+  const [presentationModalCoach, setPresentationModalCoach] = useState<CoachForList | null>(null)
   const getStatus = (coachId: string): 'pending' | 'declined' | null =>
     statusByCoach[coachId] ?? null
+  const getRequestId = (coachId: string): string | null => requestIdByCoach[coachId] ?? null
+
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setPresentationModalCoach(null)
+    }
+    if (presentationModalCoach) {
+      document.addEventListener('keydown', handleEscape)
+      document.body.style.overflow = 'hidden'
+    }
+    return () => {
+      document.removeEventListener('keydown', handleEscape)
+      document.body.style.overflow = ''
+    }
+  }, [presentationModalCoach])
 
   const filteredCoaches = useMemo(() => {
     return coaches.filter(
@@ -77,7 +98,7 @@ export function FindCoachSection({ coaches, statusByCoach }: FindCoachSectionPro
 
   return (
     <section className="space-y-6">
-      <div className="rounded-xl border border-stone-200 bg-white p-4">
+      <div className="rounded-xl border border-stone-200 bg-section p-4">
         <h2 className="text-xl font-semibold text-stone-900 mb-3">Trouver un coach</h2>
         <h3 className="text-sm font-semibold text-stone-900 mb-3">Filtrer par</h3>
         <div className="grid gap-6 sm:grid-cols-2">
@@ -132,24 +153,21 @@ export function FindCoachSection({ coaches, statusByCoach }: FindCoachSectionPro
       </h3>
 
       {filteredCoaches.length === 0 ? (
-        <p className="text-sm text-stone-600 rounded-lg border border-stone-200 bg-white p-6">
+        <p className="text-sm text-stone-600 rounded-lg border border-stone-200 bg-section p-6">
           Aucun coach ne correspond à vos critères. Modifiez les filtres ou revenez plus tard.
         </p>
       ) : (
-        <ul className="space-y-4">
+        <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {filteredCoaches.map((c) => (
             <li
               key={c.user_id}
-              className="rounded-xl border border-stone-200 bg-white p-5 hover:border-stone-300 transition-colors"
+              className="flex flex-col rounded-xl border border-stone-200 bg-section p-5 hover:border-stone-300 transition-colors"
             >
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+              <div className="flex flex-col gap-4 flex-1 min-h-0">
                 <div className="min-w-0 flex-1">
                   <p className="font-medium text-stone-900">
                     {c.full_name?.trim() || c.email}
                   </p>
-                  {c.full_name?.trim() && (
-                    <p className="text-sm text-stone-600 mt-0.5">{c.email}</p>
-                  )}
                   {(c.coached_sports?.length ?? 0) > 0 && (
                     <p className="text-xs text-stone-500 mt-2">
                       Sports : {c.coached_sports!.map(sportLabel).join(', ')}
@@ -161,22 +179,83 @@ export function FindCoachSection({ coaches, statusByCoach }: FindCoachSectionPro
                     </p>
                   )}
                   {c.presentation?.trim() && (
-                    <p className="text-sm text-stone-700 mt-3 line-clamp-3">
-                      {c.presentation.trim()}
-                    </p>
+                    <div className="mt-3">
+                      <p className="text-sm text-stone-700 whitespace-pre-wrap line-clamp-[10]">
+                        {c.presentation.trim()}
+                      </p>
+                      {c.presentation.trim().length > PRESENTATION_LONG_THRESHOLD && (
+                        <button
+                          type="button"
+                          onClick={() => setPresentationModalCoach(c)}
+                          className="mt-2 text-sm font-medium text-stone-500 hover:text-stone-700 underline underline-offset-2 transition-colors"
+                        >
+                          Voir plus
+                        </button>
+                      )}
+                    </div>
                   )}
                 </div>
-                <div className="shrink-0">
+                <div className="mt-auto pt-2 flex justify-center">
                   <RequestCoachButton
                     coachId={c.user_id}
                     coachName={c.full_name?.trim() || c.email}
                     requestStatus={getStatus(c.user_id)}
+                    requestId={getRequestId(c.user_id)}
                   />
                 </div>
               </div>
             </li>
           ))}
         </ul>
+      )}
+
+      {presentationModalCoach && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="presentation-modal-title"
+        >
+          <div
+            className="absolute inset-0 bg-palette-forest-dark/50 backdrop-blur-sm"
+            onClick={() => setPresentationModalCoach(null)}
+            aria-hidden="true"
+          />
+          <div className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto bg-white rounded-xl shadow-xl border border-stone-100">
+            <div className="sticky top-0 flex justify-end p-3 bg-white rounded-t-xl z-10">
+              <button
+                type="button"
+                onClick={() => setPresentationModalCoach(null)}
+                className="p-2 rounded-lg text-stone-400 hover:text-stone-600 hover:bg-stone-50 transition-colors"
+                aria-label="Fermer"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M18 6 6 18" /><path d="m6 6 12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="px-8 pb-8">
+              <h2 id="presentation-modal-title" className="text-xl font-semibold text-stone-900 mb-2">
+                Présentation — {presentationModalCoach.full_name?.trim() || presentationModalCoach.email}
+              </h2>
+              {(presentationModalCoach.coached_sports?.length ?? 0) > 0 && (
+                <p className="text-sm text-stone-600 mb-1">
+                  <span className="font-medium">Sports :</span>{' '}
+                  {presentationModalCoach.coached_sports!.map(sportLabel).join(', ')}
+                </p>
+              )}
+              {(presentationModalCoach.languages?.length ?? 0) > 0 && (
+                <p className="text-sm text-stone-600 mb-3">
+                  <span className="font-medium">Langues :</span>{' '}
+                  {presentationModalCoach.languages!.map(languageLabel).join(', ')}
+                </p>
+              )}
+              <p className="text-sm text-stone-700 whitespace-pre-wrap">
+                {presentationModalCoach.presentation!.trim()}
+              </p>
+            </div>
+          </div>
+        </div>
       )}
     </section>
   )

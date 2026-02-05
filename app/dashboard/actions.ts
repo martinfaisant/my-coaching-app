@@ -55,7 +55,7 @@ export async function createCoachRequest(
 }
 
 /** Athlète : liste des demandes envoyées (pour afficher "Demande envoyée" par coach). */
-export async function getMyCoachRequests(): Promise<{ coach_id: string; status: string }[]> {
+export async function getMyCoachRequests(): Promise<{ id: string; coach_id: string; status: string }[]> {
   const supabase = await createClient()
   const {
     data: { user },
@@ -64,11 +64,35 @@ export async function getMyCoachRequests(): Promise<{ coach_id: string; status: 
 
   const { data } = await supabase
     .from('coach_requests')
-    .select('coach_id, status')
+    .select('id, coach_id, status')
     .eq('athlete_id', user.id)
     .order('created_at', { ascending: false })
 
-  return (data ?? []).map((r) => ({ coach_id: r.coach_id, status: r.status }))
+  return (data ?? []).map((r) => ({ id: r.id, coach_id: r.coach_id, status: r.status }))
+}
+
+/** Athlète : annuler une demande en attente. */
+export async function cancelCoachRequest(requestId: string): Promise<CoachRequestResult> {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) return { error: 'Non connecté.' }
+
+  const { data: req } = await supabase
+    .from('coach_requests')
+    .select('id, athlete_id, status')
+    .eq('id', requestId)
+    .single()
+
+  if (!req || req.athlete_id !== user.id) return { error: 'Demande introuvable.' }
+  if (req.status !== 'pending') return { error: 'Cette demande ne peut plus être annulée.' }
+
+  const { error } = await supabase.from('coach_requests').delete().eq('id', requestId)
+
+  if (error) return { error: error.message }
+  revalidatePath('/dashboard')
+  return {}
 }
 
 export type PendingRequestWithAthlete = {
