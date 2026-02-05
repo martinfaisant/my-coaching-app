@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { CalendarView } from './CalendarView'
-import { getWorkoutsForDateRange } from '@/app/dashboard/workouts/actions'
-import type { Workout, Goal } from '@/types/database'
+import { getWorkoutsForDateRange, getImportedActivitiesForDateRange } from '@/app/dashboard/workouts/actions'
+import type { Workout, Goal, ImportedActivity } from '@/types/database'
 
 const SLIDE_DURATION_MS = 380
 /** Hauteur approximative d’une section « semaine » pour le glissement (px). */
@@ -40,6 +40,7 @@ type CalendarViewWithNavigationProps = {
   athleteId: string
   athleteEmail: string
   initialWorkouts: Workout[]
+  initialImportedActivities?: ImportedActivity[]
   goals?: Goal[]
   canEdit: boolean
   pathToRevalidate: string
@@ -60,6 +61,7 @@ export function CalendarViewWithNavigation({
   athleteId,
   athleteEmail,
   initialWorkouts,
+  initialImportedActivities = [],
   goals = [],
   canEdit,
   pathToRevalidate,
@@ -69,6 +71,7 @@ export function CalendarViewWithNavigation({
   const currentMonday = getWeekMonday(today)
   const [referenceMonday, setReferenceMonday] = useState<Date>(currentMonday)
   const [workouts, setWorkouts] = useState<Workout[]>(initialWorkouts)
+  const [importedActivities, setImportedActivities] = useState<ImportedActivity[]>(initialImportedActivities)
   const [loading, setLoading] = useState(false)
   const [loadedRange, setLoadedRange] = useState<{ start: string; end: string } | null>(null)
 
@@ -86,19 +89,25 @@ export function CalendarViewWithNavigation({
 
     if (!needsFetch) return
 
-    const loadWorkouts = async () => {
+    const loadData = async () => {
       setLoading(true)
-      const result = await getWorkoutsForDateRange(athleteId, required.start, required.end)
-      if (result.error) {
-        console.error('Erreur lors du chargement des entraînements:', result.error)
+      const [workoutsResult, importedResult] = await Promise.all([
+        getWorkoutsForDateRange(athleteId, required.start, required.end),
+        getImportedActivitiesForDateRange(athleteId, required.start, required.end),
+      ])
+      if (workoutsResult.error) {
+        console.error('Erreur lors du chargement des entraînements:', workoutsResult.error)
       } else {
-        setWorkouts((result.workouts ?? []) as Workout[])
-        setLoadedRange(required)
+        setWorkouts((workoutsResult.workouts ?? []) as Workout[])
       }
+      if (!importedResult.error) {
+        setImportedActivities((importedResult.importedActivities ?? []) as ImportedActivity[])
+      }
+      setLoadedRange(required)
       setLoading(false)
     }
 
-    loadWorkouts()
+    loadData()
   }, [referenceMonday, athleteId, loadedRange])
 
   const handleNavigate = (weeksOffset: number) => {
@@ -182,6 +191,7 @@ export function CalendarViewWithNavigation({
             athleteId={athleteId}
             athleteEmail={athleteEmail}
             workouts={workouts}
+            importedActivities={importedActivities}
             goals={goals}
             canEdit={canEdit}
             pathToRevalidate={pathToRevalidate}

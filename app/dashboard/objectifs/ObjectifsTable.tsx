@@ -35,14 +35,14 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
     <div className="mt-8 space-y-6">
       <form
         action={action}
-        className="rounded-xl border-2 border-palette-forest-dark bg-white p-6"
+        className="rounded-2xl border border-stone-200 bg-section p-6 shadow-sm"
       >
         <h2 className="text-base font-semibold text-stone-900 mb-5">
           Ajouter un objectif
         </h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div lang="fr">
-            <label htmlFor="date" className="block text-sm font-medium text-stone-700text-stone-300 mb-2">
+            <label htmlFor="date" className="block text-sm font-medium text-stone-700 mb-2">
               Date de l&apos;objectif
             </label>
             <input
@@ -56,7 +56,7 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
             />
           </div>
           <div>
-            <label htmlFor="race_name" className="block text-sm font-medium text-stone-700text-stone-300 mb-2">
+            <label htmlFor="race_name" className="block text-sm font-medium text-stone-700 mb-2">
               Nom de la course
             </label>
             <input
@@ -69,7 +69,7 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
             />
           </div>
           <div>
-            <label htmlFor="distance" className="block text-sm font-medium text-stone-700text-stone-300 mb-2">
+            <label htmlFor="distance" className="block text-sm font-medium text-stone-700 mb-2">
               Distance
             </label>
             <input
@@ -82,7 +82,7 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-stone-700text-stone-300 mb-2">
+            <label className="block text-sm font-medium text-stone-700 mb-2">
               Type d&apos;objectif
             </label>
             <select
@@ -96,7 +96,7 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
         </div>
         {(state?.error || state?.success) && (
           <p
-            className={`mt-4 text-sm ${state.error ? 'text-red-600' : 'text-palette-forest-dark600text-palette-forest-dark400'}`}
+            className={`mt-4 text-sm ${state.error ? 'text-red-600' : 'text-palette-forest-dark'}`}
             role="alert"
           >
             {state.error || state.success}
@@ -107,40 +107,40 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
         </PrimaryButton>
       </form>
 
-      <div className="overflow-hidden rounded-xl border-2 border-palette-forest-dark bg-white">
-        <table className="min-w-full divide-y divide-stone-200divide-stone-700">
+      <div className="overflow-hidden rounded-2xl border border-stone-200 bg-section shadow-sm">
+        <table className="min-w-full divide-y divide-stone-200">
           <thead>
-            <tr>
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase text-white0text-stone-400">
+            <tr className="bg-stone-100">
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase text-stone-500">
                 Date
               </th>
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase text-white0text-stone-400">
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase text-stone-500">
                 Nom de la course
               </th>
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase text-white0text-stone-400">
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase text-stone-500">
                 Distance
               </th>
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase text-white0text-stone-400">
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase text-stone-500">
                 Objectif
               </th>
-              <th className="px-4 py-3 text-right text-xs font-medium uppercase text-white0text-stone-400">
+              <th className="px-4 py-3 text-right text-xs font-medium uppercase text-stone-500">
                 Action
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-stone-200divide-stone-700">
+          <tbody className="divide-y divide-stone-200 bg-white">
             {initialGoals.map((g) => (
-              <tr key={g.id} className="bg-white">
+              <tr key={g.id}>
                 <td className="px-4 py-3 text-sm text-stone-900">
                   {new Date(g.date).toLocaleDateString('fr-FR')}
                 </td>
                 <td className="px-4 py-3 text-sm text-stone-900">
                   {g.race_name}
                 </td>
-                <td className="px-4 py-3 text-sm text-stone-600text-stone-300">
+                <td className="px-4 py-3 text-sm text-stone-600">
                   {g.distance}
                 </td>
-                <td className="px-4 py-3 text-sm text-stone-600text-stone-300">
+                <td className="px-4 py-3 text-sm text-stone-600">
                   {g.is_primary ? 'Principal' : 'Secondaire'}
                 </td>
                 <td className="px-4 py-3 text-right">
@@ -151,7 +151,7 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
           </tbody>
         </table>
         {initialGoals.length === 0 && (
-          <p className="px-4 py-8 text-center text-sm text-white0text-stone-400">
+          <p className="px-4 py-8 text-center text-sm text-stone-500">
             Aucun objectif pour le moment.
           </p>
         )}

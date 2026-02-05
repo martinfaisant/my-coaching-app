@@ -1,23 +1,19 @@
 import Link from 'next/link'
-import { getCurrentUserWithProfile } from '@/utils/auth'
 import { redirect } from 'next/navigation'
-import { createClient } from '@/utils/supabase/server'
+import { getCurrentUserWithProfile } from '@/utils/auth'
 import { ProfileMenu } from '@/components/ProfileMenu'
-import { OffersForm } from './OffersForm'
+import { StravaDevicesSection } from './StravaDevicesSection'
+import { getStravaConnection } from './actions'
 
-export default async function OffersPage() {
+export default async function DevicesPage() {
   const current = await getCurrentUserWithProfile()
-
-  if (current.profile.role !== 'coach') {
+  if (current.profile.role !== 'athlete') {
     redirect('/dashboard')
   }
 
-  const supabase = await createClient()
-  const { data: offers } = await supabase
-    .from('coach_offers')
-    .select('*')
-    .eq('coach_id', current.id)
-    .order('display_order')
+  const result = await getStravaConnection(current.id)
+  const connected = result.connected && !!result.connection
+  const connection = result.connection ?? null
 
   return (
     <div className="min-h-screen bg-background">
@@ -29,19 +25,22 @@ export default async function OffersPage() {
           >
             ← Tableau de bord
           </Link>
-          <ProfileMenu showOffersLink />
+          <ProfileMenu showObjectifsLink showCoachLink showDevicesLink />
         </div>
       </header>
 
       <main className="mx-auto max-w-2xl px-4 py-8">
         <h1 className="text-xl font-semibold text-stone-900">
-          Mon offre
+          Mes appareils connectés
         </h1>
-        <p className="mt-1 text-sm text-stone-500">
-          Définissez jusqu'à 3 offres de coaching avec leurs tarifs.
+        <p className="mt-1 text-sm text-stone-500 mb-8">
+          Connectez vos applications et montres pour importer vos activités sportives dans votre calendrier.
         </p>
-
-        <OffersForm offers={offers || []} />
+        <StravaDevicesSection
+          userId={current.id}
+          connected={connected}
+          connection={connection}
+        />
       </main>
     </div>
   )

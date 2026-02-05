@@ -9,7 +9,7 @@ import {
   getMyCoachRequests,
   getPendingCoachRequests,
 } from '@/app/dashboard/actions'
-import type { Profile, Workout, Goal } from '@/types/database'
+import type { Profile, Workout, Goal, ImportedActivity } from '@/types/database'
 
 const ROLE_LABELS: Record<Profile['role'], string> = {
   athlete: 'Athlète',
@@ -71,7 +71,7 @@ export default async function DashboardPage() {
             <h1 className="text-lg font-semibold text-stone-900">
               Tableau de bord
             </h1>
-            <ProfileMenu showObjectifsLink />
+            <ProfileMenu showObjectifsLink showDevicesLink />
           </div>
         </header>
 
@@ -108,6 +108,15 @@ export default async function DashboardPage() {
       .order('date')
       .order('created_at')
 
+    const { data: importedActivities } = await supabase
+      .from('imported_activities')
+      .select('*')
+      .eq('athlete_id', current.id)
+      .gte('date', startStr)
+      .lte('date', endStr)
+      .order('date')
+      .order('created_at')
+
     const { data: goals } = await supabase
       .from('goals')
       .select('*')
@@ -121,7 +130,7 @@ export default async function DashboardPage() {
             <h1 className="text-lg font-semibold text-stone-900text-white">
               Mon calendrier d&apos;entraînement
             </h1>
-            <ProfileMenu showObjectifsLink showCoachLink />
+            <ProfileMenu showObjectifsLink showCoachLink showDevicesLink />
           </div>
         </header>
 
@@ -130,6 +139,7 @@ export default async function DashboardPage() {
             athleteId={current.id}
             athleteEmail={current.email}
             initialWorkouts={(workouts ?? []) as Workout[]}
+            initialImportedActivities={(importedActivities ?? []) as ImportedActivity[]}
             goals={(goals ?? []) as Goal[]}
             canEdit={false}
             pathToRevalidate="/dashboard"

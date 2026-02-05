@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import { WorkoutModal } from './WorkoutModal'
-import type { Workout, SportType, Goal } from '@/types/database'
+import type { Workout, SportType, Goal, ImportedActivity } from '@/types/database'
 
 const SPORT_LABELS: Record<SportType, string> = {
   course: 'Course',
@@ -64,6 +64,7 @@ type CalendarViewProps = {
   athleteId: string
   athleteEmail: string
   workouts: Workout[]
+  importedActivities?: ImportedActivity[]
   goals?: Goal[]
   canEdit: boolean
   pathToRevalidate: string
@@ -90,6 +91,7 @@ function GoalTargetBadge({ isPrimary }: { isPrimary: boolean }) {
 export function CalendarView({
   athleteId,
   workouts,
+  importedActivities = [],
   goals = [],
   canEdit,
   pathToRevalidate,
@@ -102,6 +104,7 @@ export function CalendarView({
   const [modalWorkout, setModalWorkout] = useState<Workout | null>(null)
   const [goalModalOpen, setGoalModalOpen] = useState(false)
   const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null)
+  const [selectedImportedActivity, setSelectedImportedActivity] = useState<ImportedActivity | null>(null)
 
   const openGoal = (goal: Goal) => {
     setSelectedGoal(goal)
@@ -176,6 +179,15 @@ export function CalendarView({
     return map
   }, [workouts])
 
+  const importedByDate = useMemo(() => {
+    const map: Record<string, ImportedActivity[]> = {}
+    for (const a of importedActivities) {
+      if (!map[a.date]) map[a.date] = []
+      map[a.date].push(a)
+    }
+    return map
+  }, [importedActivities])
+
   const goalsByDate = useMemo(() => {
     const map: Record<string, Goal[]> = {}
     for (const g of goals) {
@@ -226,10 +238,11 @@ export function CalendarView({
               ))}
               {week.days.map((day) => {
                 const dayWorkouts = workoutsByDate[day.dateStr] ?? []
+                const dayImported = importedByDate[day.dateStr] ?? []
                 const dayGoals = goalsByDate[day.dateStr] ?? []
                 const canAddWorkout = canEdit && !day.isPast && dayWorkouts.length === 0
                 const isCellClickable = canEdit && (!day.isPast || dayWorkouts.length > 0)
-                const hasContent = dayWorkouts.length > 0 || dayGoals.length > 0
+                const hasContent = dayWorkouts.length > 0 || dayGoals.length > 0 || dayImported.length > 0
                 const showCenteredPlus = canAddWorkout && !hasContent
                 return (
                   <div
@@ -274,6 +287,30 @@ export function CalendarView({
                               </span>
                             </div>
                           ))}
+                          {dayImported.map((a) => {
+                            const colors = SPORT_COLORS[a.sport_type]
+                            return (
+                              <div
+                                key={a.id}
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  setSelectedImportedActivity(a)
+                                }}
+                                className={`rounded-lg px-2 py-1.5 text-xs border-l-4 border-[#FC4C02] shrink-0 bg-orange-50/80 border border-orange-200/60 ${colors.text} cursor-pointer hover:ring-2 hover:ring-orange-300 transition-shadow`}
+                                title={`${a.title} — importé depuis Strava`}
+                                role="button"
+                              >
+                                <span className="inline-flex items-center gap-1">
+                                  <span className="text-[10px] font-semibold text-[#FC4C02] uppercase tracking-wide">Strava</span>
+                                  <span className="font-medium truncate">{SPORT_LABELS[a.sport_type]}</span>
+                                </span>
+                                <span className="ml-1 truncate block">{a.title}</span>
+                                {a.description && (
+                                  <span className="mt-0.5 block truncate text-stone-500 text-[11px]">{a.description}</span>
+                                )}
+                              </div>
+                            )
+                          })}
                           {dayWorkouts.map((w) => {
                             const colors = SPORT_COLORS[w.sport_type]
                             return (
@@ -392,6 +429,105 @@ export function CalendarView({
                 type="button"
                 onClick={() => setGoalModalOpen(false)}
                 className="rounded-lg border-2 border-palette-forest-dark px-4 py-2 text-sm font-medium text-stone-700 hover:bg-stone-50 transition-colors"
+              >
+                Fermer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {selectedImportedActivity && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="imported-activity-modal-title"
+        >
+          <div
+            className="absolute inset-0 bg-stone-900/40 backdrop-blur-sm"
+            onClick={() => setSelectedImportedActivity(null)}
+            aria-hidden="true"
+          />
+          <div className="relative w-full max-w-md rounded-xl border-2 border-orange-300 bg-white p-5 shadow-xl">
+            <div className="flex items-center justify-between gap-2 mb-4">
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-semibold text-[#FC4C02] uppercase tracking-wide">Strava</span>
+                <h2 id="imported-activity-modal-title" className="text-lg font-semibold text-stone-900">
+                  Détails de l&apos;activité
+                </h2>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedImportedActivity(null)}
+                className="p-2 rounded-lg text-stone-500 hover:text-stone-700 hover:bg-stone-100 transition-colors"
+                aria-label="Fermer"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M18 6 6 18" />
+                  <path d="m6 6 12 12" />
+                </svg>
+              </button>
+            </div>
+            <dl className="space-y-3 text-sm">
+              <div>
+                <dt className="text-stone-500 font-medium">Date</dt>
+                <dd className="mt-0.5 text-stone-900">
+                  {new Date(selectedImportedActivity.date + 'T12:00:00').toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-stone-500 font-medium">Source</dt>
+                <dd className="mt-0.5 text-stone-900 capitalize">{selectedImportedActivity.source}</dd>
+              </div>
+              <div>
+                <dt className="text-stone-500 font-medium">Type de sport</dt>
+                <dd className="mt-0.5 text-stone-900">{SPORT_LABELS[selectedImportedActivity.sport_type]}</dd>
+              </div>
+              <div>
+                <dt className="text-stone-500 font-medium">Titre</dt>
+                <dd className="mt-0.5 text-stone-900">{selectedImportedActivity.title}</dd>
+              </div>
+              {selectedImportedActivity.description && (
+                <div>
+                  <dt className="text-stone-500 font-medium">Description</dt>
+                  <dd className="mt-0.5 text-stone-900 whitespace-pre-wrap">{selectedImportedActivity.description}</dd>
+                </div>
+              )}
+              {selectedImportedActivity.raw_data && typeof selectedImportedActivity.raw_data === 'object' && (
+                <>
+                  {typeof (selectedImportedActivity.raw_data as { distance?: number }).distance === 'number' && (
+                    <div>
+                      <dt className="text-stone-500 font-medium">Distance</dt>
+                      <dd className="mt-0.5 text-stone-900">
+                        {((selectedImportedActivity.raw_data as { distance: number }).distance / 1000).toFixed(2)} km
+                      </dd>
+                    </div>
+                  )}
+                  {typeof (selectedImportedActivity.raw_data as { moving_time?: number }).moving_time === 'number' && (
+                    <div>
+                      <dt className="text-stone-500 font-medium">Temps de déplacement</dt>
+                      <dd className="mt-0.5 text-stone-900">
+                        {Math.floor((selectedImportedActivity.raw_data as { moving_time: number }).moving_time / 60)} min
+                      </dd>
+                    </div>
+                  )}
+                  {typeof (selectedImportedActivity.raw_data as { total_elevation_gain?: number }).total_elevation_gain === 'number' && (
+                    <div>
+                      <dt className="text-stone-500 font-medium">Dénivelé positif</dt>
+                      <dd className="mt-0.5 text-stone-900">
+                        {Math.round((selectedImportedActivity.raw_data as { total_elevation_gain: number }).total_elevation_gain)} m
+                      </dd>
+                    </div>
+                  )}
+                </>
+              )}
+            </dl>
+            <div className="mt-5 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setSelectedImportedActivity(null)}
+                className="rounded-lg border-2 border-orange-400 px-4 py-2 text-sm font-medium text-stone-700 hover:bg-orange-50 transition-colors"
               >
                 Fermer
               </button>

@@ -82,3 +82,32 @@ export type CoachOffer = {
   created_at: string
   updated_at: string
 }
+
+export type ConnectedServiceProvider = 'strava'
+
+export type AthleteConnectedService = {
+  id: string
+  user_id: string
+  provider: ConnectedServiceProvider
+  access_token: string
+  refresh_token: string
+  expires_at: string
+  strava_athlete_id: number | null
+  created_at: string
+  updated_at: string
+}
+
+export type ImportedActivitySource = 'strava'
+
+export type ImportedActivity = {
+  id: string
+  athlete_id: string
+  source: ImportedActivitySource
+  external_id: string
+  date: string
+  sport_type: SportType
+  title: string
+  description: string
+  raw_data: Record<string, unknown> | null
+  created_at: string
+}

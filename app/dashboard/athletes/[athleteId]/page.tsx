@@ -63,6 +63,9 @@ export default async function AthleteCalendarPage({ params }: PageProps) {
     .order('date')
     .order('created_at')
 
+  // Les activités importées (Strava, etc.) ne sont pas chargées pour le coach :
+  // elles restent visibles uniquement par l'athlète (données externes / personnelles).
+
   const { data: goals } = await supabase
     .from('goals')
     .select('*')

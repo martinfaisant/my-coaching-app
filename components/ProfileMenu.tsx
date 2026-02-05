@@ -9,9 +9,10 @@ type ProfileMenuProps = {
   showObjectifsLink?: boolean
   showCoachLink?: boolean
   showOffersLink?: boolean
+  showDevicesLink?: boolean
 }
 
-export function ProfileMenu({ showObjectifsLink = false, showCoachLink = false, showOffersLink = false }: ProfileMenuProps) {
+export function ProfileMenu({ showObjectifsLink = false, showCoachLink = false, showOffersLink = false, showDevicesLink = false }: ProfileMenuProps) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
   const router = useRouter()
@@ -83,6 +84,15 @@ export function ProfileMenu({ showObjectifsLink = false, showCoachLink = false, 
               className="block px-4 py-2 text-sm text-stone-700 hover:bg-palette-olive/20 transition-colors"
             >
               Mon coach
+            </Link>
+          )}
+          {showDevicesLink && (
+            <Link
+              href="/dashboard/devices"
+              onClick={() => setOpen(false)}
+              className="block px-4 py-2 text-sm text-stone-700 hover:bg-palette-olive/20 transition-colors"
+            >
+              Mes appareils connectés
             </Link>
           )}
           {showOffersLink && (

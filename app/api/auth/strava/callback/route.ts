@@ -1,0 +1,108 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { createClient } from '@/utils/supabase/server'
+import { cookies } from 'next/headers'
+
+const STRAVA_TOKEN_URL = 'https://www.strava.com/oauth/token'
+
+function getOrigin(request: NextRequest): string {
+  const origin = request.nextUrl.origin
+  if (origin && origin !== 'null') return origin
+  const host = request.headers.get('x-forwarded-host') ?? request.headers.get('host')
+  const proto = request.headers.get('x-forwarded-proto') ?? 'https'
+  if (host) return `${proto}://${host}`
+  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`
+  return ''
+}
+
+export async function GET(request: NextRequest) {
+  const origin = getOrigin(request) || 'https://localhost:3000'
+  const redirectToDevices = (query?: string) =>
+    NextResponse.redirect(new URL(query ? `/dashboard/devices?${query}` : '/dashboard/devices', origin))
+
+  try {
+    const code = request.nextUrl.searchParams.get('code')
+    const state = request.nextUrl.searchParams.get('state')
+    const errorParam = request.nextUrl.searchParams.get('error')
+
+    if (errorParam) {
+      return redirectToDevices()
+    }
+
+    const cookieStore = await cookies()
+    const savedState = cookieStore.get('strava_oauth_state')?.value
+    cookieStore.delete('strava_oauth_state')
+
+    if (!savedState || state !== savedState || !code) {
+      return redirectToDevices('error=strava_invalid')
+    }
+
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      return NextResponse.redirect(new URL('/login', origin))
+    }
+
+    const clientId = process.env.STRAVA_CLIENT_ID
+    const clientSecret = process.env.STRAVA_CLIENT_SECRET
+    if (!clientId || !clientSecret) {
+      return redirectToDevices('error=strava_config')
+    }
+
+    const redirectUri = `${origin}/api/auth/strava/callback`
+
+    const body = new URLSearchParams({
+      client_id: clientId,
+      client_secret: clientSecret,
+      code,
+      grant_type: 'authorization_code',
+      redirect_uri: redirectUri,
+    })
+
+    const tokenRes = await fetch(STRAVA_TOKEN_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: body.toString(),
+    })
+
+    if (!tokenRes.ok) {
+      const err = await tokenRes.text()
+      console.error('Strava token exchange failed:', err)
+      return redirectToDevices('error=strava_token')
+    }
+
+    const data = (await tokenRes.json()) as {
+      access_token: string
+      refresh_token: string
+      expires_at: number
+      athlete?: { id: number }
+    }
+
+    const expiresAt = new Date(data.expires_at * 1000).toISOString()
+    const stravaAthleteId = data.athlete?.id ?? null
+
+    const { error } = await supabase
+      .from('athlete_connected_services')
+      .upsert(
+        {
+          user_id: user.id,
+          provider: 'strava',
+          access_token: data.access_token,
+          refresh_token: data.refresh_token,
+          expires_at: expiresAt,
+          strava_athlete_id: stravaAthleteId,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: 'user_id,provider' }
+      )
+
+    if (error) {
+      console.error('Failed to save Strava connection:', error)
+      return redirectToDevices('error=strava_save')
+    }
+
+    return redirectToDevices('strava=connected')
+  } catch (err) {
+    console.error('Strava callback error:', err)
+    return redirectToDevices('error=strava_config')
+  }
+}
