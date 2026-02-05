@@ -48,69 +48,49 @@ export default function Home() {
           </div>
         </header>
 
-        {/* Hero - Présentation du coach */}
+        {/* Hero - Présentation du produit */}
         <main className="mx-auto max-w-6xl px-4 sm:px-6 py-20 sm:py-28">
-          <section className="flex flex-col items-center gap-16 lg:flex-row lg:items-start lg:gap-20">
-            <div className="flex-shrink-0">
-              <div className="h-40 w-40 rounded-3xl flex items-center justify-center shadow-lg" style={{ background: 'linear-gradient(to bottom right, #627e59, #8e9856)', boxShadow: '0 10px 15px -3px rgba(98, 126, 89, 0.1)' }}>
-                <span className="text-5xl font-bold text-white">JP</span>
-              </div>
-            </div>
-            <div className="flex-1 text-center lg:text-left">
-              <p className="text-xs font-medium uppercase tracking-widest mb-3" style={{ color: '#627e59' }}>
-                Coach sportif personnel
-              </p>
-              <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-stone-900 mb-5">
-                Jean-Pierre Martin
-              </h1>
-              <p className="text-lg leading-relaxed text-stone-700 max-w-2xl mb-8">
-                Coach diplômé avec plus de 10 ans d&apos;expérience, je vous accompagne pour
-                atteindre vos objectifs : perte de poids, prise de masse, préparation
-                physique ou simplement une meilleure condition au quotidien.
-              </p>
-              <ul className="flex flex-wrap justify-center lg:justify-start gap-6 text-sm text-stone-700">
-                <li className="flex items-center gap-2.5">
-                  <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: '#627e59' }} />
-                  Musculation &amp; fitness
-                </li>
-                <li className="flex items-center gap-2.5">
-                  <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: '#627e59' }} />
-                  Nutrition
-                </li>
-                <li className="flex items-center gap-2.5">
-                  <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: '#627e59' }} />
-                  Suivi personnalisé
-                </li>
-              </ul>
-            </div>
+          <section className="text-center max-w-3xl mx-auto">
+            <p className="text-xs font-medium uppercase tracking-widest mb-3 text-palette-forest-dark">
+              La plateforme de coaching sportif
+            </p>
+            <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-stone-900 mb-6">
+              Progressez avec la bonne personne !
+            </h1>
+            <p className="text-lg leading-relaxed text-stone-700">
+              Coach Pro met en relation sportifs et coachs professionnels pour un suivi
+              personnalisé : plans d&apos;entraînement, objectifs et échanges en direct,
+              le tout dans un espace dédié.
+            </p>
           </section>
 
-          {/* Section valeurs / approche */}
-          <section className="mt-32 grid gap-6 sm:grid-cols-3">
-            <div className="rounded-xl border border-stone-300 p-6" style={{ backgroundColor: 'var(--section-bg)' }}>
+          {/* Section objectifs / atouts */}
+          <section className="mt-24 sm:mt-32 grid gap-6 sm:grid-cols-3">
+            <div className="rounded-xl border border-stone-300 p-6 bg-section">
               <h3 className="text-base font-semibold text-stone-900 mb-2">
-                Objectifs sur mesure
+                Trouvez votre coach
               </h3>
               <p className="text-sm leading-relaxed text-stone-700">
-                Chaque programme est conçu selon votre niveau, votre emploi du temps et
-                vos objectifs.
+                Parcourez les profils de coachs professionnels (sports, langues, présentation)
+                et envoyez une demande pour démarrer un accompagnement.
               </p>
             </div>
-            <div className="rounded-xl border border-stone-300 p-6" style={{ backgroundColor: 'var(--section-bg)' }}>
+            <div className="rounded-xl border border-stone-300 p-6 bg-section">
               <h3 className="text-base font-semibold text-stone-900 mb-2">
-                Suivi régulier
+                Suivi et plans sur mesure
               </h3>
               <p className="text-sm leading-relaxed text-stone-700">
-                Bilan régulier et ajustements pour garder la motivation et progresser
-                durablement.
+                Objectifs, calendrier d&apos;entraînement et suivi régulier pour progresser
+                avec un coach dédié.
               </p>
             </div>
-            <div className="rounded-xl border border-stone-300 p-6" style={{ backgroundColor: 'var(--section-bg)' }}>
+            <div className="rounded-xl border border-stone-300 p-6 bg-section">
               <h3 className="text-base font-semibold text-stone-900 mb-2">
-                En présentiel ou en ligne
+                Échange en direct
               </h3>
               <p className="text-sm leading-relaxed text-stone-700">
-                Séances en salle, à domicile ou coaching à distance selon vos préférences.
+                Messagerie intégrée entre athlète et coach pour poser vos questions
+                et ajuster le programme à tout moment.
               </p>
             </div>
           </section>
