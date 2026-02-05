@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { getCurrentUserWithProfile } from '@/utils/auth'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
+import { AvatarImage } from '@/components/AvatarImage'
 
 const COACHED_SPORTS_LABELS: Record<string, string> = {
   course_route: 'Course à pied sur route',
@@ -29,6 +30,18 @@ function languageLabel(value: string): string {
   return LANGUAGES_LABELS[value] ?? value
 }
 
+function getInitials(fullName: string | null, email: string): string {
+  const name = (fullName ?? '').trim()
+  if (name) {
+    const parts = name.split(/\s+/).filter(Boolean)
+    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase()
+    if (parts[0].length >= 2) return parts[0].slice(0, 2).toUpperCase()
+    return parts[0][0].toUpperCase()
+  }
+  if (email.length >= 2) return email.slice(0, 2).toUpperCase()
+  return '?'
+}
+
 export default async function MonCoachPage() {
   const current = await getCurrentUserWithProfile()
 
@@ -39,7 +52,7 @@ export default async function MonCoachPage() {
   const supabase = await createClient()
   const { data: coach } = await supabase
     .from('profiles')
-    .select('full_name, coached_sports, languages, presentation')
+    .select('full_name, email, coached_sports, languages, presentation, avatar_url')
     .eq('user_id', current.profile.coach_id)
     .single()
 
@@ -88,11 +101,21 @@ export default async function MonCoachPage() {
         </p>
 
         <div className="mt-8 space-y-6 rounded-2xl border border-stone-200 bg-section p-6 shadow-sm">
-          <div>
-            <h2 className="text-sm font-medium text-stone-500 mb-1">Nom</h2>
-            <p className="text-stone-900">
-              {(coach.full_name ?? '').trim() || '—'}
-            </p>
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex-1">
+              <h2 className="text-sm font-medium text-stone-500 mb-1">Nom</h2>
+              <p className="text-stone-900">
+                {(coach.full_name ?? '').trim() || '—'}
+              </p>
+            </div>
+            <div className="flex-shrink-0">
+              <AvatarImage
+                src={coach.avatar_url}
+                initials={getInitials(coach.full_name, coach.email)}
+                alt="Photo du coach"
+                className="w-16 h-16"
+              />
+            </div>
           </div>
 
           {sports.length > 0 && (

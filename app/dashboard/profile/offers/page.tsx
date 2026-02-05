@@ -1,9 +1,22 @@
 import Link from 'next/link'
 import { getCurrentUserWithProfile } from '@/utils/auth'
-import { ProfileForm } from './ProfileForm'
+import { redirect } from 'next/navigation'
+import { createClient } from '@/utils/supabase/server'
+import { OffersForm } from './OffersForm'
 
-export default async function ProfilePage() {
+export default async function OffersPage() {
   const current = await getCurrentUserWithProfile()
+
+  if (current.profile.role !== 'coach') {
+    redirect('/dashboard')
+  }
+
+  const supabase = await createClient()
+  const { data: offers } = await supabase
+    .from('coach_offers')
+    .select('*')
+    .eq('coach_id', current.id)
+    .order('display_order')
 
   return (
     <div className="min-h-screen bg-stone-50bg-stone-950">
@@ -20,21 +33,13 @@ export default async function ProfilePage() {
 
       <main className="mx-auto max-w-2xl px-4 py-8">
         <h1 className="text-xl font-semibold text-stone-900text-white">
-          Mes informations
+          Mon offre
         </h1>
         <p className="mt-1 text-sm text-stone-500text-stone-400">
-          Modifiez votre prénom et votre nom. L&apos;adresse email est affichée à titre d&apos;information.
+          Définissez jusqu'à 3 offres de coaching avec leurs tarifs.
         </p>
 
-        <ProfileForm
-          email={current.email}
-          fullName={current.profile.full_name ?? ''}
-          role={current.profile.role}
-          avatarUrl={current.profile.avatar_url ?? ''}
-          coachedSports={current.profile.coached_sports ?? []}
-          languages={current.profile.languages ?? []}
-          presentation={current.profile.presentation ?? ''}
-        />
+        <OffersForm offers={offers || []} />
       </main>
     </div>
   )

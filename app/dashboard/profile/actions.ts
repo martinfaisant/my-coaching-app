@@ -30,7 +30,7 @@ export async function updateProfile(
     .eq('user_id', user.id)
     .single()
 
-  const payload: { full_name: string | null; coached_sports?: string[]; languages?: string[]; presentation?: string | null } = {
+  const payload: { full_name: string | null; coached_sports?: string[]; languages?: string[]; presentation?: string | null; avatar_url?: string | null } = {
     full_name: fullName,
   }
 
@@ -40,9 +40,11 @@ export async function updateProfile(
     const languagesRaw = formData.getAll('languages') as string[]
     const languages = languagesRaw.filter(Boolean).map((l) => l.trim()).filter(Boolean)
     const presentation = (formData.get('presentation') as string)?.trim() || null
+    const avatarUrl = (formData.get('avatar_url') as string)?.trim() || null
     payload.coached_sports = coachedSports
     payload.languages = languages
     payload.presentation = presentation
+    payload.avatar_url = avatarUrl
   }
 
   const { error } = await supabase
@@ -53,6 +55,7 @@ export async function updateProfile(
   if (error) return { error: error.message }
   revalidatePath('/dashboard')
   revalidatePath('/dashboard/profile')
+  revalidatePath('/dashboard/coach')
   return { success: 'Informations enregistrées.' }
 }
 
