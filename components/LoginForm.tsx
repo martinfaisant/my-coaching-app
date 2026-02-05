@@ -253,28 +253,24 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
           />
         </div>
         {signupState?.error && (
-          <div className="space-y-3">
-            <p className="text-sm text-red-600text-red-400" role="alert">
-              {signupState.error}
-            </p>
+          <p className="text-sm text-red-600text-red-400" role="alert">
+            {signupState.error}
             {signupState.userExists && signupState.existingEmail && onModeChange && (
-              <div className="rounded-lg border border-stone-200 bg-stone-50 p-4">
-                <p className="text-sm text-stone-700 mb-3">
-                  Un compte existe déjà avec cet email. Souhaitez-vous vous connecter ?
-                </p>
-                <PrimaryButton
+              <>
+                {' '}
+                <button
                   type="button"
                   onClick={() => {
                     setPrefilledEmail(signupState.existingEmail || '')
                     onModeChange('login')
                   }}
-                  fullWidth
+                  className="underline text-palette-forest-dark hover:!text-palette-olive transition-colors"
                 >
                   Se connecter
-                </PrimaryButton>
-              </div>
+                </button>
+              </>
             )}
-          </div>
+          </p>
         )}
         {signupState?.success && (
           <p className="text-sm text-palette-forest-dark" role="alert">
