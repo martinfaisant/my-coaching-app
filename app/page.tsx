@@ -2,7 +2,32 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { LoginModal } from '@/components/LoginModal'
+
+const HERO_CARDS = [
+  {
+    src: 'https://images.unsplash.com/photo-1571008887538-b36bb32f4571?w=800&q=80',
+    alt: 'Coureur sur route',
+    title: 'Trouvez votre coach',
+    description:
+      'Parcourez les profils de coachs professionnels (sports, langues, présentation) et envoyez une demande pour démarrer un accompagnement.',
+  },
+  {
+    src: 'https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=800&q=80',
+    alt: 'Cycliste',
+    title: 'Suivi et plans sur mesure',
+    description:
+      "Objectifs, calendrier d'entraînement et suivi régulier pour progresser avec un coach dédié.",
+  },
+  {
+    src: 'https://images.unsplash.com/photo-1504025468847-0e438279542c?w=800&q=80',
+    alt: 'Traileur en montagne',
+    title: 'Échange en direct',
+    description:
+      'Messagerie intégrée entre athlète et coach pour poser vos questions et ajuster le programme à tout moment.',
+  },
+] as const
 
 export default function Home() {
   const [modalOpen, setModalOpen] = useState(false)
@@ -64,35 +89,34 @@ export default function Home() {
             </p>
           </section>
 
-          {/* Section objectifs / atouts */}
-          <section className="mt-24 sm:mt-32 grid gap-6 sm:grid-cols-3">
-            <div className="rounded-xl border border-stone-300 p-6 bg-section">
-              <h3 className="text-base font-semibold text-stone-900 mb-2">
-                Trouvez votre coach
-              </h3>
-              <p className="text-sm leading-relaxed text-stone-700">
-                Parcourez les profils de coachs professionnels (sports, langues, présentation)
-                et envoyez une demande pour démarrer un accompagnement.
-              </p>
-            </div>
-            <div className="rounded-xl border border-stone-300 p-6 bg-section">
-              <h3 className="text-base font-semibold text-stone-900 mb-2">
-                Suivi et plans sur mesure
-              </h3>
-              <p className="text-sm leading-relaxed text-stone-700">
-                Objectifs, calendrier d&apos;entraînement et suivi régulier pour progresser
-                avec un coach dédié.
-              </p>
-            </div>
-            <div className="rounded-xl border border-stone-300 p-6 bg-section">
-              <h3 className="text-base font-semibold text-stone-900 mb-2">
-                Échange en direct
-              </h3>
-              <p className="text-sm leading-relaxed text-stone-700">
-                Messagerie intégrée entre athlète et coach pour poser vos questions
-                et ajuster le programme à tout moment.
-              </p>
-            </div>
+          {/* Image + texte en bloc uni, hauteur texte égale — Unsplash (libre de droit) */}
+          <section className="mt-16 sm:mt-20 grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8" aria-label="Atouts de la plateforme">
+            {HERO_CARDS.map(({ src, alt, title, description }) => (
+              <article
+                key={title}
+                className="flex flex-col rounded-2xl border border-stone-200 overflow-hidden bg-section shadow-md"
+              >
+                <div className="group relative flex-none">
+                  <div className="aspect-[4/3] relative">
+                    <Image
+                      src={src}
+                      alt={alt}
+                      fill
+                      sizes="(max-width: 640px) 100vw, 33vw"
+                      className="object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                  </div>
+                </div>
+                <div className="flex flex-1 flex-col p-6">
+                  <h3 className="text-base font-semibold text-stone-900 mb-2">
+                    {title}
+                  </h3>
+                  <p className="text-sm leading-relaxed text-stone-700">
+                    {description}
+                  </p>
+                </div>
+              </article>
+            ))}
           </section>
 
         </main>

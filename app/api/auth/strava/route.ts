@@ -10,7 +10,10 @@ function getOrigin(request: NextRequest): string {
   if (origin && origin !== 'null') return origin
   const host = request.headers.get('x-forwarded-host') ?? request.headers.get('host')
   const proto = request.headers.get('x-forwarded-proto') ?? 'https'
-  return host ? `${proto}://${host}` : ''
+  if (host) return `${proto}://${host}`
+  // Vercel: deployment URL (sans protocole). Garantit un redirect_uri correct.
+  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`
+  return ''
 }
 
 export async function GET(request: NextRequest) {
