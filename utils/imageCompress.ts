@@ -1,9 +1,9 @@
 /**
- * Compresse une image pour une photo de profil : petite taille, faible poids.
- * Cible : max 96px, JPEG qualité 0.45, ~10-25 KB.
+ * Compresse une image pour une photo de profil : petite taille, qualité améliorée.
+ * Cible : max 96px, JPEG qualité 0.7, ~15-35 KB.
  */
 const MAX_SIZE = 96
-const JPEG_QUALITY = 0.45
+const JPEG_QUALITY = 0.7
 
 export async function compressProfileImage(file: File): Promise<Blob> {
   return new Promise((resolve, reject) => {

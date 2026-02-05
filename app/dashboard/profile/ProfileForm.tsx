@@ -155,7 +155,9 @@ export function ProfileForm({
       })
       if (error) throw error
       const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path)
-      setAvatarUrlState(publicUrl)
+      // Ajouter un paramètre de cache-busting pour forcer le rechargement de l'image
+      const urlWithCacheBust = `${publicUrl}?t=${Date.now()}`
+      setAvatarUrlState(urlWithCacheBust)
     } catch (err) {
       console.error(err)
     } finally {
@@ -359,11 +361,20 @@ export function ProfileForm({
             <label className="block text-sm font-medium text-stone-700 mb-2">
               Photo de profil
             </label>
-            <input type="hidden" name="avatar_url" value={avatarUrlState} />
+            <input 
+              type="hidden" 
+              name="avatar_url" 
+              value={avatarUrlState ? avatarUrlState.split('?')[0] : ''} 
+            />
             <div className="flex items-center gap-4">
               <div className="flex-shrink-0 w-16 h-16 rounded-xl overflow-hidden bg-stone-200 flex items-center justify-center">
                 {avatarUrlState ? (
-                  <img src={avatarUrlState} alt="Photo de profil" className="w-full h-full object-cover" />
+                  <img 
+                    src={avatarUrlState} 
+                    alt="Photo de profil" 
+                    className="w-full h-full object-cover"
+                    key={avatarUrlState}
+                  />
                 ) : (
                   <span className="text-2xl font-bold text-stone-400">?</span>
                 )}

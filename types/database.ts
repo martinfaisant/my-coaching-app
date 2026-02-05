@@ -70,3 +70,15 @@ export type CoachRequest = {
   created_at: string
   responded_at: string | null
 }
+
+export type CoachOffer = {
+  id: string
+  coach_id: string
+  title: string
+  description: string
+  price: number
+  price_type: 'one_time' | 'monthly'
+  display_order: number
+  created_at: string
+  updated_at: string
+}

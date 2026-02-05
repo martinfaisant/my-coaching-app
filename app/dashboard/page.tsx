@@ -178,7 +178,7 @@ export default async function DashboardPage() {
           <h1 className="text-lg font-semibold text-stone-900text-white">
             Tableau de bord
           </h1>
-          <ProfileMenu />
+          <ProfileMenu showOffersLink={current.profile.role === 'coach'} />
         </div>
       </header>
 
