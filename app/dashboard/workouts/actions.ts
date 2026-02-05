@@ -200,6 +200,35 @@ export async function getWorkoutsForDateRange(
   return { workouts: workouts ?? [] }
 }
 
+export async function getImportedActivitiesForDateRange(
+  athleteId: string,
+  startDate: string,
+  endDate: string
+) {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) return { error: 'Non connecté.', importedActivities: [] }
+
+  // Les activités importées (Strava, etc.) sont réservées à l'athlète : le coach ne peut pas y accéder.
+  if (user.id !== athleteId) {
+    return { importedActivities: [] }
+  }
+
+  const { data: importedActivities, error } = await supabase
+    .from('imported_activities')
+    .select('*')
+    .eq('athlete_id', athleteId)
+    .gte('date', startDate)
+    .lte('date', endDate)
+    .order('date')
+    .order('created_at')
+
+  if (error) return { error: error.message, importedActivities: [] }
+  return { importedActivities: importedActivities ?? [] }
+}
+
 export async function saveWorkoutComment(
   workoutId: string,
   athleteId: string,
