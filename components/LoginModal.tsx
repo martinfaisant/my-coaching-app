@@ -9,9 +9,10 @@ type LoginModalProps = {
   isOpen: boolean
   mode: AuthModalMode
   onClose: () => void
+  onModeChange?: (mode: AuthModalMode) => void
 }
 
-export function LoginModal({ isOpen, mode, onClose }: LoginModalProps) {
+export function LoginModal({ isOpen, mode, onClose, onModeChange }: LoginModalProps) {
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose()
@@ -41,30 +42,7 @@ export function LoginModal({ isOpen, mode, onClose }: LoginModalProps) {
         aria-hidden="true"
       />
       <div className="relative w-full max-w-md max-h-[90vh] overflow-y-auto bg-white rounded-xl shadow-xl border border-stone-100">
-        <div className="sticky top-0 flex justify-end p-3 bg-white rounded-t-xl z-10">
-          <button
-            type="button"
-            onClick={onClose}
-            className="p-2 rounded-lg text-stone-400 hover:text-stone-600 hover:bg-stone-50 transition-colors"
-            aria-label="Fermer"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M18 6 6 18" />
-              <path d="m6 6 12 12" />
-            </svg>
-          </button>
-        </div>
-        <LoginForm mode={mode} />
+        <LoginForm mode={mode} onModeChange={onModeChange} onClose={onClose} />
       </div>
     </div>
   )

@@ -102,6 +102,7 @@ export default function Home() {
         isOpen={modalOpen}
         mode={modalMode}
         onClose={() => setModalOpen(false)}
+        onModeChange={setModalMode}
       />
     </>
   )
