@@ -9,6 +9,7 @@ import {
   type WorkoutFormState,
   type CommentFormState,
 } from '@/app/dashboard/workouts/actions'
+import { PrimaryButton } from '@/components/PrimaryButton'
 import type { SportType, Workout } from '@/types/database'
 
 const SPORT_OPTIONS: { value: SportType; label: string }[] = [
@@ -223,13 +224,13 @@ export function WorkoutModal({
           )}
 
           {canEdit && (
-            <button
+            <PrimaryButton
               type="submit"
               disabled={!isValid}
-              className="w-full py-2.5 px-4 rounded-lg bg-palette-forest-dark text-white font-medium border-2 border-palette-olive hover:bg-palette-olive transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              fullWidth
             >
               {isEdit ? 'Enregistrer les modifications' : 'Enregistrer'}
-            </button>
+            </PrimaryButton>
           )}
         </form>
 

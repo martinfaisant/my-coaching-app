@@ -1,6 +1,7 @@
 'use client'
 
 import { useActionState, useRef, useEffect } from 'react'
+import { PrimaryButton } from '@/components/PrimaryButton'
 import { addGoal, deleteGoal, type GoalFormState } from './actions'
 import type { Goal } from '@/types/database'
 
@@ -101,12 +102,9 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
             {state.error || state.success}
           </p>
         )}
-        <button
-          type="submit"
-          className="mt-5 rounded-lg bg-palette-forest-dark px-4 py-2.5 text-sm font-medium text-white border-2 border-palette-olive hover:bg-palette-olive transition-colors"
-        >
+        <PrimaryButton type="submit" className="mt-5">
           Ajouter
-        </button>
+        </PrimaryButton>
       </form>
 
       <div className="overflow-hidden rounded-xl border-2 border-palette-forest-dark bg-white">

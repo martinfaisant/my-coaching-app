@@ -40,8 +40,10 @@ export default async function DashboardPage() {
 
     const myRequests = await getMyCoachRequests()
     const statusByCoach: Record<string, 'pending' | 'declined'> = {}
+    const requestIdByCoach: Record<string, string> = {}
     for (const r of myRequests) {
       if (statusByCoach[r.coach_id] === undefined) statusByCoach[r.coach_id] = r.status as 'pending' | 'declined'
+      if (r.status === 'pending') requestIdByCoach[r.coach_id] = r.id
     }
 
     const coachesForList = (coaches ?? [])
@@ -78,7 +80,7 @@ export default async function DashboardPage() {
               Aucun coach inscrit pour le moment. Revenez plus tard.
             </p>
           ) : (
-            <FindCoachSection coaches={coachesForList} statusByCoach={statusByCoach} />
+            <FindCoachSection coaches={coachesForList} statusByCoach={statusByCoach} requestIdByCoach={requestIdByCoach} />
           )}
         </main>
       </div>
@@ -118,7 +120,7 @@ export default async function DashboardPage() {
             <h1 className="text-lg font-semibold text-stone-900text-white">
               Mon calendrier d&apos;entraînement
             </h1>
-            <ProfileMenu showObjectifsLink />
+            <ProfileMenu showObjectifsLink showCoachLink />
           </div>
         </header>
 
@@ -143,6 +145,13 @@ export default async function DashboardPage() {
   if (current.profile.role === 'coach') {
     pendingRequests = await getPendingCoachRequests()
   }
+
+  const isCoachProfileComplete =
+    current.profile.role === 'coach' &&
+    (current.profile.full_name ?? '').trim() !== '' &&
+    (current.profile.coached_sports ?? []).length > 0 &&
+    (current.profile.languages ?? []).length > 0 &&
+    ((current.profile.presentation ?? '').trim() !== '')
 
   if (current.profile.role === 'admin') {
     const { data } = await supabase
@@ -173,21 +182,33 @@ export default async function DashboardPage() {
       </header>
 
       <main className="mx-auto max-w-5xl px-4 py-10">
-        <div className="rounded-xl border border-stone-200 bg-white p-6 mb-8">
-          <p className="text-sm text-stone-600">
-            Bonjour <strong className="text-stone-900 font-medium">{current.email}</strong>
-            {' '}({ROLE_LABELS[current.profile.role]}).
-          </p>
-
-          {current.profile.role === 'admin' && (
+        {current.profile.role === 'admin' && (
+          <div className="mb-8">
             <Link
               href="/admin/members"
-              className="mt-4 inline-flex items-center rounded-lg bg-palette-forest-dark px-4 py-2 text-sm font-medium text-white border-2 border-palette-olive hover:bg-palette-olive transition-colors"
+              className="inline-flex items-center rounded-lg bg-palette-forest-dark px-4 py-2 text-sm font-medium text-white border-2 border-palette-olive hover:bg-palette-olive transition-colors"
             >
               Gérer les membres et les rôles
             </Link>
-          )}
-        </div>
+          </div>
+        )}
+
+        {current.profile.role === 'coach' && !isCoachProfileComplete && (
+          <div className="rounded-xl border border-palette-olive/40 bg-section p-6 mb-8">
+            <p className="text-stone-800 font-medium mb-1">
+              Faites-vous connaître auprès des athlètes
+            </p>
+            <p className="text-sm text-stone-600 mb-4">
+              Complétez votre profil pour apparaître dans leurs recherches et recevoir vos premières demandes de coaching.
+            </p>
+            <Link
+              href="/dashboard/profile"
+              className="inline-flex items-center rounded-lg bg-palette-forest-dark px-4 py-2.5 text-sm font-medium text-white hover:bg-palette-olive transition-colors focus:outline-none focus:ring-2 focus:ring-palette-olive focus:ring-offset-2"
+            >
+              Compléter mon profil
+            </Link>
+          </div>
+        )}
 
         {current.profile.role === 'coach' && pendingRequests.length > 0 && (
           <section className="mb-8">
@@ -201,7 +222,7 @@ export default async function DashboardPage() {
               {pendingRequests.map((req) => (
                 <li
                   key={req.id}
-                  className="rounded-lg border border-stone-100 border-stone-200 bg-white p-4 flex flex-wrap items-start justify-between gap-4 hover:border-stone-300 transition-colors"
+                  className="rounded-lg border border-stone-200 bg-section p-4 flex flex-wrap items-start justify-between gap-4 hover:border-stone-300 transition-colors"
                 >
                   <div className="min-w-0 flex-1">
                     <p className="font-medium text-stone-900text-white">
@@ -245,7 +266,7 @@ export default async function DashboardPage() {
                   <li key={p.user_id}>
                     <Link
                       href={athleteHref}
-                      className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-stone-100 border-stone-200 bg-white p-4 hover:bg-stone-50hover:bg-stone-900 hover:border-stone-300 transition-colors group"
+                      className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-stone-200 bg-section p-4 hover:bg-stone-50 hover:border-stone-300 transition-colors group"
                     >
                       <div>
                         <p className="font-medium text-stone-900text-white">
@@ -276,7 +297,7 @@ export default async function DashboardPage() {
               return (
                 <li
                   key={p.user_id}
-                  className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-stone-100 border-stone-200 bg-white p-4"
+                  className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-stone-200 bg-section p-4"
                 >
                   <div>
                     <p className="font-medium text-stone-900text-white">{p.email}</p>

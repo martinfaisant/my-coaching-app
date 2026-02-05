@@ -9,6 +9,7 @@ import {
   type SignupState,
   type ResetPasswordState,
 } from '@/app/login/actions'
+import { PrimaryButton } from '@/components/PrimaryButton'
 import type { AuthModalMode } from './LoginModal'
 
 type SignupRole = 'athlete' | 'coach'
@@ -79,12 +80,9 @@ export function LoginForm({ mode }: LoginFormProps) {
               {loginState.error}
             </p>
           )}
-          <button
-            type="submit"
-            className="w-full py-2.5 px-4 rounded-lg bg-palette-forest-dark text-white font-medium hover:bg-palette-olive transition-colors"
-          >
+          <PrimaryButton type="submit" fullWidth>
             Se connecter
-          </button>
+          </PrimaryButton>
           <button
             type="button"
             onClick={() => setShowForgotPassword(true)}
@@ -190,12 +188,9 @@ export function LoginForm({ mode }: LoginFormProps) {
             {signupState.error}
           </p>
         )}
-        <button
-          type="submit"
-          className="w-full rounded-lg bg-palette-forest-dark px-4 py-3 text-sm font-medium text-white hover:bg-palette-olive transition-colors focus:outline-none focus:ring-2 focus:ring-palette-olive focus:ring-offset-2"
-        >
+        <PrimaryButton type="submit" fullWidth>
           S&apos;inscrire
-        </button>
+        </PrimaryButton>
       </form>
     </div>
   )
@@ -241,12 +236,9 @@ function ForgotPasswordForm({ onBack }: { onBack: () => void }) {
             {resetState.success}
           </p>
         )}
-        <button
-          type="submit"
-          className="w-full py-2.5 px-4 rounded-lg bg-palette-forest-dark text-white font-medium border-2 border-palette-olive hover:bg-palette-olive transition-colors"
-        >
+        <PrimaryButton type="submit" fullWidth>
           Envoyer le lien de réinitialisation
-        </button>
+        </PrimaryButton>
         <button
           type="button"
           onClick={onBack}

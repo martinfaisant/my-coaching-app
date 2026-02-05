@@ -7,9 +7,10 @@ import { createClient } from '@/utils/supabase/client'
 
 type ProfileMenuProps = {
   showObjectifsLink?: boolean
+  showCoachLink?: boolean
 }
 
-export function ProfileMenu({ showObjectifsLink = false }: ProfileMenuProps) {
+export function ProfileMenu({ showObjectifsLink = false, showCoachLink = false }: ProfileMenuProps) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
   const router = useRouter()
@@ -72,6 +73,15 @@ export function ProfileMenu({ showObjectifsLink = false }: ProfileMenuProps) {
               className="block px-4 py-2 text-sm text-stone-700 hover:bg-palette-olive/20 transition-colors"
             >
               Mes objectifs
+            </Link>
+          )}
+          {showCoachLink && (
+            <Link
+              href="/dashboard/coach"
+              onClick={() => setOpen(false)}
+              className="block px-4 py-2 text-sm text-stone-700 hover:bg-palette-olive/20 transition-colors"
+            >
+              Mon coach
             </Link>
           )}
           <button

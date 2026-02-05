@@ -2,6 +2,7 @@
 
 import { useState, useActionState, useEffect, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
+import { PrimaryButton } from '@/components/PrimaryButton'
 import { createClient } from '@/utils/supabase/client'
 import { updatePassword, type UpdatePasswordState } from './actions'
 
@@ -197,13 +198,9 @@ export function ResetPasswordForm() {
             {state.success}
           </p>
         )}
-        <button
-          type="submit"
-          disabled={isPending}
-          className="w-full py-2.5 px-4 rounded-lg bg-palette-forest-dark text-white font-medium border-2 border-palette-olive hover:bg-palette-olive transition-colors disabled:opacity-50"
-        >
+        <PrimaryButton type="submit" disabled={isPending} fullWidth>
           {isPending ? 'Enregistrement...' : 'Définir le nouveau mot de passe'}
-        </button>
+        </PrimaryButton>
       </form>
     </div>
   )
