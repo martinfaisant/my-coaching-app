@@ -44,6 +44,7 @@ export type CoachForList = {
   coached_sports: string[] | null
   languages: string[] | null
   presentation: string | null
+  avatar_url?: string | null
 }
 
 type FindCoachSectionProps = {
@@ -179,7 +180,13 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
               <div className="flex flex-col gap-4 flex-1 min-h-0">
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-3">
-                    <Avatar initials={getInitials(c.full_name ?? null, c.email)} />
+                    {c.avatar_url?.trim() ? (
+                      <div className="flex-shrink-0 w-9 h-9 rounded-xl overflow-hidden bg-stone-200">
+                        <img src={c.avatar_url} alt="" className="w-full h-full object-cover" />
+                      </div>
+                    ) : (
+                      <Avatar initials={getInitials(c.full_name ?? null, c.email)} />
+                    )}
                     <p className="font-medium text-stone-900">
                       {c.full_name?.trim() || c.email}
                     </p>
@@ -251,9 +258,18 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
               </button>
             </div>
             <div className="px-8 pb-8">
-              <h2 id="presentation-modal-title" className="text-xl font-semibold text-stone-900 mb-2">
-                Présentation — {presentationModalCoach.full_name?.trim() || presentationModalCoach.email}
-              </h2>
+              <div className="flex items-center gap-4 mb-4">
+                {(presentationModalCoach.avatar_url ?? '').trim() && (
+                  <img
+                    src={presentationModalCoach.avatar_url!}
+                    alt=""
+                    className="w-14 h-14 rounded-xl object-cover bg-stone-200 shrink-0"
+                  />
+                )}
+                <h2 id="presentation-modal-title" className="text-xl font-semibold text-stone-900">
+                  Présentation — {presentationModalCoach.full_name?.trim() || presentationModalCoach.email}
+                </h2>
+              </div>
               {(presentationModalCoach.coached_sports?.length ?? 0) > 0 && (
                 <p className="text-sm text-stone-600 mb-1">
                   <span className="font-medium">Sports :</span>{' '}

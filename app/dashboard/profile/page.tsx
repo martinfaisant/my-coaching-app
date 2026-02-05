@@ -30,6 +30,7 @@ export default async function ProfilePage() {
           email={current.email}
           fullName={current.profile.full_name ?? ''}
           role={current.profile.role}
+          avatarUrl={current.profile.avatar_url ?? ''}
           coachedSports={current.profile.coached_sports ?? []}
           languages={current.profile.languages ?? []}
           presentation={current.profile.presentation ?? ''}

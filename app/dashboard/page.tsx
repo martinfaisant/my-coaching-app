@@ -34,7 +34,7 @@ export default async function DashboardPage() {
   if (current.profile.role === 'athlete' && !current.profile.coach_id) {
     const { data: coaches } = await supabase
       .from('profiles')
-      .select('user_id, email, full_name, coached_sports, languages, presentation')
+      .select('user_id, email, full_name, coached_sports, languages, presentation, avatar_url')
       .eq('role', 'coach')
       .order('email')
 
@@ -61,6 +61,7 @@ export default async function DashboardPage() {
         coached_sports: c.coached_sports ?? null,
         languages: c.languages ?? null,
         presentation: c.presentation ?? null,
+        avatar_url: c.avatar_url ?? null,
       }))
 
     return (
