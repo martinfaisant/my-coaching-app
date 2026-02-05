@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useActionState } from 'react'
+import { useState, useActionState, useEffect, useRef } from 'react'
 import {
   login,
   signup,
@@ -16,13 +16,24 @@ type SignupRole = 'athlete' | 'coach'
 
 type LoginFormProps = {
   mode: AuthModalMode
+  onModeChange?: (mode: AuthModalMode) => void
+  onClose?: () => void
 }
 
-export function LoginForm({ mode }: LoginFormProps) {
+export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
   const [loginState, loginAction] = useActionState<LoginState, FormData>(login, {})
   const [signupState, signupAction] = useActionState<SignupState, FormData>(signup, {})
   const [signupRole, setSignupRole] = useState<SignupRole>('athlete')
   const [showForgotPassword, setShowForgotPassword] = useState(false)
+  const [prefilledEmail, setPrefilledEmail] = useState<string>('')
+  const emailInputRef = useRef<HTMLInputElement>(null)
+
+  // Pré-remplir l'email quand on bascule vers le mode login
+  useEffect(() => {
+    if (mode === 'login' && prefilledEmail && emailInputRef.current) {
+      emailInputRef.current.value = prefilledEmail
+    }
+  }, [mode, prefilledEmail])
 
   if (mode === 'login' && showForgotPassword) {
     return (
@@ -33,9 +44,37 @@ export function LoginForm({ mode }: LoginFormProps) {
   if (mode === 'login') {
     return (
       <div className="p-8">
-        <h2 id="modal-title" className="text-2xl font-semibold text-stone-900 text-center mb-2">
-          Se connecter
-        </h2>
+        <div className="flex items-start justify-between mb-2">
+          <div className="flex-1"></div>
+          <h2 id="modal-title" className="text-2xl font-semibold text-stone-900 flex-1 text-center whitespace-nowrap">
+            Se connecter
+          </h2>
+          <div className="flex-1 flex justify-end">
+            {onClose && (
+              <button
+                type="button"
+                onClick={onClose}
+                className="p-1.5 rounded-lg text-stone-400 hover:text-stone-600 hover:bg-stone-50 transition-colors -mt-1 -mr-1"
+                aria-label="Fermer"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M18 6 6 18" />
+                  <path d="m6 6 12 12" />
+                </svg>
+              </button>
+            )}
+          </div>
+        </div>
         <p className="text-white0 text-sm text-center mb-8">
           Entrez vos identifiants pour accéder à votre espace
         </p>
@@ -49,12 +88,14 @@ export function LoginForm({ mode }: LoginFormProps) {
               Email
             </label>
             <input
+              ref={emailInputRef}
               id="modal-email"
               name="email"
               type="email"
               autoComplete="email"
               required
               placeholder="vous@exemple.com"
+              defaultValue={prefilledEmail}
               className="w-full px-4 py-2.5 rounded-lg border border-stone-200border-stone-700 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition"
             />
           </div>
@@ -97,9 +138,37 @@ export function LoginForm({ mode }: LoginFormProps) {
 
   return (
     <div className="p-8">
-      <h2 id="modal-title" className="text-2xl font-semibold text-stone-900 text-center mb-2">
-        Créer un compte
-      </h2>
+      <div className="flex items-start justify-between mb-2">
+        <div className="flex-1"></div>
+        <h2 id="modal-title" className="text-2xl font-semibold text-stone-900 flex-1 text-center whitespace-nowrap">
+          Créer un compte
+        </h2>
+        <div className="flex-1 flex justify-end">
+          {onClose && (
+            <button
+              type="button"
+              onClick={onClose}
+              className="p-1.5 rounded-lg text-stone-400 hover:text-stone-600 hover:bg-stone-50 transition-colors -mt-1 -mr-1"
+              aria-label="Fermer"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M18 6 6 18" />
+                <path d="m6 6 12 12" />
+              </svg>
+            </button>
+          )}
+        </div>
+      </div>
       <p className="text-white0 text-sm text-center mb-8">
         Choisissez votre profil puis renseignez vos informations
       </p>
@@ -184,8 +253,32 @@ export function LoginForm({ mode }: LoginFormProps) {
           />
         </div>
         {signupState?.error && (
-          <p className="text-sm text-red-600text-red-400" role="alert">
-            {signupState.error}
+          <div className="space-y-3">
+            <p className="text-sm text-red-600text-red-400" role="alert">
+              {signupState.error}
+            </p>
+            {signupState.userExists && signupState.existingEmail && onModeChange && (
+              <div className="rounded-lg border border-stone-200 bg-stone-50 p-4">
+                <p className="text-sm text-stone-700 mb-3">
+                  Un compte existe déjà avec cet email. Souhaitez-vous vous connecter ?
+                </p>
+                <PrimaryButton
+                  type="button"
+                  onClick={() => {
+                    setPrefilledEmail(signupState.existingEmail || '')
+                    onModeChange('login')
+                  }}
+                  fullWidth
+                >
+                  Se connecter
+                </PrimaryButton>
+              </div>
+            )}
+          </div>
+        )}
+        {signupState?.success && (
+          <p className="text-sm text-palette-forest-dark" role="alert">
+            {signupState.success}
           </p>
         )}
         <PrimaryButton type="submit" fullWidth>
@@ -201,9 +294,35 @@ function ForgotPasswordForm({ onBack }: { onBack: () => void }) {
 
   return (
     <div className="p-8">
-      <h2 id="modal-title" className="text-2xl font-semibold text-stone-900 text-center mb-2">
-        Mot de passe oublié
-      </h2>
+      <div className="flex items-start justify-between mb-2">
+        <div className="flex-1"></div>
+        <h2 id="modal-title" className="text-2xl font-semibold text-stone-900 flex-1 text-center whitespace-nowrap">
+          Mot de passe oublié
+        </h2>
+        <div className="flex-1 flex justify-end">
+          <button
+            type="button"
+            onClick={onBack}
+            className="p-1.5 rounded-lg text-stone-400 hover:text-stone-600 hover:bg-stone-50 transition-colors -mt-1 -mr-1"
+            aria-label="Fermer"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M18 6 6 18" />
+              <path d="m6 6 12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
       <p className="text-white0 text-sm text-center mb-8">
         Entrez votre adresse email. Un lien de réinitialisation vous sera envoyé.
       </p>
