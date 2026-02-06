@@ -5,6 +5,11 @@ import { cookies } from 'next/headers'
 const STRAVA_TOKEN_URL = 'https://www.strava.com/oauth/token'
 
 function getOrigin(request: NextRequest): string {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? process.env.SITE_URL
+  if (appUrl) {
+    const base = appUrl.replace(/\/$/, '')
+    return base.startsWith('http') ? base : `https://${base}`
+  }
   const origin = request.nextUrl.origin
   if (origin && origin !== 'null') return origin
   const host = request.headers.get('x-forwarded-host') ?? request.headers.get('host')

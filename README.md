@@ -25,10 +25,11 @@ This project uses [`next/font`](https://nextjs.org/docs/app/building-your-applic
 Pour activer l’import d’activités depuis Strava :
 
 1. Créez une application sur [Strava API](https://www.strava.com/settings/api) et récupérez **Client ID** et **Client Secret**.
-2. Définissez **Authorization Callback Domain** sur le domaine de votre app (ex. `localhost:3000` en dev).
+2. Définissez **Authorization Callback Domain** sur le domaine de votre app : en local `localhost`, en production votre domaine exact (ex. `mon-app.vercel.app`). En cas d’erreur « redirect_uri invalid », ajoutez `NEXT_PUBLIC_APP_URL` (voir ci‑dessous).
 3. Dans `.env.local` :
    - `STRAVA_CLIENT_ID=votre_client_id`
    - `STRAVA_CLIENT_SECRET=votre_client_secret`
+   - (Si erreur redirect_uri) `NEXT_PUBLIC_APP_URL=https://votre-domaine.com` — doit correspondre au domaine enregistré dans Strava.
 4. Les athlètes peuvent aller dans **Profil → Mes appareils connectés** pour lier Strava et importer la dernière semaine d’activités dans le calendrier.
 
 ## Learn More
