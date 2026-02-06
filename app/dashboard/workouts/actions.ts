@@ -4,6 +4,51 @@ import { createClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
 import type { SportType } from '@/types/database'
 
+function parseWorkoutTargetParams(
+  sportType: SportType,
+  durationRaw: string,
+  distanceRaw: string,
+  elevationRaw: string
+): {
+  target_duration_minutes: number | null | undefined
+  target_distance_km: number | null | undefined
+  target_elevation_m: number | null | undefined
+} {
+  const duration = durationRaw ? parseInt(durationRaw, 10) : undefined
+  const distance = distanceRaw ? parseFloat(distanceRaw) : undefined
+  const elevation = elevationRaw ? parseInt(elevationRaw, 10) : undefined
+  const validDuration = duration != null && !Number.isNaN(duration) && duration > 0
+  const validDistance = distance != null && !Number.isNaN(distance) && distance > 0
+  const validElevation = elevation != null && !Number.isNaN(elevation) && elevation >= 0
+
+  if (sportType === 'musculation') {
+    return {
+      target_duration_minutes: validDuration ? duration : null,
+      target_distance_km: null,
+      target_elevation_m: null,
+    }
+  }
+  if (sportType === 'natation') {
+    return {
+      target_duration_minutes: validDuration ? duration : (validDistance ? null : undefined),
+      target_distance_km: validDistance ? distance : (validDuration ? null : undefined),
+      target_elevation_m: null,
+    }
+  }
+  if (sportType === 'course' || sportType === 'velo') {
+    return {
+      target_duration_minutes: validDuration ? duration : (validDistance ? null : undefined),
+      target_distance_km: validDistance ? distance : (validDuration ? null : undefined),
+      target_elevation_m: validElevation ? elevation : null,
+    }
+  }
+  return {
+    target_duration_minutes: null,
+    target_distance_km: null,
+    target_elevation_m: null,
+  }
+}
+
 export type WorkoutFormState = {
   error?: string
   success?: string
@@ -43,6 +88,9 @@ export async function createWorkout(
   const sportType = formData.get('sport_type') as SportType
   const title = (formData.get('title') as string)?.trim()
   const description = (formData.get('description') as string)?.trim()
+  const durationRaw = (formData.get('target_duration_minutes') as string)?.trim()
+  const distanceRaw = (formData.get('target_distance_km') as string)?.trim()
+  const elevationRaw = (formData.get('target_elevation_m') as string)?.trim()
 
   if (!date || !sportType || !title || !description) {
     return { error: 'Tous les champs sont obligatoires.' }
@@ -51,12 +99,25 @@ export async function createWorkout(
     return { error: 'Type de sport invalide.' }
   }
 
+  const { target_duration_minutes, target_distance_km, target_elevation_m } = parseWorkoutTargetParams(
+    sportType,
+    durationRaw,
+    distanceRaw,
+    elevationRaw
+  )
+  if (target_duration_minutes === undefined && target_distance_km === undefined) {
+    return { error: 'Indiquez un objectif (temps ou distance selon le sport).' }
+  }
+
   const { error } = await supabase.from('workouts').insert({
     athlete_id: athleteId,
     date,
     sport_type: sportType,
     title,
     description,
+    target_duration_minutes: target_duration_minutes ?? null,
+    target_distance_km: target_distance_km ?? null,
+    target_elevation_m: target_elevation_m ?? null,
   })
 
   if (error) return { error: error.message }
@@ -94,6 +155,9 @@ export async function updateWorkout(
   const sportType = formData.get('sport_type') as SportType
   const title = (formData.get('title') as string)?.trim()
   const description = (formData.get('description') as string)?.trim()
+  const durationRaw = (formData.get('target_duration_minutes') as string)?.trim()
+  const distanceRaw = (formData.get('target_distance_km') as string)?.trim()
+  const elevationRaw = (formData.get('target_elevation_m') as string)?.trim()
 
   if (!sportType || !title || !description) {
     return { error: 'Tous les champs sont obligatoires.' }
@@ -102,9 +166,26 @@ export async function updateWorkout(
     return { error: 'Type de sport invalide.' }
   }
 
+  const { target_duration_minutes, target_distance_km, target_elevation_m } = parseWorkoutTargetParams(
+    sportType,
+    durationRaw,
+    distanceRaw,
+    elevationRaw
+  )
+  if (target_duration_minutes === undefined && target_distance_km === undefined) {
+    return { error: 'Indiquez un objectif (temps ou distance selon le sport).' }
+  }
+
   const { error } = await supabase
     .from('workouts')
-    .update({ sport_type: sportType, title, description })
+    .update({
+      sport_type: sportType,
+      title,
+      description,
+      target_duration_minutes: target_duration_minutes ?? null,
+      target_distance_km: target_distance_km ?? null,
+      target_elevation_m: target_elevation_m ?? null,
+    })
     .eq('id', workoutId)
     .eq('athlete_id', athleteId)
 

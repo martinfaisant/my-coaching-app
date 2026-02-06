@@ -37,6 +37,12 @@ export type Workout = {
   sport_type: SportType
   title: string
   description: string
+  /** Objectif en minutes (temps). */
+  target_duration_minutes?: number | null
+  /** Objectif en km (distance). */
+  target_distance_km?: number | null
+  /** Dénivelé en m (facultatif, course / vélo). */
+  target_elevation_m?: number | null
   athlete_comment?: string | null
   athlete_comment_at?: string | null
   created_at: string
@@ -109,6 +115,8 @@ export type ImportedActivity = {
   sport_type: SportType
   title: string
   description: string
+  /** Type d'activité du service source (ex: Strava "Ride", "Run"). */
+  activity_type: string | null
   raw_data: Record<string, unknown> | null
   created_at: string
 }

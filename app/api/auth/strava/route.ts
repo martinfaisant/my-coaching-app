@@ -6,12 +6,17 @@ const STRAVA_AUTH_URL = 'https://www.strava.com/oauth/authorize'
 const SCOPES = 'activity:read_all'
 
 function getOrigin(request: NextRequest): string {
+  // Priorité à une URL explicite (doit correspondre au "Authorization Callback Domain" dans Strava)
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? process.env.SITE_URL
+  if (appUrl) {
+    const base = appUrl.replace(/\/$/, '')
+    return base.startsWith('http') ? base : `https://${base}`
+  }
   const origin = request.nextUrl.origin
   if (origin && origin !== 'null') return origin
   const host = request.headers.get('x-forwarded-host') ?? request.headers.get('host')
   const proto = request.headers.get('x-forwarded-proto') ?? 'https'
   if (host) return `${proto}://${host}`
-  // Vercel: deployment URL (sans protocole). Garantit un redirect_uri correct.
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`
   return ''
 }
@@ -32,7 +37,8 @@ export async function GET(request: NextRequest) {
     }
 
     const redirectUri = `${origin}/api/auth/strava/callback`
-    const state = crypto.randomUUID()
+    // Lier explicitement le state à l'utilisateur pour que le callback associe le token au bon user (multi-utilisateurs)
+    const state = `${user.id}:${crypto.randomUUID()}`
     const cookieStore = await cookies()
     cookieStore.set('strava_oauth_state', state, {
       httpOnly: true,

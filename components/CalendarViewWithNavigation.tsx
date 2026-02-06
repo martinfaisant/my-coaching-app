@@ -158,29 +158,29 @@ export function CalendarViewWithNavigation({
     <div>
       <div className="flex items-center justify-between w-full pb-2 mb-0 flex-wrap gap-2">
         {title != null ? <div className="flex-1 min-w-0">{title}</div> : <div className="flex-1" />}
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-3 bg-stone-100 p-1 rounded-lg shrink-0">
           <button
             type="button"
             onClick={() => handleNavigate(-1)}
             disabled={isAnimating}
-            className="rounded-lg border-2 border-palette-forest-dark p-2 text-stone-700 hover:bg-stone-50 transition-colors disabled:opacity-60 disabled:pointer-events-none"
+            className="p-1.5 hover:bg-white hover:text-[#627e59] rounded-md transition-all shadow-sm text-stone-500 disabled:opacity-60 disabled:pointer-events-none"
             aria-label="Semaine précédente"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="m15 18-6-6 6-6" />
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="m15 18-7-7 7-7" />
             </svg>
           </button>
-          <span className="text-sm font-medium text-stone-700 min-w-[10rem] text-center">
+          <span className="text-sm font-semibold text-stone-700 px-2 min-w-[140px] text-center">
             {dateRangeLabel}
           </span>
           <button
             type="button"
             onClick={() => handleNavigate(1)}
             disabled={isAnimating}
-            className="rounded-lg border-2 border-palette-forest-dark p-2 text-stone-700 hover:bg-stone-50 transition-colors disabled:opacity-60 disabled:pointer-events-none"
+            className="p-1.5 hover:bg-white hover:text-[#627e59] rounded-md transition-all shadow-sm text-stone-500 disabled:opacity-60 disabled:pointer-events-none"
             aria-label="Semaine suivante"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="m9 18 6-6-6-6" />
             </svg>
           </button>

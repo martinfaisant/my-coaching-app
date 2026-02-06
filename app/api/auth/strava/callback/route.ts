@@ -5,6 +5,11 @@ import { cookies } from 'next/headers'
 const STRAVA_TOKEN_URL = 'https://www.strava.com/oauth/token'
 
 function getOrigin(request: NextRequest): string {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? process.env.SITE_URL
+  if (appUrl) {
+    const base = appUrl.replace(/\/$/, '')
+    return base.startsWith('http') ? base : `https://${base}`
+  }
   const origin = request.nextUrl.origin
   if (origin && origin !== 'null') return origin
   const host = request.headers.get('x-forwarded-host') ?? request.headers.get('host')
@@ -40,6 +45,12 @@ export async function GET(request: NextRequest) {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
       return NextResponse.redirect(new URL('/login', origin))
+    }
+
+    // Vérifier que le state correspond à l'utilisateur connecté (1 token par utilisateur, pas de mélange)
+    const stateUserId = savedState.includes(':') ? savedState.slice(0, savedState.indexOf(':')) : ''
+    if (stateUserId !== user.id) {
+      return redirectToDevices('error=strava_invalid')
     }
 
     const clientId = process.env.STRAVA_CLIENT_ID
@@ -80,6 +91,7 @@ export async function GET(request: NextRequest) {
     const expiresAt = new Date(data.expires_at * 1000).toISOString()
     const stravaAthleteId = data.athlete?.id ?? null
 
+    // 1 utilisateur = 1 ligne (user_id + provider). Plusieurs utilisateurs = plusieurs lignes.
     const { error } = await supabase
       .from('athlete_connected_services')
       .upsert(

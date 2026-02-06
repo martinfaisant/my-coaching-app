@@ -127,6 +127,7 @@ export async function syncStravaLastWeek(userId: string): Promise<{ error?: stri
     distance?: number
     moving_time?: number
     total_elevation_gain?: number
+    description?: string | null
   }>
 
   let imported = 0
@@ -134,11 +135,8 @@ export async function syncStravaLastWeek(userId: string): Promise<{ error?: stri
     const startDate = a.start_date_local.slice(0, 10)
     const sportType = mapStravaTypeToSportType(a.sport_type || a.type)
     const title = (a.name || 'Activité').trim() || 'Sans titre'
-    const descParts: string[] = []
-    if (a.distance != null) descParts.push(`Distance: ${(a.distance / 1000).toFixed(1)} km`)
-    if (a.moving_time != null) descParts.push(`Temps: ${Math.round(a.moving_time / 60)} min`)
-    if (a.total_elevation_gain != null) descParts.push(`D+: ${Math.round(a.total_elevation_gain)} m`)
-    const description = descParts.join(' · ') || 'Importé depuis Strava'
+    // Pas de description synthétique : distance / temps / dénivelé sont dans raw_data et affichés en champs dédiés
+    const description = (a.description && String(a.description).trim()) || ''
 
     const { error: upsertErr } = await supabase
       .from('imported_activities')
@@ -151,7 +149,14 @@ export async function syncStravaLastWeek(userId: string): Promise<{ error?: stri
           sport_type: sportType,
           title,
           description,
-          raw_data: { type: a.type, sport_type: a.sport_type, distance: a.distance, moving_time: a.moving_time },
+          activity_type: (a.type && String(a.type).trim()) || null,
+          raw_data: {
+            type: a.type,
+            sport_type: a.sport_type,
+            distance: a.distance,
+            moving_time: a.moving_time,
+            total_elevation_gain: a.total_elevation_gain,
+          },
         },
         { onConflict: 'athlete_id,source,external_id' }
       )
