@@ -73,19 +73,19 @@ export default async function AthleteCalendarPage({ params }: PageProps) {
     .order('date', { ascending: true })
 
   return (
-    <div className="min-h-screen bg-stone-50bg-stone-950">
-      <header className="sticky top-0 z-40 border-b border-palette-forest-dark bg-white/80bg-stone-900/80 backdrop-blur-md">
+    <div className="min-h-screen bg-stone-50">
+      <header className="sticky top-0 z-40 border-b border-stone-200 bg-white/80 backdrop-blur-md">
         <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
           <Link
             href="/dashboard"
-            className="text-sm font-medium text-stone-600text-stone-400 hover:text-stone-900hover:text-white"
+            className="text-sm font-medium text-stone-600 hover:text-stone-900"
           >
             ← Tableau de bord
           </Link>
         </div>
       </header>
 
-      <main className="mx-auto max-w-5xl px-4 py-6">
+      <main className="mx-auto max-w-5xl px-4 py-6 pb-28">
         <CalendarViewWithNavigation
           athleteId={athleteId}
           athleteEmail={athleteProfile.email}
@@ -100,53 +100,65 @@ export default async function AthleteCalendarPage({ params }: PageProps) {
           }
         />
 
-        <section className="mt-8 rounded-xl border border-palette-forest-dark bg-white p-4">
-          <h2 className="text-lg font-semibold text-stone-900 mb-3">
-            Objectifs de l&apos;athlète
-          </h2>
-          {(goals?.length ?? 0) > 0 ? (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+        <section className="mt-8 bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden">
+          <div className="px-6 py-4 border-b border-stone-100 bg-stone-50/50 flex items-center gap-3">
+            <div className="p-2 bg-[#627e59]/10 rounded-full text-[#627e59]">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h2 className="text-lg font-bold text-stone-900">Objectifs de l&apos;athlète</h2>
+          </div>
+          <div className="overflow-x-auto">
+            {(goals?.length ?? 0) > 0 ? (
+              <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-stone-200border-stone-700 text-left text-stone-500">
-                    <th className="py-2 pr-4">Date</th>
-                    <th className="py-2 pr-4">Course</th>
-                    <th className="py-2 pr-4">Distance</th>
-                    <th className="py-2">Type</th>
+                  <tr className="text-xs font-semibold tracking-wide text-stone-500 uppercase border-b border-stone-100">
+                    <th className="px-6 py-4 bg-stone-50">Date</th>
+                    <th className="px-6 py-4 bg-stone-50 w-1/2">Course</th>
+                    <th className="px-6 py-4 bg-stone-50">Distance</th>
+                    <th className="px-6 py-4 bg-stone-50">Type</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-stone-100">
                   {(goals as Goal[]).map((g) => (
-                    <tr
-                      key={g.id}
-                      className="border-b border-stone-200 last:border-0"
-                    >
-                      <td className="py-2 pr-4 text-stone-700text-stone-300">
-                        {new Date(g.date).toLocaleDateString('fr-FR', {
+                    <tr key={g.id} className="hover:bg-stone-50/50 transition-colors">
+                      <td className="px-6 py-4 text-sm font-medium text-stone-900">
+                        {new Date(g.date + 'T12:00:00').toLocaleDateString('fr-FR', {
                           day: 'numeric',
-                          month: 'short',
+                          month: 'long',
                           year: 'numeric',
                         })}
                       </td>
-                      <td className="py-2 pr-4 text-stone-700text-stone-300">
+                      <td className="px-6 py-4 text-sm text-[#627e59] font-semibold">
                         {g.race_name}
                       </td>
-                      <td className="py-2 pr-4 text-stone-700text-stone-300">
+                      <td className="px-6 py-4 text-sm text-stone-600">
                         {g.distance}
                       </td>
-                      <td className="py-2 text-stone-600text-stone-400">
-                        {g.is_primary ? 'Principal' : 'Secondaire'}
+                      <td className="px-6 py-4">
+                        <span
+                          className={`inline-block px-2 py-1 text-xs font-bold rounded-full border ${
+                            g.is_primary
+                              ? 'text-[#627e59] bg-[#627e59]/10 border-[#627e59]/20'
+                              : 'text-[#8e9856] bg-[#8e9856]/10 border-[#8e9856]/20'
+                          }`}
+                        >
+                          {g.is_primary ? 'Principal' : 'Secondaire'}
+                        </span>
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-            </div>
-          ) : (
-            <p className="text-sm text-stone-500 py-2">
-              L&apos;athlète n&apos;a pas défini d&apos;objectif.
-            </p>
-          )}
+            ) : (
+              <div className="px-6 py-8">
+                <p className="text-sm text-stone-500">
+                  L&apos;athlète n&apos;a pas défini d&apos;objectif.
+                </p>
+              </div>
+            )}
+          </div>
         </section>
       </main>
     </div>
