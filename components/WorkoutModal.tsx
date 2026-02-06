@@ -134,7 +134,7 @@ export function WorkoutModal({
     >
       <div
         className="absolute inset-0 bg-palette-forest-dark/60bg-black/60 backdrop-blur-sm"
-        onClick={onClose}
+        onClick={() => onClose()}
         aria-hidden="true"
       />
       <div className="relative w-full max-w-md max-h-[90vh] overflow-y-auto rounded-2xl border border-2 border-palette-forest-dark bg-white shadow-2xl">
@@ -144,7 +144,7 @@ export function WorkoutModal({
           </h2>
           <button
             type="button"
-            onClick={onClose}
+            onClick={() => onClose()}
             className="p-2 rounded-xl text-white0 hover:text-stone-700 hover:bg-stone-100hover:bg-palette-olive transition"
             aria-label="Fermer"
           >
