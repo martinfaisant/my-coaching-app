@@ -32,7 +32,7 @@ function formatDateFr(dateStr: string): string {
 
 type WorkoutModalProps = {
   isOpen: boolean
-  onClose: () => void
+  onClose: (closedBySuccess?: boolean) => void
   date: string
   athleteId: string
   pathToRevalidate: string
@@ -110,15 +110,18 @@ export function WorkoutModal({
   const action = isEdit ? updateAction : createAction
 
   useEffect(() => {
-    if (state?.success) onClose()
-  }, [state?.success, onClose])
+    if (state?.success) onClose(true)
+    // onClose volontairement omis des deps pour éviter une boucle (référence change à chaque rendu du parent)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state?.success])
 
   useEffect(() => {
     if (commentState?.success) {
       setShowCommentForm(false)
-      onClose()
+      onClose(true)
     }
-  }, [commentState?.success, onClose])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [commentState?.success])
 
   if (!isOpen) return null
 
