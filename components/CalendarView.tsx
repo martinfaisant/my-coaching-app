@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import { WorkoutModal } from './WorkoutModal'
 import type { Workout, SportType, Goal, ImportedActivity } from '@/types/database'
 
@@ -99,9 +100,11 @@ export function CalendarView({
   onNavigate,
   hideFirstWeekTitle = false,
 }: CalendarViewProps) {
+  const router = useRouter()
   const [modalOpen, setModalOpen] = useState(false)
   const [modalDate, setModalDate] = useState<string>('')
   const [modalWorkout, setModalWorkout] = useState<Workout | null>(null)
+  const [workoutModalKey, setWorkoutModalKey] = useState(0)
   const [goalModalOpen, setGoalModalOpen] = useState(false)
   const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null)
   const [selectedImportedActivity, setSelectedImportedActivity] = useState<ImportedActivity | null>(null)
@@ -201,14 +204,21 @@ export function CalendarView({
     if (!canEdit || isPast) return
     setModalDate(dateStr)
     setModalWorkout(null)
+    setWorkoutModalKey((k) => k + 1)
     setModalOpen(true)
   }
 
   const openWorkout = (dateStr: string, workout: Workout) => {
     setModalDate(dateStr)
     setModalWorkout(workout)
+    setWorkoutModalKey((k) => k + 1)
     setModalOpen(true)
   }
+
+  const handleWorkoutModalClose = useCallback((closedBySuccess?: boolean) => {
+    setModalOpen(false)
+    if (closedBySuccess) router.refresh()
+  }, [router])
 
   return (
     <>
@@ -363,8 +373,9 @@ export function CalendarView({
       </div>
 
       <WorkoutModal
+        key={workoutModalKey}
         isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
+        onClose={handleWorkoutModalClose}
         date={modalDate}
         athleteId={athleteId}
         pathToRevalidate={pathToRevalidate}

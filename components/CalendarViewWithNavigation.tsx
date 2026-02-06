@@ -80,6 +80,15 @@ export function CalendarViewWithNavigation({
   const [slideEnd, setSlideEnd] = useState(false)
   const animatingRef = useRef(false)
 
+  // Après router.refresh(), réinjecter les données serveur quand le contenu change. Une seule clé primitive pour garder un tableau de deps de taille constante.
+  const serverDataKey = `${initialWorkouts.length}-${initialWorkouts[0]?.id ?? ''}-${initialWorkouts[initialWorkouts.length - 1]?.id ?? ''}|${initialImportedActivities.length}-${initialImportedActivities[0]?.id ?? ''}-${initialImportedActivities[initialImportedActivities.length - 1]?.id ?? ''}`
+  useEffect(() => {
+    setWorkouts(initialWorkouts)
+    setImportedActivities(initialImportedActivities)
+    // Dépendances volontairement limitées à une clé pour éviter boucle et taille de tableau variable.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [serverDataKey])
+
   useEffect(() => {
     const required = getSevenWeekRange(referenceMonday)
     const needsFetch =
