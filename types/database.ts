@@ -15,6 +15,7 @@ export type Profile = {
   languages?: string[] | null
   presentation?: string | null
   avatar_url?: string | null
+  postal_code?: string | null
 }
 
 export type SportType = 'course' | 'musculation' | 'natation' | 'velo'
