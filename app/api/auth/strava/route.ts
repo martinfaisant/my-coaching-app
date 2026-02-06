@@ -32,7 +32,8 @@ export async function GET(request: NextRequest) {
     }
 
     const redirectUri = `${origin}/api/auth/strava/callback`
-    const state = crypto.randomUUID()
+    // Lier explicitement le state à l'utilisateur pour que le callback associe le token au bon user (multi-utilisateurs)
+    const state = `${user.id}:${crypto.randomUUID()}`
     const cookieStore = await cookies()
     cookieStore.set('strava_oauth_state', state, {
       httpOnly: true,

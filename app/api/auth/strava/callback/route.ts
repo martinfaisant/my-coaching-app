@@ -42,6 +42,12 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(new URL('/login', origin))
     }
 
+    // Vérifier que le state correspond à l'utilisateur connecté (1 token par utilisateur, pas de mélange)
+    const stateUserId = savedState.includes(':') ? savedState.slice(0, savedState.indexOf(':')) : ''
+    if (stateUserId !== user.id) {
+      return redirectToDevices('error=strava_invalid')
+    }
+
     const clientId = process.env.STRAVA_CLIENT_ID
     const clientSecret = process.env.STRAVA_CLIENT_SECRET
     if (!clientId || !clientSecret) {
@@ -80,6 +86,7 @@ export async function GET(request: NextRequest) {
     const expiresAt = new Date(data.expires_at * 1000).toISOString()
     const stravaAthleteId = data.athlete?.id ?? null
 
+    // 1 utilisateur = 1 ligne (user_id + provider). Plusieurs utilisateurs = plusieurs lignes.
     const { error } = await supabase
       .from('athlete_connected_services')
       .upsert(
