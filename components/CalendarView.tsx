@@ -77,7 +77,10 @@ function formatWorkoutTarget(w: Workout): { primary: string; secondary?: string;
     return { primary, secondary: undefined, hasDistance: false }
   }
   if (w.target_distance_km != null && w.target_distance_km > 0) {
-    const primary = `${Number(w.target_distance_km) % 1 === 0 ? w.target_distance_km : (w.target_distance_km as number).toFixed(1)} km`
+    const primary =
+      w.sport_type === 'natation'
+        ? `${Math.round(w.target_distance_km * 1000)} m`
+        : `${Number(w.target_distance_km) % 1 === 0 ? w.target_distance_km : (w.target_distance_km as number).toFixed(1)} km`
     const secondary =
       w.target_elevation_m != null && w.target_elevation_m > 0 ? `${w.target_elevation_m}m D+` : undefined
     return { primary, secondary, hasDistance: true }
@@ -209,7 +212,7 @@ export function CalendarView({
     startMonday.setDate(startMonday.getDate() - 7)
 
     const MONTHS_FR = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre']
-    const weeks: { label: string; monthLabel: string; rangeLabel: string; isCurrentWeek: boolean; days: { dateStr: string; label: string; dayName: string; isToday: boolean; isPast: boolean }[] }[] = []
+    const weeks: { label: string; monthLabel: string; rangeLabel: string; isCurrentWeek: boolean; days: { dateStr: string; label: string; dayName: string; isToday: boolean; isTomorrow: boolean; isPast: boolean }[] }[] = []
     
     const todayMonday = getWeekMonday(today)
 
@@ -236,13 +239,17 @@ export function CalendarView({
         weekLabel = diffWeeks === 1 ? `Semaine suivante (${rangeLabel})` : `Dans ${diffWeeks} semaines`
       }
 
-      const days: { dateStr: string; label: string; dayName: string; isToday: boolean; isPast: boolean }[] = []
+      const days: { dateStr: string; label: string; dayName: string; isToday: boolean; isTomorrow: boolean; isPast: boolean }[] = []
       const todayStr = toDateStr(today)
+      const tomorrowDate = new Date(today)
+      tomorrowDate.setDate(tomorrowDate.getDate() + 1)
+      const tomorrowStr = toDateStr(tomorrowDate)
       for (let d = 0; d < 7; d++) {
         const day = new Date(weekStart)
         day.setDate(day.getDate() + d)
         const dateStr = toDateStr(day)
         const isToday = todayStr === dateStr
+        const isTomorrow = tomorrowStr === dateStr
         const isPast = dateStr < todayStr
         const dayIndex = (day.getDay() + 6) % 7
         days.push({
@@ -250,6 +257,7 @@ export function CalendarView({
           label: day.getDate().toString(),
           dayName: DAY_NAMES[dayIndex],
           isToday,
+          isTomorrow,
           isPast,
         })
       }
@@ -303,7 +311,11 @@ export function CalendarView({
 
   const handleWorkoutModalClose = useCallback((closedBySuccess?: boolean) => {
     setModalOpen(false)
-    if (closedBySuccess) router.refresh()
+    if (closedBySuccess) {
+      // Court délai pour laisser le navigateur appliquer les cookies mis à jour par la Server Action
+      // avant le refresh, évitant une déconnexion (session perdue sur la requête de refresh).
+      setTimeout(() => router.refresh(), 150)
+    }
   }, [router])
 
   const renderCompactCard = (w: Workout, dateStr: string) => {
@@ -432,71 +444,107 @@ export function CalendarView({
                     const firstImported = dayImported[0]
                     const isEmpty = !firstWorkout && !firstImported
                     const showAddInCondensed = wi === 2 && canEdit && !day.isPast && isEmpty
+                    const showAddAtBottom = wi === 2 && canEdit && !day.isPast && !isEmpty
                     return (
                       <div
                         key={day.dateStr}
                         onClick={showAddInCondensed ? () => openDay(day.dateStr, day.isPast) : undefined}
                         role={showAddInCondensed ? 'button' : undefined}
-                        className={`h-24 rounded-lg border border-stone-200 p-1.5 ${
+                        className={`h-24 rounded-lg border border-stone-200 p-1.5 flex flex-col min-h-0 ${
                           showAddInCondensed
-                            ? 'border-2 border-dashed border-stone-300 flex items-center justify-center cursor-pointer hover:border-[#627e59] hover:bg-[#627e59]/5 transition-all group'
+                            ? 'border-2 border-dashed border-stone-300 justify-center items-center cursor-pointer hover:border-[#627e59] hover:bg-[#627e59]/5 transition-all group'
                             : isEmpty
                               ? 'bg-stone-100/50'
                               : 'bg-white shadow-sm'
                         }`}
                       >
-                        {firstWorkout && renderCompactCard(firstWorkout, day.dateStr)}
-                        {!firstWorkout && firstImported && (() => {
-                          const target = formatImportedActivityTarget(firstImported)
-                          return (
+                        {showAddAtBottom ? (
+                          <>
+                            <div className="min-h-0 overflow-hidden shrink-0">
+                              {firstWorkout && renderCompactCard(firstWorkout, day.dateStr)}
+                              {!firstWorkout && firstImported && (() => {
+                                const target = formatImportedActivityTarget(firstImported)
+                                return (
+                                  <div
+                                    onClick={(e) => { e.stopPropagation(); setSelectedImportedActivity(firstImported) }}
+                                    className="bg-white rounded border-l-4 border-[#FC4C02] h-full p-1.5 flex flex-col justify-between cursor-pointer training-card w-full"
+                                    role="button"
+                                  >
+                                    <div>
+                                      <div className="inline-flex items-center gap-1 align-middle">
+                                        <img src="/strava-icon.svg" alt="" className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                                        <span className="text-[9px] font-bold uppercase text-[#FC4C02] bg-orange-100 px-1 py-0.5 rounded leading-none">
+                                          {getImportedActivityTypeLabel(firstImported)}
+                                        </span>
+                                      </div>
+                                      <div className="text-xs font-semibold text-stone-700 mt-1 truncate">{firstImported.title}</div>
+                                    </div>
+                                    {target.primary && (
+                                      <div className="flex items-center gap-1 text-[10px] text-stone-400 font-medium">
+                                        {target.hasDistance ? (
+                                          <><MapIcon /><span>{target.primary}</span>{target.secondary && <><span className="w-px h-2.5 bg-stone-300" /><MountainIcon /><span>{target.secondary}</span></>}</>
+                                        ) : (
+                                          <><ClockIcon /><span>{target.primary}</span></>
+                                        )}
+                                      </div>
+                                    )}
+                                  </div>
+                                )
+                              })()}
+                            </div>
                             <div
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                setSelectedImportedActivity(firstImported)
-                              }}
-                              className="bg-white rounded border-l-4 border-[#FC4C02] h-full p-1.5 flex flex-col justify-between cursor-pointer training-card w-full"
+                              className="shrink-0 w-full flex justify-center pt-1"
+                              onClick={(e) => { e.stopPropagation(); openDay(day.dateStr, day.isPast) }}
                               role="button"
+                              aria-label="Ajouter un entraînement"
                             >
-                              <div>
-                                <div className="inline-flex items-center gap-1 align-middle">
-                                  <img src="/strava-icon.svg" alt="" className="h-3.5 w-3.5 shrink-0" aria-hidden />
-                                  <span className="text-[9px] font-bold uppercase text-[#FC4C02] bg-orange-100 px-1 py-0.5 rounded leading-none">
-                                    {getImportedActivityTypeLabel(firstImported)}
-                                  </span>
-                                </div>
-                                <div className="text-xs font-semibold text-stone-700 mt-1 truncate">{firstImported.title}</div>
+                              <div className="w-6 h-6 rounded-full bg-white border border-stone-300 flex items-center justify-center text-stone-400 hover:text-white hover:bg-[#627e59] hover:border-[#627e59] transition-all cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+                                </svg>
                               </div>
-                              {target.primary && (
-                                <div className="flex items-center gap-1 text-[10px] text-stone-400 font-medium">
-                                  {target.hasDistance ? (
-                                    <>
-                                      <MapIcon />
-                                      <span>{target.primary}</span>
-                                      {target.secondary && (
-                                        <>
-                                          <span className="w-px h-2.5 bg-stone-300" />
-                                          <MountainIcon />
-                                          <span>{target.secondary}</span>
-                                        </>
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            {firstWorkout && renderCompactCard(firstWorkout, day.dateStr)}
+                            {!firstWorkout && firstImported && (() => {
+                              const target = formatImportedActivityTarget(firstImported)
+                              return (
+                                <div
+                                  onClick={(e) => { e.stopPropagation(); setSelectedImportedActivity(firstImported) }}
+                                  className="bg-white rounded border-l-4 border-[#FC4C02] h-full p-1.5 flex flex-col justify-between cursor-pointer training-card w-full"
+                                  role="button"
+                                >
+                                  <div>
+                                    <div className="inline-flex items-center gap-1 align-middle">
+                                      <img src="/strava-icon.svg" alt="" className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                                      <span className="text-[9px] font-bold uppercase text-[#FC4C02] bg-orange-100 px-1 py-0.5 rounded leading-none">
+                                        {getImportedActivityTypeLabel(firstImported)}
+                                      </span>
+                                    </div>
+                                    <div className="text-xs font-semibold text-stone-700 mt-1 truncate">{firstImported.title}</div>
+                                  </div>
+                                  {target.primary && (
+                                    <div className="flex items-center gap-1 text-[10px] text-stone-400 font-medium">
+                                      {target.hasDistance ? (
+                                        <><MapIcon /><span>{target.primary}</span>{target.secondary && <><span className="w-px h-2.5 bg-stone-300" /><MountainIcon /><span>{target.secondary}</span></>}</>
+                                      ) : (
+                                        <><ClockIcon /><span>{target.primary}</span></>
                                       )}
-                                    </>
-                                  ) : (
-                                    <>
-                                      <ClockIcon />
-                                      <span>{target.primary}</span>
-                                    </>
+                                    </div>
                                   )}
                                 </div>
-                              )}
-                            </div>
-                          )
-                        })()}
-                        {showAddInCondensed && (
-                          <div className="w-8 h-8 rounded-full bg-white border border-stone-300 flex items-center justify-center text-stone-300 shadow-sm group-hover:text-white group-hover:bg-[#627e59] group-hover:border-[#627e59] transition-all transform group-hover:scale-110">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
-                            </svg>
-                          </div>
+                              )
+                            })()}
+                            {showAddInCondensed && (
+                              <div className="w-8 h-8 rounded-full bg-white border border-stone-300 flex items-center justify-center text-stone-300 shadow-sm group-hover:text-white group-hover:bg-[#627e59] group-hover:border-[#627e59] transition-all transform group-hover:scale-110">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+                                </svg>
+                              </div>
+                            )}
+                          </>
                         )}
                       </div>
                     )
@@ -539,6 +587,7 @@ export function CalendarView({
                         >
                           {hasContent ? (
                             <>
+                              <div className="min-h-0 flex flex-col gap-3 overflow-y-auto shrink-0">
                               {dayGoals.map((g) => (
                                 <div
                                   key={g.id}
@@ -606,11 +655,26 @@ export function CalendarView({
                                 )
                               })}
                               {dayWorkouts.map((w) => renderDetailedCard(w, day.dateStr))}
+                              </div>
+                              {canAddWorkout && (
+                                <div
+                                  className="shrink-0 w-full flex justify-center pt-1"
+                                  onClick={(e) => { e.stopPropagation(); openDay(day.dateStr, day.isPast) }}
+                                  role="button"
+                                  aria-label="Ajouter un entraînement"
+                                >
+                                  <div className="w-10 h-10 rounded-full bg-white border border-stone-300 flex items-center justify-center text-stone-400 shadow-sm hover:text-white hover:bg-[#627e59] hover:border-[#627e59] transition-all transform hover:scale-110 cursor-pointer">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+                                    </svg>
+                                  </div>
+                                </div>
+                              )}
                             </>
                           ) : canAddWorkout ? (
                             <div className="flex-1 flex items-center justify-center min-h-[200px]">
-                              <div className="w-12 h-12 rounded-full bg-white border border-stone-300 flex items-center justify-center text-stone-300 shadow-sm group-hover:text-white group-hover:bg-[#627e59] group-hover:border-[#627e59] transition-all transform group-hover:scale-110">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <div className="w-10 h-10 rounded-full bg-white border border-stone-300 flex items-center justify-center text-stone-300 shadow-sm group-hover:text-white group-hover:bg-[#627e59] group-hover:border-[#627e59] transition-all transform group-hover:scale-110">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
                                 </svg>
                               </div>

@@ -35,6 +35,17 @@ input[type="checkbox"] {
   accent-color: var(--palette-forest-dark);
 }
 
+/* Masquer les flèches des champs number (temps, distance, dénivelé) */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
 /* Palette de couleurs personnalisée */
 .bg-palette-forest-dark { background-color: #627e59; }
 .bg-palette-olive { background-color: #8e9856; }

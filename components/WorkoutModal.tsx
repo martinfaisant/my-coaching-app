@@ -1,23 +1,24 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import { createPortal } from 'react-dom'
 import { useActionState } from 'react'
 import {
   createWorkout,
   updateWorkout,
+  deleteWorkout,
   saveWorkoutComment,
   type WorkoutFormState,
   type CommentFormState,
 } from '@/app/dashboard/workouts/actions'
-import { PrimaryButton } from '@/components/PrimaryButton'
 import type { SportType, Workout } from '@/types/database'
 
-const SPORT_OPTIONS: { value: SportType; label: string }[] = [
-  { value: 'course', label: 'Course' },
-  { value: 'musculation', label: 'Musculation' },
-  { value: 'natation', label: 'Natation' },
-  { value: 'velo', label: 'Vélo' },
+/** Options type de sport avec emoji (aligné page infos coach / profil). */
+const SPORT_OPTIONS: { value: SportType; label: string; emoji: string }[] = [
+  { value: 'course', label: 'Course', emoji: '🏃' },
+  { value: 'velo', label: 'Vélo', emoji: '🚴' },
+  { value: 'natation', label: 'Natation', emoji: '🏊' },
+  { value: 'musculation', label: 'Musculation', emoji: '💪' },
 ]
 
 /** Course et vélo : choix temps ou distance + dénivelé facultatif. Musculation : temps. Natation : temps ou distance. */
@@ -60,8 +61,13 @@ export function WorkoutModal({
   const [targetDurationMinutes, setTargetDurationMinutes] = useState<string>('')
   const [targetDistanceKm, setTargetDistanceKm] = useState<string>('')
   const [targetElevationM, setTargetElevationM] = useState<string>('')
-  const [showCommentForm, setShowCommentForm] = useState(false)
   const [commentText, setCommentText] = useState('')
+  const [commentSaveStatus, setCommentSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
+  const [commentSaveMessage, setCommentSaveMessage] = useState<string | null>(null)
+  const commentDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const lastSavedCommentRef = useRef<string | null>(null)
+  const [deleteLoading, setDeleteLoading] = useState(false)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
 
   const isEdit = !!workout
   const hasTimeDistanceChoice = sportType === 'course' || sportType === 'velo' || sportType === 'natation'
@@ -71,7 +77,6 @@ export function WorkoutModal({
   const isValid =
     sportType &&
     title.trim() &&
-    description.trim() &&
     (isTimeOnly
       ? targetDurationMinutes.trim() !== '' && Number(targetDurationMinutes) > 0
       : targetMode === 'time'
@@ -100,26 +105,14 @@ export function WorkoutModal({
       setTargetElevationM('')
       setCommentText('')
     }
-    if (!isOpen) setShowCommentForm(false)
+    if (!isOpen) {
+      setDeleteError(null)
+    }
   }, [workout, isOpen])
 
   useEffect(() => {
     if (sportType === 'musculation') setTargetMode('time')
   }, [sportType])
-
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose()
-    }
-    if (isOpen) {
-      document.addEventListener('keydown', handleEscape)
-      document.body.style.overflow = 'hidden'
-    }
-    return () => {
-      document.removeEventListener('keydown', handleEscape)
-      document.body.style.overflow = ''
-    }
-  }, [isOpen, onClose])
 
   const [createState, createAction] = useActionState<WorkoutFormState, FormData>(
     (_, fd) => createWorkout(athleteId, pathToRevalidate, {}, fd),
@@ -132,13 +125,19 @@ export function WorkoutModal({
         : Promise.resolve({}),
     {}
   )
-  const [commentState, commentAction] = useActionState<CommentFormState, FormData>(
-    (_, fd) =>
-      workout
-        ? saveWorkoutComment(workout.id, athleteId, pathToRevalidate, {}, fd)
-        : Promise.resolve({}),
-    {}
-  )
+  const handleDelete = async () => {
+    if (!workout || !canEdit) return
+    if (!confirm('Supprimer cet entraînement ? Cette action est irréversible.')) return
+    setDeleteError(null)
+    setDeleteLoading(true)
+    const result = await deleteWorkout(workout.id, athleteId, pathToRevalidate)
+    setDeleteLoading(false)
+    if (result.error) {
+      setDeleteError(result.error)
+      return
+    }
+    onClose(true)
+  }
 
   const state = isEdit ? updateState : createState
   const action = isEdit ? updateAction : createAction
@@ -149,13 +148,80 @@ export function WorkoutModal({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state?.success])
 
-  useEffect(() => {
-    if (commentState?.success) {
-      setShowCommentForm(false)
-      onClose(true)
+  // Auto-save du commentaire pour l'athlète (debounce 800 ms)
+  const saveCommentOnFly = useCallback(async () => {
+    if (!workout || canEdit) return
+    const value = commentText.trim()
+    if (value === (lastSavedCommentRef.current ?? '')) return
+    setCommentSaveStatus('saving')
+    setCommentSaveMessage(null)
+    const fd = new FormData()
+    fd.set('comment', commentText)
+    const result = await saveWorkoutComment(workout.id, athleteId, pathToRevalidate, {}, fd)
+    if (result.error) {
+      setCommentSaveStatus('error')
+      setCommentSaveMessage(result.error)
+    } else {
+      lastSavedCommentRef.current = value
+      setCommentSaveStatus('saved')
+      setCommentSaveMessage(null)
+      setTimeout(() => setCommentSaveStatus('idle'), 2000)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [commentState?.success])
+  }, [workout, canEdit, commentText, athleteId, pathToRevalidate])
+
+  // À la fermeture : sauvegarder tout de suite le commentaire s'il y a des changements non enregistrés (athlète)
+  const handleClose = useCallback(() => {
+    const doClose = () => onClose()
+
+    if (!workout || canEdit) {
+      doClose()
+      return
+    }
+    const current = commentText.trim()
+    const saved = lastSavedCommentRef.current ?? ''
+    if (current === saved) {
+      doClose()
+      return
+    }
+    if (commentDebounceRef.current) {
+      clearTimeout(commentDebounceRef.current)
+      commentDebounceRef.current = null
+    }
+    const fd = new FormData()
+    fd.set('comment', commentText)
+    saveWorkoutComment(workout.id, athleteId, pathToRevalidate, {}, fd).then(() => {
+      doClose()
+    }).catch(() => {
+      doClose()
+    })
+  }, [workout, canEdit, commentText, athleteId, pathToRevalidate, onClose])
+
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') handleClose()
+    }
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape)
+      document.body.style.overflow = 'hidden'
+    }
+    return () => {
+      document.removeEventListener('keydown', handleEscape)
+      document.body.style.overflow = ''
+    }
+  }, [isOpen, handleClose])
+
+  useEffect(() => {
+    if (!workout) lastSavedCommentRef.current = null
+    else if (lastSavedCommentRef.current === null) lastSavedCommentRef.current = workout.athlete_comment ?? ''
+  }, [workout])
+
+  useEffect(() => {
+    if (!workout || canEdit) return
+    commentDebounceRef.current = setTimeout(saveCommentOnFly, 800)
+    return () => {
+      if (commentDebounceRef.current) clearTimeout(commentDebounceRef.current)
+    }
+  }, [workout, canEdit, commentText, saveCommentOnFly])
 
   useEffect(() => {
     if (isOpen) {
@@ -176,6 +242,7 @@ export function WorkoutModal({
 
   if (!isOpen) return null
 
+  /* Structure identique au bloc "Objectifs de l'athlète" du HTML de référence */
   const modalContent = (
     <div
       className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
@@ -185,19 +252,27 @@ export function WorkoutModal({
       style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
     >
       <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-        onClick={() => onClose()}
+        className="absolute inset-0 bg-stone-900/40 backdrop-blur-sm"
+        onClick={() => handleClose()}
         aria-hidden="true"
       />
-      <div className="relative w-full max-w-md max-h-[calc(100vh-2rem)] flex flex-col rounded-2xl border-2 border-palette-forest-dark bg-white shadow-2xl">
-        <div className="shrink-0 flex items-center justify-between p-4 border-b border-stone-200 bg-white rounded-t-2xl">
-          <h2 id="workout-modal-title" className="text-lg font-semibold text-stone-900">
-            {isEdit ? 'Modifier l\'entraînement' : 'Nouvel entraînement'}
-          </h2>
+      <div className="relative w-full max-w-md max-h-[calc(100vh-2rem)] flex flex-col bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden">
+        {/* En-tête comme dans le HTML : px-6 py-4 border-b border-stone-100 bg-stone-50/50 + icône check + titre */}
+        <div className="shrink-0 px-6 py-4 border-b border-stone-100 bg-stone-50/50 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="p-2 bg-[#627e59]/10 rounded-full text-[#627e59]">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h2 id="workout-modal-title" className="text-lg font-bold text-stone-900 truncate">
+              {isEdit ? (canEdit ? 'Modifier l\'entraînement' : 'Votre entraînement') : 'Nouvel entraînement'}
+            </h2>
+          </div>
           <button
             type="button"
-            onClick={() => onClose()}
-            className="p-2 rounded-xl text-stone-600 hover:text-stone-700 hover:bg-stone-100 transition"
+            onClick={() => handleClose()}
+            className="shrink-0 p-2 rounded-lg text-stone-500 hover:text-stone-700 hover:bg-stone-200/80 transition-colors"
             aria-label="Fermer"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -210,56 +285,82 @@ export function WorkoutModal({
           <input type="hidden" name="date" value={date} />
           {isEdit && <input type="hidden" name="workout_id" value={workout.id} />}
 
-          <div className="flex-1 overflow-y-auto p-6 space-y-5 min-h-0">
-          <p className="text-sm text-stone-600">
+          <div className="flex-1 overflow-y-auto min-h-0">
+          <div className="px-6 py-4 space-y-5">
+          <p className="text-sm font-medium text-stone-600">
             {formatDateFr(date)}
           </p>
 
           <div>
-            <label htmlFor="sport_type" className="block text-sm font-medium text-stone-700 mb-2">
-              Type de sport
-            </label>
-            <select
-              id="sport_type"
-              name="sport_type"
-              value={sportType}
-              onChange={(e) => setSportType(e.target.value as SportType)}
-              required
-              disabled={!canEdit}
-              className="w-full px-4 py-2.5 rounded-lg border-2 border-stone-200 bg-white text-stone-900 focus:outline-none focus:ring-2 focus:ring-palette-olive focus:border-transparent transition disabled:opacity-60"
-            >
-              {SPORT_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
+            {canEdit && (
+              <span className="block text-sm font-medium text-stone-700 mb-2">
+                Type de sport
+              </span>
+            )}
+            <input type="hidden" name="sport_type" value={sportType} />
+            {canEdit ? (
+              <div className="grid grid-cols-4 gap-2" role="group" aria-label="Type de sport">
+                {SPORT_OPTIONS.map((opt) => {
+                  const selected = sportType === opt.value
+                  return (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => setSportType(opt.value)}
+                      className={`flex flex-col items-center justify-center gap-1 rounded-xl border-2 py-3 px-2 transition text-center min-h-[72px] ${
+                        selected
+                          ? 'border-[#627e59] bg-[#627e59]/10 text-[#627e59] font-semibold'
+                          : 'border-stone-200 bg-white text-stone-600 hover:border-stone-300 hover:bg-stone-50'
+                      }`}
+                    >
+                      <span className="text-2xl leading-none" aria-hidden>{opt.emoji}</span>
+                      <span className="text-xs font-medium">{opt.label}</span>
+                    </button>
+                  )
+                })}
+              </div>
+            ) : (
+              (() => {
+                const opt = SPORT_OPTIONS.find((o) => o.value === sportType)
+                if (!opt) return null
+                return (
+                  <div className="flex flex-col items-center justify-center gap-1 rounded-xl border-2 border-[#627e59] bg-[#627e59]/10 text-[#627e59] font-semibold py-3 px-4 min-h-[72px] w-fit">
+                    <span className="text-2xl leading-none" aria-hidden>{opt.emoji}</span>
+                    <span className="text-xs font-medium">{opt.label}</span>
+                  </div>
+                )
+              })()
+            )}
           </div>
 
-          {/* Paramètres cible selon le sport (coach) ou affichage (lecture) */}
+          {/* Objectif de la séance — style ai_studio_code (14) : bloc stone-50, toggle Temps/Distance, input avec icône */}
           {(canEdit || (workout && (workout.target_duration_minutes != null || workout.target_distance_km != null))) && (
-            <div className="space-y-4 rounded-xl border border-stone-200 bg-stone-50/50 p-4">
-              <p className="text-sm font-medium text-stone-700">
-                Objectif
-              </p>
+            <div className="bg-stone-50 p-4 rounded-xl border border-stone-100">
+              <label className="block text-xs font-bold text-stone-500 uppercase tracking-wide mb-3">
+                Objectif de la séance
+              </label>
+
               {!canEdit && workout && (workout.target_duration_minutes != null || workout.target_distance_km != null) && (
                 <p className="text-sm text-stone-600">
                   {workout.target_duration_minutes != null && workout.target_duration_minutes > 0 && (
                     <span>{workout.target_duration_minutes} min</span>
                   )}
                   {workout.target_distance_km != null && workout.target_distance_km > 0 && (
-                    <span>{workout.target_duration_minutes != null && workout.target_duration_minutes > 0 ? ' · ' : ''}{workout.target_distance_km} km</span>
+                    <span>{workout.target_duration_minutes != null && workout.target_duration_minutes > 0 ? ' · ' : ''}{workout.sport_type === 'natation' ? `${Math.round(workout.target_distance_km * 1000)} m` : `${workout.target_distance_km} km`}</span>
                   )}
                   {workout.target_elevation_m != null && workout.target_elevation_m > 0 && (
                     <span> · {workout.target_elevation_m} m D+</span>
                   )}
                 </p>
               )}
+
               {canEdit && isTimeOnly && (
-                <div>
-                  <label htmlFor="target_duration_musc" className="block text-xs text-stone-600 mb-1">
-                    Durée (minutes)
-                  </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
                   <input
                     id="target_duration_musc"
                     name="target_duration_minutes"
@@ -267,45 +368,41 @@ export function WorkoutModal({
                     min={1}
                     value={targetDurationMinutes}
                     onChange={(e) => setTargetDurationMinutes(e.target.value)}
-                    disabled={!canEdit}
-                    placeholder="Ex. 60"
-                    className="w-full max-w-[120px] px-3 py-2 rounded-lg border border-stone-200 bg-white text-stone-900"
+                    placeholder="45"
+                    className="pl-10 pr-16 w-full border border-stone-300 rounded-lg py-2.5 outline-none focus:ring-2 focus:ring-[#627e59] focus:border-transparent transition-all bg-white text-stone-900 font-medium"
                   />
+                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                    <span className="text-stone-400 text-sm font-medium">minutes</span>
+                  </div>
                   <input type="hidden" name="target_distance_km" value="" />
                   <input type="hidden" name="target_elevation_m" value="" />
                 </div>
               )}
+
               {canEdit && hasTimeDistanceChoice && (
                 <>
-                  <div className="flex gap-4">
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="radio"
-                        name="target_mode"
-                        value="time"
-                        checked={targetMode === 'time'}
-                        onChange={() => setTargetMode('time')}
-                        className="rounded-full border-stone-300"
-                      />
-                      <span className="text-sm">Temps</span>
+                  <div className="flex bg-stone-200 p-1 rounded-lg mb-4">
+                    <label className="flex-1 cursor-pointer">
+                      <input type="radio" name="target_mode" value="time" checked={targetMode === 'time'} onChange={() => setTargetMode('time')} className="sr-only" />
+                      <div className={`text-center py-1.5 text-sm font-medium rounded-md transition-all ${targetMode === 'time' ? 'bg-[#627e59] text-white shadow-sm' : 'text-stone-600'}`}>
+                        Temps
+                      </div>
                     </label>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="radio"
-                        name="target_mode"
-                        value="distance"
-                        checked={targetMode === 'distance'}
-                        onChange={() => setTargetMode('distance')}
-                        className="rounded-full border-stone-300"
-                      />
-                      <span className="text-sm">Distance</span>
+                    <label className="flex-1 cursor-pointer">
+                      <input type="radio" name="target_mode" value="distance" checked={targetMode === 'distance'} onChange={() => setTargetMode('distance')} className="sr-only" />
+                      <div className={`text-center py-1.5 text-sm font-medium rounded-md transition-all ${targetMode === 'distance' ? 'bg-[#627e59] text-white shadow-sm' : 'text-stone-600'}`}>
+                        Distance
+                      </div>
                     </label>
                   </div>
+
                   {targetMode === 'time' && (
-                    <div>
-                      <label htmlFor="target_duration" className="block text-xs text-stone-600 mb-1">
-                        Durée (minutes)
-                      </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      </div>
                       <input
                         id="target_duration"
                         name="target_duration_minutes"
@@ -313,39 +410,69 @@ export function WorkoutModal({
                         min={1}
                         value={targetDurationMinutes}
                         onChange={(e) => setTargetDurationMinutes(e.target.value)}
-                        disabled={!canEdit}
-                        placeholder="Ex. 45"
-                        className="w-full max-w-[120px] px-3 py-2 rounded-lg border border-stone-200 bg-white text-stone-900"
+                        placeholder="45"
+                        className="pl-10 pr-16 w-full border border-stone-300 rounded-lg py-2.5 outline-none focus:ring-2 focus:ring-[#627e59] focus:border-transparent transition-all bg-white text-stone-900 font-medium"
                       />
+                      <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                        <span className="text-stone-400 text-sm font-medium">minutes</span>
+                      </div>
                       <input type="hidden" name="target_distance_km" value="" />
                       <input type="hidden" name="target_elevation_m" value="" />
                     </div>
                   )}
+
                   {targetMode === 'distance' && (
                     <div className="space-y-3">
-                      <div>
-                        <label htmlFor="target_distance" className="block text-xs text-stone-600 mb-1">
-                          Distance (km)
-                        </label>
-                        <input
-                          id="target_distance"
-                          name="target_distance_km"
-                          type="number"
-                          min={0}
-                          step={0.1}
-                          value={targetDistanceKm}
-                          onChange={(e) => setTargetDistanceKm(e.target.value)}
-                          disabled={!canEdit}
-                          placeholder="Ex. 10"
-                          className="w-full max-w-[120px] px-3 py-2 rounded-lg border border-stone-200 bg-white text-stone-900"
-                        />
+                      <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                          </svg>
+                        </div>
+                        {sportType === 'natation' ? (
+                          <>
+                            <input
+                              id="target_distance"
+                              type="number"
+                              min={0}
+                              step={1}
+                              value={targetDistanceKm ? String(Math.round(Number(targetDistanceKm) * 1000)) : ''}
+                              onChange={(e) => setTargetDistanceKm(e.target.value ? String(Number(e.target.value) / 1000) : '')}
+                              placeholder="1500"
+                              className="pl-10 pr-10 w-full border border-stone-300 rounded-lg py-2.5 outline-none focus:ring-2 focus:ring-[#627e59] focus:border-transparent transition-all bg-white text-stone-900 font-medium"
+                            />
+                            <input type="hidden" name="target_distance_km" value={targetDistanceKm} />
+                            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                              <span className="text-stone-400 text-sm font-medium">m</span>
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <input
+                              id="target_distance"
+                              name="target_distance_km"
+                              type="number"
+                              min={0}
+                              step={0.1}
+                              value={targetDistanceKm}
+                              onChange={(e) => setTargetDistanceKm(e.target.value)}
+                              placeholder="10"
+                              className="pl-10 pr-12 w-full border border-stone-300 rounded-lg py-2.5 outline-none focus:ring-2 focus:ring-[#627e59] focus:border-transparent transition-all bg-white text-stone-900 font-medium"
+                            />
+                            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                              <span className="text-stone-400 text-sm font-medium">km</span>
+                            </div>
+                          </>
+                        )}
                         <input type="hidden" name="target_duration_minutes" value="" />
                       </div>
                       {hasElevation && (
-                        <div>
-                          <label htmlFor="target_elevation" className="block text-xs text-stone-600 mb-1">
-                            Dénivelé (m) — facultatif
-                          </label>
+                        <div className="relative">
+                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                            </svg>
+                          </div>
                           <input
                             id="target_elevation"
                             name="target_elevation_m"
@@ -353,10 +480,12 @@ export function WorkoutModal({
                             min={0}
                             value={targetElevationM}
                             onChange={(e) => setTargetElevationM(e.target.value)}
-                            disabled={!canEdit}
-                            placeholder="Ex. 200"
-                            className="w-full max-w-[120px] px-3 py-2 rounded-lg border border-stone-200 bg-white text-stone-900"
+                            placeholder="200"
+                            className="pl-10 pr-14 w-full border border-stone-300 rounded-lg py-2.5 outline-none focus:ring-2 focus:ring-[#627e59] focus:border-transparent transition-all bg-white text-stone-900 font-medium"
                           />
+                          <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                            <span className="text-stone-400 text-sm font-medium">m D+</span>
+                          </div>
                         </div>
                       )}
                       {!hasElevation && <input type="hidden" name="target_elevation_m" value="" />}
@@ -380,116 +509,118 @@ export function WorkoutModal({
               required
               disabled={!canEdit}
               placeholder="Ex. Footing 45 min"
-              className="w-full px-4 py-2.5 rounded-lg border-2 border-stone-200 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-olive focus:border-transparent transition disabled:opacity-60"
+              className="w-full px-4 py-2.5 rounded-lg border border-stone-200 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-[#627e59] focus:border-[#627e59] transition disabled:opacity-60"
             />
           </div>
 
-          <div>
-            <label htmlFor="description" className="block text-sm font-medium text-stone-700 mb-2">
-              Description
-            </label>
-            <textarea
-              id="description"
-              name="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              required
-              disabled={!canEdit}
-              rows={4}
-              placeholder="Détails de l'entraînement..."
-              className="w-full px-4 py-2.5 rounded-lg border-2 border-stone-200 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-olive focus:border-transparent resize-y transition disabled:opacity-60"
-            />
-          </div>
+          {(canEdit || description.trim()) && (
+            <div>
+              <label htmlFor="description" className="block text-sm font-medium text-stone-700 mb-2">
+                {canEdit ? (
+                  <>Description <span className="text-stone-400 font-normal">(facultatif)</span></>
+                ) : (
+                  'Description'
+                )}
+              </label>
+              <textarea
+                id="description"
+                name="description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                disabled={!canEdit}
+                rows={4}
+                placeholder="Détails de l'entraînement..."
+                className="w-full px-4 py-2.5 rounded-lg border border-stone-200 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-[#627e59] focus:border-[#627e59] resize-y transition disabled:opacity-60"
+              />
+            </div>
+          )}
 
           {(state?.error || state?.success) && (
             <p
-              className={`text-sm ${state.error ? 'text-red-600' : 'text-palette-forest-dark'}`}
+              className={`text-sm ${state.error ? 'text-red-600' : 'text-[#627e59] font-medium'}`}
               role="alert"
             >
               {state.error || state.success}
             </p>
           )}
-          </div>
 
-          {canEdit && (
-            <div className="shrink-0 p-4 pt-3 border-t border-stone-200 bg-white rounded-b-2xl">
-              <PrimaryButton
-                type="submit"
-                disabled={!isValid}
-                fullWidth
-              >
-                {isEdit ? 'Enregistrer les modifications' : 'Enregistrer'}
-              </PrimaryButton>
-            </div>
-          )}
-        </form>
-
-        {workout && (
-          <div className="px-6 pb-6 pt-2 border-t border-stone-200">
-            <h3 className="text-sm font-medium text-stone-700 mb-2">
-              {canEdit ? 'Commentaire de l\'athlète' : 'Votre commentaire'}
-            </h3>
-            {(workout.athlete_comment ?? null) ? (
-              <p className="text-sm text-stone-600 whitespace-pre-wrap mb-3">
-                {workout.athlete_comment}
-              </p>
-            ) : (
-              !showCommentForm && (
-                <p className="text-sm text-stone-500 mb-3">
-                  Aucun commentaire.
-                </p>
-              )
-            )}
-            {!canEdit && (
-              <>
-                {!showCommentForm ? (
-                  <button
-                    type="button"
-                    onClick={() => setShowCommentForm(true)}
-                    className="rounded-xl bg-stone-200 px-4 py-2 text-sm font-medium text-stone-900 hover:bg-stone-300 transition"
-                  >
-                    {(workout.athlete_comment ?? null) ? 'Modifier le commentaire' : 'Ajouter un commentaire'}
-                  </button>
-                ) : (
-                  <form action={commentAction} className="space-y-3">
-                    <input type="hidden" name="workout_id" value={workout.id} />
+          {workout && (
+            <div className="border-t border-stone-100 mt-6">
+              <div className="pt-4 pb-2 flex items-center gap-3">
+                <div className="p-2 bg-stone-200/80 rounded-full text-stone-600">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-bold text-stone-900">
+                  {canEdit ? 'Commentaire de l\'athlète' : 'Votre commentaire'}
+                </h3>
+              </div>
+              <div className="pt-2 pb-4">
+                {!canEdit ? (
+                  <>
                     <textarea
-                      name="comment"
                       value={commentText}
                       onChange={(e) => setCommentText(e.target.value)}
                       rows={3}
-                      placeholder="Saisissez votre commentaire..."
-                      className="w-full px-4 py-3 rounded-xl border-2 border-stone-200 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-500 resize-y"
+                      placeholder="Saisissez votre commentaire… Il est enregistré automatiquement."
+                      className="w-full px-4 py-3 rounded-xl border border-stone-200 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-[#627e59] focus:border-[#627e59] resize-y"
+                      aria-label="Votre commentaire"
                     />
-                    {(commentState?.error || commentState?.success) && (
-                      <p
-                        className={`text-sm ${commentState.error ? 'text-red-600' : 'text-palette-forest-dark'}`}
-                        role="alert"
-                      >
-                        {commentState.error || commentState.success}
-                      </p>
+                    {commentSaveStatus === 'saving' && (
+                      <p className="text-sm text-stone-500 mt-2">Enregistrement…</p>
                     )}
-                    <div className="flex gap-2">
-                      <button
-                        type="submit"
-                        className="rounded-xl bg-palette-forest-dark px-4 py-2 text-sm font-medium text-white border-2 border-palette-olive hover:bg-palette-olive transition"
-                      >
-                        Sauvegarder
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setShowCommentForm(false)}
-                        className="rounded-xl bg-stone-200 px-4 py-2 text-sm font-medium text-stone-900 hover:bg-stone-300 transition"
-                      >
-                        Annuler
-                      </button>
-                    </div>
-                  </form>
+                    {commentSaveStatus === 'saved' && (
+                      <p className="text-sm text-[#627e59] font-medium mt-2">Commentaire enregistré.</p>
+                    )}
+                    {commentSaveStatus === 'error' && commentSaveMessage && (
+                      <p className="text-sm text-red-600 mt-2" role="alert">{commentSaveMessage}</p>
+                    )}
+                  </>
+                ) : (
+                  (workout.athlete_comment ?? null) ? (
+                    <p className="text-sm text-stone-600 whitespace-pre-wrap">
+                      {workout.athlete_comment}
+                    </p>
+                  ) : (
+                    <p className="text-sm text-stone-500">Aucun commentaire.</p>
+                  )
                 )}
-              </>
-            )}
+              </div>
+            </div>
+          )}
           </div>
-        )}
+          </div>
+
+          {canEdit && (
+            <div className="shrink-0 px-6 py-4 border-t border-stone-100 bg-stone-50/50 space-y-3">
+              {deleteError && (
+                <p className="text-sm text-red-600" role="alert">
+                  {deleteError}
+                </p>
+              )}
+              <div className="flex gap-3">
+                {isEdit && (
+                  <button
+                    type="button"
+                    onClick={handleDelete}
+                    disabled={deleteLoading}
+                    className="flex-1 min-w-0 rounded-xl border border-red-300 bg-white text-red-600 hover:bg-red-50 px-4 py-3 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {deleteLoading ? 'Suppression…' : 'Supprimer'}
+                  </button>
+                )}
+                <button
+                  type="submit"
+                  disabled={!isValid}
+                  className="flex-1 min-w-0 rounded-xl bg-[#627e59] hover:bg-[#506648] text-white px-4 py-3 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-[#627e59] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Enregistrer
+                </button>
+              </div>
+            </div>
+          )}
+        </form>
       </div>
     </div>
   )

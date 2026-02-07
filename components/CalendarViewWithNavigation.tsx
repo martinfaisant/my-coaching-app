@@ -80,8 +80,11 @@ export function CalendarViewWithNavigation({
   const [slideEnd, setSlideEnd] = useState(false)
   const animatingRef = useRef(false)
 
-  // Après router.refresh(), réinjecter les données serveur quand le contenu change. Une seule clé primitive pour garder un tableau de deps de taille constante.
-  const serverDataKey = `${initialWorkouts.length}-${initialWorkouts[0]?.id ?? ''}-${initialWorkouts[initialWorkouts.length - 1]?.id ?? ''}|${initialImportedActivities.length}-${initialImportedActivities[0]?.id ?? ''}-${initialImportedActivities[initialImportedActivities.length - 1]?.id ?? ''}`
+  // Après router.refresh(), réinjecter les données serveur quand le contenu change. La clé inclut updated_at
+  // pour que les modifications d'un entraînement (ex. durée) déclenchent bien la resync.
+  const workoutsFingerprint = initialWorkouts.map((w) => w.updated_at).join('|')
+  const importedFingerprint = initialImportedActivities.map((a) => (a as { updated_at?: string }).updated_at ?? a.id).join('|')
+  const serverDataKey = `${initialWorkouts.length}-${workoutsFingerprint}|${initialImportedActivities.length}-${importedFingerprint}`
   useEffect(() => {
     setWorkouts(initialWorkouts)
     setImportedActivities(initialImportedActivities)
