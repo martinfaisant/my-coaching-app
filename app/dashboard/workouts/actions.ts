@@ -92,7 +92,7 @@ export async function createWorkout(
   const distanceRaw = (formData.get('target_distance_km') as string)?.trim()
   const elevationRaw = (formData.get('target_elevation_m') as string)?.trim()
 
-  if (!date || !sportType || !title || !description) {
+  if (!date || !sportType || !title) {
     return { error: 'Tous les champs sont obligatoires.' }
   }
   if (!['course', 'musculation', 'natation', 'velo'].includes(sportType)) {
@@ -114,7 +114,7 @@ export async function createWorkout(
     date,
     sport_type: sportType,
     title,
-    description,
+    description: description ?? '',
     target_duration_minutes: target_duration_minutes ?? null,
     target_distance_km: target_distance_km ?? null,
     target_elevation_m: target_elevation_m ?? null,
@@ -159,7 +159,7 @@ export async function updateWorkout(
   const distanceRaw = (formData.get('target_distance_km') as string)?.trim()
   const elevationRaw = (formData.get('target_elevation_m') as string)?.trim()
 
-  if (!sportType || !title || !description) {
+  if (!sportType || !title) {
     return { error: 'Tous les champs sont obligatoires.' }
   }
   if (!['course', 'musculation', 'natation', 'velo'].includes(sportType)) {
@@ -181,10 +181,11 @@ export async function updateWorkout(
     .update({
       sport_type: sportType,
       title,
-      description,
+      description: description ?? '',
       target_duration_minutes: target_duration_minutes ?? null,
       target_distance_km: target_distance_km ?? null,
       target_elevation_m: target_elevation_m ?? null,
+      updated_at: new Date().toISOString(),
     })
     .eq('id', workoutId)
     .eq('athlete_id', athleteId)
