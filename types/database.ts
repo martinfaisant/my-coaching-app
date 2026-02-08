@@ -80,6 +80,16 @@ export type CoachRequest = {
   responded_at: string | null
 }
 
+export type CoachRating = {
+  id: string
+  athlete_id: string
+  coach_id: string
+  rating: number
+  comment: string | null
+  created_at: string
+  updated_at: string
+}
+
 export type CoachOffer = {
   id: string
   coach_id: string

@@ -4,6 +4,8 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
 import { ProfileMenu } from '@/components/ProfileMenu'
 import { AvatarImage } from '@/components/AvatarImage'
+import { getMyCoachRating } from './actions'
+import { CoachRatingForm } from './CoachRatingForm'
 
 const COACHED_SPORTS_LABELS: Record<string, string> = {
   course_route: 'Course à pied sur route',
@@ -83,6 +85,7 @@ export default async function MonCoachPage() {
 
   const sports = (coach.coached_sports ?? []).map(sportLabel)
   const languages = (coach.languages ?? []).map(languageLabel)
+  const myRating = await getMyCoachRating(current.profile.coach_id!)
 
   return (
     <div className="min-h-screen bg-background">
@@ -150,6 +153,15 @@ export default async function MonCoachPage() {
               </p>
             </div>
           )}
+        </div>
+
+        <div className="mt-8 rounded-2xl border border-stone-200 bg-section p-6 shadow-sm">
+          <h2 className="text-base font-semibold text-stone-900 mb-6">Donner votre avis</h2>
+          <CoachRatingForm
+            coachId={current.profile.coach_id!}
+            initialRating={myRating?.rating ?? null}
+            initialComment={myRating?.comment ?? ''}
+          />
         </div>
       </main>
     </div>

@@ -3,14 +3,31 @@ import { createClient } from '@/utils/supabase/server'
 import { getCurrentUserWithProfile } from '@/utils/auth'
 import { CalendarViewWithNavigation } from '@/components/CalendarViewWithNavigation'
 import { ProfileMenu } from '@/components/ProfileMenu'
+import { AvatarImage } from '@/components/AvatarImage'
 import { FindCoachSection } from '@/app/dashboard/FindCoachSection'
 import { RespondToRequestButtons } from '@/app/dashboard/RespondToRequestButtons'
-import { formatSportPracticedDisplay } from '@/app/dashboard/RequestCoachButton'
+import { PRACTICED_SPORTS_OPTIONS } from '@/app/dashboard/sportsOptions'
 import {
   getMyCoachRequests,
   getPendingCoachRequests,
 } from '@/app/dashboard/actions'
 import type { Profile, Workout, Goal, ImportedActivity } from '@/types/database'
+
+/** Formate une date YYYY-MM-DD en court français (ex. "30 Mars"). */
+function formatShortDate(dateStr: string): string {
+  const d = new Date(dateStr + 'T12:00:00')
+  const day = d.getDate()
+  const month = d.toLocaleDateString('fr-FR', { month: 'long' })
+  return `${day} ${month.charAt(0).toUpperCase() + month.slice(1)}`
+}
+
+function getInitials(nameOrEmail: string): string {
+  const s = (nameOrEmail || '').trim()
+  if (!s) return '?'
+  const parts = s.split(/\s+/).filter(Boolean)
+  if (parts.length >= 2) return (parts[0][0]! + parts[parts.length - 1]![0]).toUpperCase()
+  return s.slice(0, 2).toUpperCase()
+}
 
 const ROLE_LABELS: Record<Profile['role'], string> = {
   athlete: 'Athlète',
@@ -45,6 +62,15 @@ export default async function DashboardPage() {
     for (const r of myRequests) {
       if (statusByCoach[r.coach_id] === undefined) statusByCoach[r.coach_id] = r.status as 'pending' | 'declined'
       if (r.status === 'pending') requestIdByCoach[r.coach_id] = r.id
+    }
+
+    const { data: ratingStats } = await supabase.rpc('get_coach_rating_stats')
+    const ratingsByCoach: Record<string, { averageRating: number; reviewCount: number }> = {}
+    for (const row of ratingStats ?? []) {
+      ratingsByCoach[row.coach_id] = {
+        averageRating: Number(row.avg_rating),
+        reviewCount: Number(row.review_count ?? 0),
+      }
     }
 
     const coachesForList = (coaches ?? [])
@@ -82,7 +108,7 @@ export default async function DashboardPage() {
               Aucun coach inscrit pour le moment. Revenez plus tard.
             </p>
           ) : (
-            <FindCoachSection coaches={coachesForList} statusByCoach={statusByCoach} requestIdByCoach={requestIdByCoach} initialPracticedSports={current.profile.practiced_sports ?? []} />
+            <FindCoachSection coaches={coachesForList} statusByCoach={statusByCoach} requestIdByCoach={requestIdByCoach} initialPracticedSports={current.profile.practiced_sports ?? []} ratingsByCoach={ratingsByCoach} />
           )}
         </main>
       </div>
@@ -153,6 +179,7 @@ export default async function DashboardPage() {
   // Coach / Admin : tableau de bord avec liste des membres
   let visibleProfiles: Profile[] = []
   let pendingRequests: Awaited<ReturnType<typeof getPendingCoachRequests>> = []
+  let coachAthleteIds: string[] = []
 
   if (current.profile.role === 'coach') {
     pendingRequests = await getPendingCoachRequests()
@@ -174,12 +201,71 @@ export default async function DashboardPage() {
   } else if (current.profile.role === 'coach') {
     const { data: athletes } = await supabase
       .from('profiles')
-      .select('*')
+      .select('user_id, email, full_name, role, coach_id, created_at, updated_at, practiced_sports, avatar_url')
       .eq('coach_id', current.id)
       .order('email')
     visibleProfiles = (athletes ?? []) as Profile[]
+
+    // Données par athlète pour la vue coach (planifié jusqu'au, prochain objectif)
+    coachAthleteIds = visibleProfiles.map((p) => p.user_id)
   } else {
     visibleProfiles = [current.profile as Profile]
+  }
+
+  // Coach : chargement workouts + goals pour "Planifié jusqu'au" et "Prochain objectif"
+  type CoachAthleteData = {
+    plannedUntil: string | null
+    nextGoal: { date: string; race_name: string } | null
+    isUpToDate: boolean
+  }
+  let coachAthleteData: Record<string, CoachAthleteData> = {}
+  if (current.profile.role === 'coach' && coachAthleteIds.length > 0) {
+    const { data: workoutsRows } = await supabase
+      .from('workouts')
+      .select('athlete_id, date')
+      .in('athlete_id', coachAthleteIds)
+    const { data: goalsRows } = await supabase
+      .from('goals')
+      .select('athlete_id, date, race_name, is_primary')
+      .in('athlete_id', coachAthleteIds)
+      .order('date', { ascending: true })
+
+    const now = new Date()
+    const todayStr =
+      now.getFullYear() +
+      '-' +
+      String(now.getMonth() + 1).padStart(2, '0') +
+      '-' +
+      String(now.getDate()).padStart(2, '0')
+    const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1)
+    const tomorrowStr =
+      tomorrow.getFullYear() +
+      '-' +
+      String(tomorrow.getMonth() + 1).padStart(2, '0') +
+      '-' +
+      String(tomorrow.getDate()).padStart(2, '0')
+
+    const plannedUntilByAthlete: Record<string, string> = {}
+    for (const w of workoutsRows ?? []) {
+      const cur = plannedUntilByAthlete[w.athlete_id]
+      if (!cur || w.date > cur) plannedUntilByAthlete[w.athlete_id] = w.date
+    }
+    const nextGoalByAthlete: Record<string, { date: string; race_name: string }> = {}
+    for (const g of goalsRows ?? []) {
+      if (g.date < todayStr) continue
+      if (!nextGoalByAthlete[g.athlete_id]) {
+        nextGoalByAthlete[g.athlete_id] = { date: g.date, race_name: g.race_name }
+      }
+    }
+
+    for (const id of coachAthleteIds) {
+      const plannedUntil = plannedUntilByAthlete[id] ?? null
+      coachAthleteData[id] = {
+        plannedUntil,
+        nextGoal: nextGoalByAthlete[id] ?? null,
+        isUpToDate: plannedUntil ? plannedUntil > tomorrowStr : false,
+      }
+    }
   }
 
   return (
@@ -224,109 +310,214 @@ export default async function DashboardPage() {
 
         {current.profile.role === 'coach' && pendingRequests.length > 0 && (
           <section className="mb-8">
-            <h2 className="text-base font-semibold text-stone-900text-white mb-2">
+            <h2 className="text-base font-semibold text-stone-900 mb-2">
               Demandes en attente
             </h2>
             <p className="text-sm text-stone-600 mb-4">
               Acceptez ou refusez les demandes d&apos;athlètes qui souhaitent vous avoir comme coach.
             </p>
-            <ul className="space-y-2.5">
-              {pendingRequests.map((req) => (
-                <li
-                  key={req.id}
-                  className="rounded-lg border border-stone-200 bg-section p-4 flex flex-wrap items-start justify-between gap-4 hover:border-stone-300 transition-colors"
-                >
-                  <div className="min-w-0 flex-1">
-                    <p className="font-medium text-stone-900text-white">
-                      {req.athlete_name || req.athlete_email || '—'}
-                    </p>
-                    {req.athlete_email && req.athlete_name !== req.athlete_email && req.athlete_name !== '—' && (
-                      <p className="text-sm text-stone-600 mt-0.5">
-                        {req.athlete_email}
-                      </p>
-                    )}
-                    <p className="text-sm text-stone-600text-stone-300 mt-2">
-                      <span className="font-medium">Sport(s) :</span> {formatSportPracticedDisplay(req.sport_practiced)}
-                    </p>
-                    <p className="text-sm text-stone-600text-stone-300 mt-1">
-                      <span className="font-medium">Besoin :</span> {req.coaching_need}
-                    </p>
-                  </div>
-                  <RespondToRequestButtons requestId={req.id} />
-                </li>
-              ))}
+            <ul className="space-y-3">
+              {pendingRequests.map((req) => {
+                const name = req.athlete_name || req.athlete_email || '—'
+                const sportValues = (req.sport_practiced || '')
+                  .split(',')
+                  .map((v) => v.trim())
+                  .filter(Boolean)
+                return (
+                  <li
+                    key={req.id}
+                    className="rounded-xl border border-stone-200 border-l-4 border-l-amber-400 bg-section overflow-hidden flex flex-wrap items-center justify-between gap-4 p-4"
+                  >
+                    <div className="flex gap-4 min-w-0 flex-1">
+                      <AvatarImage
+                        src={req.athlete_avatar_url}
+                        initials={getInitials(name)}
+                        className="w-12 h-12 flex-shrink-0"
+                      />
+                      <div className="min-w-0">
+                        <p className="font-semibold text-stone-900">{name}</p>
+                        {req.athlete_email && name !== req.athlete_email && (
+                          <p className="text-sm text-stone-600 mt-0.5">{req.athlete_email}</p>
+                        )}
+                        <div className="flex flex-wrap gap-1.5 mt-2">
+                          {sportValues.map((v) => {
+                            const opt = PRACTICED_SPORTS_OPTIONS.find((o) => o.value === v)
+                            return (
+                              <span
+                                key={v}
+                                className="inline-flex items-center rounded-full bg-stone-100 px-2.5 py-0.5 text-xs font-medium text-stone-700"
+                              >
+                                {opt ? `${opt.emoji} ${opt.label}` : v}
+                              </span>
+                            )
+                          })}
+                        </div>
+                        <p className="text-sm text-stone-600 mt-2 italic">&quot;{req.coaching_need}&quot;</p>
+                      </div>
+                    </div>
+                    <RespondToRequestButtons requestId={req.id} />
+                  </li>
+                )
+              })}
             </ul>
           </section>
         )}
 
         <section>
-          <h2 className="text-base font-semibold text-stone-900text-white mb-4">
+          <h2 className="text-base font-semibold text-stone-900 mb-4">
             {current.profile.role === 'admin'
               ? 'Tous les membres'
               : current.profile.role === 'coach'
-                ? 'Mes athlètes'
+                ? `Mes athlètes (${visibleProfiles.length})`
                 : 'Mon profil'}
           </h2>
-          <ul className="space-y-2.5">
-            {visibleProfiles.map((p) => {
-              const isAthleteOfMine = current.profile.role === 'coach' && p.coach_id === current.id
-              const displayName = (p.full_name?.trim() || p.email) as string
-              const athleteHref = `/dashboard/athletes/${p.user_id}`
 
-              if (isAthleteOfMine) {
+          {current.profile.role === 'coach' ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {visibleProfiles.map((p) => {
+                const displayName = (p.full_name?.trim() || p.email) as string
+                const athleteHref = `/dashboard/athletes/${p.user_id}`
+                const data = coachAthleteData[p.user_id]
+                const plannedUntil = data?.plannedUntil ?? null
+                const nextGoal = data?.nextGoal ?? null
+                const isUpToDate = data?.isUpToDate ?? false
+                const practicedSports = p.practiced_sports ?? []
+
                 return (
-                  <li key={p.user_id}>
-                    <Link
-                      href={athleteHref}
-                      className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-stone-200 bg-section p-4 hover:bg-stone-50 hover:border-stone-300 transition-colors group"
-                    >
-                      <div>
-                        <p className="font-medium text-stone-900text-white">
-                          {displayName}
-                        </p>
-                        <p className="text-sm text-stone-600 mt-0.5">
-                          {ROLE_LABELS[p.role]}
-                          {p.coach_id && ' (athlète)'}
-                        </p>
+                  <article
+                    key={p.user_id}
+                    className="group rounded-xl border border-stone-200 bg-section overflow-hidden flex flex-col"
+                  >
+                    <div className="p-4">
+                      <div className="flex items-center gap-3 mb-3">
+                        <AvatarImage
+                          src={p.avatar_url ? `${p.avatar_url}?t=${p.updated_at}` : null}
+                          initials={getInitials(displayName)}
+                          className="w-12 h-12 flex-shrink-0"
+                        />
+                        <div className="min-w-0">
+                          <p className="font-semibold text-stone-900 truncate">{displayName}</p>
+                          <div className="flex flex-wrap gap-1.5 mt-1">
+                            {practicedSports.map((v) => {
+                              const opt = PRACTICED_SPORTS_OPTIONS.find((o) => o.value === v)
+                              return (
+                                <span
+                                  key={v}
+                                  className="inline-flex items-center rounded-full bg-stone-100 px-2 py-0.5 text-xs font-medium text-stone-700"
+                                >
+                                  {opt ? `${opt.emoji} ${opt.label}` : v}
+                                </span>
+                              )
+                            })}
+                          </div>
+                        </div>
                       </div>
-                      <svg
-                        className="h-5 w-5 text-stone-400 group-hover:text-stone-600group-hover:text-stone-300 flex-shrink-0 transition-colors"
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
+                      <div className="grid grid-cols-2 gap-3 text-sm">
+                        <div>
+                          <p className="text-stone-500 font-medium">Prochain objectif</p>
+                          <p className="text-stone-900 mt-0.5">
+                            {nextGoal
+                              ? `${formatShortDate(nextGoal.date)} · ${nextGoal.race_name}`
+                              : 'Aucun'}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-stone-500 font-medium">Planifié jusqu&apos;au</p>
+                          <p className="text-stone-900 font-semibold mt-0.5 text-sm">
+                            {plannedUntil ? formatShortDate(plannedUntil) : '—'}
+                          </p>
+                          <div className="flex items-center gap-1 mt-0.5">
+                            <span
+                              className={`w-1.5 h-1.5 rounded-full shrink-0 ${
+                                isUpToDate ? 'bg-emerald-500' : 'bg-red-400'
+                              }`}
+                            />
+                            <span
+                              className={`text-[10px] font-medium ${
+                                isUpToDate ? 'text-stone-500' : 'text-red-400'
+                              }`}
+                            >
+                              {isUpToDate ? 'À jour' : 'En retard'}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="mt-auto border-t border-stone-100 p-3 bg-stone-50 flex justify-end">
+                      <Link
+                        href={athleteHref}
+                        className="text-xs font-medium text-[#627e59] hover:text-[#506648] flex items-center transition-transform group-hover:translate-x-1"
                       >
-                        <path d="m9 18 6-6-6-6" />
-                      </svg>
-                    </Link>
+                        Voir le planning
+                        <svg className="w-4 h-4 ml-1 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </Link>
+                    </div>
+                  </article>
+                )
+              })}
+            </div>
+          ) : (
+            <ul className="space-y-2.5">
+              {visibleProfiles.map((p) => {
+                const displayName = (p.full_name?.trim() || p.email) as string
+                const isAthleteOfMine = current.profile.role === 'coach' && p.coach_id === current.id
+                const athleteHref = `/dashboard/athletes/${p.user_id}`
+
+                if (isAthleteOfMine) {
+                  return (
+                    <li key={p.user_id}>
+                      <Link
+                        href={athleteHref}
+                        className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-stone-200 bg-section p-4 hover:bg-stone-50 hover:border-stone-300 transition-colors group"
+                      >
+                        <div>
+                          <p className="font-medium text-stone-900">{displayName}</p>
+                          <p className="text-sm text-stone-600 mt-0.5">
+                            {ROLE_LABELS[p.role]}
+                            {p.coach_id && ' (athlète)'}
+                          </p>
+                        </div>
+                        <svg
+                          className="h-5 w-5 text-stone-400 group-hover:text-stone-600 flex-shrink-0 transition-colors"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="m9 18 6-6-6-6" />
+                        </svg>
+                      </Link>
+                    </li>
+                  )
+                }
+
+                return (
+                  <li
+                    key={p.user_id}
+                    className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-stone-200 bg-section p-4"
+                  >
+                    <div>
+                      <p className="font-medium text-stone-900">{p.email}</p>
+                      <p className="text-sm text-stone-600 mt-0.5">
+                        {ROLE_LABELS[p.role]}
+                        {p.coach_id && ' (athlète)'}
+                      </p>
+                    </div>
+                    {p.user_id === current.id && (
+                      <span className="rounded-full bg-stone-100 px-2.5 py-0.5 text-xs font-medium text-stone-600">
+                        Vous
+                      </span>
+                    )}
                   </li>
                 )
-              }
-
-              return (
-                <li
-                  key={p.user_id}
-                  className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-stone-200 bg-section p-4"
-                >
-                  <div>
-                    <p className="font-medium text-stone-900text-white">{p.email}</p>
-                    <p className="text-sm text-stone-600 mt-0.5">
-                      {ROLE_LABELS[p.role]}
-                      {p.coach_id && ' (athlète)'}
-                    </p>
-                  </div>
-                  {p.user_id === current.id && (
-                    <span className="rounded-full bg-stone-100bg-stone-800 px-2.5 py-0.5 text-xs font-medium text-stone-600 text-stone-600">
-                      Vous
-                    </span>
-                  )}
-                </li>
-              )
-            })}
-          </ul>
+              })}
+            </ul>
+          )}
         </section>
       </main>
     </div>
