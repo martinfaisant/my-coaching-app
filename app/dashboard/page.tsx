@@ -5,6 +5,7 @@ import { CalendarViewWithNavigation } from '@/components/CalendarViewWithNavigat
 import { ProfileMenu } from '@/components/ProfileMenu'
 import { FindCoachSection } from '@/app/dashboard/FindCoachSection'
 import { RespondToRequestButtons } from '@/app/dashboard/RespondToRequestButtons'
+import { formatSportPracticedDisplay } from '@/app/dashboard/RequestCoachButton'
 import {
   getMyCoachRequests,
   getPendingCoachRequests,
@@ -81,7 +82,7 @@ export default async function DashboardPage() {
               Aucun coach inscrit pour le moment. Revenez plus tard.
             </p>
           ) : (
-            <FindCoachSection coaches={coachesForList} statusByCoach={statusByCoach} requestIdByCoach={requestIdByCoach} />
+            <FindCoachSection coaches={coachesForList} statusByCoach={statusByCoach} requestIdByCoach={requestIdByCoach} initialPracticedSports={current.profile.practiced_sports ?? []} />
           )}
         </main>
       </div>
@@ -245,7 +246,7 @@ export default async function DashboardPage() {
                       </p>
                     )}
                     <p className="text-sm text-stone-600text-stone-300 mt-2">
-                      <span className="font-medium">Sport :</span> {req.sport_practiced}
+                      <span className="font-medium">Sport(s) :</span> {formatSportPracticedDisplay(req.sport_practiced)}
                     </p>
                     <p className="text-sm text-stone-600text-stone-300 mt-1">
                       <span className="font-medium">Besoin :</span> {req.coaching_need}

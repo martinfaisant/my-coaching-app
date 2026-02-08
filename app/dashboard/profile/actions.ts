@@ -4,6 +4,7 @@ import { createClient, createAdminClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
 
 const COACHED_SPORTS_VALUES = ['course_route', 'trail', 'triathlon', 'velo'] as const
+const PRACTICED_SPORTS_VALUES = ['course', 'velo', 'natation', 'musculation', 'trail', 'triathlon'] as const
 
 export type ProfileFormState = {
   error?: string
@@ -30,9 +31,16 @@ export async function updateProfile(
     .eq('user_id', user.id)
     .single()
 
-  const payload: { full_name: string | null; coached_sports?: string[]; languages?: string[]; presentation?: string | null; avatar_url?: string | null; postal_code?: string | null } = {
+  const payload: { full_name: string | null; coached_sports?: string[]; practiced_sports?: string[]; languages?: string[]; presentation?: string | null; avatar_url?: string | null; postal_code?: string | null } = {
     full_name: fullName,
   }
+
+  const avatarUrlRaw = (formData.get('avatar_url') as string)?.trim()
+  const postalCode = (formData.get('postal_code') as string)?.trim() || null
+  if (avatarUrlRaw !== undefined && avatarUrlRaw !== '') {
+    payload.avatar_url = avatarUrlRaw
+  }
+  payload.postal_code = postalCode
 
   if (profile?.role === 'coach') {
     const coachedSportsRaw = formData.getAll('coached_sports') as string[]
@@ -40,16 +48,19 @@ export async function updateProfile(
     const languagesRaw = formData.getAll('languages') as string[]
     const languages = languagesRaw.filter(Boolean).map((l) => l.trim()).filter(Boolean)
     const presentation = (formData.get('presentation') as string)?.trim() || null
-    const avatarUrlRaw = (formData.get('avatar_url') as string)?.trim()
-    const postalCode = (formData.get('postal_code') as string)?.trim() || null
     payload.coached_sports = coachedSports
     payload.languages = languages
     payload.presentation = presentation
-    // Ne mettre à jour avatar_url que si le formulaire envoie une URL (évite d'écraser avec null)
-    if (avatarUrlRaw !== undefined && avatarUrlRaw !== '') {
-      payload.avatar_url = avatarUrlRaw
-    }
-    payload.postal_code = postalCode
+  }
+
+  if (profile?.role === 'athlete') {
+    const practicedSportsRaw = formData.getAll('practiced_sports') as string[]
+    const practicedSports = practicedSportsRaw
+      .map((s) => (s ?? '').trim())
+      .filter((s): s is (typeof PRACTICED_SPORTS_VALUES)[number] =>
+        PRACTICED_SPORTS_VALUES.includes(s as (typeof PRACTICED_SPORTS_VALUES)[number])
+      )
+    payload.practiced_sports = practicedSports
   }
 
   const { error } = await supabase

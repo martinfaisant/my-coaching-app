@@ -26,6 +26,16 @@ const COACHED_SPORTS_OPTIONS: { value: string; label: string; emoji: string }[] 
   { value: 'velo', label: 'Vélo', emoji: '🚴' },
 ]
 
+/** Mêmes sports que pour les entraînements (tuiles profil athlète). */
+const PRACTICED_SPORTS_OPTIONS: { value: string; label: string; emoji: string }[] = [
+  { value: 'course', label: 'Course', emoji: '🏃' },
+  { value: 'velo', label: 'Vélo', emoji: '🚴' },
+  { value: 'natation', label: 'Natation', emoji: '🏊' },
+  { value: 'musculation', label: 'Musculation', emoji: '💪' },
+  { value: 'trail', label: 'Trail', emoji: '⛰️' },
+  { value: 'triathlon', label: 'Triathlon', emoji: '🏅' },
+]
+
 const LANGUAGES_OPTIONS: { value: string; label: string }[] = [
   { value: 'fr', label: 'Français' },
   { value: 'en', label: 'English' },
@@ -43,6 +53,7 @@ type ProfileFormProps = {
   role: Role
   avatarUrl: string
   coachedSports: string[]
+  practicedSports: string[]
   languages: string[]
   presentation: string
   postalCode: string
@@ -54,6 +65,7 @@ export function ProfileForm({
   role,
   avatarUrl,
   coachedSports,
+  practicedSports,
   languages,
   presentation,
   postalCode,
@@ -84,6 +96,7 @@ export function ProfileForm({
     avatarUrl,
     postalCode: postalCode || '',
     coachedSports: [...coachedSports].sort(),
+    practicedSports: [...practicedSports].sort(),
     languages: [...languages].sort(),
     presentation: presentation || '',
   })
@@ -107,10 +120,10 @@ export function ProfileForm({
     if (currentFullName !== initialFullName) return true
     if (avatarUrlState !== initialValuesRef.current.avatarUrl) return true
 
-    if (isCoach) {
-      const currentPostalCode = (form.querySelector('[name="postal_code"]') as HTMLInputElement)?.value.trim() || ''
-      if (currentPostalCode !== initialValuesRef.current.postalCode) return true
+    const currentPostalCode = (form.querySelector('[name="postal_code"]') as HTMLInputElement)?.value.trim() || ''
+    if (currentPostalCode !== initialValuesRef.current.postalCode) return true
 
+    if (isCoach) {
       const currentCoachedSports = Array.from(form.querySelectorAll<HTMLInputElement>('[name="coached_sports"]:checked'))
         .map((cb) => cb.value)
         .sort()
@@ -123,6 +136,11 @@ export function ProfileForm({
 
       const currentPresentation = (form.querySelector('[name="presentation"]') as HTMLTextAreaElement)?.value.trim() || ''
       if (currentPresentation !== initialValuesRef.current.presentation) return true
+    } else {
+      const currentPracticedSports = Array.from(form.querySelectorAll<HTMLInputElement>('[name="practiced_sports"]:checked'))
+        .map((cb) => cb.value)
+        .sort()
+      if (JSON.stringify(currentPracticedSports) !== JSON.stringify(initialValuesRef.current.practicedSports)) return true
     }
 
     return false
@@ -200,6 +218,9 @@ export function ProfileForm({
         const currentCoachedSports = Array.from(form.querySelectorAll<HTMLInputElement>('[name="coached_sports"]:checked'))
           .map((cb) => cb.value)
           .sort()
+        const currentPracticedSports = Array.from(form.querySelectorAll<HTMLInputElement>('[name="practiced_sports"]:checked'))
+          .map((cb) => cb.value)
+          .sort()
         const currentLanguages = Array.from(form.querySelectorAll<HTMLInputElement>('[name="languages"]:checked'))
           .map((cb) => cb.value)
           .sort()
@@ -210,6 +231,7 @@ export function ProfileForm({
           avatarUrl: avatarUrlState,
           postalCode: currentPostalCode,
           coachedSports: currentCoachedSports,
+          practicedSports: currentPracticedSports,
           languages: currentLanguages,
           presentation: currentPresentation,
         }
@@ -365,92 +387,7 @@ export function ProfileForm({
     setPendingNavigation(null)
   }
 
-  if (!isCoach) {
-    // Version simplifiée pour les athlètes (sans bannière ni code postal)
-    return (
-      <>
-        <form ref={formRef} action={action} onSubmit={handleFormSubmit} className="mt-8 space-y-8">
-          <section className="space-y-6 rounded-2xl border border-stone-200 bg-section p-6 shadow-sm">
-            <h2 className="text-base font-semibold text-stone-900">Mes informations</h2>
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-stone-700 mb-1.5">
-                Adresse email
-              </label>
-              <input
-                id="email"
-                type="email"
-                value={email}
-                readOnly
-                className="w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50 text-stone-600 cursor-not-allowed"
-              />
-              <p className="mt-1 text-xs text-stone-500">L&apos;email ne peut pas être modifié ici.</p>
-            </div>
-            <div>
-              <label htmlFor="first_name" className="block text-sm font-medium text-stone-700 mb-1.5">
-                Prénom
-              </label>
-              <input
-                id="first_name"
-                name="first_name"
-                type="text"
-                defaultValue={firstName}
-                placeholder="Votre prénom"
-                className="w-full px-4 py-3 rounded-xl border border-stone-300 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-olive focus:border-transparent transition"
-              />
-            </div>
-            <div>
-              <label htmlFor="last_name" className="block text-sm font-medium text-stone-700 mb-1.5">
-                Nom
-              </label>
-              <input
-                id="last_name"
-                name="last_name"
-                type="text"
-                defaultValue={lastName}
-                placeholder="Votre nom"
-                className="w-full px-4 py-3 rounded-xl border border-stone-300 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-olive focus:border-transparent transition"
-              />
-            </div>
-          </section>
-
-          {state?.error && (
-            <p className="text-sm text-red-600 mb-4" role="alert">
-              {state.error}
-            </p>
-          )}
-
-          <PrimaryButton
-            type="submit"
-            fullWidth
-            disabled={!hasUnsavedChanges || isSubmitting}
-            className={state?.error ? '!bg-red-600 hover:!bg-red-700 focus:!ring-red-500' : ''}
-          >
-            {showSavedFeedback ? (
-              <>
-                <span>Enregistré</span>
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1.5 animate-saved-check" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-              </>
-            ) : state?.error ? (
-              <>
-                <span>Non enregistré</span>
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M18 6 6 18M6 6l12 12" />
-                </svg>
-              </>
-            ) : isSubmitting ? (
-              'Enregistrement...'
-            ) : (
-              'Enregistrer'
-            )}
-          </PrimaryButton>
-        </form>
-      </>
-    )
-  }
-
-  // Version complète pour les coachs avec le nouveau design
+  // Même structure pour coach et athlète : bannière, photo de profil, formulaire
   return (
     <>
       <form ref={formRef} action={action} onSubmit={handleFormSubmit} className="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-stone-100">
@@ -504,7 +441,9 @@ export function ProfileForm({
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
             <div>
               <h1 className="text-2xl font-bold text-stone-900">Mes informations</h1>
-              <p className="text-stone-500 text-sm">Complétez votre profil pour vos athlètes.</p>
+              <p className="text-stone-500 text-sm">
+                {isCoach ? 'Complétez votre profil pour vos athlètes.' : 'Gérez vos informations et votre photo de profil.'}
+              </p>
             </div>
             <PrimaryButton
               type="submit"
@@ -600,29 +539,55 @@ export function ProfileForm({
 
           <hr className="border-stone-100 my-8" />
 
-          {/* Section Sports */}
+          {/* Section Sports : coach = sports coachés, athlète = sports pratiqués */}
           <div className="mb-8">
-            <h2 className="text-sm font-bold text-stone-900 uppercase tracking-wide mb-3">Sports coachés</h2>
-            <div className="flex flex-wrap gap-3">
-              {COACHED_SPORTS_OPTIONS.map((opt) => (
-                <label key={opt.value} className="cursor-pointer">
-                  <input
-                    type="checkbox"
-                    name="coached_sports"
-                    value={opt.value}
-                    defaultChecked={coachedSports.includes(opt.value)}
-                    className="hidden chip-checkbox"
-                  />
-                  <div className="px-4 py-2 rounded-full border border-stone-200 bg-white text-stone-600 hover:border-[#627e59] transition-all text-sm font-medium select-none flex items-center gap-2">
-                    <span>{opt.emoji}</span>
-                    <span>{opt.label}</span>
-                  </div>
-                </label>
-              ))}
-            </div>
+            {isCoach ? (
+              <>
+                <h2 className="text-sm font-bold text-stone-900 uppercase tracking-wide mb-3">Sports coachés</h2>
+                <div className="flex flex-wrap gap-3">
+                  {COACHED_SPORTS_OPTIONS.map((opt) => (
+                    <label key={opt.value} className="cursor-pointer">
+                      <input
+                        type="checkbox"
+                        name="coached_sports"
+                        value={opt.value}
+                        defaultChecked={coachedSports.includes(opt.value)}
+                        className="hidden chip-checkbox"
+                      />
+                      <div className="px-4 py-2 rounded-full border border-stone-200 bg-white text-stone-600 hover:border-[#627e59] transition-all text-sm font-medium select-none flex items-center gap-2">
+                        <span>{opt.emoji}</span>
+                        <span>{opt.label}</span>
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <>
+                <h2 className="text-sm font-bold text-stone-900 uppercase tracking-wide mb-3">Sport(s) pratiqué(s)</h2>
+                <div className="flex flex-wrap gap-3">
+                  {PRACTICED_SPORTS_OPTIONS.map((opt) => (
+                    <label key={opt.value} className="cursor-pointer">
+                      <input
+                        type="checkbox"
+                        name="practiced_sports"
+                        value={opt.value}
+                        defaultChecked={practicedSports.includes(opt.value)}
+                        className="hidden chip-checkbox"
+                      />
+                      <div className="px-4 py-2 rounded-full border border-stone-200 bg-white text-stone-600 hover:border-[#627e59] transition-all text-sm font-medium select-none flex items-center gap-2">
+                        <span>{opt.emoji}</span>
+                        <span>{opt.label}</span>
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              </>
+            )}
           </div>
 
-          {/* Section Langues */}
+          {/* Section Langues (coach uniquement) */}
+          {isCoach && (
           <div className="mb-8">
             <h2 className="text-sm font-bold text-stone-900 uppercase tracking-wide mb-3">Langues parlées</h2>
             <div className="flex flex-wrap gap-2">
@@ -642,10 +607,14 @@ export function ProfileForm({
               ))}
             </div>
           </div>
+          )}
 
+          {isCoach && (
           <hr className="border-stone-100 my-8" />
+          )}
 
-          {/* Bio */}
+          {/* Bio (coach uniquement) */}
+          {isCoach && (
           <div className="input-group">
             <div className="flex justify-between items-end mb-2">
               <h2 className="text-sm font-bold text-stone-900 uppercase tracking-wide">Présentation</h2>
@@ -665,6 +634,7 @@ export function ProfileForm({
               </div>
             </div>
           </div>
+          )}
 
           {/* Danger Zone */}
           <div className="mt-16 pt-6 border-t border-stone-100 flex flex-col items-center">

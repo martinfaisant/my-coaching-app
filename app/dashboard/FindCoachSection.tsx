@@ -53,6 +53,8 @@ type FindCoachSectionProps = {
   statusByCoach: Record<string, 'pending' | 'declined'>
   /** coach_id -> request id (for pending requests, to allow cancel) */
   requestIdByCoach?: Record<string, string>
+  /** Sports déjà renseignés dans le profil (pour préremplir le formulaire de demande) */
+  initialPracticedSports?: string[]
 }
 
 function matchesSport(coach: CoachForList, selectedSports: string[]): boolean {
@@ -67,7 +69,7 @@ function matchesLanguage(coach: CoachForList, selectedLanguages: string[]): bool
   return selectedLanguages.some((l) => coachLangs.includes(l))
 }
 
-export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {} }: FindCoachSectionProps) {
+export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}, initialPracticedSports = [] }: FindCoachSectionProps) {
   const [selectedSports, setSelectedSports] = useState<string[]>([])
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([])
   const [presentationModalCoach, setPresentationModalCoach] = useState<CoachForList | null>(null)
@@ -224,6 +226,7 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
                     coachName={c.full_name?.trim() || c.email}
                     requestStatus={getStatus(c.user_id)}
                     requestId={getRequestId(c.user_id)}
+                    initialPracticedSports={initialPracticedSports}
                   />
                 </div>
               </div>

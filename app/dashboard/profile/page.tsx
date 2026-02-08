@@ -27,29 +27,28 @@ export default async function ProfilePage() {
       <main className="mx-auto max-w-3xl px-4 py-8">
         {isCoach ? (
           <ProfileForm
-          email={current.email}
-          fullName={current.profile.full_name ?? ''}
-          role={current.profile.role}
-          avatarUrl={current.profile.avatar_url ? `${current.profile.avatar_url}?t=${current.profile.updated_at}` : ''}
-          coachedSports={current.profile.coached_sports ?? []}
-          languages={current.profile.languages ?? []}
-          presentation={current.profile.presentation ?? ''}
-          postalCode={current.profile.postal_code ?? ''}
+            email={current.email}
+            fullName={current.profile.full_name ?? ''}
+            role={current.profile.role}
+            avatarUrl={current.profile.avatar_url ? `${current.profile.avatar_url}?t=${current.profile.updated_at}` : ''}
+            coachedSports={current.profile.coached_sports ?? []}
+            practicedSports={[]}
+            languages={current.profile.languages ?? []}
+            presentation={current.profile.presentation ?? ''}
+            postalCode={current.profile.postal_code ?? ''}
           />
         ) : (
           <>
             <h1 className="text-xl font-semibold text-stone-900">
               Mes informations
             </h1>
-            <p className="mt-1 text-sm text-stone-500">
-              Modifiez votre prénom et votre nom. L&apos;adresse email est affichée à titre d&apos;information.
-            </p>
             <ProfileForm
               email={current.email}
               fullName={current.profile.full_name ?? ''}
               role={current.profile.role}
               avatarUrl={current.profile.avatar_url ? `${current.profile.avatar_url}?t=${current.profile.updated_at}` : ''}
-              coachedSports={current.profile.coached_sports ?? []}
+              coachedSports={[]}
+              practicedSports={current.profile.practiced_sports ?? []}
               languages={current.profile.languages ?? []}
               presentation={current.profile.presentation ?? ''}
               postalCode={current.profile.postal_code ?? ''}

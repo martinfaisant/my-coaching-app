@@ -10,7 +10,7 @@ export type CoachRequestResult = { error?: string }
 /** Athlète : envoyer une demande de coaching au coach. */
 export async function createCoachRequest(
   coachId: string,
-  sportPracticed: string,
+  sportsPracticed: string[],
   coachingNeed: string
 ): Promise<CoachRequestResult> {
   const supabase = await createClient()
@@ -28,9 +28,9 @@ export async function createCoachRequest(
   if (profile?.role !== 'athlete') return { error: 'Réservé aux athlètes.' }
   if (profile?.coach_id) return { error: 'Vous avez déjà un coach.' }
 
-  const sport = (sportPracticed ?? '').trim()
+  const sports = (sportsPracticed ?? []).map((s) => s.trim()).filter(Boolean)
   const need = (coachingNeed ?? '').trim()
-  if (!sport || !need) return { error: 'Sport pratiqué et besoin de coaching sont obligatoires.' }
+  if (sports.length === 0 || !need) return { error: 'Au moins un sport pratiqué et le besoin de coaching sont obligatoires.' }
 
   const { data: coach } = await supabase
     .from('profiles')
@@ -41,16 +41,31 @@ export async function createCoachRequest(
 
   if (!coach) return { error: 'Ce coach n’existe pas.' }
 
+  const sportPracticedValue = sports.join(',')
+
   const { error } = await supabase.from('coach_requests').insert({
     athlete_id: user.id,
     coach_id: coachId,
-    sport_practiced: sport,
+    sport_practiced: sportPracticedValue,
     coaching_need: need,
     status: 'pending',
   })
 
   if (error) return { error: error.message }
+
+  // Mettre à jour le profil athlète avec les sports choisis (aligné avec "Sports pratiqués")
+  const { error: updateError } = await supabase
+    .from('profiles')
+    .update({ practiced_sports: sports })
+    .eq('user_id', user.id)
+
+  if (updateError) {
+    // Ne pas faire échouer la demande si la mise à jour du profil échoue
+    console.error('Mise à jour practiced_sports:', updateError.message)
+  }
+
   revalidatePath('/dashboard')
+  revalidatePath('/dashboard/profile')
   return {}
 }
 
