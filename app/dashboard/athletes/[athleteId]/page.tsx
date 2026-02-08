@@ -27,20 +27,11 @@ export default async function AthleteCalendarPage({ params }: PageProps) {
   const supabase = await createClient()
   const { data: athleteProfile } = await supabase
     .from('profiles')
-    .select('user_id, email')
+    .select('user_id, email, coach_id')
     .eq('user_id', athleteId)
     .single()
 
-  if (!athleteProfile || athleteProfile.user_id === current.id) {
-    redirect('/dashboard')
-  }
-
-  const { data: coachCheck } = await supabase
-    .from('profiles')
-    .select('coach_id')
-    .eq('user_id', athleteId)
-    .single()
-  if (coachCheck?.coach_id !== current.id) {
+  if (!athleteProfile || athleteProfile.user_id === current.id || athleteProfile.coach_id !== current.id) {
     redirect('/dashboard')
   }
 
@@ -54,23 +45,23 @@ export default async function AthleteCalendarPage({ params }: PageProps) {
   const startStr = startMonday.toISOString().slice(0, 10)
   const endStr = endSunday.toISOString().slice(0, 10)
 
-  const { data: workouts } = await supabase
-    .from('workouts')
-    .select('*')
-    .eq('athlete_id', athleteId)
-    .gte('date', startStr)
-    .lte('date', endStr)
-    .order('date')
-    .order('created_at')
-
-  // Les activités importées (Strava, etc.) ne sont pas chargées pour le coach :
-  // elles restent visibles uniquement par l'athlète (données externes / personnelles).
-
-  const { data: goals } = await supabase
-    .from('goals')
-    .select('*')
-    .eq('athlete_id', athleteId)
-    .order('date', { ascending: true })
+  const [workoutsResult, goalsResult] = await Promise.all([
+    supabase
+      .from('workouts')
+      .select('*')
+      .eq('athlete_id', athleteId)
+      .gte('date', startStr)
+      .lte('date', endStr)
+      .order('date')
+      .order('created_at'),
+    supabase
+      .from('goals')
+      .select('*')
+      .eq('athlete_id', athleteId)
+      .order('date', { ascending: true }),
+  ])
+  const workouts = workoutsResult.data
+  const goals = goalsResult.data
 
   return (
     <div className="min-h-screen bg-stone-50">

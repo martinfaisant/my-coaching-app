@@ -48,15 +48,19 @@ export default async function DashboardPage() {
   const current = await getCurrentUserWithProfile()
   const supabase = await createClient()
 
-  // Athlète sans coach : proposer de trouver un coach
+  // Athlète sans coach : proposer de trouver un coach (requêtes en parallèle)
   if (current.profile.role === 'athlete' && !current.profile.coach_id) {
-    const { data: coaches } = await supabase
-      .from('profiles')
-      .select('user_id, email, full_name, coached_sports, languages, presentation, avatar_url')
-      .eq('role', 'coach')
-      .order('email')
+    const [coachesResult, myRequests, ratingStats] = await Promise.all([
+      supabase
+        .from('profiles')
+        .select('user_id, email, full_name, coached_sports, languages, presentation, avatar_url')
+        .eq('role', 'coach')
+        .order('email'),
+      getMyCoachRequests(),
+      supabase.rpc('get_coach_rating_stats'),
+    ])
+    const coaches = coachesResult.data
 
-    const myRequests = await getMyCoachRequests()
     const statusByCoach: Record<string, 'pending' | 'declined'> = {}
     const requestIdByCoach: Record<string, string> = {}
     for (const r of myRequests) {
@@ -64,9 +68,8 @@ export default async function DashboardPage() {
       if (r.status === 'pending') requestIdByCoach[r.coach_id] = r.id
     }
 
-    const { data: ratingStats } = await supabase.rpc('get_coach_rating_stats')
     const ratingsByCoach: Record<string, { averageRating: number; reviewCount: number }> = {}
-    for (const row of ratingStats ?? []) {
+    for (const row of ratingStats.data ?? []) {
       ratingsByCoach[row.coach_id] = {
         averageRating: Number(row.avg_rating),
         reviewCount: Number(row.review_count ?? 0),
@@ -115,7 +118,7 @@ export default async function DashboardPage() {
     )
   }
 
-  // Athlète avec coach : calendrier d'entraînement
+  // Athlète avec coach : calendrier d'entraînement (workouts, activités, goals en parallèle)
   if (current.profile.role === 'athlete') {
     const today = new Date()
     const currentMonday = getWeekMonday(today)
@@ -126,29 +129,32 @@ export default async function DashboardPage() {
     const startStr = startMonday.toISOString().slice(0, 10)
     const endStr = endSunday.toISOString().slice(0, 10)
 
-    const { data: workouts } = await supabase
-      .from('workouts')
-      .select('*')
-      .eq('athlete_id', current.id)
-      .gte('date', startStr)
-      .lte('date', endStr)
-      .order('date')
-      .order('created_at')
-
-    const { data: importedActivities } = await supabase
-      .from('imported_activities')
-      .select('*')
-      .eq('athlete_id', current.id)
-      .gte('date', startStr)
-      .lte('date', endStr)
-      .order('date')
-      .order('created_at')
-
-    const { data: goals } = await supabase
-      .from('goals')
-      .select('*')
-      .eq('athlete_id', current.id)
-      .order('date', { ascending: true })
+    const [workoutsResult, importedActivitiesResult, goalsResult] = await Promise.all([
+      supabase
+        .from('workouts')
+        .select('*')
+        .eq('athlete_id', current.id)
+        .gte('date', startStr)
+        .lte('date', endStr)
+        .order('date')
+        .order('created_at'),
+      supabase
+        .from('imported_activities')
+        .select('*')
+        .eq('athlete_id', current.id)
+        .gte('date', startStr)
+        .lte('date', endStr)
+        .order('date')
+        .order('created_at'),
+      supabase
+        .from('goals')
+        .select('*')
+        .eq('athlete_id', current.id)
+        .order('date', { ascending: true }),
+    ])
+    const workouts = workoutsResult.data
+    const importedActivities = importedActivitiesResult.data
+    const goals = goalsResult.data
 
     return (
       <div className="min-h-screen bg-background">
@@ -181,10 +187,6 @@ export default async function DashboardPage() {
   let pendingRequests: Awaited<ReturnType<typeof getPendingCoachRequests>> = []
   let coachAthleteIds: string[] = []
 
-  if (current.profile.role === 'coach') {
-    pendingRequests = await getPendingCoachRequests()
-  }
-
   const isCoachProfileComplete =
     current.profile.role === 'coach' &&
     (current.profile.full_name ?? '').trim() !== '' &&
@@ -199,20 +201,22 @@ export default async function DashboardPage() {
       .order('created_at', { ascending: false })
     visibleProfiles = (data ?? []) as Profile[]
   } else if (current.profile.role === 'coach') {
-    const { data: athletes } = await supabase
-      .from('profiles')
-      .select('user_id, email, full_name, role, coach_id, created_at, updated_at, practiced_sports, avatar_url')
-      .eq('coach_id', current.id)
-      .order('email')
-    visibleProfiles = (athletes ?? []) as Profile[]
-
-    // Données par athlète pour la vue coach (planifié jusqu'au, prochain objectif)
+    const [pendingResult, athletesResult] = await Promise.all([
+      getPendingCoachRequests(),
+      supabase
+        .from('profiles')
+        .select('user_id, email, full_name, role, coach_id, created_at, updated_at, practiced_sports, avatar_url')
+        .eq('coach_id', current.id)
+        .order('email'),
+    ])
+    pendingRequests = pendingResult
+    visibleProfiles = (athletesResult.data ?? []) as Profile[]
     coachAthleteIds = visibleProfiles.map((p) => p.user_id)
   } else {
     visibleProfiles = [current.profile as Profile]
   }
 
-  // Coach : chargement workouts + goals pour "Planifié jusqu'au" et "Prochain objectif"
+  // Coach : chargement workouts + goals en parallèle pour "Planifié jusqu'au" et "Prochain objectif"
   type CoachAthleteData = {
     plannedUntil: string | null
     nextGoal: { date: string; race_name: string } | null
@@ -220,15 +224,19 @@ export default async function DashboardPage() {
   }
   let coachAthleteData: Record<string, CoachAthleteData> = {}
   if (current.profile.role === 'coach' && coachAthleteIds.length > 0) {
-    const { data: workoutsRows } = await supabase
-      .from('workouts')
-      .select('athlete_id, date')
-      .in('athlete_id', coachAthleteIds)
-    const { data: goalsRows } = await supabase
-      .from('goals')
-      .select('athlete_id, date, race_name, is_primary')
-      .in('athlete_id', coachAthleteIds)
-      .order('date', { ascending: true })
+    const [workoutsResult, goalsResult] = await Promise.all([
+      supabase
+        .from('workouts')
+        .select('athlete_id, date')
+        .in('athlete_id', coachAthleteIds),
+      supabase
+        .from('goals')
+        .select('athlete_id, date, race_name, is_primary')
+        .in('athlete_id', coachAthleteIds)
+        .order('date', { ascending: true }),
+    ])
+    const workoutsRows = workoutsResult.data
+    const goalsRows = goalsResult.data
 
     const now = new Date()
     const todayStr =
