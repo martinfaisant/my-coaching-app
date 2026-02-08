@@ -1,3 +1,4 @@
+import { cache } from 'react'
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import type { Profile, Role } from '@/types/database'
@@ -8,16 +9,14 @@ export type CurrentUserWithProfile = {
   profile: Profile
 }
 
-/** Retourne l'utilisateur connecté et son profil. Crée le profil si absent (nouveau compte). Redirige vers /login si non connecté. */
-export async function getCurrentUserWithProfile(): Promise<CurrentUserWithProfile> {
+/** Déduplique auth + profil dans la même requête (ex: layout + page). */
+const getCachedUserAndProfile = cache(async (): Promise<CurrentUserWithProfile | null> => {
   const supabase = await createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
-  if (!user?.email) {
-    redirect('/login')
-  }
+  if (!user?.email) return null
 
   const { data: profile } = await supabase
     .from('profiles')
@@ -54,6 +53,13 @@ export async function getCurrentUserWithProfile(): Promise<CurrentUserWithProfil
     email: user.email,
     profile: profile as Profile,
   }
+})
+
+/** Retourne l'utilisateur connecté et son profil. Crée le profil si absent (nouveau compte). Redirige vers /login si non connecté. */
+export async function getCurrentUserWithProfile(): Promise<CurrentUserWithProfile> {
+  const result = await getCachedUserAndProfile()
+  if (!result) redirect('/login')
+  return result
 }
 
 /** Vérifie que l'utilisateur a l'un des rôles donnés. Redirige vers /dashboard si non autorisé. */

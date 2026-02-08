@@ -31,13 +31,19 @@ function formatMessageTime(iso: string): string {
   })
 }
 
-export function ChatModule() {
-  const [chatRole, setChatRole] = useState<ChatRoleResult>(null)
+type ChatModuleProps = {
+  /** Fourni par le layout dashboard pour éviter un appel client au montage */
+  initialChatRole?: ChatRoleResult | null
+}
+
+export function ChatModule({ initialChatRole }: ChatModuleProps = {}) {
+  const [chatRole, setChatRole] = useState<ChatRoleResult>(initialChatRole ?? null)
   const [open, setOpen] = useState(false)
 
   useEffect(() => {
+    if (initialChatRole !== undefined) return
     getChatRole().then(setChatRole)
-  }, [])
+  }, [initialChatRole])
 
   if (!chatRole) return null
   if (chatRole.role === 'athlete' && !chatRole.hasCoach) return null
