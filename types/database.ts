@@ -16,6 +16,8 @@ export type Profile = {
   presentation?: string | null
   avatar_url?: string | null
   postal_code?: string | null
+  /** Sport(s) pratiqué(s) par l'athlète (course, velo, natation, musculation). */
+  practiced_sports?: string[] | null
 }
 
 export type SportType = 'course' | 'musculation' | 'natation' | 'velo'

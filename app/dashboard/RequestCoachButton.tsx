@@ -5,34 +5,62 @@ import { useRouter } from 'next/navigation'
 import { PrimaryButton } from '@/components/PrimaryButton'
 import { createCoachRequest, cancelCoachRequest } from './actions'
 
+/** Mêmes sports que le profil athlète (Mon sport) et practiced_sports en base. */
+const PRACTICED_SPORTS_OPTIONS: { value: string; label: string; emoji: string }[] = [
+  { value: 'course', label: 'Course', emoji: '🏃' },
+  { value: 'velo', label: 'Vélo', emoji: '🚴' },
+  { value: 'natation', label: 'Natation', emoji: '🏊' },
+  { value: 'musculation', label: 'Musculation', emoji: '💪' },
+  { value: 'trail', label: 'Trail', emoji: '⛰️' },
+  { value: 'triathlon', label: 'Triathlon', emoji: '🏅' },
+]
+
 type RequestCoachButtonProps = {
   coachId: string
   coachName: string
   requestStatus: 'pending' | 'declined' | null
   /** Id de la demande (quand status === 'pending') pour permettre l'annulation */
   requestId?: string | null
+  /** Sports déjà renseignés dans le profil (préremplissent le formulaire à l'ouverture) */
+  initialPracticedSports?: string[]
 }
 
-export function RequestCoachButton({ coachId, coachName, requestStatus, requestId }: RequestCoachButtonProps) {
+/** Affiche les sports pratiqués (valeur stockée en base, ex. "course,velo") avec les libellés. */
+export function formatSportPracticedDisplay(value: string): string {
+  if (!value?.trim()) return '—'
+  const labels = value.split(',').map((v) => {
+    const opt = PRACTICED_SPORTS_OPTIONS.find((o) => o.value === v.trim())
+    return opt ? opt.label : v.trim()
+  })
+  return labels.filter(Boolean).join(', ')
+}
+
+export function RequestCoachButton({ coachId, coachName, requestStatus, requestId, initialPracticedSports = [] }: RequestCoachButtonProps) {
   const [open, setOpen] = useState(false)
   const [confirmCancelOpen, setConfirmCancelOpen] = useState(false)
-  const [sport, setSport] = useState('')
+  const [sports, setSports] = useState<string[]>(initialPracticedSports)
   const [need, setNeed] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
   const router = useRouter()
 
+  const toggleSport = (value: string) => {
+    setSports((prev) =>
+      prev.includes(value) ? prev.filter((s) => s !== value) : [...prev, value]
+    )
+  }
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
     startTransition(async () => {
-      const result = await createCoachRequest(coachId, sport.trim(), need.trim())
+      const result = await createCoachRequest(coachId, sports, need.trim())
       if (result.error) {
         setError(result.error)
         return
       }
       setOpen(false)
-      setSport('')
+      setSports([])
       setNeed('')
       router.refresh()
     })
@@ -49,12 +77,13 @@ export function RequestCoachButton({ coachId, coachName, requestStatus, requestI
     if (open) {
       document.addEventListener('keydown', handleEscape)
       document.body.style.overflow = 'hidden'
+      if (!isPending) setSports(initialPracticedSports?.length ? [...initialPracticedSports] : [])
     }
     return () => {
       document.removeEventListener('keydown', handleEscape)
       document.body.style.overflow = ''
     }
-  }, [open, isPending])
+  }, [open, isPending, initialPracticedSports])
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -206,18 +235,25 @@ export function RequestCoachButton({ coachId, coachName, requestStatus, requestI
               </p>
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div>
-                  <label htmlFor="sport" className="block text-sm font-medium text-stone-700 mb-2">
-                    Sport pratiqué
-                  </label>
-                  <input
-                    id="sport"
-                    type="text"
-                    value={sport}
-                    onChange={(e) => setSport(e.target.value)}
-                    required
-                    placeholder="Ex. Course à pied, Musculation..."
-                    className="w-full px-4 py-2.5 rounded-lg border border-stone-300 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-olive focus:border-transparent transition"
-                  />
+                  <p className="block text-sm font-medium text-stone-700 mb-3">Sports pratiqués</p>
+                  <div className="flex flex-wrap gap-3" role="group" aria-label="Sports pratiqués">
+                    {PRACTICED_SPORTS_OPTIONS.map((opt) => (
+                      <label key={opt.value} className="cursor-pointer">
+                        <input
+                          type="checkbox"
+                          name="sport_practiced"
+                          value={opt.value}
+                          checked={sports.includes(opt.value)}
+                          onChange={() => toggleSport(opt.value)}
+                          className="hidden chip-checkbox"
+                        />
+                        <div className="px-4 py-2 rounded-full border border-stone-200 bg-white text-stone-600 hover:border-[#627e59] transition-all text-sm font-medium select-none flex items-center gap-2">
+                          <span>{opt.emoji}</span>
+                          <span>{opt.label}</span>
+                        </div>
+                      </label>
+                    ))}
+                  </div>
                 </div>
                 <div>
                   <label htmlFor="need" className="block text-sm font-medium text-stone-700 mb-2">
@@ -247,7 +283,7 @@ export function RequestCoachButton({ coachId, coachName, requestStatus, requestI
                   </button>
                   <PrimaryButton
                     type="submit"
-                    disabled={isPending}
+                    disabled={isPending || sports.length === 0}
                     className="flex-1"
                   >
                     {isPending ? 'Envoi...' : 'Envoyer la demande'}
