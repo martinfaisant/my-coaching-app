@@ -1,19 +1,13 @@
 'use client'
 
 import { useState, useTransition, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
 import { PrimaryButton } from '@/components/PrimaryButton'
 import { createCoachRequest, cancelCoachRequest } from './actions'
+import { PRACTICED_SPORTS_OPTIONS } from './sportsOptions'
 
-/** Mêmes sports que le profil athlète (Mon sport) et practiced_sports en base. */
-const PRACTICED_SPORTS_OPTIONS: { value: string; label: string; emoji: string }[] = [
-  { value: 'course', label: 'Course', emoji: '🏃' },
-  { value: 'velo', label: 'Vélo', emoji: '🚴' },
-  { value: 'natation', label: 'Natation', emoji: '🏊' },
-  { value: 'musculation', label: 'Musculation', emoji: '💪' },
-  { value: 'trail', label: 'Trail', emoji: '⛰️' },
-  { value: 'triathlon', label: 'Triathlon', emoji: '🏅' },
-]
+export { PRACTICED_SPORTS_OPTIONS }
 
 type RequestCoachButtonProps = {
   coachId: string
@@ -107,8 +101,9 @@ export function RequestCoachButton({ coachId, coachName, requestStatus, requestI
         setError(result.error)
         return
       }
+      // Fermer la modale d'abord, puis refresh au prochain tick pour éviter un glitch visuel (vibration)
       setConfirmCancelOpen(false)
-      router.refresh()
+      setTimeout(() => router.refresh(), 0)
     })
   }
 
@@ -128,63 +123,66 @@ export function RequestCoachButton({ coachId, coachName, requestStatus, requestI
             >
               Annuler la demande
             </button>
-            {confirmCancelOpen && (
-              <div
-                className="fixed inset-0 z-50 flex items-center justify-center p-4"
-                role="dialog"
-                aria-modal="true"
-                aria-labelledby="confirm-cancel-title"
-              >
+            {confirmCancelOpen &&
+              typeof document !== 'undefined' &&
+              createPortal(
                 <div
-                  className="absolute inset-0 bg-palette-forest-dark/50 backdrop-blur-sm"
-                  onClick={() => { if (!isPending) { setError(null); setConfirmCancelOpen(false) } }}
-                  aria-hidden="true"
-                />
-                <div className="relative w-full max-w-md bg-white rounded-xl shadow-xl border border-stone-100">
-                  <div className="sticky top-0 flex justify-end p-3 bg-white rounded-t-xl z-10">
-                    <button
-                      type="button"
-                      onClick={() => { if (!isPending) { setError(null); setConfirmCancelOpen(false) } }}
-                      className="p-2 rounded-lg text-stone-400 hover:text-stone-600 hover:bg-stone-50 transition-colors"
-                      aria-label="Fermer"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M18 6 6 18" /><path d="m6 6 12 12" />
-                      </svg>
-                    </button>
-                  </div>
-                  <div className="px-8 pb-8">
-                    <h2 id="confirm-cancel-title" className="text-xl font-semibold text-stone-900 text-center mb-2">
-                      Annuler la demande ?
-                    </h2>
-                    <p className="text-sm text-stone-600 text-center mb-8">
-                      Êtes-vous sûr de vouloir annuler cette demande envoyée à ce coach ?
-                    </p>
-                    <div className="flex gap-3">
+                  className="fixed inset-0 z-50 flex items-center justify-center p-4"
+                  role="dialog"
+                  aria-modal="true"
+                  aria-labelledby="confirm-cancel-title"
+                >
+                  <div
+                    className="absolute inset-0 bg-palette-forest-dark/50 backdrop-blur-sm"
+                    onClick={() => { if (!isPending) { setError(null); setConfirmCancelOpen(false) } }}
+                    aria-hidden="true"
+                  />
+                  <div className="relative w-full max-w-md bg-white rounded-xl shadow-xl border border-stone-100">
+                    <div className="sticky top-0 flex justify-end p-3 bg-white rounded-t-xl z-10">
                       <button
                         type="button"
-                        onClick={() => { setError(null); setConfirmCancelOpen(false) }}
-                        disabled={isPending}
-                        className="flex-1 py-2.5 rounded-lg border border-stone-300 text-sm font-medium text-stone-700 hover:bg-stone-50 transition-colors disabled:opacity-50"
+                        onClick={() => { if (!isPending) { setError(null); setConfirmCancelOpen(false) } }}
+                        className="p-2 rounded-lg text-stone-400 hover:text-stone-600 hover:bg-stone-50 transition-colors"
+                        aria-label="Fermer"
                       >
-                        Retour
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M18 6 6 18" /><path d="m6 6 12 12" />
+                        </svg>
                       </button>
-                      <PrimaryButton
-                        type="button"
-                        onClick={handleConfirmCancel}
-                        disabled={isPending}
-                        className="flex-1"
-                      >
-                        {isPending ? 'Annulation...' : 'Oui, annuler'}
-                      </PrimaryButton>
                     </div>
-                    {error && (
-                      <p className="text-sm text-red-600 mt-4 text-center" role="alert">{error}</p>
-                    )}
+                    <div className="px-8 pb-8">
+                      <h2 id="confirm-cancel-title" className="text-xl font-semibold text-stone-900 text-center mb-2">
+                        Annuler la demande ?
+                      </h2>
+                      <p className="text-sm text-stone-600 text-center mb-8">
+                        Êtes-vous sûr de vouloir annuler cette demande envoyée à ce coach ?
+                      </p>
+                      <div className="flex gap-3">
+                        <button
+                          type="button"
+                          onClick={() => { setError(null); setConfirmCancelOpen(false) }}
+                          disabled={isPending}
+                          className="flex-1 py-2.5 rounded-lg border border-stone-300 text-sm font-medium text-stone-700 hover:bg-stone-50 transition-colors disabled:opacity-50"
+                        >
+                          Retour
+                        </button>
+                        <PrimaryButton
+                          type="button"
+                          onClick={handleConfirmCancel}
+                          disabled={isPending}
+                          className="flex-1"
+                        >
+                          {isPending ? 'Annulation...' : 'Oui, annuler'}
+                        </PrimaryButton>
+                      </div>
+                      {error && (
+                        <p className="text-sm text-red-600 mt-4 text-center" role="alert">{error}</p>
+                      )}
+                    </div>
                   </div>
-                </div>
-              </div>
-            )}
+                </div>,
+                document.body
+              )}
           </>
         )}
       </div>
@@ -201,99 +199,102 @@ export function RequestCoachButton({ coachId, coachName, requestStatus, requestI
         Choisir ce coach
       </PrimaryButton>
 
-      {open && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="request-coach-title"
-        >
+      {open &&
+        typeof document !== 'undefined' &&
+        createPortal(
           <div
-            className="absolute inset-0 bg-palette-forest-dark/50 backdrop-blur-sm"
-            onClick={closeModal}
-            aria-hidden="true"
-          />
-          <div className="relative w-full max-w-md max-h-[90vh] overflow-y-auto bg-white rounded-xl shadow-xl border border-stone-100">
-            <div className="sticky top-0 flex justify-end p-3 bg-white rounded-t-xl z-10">
-              <button
-                type="button"
-                onClick={closeModal}
-                className="p-2 rounded-lg text-stone-400 hover:text-stone-600 hover:bg-stone-50 transition-colors"
-                aria-label="Fermer"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M18 6 6 18" /><path d="m6 6 12 12" />
-                </svg>
-              </button>
-            </div>
-            <div className="px-8 pb-8">
-              <h2 id="request-coach-title" className="text-2xl font-semibold text-stone-900 text-center mb-2">
-                Demande de coaching
-              </h2>
-              <p className="text-sm text-stone-600 text-center mb-8">
-                Renseignez les informations ci-dessous. Le coach pourra accepter ou refuser votre demande.
-              </p>
-              <form onSubmit={handleSubmit} className="space-y-5">
-                <div>
-                  <p className="block text-sm font-medium text-stone-700 mb-3">Sports pratiqués</p>
-                  <div className="flex flex-wrap gap-3" role="group" aria-label="Sports pratiqués">
-                    {PRACTICED_SPORTS_OPTIONS.map((opt) => (
-                      <label key={opt.value} className="cursor-pointer">
-                        <input
-                          type="checkbox"
-                          name="sport_practiced"
-                          value={opt.value}
-                          checked={sports.includes(opt.value)}
-                          onChange={() => toggleSport(opt.value)}
-                          className="hidden chip-checkbox"
-                        />
-                        <div className="px-4 py-2 rounded-full border border-stone-200 bg-white text-stone-600 hover:border-[#627e59] transition-all text-sm font-medium select-none flex items-center gap-2">
-                          <span>{opt.emoji}</span>
-                          <span>{opt.label}</span>
-                        </div>
-                      </label>
-                    ))}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="request-coach-title"
+          >
+            <div
+              className="absolute inset-0 bg-palette-forest-dark/50 backdrop-blur-sm"
+              onClick={closeModal}
+              aria-hidden="true"
+            />
+            <div className="relative w-full max-w-md max-h-[90vh] overflow-y-auto bg-white rounded-xl shadow-xl border border-stone-100">
+              <div className="sticky top-0 flex justify-end p-3 bg-white rounded-t-xl z-10">
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  className="p-2 rounded-lg text-stone-400 hover:text-stone-600 hover:bg-stone-50 transition-colors"
+                  aria-label="Fermer"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M18 6 6 18" /><path d="m6 6 12 12" />
+                  </svg>
+                </button>
+              </div>
+              <div className="px-8 pb-8">
+                <h2 id="request-coach-title" className="text-2xl font-semibold text-stone-900 text-center mb-2">
+                  Demande de coaching
+                </h2>
+                <p className="text-sm text-stone-600 text-center mb-8">
+                  Renseignez les informations ci-dessous. Le coach pourra accepter ou refuser votre demande.
+                </p>
+                <form onSubmit={handleSubmit} className="space-y-5">
+                  <div>
+                    <p className="block text-sm font-medium text-stone-700 mb-3">Sports pratiqués</p>
+                    <div className="flex flex-wrap gap-3" role="group" aria-label="Sports pratiqués">
+                      {PRACTICED_SPORTS_OPTIONS.map((opt) => (
+                        <label key={opt.value} className="cursor-pointer">
+                          <input
+                            type="checkbox"
+                            name="sport_practiced"
+                            value={opt.value}
+                            checked={sports.includes(opt.value)}
+                            onChange={() => toggleSport(opt.value)}
+                            className="hidden chip-checkbox"
+                          />
+                          <div className="px-4 py-2 rounded-full border border-stone-200 bg-white text-stone-600 hover:border-[#627e59] transition-all text-sm font-medium select-none flex items-center gap-2">
+                            <span>{opt.emoji}</span>
+                            <span>{opt.label}</span>
+                          </div>
+                        </label>
+                      ))}
+                    </div>
                   </div>
-                </div>
-                <div>
-                  <label htmlFor="need" className="block text-sm font-medium text-stone-700 mb-2">
-                    Besoin de coaching
-                  </label>
-                  <textarea
-                    id="need"
-                    value={need}
-                    onChange={(e) => setNeed(e.target.value)}
-                    required
-                    rows={4}
-                    placeholder="Décrivez votre objectif ou votre besoin d'accompagnement..."
-                    className="w-full px-4 py-2.5 rounded-lg border border-stone-300 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-olive focus:border-transparent resize-y transition"
-                  />
-                </div>
-                {error && (
-                  <p className="text-sm text-red-600" role="alert">{error}</p>
-                )}
-                <div className="flex gap-3 pt-2">
-                  <button
-                    type="button"
-                    onClick={closeModal}
-                    disabled={isPending}
-                    className="flex-1 py-2.5 rounded-lg border border-stone-300 text-stone-700 font-medium hover:bg-stone-50 transition-colors disabled:opacity-50"
-                  >
-                    Annuler
-                  </button>
-                  <PrimaryButton
-                    type="submit"
-                    disabled={isPending || sports.length === 0}
-                    className="flex-1"
-                  >
-                    {isPending ? 'Envoi...' : 'Envoyer la demande'}
-                  </PrimaryButton>
-                </div>
-              </form>
+                  <div>
+                    <label htmlFor="need" className="block text-sm font-medium text-stone-700 mb-2">
+                      Besoin de coaching
+                    </label>
+                    <textarea
+                      id="need"
+                      value={need}
+                      onChange={(e) => setNeed(e.target.value)}
+                      required
+                      rows={4}
+                      placeholder="Décrivez votre objectif ou votre besoin d'accompagnement..."
+                      className="w-full px-4 py-2.5 rounded-lg border border-stone-300 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-olive focus:border-transparent resize-y transition"
+                    />
+                  </div>
+                  {error && (
+                    <p className="text-sm text-red-600" role="alert">{error}</p>
+                  )}
+                  <div className="flex gap-3 pt-2">
+                    <button
+                      type="button"
+                      onClick={closeModal}
+                      disabled={isPending}
+                      className="flex-1 py-2.5 rounded-lg border border-stone-300 text-stone-700 font-medium hover:bg-stone-50 transition-colors disabled:opacity-50"
+                    >
+                      Annuler
+                    </button>
+                    <PrimaryButton
+                      type="submit"
+                      disabled={isPending || sports.length === 0}
+                      className="flex-1"
+                    >
+                      {isPending ? 'Envoi...' : 'Envoyer la demande'}
+                    </PrimaryButton>
+                  </div>
+                </form>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body
+        )}
     </>
   )
 }

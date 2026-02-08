@@ -115,6 +115,7 @@ export type PendingRequestWithAthlete = {
   athlete_id: string
   athlete_name: string
   athlete_email: string
+  athlete_avatar_url: string | null
   sport_practiced: string
   coaching_need: string
   created_at: string
@@ -140,14 +141,16 @@ export async function getPendingCoachRequests(): Promise<PendingRequestWithAthle
   const athleteIds = [...new Set(rows.map((r) => r.athlete_id))]
   const { data: profiles } = await supabase
     .from('profiles')
-    .select('user_id, full_name, email')
+    .select('user_id, full_name, email, avatar_url')
     .in('user_id', athleteIds)
 
   const nameByUserId = new Map<string, string>()
   const emailByUserId = new Map<string, string>()
+  const avatarByUserId = new Map<string, string | null>()
   for (const p of profiles ?? []) {
     nameByUserId.set(p.user_id, p.full_name?.trim() || p.email)
     emailByUserId.set(p.user_id, p.email)
+    avatarByUserId.set(p.user_id, p.avatar_url ?? null)
   }
 
   return rows.map((r) => ({
@@ -155,6 +158,7 @@ export async function getPendingCoachRequests(): Promise<PendingRequestWithAthle
     athlete_id: r.athlete_id,
     athlete_name: nameByUserId.get(r.athlete_id) ?? emailByUserId.get(r.athlete_id) ?? '—',
     athlete_email: emailByUserId.get(r.athlete_id) ?? '',
+    athlete_avatar_url: avatarByUserId.get(r.athlete_id) ?? null,
     sport_practiced: r.sport_practiced,
     coaching_need: r.coaching_need,
     created_at: r.created_at,
