@@ -264,6 +264,9 @@ const EMPTY_FAIT: WeekFaitBySport = {
   velo: { minutes: 0, distanceKm: 0 },
   natation: { minutes: 0, distanceKm: 0 },
   musculation: { minutes: 0, distanceKm: 0 },
+  nordic_ski: { minutes: 0, distanceKm: 0 },
+  backcountry_ski: { minutes: 0, distanceKm: 0 },
+  ice_skating: { minutes: 0, distanceKm: 0 },
 }
 
 export function CalendarView({
