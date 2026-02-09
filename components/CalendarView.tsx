@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
 import { WorkoutModal } from './WorkoutModal'
 import { IconRunning, IconBiking, IconSwimming, IconDumbbell, IconNordicSki, IconBackcountrySki, IconIceSkating } from './SportIcons'
@@ -53,14 +54,14 @@ const SPORT_CARD_STYLES: Record<
     badgeBg: 'bg-stone-100',
   },
   nordic_ski: {
-    borderLeft: 'border-l-blue-600',
-    badge: 'text-blue-700',
-    badgeBg: 'bg-blue-50',
+    borderLeft: 'border-l-[#aaaa51]',
+    badge: 'text-[#aaaa51]',
+    badgeBg: 'bg-[#aaaa51]/10',
   },
   backcountry_ski: {
-    borderLeft: 'border-l-indigo-600',
-    badge: 'text-indigo-700',
-    badgeBg: 'bg-indigo-50',
+    borderLeft: 'border-l-[#cbb44b]',
+    badge: 'text-[#cbb44b]',
+    badgeBg: 'bg-[#cbb44b]/10',
   },
   ice_skating: {
     borderLeft: 'border-l-cyan-600',
@@ -98,15 +99,15 @@ const SPORT_COLORS: Record<
     comment: 'text-palette-olive',
   },
   nordic_ski: {
-    bg: 'bg-blue-50',
-    border: 'border-blue-600',
-    text: 'text-blue-700',
+    bg: 'bg-[#aaaa51]/10',
+    border: 'border-[#aaaa51]',
+    text: 'text-[#aaaa51]',
     comment: 'text-palette-olive',
   },
   backcountry_ski: {
-    bg: 'bg-indigo-50',
-    border: 'border-indigo-600',
-    text: 'text-indigo-700',
+    bg: 'bg-[#cbb44b]/10',
+    border: 'border-[#cbb44b]',
+    text: 'text-[#cbb44b]',
     comment: 'text-palette-olive',
   },
   ice_skating: {
@@ -290,6 +291,9 @@ export function CalendarView({
   const [goalModalOpen, setGoalModalOpen] = useState(false)
   const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null)
   const [selectedImportedActivity, setSelectedImportedActivity] = useState<ImportedActivity | null>(null)
+  const [extraActivitiesModalOpen, setExtraActivitiesModalOpen] = useState(false)
+  const [extraActivitiesList, setExtraActivitiesList] = useState<Array<{ type: 'workout'; item: Workout; dateStr: string } | { type: 'imported'; item: ImportedActivity; dateStr: string }>>([])
+  const [extraActivitiesModalDate, setExtraActivitiesModalDate] = useState<string | null>(null)
 
   const openGoal = (goal: Goal) => {
     setSelectedGoal(goal)
@@ -700,10 +704,18 @@ export function CalendarView({
                                 {formatDist(fait?.velo?.distanceKm ?? 0)} km / {formatDist(prevu?.velo?.distanceKm ?? 0)} km
                               </span>
                             ) : null}
-                            {(prevu?.natation?.distanceKm ?? 0) > 0 || (fait?.natation?.distanceKm ?? 0) > 0 ? (
-                              <span className="flex items-center gap-1.5 text-sky-600" title="Natation : distance faite / prévue">
+                            {((prevu?.natation?.distanceKm ?? 0) > 0 || (fait?.natation?.distanceKm ?? 0) > 0 || (prevu?.natation?.minutes ?? 0) > 0 || (fait?.natation?.minutes ?? 0) > 0) ? (
+                              <span className="flex items-center gap-1.5 text-sky-600" title="Natation : distance ou temps réalisé / prévu">
                                 <IconSwimming className="w-3.5 h-3.5" />
-                                {formatDist(fait?.natation?.distanceKm ?? 0)} km / {formatDist(prevu?.natation?.distanceKm ?? 0)} km
+                                {(prevu?.natation?.distanceKm ?? 0) > 0 || (fait?.natation?.distanceKm ?? 0) > 0 ? (
+                                  <>
+                                    {formatDist(fait?.natation?.distanceKm ?? 0)} km / {formatDist(prevu?.natation?.distanceKm ?? 0)} km
+                                  </>
+                                ) : (
+                                  <>
+                                    {formatDuration(fait?.natation?.minutes ?? 0)} / {formatDuration(prevu?.natation?.minutes ?? 0)}
+                                  </>
+                                )}
                               </span>
                             ) : null}
                             {(prevu?.musculation?.minutes ?? 0) > 0 || (fait?.musculation?.minutes ?? 0) > 0 ? (
@@ -713,13 +725,13 @@ export function CalendarView({
                               </span>
                             ) : null}
                             {(prevu?.nordic_ski?.distanceKm ?? 0) > 0 || (fait?.nordic_ski?.distanceKm ?? 0) > 0 ? (
-                              <span className="flex items-center gap-1.5 text-blue-600" title="Ski de fond : distance faite / prévue">
+                              <span className="flex items-center gap-1.5 text-[#aaaa51]" title="Ski de fond : distance faite / prévue">
                                 <IconNordicSki className="w-3.5 h-3.5" />
                                 {formatDist(fait?.nordic_ski?.distanceKm ?? 0)} km / {formatDist(prevu?.nordic_ski?.distanceKm ?? 0)} km
                               </span>
                             ) : null}
                             {(prevu?.backcountry_ski?.distanceKm ?? 0) > 0 || (fait?.backcountry_ski?.distanceKm ?? 0) > 0 ? (
-                              <span className="flex items-center gap-1.5 text-indigo-600" title="Ski de randonnée : distance faite / prévue">
+                              <span className="flex items-center gap-1.5 text-[#cbb44b]" title="Ski de randonnée : distance faite / prévue">
                                 <IconBackcountrySki className="w-3.5 h-3.5" />
                                 {formatDist(fait?.backcountry_ski?.distanceKm ?? 0)} km / {formatDist(prevu?.backcountry_ski?.distanceKm ?? 0)} km
                               </span>
@@ -749,10 +761,19 @@ export function CalendarView({
                 const sports = [
                   { key: 'course' as const, Icon: IconRunning, color: 'text-[#627e59]', bg: 'bg-[#627e59]', label: 'Run', prevuVal: prevu?.course?.distanceKm ?? 0, faitVal: fait?.course?.distanceKm ?? 0, useTime: false },
                   { key: 'velo' as const, Icon: IconBiking, color: 'text-[#8e9856]', bg: 'bg-[#8e9856]', label: 'Vélo', prevuVal: prevu?.velo?.distanceKm ?? 0, faitVal: fait?.velo?.distanceKm ?? 0, useTime: false },
-                  { key: 'natation' as const, Icon: IconSwimming, color: 'text-sky-600', bg: 'bg-sky-500', label: 'Nage', prevuVal: prevu?.natation?.distanceKm ?? 0, faitVal: fait?.natation?.distanceKm ?? 0, useTime: false },
+                  { 
+                    key: 'natation' as const, 
+                    Icon: IconSwimming, 
+                    color: 'text-sky-600', 
+                    bg: 'bg-sky-500', 
+                    label: 'Nage', 
+                    prevuVal: (prevu?.natation?.distanceKm ?? 0) > 0 ? (prevu?.natation?.distanceKm ?? 0) : (prevu?.natation?.minutes ?? 0), 
+                    faitVal: (fait?.natation?.distanceKm ?? 0) > 0 ? (fait?.natation?.distanceKm ?? 0) : (fait?.natation?.minutes ?? 0), 
+                    useTime: (prevu?.natation?.distanceKm ?? 0) === 0 && (fait?.natation?.distanceKm ?? 0) === 0 
+                  },
                   { key: 'musculation' as const, Icon: IconDumbbell, color: 'text-stone-600', bg: 'bg-stone-500', label: 'Muscu', prevuVal: prevu?.musculation?.minutes ?? 0, faitVal: fait?.musculation?.minutes ?? 0, useTime: true },
-                  { key: 'nordic_ski' as const, Icon: IconNordicSki, color: 'text-blue-600', bg: 'bg-blue-500', label: 'Ski de fond', prevuVal: prevu?.nordic_ski?.distanceKm ?? 0, faitVal: fait?.nordic_ski?.distanceKm ?? 0, useTime: false },
-                  { key: 'backcountry_ski' as const, Icon: IconBackcountrySki, color: 'text-indigo-600', bg: 'bg-indigo-500', label: 'Ski Rando', prevuVal: prevu?.backcountry_ski?.distanceKm ?? 0, faitVal: fait?.backcountry_ski?.distanceKm ?? 0, useTime: false },
+                  { key: 'nordic_ski' as const, Icon: IconNordicSki, color: 'text-[#aaaa51]', bg: 'bg-[#aaaa51]', label: 'Ski de fond', prevuVal: prevu?.nordic_ski?.distanceKm ?? 0, faitVal: fait?.nordic_ski?.distanceKm ?? 0, useTime: false },
+                  { key: 'backcountry_ski' as const, Icon: IconBackcountrySki, color: 'text-[#cbb44b]', bg: 'bg-[#cbb44b]', label: 'Ski Rando', prevuVal: prevu?.backcountry_ski?.distanceKm ?? 0, faitVal: fait?.backcountry_ski?.distanceKm ?? 0, useTime: false },
                   { key: 'ice_skating' as const, Icon: IconIceSkating, color: 'text-cyan-600', bg: 'bg-cyan-500', label: 'Patin', prevuVal: prevu?.ice_skating?.distanceKm ?? 0, faitVal: fait?.ice_skating?.distanceKm ?? 0, useTime: false },
                 ].filter(s => s.prevuVal > 0 || s.faitVal > 0)
                 return (
@@ -820,20 +841,28 @@ export function CalendarView({
               })()}
               <div className={`grid grid-cols-7 gap-2 min-w-[800px] overflow-x-auto hide-scroll items-stretch ${isDetailed ? 'gap-3' : ''}`}>
                 {isCondensed &&
-                  week.days.map((day) => {
+                  <>
+                  {week.days.map((day) => {
                     const dayWorkouts = workoutsByDate[day.dateStr] ?? []
                     const dayImported = importedByDate[day.dateStr] ?? []
                     const firstWorkout = dayWorkouts[0]
                     const firstImported = dayImported[0]
                     const isEmpty = !firstWorkout && !firstImported
-                    const showAddInCondensed = wi === 2 && canEdit && !day.isPast && isEmpty
-                    const showAddAtBottom = wi === 2 && canEdit && !day.isPast && !isEmpty
+                    const showAddInCondensed = (wi === 0 || wi === 2) && canEdit && !day.isPast && isEmpty
+                    const showAddAtBottom = (wi === 0 || wi === 2) && canEdit && !day.isPast && !isEmpty
+                    const dayTotal = dayWorkouts.length + dayImported.length
+                    const dayExtraCount = dayTotal > 1 ? dayTotal - 1 : 0
+                    const dayFullList: Array<{ type: 'workout'; item: Workout; dateStr: string } | { type: 'imported'; item: ImportedActivity; dateStr: string }> = []
+                    if (dayTotal > 0) {
+                      dayWorkouts.forEach((workout) => dayFullList.push({ type: 'workout', item: workout, dateStr: day.dateStr }))
+                      dayImported.forEach((act) => dayFullList.push({ type: 'imported', item: act, dateStr: day.dateStr }))
+                    }
                     return (
                       <div
                         key={day.dateStr}
                         onClick={showAddInCondensed ? () => openDay(day.dateStr, day.isPast) : undefined}
                         role={showAddInCondensed ? 'button' : undefined}
-                        className={`h-24 rounded-lg border border-stone-200 p-1.5 flex flex-col min-h-0 ${
+                        className={`min-h-24 rounded-lg border border-stone-200 p-1.5 flex flex-col ${
                           showAddInCondensed
                             ? 'border-2 border-dashed border-stone-300 justify-center items-center cursor-pointer hover:border-[#627e59] hover:bg-[#627e59]/5 transition-all group'
                             : isEmpty
@@ -875,6 +904,22 @@ export function CalendarView({
                                 )
                               })()}
                             </div>
+                            {(wi === 0 || wi === 2) && dayExtraCount > 0 && (
+                              <div className="flex-1 min-h-0 flex items-center justify-center pt-1.5">
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    setExtraActivitiesList(dayFullList)
+                                    setExtraActivitiesModalDate(day.dateStr)
+                                    setExtraActivitiesModalOpen(true)
+                                  }}
+                                  className="w-full text-center text-[10px] font-medium text-[#627e59] py-0.5 rounded border border-[#627e59]/30 bg-[#627e59]/5 hover:bg-[#627e59]/10 hover:border-[#627e59]/50 transition-colors cursor-pointer"
+                                >
+                                  {dayExtraCount} autre{dayExtraCount > 1 ? 's' : ''}
+                                </button>
+                              </div>
+                            )}
                             <div
                               className="shrink-0 w-full flex justify-center pt-1"
                               onClick={(e) => { e.stopPropagation(); openDay(day.dateStr, day.isPast) }}
@@ -890,36 +935,52 @@ export function CalendarView({
                           </>
                         ) : (
                           <>
-                            {firstWorkout && renderCompactCard(firstWorkout, day.dateStr)}
-                            {!firstWorkout && firstImported && (() => {
-                              const target = formatImportedActivityTarget(firstImported)
-                              return (
-                                <div
-                                  onClick={(e) => { e.stopPropagation(); setSelectedImportedActivity(firstImported) }}
-                                  className="bg-white rounded border-l-4 border-[#FC4C02] h-full p-1.5 flex flex-col justify-between cursor-pointer training-card w-full"
-                                  role="button"
-                                >
-                                  <div>
-                                    <div className="inline-flex items-center gap-1 align-middle">
-                                      <img src="/strava-icon.svg" alt="" className="h-3.5 w-3.5 shrink-0" aria-hidden />
-                                      <span className="text-[9px] font-bold uppercase text-[#FC4C02] bg-orange-100 px-1 py-0.5 rounded leading-none">
-                                        {getImportedActivityTypeLabel(firstImported)}
-                                      </span>
+                            <div className="min-h-0 overflow-hidden shrink-0 flex flex-col gap-0.5">
+                              {firstWorkout && renderCompactCard(firstWorkout, day.dateStr)}
+                              {!firstWorkout && firstImported && (() => {
+                                const target = formatImportedActivityTarget(firstImported)
+                                return (
+                                  <div
+                                    onClick={(e) => { e.stopPropagation(); setSelectedImportedActivity(firstImported) }}
+                                    className="bg-white rounded border-l-4 border-[#FC4C02] h-full p-1.5 flex flex-col justify-between cursor-pointer training-card w-full"
+                                    role="button"
+                                  >
+                                    <div>
+                                      <div className="inline-flex items-center gap-1 align-middle">
+                                        <img src="/strava-icon.svg" alt="" className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                                        <span className="text-[9px] font-bold uppercase text-[#FC4C02] bg-orange-100 px-1 py-0.5 rounded leading-none">
+                                          {getImportedActivityTypeLabel(firstImported)}
+                                        </span>
+                                      </div>
+                                      <div className="text-xs font-semibold text-stone-700 mt-1 truncate">{firstImported.title}</div>
                                     </div>
-                                    <div className="text-xs font-semibold text-stone-700 mt-1 truncate">{firstImported.title}</div>
+                                    {target.primary && (
+                                      <div className="flex items-center gap-1 text-[10px] text-stone-400 font-medium">
+                                        {target.hasDistance ? (
+                                          <><MapIcon /><span>{target.primary}</span>{target.secondary && <><span className="w-px h-2.5 bg-stone-300" /><MountainIcon /><span>{target.secondary}</span></>}</>
+                                        ) : (
+                                          <><ClockIcon /><span>{target.primary}</span></>
+                                        )}
+                                      </div>
+                                    )}
                                   </div>
-                                  {target.primary && (
-                                    <div className="flex items-center gap-1 text-[10px] text-stone-400 font-medium">
-                                      {target.hasDistance ? (
-                                        <><MapIcon /><span>{target.primary}</span>{target.secondary && <><span className="w-px h-2.5 bg-stone-300" /><MountainIcon /><span>{target.secondary}</span></>}</>
-                                      ) : (
-                                        <><ClockIcon /><span>{target.primary}</span></>
-                                      )}
-                                    </div>
-                                  )}
-                                </div>
-                              )
-                            })()}
+                                )
+                              })()}
+                              {(wi === 0 || wi === 2) && dayExtraCount > 0 && (
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    setExtraActivitiesList(dayFullList)
+                                    setExtraActivitiesModalDate(day.dateStr)
+                                    setExtraActivitiesModalOpen(true)
+                                  }}
+                                  className="shrink-0 w-full text-center text-[10px] font-medium text-[#627e59] py-0.5 rounded border border-[#627e59]/30 bg-[#627e59]/5 hover:bg-[#627e59]/10 hover:border-[#627e59]/50 transition-colors cursor-pointer mt-1.5"
+                                >
+                                  {dayExtraCount} autre{dayExtraCount > 1 ? 's' : ''}
+                                </button>
+                              )}
+                            </div>
                             {showAddInCondensed && (
                               <div className="w-8 h-8 rounded-full bg-white border border-stone-300 flex items-center justify-center text-stone-300 shadow-sm group-hover:text-white group-hover:bg-[#627e59] group-hover:border-[#627e59] transition-all transform group-hover:scale-110">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -932,7 +993,9 @@ export function CalendarView({
                       </div>
                     )
                   })}
-                {isDetailed &&
+                  </>
+                }
+                {isDetailed && (
                   week.days.map((day) => {
                     const dayWorkouts = workoutsByDate[day.dateStr] ?? []
                     const dayImported = importedByDate[day.dateStr] ?? []
@@ -945,20 +1008,14 @@ export function CalendarView({
                           className={`shrink-0 text-center pb-2 border-b ${day.isToday ? 'border-b-2 border-[#627e59]' : 'border-stone-200'}`}
                         >
                           <span
-                            className={`block text-xs font-semibold uppercase ${day.isToday ? 'text-[#627e59]' : 'text-stone-500'}`}
+                            className={`inline-flex items-center justify-center gap-1.5 text-sm font-semibold ${day.isToday ? 'text-[#627e59]' : 'text-stone-600'}`}
                           >
-                            {day.dayName}
+                            <span className="uppercase">{day.dayName}.</span>
+                            <span className={day.isToday ? 'font-bold' : ''}>{day.label}</span>
                           </span>
-                          {day.isToday ? (
-                            <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#627e59] text-white shadow-md text-xl font-bold mt-1">
-                              {day.label}
-                            </div>
-                          ) : (
-                            <span className="block text-xl font-bold text-stone-800">{day.label}</span>
-                          )}
                         </div>
                         <div
-                          className={`flex-1 min-h-[320px] rounded-xl border p-1.5 flex flex-col gap-3 overflow-y-auto ${
+                          className={`flex-1 min-h-[202px] rounded-xl border p-1.5 flex flex-col gap-3 overflow-y-auto ${
                             day.isToday
                               ? 'bg-[#627e59]/5 border-[#627e59]/30 shadow-inner'
                               : hasContent
@@ -1041,7 +1098,7 @@ export function CalendarView({
                               </div>
                               {canAddWorkout && (
                                 <div
-                                  className="shrink-0 w-full flex justify-center pt-1"
+                                  className="flex-1 min-h-0 flex items-center justify-center"
                                   onClick={(e) => { e.stopPropagation(); openDay(day.dateStr, day.isPast) }}
                                   role="button"
                                   aria-label="Ajouter un entraînement"
@@ -1055,7 +1112,7 @@ export function CalendarView({
                               )}
                             </>
                           ) : canAddWorkout ? (
-                            <div className="flex-1 flex items-center justify-center min-h-[200px]">
+                            <div className="flex-1 flex items-center justify-center min-h-[126px]">
                               <div className="w-10 h-10 rounded-full bg-white border border-stone-300 flex items-center justify-center text-stone-300 shadow-sm group-hover:text-white group-hover:bg-[#627e59] group-hover:border-[#627e59] transition-all transform group-hover:scale-110">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
@@ -1066,7 +1123,8 @@ export function CalendarView({
                         </div>
                       </div>
                     )
-                  })}
+                  })
+                )}
               </div>
             </section>
           )
@@ -1083,6 +1141,107 @@ export function CalendarView({
         canEdit={canEdit}
         workout={modalWorkout}
       />
+
+      {extraActivitiesModalOpen && extraActivitiesList.length > 0 && typeof document !== 'undefined' && createPortal(
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="extra-activities-modal-title"
+        >
+          <div
+            className="absolute inset-0 bg-stone-900/40 backdrop-blur-sm"
+            onClick={() => { setExtraActivitiesModalOpen(false); setExtraActivitiesModalDate(null) }}
+            aria-hidden="true"
+          />
+          <div className="relative w-full max-w-md max-h-[80vh] rounded-xl border-2 border-palette-forest-dark bg-white shadow-xl flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between gap-2 p-4 border-b border-stone-200">
+              <h2 id="extra-activities-modal-title" className="text-lg font-semibold text-stone-900">
+                {extraActivitiesModalDate
+                  ? (() => {
+                      const s = new Date(extraActivitiesModalDate + 'T12:00:00').toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+                      return s.charAt(0).toUpperCase() + s.slice(1)
+                    })()
+                  : 'Activités du jour'}
+              </h2>
+              <button
+                type="button"
+                onClick={() => { setExtraActivitiesModalOpen(false); setExtraActivitiesModalDate(null) }}
+                className="p-2 rounded-lg text-stone-500 hover:text-stone-700 hover:bg-stone-100 transition-colors"
+                aria-label="Fermer"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M18 6 6 18" />
+                  <path d="m6 6 12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="overflow-y-auto p-4 space-y-2">
+              {extraActivitiesList.map((entry) => {
+                if (entry.type === 'workout') {
+                  const style = SPORT_CARD_STYLES[entry.item.sport_type]
+                  const SportIcon = SPORT_ICONS[entry.item.sport_type]
+                  return (
+                    <button
+                      key={`w-${entry.item.id}`}
+                      type="button"
+                      onClick={() => {
+                        setExtraActivitiesModalOpen(false)
+                        setExtraActivitiesModalDate(null)
+                        openWorkout(entry.dateStr, entry.item)
+                      }}
+                      className="w-full text-left rounded-lg border border-stone-200 bg-white p-3 shadow-sm hover:border-[#627e59] hover:bg-[#627e59]/5 transition-all flex items-center gap-3"
+                    >
+                      <span className={`shrink-0 inline-flex ${style.badge} ${style.badgeBg} px-2 py-1 rounded`}>
+                        <SportIcon className="w-4 h-4" />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <div className="font-semibold text-stone-900 truncate">{entry.item.title}</div>
+                        <div className="text-xs text-stone-500">
+                          {new Date(entry.dateStr + 'T12:00:00').toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })}
+                        </div>
+                      </div>
+                    </button>
+                  )
+                }
+                const a = entry.item
+                const target = formatImportedActivityTarget(a)
+                return (
+                  <button
+                    key={`i-${a.id}`}
+                    type="button"
+                    onClick={() => {
+                      setExtraActivitiesModalOpen(false)
+                      setExtraActivitiesModalDate(null)
+                      setSelectedImportedActivity(a)
+                    }}
+                    className="w-full text-left rounded-lg border border-l-4 border-l-[#FC4C02] border-stone-200 bg-white p-3 shadow-sm hover:bg-orange-50 transition-all flex items-center gap-3"
+                  >
+                    <img src="/strava-icon.svg" alt="" className="h-5 w-5 shrink-0" aria-hidden />
+                    <div className="min-w-0 flex-1">
+                      <div className="font-semibold text-stone-900 truncate">{a.title}</div>
+                      <div className="text-xs text-stone-500">
+                        {new Date(entry.dateStr + 'T12:00:00').toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })}
+                        {target.primary && ` · ${target.primary}`}
+                      </div>
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
+            <div className="p-4 border-t border-stone-200">
+              <button
+                type="button"
+                onClick={() => { setExtraActivitiesModalOpen(false); setExtraActivitiesModalDate(null) }}
+                className="w-full rounded-lg border-2 border-palette-forest-dark px-4 py-2 text-sm font-medium text-stone-700 hover:bg-stone-50 transition-colors"
+              >
+                Fermer
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
 
       {goalModalOpen && selectedGoal && (
         <div

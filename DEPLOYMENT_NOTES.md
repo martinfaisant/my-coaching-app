@@ -11,7 +11,17 @@ feat: Ajout des sports nordic ski, backcountry ski et patin à glace
 ### ⚠️ IMPORTANT : Ordre d'exécution
 Les migrations doivent être exécutées **dans l'ordre** car chaque migration dépend de la précédente.
 
-### 1. Migration pour le champ target_pace (vitesse/allure)
+### 1. Migration pour les totaux hebdomadaires des activités importées
+**Fichier :** `supabase/migrations/024_imported_activity_weekly_totals_table.sql`
+
+**Description :** Remplace la vue `v_imported_activity_weekly_totals` par une table `imported_activity_weekly_totals` alimentée par un trigger. Permet au calendrier d'afficher les totaux « réalisé » (activités importées) sans recalcul à chaque requête.
+
+**Tables créées / modifiées :**
+- Suppression de la vue `v_imported_activity_weekly_totals`
+- Création de la table `imported_activity_weekly_totals`
+- Fonction `sync_imported_activity_weekly_totals()` et trigger associé
+
+### 2. Migration pour le champ target_pace (vitesse/allure)
 **Fichier :** `supabase/migrations/025_workout_target_pace.sql`
 
 **Description :** Ajoute le champ `target_pace` à la table `workouts` pour permettre le calcul automatique de durée ou distance.
@@ -19,7 +29,7 @@ Les migrations doivent être exécutées **dans l'ordre** car chaque migration d
 **Tables modifiées :**
 - `workouts` (ajout de la colonne `target_pace`)
 
-### 2. Migration pour les totaux hebdomadaires précalculés
+### 3. Migration pour les totaux hebdomadaires précalculés (entraînements)
 **Fichier :** `supabase/migrations/026_workout_weekly_totals.sql`
 
 **Description :** Crée la table `workout_weekly_totals` et le trigger associé pour précalculer les totaux hebdomadaires par sport. Cette table accélère l'affichage du calendrier.
@@ -30,7 +40,7 @@ Les migrations doivent être exécutées **dans l'ordre** car chaque migration d
 - Fonction `sync_workout_weekly_totals()`
 - Trigger `trigger_sync_workout_weekly_totals`
 
-### 3. Migration pour nordic_ski
+### 4. Migration pour nordic_ski
 **Fichier :** `supabase/migrations/027_add_nordic_ski_sport_type.sql`
 
 **Description :** Ajoute le type `nordic_ski` aux contraintes CHECK de toutes les tables concernées.
@@ -41,7 +51,7 @@ Les migrations doivent être exécutées **dans l'ordre** car chaque migration d
 - `imported_activity_weekly_totals`
 - `workout_weekly_totals`
 
-### 4. Migration pour backcountry_ski
+### 5. Migration pour backcountry_ski
 **Fichier :** `supabase/migrations/028_add_backcountry_ski_sport_type.sql`
 
 **Description :** Ajoute le type `backcountry_ski` aux contraintes CHECK de toutes les tables concernées.
@@ -52,7 +62,7 @@ Les migrations doivent être exécutées **dans l'ordre** car chaque migration d
 - `imported_activity_weekly_totals`
 - `workout_weekly_totals`
 
-### 5. Migration pour ice_skating
+### 6. Migration pour ice_skating
 **Fichier :** `supabase/migrations/029_add_ice_skating_sport_type.sql`
 
 **Description :** Ajoute le type `ice_skating` aux contraintes CHECK de toutes les tables concernées.

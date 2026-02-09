@@ -116,6 +116,9 @@ export async function createWorkout(
   }
 
   const target_pace = paceRaw && paceRaw !== '' && Number(paceRaw) > 0 ? Number(paceRaw) : null
+  if (['course', 'velo', 'natation'].includes(sportType) && (target_pace == null || target_pace <= 0)) {
+    return { error: 'La vitesse (allure ou km/h) est obligatoire pour ce sport.' }
+  }
 
   const { error } = await supabase.from('workouts').insert({
     athlete_id: athleteId,
@@ -161,6 +164,7 @@ export async function updateWorkout(
     .single()
   if (athleteProfile?.coach_id !== user.id) return { error: 'Non autorisé.' }
 
+  const date = formData.get('date') as string
   const sportType = formData.get('sport_type') as SportType
   const title = (formData.get('title') as string)?.trim()
   const description = (formData.get('description') as string)?.trim()
@@ -169,7 +173,7 @@ export async function updateWorkout(
   const elevationRaw = (formData.get('target_elevation_m') as string)?.trim()
   const paceRaw = (formData.get('target_pace') as string)?.trim()
 
-  if (!sportType || !title) {
+  if (!date || !sportType || !title) {
     return { error: 'Tous les champs sont obligatoires.' }
   }
   if (!['course', 'musculation', 'natation', 'velo'].includes(sportType)) {
@@ -187,10 +191,14 @@ export async function updateWorkout(
   }
 
   const target_pace = paceRaw && paceRaw !== '' && Number(paceRaw) > 0 ? Number(paceRaw) : null
+  if (['course', 'velo', 'natation'].includes(sportType) && (target_pace == null || target_pace <= 0)) {
+    return { error: 'La vitesse (allure ou km/h) est obligatoire pour ce sport.' }
+  }
 
   const { error } = await supabase
     .from('workouts')
     .update({
+      date,
       sport_type: sportType,
       title,
       description: description ?? '',
