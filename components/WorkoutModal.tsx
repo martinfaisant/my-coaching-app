@@ -61,6 +61,7 @@ export function WorkoutModal({
   const [targetDurationMinutes, setTargetDurationMinutes] = useState<string>('')
   const [targetDistanceKm, setTargetDistanceKm] = useState<string>('')
   const [targetElevationM, setTargetElevationM] = useState<string>('')
+  const [targetPace, setTargetPace] = useState<string>('')
   const [commentText, setCommentText] = useState('')
   const [commentSaveStatus, setCommentSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
   const [commentSaveMessage, setCommentSaveMessage] = useState<string | null>(null)
@@ -91,6 +92,7 @@ export function WorkoutModal({
       setTargetDurationMinutes(workout.target_duration_minutes != null ? String(workout.target_duration_minutes) : '')
       setTargetDistanceKm(workout.target_distance_km != null ? String(workout.target_distance_km) : '')
       setTargetElevationM(workout.target_elevation_m != null ? String(workout.target_elevation_m) : '')
+      setTargetPace(workout.target_pace != null ? String(workout.target_pace) : '')
       setTargetMode(
         workout.target_distance_km != null && workout.target_distance_km > 0 ? 'distance' : 'time'
       )
@@ -103,6 +105,7 @@ export function WorkoutModal({
       setTargetDurationMinutes('')
       setTargetDistanceKm('')
       setTargetElevationM('')
+      setTargetPace('')
       setCommentText('')
     }
     if (!isOpen) {
@@ -113,6 +116,58 @@ export function WorkoutModal({
   useEffect(() => {
     if (sportType === 'musculation') setTargetMode('time')
   }, [sportType])
+
+  // Calcul automatique avec la vitesse
+  useEffect(() => {
+    if (!hasTimeDistanceChoice || !targetPace || Number(targetPace) <= 0) return
+
+    const pace = Number(targetPace)
+
+    if (sportType === 'course') {
+      // Course : min/km
+      if (targetMode === 'distance' && targetDistanceKm && Number(targetDistanceKm) > 0) {
+        // Distance + vitesse => calculer durée
+        const distance = Number(targetDistanceKm)
+        const duration = distance * pace
+        setTargetDurationMinutes(String(Math.round(duration)))
+      } else if (targetMode === 'time' && targetDurationMinutes && Number(targetDurationMinutes) > 0) {
+        // Durée + vitesse => calculer distance
+        const duration = Number(targetDurationMinutes)
+        const distance = duration / pace
+        setTargetDistanceKm(distance.toFixed(2))
+      }
+    } else if (sportType === 'velo') {
+      // Vélo : km/h
+      if (targetMode === 'distance' && targetDistanceKm && Number(targetDistanceKm) > 0) {
+        // Distance + vitesse => calculer durée
+        const distance = Number(targetDistanceKm)
+        const durationHours = distance / pace
+        const durationMinutes = durationHours * 60
+        setTargetDurationMinutes(String(Math.round(durationMinutes)))
+      } else if (targetMode === 'time' && targetDurationMinutes && Number(targetDurationMinutes) > 0) {
+        // Durée + vitesse => calculer distance
+        const durationMinutes = Number(targetDurationMinutes)
+        const durationHours = durationMinutes / 60
+        const distance = durationHours * pace
+        setTargetDistanceKm(distance.toFixed(2))
+      }
+    } else if (sportType === 'natation') {
+      // Natation : min/100m
+      if (targetMode === 'distance' && targetDistanceKm && Number(targetDistanceKm) > 0) {
+        // Distance + vitesse => calculer durée
+        const distanceM = Number(targetDistanceKm) * 1000
+        const duration = (distanceM / 100) * pace
+        setTargetDurationMinutes(String(Math.round(duration)))
+      } else if (targetMode === 'time' && targetDurationMinutes && Number(targetDurationMinutes) > 0) {
+        // Durée + vitesse => calculer distance
+        const duration = Number(targetDurationMinutes)
+        const distanceM = (duration / pace) * 100
+        const distanceKm = distanceM / 1000
+        setTargetDistanceKm(distanceKm.toFixed(3))
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [targetPace, targetMode, sportType, hasTimeDistanceChoice])
 
   const [createState, createAction] = useActionState<WorkoutFormState, FormData>(
     (_, fd) => createWorkout(athleteId, pathToRevalidate, {}, fd),
@@ -333,12 +388,31 @@ export function WorkoutModal({
             )}
           </div>
 
-          {/* Objectif de la séance — style ai_studio_code (14) : bloc stone-50, toggle Temps/Distance, input avec icône */}
+          {/* Objectifs de la séance — Design avec titre à gauche, toggle à droite, grille 2x2 */}
           {(canEdit || (workout && (workout.target_duration_minutes != null || workout.target_distance_km != null))) && (
             <div className="bg-stone-50 p-4 rounded-xl border border-stone-100">
-              <label className="block text-xs font-bold text-stone-500 uppercase tracking-wide mb-3">
-                Objectif de la séance
-              </label>
+              {/* En-tête avec titre et toggle */}
+              <div className="flex items-center justify-between mb-3">
+                <label className="text-xs font-bold text-stone-500 uppercase tracking-wide">
+                  OBJECTIFS DE LA SÉANCE
+                </label>
+                {canEdit && hasTimeDistanceChoice && (
+                  <div className="flex bg-stone-200 p-0.5 rounded-lg">
+                    <label className="cursor-pointer">
+                      <input type="radio" name="target_mode" value="time" checked={targetMode === 'time'} onChange={() => setTargetMode('time')} className="sr-only" />
+                      <div className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${targetMode === 'time' ? 'bg-[#627e59] text-white shadow-sm' : 'text-stone-600'}`}>
+                        Temps
+                      </div>
+                    </label>
+                    <label className="cursor-pointer">
+                      <input type="radio" name="target_mode" value="distance" checked={targetMode === 'distance'} onChange={() => setTargetMode('distance')} className="sr-only" />
+                      <div className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${targetMode === 'distance' ? 'bg-[#627e59] text-white shadow-sm' : 'text-stone-600'}`}>
+                        Distance
+                      </div>
+                    </label>
+                  </div>
+                )}
+              </div>
 
               {!canEdit && workout && (workout.target_duration_minutes != null || workout.target_distance_km != null) && (
                 <p className="text-sm text-stone-600">
@@ -354,81 +428,35 @@ export function WorkoutModal({
                 </p>
               )}
 
-              {canEdit && isTimeOnly && (
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                  <input
-                    id="target_duration_musc"
-                    name="target_duration_minutes"
-                    type="number"
-                    min={1}
-                    value={targetDurationMinutes}
-                    onChange={(e) => setTargetDurationMinutes(e.target.value)}
-                    placeholder="45"
-                    className="pl-10 pr-16 w-full border border-stone-300 rounded-lg py-2.5 outline-none focus:ring-2 focus:ring-[#627e59] focus:border-transparent transition-all bg-white text-stone-900 font-medium"
-                  />
-                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                    <span className="text-stone-400 text-sm font-medium">minutes</span>
-                  </div>
-                  <input type="hidden" name="target_distance_km" value="" />
-                  <input type="hidden" name="target_elevation_m" value="" />
-                </div>
-              )}
-
-              {canEdit && hasTimeDistanceChoice && (
+              {canEdit && (
                 <>
-                  <div className="flex bg-stone-200 p-1 rounded-lg mb-4">
-                    <label className="flex-1 cursor-pointer">
-                      <input type="radio" name="target_mode" value="time" checked={targetMode === 'time'} onChange={() => setTargetMode('time')} className="sr-only" />
-                      <div className={`text-center py-1.5 text-sm font-medium rounded-md transition-all ${targetMode === 'time' ? 'bg-[#627e59] text-white shadow-sm' : 'text-stone-600'}`}>
-                        Temps
+                  {isTimeOnly && (
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="relative">
+                        <input
+                          id="target_duration_musc"
+                          name="target_duration_minutes"
+                          type="number"
+                          min={1}
+                          value={targetDurationMinutes}
+                          onChange={(e) => setTargetDurationMinutes(e.target.value)}
+                          placeholder="22"
+                          className="w-full border border-stone-300 rounded-lg py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-[#627e59] focus:border-transparent transition-all bg-white text-stone-900 font-semibold pr-12"
+                        />
+                        <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                          <span className="text-stone-400 text-xs font-normal">min</span>
+                        </div>
+                        <input type="hidden" name="target_distance_km" value="" />
+                        <input type="hidden" name="target_elevation_m" value="" />
                       </div>
-                    </label>
-                    <label className="flex-1 cursor-pointer">
-                      <input type="radio" name="target_mode" value="distance" checked={targetMode === 'distance'} onChange={() => setTargetMode('distance')} className="sr-only" />
-                      <div className={`text-center py-1.5 text-sm font-medium rounded-md transition-all ${targetMode === 'distance' ? 'bg-[#627e59] text-white shadow-sm' : 'text-stone-600'}`}>
-                        Distance
-                      </div>
-                    </label>
-                  </div>
-
-                  {targetMode === 'time' && (
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                      </div>
-                      <input
-                        id="target_duration"
-                        name="target_duration_minutes"
-                        type="number"
-                        min={1}
-                        value={targetDurationMinutes}
-                        onChange={(e) => setTargetDurationMinutes(e.target.value)}
-                        placeholder="45"
-                        className="pl-10 pr-16 w-full border border-stone-300 rounded-lg py-2.5 outline-none focus:ring-2 focus:ring-[#627e59] focus:border-transparent transition-all bg-white text-stone-900 font-medium"
-                      />
-                      <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                        <span className="text-stone-400 text-sm font-medium">minutes</span>
-                      </div>
-                      <input type="hidden" name="target_distance_km" value="" />
-                      <input type="hidden" name="target_elevation_m" value="" />
+                      <div></div>
                     </div>
                   )}
 
-                  {targetMode === 'distance' && (
-                    <div className="space-y-3">
+                  {hasTimeDistanceChoice && (
+                    <div className="grid grid-cols-2 gap-2">
+                      {/* Distance (haut gauche) */}
                       <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                          </svg>
-                        </div>
                         {sportType === 'natation' ? (
                           <>
                             <input
@@ -439,11 +467,16 @@ export function WorkoutModal({
                               value={targetDistanceKm ? String(Math.round(Number(targetDistanceKm) * 1000)) : ''}
                               onChange={(e) => setTargetDistanceKm(e.target.value ? String(Number(e.target.value) / 1000) : '')}
                               placeholder="1500"
-                              className="pl-10 pr-10 w-full border border-stone-300 rounded-lg py-2.5 outline-none focus:ring-2 focus:ring-[#627e59] focus:border-transparent transition-all bg-white text-stone-900 font-medium"
+                              disabled={targetMode === 'time'}
+                              className={`w-full border border-stone-300 rounded-lg py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-[#627e59] focus:border-transparent transition-all font-semibold pr-10 ${
+                                targetMode === 'time' 
+                                  ? 'bg-stone-100 text-stone-400 cursor-not-allowed' 
+                                  : 'bg-white text-stone-900'
+                              }`}
                             />
-                            <input type="hidden" name="target_distance_km" value={targetDistanceKm} />
+                            <input type="hidden" name="target_distance_km" value={targetMode === 'distance' ? targetDistanceKm : (targetPace && Number(targetPace) > 0 && targetDistanceKm && Number(targetDistanceKm) > 0 ? targetDistanceKm : '')} />
                             <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                              <span className="text-stone-400 text-sm font-medium">m</span>
+                              <span className={`text-xs font-normal ${targetMode === 'time' ? 'text-stone-300' : 'text-stone-400'}`}>m</span>
                             </div>
                           </>
                         ) : (
@@ -456,23 +489,49 @@ export function WorkoutModal({
                               step={0.1}
                               value={targetDistanceKm}
                               onChange={(e) => setTargetDistanceKm(e.target.value)}
-                              placeholder="10"
-                              className="pl-10 pr-12 w-full border border-stone-300 rounded-lg py-2.5 outline-none focus:ring-2 focus:ring-[#627e59] focus:border-transparent transition-all bg-white text-stone-900 font-medium"
+                              placeholder="14,3"
+                              disabled={targetMode === 'time'}
+                              className={`w-full border border-stone-300 rounded-lg py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-[#627e59] focus:border-transparent transition-all font-semibold pr-10 ${
+                                targetMode === 'time' 
+                                  ? 'bg-stone-100 text-stone-400 cursor-not-allowed' 
+                                  : 'bg-white text-stone-900'
+                              }`}
                             />
                             <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                              <span className="text-stone-400 text-sm font-medium">km</span>
+                              <span className={`text-xs font-normal ${targetMode === 'time' ? 'text-stone-300' : 'text-stone-400'}`}>km</span>
                             </div>
                           </>
                         )}
-                        <input type="hidden" name="target_duration_minutes" value="" />
                       </div>
-                      {hasElevation && (
+
+                      {/* Temps (haut droite) */}
+                      <div className="relative">
+                        <input
+                          id="target_duration"
+                          name="target_duration_minutes"
+                          type="number"
+                          min={1}
+                          value={targetDurationMinutes}
+                          onChange={(e) => setTargetDurationMinutes(e.target.value)}
+                          placeholder="22"
+                          disabled={targetMode === 'distance'}
+                          className={`w-full border border-stone-300 rounded-lg py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-[#627e59] focus:border-transparent transition-all font-semibold pr-12 ${
+                            targetMode === 'distance' 
+                              ? 'bg-stone-100 text-stone-400 cursor-not-allowed' 
+                              : 'bg-white text-stone-900'
+                          }`}
+                        />
+                        <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                          <span className={`text-xs font-normal ${targetMode === 'distance' ? 'text-stone-300' : 'text-stone-400'}`}>min</span>
+                        </div>
+                        <input type="hidden" name="target_duration_minutes" value={targetMode === 'time' ? targetDurationMinutes : (targetPace && Number(targetPace) > 0 && targetDurationMinutes && Number(targetDurationMinutes) > 0 ? targetDurationMinutes : '')} />
+                        <input type="hidden" name="target_distance_km" value={targetMode === 'distance' ? targetDistanceKm : ''} />
+                        <input type="hidden" name="target_elevation_m" value={hasElevation ? targetElevationM : ''} />
+                      </div>
+
+                      {/* Dénivelé (bas gauche) */}
+                      {hasElevation ? (
                         <div className="relative">
-                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                            </svg>
-                          </div>
                           <input
                             id="target_elevation"
                             name="target_elevation_m"
@@ -481,14 +540,37 @@ export function WorkoutModal({
                             value={targetElevationM}
                             onChange={(e) => setTargetElevationM(e.target.value)}
                             placeholder="200"
-                            className="pl-10 pr-14 w-full border border-stone-300 rounded-lg py-2.5 outline-none focus:ring-2 focus:ring-[#627e59] focus:border-transparent transition-all bg-white text-stone-900 font-medium"
+                            className="w-full border border-stone-300 rounded-lg py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-[#627e59] focus:border-transparent transition-all bg-white text-stone-900 font-semibold pr-14"
                           />
                           <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                            <span className="text-stone-400 text-sm font-medium">m D+</span>
+                            <span className="text-stone-400 text-xs font-normal">m D+</span>
+                          </div>
+                        </div>
+                      ) : (
+                        <div></div>
+                      )}
+
+                      {/* Vitesse (bas droite) */}
+                      {hasTimeDistanceChoice && (
+                        <div className="relative">
+                          <input
+                            id="target_pace"
+                            name="target_pace"
+                            type="number"
+                            min={0}
+                            step={sportType === 'velo' ? 1 : 0.1}
+                            value={targetPace}
+                            onChange={(e) => setTargetPace(e.target.value)}
+                            placeholder={sportType === 'course' ? '5.0' : sportType === 'velo' ? '39' : '2.0'}
+                            className="w-full border border-stone-300 rounded-lg py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-[#627e59] focus:border-transparent transition-all bg-white text-stone-900 font-semibold pr-16"
+                          />
+                          <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                            <span className="text-stone-400 text-xs font-normal">
+                              {sportType === 'course' ? 'min/km' : sportType === 'velo' ? 'km/h' : 'min/100m'}
+                            </span>
                           </div>
                         </div>
                       )}
-                      {!hasElevation && <input type="hidden" name="target_elevation_m" value="" />}
                     </div>
                   )}
                 </>

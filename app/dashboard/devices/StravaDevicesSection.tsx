@@ -41,7 +41,7 @@ export function StravaDevicesSection({ userId, connected, connection }: StravaDe
       setMessage({
         type: 'success',
         text: result.imported !== undefined
-          ? `Dernière semaine importée : ${result.imported} activité(s).`
+          ? `Import : ${result.imported} activité(s) (3 dernières semaines).`
           : 'Import terminé.',
       })
       router.refresh()
@@ -89,7 +89,7 @@ export function StravaDevicesSection({ userId, connected, connection }: StravaDe
             <h2 className="text-lg font-semibold text-stone-900">Strava</h2>
             <p className="text-sm text-stone-600">
               {connected
-                ? 'Connecté — importez la dernière semaine d\'activités dans votre calendrier.'
+                ? 'Connecté — importez les 3 dernières semaines d\'activités dans votre calendrier.'
                 : 'Afficher vos activités Strava dans le calendrier.'}
             </p>
           </div>
@@ -109,7 +109,7 @@ export function StravaDevicesSection({ userId, connected, connection }: StravaDe
                 disabled={syncing}
                 className="rounded-lg bg-[#FC4C02] px-4 py-2 text-sm font-medium text-white hover:opacity-90 transition-opacity disabled:opacity-60 h-12 flex items-center"
               >
-                {syncing ? 'Import en cours…' : 'Importer la dernière semaine'}
+                {syncing ? 'Import en cours…' : 'Importer les 3 dernières semaines'}
               </button>
               <button
                 type="button"

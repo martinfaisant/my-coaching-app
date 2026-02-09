@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useTransition } from 'react'
 import { CalendarView } from './CalendarView'
-import { getWorkoutsForDateRange, getImportedActivitiesForDateRange } from '@/app/dashboard/workouts/actions'
-import type { Workout, Goal, ImportedActivity } from '@/types/database'
+import { getWorkoutsForDateRange, getImportedActivitiesForDateRange, getImportedActivityWeeklyTotals, getWorkoutWeeklyTotals } from '@/app/dashboard/workouts/actions'
+import type { Workout, Goal, ImportedActivity, ImportedActivityWeeklyTotal, WorkoutWeeklyTotal } from '@/types/database'
 
 const SLIDE_DURATION_MS = 380
 /** Hauteur approximative d’une section « semaine » pour le glissement (px). */
@@ -36,11 +36,22 @@ function formatWeekRangeLabel(referenceMonday: Date): string {
   return `${startLabel} – ${endLabel}`
 }
 
+/** Retourne le lundi de la première et de la dernière des 3 semaines affichées. */
+function getThreeWeekMondays(referenceMonday: Date): { start: string; end: string } {
+  const first = new Date(referenceMonday)
+  first.setDate(first.getDate() - 7)
+  const last = new Date(referenceMonday)
+  last.setDate(last.getDate() + 7)
+  return { start: toDateStr(first), end: toDateStr(last) }
+}
+
 type CalendarViewWithNavigationProps = {
   athleteId: string
   athleteEmail: string
   initialWorkouts: Workout[]
   initialImportedActivities?: ImportedActivity[]
+  initialWeeklyTotals?: ImportedActivityWeeklyTotal[]
+  initialWorkoutTotals?: WorkoutWeeklyTotal[]
   goals?: Goal[]
   canEdit: boolean
   pathToRevalidate: string
@@ -48,12 +59,26 @@ type CalendarViewWithNavigationProps = {
   title?: React.ReactNode
 }
 
-/** 7 semaines pour éviter un refetch à chaque clic (marge ~2 semaines de chaque côté des 3 affichées). */
-function getSevenWeekRange(referenceMonday: Date): { start: string; end: string } {
-  const startMonday = new Date(referenceMonday)
-  startMonday.setDate(startMonday.getDate() - 7 - 14) // 2 semaines avant la 1ère affichée
-  const endDay = new Date(startMonday)
-  endDay.setDate(endDay.getDate() + 7 * 7 - 1)
+/** Retourne le lundi d'une semaine donnée (offset par rapport à referenceMonday). */
+function getWeekMondayByOffset(referenceMonday: Date, offset: number): Date {
+  const monday = new Date(referenceMonday)
+  monday.setDate(monday.getDate() + offset * 7)
+  return monday
+}
+
+/** Retourne la plage de dates pour une semaine donnée (lundi à dimanche). */
+function getWeekDateRange(weekMonday: Date): { start: string; end: string } {
+  const start = new Date(weekMonday)
+  const end = new Date(weekMonday)
+  end.setDate(end.getDate() + 6)
+  return { start: toDateStr(start), end: toDateStr(end) }
+}
+
+/** Retourne la plage initiale de 5 semaines (S-2 à S+2). */
+function getInitialFiveWeekRange(referenceMonday: Date): { start: string; end: string } {
+  const startMonday = getWeekMondayByOffset(referenceMonday, -2)
+  const endDay = getWeekMondayByOffset(referenceMonday, 2)
+  endDay.setDate(endDay.getDate() + 6)
   return { start: toDateStr(startMonday), end: toDateStr(endDay) }
 }
 
@@ -62,6 +87,8 @@ export function CalendarViewWithNavigation({
   athleteEmail,
   initialWorkouts,
   initialImportedActivities = [],
+  initialWeeklyTotals = [],
+  initialWorkoutTotals = [],
   goals = [],
   canEdit,
   pathToRevalidate,
@@ -72,55 +99,190 @@ export function CalendarViewWithNavigation({
   const [referenceMonday, setReferenceMonday] = useState<Date>(currentMonday)
   const [workouts, setWorkouts] = useState<Workout[]>(initialWorkouts)
   const [importedActivities, setImportedActivities] = useState<ImportedActivity[]>(initialImportedActivities)
+  const [weeklyTotals, setWeeklyTotals] = useState<ImportedActivityWeeklyTotal[]>(initialWeeklyTotals)
+  const [workoutTotals, setWorkoutTotals] = useState<WorkoutWeeklyTotal[]>(initialWorkoutTotals)
   const [loading, setLoading] = useState(false)
-  const [loadedRange, setLoadedRange] = useState<{ start: string; end: string } | null>(null)
+  // Tracker les semaines déjà chargées (set de lundis en string)
+  // Utiliser useRef pour éviter les re-renders inutiles
+  const loadedWeeksRef = useRef<Set<string>>((() => {
+    const initialSet = new Set<string>()
+    // Initialement, on charge S-2, S-1, S, S+1, S+2
+    for (let offset = -2; offset <= 2; offset++) {
+      const weekMonday = getWeekMondayByOffset(currentMonday, offset)
+      initialSet.add(toDateStr(weekMonday))
+    }
+    return initialSet
+  })())
+  // Garder les données précédentes pendant le chargement/animation pour éviter le flickering
+  const stableWeeklyTotalsRef = useRef<ImportedActivityWeeklyTotal[]>(initialWeeklyTotals)
+  const stableWorkoutTotalsRef = useRef<WorkoutWeeklyTotal[]>(initialWorkoutTotals)
+  const stableWorkoutsRef = useRef<Workout[]>(initialWorkouts)
 
   const [isAnimating, setIsAnimating] = useState(false)
   const [slideDirection, setSlideDirection] = useState<'next' | 'prev'>('next')
   const [slideEnd, setSlideEnd] = useState(false)
   const animatingRef = useRef(false)
+  const [isPending, startTransition] = useTransition()
 
   // Après router.refresh(), réinjecter les données serveur quand le contenu change. La clé inclut updated_at
   // pour que les modifications d'un entraînement (ex. durée) déclenchent bien la resync.
   const workoutsFingerprint = initialWorkouts.map((w) => w.updated_at).join('|')
   const importedFingerprint = initialImportedActivities.map((a) => (a as { updated_at?: string }).updated_at ?? a.id).join('|')
   const serverDataKey = `${initialWorkouts.length}-${workoutsFingerprint}|${initialImportedActivities.length}-${importedFingerprint}`
+  const weeklyTotalsKey = initialWeeklyTotals.map((t) => `${t.week_start}-${t.sport_type}-${t.total_moving_time_seconds}`).join('|')
   useEffect(() => {
     setWorkouts(initialWorkouts)
+    stableWorkoutsRef.current = initialWorkouts
     setImportedActivities(initialImportedActivities)
+    setWeeklyTotals(initialWeeklyTotals)
+    stableWeeklyTotalsRef.current = initialWeeklyTotals
+    setWorkoutTotals(initialWorkoutTotals)
+    stableWorkoutTotalsRef.current = initialWorkoutTotals
     // Dépendances volontairement limitées à une clé pour éviter boucle et taille de tableau variable.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [serverDataKey])
+  }, [serverDataKey, weeklyTotalsKey])
 
+  // Chargement initial : 5 semaines (S-2 à S+2)
   useEffect(() => {
-    const required = getSevenWeekRange(referenceMonday)
-    const needsFetch =
-      !loadedRange ||
-      required.start < loadedRange.start ||
-      required.end > loadedRange.end
-
-    if (!needsFetch) return
-
-    const loadData = async () => {
-      setLoading(true)
-      const [workoutsResult, importedResult] = await Promise.all([
-        getWorkoutsForDateRange(athleteId, required.start, required.end),
-        getImportedActivitiesForDateRange(athleteId, required.start, required.end),
+    // Si on a déjà des données initiales, on considère que les 5 semaines sont chargées
+    if (initialWorkouts.length > 0 || initialWeeklyTotals.length > 0) {
+      // Les semaines sont déjà marquées comme chargées dans l'initialisation de loadedWeeks
+      return
+    }
+    
+    const initialRange = getInitialFiveWeekRange(currentMonday)
+    let cancelled = false
+    
+    const loadInitialData = async () => {
+      const [workoutsResult, importedResult, totalsResult, workoutTotalsResult] = await Promise.all([
+        getWorkoutsForDateRange(athleteId, initialRange.start, initialRange.end),
+        getImportedActivitiesForDateRange(athleteId, initialRange.start, initialRange.end),
+        getImportedActivityWeeklyTotals(athleteId, initialRange.start, initialRange.end),
+        getWorkoutWeeklyTotals(athleteId, initialRange.start, initialRange.end),
       ])
-      if (workoutsResult.error) {
-        console.error('Erreur lors du chargement des entraînements:', workoutsResult.error)
-      } else {
-        setWorkouts((workoutsResult.workouts ?? []) as Workout[])
-      }
-      if (!importedResult.error) {
-        setImportedActivities((importedResult.importedActivities ?? []) as ImportedActivity[])
-      }
-      setLoadedRange(required)
-      setLoading(false)
+      
+      if (cancelled) return
+      
+      startTransition(() => {
+        if (!workoutsResult.error && workoutsResult.workouts) {
+          setWorkouts(workoutsResult.workouts as Workout[])
+          stableWorkoutsRef.current = workoutsResult.workouts as Workout[]
+        }
+        if (!importedResult.error && importedResult.importedActivities) {
+          setImportedActivities(importedResult.importedActivities as ImportedActivity[])
+        }
+        if (!totalsResult.error && totalsResult.weeklyTotals) {
+          setWeeklyTotals(totalsResult.weeklyTotals as ImportedActivityWeeklyTotal[])
+          stableWeeklyTotalsRef.current = totalsResult.weeklyTotals as ImportedActivityWeeklyTotal[]
+        }
+        if (!workoutTotalsResult.error && workoutTotalsResult.workoutTotals) {
+          setWorkoutTotals(workoutTotalsResult.workoutTotals as WorkoutWeeklyTotal[])
+          stableWorkoutTotalsRef.current = workoutTotalsResult.workoutTotals as WorkoutWeeklyTotal[]
+        }
+        
+        // Marquer les 5 semaines initiales comme chargées
+        for (let offset = -2; offset <= 2; offset++) {
+          const weekMonday = getWeekMondayByOffset(currentMonday, offset)
+          loadedWeeksRef.current.add(toDateStr(weekMonday))
+        }
+      })
+    }
+    
+    loadInitialData()
+    
+    return () => {
+      cancelled = true
+    }
+  }, [athleteId]) // Seulement au montage ou si athleteId change
+
+  // Chargement paginé lors de la navigation
+  useEffect(() => {
+    // Vérifier quelles semaines doivent être chargées (S-2, S-1, S, S+1, S+2)
+    const requiredWeeks: string[] = []
+    for (let offset = -2; offset <= 2; offset++) {
+      const weekMonday = getWeekMondayByOffset(referenceMonday, offset)
+      requiredWeeks.push(toDateStr(weekMonday))
+    }
+    
+    // Trouver les semaines manquantes
+    const missingWeeks = requiredWeeks.filter(weekStr => !loadedWeeksRef.current.has(weekStr))
+    
+    if (missingWeeks.length === 0) {
+      // Toutes les semaines nécessaires sont déjà chargées
+      return
     }
 
-    loadData()
-  }, [referenceMonday, athleteId, loadedRange])
+    // Charger uniquement les semaines manquantes (workouts, activités et totaux en une seule fois)
+    const loadMissingWeeks = async () => {
+      const weekRanges = missingWeeks.map(weekStr => {
+        const weekDate = new Date(weekStr + 'T12:00:00')
+        return getWeekDateRange(weekDate)
+      })
+      
+      const earliestStart = weekRanges.reduce((min, r) => r.start < min ? r.start : min, weekRanges[0].start)
+      const latestEnd = weekRanges.reduce((max, r) => r.end > max ? r.end : max, weekRanges[0].end)
+      
+      const [workoutsResult, importedResult, totalsResult, workoutTotalsResult] = await Promise.all([
+        getWorkoutsForDateRange(athleteId, earliestStart, latestEnd),
+        getImportedActivitiesForDateRange(athleteId, earliestStart, latestEnd),
+        getImportedActivityWeeklyTotals(athleteId, earliestStart, latestEnd),
+        getWorkoutWeeklyTotals(athleteId, earliestStart, latestEnd),
+      ])
+      
+      startTransition(() => {
+        // Fusionner les nouvelles données avec les existantes
+        if (!workoutsResult.error && workoutsResult.workouts) {
+          const newWorkouts = workoutsResult.workouts as Workout[]
+          setWorkouts(prev => {
+            const workoutMap = new Map<string, Workout>()
+            prev.forEach(w => workoutMap.set(w.id, w))
+            newWorkouts.forEach(w => workoutMap.set(w.id, w))
+            const merged = Array.from(workoutMap.values())
+            stableWorkoutsRef.current = merged
+            return merged
+          })
+        }
+        if (!importedResult.error && importedResult.importedActivities) {
+          const newImported = importedResult.importedActivities as ImportedActivity[]
+          setImportedActivities(prev => {
+            const importedMap = new Map<string, ImportedActivity>()
+            prev.forEach(a => importedMap.set(a.id, a))
+            newImported.forEach(a => importedMap.set(a.id, a))
+            return Array.from(importedMap.values())
+          })
+        }
+        if (!totalsResult.error && totalsResult.weeklyTotals) {
+          const newTotals = totalsResult.weeklyTotals as ImportedActivityWeeklyTotal[]
+          setWeeklyTotals(prev => {
+            const existingMap = new Map(prev.map(t => [`${t.week_start}-${t.sport_type}`, t]))
+            newTotals.forEach(t => {
+              existingMap.set(`${t.week_start}-${t.sport_type}`, t)
+            })
+            const merged = Array.from(existingMap.values())
+            stableWeeklyTotalsRef.current = merged
+            return merged
+          })
+        }
+        if (!workoutTotalsResult.error && workoutTotalsResult.workoutTotals) {
+          const newTotals = workoutTotalsResult.workoutTotals as WorkoutWeeklyTotal[]
+          setWorkoutTotals(prev => {
+            const existingMap = new Map(prev.map(t => [`${t.week_start}-${t.sport_type}`, t]))
+            newTotals.forEach(t => {
+              existingMap.set(`${t.week_start}-${t.sport_type}`, t)
+            })
+            const merged = Array.from(existingMap.values())
+            stableWorkoutTotalsRef.current = merged
+            return merged
+          })
+        }
+        
+        // Marquer les semaines comme chargées
+        missingWeeks.forEach(weekStr => loadedWeeksRef.current.add(weekStr))
+      })
+    }
+
+    loadMissingWeeks()
+  }, [referenceMonday, athleteId])
 
   const handleNavigate = (weeksOffset: number) => {
     if (animatingRef.current) return
@@ -202,8 +364,10 @@ export function CalendarViewWithNavigation({
           <CalendarView
             athleteId={athleteId}
             athleteEmail={athleteEmail}
-            workouts={workouts}
+            workouts={isAnimating ? stableWorkoutsRef.current : workouts}
             importedActivities={importedActivities}
+            weeklyTotals={isAnimating ? stableWeeklyTotalsRef.current : weeklyTotals}
+            workoutTotals={isAnimating ? stableWorkoutTotalsRef.current : workoutTotals}
             goals={goals}
             canEdit={canEdit}
             pathToRevalidate={pathToRevalidate}
