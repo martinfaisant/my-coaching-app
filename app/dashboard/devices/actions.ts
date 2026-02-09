@@ -13,7 +13,12 @@ function mapStravaTypeToSportType(stravaType: string): SportType {
   if (t.includes('run') || t.includes('virtualrun')) return 'course'
   if (t.includes('ride') || t.includes('virtualride') || t.includes('ebike') || t.includes('velomobile')) return 'velo'
   if (t.includes('swim')) return 'natation'
-  if (t.includes('weight') || t.includes('workout') || t.includes('crossfit')) return 'musculation'
+  if (t.includes('yoga') || t.includes('weight') || t.includes('workout') || t.includes('crossfit')) return 'musculation'
+  // Vérifier nordic ski, backcountry ski et patin à glace
+  if (t.includes('nordic')) return 'nordic_ski'
+  if (t.includes('backcountry')) return 'backcountry_ski'
+  if (t.includes('iceskate') || t.includes('ice_skate') || t.includes('ice skate')) return 'ice_skating'
+  if (t.includes('ski') && !t.includes('alpine') && !t.includes('roller')) return 'nordic_ski'
   return 'course'
 }
 
@@ -106,8 +111,8 @@ export async function syncStravaLastWeek(userId: string): Promise<{ error?: stri
   if ('error' in tokenResult) return { error: tokenResult.error }
 
   const now = Math.floor(Date.now() / 1000)
-  const oneWeekAgo = now - 7 * 24 * 60 * 60
-  const url = `${STRAVA_ACTIVITIES_URL}?after=${oneWeekAgo}&before=${now}&per_page=100`
+  const threeWeeksAgo = now - 3 * 7 * 24 * 60 * 60
+  const url = `${STRAVA_ACTIVITIES_URL}?after=${threeWeeksAgo}&before=${now}&per_page=100`
   const res = await fetch(url, {
     headers: { Authorization: `Bearer ${tokenResult.accessToken}` },
   })

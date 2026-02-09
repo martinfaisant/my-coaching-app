@@ -20,7 +20,7 @@ export type Profile = {
   practiced_sports?: string[] | null
 }
 
-export type SportType = 'course' | 'musculation' | 'natation' | 'velo'
+export type SportType = 'course' | 'musculation' | 'natation' | 'velo' | 'nordic_ski' | 'backcountry_ski' | 'ice_skating'
 
 export type Goal = {
   id: string
@@ -45,6 +45,8 @@ export type Workout = {
   target_distance_km?: number | null
   /** Dénivelé en m (facultatif, course / vélo). */
   target_elevation_m?: number | null
+  /** Vitesse/allure pour calcul automatique. Course: min/km, Vélo: km/h, Natation: min/100m */
+  target_pace?: number | null
   athlete_comment?: string | null
   athlete_comment_at?: string | null
   created_at: string
@@ -131,4 +133,28 @@ export type ImportedActivity = {
   activity_type: string | null
   raw_data: Record<string, unknown> | null
   created_at: string
+}
+
+/** Totaux hebdomadaires par sport (activités importées). Visible par le coach pour ses athlètes. */
+export type ImportedActivityWeeklyTotal = {
+  athlete_id: string
+  week_start: string
+  sport_type: SportType
+  total_moving_time_seconds: number
+  total_distance_m: number
+  total_elevation_m: number
+  updated_at: string
+}
+
+/** Totaux hebdomadaires par sport (entraînements prévus). Précalculés pour accélérer l'affichage. */
+export type WorkoutWeeklyTotal = {
+  athlete_id: string
+  week_start: string
+  sport_type: SportType
+  total_duration_minutes: number
+  total_distance_km: number
+  total_elevation_m: number
+  duration_percent_vs_previous_week: number | null
+  distance_percent_vs_previous_week: number | null
+  updated_at: string
 }

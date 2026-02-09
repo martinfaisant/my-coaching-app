@@ -3,13 +3,28 @@
 import { useState, useMemo, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { WorkoutModal } from './WorkoutModal'
-import type { Workout, SportType, Goal, ImportedActivity } from '@/types/database'
+import { IconRunning, IconBiking, IconSwimming, IconDumbbell, IconNordicSki, IconBackcountrySki, IconIceSkating } from './SportIcons'
+import type { Workout, SportType, Goal, ImportedActivity, ImportedActivityWeeklyTotal, WorkoutWeeklyTotal } from '@/types/database'
 
 const SPORT_LABELS: Record<SportType, string> = {
   course: 'Course',
   musculation: 'Musculation',
   natation: 'Natation',
   velo: 'Vélo',
+  nordic_ski: 'Ski de fond',
+  backcountry_ski: 'Ski de randonnée',
+  ice_skating: 'Patin à glace',
+}
+
+/** Mapping des icônes par type de sport */
+const SPORT_ICONS: Record<SportType, React.ComponentType<{ className?: string }>> = {
+  course: IconRunning,
+  velo: IconBiking,
+  natation: IconSwimming,
+  musculation: IconDumbbell,
+  nordic_ski: IconNordicSki,
+  backcountry_ski: IconBackcountrySki,
+  ice_skating: IconIceSkating,
 }
 
 /** Style des cartes par sport (design référence: Run forest, Vélo olive, Nage sky, Muscu stone). */
@@ -36,6 +51,21 @@ const SPORT_CARD_STYLES: Record<
     borderLeft: 'border-l-stone-500',
     badge: 'text-stone-600',
     badgeBg: 'bg-stone-100',
+  },
+  nordic_ski: {
+    borderLeft: 'border-l-blue-600',
+    badge: 'text-blue-700',
+    badgeBg: 'bg-blue-50',
+  },
+  backcountry_ski: {
+    borderLeft: 'border-l-indigo-600',
+    badge: 'text-indigo-700',
+    badgeBg: 'bg-indigo-50',
+  },
+  ice_skating: {
+    borderLeft: 'border-l-cyan-600',
+    badge: 'text-cyan-700',
+    badgeBg: 'bg-cyan-50',
   },
 }
 
@@ -67,6 +97,48 @@ const SPORT_COLORS: Record<
     text: 'text-[#8e9856]',
     comment: 'text-palette-olive',
   },
+  nordic_ski: {
+    bg: 'bg-blue-50',
+    border: 'border-blue-600',
+    text: 'text-blue-700',
+    comment: 'text-palette-olive',
+  },
+  backcountry_ski: {
+    bg: 'bg-indigo-50',
+    border: 'border-indigo-600',
+    text: 'text-indigo-700',
+    comment: 'text-palette-olive',
+  },
+  ice_skating: {
+    bg: 'bg-cyan-50',
+    border: 'border-cyan-600',
+    text: 'text-cyan-700',
+    comment: 'text-palette-olive',
+  },
+}
+
+/** Formate une durée en minutes (ex. "4h00", "45'"). */
+function formatDuration(minutes: number): string {
+  if (minutes < 60) return `${minutes}'`
+  const h = Math.floor(minutes / 60)
+  const m = minutes % 60
+  return m ? `${h}h${String(m).padStart(2, '0')}` : `${h}h00`
+}
+
+/** Formate la vitesse selon le type de sport. */
+function formatPace(pace: number | null | undefined, sportType: SportType): string {
+  if (!pace || pace <= 0) return ''
+  if (sportType === 'course') {
+    // min/km
+    return `${pace.toFixed(1)} min/km`
+  } else if (sportType === 'velo') {
+    // km/h
+    return `${Math.round(pace)} km/h`
+  } else if (sportType === 'natation') {
+    // min/100m
+    return `${pace.toFixed(1)} min/100m`
+  }
+  return ''
 }
 
 /** Formate l'objectif d'un entraînement pour affichage (ex. "45'", "1h30", "10.5 km", "120m D+"). */
@@ -152,11 +224,18 @@ function toDateStr(d: Date): string {
   return `${y}-${m}-${day}`
 }
 
+/** Totaux "fait" par sport pour une semaine (minutes, distance km). */
+type WeekFaitBySport = Record<SportType, { minutes: number; distanceKm: number }>
+
 type CalendarViewProps = {
   athleteId: string
   athleteEmail: string
   workouts: Workout[]
   importedActivities?: ImportedActivity[]
+  /** Totaux hebdomadaires (activités importées) pour afficher le "fait". */
+  weeklyTotals?: ImportedActivityWeeklyTotal[]
+  /** Totaux hebdomadaires précalculés (entraînements prévus) pour afficher le "prévu". */
+  workoutTotals?: WorkoutWeeklyTotal[]
   goals?: Goal[]
   canEdit: boolean
   pathToRevalidate: string
@@ -180,10 +259,22 @@ function GoalTargetBadge({ isPrimary }: { isPrimary: boolean }) {
   )
 }
 
+const EMPTY_FAIT: WeekFaitBySport = {
+  course: { minutes: 0, distanceKm: 0 },
+  velo: { minutes: 0, distanceKm: 0 },
+  natation: { minutes: 0, distanceKm: 0 },
+  musculation: { minutes: 0, distanceKm: 0 },
+  nordic_ski: { minutes: 0, distanceKm: 0 },
+  backcountry_ski: { minutes: 0, distanceKm: 0 },
+  ice_skating: { minutes: 0, distanceKm: 0 },
+}
+
 export function CalendarView({
   athleteId,
   workouts,
   importedActivities = [],
+  weeklyTotals = [],
+  workoutTotals = [],
   goals = [],
   canEdit,
   pathToRevalidate,
@@ -233,10 +324,10 @@ export function CalendarView({
         isCurrentWeek = true
       } else if (weekMonday.getTime() < todayMonday.getTime()) {
         const diffWeeks = Math.round((todayMonday.getTime() - weekMonday.getTime()) / (7 * 24 * 60 * 60 * 1000))
-        weekLabel = diffWeeks === 1 ? `Semaine précédente (${rangeLabel})` : `Il y a ${diffWeeks} semaines`
+        weekLabel = diffWeeks === 1 ? `Semaine précédente` : `Il y a ${diffWeeks} semaines`
       } else {
         const diffWeeks = Math.round((weekMonday.getTime() - todayMonday.getTime()) / (7 * 24 * 60 * 60 * 1000))
-        weekLabel = diffWeeks === 1 ? `Semaine suivante (${rangeLabel})` : `Dans ${diffWeeks} semaines`
+        weekLabel = diffWeeks === 1 ? `Semaine suivante` : `Dans ${diffWeeks} semaines`
       }
 
       const days: { dateStr: string; label: string; dayName: string; isToday: boolean; isTomorrow: boolean; isPast: boolean }[] = []
@@ -294,6 +385,85 @@ export function CalendarView({
     return map
   }, [goals])
 
+  /** Totaux prévus par semaine et par sport (depuis workout_weekly_totals précalculés). Distance en km pour course/vélo/natation, temps pour musculation. */
+  const weekPrevuBySport = useMemo(() => {
+    if (!referenceMonday) return [EMPTY_FAIT, EMPTY_FAIT, EMPTY_FAIT]
+    
+    return weeks.map((week) => {
+      // Trouver le lundi de cette semaine
+      const weekStartDate = new Date(week.days[0]!.dateStr + 'T12:00:00')
+      const weekMonday = getWeekMonday(weekStartDate)
+      const weekStartStr = toDateStr(weekMonday)
+      
+      // Récupérer les totaux précalculés pour cette semaine
+      const totalsForWeek = workoutTotals.filter((t) => t.week_start === weekStartStr)
+      
+      const bySport: Record<SportType, { minutes: number; distanceKm: number }> = {
+        course: { minutes: 0, distanceKm: 0 },
+        velo: { minutes: 0, distanceKm: 0 },
+        natation: { minutes: 0, distanceKm: 0 },
+        musculation: { minutes: 0, distanceKm: 0 },
+        nordic_ski: { minutes: 0, distanceKm: 0 },
+        backcountry_ski: { minutes: 0, distanceKm: 0 },
+        ice_skating: { minutes: 0, distanceKm: 0 },
+      }
+      
+      for (const total of totalsForWeek) {
+        bySport[total.sport_type] = {
+          minutes: Math.round(Number(total.total_duration_minutes) || 0),
+          distanceKm: Math.round(Number(total.total_distance_km) || 0),
+        }
+      }
+      
+      return bySport
+    })
+  }, [weeks, workoutTotals, referenceMonday])
+
+  /** Totaux "fait" par semaine (depuis imported_activity_weekly_totals). */
+  const weekFaitBySport = useMemo((): WeekFaitBySport[] => {
+    const empty = (): WeekFaitBySport => ({
+      course: { minutes: 0, distanceKm: 0 },
+      velo: { minutes: 0, distanceKm: 0 },
+        natation: { minutes: 0, distanceKm: 0 },
+        musculation: { minutes: 0, distanceKm: 0 },
+        nordic_ski: { minutes: 0, distanceKm: 0 },
+        backcountry_ski: { minutes: 0, distanceKm: 0 },
+        ice_skating: { minutes: 0, distanceKm: 0 },
+      })
+    if (!referenceMonday) return [empty(), empty(), empty()]
+    return [0, 1, 2].map((wi) => {
+      const mon = new Date(referenceMonday)
+      mon.setDate(mon.getDate() + (wi - 1) * 7)
+      const weekStartStr = toDateStr(mon)
+      const rows = weeklyTotals.filter((t) => t.week_start === weekStartStr)
+      const bySport: WeekFaitBySport = {
+        course: { minutes: 0, distanceKm: 0 },
+        velo: { minutes: 0, distanceKm: 0 },
+        natation: { minutes: 0, distanceKm: 0 },
+        musculation: { minutes: 0, distanceKm: 0 },
+        nordic_ski: { minutes: 0, distanceKm: 0 },
+        backcountry_ski: { minutes: 0, distanceKm: 0 },
+        ice_skating: { minutes: 0, distanceKm: 0 },
+      }
+      for (const r of rows) {
+        bySport[r.sport_type] = {
+          minutes: Math.round((r.total_moving_time_seconds ?? 0) / 60),
+          distanceKm: Math.round((r.total_distance_m ?? 0) / 1000),
+        }
+      }
+      // Arrondir les totaux à l'entier
+      return {
+        course: { minutes: Math.round(bySport.course.minutes), distanceKm: Math.round(bySport.course.distanceKm) },
+        velo: { minutes: Math.round(bySport.velo.minutes), distanceKm: Math.round(bySport.velo.distanceKm) },
+        natation: { minutes: Math.round(bySport.natation.minutes), distanceKm: Math.round(bySport.natation.distanceKm) },
+        musculation: { minutes: Math.round(bySport.musculation.minutes), distanceKm: Math.round(bySport.musculation.distanceKm) },
+        nordic_ski: { minutes: Math.round(bySport.nordic_ski.minutes), distanceKm: Math.round(bySport.nordic_ski.distanceKm) },
+        backcountry_ski: { minutes: Math.round(bySport.backcountry_ski.minutes), distanceKm: Math.round(bySport.backcountry_ski.distanceKm) },
+        ice_skating: { minutes: Math.round(bySport.ice_skating.minutes), distanceKm: Math.round(bySport.ice_skating.distanceKm) },
+      }
+    })
+  }, [referenceMonday, weeklyTotals])
+
   const openDay = (dateStr: string, isPast: boolean) => {
     if (!canEdit || isPast) return
     setModalDate(dateStr)
@@ -321,6 +491,12 @@ export function CalendarView({
   const renderCompactCard = (w: Workout, dateStr: string) => {
     const style = SPORT_CARD_STYLES[w.sport_type]
     const target = formatWorkoutTarget(w)
+    const SportIcon = SPORT_ICONS[w.sport_type]
+    const hasDuration = w.target_duration_minutes != null && w.target_duration_minutes > 0
+    const hasDistance = w.target_distance_km != null && w.target_distance_km > 0
+    const hasPace = w.target_pace != null && w.target_pace > 0
+    const paceStr = formatPace(w.target_pace, w.sport_type)
+    
     return (
       <div
         key={w.id}
@@ -332,18 +508,50 @@ export function CalendarView({
         role={canEdit ? 'button' : undefined}
       >
         <div>
-          <span className={`text-[9px] font-bold uppercase ${style.badge} ${style.badgeBg} px-1 py-0.5 rounded`}>
-            {SPORT_LABELS[w.sport_type]}
-          </span>
-          <div className="text-xs font-semibold text-stone-700 mt-1 truncate">{w.title}</div>
+          <div>
+            <span className={`float-left inline-flex items-center mr-1.5 ${style.badge} ${style.badgeBg} px-1 py-0.5 rounded shrink-0`}>
+              <SportIcon className="w-2.5 h-2.5" />
+            </span>
+            <div className="text-xs font-semibold text-stone-700 leading-tight">{w.title}</div>
+            <div className="clear-both"></div>
+          </div>
         </div>
-        {target.primary && (
-          <div className="flex items-center gap-1 text-[10px] text-stone-400 font-medium">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            {target.primary}
-            {target.secondary ? ` · ${target.secondary}` : ''}
+        {(hasDuration || hasDistance || hasPace) && (
+          <div className="flex items-center gap-1 flex-wrap text-[10px] text-stone-400 font-medium mt-1">
+            {hasDuration && (
+              <div className="flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>{formatDuration(Math.round(w.target_duration_minutes!))}</span>
+              </div>
+            )}
+            {hasDistance && (
+              <>
+                {hasDuration && <div className="w-px h-2.5 bg-stone-300" />}
+                <div className="flex items-center gap-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                  </svg>
+                  <span>
+                    {w.sport_type === 'natation' 
+                      ? `${Math.round(w.target_distance_km! * 1000)} m`
+                      : `${Math.round(w.target_distance_km!)} km`}
+                  </span>
+                </div>
+              </>
+            )}
+            {hasPace && (
+              <>
+                {(hasDuration || hasDistance) && <div className="w-px h-2.5 bg-stone-300" />}
+                <div className="flex items-center gap-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                  <span>{paceStr}</span>
+                </div>
+              </>
+            )}
           </div>
         )}
       </div>
@@ -353,6 +561,12 @@ export function CalendarView({
   const renderDetailedCard = (w: Workout, dateStr: string) => {
     const style = SPORT_CARD_STYLES[w.sport_type]
     const target = formatWorkoutTarget(w)
+    const SportIcon = SPORT_ICONS[w.sport_type]
+    const hasDuration = w.target_duration_minutes != null && w.target_duration_minutes > 0
+    const hasDistance = w.target_distance_km != null && w.target_distance_km > 0
+    const hasPace = w.target_pace != null && w.target_pace > 0
+    const paceStr = formatPace(w.target_pace, w.sport_type)
+    
     return (
       <div
         key={w.id}
@@ -363,45 +577,61 @@ export function CalendarView({
         className={`training-card bg-white p-3 rounded-lg shadow-sm border border-stone-100 border-l-4 ${style.borderLeft} ${canEdit ? 'cursor-pointer' : ''}`}
         role={canEdit ? 'button' : undefined}
       >
-        <div className="flex justify-between items-start mb-2">
-          <span className={`text-[10px] font-bold uppercase ${style.badge} ${style.badgeBg} px-1.5 py-0.5 rounded`}>
-            {SPORT_LABELS[w.sport_type]}
+        <div className="mb-2">
+          <span className={`float-left inline-flex items-center mr-2 ${style.badge} ${style.badgeBg} px-1.5 py-0.5 rounded shrink-0`}>
+            <SportIcon className="w-3 h-3" />
           </span>
+          <h4 className="text-sm font-bold text-stone-900 leading-tight">{w.title}</h4>
+          <div className="clear-both"></div>
         </div>
-        <h4 className="text-sm font-bold text-stone-900 leading-tight mb-2">{w.title}</h4>
         <p className="text-xs text-stone-500 leading-snug mb-3 line-clamp-2">{w.description || '—'}</p>
-        {target.primary && (
-          <div className="flex items-center gap-3 text-xs text-stone-500 font-medium flex-wrap">
-            {w.target_distance_km != null && w.target_distance_km > 0 ? (
-              <>
-                <div className="flex items-center gap-1">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                  </svg>
-                  <span>{target.primary}</span>
-                </div>
-                {target.secondary && (
-                  <>
-                    <div className="w-px h-3 bg-stone-300" />
-                    <div className="flex items-center gap-1">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                      </svg>
-                      <span>{target.secondary}</span>
-                    </div>
-                  </>
-                )}
-              </>
-            ) : (
-              <div className="flex items-center gap-1.5">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <div className="flex items-center gap-1.5 text-[10px] text-stone-500 font-medium flex-wrap">
+          {hasDuration && (
+            <div className="flex items-center gap-1">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-2.5 w-2.5 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>{formatDuration(Math.round(w.target_duration_minutes!))}</span>
+            </div>
+          )}
+          {hasDistance && (
+            <>
+              {hasDuration && <div className="w-px h-3 bg-stone-300" />}
+              <div className="flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-2.5 w-2.5 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
                 </svg>
-                <span>{target.primary}</span>
+                <span>
+                  {w.sport_type === 'natation' 
+                    ? `${Math.round(w.target_distance_km! * 1000)} m`
+                    : `${Math.round(w.target_distance_km!)} km`}
+                </span>
               </div>
-            )}
-          </div>
-        )}
+            </>
+          )}
+          {hasPace && (
+            <>
+              {(hasDuration || hasDistance) && <div className="w-px h-3 bg-stone-300" />}
+              <div className="flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-2.5 w-2.5 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                <span>{paceStr}</span>
+              </div>
+            </>
+          )}
+          {target.secondary && (hasDuration || hasDistance || hasPace) && (
+            <>
+              <div className="w-px h-3 bg-stone-300" />
+              <div className="flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-2.5 w-2.5 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
+                <span>{target.secondary}</span>
+              </div>
+            </>
+          )}
+        </div>
       </div>
     )
   }
@@ -419,22 +649,175 @@ export function CalendarView({
               className={`mb-8 ${sectionOpacity} ${wi === 1 ? 'mb-12' : ''} ${hideFirstWeekTitle && wi === 0 ? 'mt-1' : ''}`}
             >
               {!(hideFirstWeekTitle && wi === 0) && (
-                <div className={`flex items-center gap-4 mb-3 ${isDetailed ? 'mb-4 mt-8' : ''}`}>
-                  {isDetailed ? (
-                    <div className="flex items-center gap-3">
-                      <h2 className="text-xl font-bold text-[#627e59]">
-                        {week.isCurrentWeek ? 'Semaine actuelle' : 'Semaine'}
-                      </h2>
-                      <span className="text-stone-400 font-medium text-sm">— {week.rangeLabel.replace(' - ', ' au ')}</span>
+                <div className={`flex items-center justify-between w-full gap-4 mb-3 ${isDetailed ? 'mb-4 mt-8' : ''}`}>
+                  <div className="flex items-center gap-4 min-w-0">
+                    {isDetailed ? (
+                      <>
+                        <h2 className="text-xl font-bold text-[#627e59]">
+                          {week.label}
+                        </h2>
+                        <span className="text-stone-400 font-medium text-sm">— {week.rangeLabel.replace(' - ', ' au ')}</span>
+                      </>
+                    ) : (
+                      <>
+                        <h2 className="text-xs font-bold uppercase tracking-wider text-stone-500">{week.label}</h2>
+                        <span className="text-stone-400 font-medium text-xs">— {week.rangeLabel.replace(' - ', ' au ')}</span>
+                        <div className="h-px w-12 bg-stone-200 shrink-0" />
+                      </>
+                    )}
+                  </div>
+                  {!isDetailed && (
+                    <div className="flex items-center gap-4 text-xs font-medium text-stone-500 shrink-0 flex-wrap justify-end">
+                      {(() => {
+                        const prevu = weekPrevuBySport[wi]
+                        const fait = weekFaitBySport[wi]
+                        const totalPrevuMin = prevu ? Math.round((prevu.course?.minutes ?? 0) + (prevu.velo?.minutes ?? 0) + (prevu.natation?.minutes ?? 0) + (prevu.musculation?.minutes ?? 0) + (prevu.nordic_ski?.minutes ?? 0) + (prevu.backcountry_ski?.minutes ?? 0) + (prevu.ice_skating?.minutes ?? 0)) : 0
+                        const totalFaitMin = fait ? Math.round((fait.course?.minutes ?? 0) + (fait.velo?.minutes ?? 0) + (fait.natation?.minutes ?? 0) + (fait.musculation?.minutes ?? 0) + (fait.nordic_ski?.minutes ?? 0) + (fait.backcountry_ski?.minutes ?? 0) + (fait.ice_skating?.minutes ?? 0)) : 0
+                        const showTime = totalPrevuMin > 0 || totalFaitMin > 0
+                        const formatDist = (km: number) => String(Math.round(km))
+                        return (
+                          <>
+                            {showTime && (
+                              <>
+                                <span className="flex items-center gap-1.5 text-stone-600" title="Temps réalisé / prévu">
+                                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                  </svg>
+                                  {formatDuration(totalFaitMin)} / {formatDuration(totalPrevuMin)}
+                                </span>
+                                <span className="w-px h-3 bg-stone-300" />
+                              </>
+                            )}
+                            {(prevu?.course?.distanceKm ?? 0) > 0 || (fait?.course?.distanceKm ?? 0) > 0 ? (
+                              <span className="flex items-center gap-1.5 text-[#627e59]" title="Course : distance faite / prévue">
+                                <IconRunning className="w-3.5 h-3.5" />
+                                {formatDist(fait?.course?.distanceKm ?? 0)} km / {formatDist(prevu?.course?.distanceKm ?? 0)} km
+                              </span>
+                            ) : null}
+                            {(prevu?.velo?.distanceKm ?? 0) > 0 || (fait?.velo?.distanceKm ?? 0) > 0 ? (
+                              <span className="flex items-center gap-1.5 text-[#8e9856]" title="Vélo : distance faite / prévue">
+                                <IconBiking className="w-3.5 h-3.5" />
+                                {formatDist(fait?.velo?.distanceKm ?? 0)} km / {formatDist(prevu?.velo?.distanceKm ?? 0)} km
+                              </span>
+                            ) : null}
+                            {(prevu?.natation?.distanceKm ?? 0) > 0 || (fait?.natation?.distanceKm ?? 0) > 0 ? (
+                              <span className="flex items-center gap-1.5 text-sky-600" title="Natation : distance faite / prévue">
+                                <IconSwimming className="w-3.5 h-3.5" />
+                                {formatDist(fait?.natation?.distanceKm ?? 0)} km / {formatDist(prevu?.natation?.distanceKm ?? 0)} km
+                              </span>
+                            ) : null}
+                            {(prevu?.musculation?.minutes ?? 0) > 0 || (fait?.musculation?.minutes ?? 0) > 0 ? (
+                              <span className="flex items-center gap-1.5 text-stone-600" title="Musculation : temps réalisé / prévu">
+                                <IconDumbbell className="w-3.5 h-3.5" />
+                                {formatDuration(fait?.musculation?.minutes ?? 0)} / {formatDuration(prevu?.musculation?.minutes ?? 0)}
+                              </span>
+                            ) : null}
+                            {(prevu?.nordic_ski?.distanceKm ?? 0) > 0 || (fait?.nordic_ski?.distanceKm ?? 0) > 0 ? (
+                              <span className="flex items-center gap-1.5 text-blue-600" title="Ski de fond : distance faite / prévue">
+                                <IconNordicSki className="w-3.5 h-3.5" />
+                                {formatDist(fait?.nordic_ski?.distanceKm ?? 0)} km / {formatDist(prevu?.nordic_ski?.distanceKm ?? 0)} km
+                              </span>
+                            ) : null}
+                            {(prevu?.backcountry_ski?.distanceKm ?? 0) > 0 || (fait?.backcountry_ski?.distanceKm ?? 0) > 0 ? (
+                              <span className="flex items-center gap-1.5 text-indigo-600" title="Ski de randonnée : distance faite / prévue">
+                                <IconBackcountrySki className="w-3.5 h-3.5" />
+                                {formatDist(fait?.backcountry_ski?.distanceKm ?? 0)} km / {formatDist(prevu?.backcountry_ski?.distanceKm ?? 0)} km
+                              </span>
+                            ) : null}
+                            {(prevu?.ice_skating?.distanceKm ?? 0) > 0 || (fait?.ice_skating?.distanceKm ?? 0) > 0 ? (
+                              <span className="flex items-center gap-1.5 text-cyan-600" title="Patin à glace : distance faite / prévue">
+                                <IconIceSkating className="w-3.5 h-3.5" />
+                                {formatDist(fait?.ice_skating?.distanceKm ?? 0)} km / {formatDist(prevu?.ice_skating?.distanceKm ?? 0)} km
+                              </span>
+                            ) : null}
+                          </>
+                        )
+                      })()}
                     </div>
-                  ) : (
-                    <>
-                      <h2 className="text-xs font-bold uppercase tracking-wider text-stone-500">{week.label}</h2>
-                      <div className="h-px flex-grow bg-stone-200" />
-                    </>
                   )}
                 </div>
               )}
+              {isDetailed && (() => {
+                const prevu = weekPrevuBySport[1]
+                const fait = weekFaitBySport[1]
+                const prevWeekFait = weekFaitBySport[0]
+                const totalPrevuMin = prevu ? Math.round((prevu.course?.minutes ?? 0) + (prevu.velo?.minutes ?? 0) + (prevu.natation?.minutes ?? 0) + (prevu.musculation?.minutes ?? 0) + (prevu.nordic_ski?.minutes ?? 0) + (prevu.backcountry_ski?.minutes ?? 0) + (prevu.ice_skating?.minutes ?? 0)) : 0
+                const totalFaitMin = fait ? Math.round((fait.course?.minutes ?? 0) + (fait.velo?.minutes ?? 0) + (fait.natation?.minutes ?? 0) + (fait.musculation?.minutes ?? 0) + (fait.nordic_ski?.minutes ?? 0) + (fait.backcountry_ski?.minutes ?? 0) + (fait.ice_skating?.minutes ?? 0)) : 0
+                const prevTotalMin = prevWeekFait ? Math.round((prevWeekFait.course?.minutes ?? 0) + (prevWeekFait.velo?.minutes ?? 0) + (prevWeekFait.natation?.minutes ?? 0) + (prevWeekFait.musculation?.minutes ?? 0) + (prevWeekFait.nordic_ski?.minutes ?? 0) + (prevWeekFait.backcountry_ski?.minutes ?? 0) + (prevWeekFait.ice_skating?.minutes ?? 0)) : 0
+                const diffPct = prevTotalMin > 0 ? Math.round(((totalFaitMin - prevTotalMin) / prevTotalMin) * 100) : 0
+                const progressPct = totalPrevuMin > 0 ? Math.round((totalFaitMin / totalPrevuMin) * 100) : 0
+                const sports = [
+                  { key: 'course' as const, Icon: IconRunning, color: 'text-[#627e59]', bg: 'bg-[#627e59]', label: 'Run', prevuVal: prevu?.course?.distanceKm ?? 0, faitVal: fait?.course?.distanceKm ?? 0, useTime: false },
+                  { key: 'velo' as const, Icon: IconBiking, color: 'text-[#8e9856]', bg: 'bg-[#8e9856]', label: 'Vélo', prevuVal: prevu?.velo?.distanceKm ?? 0, faitVal: fait?.velo?.distanceKm ?? 0, useTime: false },
+                  { key: 'natation' as const, Icon: IconSwimming, color: 'text-sky-600', bg: 'bg-sky-500', label: 'Nage', prevuVal: prevu?.natation?.distanceKm ?? 0, faitVal: fait?.natation?.distanceKm ?? 0, useTime: false },
+                  { key: 'musculation' as const, Icon: IconDumbbell, color: 'text-stone-600', bg: 'bg-stone-500', label: 'Muscu', prevuVal: prevu?.musculation?.minutes ?? 0, faitVal: fait?.musculation?.minutes ?? 0, useTime: true },
+                  { key: 'nordic_ski' as const, Icon: IconNordicSki, color: 'text-blue-600', bg: 'bg-blue-500', label: 'Ski de fond', prevuVal: prevu?.nordic_ski?.distanceKm ?? 0, faitVal: fait?.nordic_ski?.distanceKm ?? 0, useTime: false },
+                  { key: 'backcountry_ski' as const, Icon: IconBackcountrySki, color: 'text-indigo-600', bg: 'bg-indigo-500', label: 'Ski Rando', prevuVal: prevu?.backcountry_ski?.distanceKm ?? 0, faitVal: fait?.backcountry_ski?.distanceKm ?? 0, useTime: false },
+                  { key: 'ice_skating' as const, Icon: IconIceSkating, color: 'text-cyan-600', bg: 'bg-cyan-500', label: 'Patin', prevuVal: prevu?.ice_skating?.distanceKm ?? 0, faitVal: fait?.ice_skating?.distanceKm ?? 0, useTime: false },
+                ].filter(s => s.prevuVal > 0 || s.faitVal > 0)
+                return (
+                  <div className="bg-white rounded-xl border border-stone-200 shadow-sm p-5 mb-6">
+                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+                      {(totalPrevuMin > 0 || totalFaitMin > 0) && (
+                        <div className="flex flex-col">
+                          <div className="flex items-center gap-2 text-xs mb-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-palette-amber" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <circle cx="12" cy="12" r="10" />
+                              <polyline points="12 6 12 12 16 14" />
+                            </svg>
+                            <span className="font-semibold text-palette-amber">Volume horaire total</span>
+                          </div>
+                          <div className="relative w-full mt-2">
+                            <div className="w-full bg-stone-100 rounded-full h-1.5 relative">
+                              {totalFaitMin > 0 && (
+                                <div className="bg-palette-amber h-1.5 rounded-full transition-all relative overflow-visible" style={{ width: totalPrevuMin > 0 ? `${Math.min(100, progressPct)}%` : '100%' }}>
+                                  <span className="absolute right-0 top-0 translate-y-[-100%] text-[10px] text-palette-amber font-bold whitespace-nowrap" style={{ maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>
+                                    {formatDuration(totalFaitMin)}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                            {totalPrevuMin > 0 && (
+                              <span className="absolute right-0 top-full mt-0.5 text-[10px] text-stone-400">
+                                {formatDuration(totalPrevuMin)} prévu
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                      {sports.map(({ key, Icon, color, bg, label, prevuVal, faitVal, useTime }) => {
+                        const barPct = prevuVal > 0 ? Math.min(100, Math.round((faitVal / prevuVal) * 100)) : (faitVal > 0 ? 100 : 0)
+                        const prevuDisplay = useTime ? formatDuration(Math.round(prevuVal)) : (prevuVal > 0 ? `${Math.round(prevuVal)} km` : '—')
+                        const faitDisplay = useTime ? formatDuration(Math.round(faitVal)) : (faitVal > 0 ? `${Math.round(faitVal)} km` : '0 km')
+                        return (
+                              <div key={key} className="flex flex-col">
+                                <div className="flex items-center gap-2 text-xs mb-3">
+                                  <Icon className={`w-4 h-4 ${color}`} />
+                                  <span className={`font-semibold ${color}`}>{label}</span>
+                                </div>
+                                <div className="relative w-full mt-2">
+                                  <div className="w-full bg-stone-100 rounded-full h-1.5 relative">
+                                    {faitVal > 0 && (
+                                      <div className={`h-full ${bg} rounded-full transition-all relative overflow-visible`} style={{ width: `${barPct}%` }}>
+                                        <span className={`absolute right-0 top-0 translate-y-[-100%] text-[10px] ${color} font-bold whitespace-nowrap`} style={{ maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>
+                                          {faitDisplay}
+                                        </span>
+                                      </div>
+                                    )}
+                                  </div>
+                                  {prevuVal > 0 && (
+                                    <span className="absolute right-0 top-full mt-0.5 text-[10px] text-stone-400">
+                                      {prevuDisplay} prévu
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )
+              })()}
               <div className={`grid grid-cols-7 gap-2 min-w-[800px] overflow-x-auto hide-scroll items-stretch ${isDetailed ? 'gap-3' : ''}`}>
                 {isCondensed &&
                   week.days.map((day) => {

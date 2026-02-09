@@ -29,6 +29,7 @@ function parseWorkoutTargetParams(
     }
   }
   if (sportType === 'natation') {
+    // Permettre d'avoir les deux valeurs si elles sont toutes les deux valides (cas où l'une est calculée)
     return {
       target_duration_minutes: validDuration ? duration : (validDistance ? null : undefined),
       target_distance_km: validDistance ? distance : (validDuration ? null : undefined),
@@ -36,9 +37,13 @@ function parseWorkoutTargetParams(
     }
   }
   if (sportType === 'course' || sportType === 'velo') {
+    // Permettre d'avoir les deux valeurs si elles sont toutes les deux valides (cas où l'une est calculée)
+    // Si les deux sont valides, on les garde toutes les deux pour les totaux
+    const hasDuration = validDuration
+    const hasDistance = validDistance
     return {
-      target_duration_minutes: validDuration ? duration : (validDistance ? null : undefined),
-      target_distance_km: validDistance ? distance : (validDuration ? null : undefined),
+      target_duration_minutes: hasDuration ? duration : (hasDistance ? null : undefined),
+      target_distance_km: hasDistance ? distance : (hasDuration ? null : undefined),
       target_elevation_m: validElevation ? elevation : null,
     }
   }
@@ -91,6 +96,7 @@ export async function createWorkout(
   const durationRaw = (formData.get('target_duration_minutes') as string)?.trim()
   const distanceRaw = (formData.get('target_distance_km') as string)?.trim()
   const elevationRaw = (formData.get('target_elevation_m') as string)?.trim()
+  const paceRaw = (formData.get('target_pace') as string)?.trim()
 
   if (!date || !sportType || !title) {
     return { error: 'Tous les champs sont obligatoires.' }
@@ -109,6 +115,8 @@ export async function createWorkout(
     return { error: 'Indiquez un objectif (temps ou distance selon le sport).' }
   }
 
+  const target_pace = paceRaw && paceRaw !== '' && Number(paceRaw) > 0 ? Number(paceRaw) : null
+
   const { error } = await supabase.from('workouts').insert({
     athlete_id: athleteId,
     date,
@@ -118,6 +126,7 @@ export async function createWorkout(
     target_duration_minutes: target_duration_minutes ?? null,
     target_distance_km: target_distance_km ?? null,
     target_elevation_m: target_elevation_m ?? null,
+    target_pace,
   })
 
   if (error) return { error: error.message }
@@ -158,6 +167,7 @@ export async function updateWorkout(
   const durationRaw = (formData.get('target_duration_minutes') as string)?.trim()
   const distanceRaw = (formData.get('target_distance_km') as string)?.trim()
   const elevationRaw = (formData.get('target_elevation_m') as string)?.trim()
+  const paceRaw = (formData.get('target_pace') as string)?.trim()
 
   if (!sportType || !title) {
     return { error: 'Tous les champs sont obligatoires.' }
@@ -176,6 +186,8 @@ export async function updateWorkout(
     return { error: 'Indiquez un objectif (temps ou distance selon le sport).' }
   }
 
+  const target_pace = paceRaw && paceRaw !== '' && Number(paceRaw) > 0 ? Number(paceRaw) : null
+
   const { error } = await supabase
     .from('workouts')
     .update({
@@ -185,6 +197,7 @@ export async function updateWorkout(
       target_duration_minutes: target_duration_minutes ?? null,
       target_distance_km: target_distance_km ?? null,
       target_elevation_m: target_elevation_m ?? null,
+      target_pace,
       updated_at: new Date().toISOString(),
     })
     .eq('id', workoutId)
@@ -309,6 +322,98 @@ export async function getImportedActivitiesForDateRange(
 
   if (error) return { error: error.message, importedActivities: [] }
   return { importedActivities: importedActivities ?? [] }
+}
+
+/** Totaux hebdomadaires (activités importées) par sport. Le coach peut les voir pour ses athlètes sans accéder aux activités Strava. */
+export async function getImportedActivityWeeklyTotals(
+  athleteId: string,
+  startDate: string,
+  endDate: string
+) {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) return { error: 'Non connecté.', weeklyTotals: [] }
+
+  const { data: myProfile } = await supabase
+    .from('profiles')
+    .select('role, user_id')
+    .eq('user_id', user.id)
+    .single()
+
+  const isCoach = myProfile?.role === 'coach'
+  const isAthlete = myProfile?.role === 'athlete' && user.id === athleteId
+  if (!isCoach && !isAthlete) return { error: 'Non autorisé.', weeklyTotals: [] }
+
+  if (isCoach) {
+    const { data: athleteProfile } = await supabase
+      .from('profiles')
+      .select('coach_id')
+      .eq('user_id', athleteId)
+      .single()
+    if (athleteProfile?.coach_id !== user.id) {
+      return { error: 'Non autorisé.', weeklyTotals: [] }
+    }
+  }
+
+  const { data: weeklyTotals, error } = await supabase
+    .from('imported_activity_weekly_totals')
+    .select('*')
+    .eq('athlete_id', athleteId)
+    .gte('week_start', startDate)
+    .lte('week_start', endDate)
+    .order('week_start')
+    .order('sport_type')
+
+  if (error) return { error: error.message, weeklyTotals: [] }
+  return { weeklyTotals: weeklyTotals ?? [] }
+}
+
+/** Totaux hebdomadaires précalculés (entraînements prévus) par sport. Précalculés pour accélérer l'affichage. */
+export async function getWorkoutWeeklyTotals(
+  athleteId: string,
+  startDate: string,
+  endDate: string
+) {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) return { error: 'Non connecté.', workoutTotals: [] }
+
+  const { data: myProfile } = await supabase
+    .from('profiles')
+    .select('role, user_id')
+    .eq('user_id', user.id)
+    .single()
+
+  const isCoach = myProfile?.role === 'coach'
+  const isAthlete = myProfile?.role === 'athlete' && user.id === athleteId
+  if (!isCoach && !isAthlete) return { error: 'Non autorisé.', workoutTotals: [] }
+
+  if (isCoach) {
+    const { data: athleteProfile } = await supabase
+      .from('profiles')
+      .select('coach_id')
+      .eq('user_id', athleteId)
+      .single()
+    if (athleteProfile?.coach_id !== user.id) {
+      return { error: 'Non autorisé.', workoutTotals: [] }
+    }
+  }
+
+  const { data: workoutTotals, error } = await supabase
+    .from('workout_weekly_totals')
+    .select('*')
+    .eq('athlete_id', athleteId)
+    .gte('week_start', startDate)
+    .lte('week_start', endDate)
+    .order('week_start')
+    .order('sport_type')
+
+  if (error) return { error: error.message, workoutTotals: [] }
+  return { workoutTotals: workoutTotals ?? [] }
 }
 
 export async function saveWorkoutComment(
