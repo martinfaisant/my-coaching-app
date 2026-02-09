@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useRef, useCallback } from 'react'
-import { createPortal } from 'react-dom'
+import { createPortal, useFormStatus } from 'react-dom'
 import { useActionState } from 'react'
 import {
   createWorkout,
@@ -45,6 +45,19 @@ type WorkoutModalProps = {
   workout?: Workout | null
 }
 
+function SubmitButton({ disabled }: { disabled?: boolean }) {
+  const { pending } = useFormStatus()
+  return (
+    <button
+      type="submit"
+      disabled={disabled || pending}
+      className="flex-1 min-w-0 rounded-xl bg-[#627e59] hover:bg-[#506648] text-white px-4 py-3 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-[#627e59] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+    >
+      {pending ? 'Enregistrement…' : 'Enregistrer'}
+    </button>
+  )
+}
+
 export function WorkoutModal({
   isOpen,
   onClose,
@@ -75,14 +88,22 @@ export function WorkoutModal({
   const hasElevation = sportType === 'course' || sportType === 'velo'
   const isTimeOnly = sportType === 'musculation'
 
+  // Pour le champ désactivé : n'afficher une valeur que si les deux autres champs (temps ou distance + vitesse) sont remplis
+  const paceFilled = (targetPace?.trim() ?? '') !== '' && Number(targetPace) > 0
+  const timeFilled = (targetDurationMinutes?.trim() ?? '') !== '' && Number(targetDurationMinutes) > 0
+  const distanceFilled = (targetDistanceKm?.trim() ?? '') !== '' && Number(targetDistanceKm) > 0
+  const showDisabledDistance = targetMode === 'time' && timeFilled && paceFilled
+  const showDisabledDuration = targetMode === 'distance' && distanceFilled && paceFilled
+
   const isValid =
     sportType &&
     title.trim() &&
     (isTimeOnly
       ? targetDurationMinutes.trim() !== '' && Number(targetDurationMinutes) > 0
-      : targetMode === 'time'
-        ? targetDurationMinutes.trim() !== '' && Number(targetDurationMinutes) > 0
-        : targetDistanceKm.trim() !== '' && Number(targetDistanceKm) > 0)
+      : (targetMode === 'time'
+          ? targetDurationMinutes.trim() !== '' && Number(targetDurationMinutes) > 0
+          : targetDistanceKm.trim() !== '' && Number(targetDistanceKm) > 0) &&
+        paceFilled)
 
   useEffect(() => {
     if (workout) {
@@ -117,57 +138,50 @@ export function WorkoutModal({
     if (sportType === 'musculation') setTargetMode('time')
   }, [sportType])
 
-  // Calcul automatique avec la vitesse
+  // Calcul automatique avec la vitesse : ne remplir le champ non sélectionnable que si les deux autres (temps ou distance + vitesse) sont complétés
   useEffect(() => {
-    if (!hasTimeDistanceChoice || !targetPace || Number(targetPace) <= 0) return
+    if (!hasTimeDistanceChoice) return
 
-    const pace = Number(targetPace)
+    const paceOk = targetPace && Number(targetPace) > 0
+    const pace = paceOk ? Number(targetPace) : 0
 
-    if (sportType === 'course') {
-      // Course : min/km
-      if (targetMode === 'distance' && targetDistanceKm && Number(targetDistanceKm) > 0) {
-        // Distance + vitesse => calculer durée
-        const distance = Number(targetDistanceKm)
-        const duration = distance * pace
-        setTargetDurationMinutes(String(Math.round(duration)))
-      } else if (targetMode === 'time' && targetDurationMinutes && Number(targetDurationMinutes) > 0) {
-        // Durée + vitesse => calculer distance
-        const duration = Number(targetDurationMinutes)
-        const distance = duration / pace
-        setTargetDistanceKm(distance.toFixed(2))
+    if (targetMode === 'distance') {
+      // Champ désactivé = durée. Remplir seulement si distance ET vitesse sont renseignés
+      if (targetDistanceKm && Number(targetDistanceKm) > 0 && paceOk) {
+        if (sportType === 'course') {
+          const distance = Number(targetDistanceKm)
+          setTargetDurationMinutes(String(Math.round(distance * pace)))
+        } else if (sportType === 'velo') {
+          const distance = Number(targetDistanceKm)
+          const durationMinutes = (distance / pace) * 60
+          setTargetDurationMinutes(String(Math.round(durationMinutes)))
+        } else if (sportType === 'natation') {
+          const distanceM = Number(targetDistanceKm) * 1000
+          setTargetDurationMinutes(String(Math.round((distanceM / 100) * pace)))
+        }
+      } else if (!targetDistanceKm || !paceOk) {
+        setTargetDurationMinutes('')
       }
-    } else if (sportType === 'velo') {
-      // Vélo : km/h
-      if (targetMode === 'distance' && targetDistanceKm && Number(targetDistanceKm) > 0) {
-        // Distance + vitesse => calculer durée
-        const distance = Number(targetDistanceKm)
-        const durationHours = distance / pace
-        const durationMinutes = durationHours * 60
-        setTargetDurationMinutes(String(Math.round(durationMinutes)))
-      } else if (targetMode === 'time' && targetDurationMinutes && Number(targetDurationMinutes) > 0) {
-        // Durée + vitesse => calculer distance
-        const durationMinutes = Number(targetDurationMinutes)
-        const durationHours = durationMinutes / 60
-        const distance = durationHours * pace
-        setTargetDistanceKm(distance.toFixed(2))
-      }
-    } else if (sportType === 'natation') {
-      // Natation : min/100m
-      if (targetMode === 'distance' && targetDistanceKm && Number(targetDistanceKm) > 0) {
-        // Distance + vitesse => calculer durée
-        const distanceM = Number(targetDistanceKm) * 1000
-        const duration = (distanceM / 100) * pace
-        setTargetDurationMinutes(String(Math.round(duration)))
-      } else if (targetMode === 'time' && targetDurationMinutes && Number(targetDurationMinutes) > 0) {
-        // Durée + vitesse => calculer distance
-        const duration = Number(targetDurationMinutes)
-        const distanceM = (duration / pace) * 100
-        const distanceKm = distanceM / 1000
-        setTargetDistanceKm(distanceKm.toFixed(3))
+    } else {
+      // targetMode === 'time' : champ désactivé = distance. Remplir seulement si durée ET vitesse sont renseignés
+      if (targetDurationMinutes && Number(targetDurationMinutes) > 0 && paceOk) {
+        if (sportType === 'course') {
+          const duration = Number(targetDurationMinutes)
+          setTargetDistanceKm((duration / pace).toFixed(2))
+        } else if (sportType === 'velo') {
+          const durationMinutes = Number(targetDurationMinutes)
+          setTargetDistanceKm(((durationMinutes / 60) * pace).toFixed(2))
+        } else if (sportType === 'natation') {
+          const duration = Number(targetDurationMinutes)
+          const distanceKm = ((duration / pace) * 100) / 1000
+          setTargetDistanceKm(distanceKm.toFixed(3))
+        }
+      } else if (!targetDurationMinutes || !paceOk) {
+        setTargetDistanceKm('')
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [targetPace, targetMode, sportType, hasTimeDistanceChoice])
+  }, [targetPace, targetMode, sportType, hasTimeDistanceChoice, targetDistanceKm, targetDurationMinutes])
 
   const [createState, createAction] = useActionState<WorkoutFormState, FormData>(
     (_, fd) => createWorkout(athleteId, pathToRevalidate, {}, fd),
@@ -441,7 +455,7 @@ export function WorkoutModal({
                           value={targetDurationMinutes}
                           onChange={(e) => setTargetDurationMinutes(e.target.value)}
                           placeholder="22"
-                          className="w-full border border-stone-300 rounded-lg py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-[#627e59] focus:border-transparent transition-all bg-white text-stone-900 font-semibold pr-12"
+                          className="w-full border border-stone-300 rounded-lg py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-[#627e59] focus:border-transparent transition-all bg-white text-stone-900 placeholder-stone-300 font-semibold pr-12"
                         />
                         <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                           <span className="text-stone-400 text-xs font-normal">min</span>
@@ -464,17 +478,17 @@ export function WorkoutModal({
                               type="number"
                               min={0}
                               step={1}
-                              value={targetDistanceKm ? String(Math.round(Number(targetDistanceKm) * 1000)) : ''}
+                              value={targetMode === 'time' ? (showDisabledDistance && targetDistanceKm ? String(Math.round(Number(targetDistanceKm) * 1000)) : '') : (targetDistanceKm ? String(Math.round(Number(targetDistanceKm) * 1000)) : '')}
                               onChange={(e) => setTargetDistanceKm(e.target.value ? String(Number(e.target.value) / 1000) : '')}
-                              placeholder="1500"
+                              placeholder={targetMode === 'time' ? '' : '1500'}
                               disabled={targetMode === 'time'}
-                              className={`w-full border border-stone-300 rounded-lg py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-[#627e59] focus:border-transparent transition-all font-semibold pr-10 ${
+                              className={`w-full border border-stone-300 rounded-lg py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-[#627e59] focus:border-transparent transition-all font-semibold placeholder-stone-300 pr-10 ${
                                 targetMode === 'time' 
                                   ? 'bg-stone-100 text-stone-400 cursor-not-allowed' 
                                   : 'bg-white text-stone-900'
                               }`}
                             />
-                            <input type="hidden" name="target_distance_km" value={targetMode === 'distance' ? targetDistanceKm : (targetPace && Number(targetPace) > 0 && targetDistanceKm && Number(targetDistanceKm) > 0 ? targetDistanceKm : '')} />
+                            <input type="hidden" name="target_distance_km" value={targetMode === 'distance' ? targetDistanceKm : (showDisabledDistance ? targetDistanceKm : '')} />
                             <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                               <span className={`text-xs font-normal ${targetMode === 'time' ? 'text-stone-300' : 'text-stone-400'}`}>m</span>
                             </div>
@@ -487,11 +501,11 @@ export function WorkoutModal({
                               type="number"
                               min={0}
                               step={0.1}
-                              value={targetDistanceKm}
+                              value={showDisabledDistance ? targetDistanceKm : (targetMode === 'time' ? '' : targetDistanceKm)}
                               onChange={(e) => setTargetDistanceKm(e.target.value)}
-                              placeholder="14,3"
+                              placeholder={targetMode === 'time' ? '' : '14,3'}
                               disabled={targetMode === 'time'}
-                              className={`w-full border border-stone-300 rounded-lg py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-[#627e59] focus:border-transparent transition-all font-semibold pr-10 ${
+                              className={`w-full border border-stone-300 rounded-lg py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-[#627e59] focus:border-transparent transition-all font-semibold placeholder-stone-300 pr-10 ${
                                 targetMode === 'time' 
                                   ? 'bg-stone-100 text-stone-400 cursor-not-allowed' 
                                   : 'bg-white text-stone-900'
@@ -511,11 +525,11 @@ export function WorkoutModal({
                           name="target_duration_minutes"
                           type="number"
                           min={1}
-                          value={targetDurationMinutes}
+                          value={showDisabledDuration ? targetDurationMinutes : (targetMode === 'distance' ? '' : targetDurationMinutes)}
                           onChange={(e) => setTargetDurationMinutes(e.target.value)}
-                          placeholder="22"
+                          placeholder={targetMode === 'distance' ? '' : '22'}
                           disabled={targetMode === 'distance'}
-                          className={`w-full border border-stone-300 rounded-lg py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-[#627e59] focus:border-transparent transition-all font-semibold pr-12 ${
+                          className={`w-full border border-stone-300 rounded-lg py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-[#627e59] focus:border-transparent transition-all font-semibold placeholder-stone-300 pr-12 ${
                             targetMode === 'distance' 
                               ? 'bg-stone-100 text-stone-400 cursor-not-allowed' 
                               : 'bg-white text-stone-900'
@@ -524,8 +538,8 @@ export function WorkoutModal({
                         <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                           <span className={`text-xs font-normal ${targetMode === 'distance' ? 'text-stone-300' : 'text-stone-400'}`}>min</span>
                         </div>
-                        <input type="hidden" name="target_duration_minutes" value={targetMode === 'time' ? targetDurationMinutes : (targetPace && Number(targetPace) > 0 && targetDurationMinutes && Number(targetDurationMinutes) > 0 ? targetDurationMinutes : '')} />
-                        <input type="hidden" name="target_distance_km" value={targetMode === 'distance' ? targetDistanceKm : ''} />
+                        <input type="hidden" name="target_duration_minutes" value={targetMode === 'time' ? targetDurationMinutes : (showDisabledDuration ? targetDurationMinutes : '')} />
+                        <input type="hidden" name="target_distance_km" value={targetMode === 'distance' ? targetDistanceKm : (showDisabledDistance ? targetDistanceKm : '')} />
                         <input type="hidden" name="target_elevation_m" value={hasElevation ? targetElevationM : ''} />
                       </div>
 
@@ -540,7 +554,7 @@ export function WorkoutModal({
                             value={targetElevationM}
                             onChange={(e) => setTargetElevationM(e.target.value)}
                             placeholder="200"
-                            className="w-full border border-stone-300 rounded-lg py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-[#627e59] focus:border-transparent transition-all bg-white text-stone-900 font-semibold pr-14"
+                            className="w-full border border-stone-300 rounded-lg py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-[#627e59] focus:border-transparent transition-all bg-white text-stone-900 placeholder-stone-300 font-semibold pr-14"
                           />
                           <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                             <span className="text-stone-400 text-xs font-normal">m D+</span>
@@ -562,7 +576,8 @@ export function WorkoutModal({
                             value={targetPace}
                             onChange={(e) => setTargetPace(e.target.value)}
                             placeholder={sportType === 'course' ? '5.0' : sportType === 'velo' ? '39' : '2.0'}
-                            className="w-full border border-stone-300 rounded-lg py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-[#627e59] focus:border-transparent transition-all bg-white text-stone-900 font-semibold pr-16"
+                            title="Obligatoire pour course, vélo et natation"
+                            className="w-full border border-stone-300 rounded-lg py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-[#627e59] focus:border-transparent transition-all bg-white text-stone-900 placeholder-stone-300 font-semibold pr-16"
                           />
                           <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                             <span className="text-stone-400 text-xs font-normal">
@@ -591,7 +606,7 @@ export function WorkoutModal({
               required
               disabled={!canEdit}
               placeholder="Ex. Footing 45 min"
-              className="w-full px-4 py-2.5 rounded-lg border border-stone-200 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-[#627e59] focus:border-[#627e59] transition disabled:opacity-60"
+              className="w-full px-4 py-2.5 rounded-lg border border-stone-200 bg-white text-stone-900 placeholder-stone-300 focus:outline-none focus:ring-2 focus:ring-[#627e59] focus:border-[#627e59] transition disabled:opacity-60"
             />
           </div>
 
@@ -612,7 +627,7 @@ export function WorkoutModal({
                 disabled={!canEdit}
                 rows={4}
                 placeholder="Détails de l'entraînement..."
-                className="w-full px-4 py-2.5 rounded-lg border border-stone-200 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-[#627e59] focus:border-[#627e59] resize-y transition disabled:opacity-60"
+                className="w-full px-4 py-2.5 rounded-lg border border-stone-200 bg-white text-stone-900 placeholder-stone-300 focus:outline-none focus:ring-2 focus:ring-[#627e59] focus:border-[#627e59] resize-y transition disabled:opacity-60"
               />
             </div>
           )}
@@ -646,7 +661,7 @@ export function WorkoutModal({
                       onChange={(e) => setCommentText(e.target.value)}
                       rows={3}
                       placeholder="Saisissez votre commentaire… Il est enregistré automatiquement."
-                      className="w-full px-4 py-3 rounded-xl border border-stone-200 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-[#627e59] focus:border-[#627e59] resize-y"
+                      className="w-full px-4 py-3 rounded-xl border border-stone-200 bg-white text-stone-900 placeholder-stone-300 focus:outline-none focus:ring-2 focus:ring-[#627e59] focus:border-[#627e59] resize-y"
                       aria-label="Votre commentaire"
                     />
                     {commentSaveStatus === 'saving' && (
@@ -692,13 +707,7 @@ export function WorkoutModal({
                     {deleteLoading ? 'Suppression…' : 'Supprimer'}
                   </button>
                 )}
-                <button
-                  type="submit"
-                  disabled={!isValid}
-                  className="flex-1 min-w-0 rounded-xl bg-[#627e59] hover:bg-[#506648] text-white px-4 py-3 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-[#627e59] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Enregistrer
-                </button>
+                <SubmitButton disabled={!isValid} />
               </div>
             </div>
           )}
