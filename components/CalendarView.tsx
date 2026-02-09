@@ -4,7 +4,7 @@ import { useState, useMemo, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { WorkoutModal } from './WorkoutModal'
 import { IconRunning, IconBiking, IconSwimming, IconDumbbell, IconNordicSki, IconBackcountrySki, IconIceSkating } from './SportIcons'
-import type { Workout, SportType, Goal, ImportedActivity, ImportedActivityWeeklyTotal } from '@/types/database'
+import type { Workout, SportType, Goal, ImportedActivity, ImportedActivityWeeklyTotal, WorkoutWeeklyTotal } from '@/types/database'
 
 const SPORT_LABELS: Record<SportType, string> = {
   course: 'Course',
