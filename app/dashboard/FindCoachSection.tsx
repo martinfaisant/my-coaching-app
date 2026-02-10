@@ -126,8 +126,7 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
       <div className="bg-white rounded-2xl shadow-sm border border-stone-200 p-6 mb-10">
         <div className="flex justify-between items-end mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-stone-900 mb-1">Trouver un coach</h1>
-            <p className="text-stone-500 text-sm">Sélectionnez vos critères pour trouver l&apos;expert idéal.</p>
+            <h1 className="text-lg font-bold text-stone-900">Filtre</h1>
           </div>
           <button
             type="button"

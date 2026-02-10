@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, useTransition } from 'react'
+import { useState, useEffect, useRef, useTransition, useCallback } from 'react'
 import { CalendarView } from './CalendarView'
 import { getWorkoutsForDateRange, getImportedActivitiesForDateRange, getImportedActivityWeeklyTotals, getWorkoutWeeklyTotals } from '@/app/dashboard/workouts/actions'
 import type { Workout, Goal, ImportedActivity, ImportedActivityWeeklyTotal, WorkoutWeeklyTotal } from '@/types/database'
@@ -54,9 +54,19 @@ type CalendarViewWithNavigationProps = {
   initialWorkoutTotals?: WorkoutWeeklyTotal[]
   goals?: Goal[]
   canEdit: boolean
+  /** Vue athlète (son propre calendrier) : modale "Mon entrainement" */
+  athleteView?: boolean
   pathToRevalidate: string
   /** Titre affiché à gauche de la barre (ex. "Calendrier d'entraînement — email"). Même niveau que le sélecteur de semaine. */
   title?: React.ReactNode
+  /** Si fourni, le sélecteur de semaine sera rendu via cette fonction au lieu d'être dans le composant */
+  renderWeekSelector?: (props: { dateRangeLabel: string; onNavigate: (offset: number) => void; isAnimating: boolean }) => React.ReactNode
+  /** Si true, n'affiche pas le sélecteur intégré (utilisé avec renderWeekSelector) */
+  hideBuiltInSelector?: boolean
+  /** Si true, désactive le scroll du contenu du calendrier (pour permettre un layout avec contenu scrollable en dessous) */
+  disableContentScroll?: boolean
+  /** Contenu à afficher après le calendrier dans la même zone scrollable */
+  renderAfterCalendar?: () => React.ReactNode
 }
 
 /** Retourne le lundi d'une semaine donnée (offset par rapport à referenceMonday). */
@@ -91,8 +101,13 @@ export function CalendarViewWithNavigation({
   initialWorkoutTotals = [],
   goals = [],
   canEdit,
+  athleteView = false,
   pathToRevalidate,
   title,
+  renderWeekSelector,
+  hideBuiltInSelector = false,
+  disableContentScroll = false,
+  renderAfterCalendar,
 }: CalendarViewWithNavigationProps) {
   const today = new Date()
   const currentMonday = getWeekMonday(today)
@@ -284,6 +299,47 @@ export function CalendarViewWithNavigation({
     loadMissingWeeks()
   }, [referenceMonday, athleteId])
 
+  const refetchWorkoutsAfterSave = useCallback(async (updatedWorkout?: Workout) => {
+    if (updatedWorkout) {
+      startTransition(() => {
+        setWorkouts(prev => {
+          const map = new Map(prev.map(w => [w.id, w]))
+          map.set(updatedWorkout.id, updatedWorkout)
+          const merged = Array.from(map.values())
+          stableWorkoutsRef.current = merged
+          return merged
+        })
+      })
+      const { start, end } = getInitialFiveWeekRange(referenceMonday)
+      const workoutTotalsResult = await getWorkoutWeeklyTotals(athleteId, start, end)
+      if (!workoutTotalsResult.error && workoutTotalsResult.workoutTotals) {
+        startTransition(() => {
+          const fresh = workoutTotalsResult.workoutTotals as WorkoutWeeklyTotal[]
+          setWorkoutTotals(fresh)
+          stableWorkoutTotalsRef.current = fresh
+        })
+      }
+      return
+    }
+    const { start, end } = getInitialFiveWeekRange(referenceMonday)
+    const [workoutsResult, workoutTotalsResult] = await Promise.all([
+      getWorkoutsForDateRange(athleteId, start, end),
+      getWorkoutWeeklyTotals(athleteId, start, end),
+    ])
+    startTransition(() => {
+      if (!workoutsResult.error && workoutsResult.workouts) {
+        const fresh = workoutsResult.workouts as Workout[]
+        setWorkouts(fresh)
+        stableWorkoutsRef.current = fresh
+      }
+      if (!workoutTotalsResult.error && workoutTotalsResult.workoutTotals) {
+        const fresh = workoutTotalsResult.workoutTotals as WorkoutWeeklyTotal[]
+        setWorkoutTotals(fresh)
+        stableWorkoutTotalsRef.current = fresh
+      }
+    })
+  }, [referenceMonday, athleteId])
+
   const handleNavigate = (weeksOffset: number) => {
     if (animatingRef.current) return
 
@@ -319,40 +375,83 @@ export function CalendarViewWithNavigation({
     return 'translateY(0)'
   }
 
-  return (
-    <div>
-      <div className="flex items-center justify-between w-full pb-2 mb-0 flex-wrap gap-2">
-        {title != null ? <div className="flex-1 min-w-0">{title}</div> : <div className="flex-1" />}
-        <div className="flex items-center gap-3 bg-stone-100 p-1 rounded-lg shrink-0">
-          <button
-            type="button"
-            onClick={() => handleNavigate(-1)}
-            disabled={isAnimating}
-            className="p-1.5 hover:bg-white hover:text-[#627e59] rounded-md transition-all shadow-sm text-stone-500 disabled:opacity-60 disabled:pointer-events-none"
-            aria-label="Semaine précédente"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="m15 18-7-7 7-7" />
-            </svg>
-          </button>
-          <span className="text-sm font-semibold text-stone-700 px-2 min-w-[140px] text-center">
-            {dateRangeLabel}
-          </span>
-          <button
-            type="button"
-            onClick={() => handleNavigate(1)}
-            disabled={isAnimating}
-            className="p-1.5 hover:bg-white hover:text-[#627e59] rounded-md transition-all shadow-sm text-stone-500 disabled:opacity-60 disabled:pointer-events-none"
-            aria-label="Semaine suivante"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="m9 18 6-6-6-6" />
-            </svg>
-          </button>
-        </div>
-      </div>
+  const weekSelectorProps = { dateRangeLabel, onNavigate: handleNavigate, isAnimating }
 
-      <div className="overflow-hidden">
+  return (
+    <div className={`${disableContentScroll ? 'flex-auto' : 'flex-1'} flex flex-col ${disableContentScroll ? 'min-h-0' : 'h-full'} min-w-0 overflow-hidden`}>
+      {renderWeekSelector ? (
+        <>
+          {renderWeekSelector(weekSelectorProps)}
+          <div className="flex-1 overflow-y-auto px-6 lg:px-8 py-6">
+            <div className="overflow-hidden">
+              <div
+                className="ease-out"
+                style={{
+                  transitionProperty: 'transform',
+                  transitionDuration: `${SLIDE_DURATION_MS}ms`,
+                  transform: getTransform(),
+                }}
+              >
+                <CalendarView
+                  athleteId={athleteId}
+                  athleteEmail={athleteEmail}
+                  workouts={isAnimating ? stableWorkoutsRef.current : workouts}
+                  importedActivities={importedActivities}
+                  weeklyTotals={isAnimating ? stableWeeklyTotalsRef.current : weeklyTotals}
+                  workoutTotals={isAnimating ? stableWorkoutTotalsRef.current : workoutTotals}
+                  goals={goals}
+                  canEdit={canEdit}
+                  athleteView={athleteView}
+                  pathToRevalidate={pathToRevalidate}
+                  referenceMonday={referenceMonday}
+                  onNavigate={handleNavigate}
+                  onWorkoutSaved={refetchWorkoutsAfterSave}
+                />
+              </div>
+            </div>
+            {renderAfterCalendar && (
+              <div className="mt-6">
+                {renderAfterCalendar()}
+              </div>
+            )}
+          </div>
+        </>
+      ) : (
+        <>
+          {!hideBuiltInSelector && (
+            <div className="flex items-center justify-between w-full pb-2 mb-0 flex-wrap gap-2">
+              {title != null ? <div className="flex-1 min-w-0">{title}</div> : <div className="flex-1" />}
+              <div className="flex items-center gap-3 bg-stone-100 p-1 rounded-lg shrink-0">
+                <button
+                  type="button"
+                  onClick={() => handleNavigate(-1)}
+                  disabled={isAnimating}
+                  className="p-1.5 hover:bg-white hover:text-[#627e59] rounded-md transition-all shadow-sm text-stone-500 disabled:opacity-60 disabled:pointer-events-none"
+                  aria-label="Semaine précédente"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="m15 18-7-7 7-7" />
+                  </svg>
+                </button>
+                <span className="text-sm font-semibold text-stone-700 px-2 min-w-[140px] text-center">
+                  {dateRangeLabel}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => handleNavigate(1)}
+                  disabled={isAnimating}
+                  className="p-1.5 hover:bg-white hover:text-[#627e59] rounded-md transition-all shadow-sm text-stone-500 disabled:opacity-60 disabled:pointer-events-none"
+                  aria-label="Semaine suivante"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="m9 18 6-6-6-6" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          )}
+
+          <div className="overflow-hidden">
         <div
           className="ease-out"
           style={{
@@ -370,12 +469,16 @@ export function CalendarViewWithNavigation({
             workoutTotals={isAnimating ? stableWorkoutTotalsRef.current : workoutTotals}
             goals={goals}
             canEdit={canEdit}
+            athleteView={athleteView}
             pathToRevalidate={pathToRevalidate}
             referenceMonday={referenceMonday}
             onNavigate={handleNavigate}
+            onWorkoutSaved={refetchWorkoutsAfterSave}
           />
-        </div>
-      </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   )
 }

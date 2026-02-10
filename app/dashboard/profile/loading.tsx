@@ -1,16 +1,10 @@
 export default function ProfileLoading() {
   return (
-    <div className="min-h-screen bg-background animate-pulse">
-      <header className="sticky top-0 z-40 border-b border-stone-200/50 bg-background/95 backdrop-blur-md">
-        <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
-          <div className="h-4 w-32 bg-stone-200 rounded" />
-          <div className="h-9 w-24 bg-stone-200 rounded-lg" />
-        </div>
+    <main className="flex-1 flex flex-col h-full min-w-0 bg-white/50 rounded-2xl overflow-hidden relative border border-stone-200/50 animate-pulse">
+      <header className="h-20 flex items-center justify-between px-6 lg:px-8 shrink-0 bg-white/80 backdrop-blur-md border-b border-stone-100 z-10">
+        <div className="h-7 w-28 bg-stone-200 rounded" />
       </header>
-
-      <main className="mx-auto max-w-3xl px-4 py-8 space-y-8">
-        <div className="h-7 w-40 bg-stone-200 rounded" />
-
+      <div className="flex-1 overflow-y-auto px-6 lg:px-8 py-6">
         {/* Formulaire profil : avatar + champs */}
         <div className="rounded-2xl border border-stone-200 bg-section overflow-hidden">
           <div className="p-6 space-y-6">
@@ -42,7 +36,7 @@ export default function ProfileLoading() {
             </div>
           </div>
         </div>
-      </main>
-    </div>
+      </div>
+    </main>
   )
 }

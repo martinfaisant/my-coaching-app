@@ -1,8 +1,7 @@
-import Link from 'next/link'
 import { getCurrentUserWithProfile } from '@/utils/auth'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
-import { ProfileMenu } from '@/components/ProfileMenu'
+import { PageHeader } from '@/components/PageHeader'
 import { AvatarImage } from '@/components/AvatarImage'
 import { getMyCoachRating } from './actions'
 import { CoachRatingForm } from './CoachRatingForm'
@@ -61,25 +60,14 @@ export default async function MonCoachPage() {
 
   if (!coach) {
     return (
-      <div className="min-h-screen bg-background">
-        <header className="sticky top-0 z-40 border-b border-stone-200/50 bg-background/95 backdrop-blur-md">
-          <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
-            <Link
-              href="/dashboard"
-              className="text-sm font-medium text-stone-600 hover:text-stone-900"
-            >
-              ← Tableau de bord
-            </Link>
-            <ProfileMenu showObjectifsLink showCoachLink showDevicesLink />
-          </div>
-        </header>
-        <main className="mx-auto max-w-2xl px-4 py-8">
-          <h1 className="text-xl font-semibold text-stone-900">
-            Mon coach
-          </h1>
+      <main className="flex-1 flex flex-col h-full min-w-0 bg-white/50 rounded-2xl overflow-hidden relative border border-stone-200/50">
+        <PageHeader title="Mon Coach" />
+
+        {/* ZONE SCROLLABLE */}
+        <div className="flex-1 overflow-y-auto px-6 lg:px-8 py-6">
           <p className="mt-1 text-sm text-stone-600">Coach introuvable.</p>
-        </main>
-      </div>
+        </div>
+      </main>
     )
   }
 
@@ -88,26 +76,9 @@ export default async function MonCoachPage() {
   const myRating = await getMyCoachRating(current.profile.coach_id!)
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-40 border-b border-stone-200/50 bg-background/95 backdrop-blur-md">
-        <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
-          <Link
-            href="/dashboard"
-            className="text-sm font-medium text-stone-600 hover:text-stone-900"
-          >
-            ← Tableau de bord
-          </Link>
-          <ProfileMenu showObjectifsLink showCoachLink showDevicesLink />
-        </div>
-      </header>
-
-      <main className="mx-auto max-w-2xl px-4 py-8">
-        <h1 className="text-xl font-semibold text-stone-900">
-          Mon coach
-        </h1>
-        <p className="mt-1 text-sm text-stone-500">
-          Les informations de votre coach.
-        </p>
+    <main className="flex-1 flex flex-col h-full min-w-0 bg-white/50 rounded-2xl overflow-hidden relative border border-stone-200/50">
+      <PageHeader title="Mon Coach" />
+      <div className="flex-1 overflow-y-auto px-6 lg:px-8 py-6">
 
         <div className="mt-8 space-y-6 rounded-2xl border border-stone-200 bg-section p-6 shadow-sm">
           <div className="flex items-start justify-between gap-4">
@@ -163,7 +134,7 @@ export default async function MonCoachPage() {
             initialComment={myRating?.comment ?? ''}
           />
         </div>
-      </main>
-    </div>
+      </div>
+    </main>
   )
 }

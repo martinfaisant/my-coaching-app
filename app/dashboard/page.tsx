@@ -1,8 +1,8 @@
 import Link from 'next/link'
 import { createClient } from '@/utils/supabase/server'
 import { getCurrentUserWithProfile } from '@/utils/auth'
-import { CalendarViewWithNavigation } from '@/components/CalendarViewWithNavigation'
-import { ProfileMenu } from '@/components/ProfileMenu'
+import { redirect } from 'next/navigation'
+import { PageHeader } from '@/components/PageHeader'
 import { AvatarImage } from '@/components/AvatarImage'
 import { FindCoachSection } from '@/app/dashboard/FindCoachSection'
 import { RespondToRequestButtons } from '@/app/dashboard/RespondToRequestButtons'
@@ -11,7 +11,7 @@ import {
   getMyCoachRequests,
   getPendingCoachRequests,
 } from '@/app/dashboard/actions'
-import type { Profile, Workout, Goal, ImportedActivity, ImportedActivityWeeklyTotal, WorkoutWeeklyTotal } from '@/types/database'
+import type { Profile } from '@/types/database'
 
 /** Formate une date YYYY-MM-DD en court français (ex. "30 Mars"). */
 function formatShortDate(dateStr: string): string {
@@ -35,20 +35,16 @@ const ROLE_LABELS: Record<Profile['role'], string> = {
   admin: 'Administrateur',
 }
 
-function getWeekMonday(d: Date): Date {
-  const date = new Date(d)
-  const day = date.getDay()
-  const diff = day === 0 ? -6 : 1 - day
-  date.setDate(date.getDate() + diff)
-  date.setHours(0, 0, 0, 0)
-  return date
-}
-
 export default async function DashboardPage() {
   const current = await getCurrentUserWithProfile()
   const supabase = await createClient()
 
-  // Athlète sans coach : proposer de trouver un coach (requêtes en parallèle)
+  // Athlète avec coach : rediriger vers le calendrier
+  if (current.profile.role === 'athlete' && current.profile.coach_id) {
+    redirect('/dashboard/calendar')
+  }
+
+  // Athlète sans coach : page "Trouver un coach"
   if (current.profile.role === 'athlete' && !current.profile.coach_id) {
     const [coachesResult, myRequests, ratingStats] = await Promise.all([
       supabase
@@ -95,17 +91,9 @@ export default async function DashboardPage() {
       }))
 
     return (
-      <div className="min-h-screen bg-background">
-        <header className="sticky top-0 z-40 border-b border-stone-200/50 bg-background/95 backdrop-blur-md">
-          <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
-            <h1 className="text-lg font-semibold text-stone-900">
-              Tableau de bord
-            </h1>
-            <ProfileMenu showObjectifsLink showDevicesLink />
-          </div>
-        </header>
-
-        <main className="mx-auto max-w-5xl px-4 py-10">
+      <main className="flex-1 flex flex-col h-full min-w-0 bg-white/50 rounded-2xl overflow-hidden relative border border-stone-200/50">
+        <PageHeader title="Trouver mon coach" />
+        <div className="flex-1 overflow-y-auto px-6 lg:px-8 py-6">
           {(coachesForList.length === 0) ? (
             <p className="text-sm text-stone-600">
               Aucun coach inscrit pour le moment. Revenez plus tard.
@@ -113,98 +101,8 @@ export default async function DashboardPage() {
           ) : (
             <FindCoachSection coaches={coachesForList} statusByCoach={statusByCoach} requestIdByCoach={requestIdByCoach} initialPracticedSports={current.profile.practiced_sports ?? []} ratingsByCoach={ratingsByCoach} />
           )}
-        </main>
-      </div>
-    )
-  }
-
-  // Athlète avec coach : calendrier d'entraînement (workouts, activités, goals en parallèle)
-  if (current.profile.role === 'athlete') {
-    const today = new Date()
-    const currentMonday = getWeekMonday(today)
-    // Charger 5 semaines : S-2, S-1, S, S+1, S+2
-    const startMonday = new Date(currentMonday)
-    startMonday.setDate(startMonday.getDate() - 14) // S-2
-    const endSunday = new Date(currentMonday)
-    endSunday.setDate(endSunday.getDate() + 14 + 6) // S+2
-    const startStr = startMonday.toISOString().slice(0, 10)
-    const endStr = endSunday.toISOString().slice(0, 10)
-    // Calculer les lundis des 5 semaines pour les totaux
-    const weekMondays: string[] = []
-    for (let offset = -2; offset <= 2; offset++) {
-      const weekMonday = new Date(currentMonday)
-      weekMonday.setDate(weekMonday.getDate() + offset * 7)
-      weekMondays.push(weekMonday.toISOString().slice(0, 10))
-    }
-
-    const [workoutsResult, importedActivitiesResult, goalsResult, weeklyTotalsResult, workoutTotalsResult] = await Promise.all([
-      supabase
-        .from('workouts')
-        .select('*')
-        .eq('athlete_id', current.id)
-        .gte('date', startStr)
-        .lte('date', endStr)
-        .order('date')
-        .order('created_at'),
-      supabase
-        .from('imported_activities')
-        .select('*')
-        .eq('athlete_id', current.id)
-        .gte('date', startStr)
-        .lte('date', endStr)
-        .order('date')
-        .order('created_at'),
-      supabase
-        .from('goals')
-        .select('*')
-        .eq('athlete_id', current.id)
-        .order('date', { ascending: true }),
-      supabase
-        .from('imported_activity_weekly_totals')
-        .select('*')
-        .eq('athlete_id', current.id)
-        .in('week_start', weekMondays)
-        .order('week_start')
-        .order('sport_type'),
-      supabase
-        .from('workout_weekly_totals')
-        .select('*')
-        .eq('athlete_id', current.id)
-        .in('week_start', weekMondays)
-        .order('week_start')
-        .order('sport_type'),
-    ])
-    const workouts = workoutsResult.data
-    const importedActivities = importedActivitiesResult.data
-    const goals = goalsResult.data
-    const initialWeeklyTotals = weeklyTotalsResult.data ?? []
-    const initialWorkoutTotals = workoutTotalsResult.data ?? []
-
-    return (
-      <div className="min-h-screen bg-background">
-        <header className="sticky top-0 z-40 border-b border-stone-200/50 bg-background/95 backdrop-blur-md">
-          <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
-            <h1 className="text-lg font-semibold text-stone-900text-white">
-              Mon calendrier d&apos;entraînement
-            </h1>
-            <ProfileMenu showObjectifsLink showCoachLink showDevicesLink />
-          </div>
-        </header>
-
-        <main className="mx-auto max-w-5xl px-4 pt-4 pb-8">
-          <CalendarViewWithNavigation
-            athleteId={current.id}
-            athleteEmail={current.email}
-            initialWorkouts={(workouts ?? []) as Workout[]}
-            initialImportedActivities={(importedActivities ?? []) as ImportedActivity[]}
-            initialWeeklyTotals={initialWeeklyTotals as ImportedActivityWeeklyTotal[]}
-            initialWorkoutTotals={(initialWorkoutTotals ?? []) as WorkoutWeeklyTotal[]}
-            goals={(goals ?? []) as Goal[]}
-            canEdit={false}
-            pathToRevalidate="/dashboard"
-          />
-        </main>
-      </div>
+        </div>
+      </main>
     )
   }
 
@@ -302,18 +200,24 @@ export default async function DashboardPage() {
     }
   }
 
+  const athleteCount = current.profile.role === 'coach' ? visibleProfiles.length : 0
+  const pageTitle = current.profile.role === 'admin'
+    ? 'Tous les membres'
+    : current.profile.role === 'coach'
+      ? `Mes Athlètes (${athleteCount})`
+      : 'Tableau de bord'
+
   return (
-    <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-40 border-b border-stone-200/50 bg-background/95 backdrop-blur-md">
-        <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
-          <h1 className="text-lg font-semibold text-stone-900text-white">
-            Tableau de bord
-          </h1>
-          <ProfileMenu showOffersLink={current.profile.role === 'coach'} />
+    <main className="flex-1 flex flex-col h-full min-w-0 bg-white/50 rounded-2xl overflow-hidden relative border border-stone-200/50">
+      {/* HEADER */}
+      <header className="h-20 flex items-center justify-between px-6 lg:px-8 shrink-0 bg-white border-b border-stone-100">
+        <div>
+          <h1 className="text-xl font-bold text-stone-800">{pageTitle}</h1>
         </div>
       </header>
 
-      <main className="mx-auto max-w-5xl px-4 py-10">
+      {/* ZONE SCROLLABLE */}
+      <div className="flex-1 overflow-y-auto px-6 lg:px-8 py-10">
         {current.profile.role === 'admin' && (
           <div className="mb-8">
             <Link
@@ -398,15 +302,17 @@ export default async function DashboardPage() {
         )}
 
         <section>
-          <h2 className="text-base font-semibold text-stone-900 mb-4">
-            {current.profile.role === 'admin'
-              ? 'Tous les membres'
-              : current.profile.role === 'coach'
-                ? `Mes athlètes (${visibleProfiles.length})`
-                : 'Mon profil'}
-          </h2>
-
           {current.profile.role === 'coach' ? (
+            visibleProfiles.length === 0 ? (
+              <div className="rounded-2xl border border-stone-200 bg-section border-dashed p-12 text-center">
+                <p className="text-stone-600 font-medium">
+                  Vos demandes de coaching apparaîtront sur cette page.
+                </p>
+                <p className="text-sm text-stone-500 mt-2">
+                  Les athlètes qui vous choisiront apparaitront ici. Vous pourrez l&apos;accepter ou la refuser.
+                </p>
+              </div>
+            ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {visibleProfiles.map((p) => {
                 const displayName = (p.full_name?.trim() || p.email) as string
@@ -492,6 +398,7 @@ export default async function DashboardPage() {
                 )
               })}
             </div>
+            )
           ) : (
             <ul className="space-y-2.5">
               {visibleProfiles.map((p) => {
@@ -553,7 +460,7 @@ export default async function DashboardPage() {
             </ul>
           )}
         </section>
-      </main>
-    </div>
+      </div>
+    </main>
   )
 }
