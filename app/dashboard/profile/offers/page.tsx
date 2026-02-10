@@ -1,8 +1,7 @@
-import Link from 'next/link'
 import { getCurrentUserWithProfile } from '@/utils/auth'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
-import { ProfileMenu } from '@/components/ProfileMenu'
+import { PageHeader } from '@/components/PageHeader'
 import { OffersForm } from './OffersForm'
 
 export default async function OffersPage() {
@@ -20,29 +19,11 @@ export default async function OffersPage() {
     .order('display_order')
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-40 border-b border-stone-200/50 bg-background/95 backdrop-blur-md">
-        <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
-          <Link
-            href="/dashboard"
-            className="text-sm font-medium text-stone-600 hover:text-stone-900"
-          >
-            ← Tableau de bord
-          </Link>
-          <ProfileMenu showOffersLink />
-        </div>
-      </header>
-
-      <main className="mx-auto max-w-2xl px-4 py-8">
-        <h1 className="text-xl font-semibold text-stone-900">
-          Mon offre
-        </h1>
-        <p className="mt-1 text-sm text-stone-500">
-          Définissez jusqu'à 3 offres de coaching avec leurs tarifs.
-        </p>
-
+    <main className="flex-1 flex flex-col h-full min-w-0 bg-white/50 rounded-2xl overflow-hidden relative border border-stone-200/50">
+      <PageHeader title="Mon offre" />
+      <div className="flex-1 overflow-y-auto px-6 lg:px-8 py-6">
         <OffersForm offers={offers || []} />
-      </main>
-    </div>
+      </div>
+    </main>
   )
 }

@@ -37,11 +37,13 @@ function formatDateFr(dateStr: string): string {
 
 type WorkoutModalProps = {
   isOpen: boolean
-  onClose: (closedBySuccess?: boolean) => void
+  onClose: (closedBySuccess?: boolean, updatedWorkout?: Workout) => void
   date: string
   athleteId: string
   pathToRevalidate: string
   canEdit: boolean
+  /** Vue athlète (son propre calendrier) : titre "Mon entrainement" au lieu de "Modifier l'entraînement" */
+  athleteView?: boolean
   workout?: Workout | null
 }
 
@@ -65,6 +67,7 @@ export function WorkoutModal({
   athleteId,
   pathToRevalidate,
   canEdit,
+  athleteView = false,
   workout,
 }: WorkoutModalProps) {
   const [sportType, setSportType] = useState<SportType>('course')
@@ -80,6 +83,7 @@ export function WorkoutModal({
   const [commentSaveMessage, setCommentSaveMessage] = useState<string | null>(null)
   const commentDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const lastSavedCommentRef = useRef<string | null>(null)
+  const workoutJustLoadedRef = useRef(false)
   const [deleteLoading, setDeleteLoading] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
 
@@ -107,6 +111,7 @@ export function WorkoutModal({
 
   useEffect(() => {
     if (workout) {
+      workoutJustLoadedRef.current = true
       setSportType(workout.sport_type)
       setTitle(workout.title)
       setDescription(workout.description)
@@ -144,10 +149,12 @@ export function WorkoutModal({
 
     const paceOk = targetPace && Number(targetPace) > 0
     const pace = paceOk ? Number(targetPace) : 0
+    const skipClear = workoutJustLoadedRef.current
 
     if (targetMode === 'distance') {
       // Champ désactivé = durée. Remplir seulement si distance ET vitesse sont renseignés
       if (targetDistanceKm && Number(targetDistanceKm) > 0 && paceOk) {
+        workoutJustLoadedRef.current = false
         if (sportType === 'course') {
           const distance = Number(targetDistanceKm)
           setTargetDurationMinutes(String(Math.round(distance * pace)))
@@ -159,12 +166,13 @@ export function WorkoutModal({
           const distanceM = Number(targetDistanceKm) * 1000
           setTargetDurationMinutes(String(Math.round((distanceM / 100) * pace)))
         }
-      } else if (!targetDistanceKm || !paceOk) {
+      } else if (!skipClear && (!targetDistanceKm || !paceOk)) {
         setTargetDurationMinutes('')
       }
     } else {
       // targetMode === 'time' : champ désactivé = distance. Remplir seulement si durée ET vitesse sont renseignés
       if (targetDurationMinutes && Number(targetDurationMinutes) > 0 && paceOk) {
+        workoutJustLoadedRef.current = false
         if (sportType === 'course') {
           const duration = Number(targetDurationMinutes)
           setTargetDistanceKm((duration / pace).toFixed(2))
@@ -176,7 +184,7 @@ export function WorkoutModal({
           const distanceKm = ((duration / pace) * 100) / 1000
           setTargetDistanceKm(distanceKm.toFixed(3))
         }
-      } else if (!targetDurationMinutes || !paceOk) {
+      } else if (!skipClear && (!targetDurationMinutes || !paceOk)) {
         setTargetDistanceKm('')
       }
     }
@@ -212,7 +220,7 @@ export function WorkoutModal({
   const action = isEdit ? updateAction : createAction
 
   useEffect(() => {
-    if (state?.success) onClose(true)
+    if (state?.success) onClose(true, state.workout)
     // onClose volontairement omis des deps pour éviter une boucle (référence change à chaque rendu du parent)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state?.success])
@@ -335,7 +343,7 @@ export function WorkoutModal({
               </svg>
             </div>
             <h2 id="workout-modal-title" className="text-lg font-bold text-stone-900 truncate">
-              {isEdit ? (canEdit ? 'Modifier l\'entraînement' : 'Votre entraînement') : 'Nouvel entraînement'}
+              {isEdit ? (athleteView ? 'Mon entrainement' : canEdit ? 'Modifier l\'entraînement' : 'Votre entraînement') : 'Nouvel entraînement'}
             </h2>
           </div>
           <button

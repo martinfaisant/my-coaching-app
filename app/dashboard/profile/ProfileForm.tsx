@@ -392,7 +392,7 @@ export function ProfileForm({
     <>
       <form ref={formRef} action={action} onSubmit={handleFormSubmit} className="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-stone-100">
         {/* BANNIÈRE BRANDÉE : Dégradé Forest Dark -> Olive */}
-        <div className="h-40 bg-gradient-to-r from-[#627e59] to-[#8e9856] relative">
+        <div className="h-[136px] bg-gradient-to-r from-[#627e59] to-[#8e9856] relative">
           {/* Avatar positionné sur la bannière */}
           <div className="absolute -bottom-10 left-8">
             <div className="relative group cursor-pointer">

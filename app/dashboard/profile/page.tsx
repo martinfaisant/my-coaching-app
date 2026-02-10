@@ -1,6 +1,6 @@
-import Link from 'next/link'
 import { getCurrentUserWithProfile } from '@/utils/auth'
-import { ProfileMenu } from '@/components/ProfileMenu'
+import { PageHeader } from '@/components/PageHeader'
+import { LogoutButton } from '@/components/LogoutButton'
 import { ProfileForm } from './ProfileForm'
 
 export const dynamic = 'force-dynamic'
@@ -11,20 +11,11 @@ export default async function ProfilePage() {
   const isCoach = current.profile.role === 'coach'
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-40 border-b border-stone-200/50 bg-background/95 backdrop-blur-md">
-        <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
-          <Link
-            href="/dashboard"
-            className="text-sm font-medium text-stone-600 hover:text-stone-900"
-          >
-            ← Tableau de bord
-          </Link>
-          <ProfileMenu showObjectifsLink={isAthlete} showCoachLink={isAthlete} showDevicesLink={isAthlete} showOffersLink={isCoach} />
-        </div>
-      </header>
+    <main className="flex-1 flex flex-col h-full min-w-0 bg-white/50 rounded-2xl overflow-hidden relative border border-stone-200/50">
+      <PageHeader title="Mon profil" rightContent={<LogoutButton />} />
 
-      <main className="mx-auto max-w-3xl px-4 py-8">
+      {/* ZONE SCROLLABLE */}
+      <div className="flex-1 overflow-y-auto px-6 lg:px-8 py-6">
         {isCoach ? (
           <ProfileForm
             email={current.email}
@@ -38,24 +29,19 @@ export default async function ProfilePage() {
             postalCode={current.profile.postal_code ?? ''}
           />
         ) : (
-          <>
-            <h1 className="text-xl font-semibold text-stone-900">
-              Mes informations
-            </h1>
-            <ProfileForm
-              email={current.email}
-              fullName={current.profile.full_name ?? ''}
-              role={current.profile.role}
-              avatarUrl={current.profile.avatar_url ? `${current.profile.avatar_url}?t=${current.profile.updated_at}` : ''}
-              coachedSports={[]}
-              practicedSports={current.profile.practiced_sports ?? []}
-              languages={current.profile.languages ?? []}
-              presentation={current.profile.presentation ?? ''}
-              postalCode={current.profile.postal_code ?? ''}
-            />
-          </>
+          <ProfileForm
+            email={current.email}
+            fullName={current.profile.full_name ?? ''}
+            role={current.profile.role}
+            avatarUrl={current.profile.avatar_url ? `${current.profile.avatar_url}?t=${current.profile.updated_at}` : ''}
+            coachedSports={[]}
+            practicedSports={current.profile.practiced_sports ?? []}
+            languages={current.profile.languages ?? []}
+            presentation={current.profile.presentation ?? ''}
+            postalCode={current.profile.postal_code ?? ''}
+          />
         )}
-      </main>
-    </div>
+      </div>
+    </main>
   )
 }

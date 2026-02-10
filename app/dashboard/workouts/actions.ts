@@ -2,7 +2,7 @@
 
 import { createClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
-import type { SportType } from '@/types/database'
+import type { SportType, Workout } from '@/types/database'
 
 function parseWorkoutTargetParams(
   sportType: SportType,
@@ -57,6 +57,8 @@ function parseWorkoutTargetParams(
 export type WorkoutFormState = {
   error?: string
   success?: string
+  /** Workout créé ou mis à jour (pour mise à jour optimiste côté client). */
+  workout?: Workout
 }
 
 export async function createWorkout(
@@ -71,22 +73,16 @@ export async function createWorkout(
   } = await supabase.auth.getUser()
   if (!user) return { error: 'Non connecté.' }
 
-  const { data: myProfile } = await supabase
-    .from('profiles')
-    .select('role, user_id')
-    .eq('user_id', user.id)
-    .single()
-
+  const [myProfileRes, athleteProfileRes] = await Promise.all([
+    supabase.from('profiles').select('role, user_id').eq('user_id', user.id).single(),
+    supabase.from('profiles').select('coach_id').eq('user_id', athleteId).single(),
+  ])
+  const myProfile = myProfileRes.data
+  const athleteProfile = athleteProfileRes.data
   const isCoach = myProfile?.role === 'coach'
   const isAthlete = myProfile?.role === 'athlete' && user.id === athleteId
   if (!isCoach && !isAthlete) return { error: 'Non autorisé.' }
   if (isAthlete) return { error: 'Seul le coach peut créer un entraînement.' }
-
-  const { data: athleteProfile } = await supabase
-    .from('profiles')
-    .select('coach_id')
-    .eq('user_id', athleteId)
-    .single()
   if (athleteProfile?.coach_id !== user.id) return { error: 'Cet athlète n\'est pas sous votre responsabilité.' }
 
   const date = formData.get('date') as string
@@ -120,21 +116,25 @@ export async function createWorkout(
     return { error: 'La vitesse (allure ou km/h) est obligatoire pour ce sport.' }
   }
 
-  const { error } = await supabase.from('workouts').insert({
-    athlete_id: athleteId,
-    date,
-    sport_type: sportType,
-    title,
-    description: description ?? '',
-    target_duration_minutes: target_duration_minutes ?? null,
-    target_distance_km: target_distance_km ?? null,
-    target_elevation_m: target_elevation_m ?? null,
-    target_pace,
-  })
+  const { data: created, error } = await supabase
+    .from('workouts')
+    .insert({
+      athlete_id: athleteId,
+      date,
+      sport_type: sportType,
+      title,
+      description: description ?? '',
+      target_duration_minutes: target_duration_minutes ?? null,
+      target_distance_km: target_distance_km ?? null,
+      target_elevation_m: target_elevation_m ?? null,
+      target_pace,
+    })
+    .select()
+    .single()
 
   if (error) return { error: error.message }
   revalidatePath(pathToRevalidate)
-  return { success: 'Entraînement enregistré.' }
+  return { success: 'Entraînement enregistré.', workout: created as Workout }
 }
 
 export async function updateWorkout(
@@ -150,18 +150,13 @@ export async function updateWorkout(
   } = await supabase.auth.getUser()
   if (!user) return { error: 'Non connecté.' }
 
-  const { data: myProfile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('user_id', user.id)
-    .single()
+  const [myProfileRes, athleteProfileRes] = await Promise.all([
+    supabase.from('profiles').select('role').eq('user_id', user.id).single(),
+    supabase.from('profiles').select('coach_id').eq('user_id', athleteId).single(),
+  ])
+  const myProfile = myProfileRes.data
+  const athleteProfile = athleteProfileRes.data
   if (myProfile?.role !== 'coach') return { error: 'Seul le coach peut modifier un entraînement.' }
-
-  const { data: athleteProfile } = await supabase
-    .from('profiles')
-    .select('coach_id')
-    .eq('user_id', athleteId)
-    .single()
   if (athleteProfile?.coach_id !== user.id) return { error: 'Non autorisé.' }
 
   const date = formData.get('date') as string
@@ -195,7 +190,7 @@ export async function updateWorkout(
     return { error: 'La vitesse (allure ou km/h) est obligatoire pour ce sport.' }
   }
 
-  const { error } = await supabase
+  const { data: updated, error } = await supabase
     .from('workouts')
     .update({
       date,
@@ -210,10 +205,12 @@ export async function updateWorkout(
     })
     .eq('id', workoutId)
     .eq('athlete_id', athleteId)
+    .select()
+    .single()
 
   if (error) return { error: error.message }
   revalidatePath(pathToRevalidate)
-  return { success: 'Entraînement mis à jour.' }
+  return { success: 'Entraînement mis à jour.', workout: updated as Workout }
 }
 
 export async function deleteWorkout(

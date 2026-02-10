@@ -239,9 +239,13 @@ type CalendarViewProps = {
   workoutTotals?: WorkoutWeeklyTotal[]
   goals?: Goal[]
   canEdit: boolean
+  /** Vue athlète (son propre calendrier) : modale "Mon entrainement" */
+  athleteView?: boolean
   pathToRevalidate: string
   referenceMonday?: Date
   onNavigate?: (weeksOffset: number) => void
+  /** Appelé après enregistrement réussi (modale fermée). Si updatedWorkout est fourni, le parent peut fusionner au lieu de tout recharger. */
+  onWorkoutSaved?: (updatedWorkout?: Workout) => void
   /** Quand true, le titre de la première semaine n'est pas affiché (il est dans la barre de navigation). */
   hideFirstWeekTitle?: boolean
 }
@@ -278,9 +282,11 @@ export function CalendarView({
   workoutTotals = [],
   goals = [],
   canEdit,
+  athleteView = false,
   pathToRevalidate,
   referenceMonday,
   onNavigate,
+  onWorkoutSaved,
   hideFirstWeekTitle = false,
 }: CalendarViewProps) {
   const router = useRouter()
@@ -483,14 +489,13 @@ export function CalendarView({
     setModalOpen(true)
   }
 
-  const handleWorkoutModalClose = useCallback((closedBySuccess?: boolean) => {
+  const handleWorkoutModalClose = useCallback((closedBySuccess?: boolean, updatedWorkout?: Workout) => {
     setModalOpen(false)
     if (closedBySuccess) {
-      // Court délai pour laisser le navigateur appliquer les cookies mis à jour par la Server Action
-      // avant le refresh, évitant une déconnexion (session perdue sur la requête de refresh).
+      onWorkoutSaved?.(updatedWorkout)
       setTimeout(() => router.refresh(), 150)
     }
-  }, [router])
+  }, [router, onWorkoutSaved])
 
   const renderCompactCard = (w: Workout, dateStr: string) => {
     const style = SPORT_CARD_STYLES[w.sport_type]
@@ -705,17 +710,9 @@ export function CalendarView({
                               </span>
                             ) : null}
                             {((prevu?.natation?.distanceKm ?? 0) > 0 || (fait?.natation?.distanceKm ?? 0) > 0 || (prevu?.natation?.minutes ?? 0) > 0 || (fait?.natation?.minutes ?? 0) > 0) ? (
-                              <span className="flex items-center gap-1.5 text-sky-600" title="Natation : distance ou temps réalisé / prévu">
+                              <span className="flex items-center gap-1.5 text-sky-600" title="Natation : distance réalisée / prévue">
                                 <IconSwimming className="w-3.5 h-3.5" />
-                                {(prevu?.natation?.distanceKm ?? 0) > 0 || (fait?.natation?.distanceKm ?? 0) > 0 ? (
-                                  <>
-                                    {formatDist(fait?.natation?.distanceKm ?? 0)} km / {formatDist(prevu?.natation?.distanceKm ?? 0)} km
-                                  </>
-                                ) : (
-                                  <>
-                                    {formatDuration(fait?.natation?.minutes ?? 0)} / {formatDuration(prevu?.natation?.minutes ?? 0)}
-                                  </>
-                                )}
+                                {formatDist(fait?.natation?.distanceKm ?? 0)} km / {formatDist(prevu?.natation?.distanceKm ?? 0)} km
                               </span>
                             ) : null}
                             {(prevu?.musculation?.minutes ?? 0) > 0 || (fait?.musculation?.minutes ?? 0) > 0 ? (
@@ -767,15 +764,17 @@ export function CalendarView({
                     color: 'text-sky-600', 
                     bg: 'bg-sky-500', 
                     label: 'Nage', 
-                    prevuVal: (prevu?.natation?.distanceKm ?? 0) > 0 ? (prevu?.natation?.distanceKm ?? 0) : (prevu?.natation?.minutes ?? 0), 
-                    faitVal: (fait?.natation?.distanceKm ?? 0) > 0 ? (fait?.natation?.distanceKm ?? 0) : (fait?.natation?.minutes ?? 0), 
-                    useTime: (prevu?.natation?.distanceKm ?? 0) === 0 && (fait?.natation?.distanceKm ?? 0) === 0 
+                    prevuVal: prevu?.natation?.distanceKm ?? 0, 
+                    faitVal: fait?.natation?.distanceKm ?? 0, 
+                    useTime: false 
                   },
                   { key: 'musculation' as const, Icon: IconDumbbell, color: 'text-stone-600', bg: 'bg-stone-500', label: 'Muscu', prevuVal: prevu?.musculation?.minutes ?? 0, faitVal: fait?.musculation?.minutes ?? 0, useTime: true },
                   { key: 'nordic_ski' as const, Icon: IconNordicSki, color: 'text-[#aaaa51]', bg: 'bg-[#aaaa51]', label: 'Ski de fond', prevuVal: prevu?.nordic_ski?.distanceKm ?? 0, faitVal: fait?.nordic_ski?.distanceKm ?? 0, useTime: false },
                   { key: 'backcountry_ski' as const, Icon: IconBackcountrySki, color: 'text-[#cbb44b]', bg: 'bg-[#cbb44b]', label: 'Ski Rando', prevuVal: prevu?.backcountry_ski?.distanceKm ?? 0, faitVal: fait?.backcountry_ski?.distanceKm ?? 0, useTime: false },
                   { key: 'ice_skating' as const, Icon: IconIceSkating, color: 'text-cyan-600', bg: 'bg-cyan-500', label: 'Patin', prevuVal: prevu?.ice_skating?.distanceKm ?? 0, faitVal: fait?.ice_skating?.distanceKm ?? 0, useTime: false },
                 ].filter(s => s.prevuVal > 0 || s.faitVal > 0)
+                const hasAnyTotals = (totalPrevuMin > 0 || totalFaitMin > 0) || sports.length > 0
+                if (!hasAnyTotals) return null
                 return (
                   <div className="bg-white rounded-xl border border-stone-200 shadow-sm p-5 mb-6">
                     <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
@@ -1139,6 +1138,7 @@ export function CalendarView({
         athleteId={athleteId}
         pathToRevalidate={pathToRevalidate}
         canEdit={canEdit}
+        athleteView={athleteView}
         workout={modalWorkout}
       />
 
@@ -1308,9 +1308,9 @@ export function CalendarView({
         </div>
       )}
 
-      {selectedImportedActivity && (
+      {selectedImportedActivity && typeof document !== 'undefined' && createPortal(
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4"
           role="dialog"
           aria-modal="true"
           aria-labelledby="imported-activity-modal-title"
@@ -1411,7 +1411,8 @@ export function CalendarView({
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   )
