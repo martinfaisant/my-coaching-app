@@ -776,16 +776,16 @@ export function CalendarView({
                 const hasAnyTotals = (totalPrevuMin > 0 || totalFaitMin > 0) || sports.length > 0
                 if (!hasAnyTotals) return null
                 return (
-                  <div className="bg-white rounded-xl border border-stone-200 shadow-sm p-5 mb-6">
+                  <div className="bg-white rounded-xl border border-stone-200 shadow-sm px-5 pt-3 pb-5 mb-6">
                     <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
                       {(totalPrevuMin > 0 || totalFaitMin > 0) && (
                         <div className="flex flex-col">
-                          <div className="flex items-center gap-2 text-xs mb-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-palette-amber" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <div className="flex items-center gap-2 text-xs mb-2 min-h-7">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-palette-amber shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                               <circle cx="12" cy="12" r="10" />
                               <polyline points="12 6 12 12 16 14" />
                             </svg>
-                            <span className="font-semibold text-palette-amber">Volume horaire total</span>
+                            <span className="font-semibold text-palette-amber leading-tight">Volume horaire total</span>
                           </div>
                           <div className="relative w-full mt-2">
                             <div className="w-full bg-stone-100 rounded-full h-1.5 relative">
@@ -811,9 +811,9 @@ export function CalendarView({
                         const faitDisplay = useTime ? formatDuration(Math.round(faitVal)) : (faitVal > 0 ? `${Math.round(faitVal)} km` : '0 km')
                         return (
                               <div key={key} className="flex flex-col">
-                                <div className="flex items-center gap-2 text-xs mb-3">
-                                  <Icon className={`w-4 h-4 ${color}`} />
-                                  <span className={`font-semibold ${color}`}>{label}</span>
+                                <div className="flex items-center gap-2 text-xs mb-2 min-h-7">
+                                  <Icon className={`w-4 h-4 ${color} shrink-0`} />
+                                  <span className={`font-semibold ${color} leading-tight`}>{label}</span>
                                 </div>
                                 <div className="relative w-full mt-2">
                                   <div className="w-full bg-stone-100 rounded-full h-1.5 relative">
