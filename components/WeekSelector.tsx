@@ -21,7 +21,7 @@ export function WeekSelector({ dateRangeLabel, onNavigate, isAnimating, onToday 
           <path d="m15 18-7-7 7-7" />
         </svg>
       </button>
-      <div className="px-2 text-sm font-bold text-stone-800 select-none">
+      <div className="px-2 text-sm font-bold text-stone-800 select-none w-[200px] text-center shrink-0">
         {dateRangeLabel}
       </div>
       <button

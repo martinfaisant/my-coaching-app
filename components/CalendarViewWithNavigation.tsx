@@ -433,7 +433,7 @@ export function CalendarViewWithNavigation({
                     <path d="m15 18-7-7 7-7" />
                   </svg>
                 </button>
-                <span className="text-sm font-semibold text-stone-700 px-2 min-w-[140px] text-center">
+                <span className="text-sm font-semibold text-stone-700 px-2 w-[200px] text-center shrink-0">
                   {dateRangeLabel}
                 </span>
                 <button
