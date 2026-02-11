@@ -71,68 +71,136 @@ export default async function MonCoachPage() {
     )
   }
 
-  const sports = (coach.coached_sports ?? []).map(sportLabel)
-  const languages = (coach.languages ?? []).map(languageLabel)
+  const COACHED_SPORTS_OPTIONS: { value: string; label: string; emoji: string }[] = [
+    { value: 'triathlon', label: 'Triathlon', emoji: '🏊‍♂️' },
+    { value: 'course_route', label: 'Course à pied', emoji: '🏃' },
+    { value: 'trail', label: 'Trail', emoji: '⛰️' },
+    { value: 'velo', label: 'Vélo', emoji: '🚴' },
+  ]
+
+  const LANGUAGES_OPTIONS: { value: string; label: string }[] = [
+    { value: 'fr', label: 'Français' },
+    { value: 'en', label: 'English' },
+    { value: 'es', label: 'Español' },
+    { value: 'de', label: 'Deutsch' },
+    { value: 'it', label: 'Italiano' },
+    { value: 'pt', label: 'Português' },
+    { value: 'nl', label: 'Nederlands' },
+    { value: 'zh', label: '中文' },
+  ]
+
   const myRating = await getMyCoachRating(current.profile.coach_id!)
 
   return (
     <main className="flex-1 flex flex-col h-full min-w-0 bg-white/50 rounded-2xl overflow-hidden relative border border-stone-200/50">
       <PageHeader title="Mon Coach" />
       <div className="flex-1 overflow-y-auto px-6 lg:px-8 py-6">
-
-        <div className="mt-8 space-y-6 rounded-2xl border border-stone-200 bg-section p-6 shadow-sm">
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex-1">
-              <h2 className="text-sm font-medium text-stone-500 mb-1">Nom</h2>
-              <p className="text-stone-900">
-                {(coach.full_name ?? '').trim() || '—'}
-              </p>
-            </div>
-            <div className="flex-shrink-0">
-              <AvatarImage
-                src={coach.avatar_url}
-                initials={getInitials(coach.full_name, coach.email)}
-                alt="Photo du coach"
-                className="w-16 h-16"
-              />
+        {/* Carte principale avec bannière et avatar */}
+        <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-stone-100">
+          {/* BANNIÈRE BRANDÉE : Dégradé Forest Dark -> Olive */}
+          <div className="h-[136px] bg-gradient-to-r from-[#627e59] to-[#8e9856] relative">
+            {/* Avatar positionné sur la bannière */}
+            <div className="absolute -bottom-10 left-8">
+              <div className="relative">
+                <div className="w-28 h-28 rounded-full bg-stone-100 border-4 border-white shadow-md flex items-center justify-center text-stone-300 overflow-hidden">
+                  <AvatarImage
+                    src={coach.avatar_url}
+                    initials={getInitials(coach.full_name, coach.email)}
+                    alt="Photo du coach"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
             </div>
           </div>
 
-          {sports.length > 0 && (
-            <div>
-              <h2 className="text-sm font-medium text-stone-500 mb-1">Sports coachés</h2>
-              <p className="text-stone-900">
-                {sports.join(', ')}
-              </p>
+          {/* Contenu */}
+          <div className="pt-16 pb-4 px-8">
+            {/* Header section */}
+            <div className="mb-8">
+              <h1 className="text-2xl font-bold text-stone-900">
+                {(coach.full_name ?? '').trim() || coach.email}
+              </h1>
             </div>
-          )}
 
-          {languages.length > 0 && (
-            <div>
-              <h2 className="text-sm font-medium text-stone-500 mb-1">Langues</h2>
-              <p className="text-stone-900">
-                {languages.join(', ')}
-              </p>
-            </div>
-          )}
+            {/* Section Sports coachés et Langues sur la même ligne */}
+            {((coach.coached_sports ?? []).length > 0 || (coach.languages ?? []).length > 0) && (
+              <div className="mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {/* Section Sports coachés */}
+                  {(coach.coached_sports ?? []).length > 0 && (
+                    <div>
+                      <h2 className="text-sm font-bold text-stone-900 uppercase tracking-wide mb-3">Sports coachés</h2>
+                      <div className="flex flex-wrap gap-3">
+                        {(coach.coached_sports ?? []).map((sportValue: string) => {
+                          const opt = COACHED_SPORTS_OPTIONS.find(o => o.value === sportValue)
+                          return (
+                            <div
+                              key={sportValue}
+                              className="px-4 py-2 rounded-full border border-stone-200 bg-white text-stone-600 text-sm font-medium flex items-center gap-2"
+                            >
+                              <span>{opt?.emoji ?? ''}</span>
+                              <span>{opt?.label ?? sportLabel(sportValue)}</span>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  )}
 
-          {(coach.presentation ?? '').trim() && (
-            <div>
-              <h2 className="text-sm font-medium text-stone-500 mb-1">Présentation</h2>
-              <p className="text-stone-700 whitespace-pre-wrap">
-                {coach.presentation!.trim()}
-              </p>
-            </div>
-          )}
+                  {/* Section Langues */}
+                  {(coach.languages ?? []).length > 0 && (
+                    <div>
+                      <h2 className="text-sm font-bold text-stone-900 uppercase tracking-wide mb-3">Langues parlées</h2>
+                      <div className="flex flex-wrap gap-2">
+                        {(coach.languages ?? []).map((langCode: string) => {
+                          const opt = LANGUAGES_OPTIONS.find(o => o.value === langCode)
+                          return (
+                            <div
+                              key={langCode}
+                              className="px-3 py-1.5 rounded-md border border-stone-200 bg-white text-stone-600 text-sm font-medium"
+                            >
+                              {opt?.label ?? languageLabel(langCode)}
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {((coach.coached_sports ?? []).length > 0 || (coach.languages ?? []).length > 0) && (
+              <hr className="border-stone-100 my-4" />
+            )}
+
+            {/* Présentation */}
+            {(coach.presentation ?? '').trim() && (
+              <div className="mb-4">
+                <div className="flex justify-between items-end mb-2">
+                  <h2 className="text-sm font-bold text-stone-900 uppercase tracking-wide">Présentation</h2>
+                </div>
+                <div className="relative">
+                  <p className="w-full border border-stone-200 rounded-xl p-4 text-stone-700 leading-relaxed text-sm bg-stone-50 whitespace-pre-wrap">
+                    {coach.presentation!.trim()}
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
-        <div className="mt-8 rounded-2xl border border-stone-200 bg-section p-6 shadow-sm">
-          <h2 className="text-base font-semibold text-stone-900 mb-6">Donner votre avis</h2>
-          <CoachRatingForm
-            coachId={current.profile.coach_id!}
-            initialRating={myRating?.rating ?? null}
-            initialComment={myRating?.comment ?? ''}
-          />
+        {/* Section Avis */}
+        <div className="max-w-3xl mx-auto mt-8 bg-white rounded-2xl shadow-xl overflow-hidden border border-stone-100">
+          <div className="px-8 py-6">
+            <h2 className="text-base font-semibold text-stone-900 mb-6">Donner votre avis</h2>
+            <CoachRatingForm
+              coachId={current.profile.coach_id!}
+              initialRating={myRating?.rating ?? null}
+              initialComment={myRating?.comment ?? ''}
+            />
+          </div>
         </div>
       </div>
     </main>
