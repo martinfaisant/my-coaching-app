@@ -78,6 +78,7 @@ export type CoachRequest = {
   sport_practiced: string
   coaching_need: string
   status: CoachRequestStatus
+  offer_id: string | null
   created_at: string
   responded_at: string | null
 }
@@ -98,8 +99,9 @@ export type CoachOffer = {
   title: string
   description: string
   price: number
-  price_type: 'one_time' | 'monthly'
+  price_type: 'one_time' | 'monthly' | 'free'
   display_order: number
+  is_featured: boolean
   created_at: string
   updated_at: string
 }

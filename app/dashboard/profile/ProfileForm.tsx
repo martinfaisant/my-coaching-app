@@ -671,13 +671,13 @@ export function ProfileForm({
       {/* Modales (identique à avant) */}
       {deleteModalOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4"
           role="dialog"
           aria-modal="true"
           aria-labelledby="delete-account-title"
         >
           <div
-            className="absolute inset-0 bg-palette-forest-dark/50 backdrop-blur-sm"
+            className="absolute inset-0 bg-palette-forest-dark/50 backdrop-blur-sm z-[90]"
             onClick={() => !isDeleting && setDeleteModalOpen(false)}
             aria-hidden="true"
           />
@@ -740,13 +740,13 @@ export function ProfileForm({
 
       {unsavedChangesModalOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4"
           role="dialog"
           aria-modal="true"
           aria-labelledby="unsaved-changes-title"
         >
           <div
-            className="absolute inset-0 bg-palette-forest-dark/50 backdrop-blur-sm"
+            className="absolute inset-0 bg-palette-forest-dark/50 backdrop-blur-sm z-[90]"
             onClick={() => !isSavingBeforeLeave && setUnsavedChangesModalOpen(false)}
             aria-hidden="true"
           />

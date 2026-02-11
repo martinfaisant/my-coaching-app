@@ -75,13 +75,19 @@ export function RequestCoachButton({ coachId, coachName, requestStatus, requestI
     }
     return () => {
       document.removeEventListener('keydown', handleEscape)
-      document.body.style.overflow = ''
+      // Ne réinitialiser overflow que si la modale de confirmation n'est pas ouverte
+      if (!confirmCancelOpen) {
+        document.body.style.overflow = ''
+      }
     }
-  }, [open, isPending, initialPracticedSports])
+  }, [open, isPending, initialPracticedSports, confirmCancelOpen])
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && !isPending) setConfirmCancelOpen(false)
+      if (e.key === 'Escape' && !isPending) {
+        setError(null)
+        setConfirmCancelOpen(false)
+      }
     }
     if (confirmCancelOpen) {
       document.addEventListener('keydown', handleEscape)
@@ -89,9 +95,12 @@ export function RequestCoachButton({ coachId, coachName, requestStatus, requestI
     }
     return () => {
       document.removeEventListener('keydown', handleEscape)
-      document.body.style.overflow = ''
+      // Ne réinitialiser overflow que si aucune modale n'est ouverte
+      if (!open && !confirmCancelOpen) {
+        document.body.style.overflow = ''
+      }
     }
-  }, [confirmCancelOpen, isPending])
+  }, [confirmCancelOpen, isPending, open])
 
   const handleConfirmCancel = () => {
     if (!requestId) return
@@ -126,61 +135,63 @@ export function RequestCoachButton({ coachId, coachName, requestStatus, requestI
             {confirmCancelOpen &&
               typeof document !== 'undefined' &&
               createPortal(
-                <div
-                  className="fixed inset-0 z-50 flex items-center justify-center p-4"
-                  role="dialog"
-                  aria-modal="true"
-                  aria-labelledby="confirm-cancel-title"
-                >
+                <>
                   <div
-                    className="absolute inset-0 bg-palette-forest-dark/50 backdrop-blur-sm"
+                    className="fixed inset-0 bg-palette-forest-dark/50 backdrop-blur-sm z-[90]"
                     onClick={() => { if (!isPending) { setError(null); setConfirmCancelOpen(false) } }}
                     aria-hidden="true"
                   />
-                  <div className="relative w-full max-w-md bg-white rounded-xl shadow-xl border border-stone-100">
-                    <div className="sticky top-0 flex justify-end p-3 bg-white rounded-t-xl z-10">
-                      <button
-                        type="button"
-                        onClick={() => { if (!isPending) { setError(null); setConfirmCancelOpen(false) } }}
-                        className="p-2 rounded-lg text-stone-400 hover:text-stone-600 hover:bg-stone-50 transition-colors"
-                        aria-label="Fermer"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M18 6 6 18" /><path d="m6 6 12 12" />
-                        </svg>
-                      </button>
-                    </div>
-                    <div className="px-8 pb-8">
-                      <h2 id="confirm-cancel-title" className="text-xl font-semibold text-stone-900 text-center mb-2">
-                        Annuler la demande ?
-                      </h2>
-                      <p className="text-sm text-stone-600 text-center mb-8">
-                        Êtes-vous sûr de vouloir annuler cette demande envoyée à ce coach ?
-                      </p>
-                      <div className="flex gap-3">
+                  <div
+                    className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+                    role="dialog"
+                    aria-modal="true"
+                    aria-labelledby="confirm-cancel-title"
+                  >
+                    <div className="relative w-full max-w-md bg-white rounded-xl shadow-xl border border-stone-100">
+                      <div className="sticky top-0 flex justify-end p-3 bg-white rounded-t-xl z-10">
                         <button
                           type="button"
-                          onClick={() => { setError(null); setConfirmCancelOpen(false) }}
-                          disabled={isPending}
-                          className="flex-1 py-2.5 rounded-lg border border-stone-300 text-sm font-medium text-stone-700 hover:bg-stone-50 transition-colors disabled:opacity-50"
+                          onClick={() => { if (!isPending) { setError(null); setConfirmCancelOpen(false) } }}
+                          className="p-2 rounded-lg text-stone-400 hover:text-stone-600 hover:bg-stone-50 transition-colors"
+                          aria-label="Fermer"
                         >
-                          Retour
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M18 6 6 18" /><path d="m6 6 12 12" />
+                          </svg>
                         </button>
-                        <PrimaryButton
-                          type="button"
-                          onClick={handleConfirmCancel}
-                          disabled={isPending}
-                          className="flex-1"
-                        >
-                          {isPending ? 'Annulation...' : 'Oui, annuler'}
-                        </PrimaryButton>
                       </div>
-                      {error && (
-                        <p className="text-sm text-red-600 mt-4 text-center" role="alert">{error}</p>
-                      )}
+                      <div className="px-8 pb-8">
+                        <h2 id="confirm-cancel-title" className="text-xl font-semibold text-stone-900 text-center mb-2">
+                          Annuler la demande ?
+                        </h2>
+                        <p className="text-sm text-stone-600 text-center mb-8">
+                          Êtes-vous sûr de vouloir annuler cette demande envoyée à ce coach ?
+                        </p>
+                        <div className="flex gap-3">
+                          <button
+                            type="button"
+                            onClick={() => { setError(null); setConfirmCancelOpen(false) }}
+                            disabled={isPending}
+                            className="flex-1 py-2.5 rounded-lg border border-stone-300 text-sm font-medium text-stone-700 hover:bg-stone-50 transition-colors disabled:opacity-50"
+                          >
+                            Retour
+                          </button>
+                          <PrimaryButton
+                            type="button"
+                            onClick={handleConfirmCancel}
+                            disabled={isPending}
+                            className="flex-1"
+                          >
+                            {isPending ? 'Annulation...' : 'Oui, annuler'}
+                          </PrimaryButton>
+                        </div>
+                        {error && (
+                          <p className="text-sm text-red-600 mt-4 text-center" role="alert">{error}</p>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>,
+                </>,
                 document.body
               )}
           </>
@@ -203,13 +214,13 @@ export function RequestCoachButton({ coachId, coachName, requestStatus, requestI
         typeof document !== 'undefined' &&
         createPortal(
           <div
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4"
             role="dialog"
             aria-modal="true"
             aria-labelledby="request-coach-title"
           >
             <div
-              className="absolute inset-0 bg-palette-forest-dark/50 backdrop-blur-sm"
+              className="absolute inset-0 bg-palette-forest-dark/50 backdrop-blur-sm z-[90]"
               onClick={closeModal}
               aria-hidden="true"
             />

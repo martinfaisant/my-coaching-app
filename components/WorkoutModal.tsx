@@ -322,14 +322,14 @@ export function WorkoutModal({
   /* Structure identique au bloc "Objectifs de l'athlète" du HTML de référence */
   const modalContent = (
     <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4"
       role="dialog"
       aria-modal="true"
       aria-labelledby="workout-modal-title"
       style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
     >
       <div
-        className="absolute inset-0 bg-stone-900/40 backdrop-blur-sm"
+        className="absolute inset-0 bg-stone-900/40 backdrop-blur-sm z-[90]"
         onClick={() => handleClose()}
         aria-hidden="true"
       />

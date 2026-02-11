@@ -21,24 +21,65 @@ export function OffersForm({ offers }: OffersFormProps) {
   const [pendingNavigation, setPendingNavigation] = useState<string | null>(null)
   const [isSavingBeforeLeave, setIsSavingBeforeLeave] = useState(false)
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
+  const [showSavedFeedback, setShowSavedFeedback] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const previousIsSubmittingRef = useRef(false)
   const isSubmittingRef = useRef(false)
   const formRef = useRef<HTMLFormElement>(null)
-
   const sortedOffers = [...offers].sort((a, b) => a.display_order - b.display_order)
+  const [priceTypes, setPriceTypes] = useState<Record<number, 'one_time' | 'monthly' | 'free'>>(() => {
+    const initial: Record<number, 'one_time' | 'monthly' | 'free'> = {}
+    sortedOffers.forEach((offer, idx) => {
+      initial[idx] = offer.price_type || 'one_time'
+    })
+    return initial
+  })
+  const [featuredOfferIndex, setFeaturedOfferIndex] = useState<number | null>(() => {
+    const featuredIndex = sortedOffers.findIndex(offer => offer.is_featured)
+    return featuredIndex >= 0 ? featuredIndex : null
+  })
   const initialOffersRef = useRef(offers)
   const lastOffersLengthRef = useRef(offers.length)
+  const isInitializedRef = useRef(false)
 
   // Synchroniser le compteur avec les offres après suppression en base
   useEffect(() => {
+    // Premier chargement : initialiser les types de prix depuis les offres en base
+    if (!isInitializedRef.current) {
+      const sorted = [...offers].sort((a, b) => a.display_order - b.display_order)
+      const newPriceTypes: Record<number, 'one_time' | 'monthly' | 'free'> = {}
+      sorted.forEach((offer, idx) => {
+        newPriceTypes[idx] = offer.price_type || 'one_time'
+      })
+      setPriceTypes(newPriceTypes)
+      const featuredIndex = sorted.findIndex(offer => offer.is_featured)
+      setFeaturedOfferIndex(featuredIndex >= 0 ? featuredIndex : null)
+      initialOffersRef.current = offers
+      isInitializedRef.current = true
+      lastOffersLengthRef.current = offers.length
+      return
+    }
+    
     // Si le nombre d'offres a diminué (suppression en base), mettre à jour
+    // Ne pas toucher aux types de prix si l'utilisateur a fait des modifications
     if (offers.length < lastOffersLengthRef.current) {
       setOfferCount(Math.max(offers.length || 0, 0))
       initialOffersRef.current = offers
-    } else if (offers.length === lastOffersLengthRef.current) {
-      // Même nombre, mettre à jour les références initiales
-      initialOffersRef.current = offers
+      
+      // Réinitialiser les types de prix seulement si une offre a été supprimée
+      const sorted = [...offers].sort((a, b) => a.display_order - b.display_order)
+      setPriceTypes(prev => {
+        const newPriceTypes: Record<number, 'one_time' | 'monthly' | 'free'> = {}
+        sorted.forEach((offer, idx) => {
+          newPriceTypes[idx] = offer.price_type || 'one_time'
+        })
+        return newPriceTypes
+      })
+      const featuredIndex = sorted.findIndex(offer => offer.is_featured)
+      setFeaturedOfferIndex(featuredIndex >= 0 ? featuredIndex : null)
+      lastOffersLengthRef.current = offers.length
     }
-    lastOffersLengthRef.current = offers.length
+    // Ne rien faire si le nombre d'offres est le même - ne pas écraser les modifications de l'utilisateur
   }, [offers])
 
   // Fonction pour vérifier les modifications
@@ -174,14 +215,43 @@ export function OffersForm({ offers }: OffersFormProps) {
   // Gérer la soumission du formulaire
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     isSubmittingRef.current = true
+    setIsSubmitting(true)
   }
 
   // Réinitialiser le flag après la soumission
   useEffect(() => {
     if (state?.success || state?.error) {
       isSubmittingRef.current = false
+      setIsSubmitting(false)
     }
   }, [state])
+
+  // À chaque succès : afficher "Enregistré", réinitialiser les valeurs de référence et hasUnsavedChanges
+  const saveFeedbackKey = `${state?.success ?? ''}|${state?.error ?? ''}|${isSubmitting}`
+  useEffect(() => {
+    const justFinishedSubmitting = previousIsSubmittingRef.current && !isSubmitting
+    previousIsSubmittingRef.current = isSubmitting
+
+    if (state?.success && justFinishedSubmitting) {
+      setShowSavedFeedback(true)
+      router.refresh()
+      const t = setTimeout(() => setShowSavedFeedback(false), 2500)
+      // Réinitialiser les valeurs initiales après succès
+      initialOffersRef.current = offers
+      setHasUnsavedChanges(false)
+      return () => clearTimeout(t)
+    }
+    if (state?.error) {
+      setShowSavedFeedback(false)
+    }
+  }, [saveFeedbackKey, router, offers])
+
+  // Réinitialiser "Enregistré" dès qu'une nouvelle modification est détectée
+  useEffect(() => {
+    if (hasUnsavedChanges && showSavedFeedback) {
+      setShowSavedFeedback(false)
+    }
+  }, [hasUnsavedChanges, showSavedFeedback])
 
   // Gérer la suppression d'offre
   const handleDeleteClick = (index: number) => {
@@ -275,143 +345,243 @@ export function OffersForm({ offers }: OffersFormProps) {
     }
   }, [deleteModalOpen, unsavedChangesModalOpen, isDeleting, isSavingBeforeLeave])
 
+  const remainingOffers = 3 - offerCount
+
   return (
     <>
-      <form ref={formRef} action={action} onSubmit={handleFormSubmit} className="mt-8 space-y-8">
-      <section className="space-y-6 rounded-2xl border border-stone-200 bg-section p-6 shadow-sm">
-        <div className="flex items-center justify-between">
-          <h2 className="text-base font-semibold text-stone-900">Mes offres</h2>
-          <p className="text-sm text-stone-500">Jusqu'à 3 offres</p>
+      {/* HEADER */}
+      <header className="h-20 flex items-center justify-between px-6 lg:px-8 shrink-0 bg-white border-b border-stone-100">
+        <div>
+          <h1 className="text-2xl font-bold text-stone-800">Mon Offre</h1>
         </div>
+        
+        {/* Bouton Sauvegarde */}
+        <PrimaryButton
+          type="submit"
+          form="offers-form"
+          disabled={!hasUnsavedChanges || isSubmitting}
+          className={`flex items-center gap-2 ${state?.error ? '!bg-red-600 hover:!bg-red-700 focus:!ring-red-500' : ''}`}
+        >
+          {showSavedFeedback ? (
+            <>
+              <span>Enregistré</span>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 animate-saved-check" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            </>
+          ) : state?.error ? (
+            <>
+              <span>Non enregistré</span>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M18 6 6 18M6 6l12 12" />
+              </svg>
+            </>
+          ) : isSubmitting ? (
+            'Enregistrement...'
+          ) : (
+            <span>Enregistrer</span>
+          )}
+        </PrimaryButton>
+      </header>
 
-        <p className="text-sm text-stone-600">
-          Définissez jusqu'à 3 offres de coaching. Chaque offre doit avoir un titre, une description et un prix (frais unique ou mensuel).
-        </p>
+      {/* CONTENU (GRILLE D'OFFRES) */}
+      <div className="flex-1 overflow-y-auto px-6 lg:px-8 py-8">
+        {state?.error && (
+          <div
+            className="mb-6 p-3 rounded-lg text-sm bg-red-50 border border-red-200 text-red-700"
+            role="alert"
+          >
+            {state.error}
+          </div>
+        )}
 
-        {offerCount === 0 ? (
-          <p className="text-sm text-stone-500 text-center py-4">
-            Aucune offre définie. Cliquez sur &quot;Ajouter une offre&quot; pour commencer.
-          </p>
-        ) : (
-          Array.from({ length: Math.min(offerCount, 3) }).map((_, index) => {
-          const offer = sortedOffers[index] || null
-          return (
-            <div key={index} className="space-y-4 rounded-xl border border-stone-200 bg-white p-5">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-medium text-stone-700">Offre {index + 1}</h3>
-                <button
-                  type="button"
-                  onClick={() => handleDeleteClick(index)}
-                  className="text-sm text-red-600 hover:text-red-700"
+        <form id="offers-form" ref={formRef} action={action} onSubmit={handleFormSubmit}>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pb-20">
+            {/* Cartes d'offres existantes */}
+            {Array.from({ length: Math.min(offerCount, 3) }).map((_, index) => {
+              const offer = sortedOffers[index] || null
+              const isFeatured = featuredOfferIndex === index
+              
+              return (
+                <div
+                  key={index}
+                  className={`bg-white rounded-2xl border-2 flex flex-col relative group ${
+                    isFeatured ? 'border-[#627e59] shadow-md' : 'border-stone-200 shadow-sm hover:shadow-md'
+                  } transition-all`}
                 >
-                  Supprimer
-                </button>
-              </div>
+                  {/* Badge "Mis en avant" */}
+                  {isFeatured && (
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#627e59] text-white px-3 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide shadow-sm flex items-center gap-1">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3 fill-current" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                      Recommandé
+                    </div>
+                  )}
 
-              <input type="hidden" name={`offer_${index}_id`} value={offer?.id || ''} />
+                  {/* Header Carte & Actions */}
+                  <div className="p-4 border-b border-stone-100 flex justify-between items-center bg-stone-50/50 rounded-t-2xl">
+                    <span className="text-xs font-bold text-stone-400 uppercase">Offre {index + 1}</span>
+                    <div className="flex gap-2">
+                      {/* Toggle "Privilégié" */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (isFeatured) {
+                            setFeaturedOfferIndex(null)
+                          } else {
+                            setFeaturedOfferIndex(index)
+                          }
+                        }}
+                        className={`p-1.5 rounded-lg transition-colors ${
+                          isFeatured
+                            ? 'bg-yellow-50 text-yellow-600 hover:bg-yellow-100'
+                            : 'hover:bg-yellow-50 text-stone-300 hover:text-yellow-600'
+                        }`}
+                        title={isFeatured ? 'Retirer de la mise en avant' : 'Mettre en avant'}
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                      </button>
+                      {/* Supprimer */}
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteClick(index)}
+                        className="p-1.5 rounded-lg hover:bg-red-50 text-stone-400 hover:text-red-500 transition-colors"
+                        title="Supprimer l'offre"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                          <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
 
-              <div>
-                <label htmlFor={`offer_${index}_title`} className="block text-sm font-medium text-stone-700 mb-1.5">
-                  Titre *
-                </label>
-                <input
-                  id={`offer_${index}_title`}
-                  name={`offer_${index}_title`}
-                  type="text"
-                  defaultValue={offer?.title || ''}
-                  placeholder="Ex: Coaching mensuel complet"
-                  className="w-full px-4 py-3 rounded-xl border border-stone-300 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-olive focus:border-transparent transition"
-                />
-              </div>
+                  {/* Formulaire Intégré */}
+                  <div className="p-5 flex flex-col gap-4 flex-1">
+                    <input type="hidden" name={`offer_${index}_id`} value={offer?.id || ''} />
+                    <input type="hidden" name={`offer_${index}_featured`} value={isFeatured ? 'on' : ''} />
 
-              <div>
-                <label htmlFor={`offer_${index}_description`} className="block text-sm font-medium text-stone-700 mb-1.5">
-                  Description *
-                </label>
-                <textarea
-                  id={`offer_${index}_description`}
-                  name={`offer_${index}_description`}
-                  rows={4}
-                  defaultValue={offer?.description || ''}
-                  placeholder="Décrivez votre offre en détail..."
-                  className="w-full px-4 py-3 rounded-xl border border-stone-300 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-olive focus:border-transparent resize-y min-h-[100px]"
-                />
-              </div>
+                    {/* Titre */}
+                    <div>
+                      <label htmlFor={`offer_${index}_title`} className="block text-[10px] uppercase font-bold text-stone-400 mb-1">
+                        Titre de l&apos;offre
+                      </label>
+                      <input
+                        id={`offer_${index}_title`}
+                        name={`offer_${index}_title`}
+                        type="text"
+                        defaultValue={offer?.title || ''}
+                        placeholder="Ex: Suivi Mensuel"
+                        className="w-full text-lg font-bold text-stone-800 bg-stone-50 border border-stone-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#627e59] focus:border-[#627e59] focus:outline-none transition-all placeholder-stone-300"
+                      />
+                    </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor={`offer_${index}_price`} className="block text-sm font-medium text-stone-700 mb-1.5">
-                    Prix *
-                  </label>
-                  <div className="relative">
-                    <input
-                      id={`offer_${index}_price`}
-                      name={`offer_${index}_price`}
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      defaultValue={offer?.price || ''}
-                      placeholder="0.00"
-                      className="w-full px-4 py-3 rounded-xl border border-stone-300 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-olive focus:border-transparent transition [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                    />
-                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-stone-500">€</span>
+                    {/* Prix & Type */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label htmlFor={`offer_${index}_price`} className="block text-[10px] uppercase font-bold text-stone-400 mb-1">
+                          Prix (€)
+                        </label>
+                        {priceTypes[index] === 'free' ? (
+                          <>
+                            <input type="hidden" name={`offer_${index}_price`} value="0" />
+                            <div className="w-full font-bold text-stone-800 bg-stone-50 border border-stone-200 rounded-lg px-3 py-2">
+                              0
+                            </div>
+                          </>
+                        ) : (
+                          <input
+                            id={`offer_${index}_price`}
+                            name={`offer_${index}_price`}
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            defaultValue={offer?.price !== undefined && offer.price_type !== 'free' ? String(offer.price) : ''}
+                            placeholder="0"
+                            className="w-full font-bold text-stone-800 bg-stone-50 border border-stone-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#627e59] focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          />
+                        )}
+                      </div>
+                      <div>
+                        <label htmlFor={`offer_${index}_price_type`} className="block text-[10px] uppercase font-bold text-stone-400 mb-1">
+                          Récurrence
+                        </label>
+                        <select
+                          key={`price_type_${index}_${priceTypes[index] || 'one_time'}`}
+                          id={`offer_${index}_price_type`}
+                          name={`offer_${index}_price_type`}
+                          defaultValue={priceTypes[index] || offer?.price_type || 'one_time'}
+                          onChange={(e) => {
+                            const newType = e.target.value as 'one_time' | 'monthly' | 'free'
+                            setPriceTypes(prev => {
+                              const updated = { ...prev, [index]: newType }
+                              return updated
+                            })
+                          }}
+                          className="w-full text-sm font-medium text-stone-600 bg-stone-50 border border-stone-200 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-[#627e59] focus:outline-none appearance-none"
+                        >
+                          <option value="monthly">/ Mois</option>
+                          <option value="one_time">Paiement unique</option>
+                          <option value="free">Gratuit</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    {/* Description */}
+                    <div className="flex-1">
+                      <label htmlFor={`offer_${index}_description`} className="block text-[10px] uppercase font-bold text-stone-400 mb-1">
+                        Description & Avantages
+                      </label>
+                      <textarea
+                        id={`offer_${index}_description`}
+                        name={`offer_${index}_description`}
+                        rows={4}
+                        defaultValue={offer?.description || ''}
+                        placeholder="Décrivez ce que l'athlète obtient..."
+                        className="w-full h-32 text-sm text-stone-600 bg-stone-50 border border-stone-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#627e59] focus:outline-none resize-none"
+                      />
+                    </div>
                   </div>
                 </div>
+              )
+            })}
 
-                <div>
-                  <label htmlFor={`offer_${index}_price_type`} className="block text-sm font-medium text-stone-700 mb-1.5">
-                    Type de prix *
-                  </label>
-                  <select
-                    id={`offer_${index}_price_type`}
-                    name={`offer_${index}_price_type`}
-                    defaultValue={offer?.price_type || 'one_time'}
-                    className="w-full px-4 py-3 rounded-xl border border-stone-300 bg-white text-stone-900 focus:outline-none focus:ring-2 focus:ring-palette-olive focus:border-transparent transition"
-                  >
-                    <option value="one_time">Frais unique</option>
-                    <option value="monthly">Prix mensuel</option>
-                  </select>
+            {/* Carte vide pour ajouter une offre */}
+            {offerCount < 3 && (
+              <button
+                type="button"
+                onClick={() => {
+                  setOfferCount(offerCount + 1)
+                  setPriceTypes(prev => ({ ...prev, [offerCount]: 'one_time' }))
+                }}
+                className="bg-stone-50 rounded-2xl border-2 border-dashed border-stone-300 flex flex-col items-center justify-center gap-4 hover:border-[#627e59] hover:bg-[#627e59]/5 transition-all group cursor-pointer min-h-[400px]"
+              >
+                <div className="w-16 h-16 rounded-full bg-white border border-stone-200 flex items-center justify-center text-stone-400 shadow-sm group-hover:scale-110 group-hover:text-[#627e59] group-hover:border-[#627e59] transition-all">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path d="M12 4v16m8-8H4" />
+                  </svg>
                 </div>
-              </div>
-            </div>
-          )
-          })
-        )}
-
-        {offerCount < 3 && (
-          <button
-            type="button"
-            onClick={() => setOfferCount(offerCount + 1)}
-            className="w-full py-2.5 rounded-lg border border-stone-300 text-sm font-medium text-stone-700 hover:bg-stone-50 transition-colors"
-          >
-            + Ajouter une offre
-          </button>
-        )}
-      </section>
-
-      {(state?.error || state?.success) && (
-        <p
-          className={`text-sm ${state.error ? 'text-red-600' : 'text-palette-forest-dark'}`}
-          role="alert"
-        >
-          {state.error || state.success}
-        </p>
-      )}
-
-      <PrimaryButton type="submit" fullWidth>
-        Enregistrer les offres
-      </PrimaryButton>
-      </form>
+                <div className="text-center">
+                  <h3 className="text-lg font-bold text-stone-600 group-hover:text-[#627e59]">Ajouter une offre</h3>
+                  <p className="text-xs text-stone-400 mt-1">Vous pouvez encore créer {remainingOffers} offre{remainingOffers > 1 ? 's' : ''}</p>
+                </div>
+              </button>
+            )}
+          </div>
+        </form>
+      </div>
 
       {deleteModalOpen && offerToDelete && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4"
           role="dialog"
           aria-modal="true"
           aria-labelledby="delete-offer-title"
         >
           <div
-            className="absolute inset-0 bg-palette-forest-dark/50 backdrop-blur-sm"
+            className="absolute inset-0 bg-palette-forest-dark/50 backdrop-blur-sm z-[90]"
             onClick={() => !isDeleting && setDeleteModalOpen(false)}
             aria-hidden="true"
           />
@@ -461,13 +631,13 @@ export function OffersForm({ offers }: OffersFormProps) {
 
       {unsavedChangesModalOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4"
           role="dialog"
           aria-modal="true"
           aria-labelledby="unsaved-changes-title"
         >
           <div
-            className="absolute inset-0 bg-palette-forest-dark/50 backdrop-blur-sm"
+            className="absolute inset-0 bg-palette-forest-dark/50 backdrop-blur-sm z-[90]"
             onClick={() => !isSavingBeforeLeave && setUnsavedChangesModalOpen(false)}
             aria-hidden="true"
           />

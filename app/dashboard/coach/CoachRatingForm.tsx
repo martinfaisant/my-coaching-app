@@ -219,13 +219,13 @@ export function CoachRatingForm({ coachId, initialRating, initialComment }: Coac
 
     {unsavedChangesModalOpen && (
       <div
-        className="fixed inset-0 z-50 flex items-center justify-center p-4"
+        className="fixed inset-0 z-[100] flex items-center justify-center p-4"
         role="dialog"
         aria-modal="true"
         aria-labelledby="coach-rating-unsaved-title"
       >
         <div
-          className="absolute inset-0 bg-palette-forest-dark/50 backdrop-blur-sm"
+          className="absolute inset-0 bg-palette-forest-dark/50 backdrop-blur-sm z-[90]"
           onClick={() => !isSavingBeforeLeave && (setUnsavedChangesModalOpen(false), setPendingNavigation(null))}
           aria-hidden="true"
         />
