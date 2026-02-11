@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useActionState, useEffect, useRef, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
 import { PrimaryButton } from '@/components/PrimaryButton'
 import { saveOffers, deleteOffer, type OffersFormState } from './actions'
@@ -39,6 +40,10 @@ export function OffersForm({ offers }: OffersFormProps) {
     return featuredIndex >= 0 ? featuredIndex : null
   })
   const initialOffersRef = useRef(offers)
+  const initialFeaturedIndexRef = useRef<number | null>((() => {
+    const featuredIndex = sortedOffers.findIndex(offer => offer.is_featured)
+    return featuredIndex >= 0 ? featuredIndex : null
+  })())
   const lastOffersLengthRef = useRef(offers.length)
   const isInitializedRef = useRef(false)
 
@@ -53,7 +58,9 @@ export function OffersForm({ offers }: OffersFormProps) {
       })
       setPriceTypes(newPriceTypes)
       const featuredIndex = sorted.findIndex(offer => offer.is_featured)
-      setFeaturedOfferIndex(featuredIndex >= 0 ? featuredIndex : null)
+      const featuredIdx = featuredIndex >= 0 ? featuredIndex : null
+      setFeaturedOfferIndex(featuredIdx)
+      initialFeaturedIndexRef.current = featuredIdx
       initialOffersRef.current = offers
       isInitializedRef.current = true
       lastOffersLengthRef.current = offers.length
@@ -76,7 +83,9 @@ export function OffersForm({ offers }: OffersFormProps) {
         return newPriceTypes
       })
       const featuredIndex = sorted.findIndex(offer => offer.is_featured)
-      setFeaturedOfferIndex(featuredIndex >= 0 ? featuredIndex : null)
+      const featuredIdx = featuredIndex >= 0 ? featuredIndex : null
+      setFeaturedOfferIndex(featuredIdx)
+      initialFeaturedIndexRef.current = featuredIdx
       lastOffersLengthRef.current = offers.length
     }
     // Ne rien faire si le nombre d'offres est le même - ne pas écraser les modifications de l'utilisateur
@@ -123,8 +132,13 @@ export function OffersForm({ offers }: OffersFormProps) {
       }
     }
 
+    // Vérifier si l'offre privilégiée a changé
+    if (featuredOfferIndex !== initialFeaturedIndexRef.current) {
+      return true
+    }
+
     return false
-  }, [offerCount])
+  }, [offerCount, featuredOfferIndex])
 
   // Mettre à jour l'état des modifications
   useEffect(() => {
@@ -148,6 +162,11 @@ export function OffersForm({ offers }: OffersFormProps) {
       })
     }
   }, [checkUnsavedChanges])
+
+  // Détecter les changements de l'offre privilégiée
+  useEffect(() => {
+    setHasUnsavedChanges(checkUnsavedChanges())
+  }, [featuredOfferIndex, checkUnsavedChanges])
 
   // Réinitialiser après sauvegarde réussie
   useEffect(() => {
@@ -238,6 +257,7 @@ export function OffersForm({ offers }: OffersFormProps) {
       const t = setTimeout(() => setShowSavedFeedback(false), 2500)
       // Réinitialiser les valeurs initiales après succès
       initialOffersRef.current = offers
+      initialFeaturedIndexRef.current = featuredOfferIndex
       setHasUnsavedChanges(false)
       return () => clearTimeout(t)
     }
@@ -573,20 +593,21 @@ export function OffersForm({ offers }: OffersFormProps) {
         </form>
       </div>
 
-      {deleteModalOpen && offerToDelete && (
-        <div
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="delete-offer-title"
-        >
+      {deleteModalOpen && offerToDelete && typeof document !== 'undefined' && createPortal(
+        <>
           <div
-            className="absolute inset-0 bg-palette-forest-dark/50 backdrop-blur-sm z-[90]"
+            className="fixed inset-0 bg-palette-forest-dark/50 backdrop-blur-sm z-[90]"
             onClick={() => !isDeleting && setDeleteModalOpen(false)}
             aria-hidden="true"
           />
-          <div className="relative w-full max-w-md bg-white rounded-xl shadow-xl border border-stone-100">
-            <div className="sticky top-0 flex justify-end p-3 bg-white rounded-t-xl z-10">
+          <div
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="delete-offer-title"
+          >
+            <div className="relative w-full max-w-md bg-white rounded-xl shadow-xl border border-stone-100">
+              <div className="sticky top-0 flex justify-end p-3 bg-white rounded-t-xl z-10">
               <button
                 type="button"
                 onClick={() => !isDeleting && setDeleteModalOpen(false)}
@@ -625,64 +646,69 @@ export function OffersForm({ offers }: OffersFormProps) {
                 </PrimaryButton>
               </div>
             </div>
+            </div>
           </div>
-        </div>
+        </>,
+        document.body
       )}
 
-      {unsavedChangesModalOpen && (
-        <div
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="unsaved-changes-title"
-        >
+      {unsavedChangesModalOpen && typeof document !== 'undefined' && createPortal(
+        <>
           <div
-            className="absolute inset-0 bg-palette-forest-dark/50 backdrop-blur-sm z-[90]"
+            className="fixed inset-0 bg-palette-forest-dark/50 backdrop-blur-sm z-[90]"
             onClick={() => !isSavingBeforeLeave && setUnsavedChangesModalOpen(false)}
             aria-hidden="true"
           />
-          <div className="relative w-full max-w-md bg-white rounded-xl shadow-xl border border-stone-100">
-            <div className="sticky top-0 flex justify-end p-3 bg-white rounded-t-xl z-10">
-              <button
-                type="button"
-                onClick={() => !isSavingBeforeLeave && setUnsavedChangesModalOpen(false)}
-                className="p-2 rounded-lg text-stone-400 hover:text-stone-600 hover:bg-stone-50 transition-colors"
-                aria-label="Fermer"
-                disabled={isSavingBeforeLeave}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M18 6 6 18" /><path d="m6 6 12 12" />
-                </svg>
-              </button>
-            </div>
-            <div className="px-8 pb-8">
-              <h2 id="unsaved-changes-title" className="text-xl font-semibold text-stone-900 mb-2">
-                Modifications non enregistrées
-              </h2>
-              <p className="text-sm text-stone-600 mb-8">
-                Vous avez des modifications non enregistrées. Que souhaitez-vous faire ?
-              </p>
-              <div className="flex gap-3">
+          <div
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="unsaved-changes-title"
+          >
+            <div className="relative w-full max-w-md bg-white rounded-xl shadow-xl border border-stone-100">
+              <div className="sticky top-0 flex justify-end p-3 bg-white rounded-t-xl z-10">
                 <button
                   type="button"
-                  onClick={handleLeaveWithoutSaving}
+                  onClick={() => !isSavingBeforeLeave && setUnsavedChangesModalOpen(false)}
+                  className="p-2 rounded-lg text-stone-400 hover:text-stone-600 hover:bg-stone-50 transition-colors"
+                  aria-label="Fermer"
                   disabled={isSavingBeforeLeave}
-                  className="flex-1 py-2.5 rounded-lg border border-stone-300 text-sm font-medium text-stone-700 hover:bg-stone-50 transition-colors disabled:opacity-50"
                 >
-                  Quitter sans enregistrer
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M18 6 6 18" /><path d="m6 6 12 12" />
+                  </svg>
                 </button>
-                <PrimaryButton
-                  type="button"
-                  onClick={handleSaveAndLeave}
-                  disabled={isSavingBeforeLeave}
-                  className="flex-1"
-                >
-                  {isSavingBeforeLeave ? 'Enregistrement...' : 'Enregistrer et quitter'}
-                </PrimaryButton>
+              </div>
+              <div className="px-8 pb-8">
+                <h2 id="unsaved-changes-title" className="text-xl font-semibold text-stone-900 mb-2">
+                  Modifications non enregistrées
+                </h2>
+                <p className="text-sm text-stone-600 mb-8">
+                  Vous avez des modifications non enregistrées. Que souhaitez-vous faire ?
+                </p>
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={handleLeaveWithoutSaving}
+                    disabled={isSavingBeforeLeave}
+                    className="flex-1 py-2.5 rounded-lg border border-stone-300 text-sm font-medium text-stone-700 hover:bg-stone-50 transition-colors disabled:opacity-50"
+                  >
+                    Quitter sans enregistrer
+                  </button>
+                  <PrimaryButton
+                    type="button"
+                    onClick={handleSaveAndLeave}
+                    disabled={isSavingBeforeLeave}
+                    className="flex-1"
+                  >
+                    {isSavingBeforeLeave ? 'Enregistrement...' : 'Enregistrer et quitter'}
+                  </PrimaryButton>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </>,
+        document.body
       )}
     </>
   )

@@ -1143,18 +1143,19 @@ export function CalendarView({
       />
 
       {extraActivitiesModalOpen && extraActivitiesList.length > 0 && typeof document !== 'undefined' && createPortal(
-        <div
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="extra-activities-modal-title"
-        >
+        <>
           <div
-            className="absolute inset-0 bg-stone-900/40 backdrop-blur-sm z-[90]"
+            className="fixed inset-0 bg-palette-forest-dark/50 backdrop-blur-sm z-[90]"
             onClick={() => { setExtraActivitiesModalOpen(false); setExtraActivitiesModalDate(null) }}
             aria-hidden="true"
           />
-          <div className="relative w-full max-w-md max-h-[80vh] rounded-xl border-2 border-palette-forest-dark bg-white shadow-xl flex flex-col overflow-hidden">
+          <div
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="extra-activities-modal-title"
+          >
+            <div className="relative w-full max-w-md max-h-[80vh] rounded-xl border-2 border-palette-forest-dark bg-white shadow-xl flex flex-col overflow-hidden">
             <div className="flex items-center justify-between gap-2 p-4 border-b border-stone-200">
               <h2 id="extra-activities-modal-title" className="text-lg font-semibold text-stone-900">
                 {extraActivitiesModalDate
@@ -1238,24 +1239,26 @@ export function CalendarView({
                 Fermer
               </button>
             </div>
+            </div>
           </div>
-        </div>,
+        </>,
         document.body
       )}
 
-      {goalModalOpen && selectedGoal && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="goal-modal-title"
-        >
+      {goalModalOpen && selectedGoal && typeof document !== 'undefined' && createPortal(
+        <>
           <div
-            className="absolute inset-0 bg-stone-900/40 backdrop-blur-sm z-[90]"
+            className="fixed inset-0 bg-palette-forest-dark/50 backdrop-blur-sm z-[90]"
             onClick={() => setGoalModalOpen(false)}
             aria-hidden="true"
           />
-          <div className="relative w-full max-w-sm rounded-xl border-2 border-palette-forest-dark bg-white p-5 shadow-xl">
+          <div
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="goal-modal-title"
+          >
+            <div className="relative w-full max-w-sm rounded-xl border-2 border-palette-forest-dark bg-white p-5 shadow-xl">
             <div className="flex items-center justify-between gap-2 mb-4">
               <h2 id="goal-modal-title" className="text-lg font-semibold text-stone-900">
                 Détails de l&apos;objectif
@@ -1304,114 +1307,132 @@ export function CalendarView({
                 Fermer
               </button>
             </div>
+            </div>
           </div>
-        </div>
+        </>,
+        document.body
       )}
 
       {selectedImportedActivity && typeof document !== 'undefined' && createPortal(
-        <div
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="imported-activity-modal-title"
-        >
+        <>
           <div
-            className="absolute inset-0 bg-stone-900/40 backdrop-blur-sm z-[90]"
+            className="fixed inset-0 bg-palette-forest-dark/50 backdrop-blur-sm z-[90]"
             onClick={() => setSelectedImportedActivity(null)}
             aria-hidden="true"
           />
-          <div className="relative w-full max-w-md rounded-xl border-2 border-orange-300 bg-white p-5 shadow-xl">
-            <div className="flex items-center justify-between gap-2 mb-4">
-              <div className="flex items-center gap-2 min-w-0">
-                <img src="/strava-icon.svg" alt="" className="h-4 w-4 shrink-0" aria-hidden />
-                <span className="text-[10px] font-semibold text-[#FC4C02] uppercase tracking-wide">{getImportedActivityTypeLabel(selectedImportedActivity)}</span>
-                <h2 id="imported-activity-modal-title" className="text-lg font-semibold text-stone-900 truncate">
-                  Détails de l&apos;activité
-                </h2>
-              </div>
-              <button
-                type="button"
-                onClick={() => setSelectedImportedActivity(null)}
-                className="p-2 rounded-lg text-stone-500 hover:text-stone-700 hover:bg-stone-100 transition-colors"
-                aria-label="Fermer"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M18 6 6 18" />
-                  <path d="m6 6 12 12" />
-                </svg>
-              </button>
-            </div>
-            <dl className="space-y-3 text-sm">
-              <div>
-                <dt className="text-stone-500 font-medium">Date</dt>
-                <dd className="mt-0.5 text-stone-900">
-                  {new Date(selectedImportedActivity.date + 'T12:00:00').toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-stone-500 font-medium">Source</dt>
-                <dd className="mt-0.5 text-stone-900 capitalize">{selectedImportedActivity.source}</dd>
-              </div>
-              <div>
-                <dt className="text-stone-500 font-medium">Type de sport</dt>
-                <dd className="mt-0.5 text-stone-900">{SPORT_LABELS[selectedImportedActivity.sport_type]}</dd>
-              </div>
-              {selectedImportedActivity.activity_type && (
-                <div>
-                  <dt className="text-stone-500 font-medium">Type d'activité</dt>
-                  <dd className="mt-0.5 text-stone-900">{selectedImportedActivity.activity_type}</dd>
+          <div
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="imported-activity-modal-title"
+          >
+            <div className="relative w-full max-w-md max-h-[calc(100vh-2rem)] flex flex-col bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden">
+              {/* En-tête comme dans WorkoutModal */}
+              <div className="shrink-0 px-6 py-4 border-b border-stone-100 bg-stone-50/50 flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="p-2 bg-[#FC4C02]/10 rounded-full">
+                    <img src="/strava-icon.svg" alt="" className="h-5 w-5" aria-hidden />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-[10px] font-semibold text-[#FC4C02] uppercase tracking-wide mb-0.5">
+                      {getImportedActivityTypeLabel(selectedImportedActivity)}
+                    </div>
+                    <h2 id="imported-activity-modal-title" className="text-lg font-bold text-stone-900 truncate">
+                      Détails de l&apos;activité
+                    </h2>
+                  </div>
                 </div>
-              )}
-              <div>
-                <dt className="text-stone-500 font-medium">Titre</dt>
-                <dd className="mt-0.5 text-stone-900">{selectedImportedActivity.title}</dd>
+                <button
+                  type="button"
+                  onClick={() => setSelectedImportedActivity(null)}
+                  className="shrink-0 p-2 rounded-lg text-stone-500 hover:text-stone-700 hover:bg-stone-200/80 transition-colors"
+                  aria-label="Fermer"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M18 6 6 18" /><path d="m6 6 12 12" />
+                  </svg>
+                </button>
               </div>
-              {selectedImportedActivity.description && (
-                <div>
-                  <dt className="text-stone-500 font-medium">Description</dt>
-                  <dd className="mt-0.5 text-stone-900 whitespace-pre-wrap">{selectedImportedActivity.description}</dd>
+
+              {/* Contenu scrollable */}
+              <div className="flex-1 overflow-y-auto min-h-0">
+                <div className="px-6 py-4">
+                  <dl className="space-y-4">
+                    <div>
+                      <dt className="text-sm font-medium text-stone-700 mb-1">Date</dt>
+                      <dd className="text-stone-900">
+                        {new Date(selectedImportedActivity.date + 'T12:00:00').toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="text-sm font-medium text-stone-700 mb-1">Source</dt>
+                      <dd className="text-stone-900 capitalize">{selectedImportedActivity.source}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-sm font-medium text-stone-700 mb-1">Type de sport</dt>
+                      <dd className="text-stone-900">{SPORT_LABELS[selectedImportedActivity.sport_type]}</dd>
+                    </div>
+                    {selectedImportedActivity.activity_type && (
+                      <div>
+                        <dt className="text-sm font-medium text-stone-700 mb-1">Type d&apos;activité</dt>
+                        <dd className="text-stone-900">{selectedImportedActivity.activity_type}</dd>
+                      </div>
+                    )}
+                    <div>
+                      <dt className="text-sm font-medium text-stone-700 mb-1">Titre</dt>
+                      <dd className="text-stone-900">{selectedImportedActivity.title}</dd>
+                    </div>
+                    {selectedImportedActivity.description && (
+                      <div>
+                        <dt className="text-sm font-medium text-stone-700 mb-1">Description</dt>
+                        <dd className="text-stone-900 whitespace-pre-wrap">{selectedImportedActivity.description}</dd>
+                      </div>
+                    )}
+                    {selectedImportedActivity.raw_data && typeof selectedImportedActivity.raw_data === 'object' && (
+                      <>
+                        {typeof (selectedImportedActivity.raw_data as { distance?: number }).distance === 'number' && (
+                          <div>
+                            <dt className="text-sm font-medium text-stone-700 mb-1">Distance</dt>
+                            <dd className="text-stone-900">
+                              {((selectedImportedActivity.raw_data as { distance: number }).distance / 1000).toFixed(2)} km
+                            </dd>
+                          </div>
+                        )}
+                        {typeof (selectedImportedActivity.raw_data as { moving_time?: number }).moving_time === 'number' && (
+                          <div>
+                            <dt className="text-sm font-medium text-stone-700 mb-1">Temps de déplacement</dt>
+                            <dd className="text-stone-900">
+                              {Math.floor((selectedImportedActivity.raw_data as { moving_time: number }).moving_time / 60)} min
+                            </dd>
+                          </div>
+                        )}
+                        {typeof (selectedImportedActivity.raw_data as { total_elevation_gain?: number }).total_elevation_gain === 'number' && (
+                          <div>
+                            <dt className="text-sm font-medium text-stone-700 mb-1">Dénivelé positif</dt>
+                            <dd className="text-stone-900">
+                              {Math.round((selectedImportedActivity.raw_data as { total_elevation_gain: number }).total_elevation_gain)} m
+                            </dd>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </dl>
                 </div>
-              )}
-              {selectedImportedActivity.raw_data && typeof selectedImportedActivity.raw_data === 'object' && (
-                <>
-                  {typeof (selectedImportedActivity.raw_data as { distance?: number }).distance === 'number' && (
-                    <div>
-                      <dt className="text-stone-500 font-medium">Distance</dt>
-                      <dd className="mt-0.5 text-stone-900">
-                        {((selectedImportedActivity.raw_data as { distance: number }).distance / 1000).toFixed(2)} km
-                      </dd>
-                    </div>
-                  )}
-                  {typeof (selectedImportedActivity.raw_data as { moving_time?: number }).moving_time === 'number' && (
-                    <div>
-                      <dt className="text-stone-500 font-medium">Temps de déplacement</dt>
-                      <dd className="mt-0.5 text-stone-900">
-                        {Math.floor((selectedImportedActivity.raw_data as { moving_time: number }).moving_time / 60)} min
-                      </dd>
-                    </div>
-                  )}
-                  {typeof (selectedImportedActivity.raw_data as { total_elevation_gain?: number }).total_elevation_gain === 'number' && (
-                    <div>
-                      <dt className="text-stone-500 font-medium">Dénivelé positif</dt>
-                      <dd className="mt-0.5 text-stone-900">
-                        {Math.round((selectedImportedActivity.raw_data as { total_elevation_gain: number }).total_elevation_gain)} m
-                      </dd>
-                    </div>
-                  )}
-                </>
-              )}
-            </dl>
-            <div className="mt-5 flex justify-end">
-              <button
-                type="button"
-                onClick={() => setSelectedImportedActivity(null)}
-                className="rounded-lg border-2 border-orange-400 px-4 py-2 text-sm font-medium text-stone-700 hover:bg-orange-50 transition-colors"
-              >
-                Fermer
-              </button>
+              </div>
+
+              {/* Footer comme dans WorkoutModal */}
+              <div className="shrink-0 px-6 py-4 border-t border-stone-100 bg-stone-50/50 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setSelectedImportedActivity(null)}
+                  className="rounded-xl border border-stone-300 bg-white text-stone-700 hover:bg-stone-50 px-4 py-3 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-stone-500 focus:ring-offset-2"
+                >
+                  Fermer
+                </button>
+              </div>
             </div>
           </div>
-        </div>,
+        </>,
         document.body
       )}
     </>

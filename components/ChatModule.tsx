@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 import {
   getChatRole,
   getOrCreateConversationForAthlete,
@@ -75,12 +76,13 @@ export function ChatModule({ initialChatRole }: ChatModuleProps = {}) {
         <span className="hidden sm:inline">{label}</span>
       </button>
 
-      {open && (
+      {open && typeof document !== 'undefined' && createPortal(
         <ChatOverlay
           role={chatRole.role}
           userId={chatRole.userId}
           onClose={() => setOpen(false)}
-        />
+        />,
+        document.body
       )}
     </>
   )
@@ -106,8 +108,12 @@ function ChatOverlay({ role, userId, onClose }: ChatOverlayProps) {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose()
     }
-    window.addEventListener('keydown', handleEscape)
-    return () => window.removeEventListener('keydown', handleEscape)
+    document.addEventListener('keydown', handleEscape)
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.removeEventListener('keydown', handleEscape)
+      document.body.style.overflow = ''
+    }
   }, [onClose])
 
   const loadMessages = useCallback(async (conversationId: string) => {
@@ -168,17 +174,18 @@ function ChatOverlay({ role, userId, onClose }: ChatOverlayProps) {
       : 'Discuter avec mes athlètes'
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-end p-4"
-      role="dialog"
-      aria-modal="true"
-      aria-label="Discussion"
-    >
+    <>
       <div
-        className="absolute inset-0 bg-palette-forest-dark/50bg-black/50 backdrop-blur-sm"
+        className="fixed inset-0 bg-palette-forest-dark/50 backdrop-blur-sm z-[90]"
         onClick={onClose}
         aria-hidden="true"
       />
+      <div
+        className="fixed inset-0 z-[100] flex items-center justify-end p-4"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Discussion"
+      >
       <div className="relative flex flex-col w-full max-w-md h-[80vh] max-h-[600px] rounded-2xl border-2 border-palette-forest-dark bg-white shadow-2xl overflow-hidden">
         <div className="flex items-center justify-between shrink-0 p-4 border-b-2 border-palette-forest-dark bg-white">
           <h2 className="text-lg font-semibold text-stone-900 truncate">
@@ -299,6 +306,7 @@ function ChatOverlay({ role, userId, onClose }: ChatOverlayProps) {
           </div>
         )}
       </div>
-    </div>
+      </div>
+    </>
   )
 }

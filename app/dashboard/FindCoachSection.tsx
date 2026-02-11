@@ -346,18 +346,19 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
       )}
 
       {presentationModalCoach && (
-        <div
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="presentation-modal-title"
-        >
+        <>
           <div
-            className="absolute inset-0 bg-palette-forest-dark/50 backdrop-blur-sm z-[90]"
+            className="fixed inset-0 bg-palette-forest-dark/50 backdrop-blur-sm z-[90]"
             onClick={() => setPresentationModalCoach(null)}
             aria-hidden="true"
           />
-          <div className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto bg-white rounded-xl shadow-xl border border-stone-100">
+          <div
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="presentation-modal-title"
+          >
+            <div className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto bg-white rounded-xl shadow-xl border border-stone-100">
             <div className="sticky top-0 flex justify-end p-3 bg-white rounded-t-xl z-10">
               <button
                 type="button"
@@ -413,7 +414,8 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
               </p>
             </div>
           </div>
-        </div>
+          </div>
+        </>
       )}
     </section>
   )
@@ -535,84 +537,76 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
 
   return createPortal(
     <>
-      <div className="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-[90]" onClick={onClose} />
+      <div className="fixed inset-0 bg-palette-forest-dark/50 backdrop-blur-sm z-[90]" onClick={onClose} />
       <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 overflow-y-auto">
-        <div className="relative w-full max-w-5xl bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] my-auto">
-          {/* HEADER MODALE : Profil Coach */}
-          <div className="p-6 md:p-8 border-b border-stone-100 bg-white shrink-0 flex justify-between items-start">
-            <div className="flex gap-5">
+        <div className="relative w-full max-w-4xl bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] my-auto">
+          {/* HEADER FIXE (Identité + Note) */}
+          <div className="p-6 border-b border-stone-100 flex gap-5 items-center bg-white shrink-0">
+            <div className="relative">
               <AvatarImage
                 src={coach.avatar_url}
                 initials={getInitials(coach.full_name, coach.email)}
-                className="w-20 h-20 rounded-2xl object-cover shadow-sm ring-4 ring-stone-50 shrink-0"
+                className="w-16 h-16 rounded-2xl object-cover ring-4 ring-stone-50"
               />
-              <div>
-                <h2 className="text-2xl font-bold text-stone-900 flex items-center gap-2">
-                  {coach.full_name?.trim() || coach.email}
-                  {ratings && ratings.reviewCount > 0 && (
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-blue-500 fill-blue-50" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                    </svg>
+            </div>
+            <div className="flex-1">
+              <h2 className="text-xl font-bold text-stone-900">{coach.full_name?.trim() || coach.email}</h2>
+              {ratings && ratings.reviewCount > 0 && (
+                <div className="flex items-center gap-1 text-sm text-amber-500 font-bold mt-0.5">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                  {ratings.averageRating} <span className="text-stone-400 font-normal ml-1">({ratings.reviewCount} avis)</span>
+                </div>
+              )}
+              {/* Tags Sports & Langues */}
+              {((coach.coached_sports ?? []).length > 0 || (coach.languages ?? []).length > 0) && (
+                <div className="flex flex-wrap gap-2 items-center mt-2">
+                  {/* Tuiles Sports */}
+                  {(coach.coached_sports ?? []).map((sportValue) => {
+                    const opt = COACHED_SPORTS_OPTIONS.find(o => o.value === sportValue)
+                    return (
+                      <span
+                        key={sportValue}
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white border border-stone-200 text-stone-600 text-xs font-bold uppercase tracking-wide"
+                      >
+                        <span aria-hidden>{opt?.emoji ?? ''}</span>
+                        {opt?.label ?? sportValue}
+                      </span>
+                    )
+                  })}
+                  {/* Séparateur si sports ET langues */}
+                  {(coach.coached_sports ?? []).length > 0 && (coach.languages ?? []).length > 0 && (
+                    <div className="w-px h-6 bg-stone-300 mx-1" />
                   )}
-                </h2>
-                {ratings && ratings.reviewCount > 0 && (
-                  <div className="flex items-center gap-1 text-amber-500 font-bold mt-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 fill-current" viewBox="0 0 20 20">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                    {ratings.averageRating} ({ratings.reviewCount} avis)
-                  </div>
-                )}
-                {/* Tuiles Sports et Langues */}
-                {((coach.coached_sports ?? []).length > 0 || (coach.languages ?? []).length > 0) && (
-                  <div className="flex flex-wrap gap-2 mt-3">
-                    {/* Tuiles Sports */}
-                    {(coach.coached_sports ?? []).map((sportValue) => {
-                      const opt = COACHED_SPORTS_OPTIONS.find(o => o.value === sportValue)
-                      return (
-                        <span
-                          key={sportValue}
-                          className="inline-flex items-center px-2 py-1 rounded-md bg-stone-100 text-stone-600 text-[10px] font-bold uppercase tracking-wide border border-stone-200"
-                        >
-                          <span aria-hidden>{opt?.emoji ?? ''}</span>
-                          <span>{opt?.label ?? sportValue}</span>
-                        </span>
-                      )
-                    })}
-                    {/* Tuiles Langues */}
-                    {(coach.languages ?? []).map((langCode) => {
-                      const opt = LANGUAGES_OPTIONS.find(o => o.value === langCode)
-                      return (
-                        <span
-                          key={langCode}
-                          className="inline-flex items-center px-2 py-1 rounded-md bg-[#8e9856]/10 text-[#8e9856] text-[10px] font-bold uppercase tracking-wide border border-[#8e9856]/20"
-                        >
-                          {opt?.label ?? langCode}
-                        </span>
-                      )
-                    })}
-                  </div>
-                )}
-                {coach.presentation?.trim() && (
-                  <p className="text-stone-600 text-sm mt-3 max-w-2xl">
-                    {coach.presentation.trim()}
-                  </p>
-                )}
-              </div>
+                  {/* Tuiles Langues */}
+                  {(coach.languages ?? []).map((langCode) => {
+                    const opt = LANGUAGES_OPTIONS.find(o => o.value === langCode)
+                    return (
+                      <span
+                        key={langCode}
+                        className="inline-flex items-center px-2 py-1 rounded bg-stone-100 text-stone-500 text-xs font-medium"
+                      >
+                        {opt?.label ?? langCode}
+                      </span>
+                    )
+                  })}
+                </div>
+              )}
             </div>
             <button
               type="button"
               onClick={onClose}
-              className="w-10 h-10 rounded-full bg-stone-100 hover:bg-stone-200 flex items-center justify-center text-stone-500 transition-colors shrink-0"
+              className="w-10 h-10 rounded-full bg-stone-50 hover:bg-stone-100 flex items-center justify-center text-stone-400 hover:text-stone-600 transition-colors shrink-0"
               aria-label="Fermer"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M18 6 6 18" /><path d="m6 6 12 12" />
               </svg>
             </button>
           </div>
 
-          {/* CORPS MODALE : Les Offres */}
+          {/* CORPS SCROLLABLE */}
           <div className="overflow-y-auto p-6 md:p-8 bg-stone-50 flex-1">
             {requestStatus === 'pending' ? (
               <div className="text-center py-12">
@@ -621,70 +615,93 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
               </div>
             ) : (
               <>
-                <h3 className="text-lg font-bold text-stone-800 mb-6 flex items-center gap-2">
+                {/* INFO PROFIL (Bio) */}
+                {coach.presentation?.trim() && (
+                  <div className="mb-8">
+                    <p className="text-stone-600 text-sm leading-relaxed max-w-3xl">
+                      {coach.presentation.trim()}
+                    </p>
+                  </div>
+                )}
+
+                {coach.presentation?.trim() && <hr className="border-stone-200 mb-8" />}
+
+                {/* SECTION OFFRES */}
+                <h3 className="text-lg font-bold text-stone-800 mb-4 flex items-center gap-2">
                   <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-[#627e59]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path d="M20 7h-4m-2-4H8a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2Z" />
                   </svg>
-                  Choisir une formule
+                  Choisissez une formule
                 </h3>
 
                 {sortedOffers.length === 0 ? (
                   <p className="text-sm text-stone-600 text-center py-8">Ce coach n'a pas encore d'offres disponibles.</p>
                 ) : (
                   <>
-                    <div className={`grid ${getGridCols(sortedOffers.length)} gap-6 mb-8`}>
+                    {/* GRID OFFRES */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
                       {sortedOffers.map((offer) => {
-                        const badge = getOfferBadge(offer)
                         const isSelected = selectedOfferId === offer.id
                         const isFeatured = offer.is_featured
                         return (
                           <div
                             key={offer.id}
-                            className={`bg-white rounded-2xl border-2 p-6 flex flex-col hover:border-stone-300 transition-all relative cursor-pointer ${
+                            className={`relative bg-white rounded-2xl border-2 p-6 cursor-pointer transition-all group flex flex-col ${
                               isSelected 
-                                ? 'border-[#627e59] shadow-lg' 
-                                : isFeatured 
-                                ? 'border-[#627e59] shadow-md' 
-                                : 'border-stone-200'
+                                ? 'border-[#627e59] shadow-md hover:border-[#627e59]' 
+                                : 'border-stone-200 hover:border-stone-300 hover:shadow-md'
                             }`}
                             onClick={() => setSelectedOfferId(offer.id)}
                           >
                             {isFeatured && (
-                              <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#627e59] text-white px-4 py-1 rounded-full text-xs font-bold shadow-sm">
+                              <div className={`absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide shadow-sm transition-colors ${
+                                isSelected ? 'bg-[#627e59] text-white' : 'bg-stone-500 text-white group-hover:bg-[#627e59]'
+                              }`}>
                                 Recommandé
                               </div>
                             )}
-                            <div className="mb-4 mt-2">
-                              <span className={`px-3 py-1 ${badge.className} text-xs font-bold uppercase rounded-full tracking-wide`}>
-                                {badge.label}
-                              </span>
+                            <div className="flex justify-between items-start mb-4">
+                              <div>
+                                <h4 className="text-lg font-bold text-stone-900">{offer.title}</h4>
+                                {offer.description && (
+                                  <p className="text-sm text-stone-500 mt-1">{offer.description}</p>
+                                )}
+                              </div>
+                              <div className={`w-5 h-5 rounded-full border-2 transition-colors shrink-0 ${
+                                isSelected 
+                                  ? 'border-[#627e59] bg-[#627e59]' 
+                                  : 'border-stone-300 group-hover:border-stone-300'
+                              }`}>
+                                {isSelected && (
+                                  <svg xmlns="http://www.w3.org/2000/svg" className="w-full h-full text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                  </svg>
+                                )}
+                              </div>
                             </div>
-                            <h4 className="text-lg font-bold text-stone-900 mb-2">{offer.title}</h4>
-                            <div className="mb-6 flex items-baseline gap-1">
-                              <span className="text-4xl font-bold text-stone-900">{offer.price === 0 ? 'Gratuit' : `${offer.price}€`}</span>
-                              {offer.price_type === 'monthly' && <span className="text-sm font-medium text-stone-400">/mois</span>}
-                              {offer.price_type === 'one_time' && <span className="text-sm font-medium text-stone-400">/plan</span>}
-                            </div>
-                            {offer.description && (
-                              <p className="text-sm text-stone-500 mb-6">{offer.description}</p>
-                            )}
                             <div className="flex-1" />
-                            <OfferSelectButton
-                              isSelected={isSelected}
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                setSelectedOfferId(offer.id)
-                              }}
-                            />
-                            {offer.price_type === 'monthly' && (
-                              <p className="text-xs text-center text-stone-400 mt-3">Sans engagement, annulable à tout moment.</p>
-                            )}
+                            <div className="flex items-baseline gap-1 mt-auto">
+                              <span className="text-3xl font-bold text-stone-900">
+                                {offer.price_type === 'free' ? 'Gratuit' : `${offer.price}€`}
+                              </span>
+                              {offer.price_type === 'monthly' && (
+                                <span className="text-sm text-stone-500 font-medium">/mois</span>
+                              )}
+                              {offer.price_type === 'one_time' && (
+                                <span className="text-sm text-stone-500 font-medium">/plan</span>
+                              )}
+                            </div>
                           </div>
                         )
                       })}
                     </div>
 
-                    {selectedOfferId && (
+                    {/* PLACEHOLDER FORMULAIRE */}
+                    {!selectedOfferId ? (
+                      <div className="border-2 border-dashed border-stone-200 rounded-2xl p-8 text-center bg-stone-50/50">
+                        <p className="text-stone-400 text-sm">Veuillez sélectionner une offre ci-dessus pour continuer.</p>
+                      </div>
+                    ) : (
                       <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-stone-200 p-6 space-y-6">
                         <h4 className="text-base font-semibold text-stone-900">Compléter votre demande</h4>
                         {error && (

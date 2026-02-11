@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useTransition, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
 import { PrimaryButton } from '@/components/PrimaryButton'
 import { upsertCoachRating } from './actions'
@@ -217,19 +218,20 @@ export function CoachRatingForm({ coachId, initialRating, initialComment }: Coac
       </div>
     </form>
 
-    {unsavedChangesModalOpen && (
-      <div
-        className="fixed inset-0 z-[100] flex items-center justify-center p-4"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="coach-rating-unsaved-title"
-      >
+    {unsavedChangesModalOpen && typeof document !== 'undefined' && createPortal(
+      <>
         <div
-          className="absolute inset-0 bg-palette-forest-dark/50 backdrop-blur-sm z-[90]"
+          className="fixed inset-0 bg-palette-forest-dark/50 backdrop-blur-sm z-[90]"
           onClick={() => !isSavingBeforeLeave && (setUnsavedChangesModalOpen(false), setPendingNavigation(null))}
           aria-hidden="true"
         />
-        <div className="relative w-full max-w-md bg-white rounded-xl shadow-xl border border-stone-100">
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="coach-rating-unsaved-title"
+        >
+          <div className="relative w-full max-w-md bg-white rounded-xl shadow-xl border border-stone-100">
           <div className="sticky top-0 flex justify-end p-3 bg-white rounded-t-xl z-10">
             <button
               type="button"
@@ -269,9 +271,11 @@ export function CoachRatingForm({ coachId, initialRating, initialComment }: Coac
               </PrimaryButton>
             </div>
           </div>
+          </div>
         </div>
-      </div>
-    )}
+        </>,
+        document.body
+      )}
     </>
   )
 }
