@@ -321,19 +321,19 @@ export function WorkoutModal({
 
   /* Structure identique au bloc "Objectifs de l'athlète" du HTML de référence */
   const modalContent = (
-    <div
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="workout-modal-title"
-      style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
-    >
+    <>
       <div
-        className="absolute inset-0 bg-stone-900/40 backdrop-blur-sm z-[90]"
+        className="fixed inset-0 bg-palette-forest-dark/50 backdrop-blur-sm z-[90]"
         onClick={() => handleClose()}
         aria-hidden="true"
       />
-      <div className="relative w-full max-w-md max-h-[calc(100vh-2rem)] flex flex-col bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden">
+      <div
+        className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="workout-modal-title"
+      >
+        <div className="relative w-full max-w-md max-h-[calc(100vh-2rem)] flex flex-col bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden">
         {/* En-tête comme dans le HTML : px-6 py-4 border-b border-stone-100 bg-stone-50/50 + icône check + titre */}
         <div className="shrink-0 px-6 py-4 border-b border-stone-100 bg-stone-50/50 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
@@ -720,8 +720,9 @@ export function WorkoutModal({
             </div>
           )}
         </form>
+        </div>
       </div>
-    </div>
+    </>
   )
 
   if (typeof document === 'undefined') return null

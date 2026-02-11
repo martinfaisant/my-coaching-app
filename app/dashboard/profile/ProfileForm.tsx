@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useLayoutEffect, useRef, useCallback } from 'react'
 import { useActionState } from 'react'
+import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
 import { PrimaryButton } from '@/components/PrimaryButton'
 import { createClient } from '@/utils/supabase/client'
@@ -669,19 +670,20 @@ export function ProfileForm({
       </form>
 
       {/* Modales (identique à avant) */}
-      {deleteModalOpen && (
-        <div
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="delete-account-title"
-        >
+      {deleteModalOpen && typeof document !== 'undefined' && createPortal(
+        <>
           <div
-            className="absolute inset-0 bg-palette-forest-dark/50 backdrop-blur-sm z-[90]"
+            className="fixed inset-0 bg-palette-forest-dark/50 backdrop-blur-sm z-[90]"
             onClick={() => !isDeleting && setDeleteModalOpen(false)}
             aria-hidden="true"
           />
-          <div className="relative w-full max-w-md bg-white rounded-xl shadow-xl border border-stone-100">
+          <div
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="delete-account-title"
+          >
+            <div className="relative w-full max-w-md bg-white rounded-xl shadow-xl border border-stone-100">
             <div className="sticky top-0 flex justify-end p-3 bg-white rounded-t-xl z-10">
               <button
                 type="button"
@@ -734,23 +736,26 @@ export function ProfileForm({
                 </PrimaryButton>
               </div>
             </div>
+            </div>
           </div>
-        </div>
+        </>,
+        document.body
       )}
 
-      {unsavedChangesModalOpen && (
-        <div
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="unsaved-changes-title"
-        >
+      {unsavedChangesModalOpen && typeof document !== 'undefined' && createPortal(
+        <>
           <div
-            className="absolute inset-0 bg-palette-forest-dark/50 backdrop-blur-sm z-[90]"
+            className="fixed inset-0 bg-palette-forest-dark/50 backdrop-blur-sm z-[90]"
             onClick={() => !isSavingBeforeLeave && setUnsavedChangesModalOpen(false)}
             aria-hidden="true"
           />
-          <div className="relative w-full max-w-md bg-white rounded-xl shadow-xl border border-stone-100">
+          <div
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="unsaved-changes-title"
+          >
+            <div className="relative w-full max-w-md bg-white rounded-xl shadow-xl border border-stone-100">
             <div className="sticky top-0 flex justify-end p-3 bg-white rounded-t-xl z-10">
               <button
                 type="button"
@@ -790,8 +795,9 @@ export function ProfileForm({
                 </PrimaryButton>
               </div>
             </div>
+            </div>
           </div>
-        </div>
+        </>, document.body
       )}
     </>
   )

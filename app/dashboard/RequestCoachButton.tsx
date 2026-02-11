@@ -213,17 +213,18 @@ export function RequestCoachButton({ coachId, coachName, requestStatus, requestI
       {open &&
         typeof document !== 'undefined' &&
         createPortal(
-          <div
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="request-coach-title"
-          >
+          <>
             <div
-              className="absolute inset-0 bg-palette-forest-dark/50 backdrop-blur-sm z-[90]"
+              className="fixed inset-0 bg-palette-forest-dark/50 backdrop-blur-sm z-[90]"
               onClick={closeModal}
               aria-hidden="true"
             />
+            <div
+              className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="request-coach-title"
+            >
             <div className="relative w-full max-w-md max-h-[90vh] overflow-y-auto bg-white rounded-xl shadow-xl border border-stone-100">
               <div className="sticky top-0 flex justify-end p-3 bg-white rounded-t-xl z-10">
                 <button
@@ -303,7 +304,8 @@ export function RequestCoachButton({ coachId, coachName, requestStatus, requestI
                 </form>
               </div>
             </div>
-          </div>,
+            </div>
+          </>,
           document.body
         )}
     </>
