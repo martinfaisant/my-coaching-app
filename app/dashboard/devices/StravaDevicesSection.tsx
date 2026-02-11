@@ -65,7 +65,7 @@ export function StravaDevicesSection({ userId, connected, connection }: StravaDe
   const ConnectWithStravaButton = () => (
     <a
       href="/api/auth/strava"
-      className="inline-flex h-12 items-center justify-center rounded-lg bg-[#FC4C02] px-5 text-base font-semibold text-white no-underline transition-opacity hover:opacity-90 focus:opacity-90 focus:outline-none focus:ring-2 focus:ring-[#FC4C02] focus:ring-offset-2"
+      className="inline-flex items-center justify-center rounded-lg bg-[#FC4C02] px-5 py-2.5 text-sm font-medium text-white no-underline transition-opacity hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-[#FC4C02]/20"
       aria-label="Connecter Strava"
     >
       Connecter Strava
@@ -73,69 +73,73 @@ export function StravaDevicesSection({ userId, connected, connection }: StravaDe
   )
 
   return (
-    <section className="mt-8 rounded-2xl border border-stone-200 bg-section p-6 shadow-sm">
-      <div className="flex items-start justify-between gap-4 flex-wrap">
-        <div className="flex min-w-0 flex-1 items-center gap-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#f05222]">
-            <img
-              src="/strava-icon.svg"
-              alt="Strava"
-              width={32}
-              height={32}
-              className="object-contain"
-            />
+    <div className="max-w-3xl mx-auto">
+      <section className="bg-white rounded-2xl shadow-xl overflow-hidden border border-stone-100">
+        <div className="px-8 py-6">
+          <div className="flex items-start justify-between gap-6 flex-wrap">
+            <div className="flex min-w-0 flex-1 items-center gap-4">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#f05222]">
+                <img
+                  src="/strava-icon.svg"
+                  alt="Strava"
+                  width={32}
+                  height={32}
+                  className="object-contain"
+                />
+              </div>
+              <div className="min-w-0">
+                <h2 className="text-base font-semibold text-stone-900 mb-1">Strava</h2>
+                <p className="text-sm text-stone-600">
+                  {connected
+                    ? 'Connecté — importez les 3 dernières semaines d\'activités dans votre calendrier.'
+                    : 'Afficher vos activités Strava dans le calendrier.'}
+                </p>
+              </div>
+            </div>
+            <div className="flex shrink-0 flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+              {connected ? (
+                <>
+                  <a
+                    href="/api/auth/strava"
+                    className="inline-flex items-center justify-center rounded-lg border border-stone-300 px-4 py-2.5 text-sm font-medium text-stone-700 bg-white hover:bg-stone-50 transition-colors focus:outline-none focus:ring-2 focus:ring-[#627e59]/20 focus:border-[#627e59]"
+                  >
+                    Reconnecter
+                  </a>
+                  <button
+                    type="button"
+                    onClick={handleSync}
+                    disabled={syncing}
+                    className="inline-flex items-center justify-center rounded-lg bg-[#FC4C02] px-4 py-2.5 text-sm font-medium text-white hover:opacity-90 transition-opacity disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-[#FC4C02]/20"
+                  >
+                    {syncing ? 'Import en cours…' : 'Importer les 3 dernières semaines'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleDisconnect}
+                    disabled={disconnecting}
+                    className="inline-flex items-center justify-center rounded-lg border border-red-300 px-4 py-2.5 text-sm font-medium text-red-700 bg-white hover:bg-red-50 transition-colors disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-red-200 focus:border-red-400"
+                  >
+                    Déconnecter
+                  </button>
+                </>
+              ) : (
+                <ConnectWithStravaButton />
+              )}
+            </div>
           </div>
-          <div className="min-w-0">
-            <h2 className="text-lg font-semibold text-stone-900">Strava</h2>
-            <p className="text-sm text-stone-600">
-              {connected
-                ? 'Connecté — importez les 3 dernières semaines d\'activités dans votre calendrier.'
-                : 'Afficher vos activités Strava dans le calendrier.'}
-            </p>
-          </div>
-        </div>
-        <div className="flex shrink-0 flex-col sm:flex-row gap-2 items-end sm:items-center justify-end">
-          {connected ? (
-            <>
-              <a
-                href="/api/auth/strava"
-                className="flex h-12 items-center rounded-lg border-2 border-stone-300 px-4 py-2 text-sm font-medium text-stone-700 hover:bg-stone-50 transition-colors"
-              >
-                Reconnecter
-              </a>
-              <button
-                type="button"
-                onClick={handleSync}
-                disabled={syncing}
-                className="rounded-lg bg-[#FC4C02] px-4 py-2 text-sm font-medium text-white hover:opacity-90 transition-opacity disabled:opacity-60 h-12 flex items-center"
-              >
-                {syncing ? 'Import en cours…' : 'Importer les 3 dernières semaines'}
-              </button>
-              <button
-                type="button"
-                onClick={handleDisconnect}
-                disabled={disconnecting}
-                className="rounded-lg border-2 border-red-200 px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-50 transition-colors disabled:opacity-60 h-12 flex items-center"
-              >
-                Déconnecter
-              </button>
-            </>
-          ) : (
-            <ConnectWithStravaButton />
+          {(urlMessage || message) && (
+            <div
+              className={`mt-6 rounded-lg px-4 py-3 text-sm ${
+                message?.type === 'error' || (searchParams.get('error') && !urlMessage)
+                  ? 'bg-red-50 text-red-800 border border-red-200'
+                  : 'bg-[#627e59]/10 text-[#627e59] border border-[#627e59]/20'
+              }`}
+            >
+              {message ? message.text : urlMessage}
+            </div>
           )}
         </div>
-      </div>
-      {(urlMessage || message) && (
-        <div
-          className={`mt-4 rounded-lg px-3 py-2 text-sm ${
-            message?.type === 'error' || (searchParams.get('error') && !urlMessage)
-              ? 'bg-red-50 text-red-800'
-              : 'bg-green-50 text-green-800'
-          }`}
-        >
-          {message ? message.text : urlMessage}
-        </div>
-      )}
-    </section>
+      </section>
+    </div>
   )
 }

@@ -871,14 +871,14 @@ export function CalendarView({
                       >
                         {showAddAtBottom ? (
                           <>
-                            <div className="min-h-0 overflow-hidden shrink-0">
+                            <div className="min-h-0 shrink-0">
                               {firstWorkout && renderCompactCard(firstWorkout, day.dateStr)}
                               {!firstWorkout && firstImported && (() => {
                                 const target = formatImportedActivityTarget(firstImported)
                                 return (
                                   <div
                                     onClick={(e) => { e.stopPropagation(); setSelectedImportedActivity(firstImported) }}
-                                    className="bg-white rounded border-l-4 border-[#FC4C02] h-full p-1.5 flex flex-col justify-between cursor-pointer training-card w-full"
+                                    className="bg-white rounded border-l-4 border-[#FC4C02] shadow-sm h-full p-1.5 flex flex-col justify-between cursor-pointer training-card w-full"
                                     role="button"
                                   >
                                     <div>
@@ -934,14 +934,14 @@ export function CalendarView({
                           </>
                         ) : (
                           <>
-                            <div className="min-h-0 overflow-hidden shrink-0 flex flex-col gap-0.5">
+                            <div className="min-h-0 shrink-0 flex flex-col gap-0.5">
                               {firstWorkout && renderCompactCard(firstWorkout, day.dateStr)}
                               {!firstWorkout && firstImported && (() => {
                                 const target = formatImportedActivityTarget(firstImported)
                                 return (
                                   <div
                                     onClick={(e) => { e.stopPropagation(); setSelectedImportedActivity(firstImported) }}
-                                    className="bg-white rounded border-l-4 border-[#FC4C02] h-full p-1.5 flex flex-col justify-between cursor-pointer training-card w-full"
+                                    className="bg-white rounded border-l-4 border-[#FC4C02] shadow-sm h-full p-1.5 flex flex-col justify-between cursor-pointer training-card w-full"
                                     role="button"
                                   >
                                     <div>
@@ -1016,9 +1016,9 @@ export function CalendarView({
                         <div
                           className={`flex-1 min-h-[202px] rounded-xl border p-1.5 flex flex-col gap-3 overflow-y-auto ${
                             day.isToday
-                              ? 'bg-[#627e59]/5 border-[#627e59]/30 shadow-inner'
+                              ? 'bg-[#627e59]/5 border-[#627e59]/30'
                               : hasContent
-                                ? 'bg-white border-stone-200 shadow-inner'
+                                ? 'bg-white border-stone-200'
                                 : 'bg-stone-50 border-stone-200 border-dashed'
                           } ${canAddWorkout && !hasContent ? 'border-2 border-dashed border-stone-300 cursor-pointer hover:border-[#627e59] hover:bg-[#627e59]/5 transition-all group' : ''}`}
                           onClick={() => canAddWorkout && !hasContent && openDay(day.dateStr, day.isPast)}
@@ -1026,22 +1026,46 @@ export function CalendarView({
                         >
                           {hasContent ? (
                             <>
-                              <div className="min-h-0 flex flex-col gap-3 overflow-y-auto shrink-0">
-                              {dayGoals.map((g) => (
-                                <div
-                                  key={g.id}
-                                  onClick={(e) => {
-                                    e.stopPropagation()
-                                    openGoal(g)
-                                  }}
-                                  className="training-card rounded-lg px-3 py-2 text-xs border bg-[#8e9856]/10 border-[#8e9856]/30 text-palette-forest-dark cursor-pointer"
-                                  role="button"
-                                >
-                                  <GoalTargetBadge isPrimary={g.is_primary} />
-                                  <span className="font-medium truncate block">{g.race_name}</span>
-                                  <span className="text-stone-600 truncate block">{g.distance}</span>
-                                </div>
-                              ))}
+                              <div className="min-h-0 flex flex-col gap-3 overflow-y-auto shrink-0 pb-3">
+                              {dayGoals.map((g) => {
+                                const isPrimary = g.is_primary
+                                const borderColor = isPrimary ? 'border-[#c9a544]' : 'border-[#aaaa51]'
+                                const badgeColor = isPrimary ? 'text-[#c9a544] bg-[#c9a544]/10' : 'text-[#aaaa51] bg-[#aaaa51]/10'
+                                
+                                return (
+                                  <div
+                                    key={g.id}
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      openGoal(g)
+                                    }}
+                                    className={`training-card bg-white rounded border-l-4 ${borderColor} shadow-sm p-1.5 h-full flex flex-col justify-between ${canEdit ? 'cursor-pointer' : ''}`}
+                                    role={canEdit ? 'button' : undefined}
+                                  >
+                                    <div>
+                                      <div>
+                                        <span className={`float-left inline-flex items-center mr-1.5 ${badgeColor} px-1 py-0.5 rounded shrink-0`}>
+                                          <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <circle cx="12" cy="12" r="10" />
+                                            <circle cx="12" cy="12" r="6" />
+                                            <circle cx="12" cy="12" r="2" />
+                                          </svg>
+                                        </span>
+                                        <div className="text-xs font-semibold text-stone-700 leading-tight">{g.race_name}</div>
+                                        <div className="clear-both"></div>
+                                      </div>
+                                    </div>
+                                    <div className="flex items-center gap-1 flex-wrap text-[10px] text-stone-400 font-medium mt-1">
+                                      <div className="flex items-center gap-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                                        </svg>
+                                        <span>{g.distance} km</span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                )
+                              })}
                               {dayImported.map((a) => {
                                 const target = formatImportedActivityTarget(a)
                                 return (
@@ -1258,55 +1282,86 @@ export function CalendarView({
             aria-modal="true"
             aria-labelledby="goal-modal-title"
           >
-            <div className="relative w-full max-w-sm rounded-xl border-2 border-palette-forest-dark bg-white p-5 shadow-xl">
-            <div className="flex items-center justify-between gap-2 mb-4">
-              <h2 id="goal-modal-title" className="text-lg font-semibold text-stone-900">
-                Détails de l&apos;objectif
-              </h2>
-              <button
-                type="button"
-                onClick={() => setGoalModalOpen(false)}
-                className="p-2 rounded-lg text-stone-500 hover:text-stone-700 hover:bg-stone-100 transition-colors"
-                aria-label="Fermer"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M18 6 6 18" />
-                  <path d="m6 6 12 12" />
-                </svg>
-              </button>
-            </div>
-            <dl className="space-y-3 text-sm">
-              <div>
-                <dt className="text-stone-500 font-medium">Date</dt>
-                <dd className="mt-0.5 text-stone-900">
-                  {new Date(selectedGoal.date + 'T12:00:00').toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
-                </dd>
+            <div className="relative w-full max-w-md max-h-[calc(100vh-2rem)] flex flex-col bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden">
+              {/* En-tête */}
+              <div className="shrink-0 px-6 py-4 border-b border-stone-100 bg-stone-50/50 flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className={`p-2 rounded-full ${
+                    selectedGoal.is_primary ? 'bg-[#c9a544]/10 text-[#c9a544]' : 'bg-[#aaaa51]/10 text-[#aaaa51]'
+                  }`}>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="10" />
+                      <circle cx="12" cy="12" r="6" />
+                      <circle cx="12" cy="12" r="2" />
+                    </svg>
+                  </div>
+                  <h2 id="goal-modal-title" className="text-lg font-bold text-stone-900 truncate">
+                    Détails de l&apos;objectif
+                  </h2>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setGoalModalOpen(false)}
+                  className="p-2 rounded-lg text-stone-500 hover:text-stone-700 hover:bg-stone-100 transition-colors shrink-0"
+                  aria-label="Fermer"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
               </div>
-              <div>
-                <dt className="text-stone-500 font-medium">Nom de la course</dt>
-                <dd className="mt-0.5 text-stone-900">{selectedGoal.race_name}</dd>
+              
+              {/* Contenu scrollable */}
+              <div className="flex-1 overflow-y-auto min-h-0">
+                <div className="px-6 py-4">
+                  <dl className="space-y-4">
+                    <div>
+                      <dt className="text-xs text-stone-500 uppercase tracking-wide font-bold mb-1.5">Date</dt>
+                      <dd className="text-sm text-stone-900">
+                        {new Date(selectedGoal.date + 'T12:00:00').toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="text-xs text-stone-500 uppercase tracking-wide font-bold mb-1.5">Nom de la course</dt>
+                      <dd className="text-sm text-stone-900">{selectedGoal.race_name}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-xs text-stone-500 uppercase tracking-wide font-bold mb-1.5">Distance</dt>
+                      <dd className="text-sm text-stone-900 flex items-center gap-1.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                        </svg>
+                        {selectedGoal.distance} km
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="text-xs text-stone-500 uppercase tracking-wide font-bold mb-1.5">Type d&apos;objectif</dt>
+                      <dd className="text-sm text-stone-900 flex items-center gap-2">
+                        {selectedGoal.is_primary ? (
+                          <span className="bg-[#c9a544]/10 text-[#c9a544] text-[10px] font-bold px-2 py-0.5 rounded-full border border-[#c9a544]">
+                            Principal
+                          </span>
+                        ) : (
+                          <span className="bg-[#aaaa51]/10 text-[#aaaa51] text-[10px] font-bold px-2 py-0.5 rounded-full border border-[#aaaa51]">
+                            Secondaire
+                          </span>
+                        )}
+                      </dd>
+                    </div>
+                  </dl>
+                </div>
               </div>
-              <div>
-                <dt className="text-stone-500 font-medium">Distance</dt>
-                <dd className="mt-0.5 text-stone-900">{selectedGoal.distance}</dd>
+              
+              {/* Footer */}
+              <div className="shrink-0 px-6 py-4 border-t border-stone-100 bg-stone-50/50 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setGoalModalOpen(false)}
+                  className="rounded-xl border border-stone-300 px-4 py-2 text-sm font-medium text-stone-700 bg-white hover:bg-stone-50 transition-colors focus:outline-none focus:ring-2 focus:ring-[#627e59]/20 focus:border-[#627e59]"
+                >
+                  Fermer
+                </button>
               </div>
-              <div>
-                <dt className="text-stone-500 font-medium">Type d&apos;objectif</dt>
-                <dd className="mt-0.5 flex items-center gap-1.5">
-                  <GoalTargetBadge isPrimary={selectedGoal.is_primary} />
-                  <span className="text-stone-900">{selectedGoal.is_primary ? 'Objectif principal' : 'Objectif secondaire'}</span>
-                </dd>
-              </div>
-            </dl>
-            <div className="mt-5 flex justify-end">
-              <button
-                type="button"
-                onClick={() => setGoalModalOpen(false)}
-                className="rounded-lg border-2 border-palette-forest-dark px-4 py-2 text-sm font-medium text-stone-700 hover:bg-stone-50 transition-colors"
-              >
-                Fermer
-              </button>
-            </div>
             </div>
           </div>
         </>,
@@ -1330,8 +1385,8 @@ export function CalendarView({
               {/* En-tête comme dans WorkoutModal */}
               <div className="shrink-0 px-6 py-4 border-b border-stone-100 bg-stone-50/50 flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="p-2 bg-[#FC4C02]/10 rounded-full">
-                    <img src="/strava-icon.svg" alt="" className="h-5 w-5" aria-hidden />
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#f05222]">
+                    <img src="/strava-icon.svg" alt="" className="h-5 w-5 object-contain" aria-hidden />
                   </div>
                   <div className="min-w-0">
                     <div className="text-[10px] font-semibold text-[#FC4C02] uppercase tracking-wide mb-0.5">
