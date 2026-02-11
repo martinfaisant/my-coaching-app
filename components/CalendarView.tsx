@@ -1150,7 +1150,7 @@ export function CalendarView({
           aria-labelledby="extra-activities-modal-title"
         >
           <div
-            className="absolute inset-0 bg-stone-900/40 backdrop-blur-sm"
+            className="absolute inset-0 bg-stone-900/40 backdrop-blur-sm z-[90]"
             onClick={() => { setExtraActivitiesModalOpen(false); setExtraActivitiesModalDate(null) }}
             aria-hidden="true"
           />
@@ -1251,7 +1251,7 @@ export function CalendarView({
           aria-labelledby="goal-modal-title"
         >
           <div
-            className="absolute inset-0 bg-stone-900/40 backdrop-blur-sm"
+            className="absolute inset-0 bg-stone-900/40 backdrop-blur-sm z-[90]"
             onClick={() => setGoalModalOpen(false)}
             aria-hidden="true"
           />
@@ -1316,7 +1316,7 @@ export function CalendarView({
           aria-labelledby="imported-activity-modal-title"
         >
           <div
-            className="absolute inset-0 bg-stone-900/40 backdrop-blur-sm"
+            className="absolute inset-0 bg-stone-900/40 backdrop-blur-sm z-[90]"
             onClick={() => setSelectedImportedActivity(null)}
             aria-hidden="true"
           />

@@ -46,7 +46,7 @@ export default async function DashboardPage() {
 
   // Athlète sans coach : page "Trouver un coach"
   if (current.profile.role === 'athlete' && !current.profile.coach_id) {
-    const [coachesResult, myRequests, ratingStats] = await Promise.all([
+    const [coachesResult, myRequests, ratingStats, offersResult] = await Promise.all([
       supabase
         .from('profiles')
         .select('user_id, email, full_name, coached_sports, languages, presentation, avatar_url')
@@ -54,8 +54,13 @@ export default async function DashboardPage() {
         .order('email'),
       getMyCoachRequests(),
       supabase.rpc('get_coach_rating_stats'),
+      supabase
+        .from('coach_offers')
+        .select('id, coach_id, title, description, price, price_type, is_featured, display_order')
+        .order('display_order'),
     ])
     const coaches = coachesResult.data
+    const allOffers = offersResult.data ?? []
 
     const statusByCoach: Record<string, 'pending' | 'declined'> = {}
     const requestIdByCoach: Record<string, string> = {}
@@ -70,6 +75,23 @@ export default async function DashboardPage() {
         averageRating: Number(row.avg_rating),
         reviewCount: Number(row.review_count ?? 0),
       }
+    }
+
+    // Organiser les offres par coach_id
+    const offersByCoach: Record<string, Array<{ id: string; title: string; description: string | null; price: number; price_type: string; is_featured: boolean; display_order: number }>> = {}
+    for (const offer of allOffers) {
+      if (!offersByCoach[offer.coach_id]) {
+        offersByCoach[offer.coach_id] = []
+      }
+      offersByCoach[offer.coach_id].push({
+        id: offer.id,
+        title: offer.title,
+        description: offer.description ?? null,
+        price: offer.price,
+        price_type: offer.price_type,
+        is_featured: offer.is_featured,
+        display_order: offer.display_order,
+      })
     }
 
     const coachesForList = (coaches ?? [])
@@ -99,7 +121,7 @@ export default async function DashboardPage() {
               Aucun coach inscrit pour le moment. Revenez plus tard.
             </p>
           ) : (
-            <FindCoachSection coaches={coachesForList} statusByCoach={statusByCoach} requestIdByCoach={requestIdByCoach} initialPracticedSports={current.profile.practiced_sports ?? []} ratingsByCoach={ratingsByCoach} />
+            <FindCoachSection coaches={coachesForList} statusByCoach={statusByCoach} requestIdByCoach={requestIdByCoach} initialPracticedSports={current.profile.practiced_sports ?? []} ratingsByCoach={ratingsByCoach} offersByCoach={offersByCoach} />
           )}
         </div>
       </main>
@@ -290,6 +312,17 @@ export default async function DashboardPage() {
                             )
                           })}
                         </div>
+                        {req.offer_title && (
+                          <div className="mt-2 flex items-center gap-2">
+                            <span className="text-xs font-medium text-stone-500">Offre choisie :</span>
+                            <span className="text-xs font-semibold text-stone-900">{req.offer_title}</span>
+                            {req.offer_price !== null && (
+                              <span className="text-xs text-stone-600">
+                                {req.offer_price_type === 'free' ? 'Gratuit' : req.offer_price_type === 'monthly' ? `${req.offer_price}€/mois` : `${req.offer_price}€`}
+                              </span>
+                            )}
+                          </div>
+                        )}
                         <p className="text-sm text-stone-600 mt-2 italic">&quot;{req.coaching_need}&quot;</p>
                       </div>
                     </div>
@@ -313,7 +346,16 @@ export default async function DashboardPage() {
                 </p>
               </div>
             ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <>
+              {pendingRequests.length > 0 && (
+                <>
+                  <div className="border-t border-stone-200 my-8"></div>
+                  <h2 className="text-base font-semibold text-stone-900 mb-4">
+                    Mes athlètes
+                  </h2>
+                </>
+              )}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {visibleProfiles.map((p) => {
                 const displayName = (p.full_name?.trim() || p.email) as string
                 const athleteHref = `/dashboard/athletes/${p.user_id}`
@@ -397,7 +439,8 @@ export default async function DashboardPage() {
                   </article>
                 )
               })}
-            </div>
+              </div>
+            </>
             )
           ) : (
             <ul className="space-y-2.5">

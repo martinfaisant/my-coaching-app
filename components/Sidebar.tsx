@@ -45,7 +45,7 @@ export function Sidebar({ profile }: SidebarProps) {
 
   if (profile.role === 'athlete') {
     return (
-      <aside className={`${isCollapsed ? 'w-14' : 'w-14 lg:w-52'} bg-white rounded-2xl shadow-sm flex flex-col justify-between shrink-0 relative transition-all duration-300 ease-in-out z-50`}>
+      <aside className={`${isCollapsed ? 'w-14' : 'w-14 lg:w-52'} bg-white rounded-2xl shadow-sm flex flex-col justify-between shrink-0 relative transition-all duration-300 ease-in-out z-30`}>
         {/* Bouton toggle comme dans le HTML : absolute -right-3 top-9 */}
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
@@ -202,7 +202,7 @@ export function Sidebar({ profile }: SidebarProps) {
 
   // Coach sidebar (même animation et position flèche que le HTML de référence)
   return (
-    <aside className={`${isCollapsed ? 'w-14' : 'w-14 lg:w-52'} bg-white rounded-2xl shadow-sm flex flex-col justify-between shrink-0 relative transition-all duration-300 ease-in-out z-50`}>
+    <aside className={`${isCollapsed ? 'w-14' : 'w-14 lg:w-52'} bg-white rounded-2xl shadow-sm flex flex-col justify-between shrink-0 relative transition-all duration-300 ease-in-out z-30`}>
       <button
         onClick={() => setIsCollapsed(!isCollapsed)}
         className="absolute -right-3 top-9 bg-white border border-stone-200 text-stone-400 hover:text-[#627e59] p-1.5 rounded-full shadow-md hover:shadow-lg transition-all duration-300 transform group z-50 hidden lg:flex items-center justify-center"
