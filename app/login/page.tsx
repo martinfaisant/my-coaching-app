@@ -2,6 +2,8 @@
 
 import { useState, useActionState } from 'react'
 import { login, signup, type LoginState, type SignupState } from './actions'
+import { Button } from '@/components/Button'
+import { Input } from '@/components/Input'
 
 type SignupRole = 'athlete' | 'coach'
 
@@ -11,88 +13,71 @@ export default function LoginPage() {
   const [signupRole, setSignupRole] = useState<SignupRole>('athlete')
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-stone-50 to-stone-200from-stone-950to-stone-900 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-stone-50 to-stone-200 p-4">
       <div className="w-full max-w-md">
-        <div className="bg-white rounded-2xl shadow-xl shadow-stone-200/50shadow-black/20 border border-2 border-palette-forest-dark overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-xl shadow-stone-200/50 border border-2 border-palette-forest-dark overflow-hidden">
           <div className="p-8 sm:p-10">
-            <h1 className="text-2xl font-semibold text-stone-900text-white text-center mb-1">
+            <h1 className="text-2xl font-semibold text-stone-900 text-center mb-1">
               Connexion
             </h1>
-            <p className="text-white0text-stone-400 text-sm text-center mb-8">
+            <p className="text-stone-400 text-sm text-center mb-8">
               Connectez-vous ou créez un compte
             </p>
 
             <form action={loginAction} className="space-y-5">
-              <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium text-stone-700text-stone-300 mb-1.5"
-                >
-                  Email
-                </label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  placeholder="vous@exemple.com"
-                  className="w-full px-4 py-3 rounded-xl border border-stone-300border-stone-600 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-olive focus:border-transparent transition"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="password"
-                  className="block text-sm font-medium text-stone-700text-stone-300 mb-1.5"
-                >
-                  Mot de passe
-                </label>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  placeholder="••••••••"
-                  className="w-full px-4 py-3 rounded-xl border border-stone-300border-stone-600 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-olive focus:border-transparent transition"
-                />
-              </div>
+              <Input
+                id="email"
+                label="Email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+                placeholder="vous@exemple.com"
+                className="rounded-xl focus:ring-palette-olive"
+              />
+              <Input
+                id="password"
+                label="Mot de passe"
+                name="password"
+                type="password"
+                autoComplete="current-password"
+                required
+                placeholder="••••••••"
+                className="rounded-xl focus:ring-palette-olive"
+              />
               {loginState?.error && (
-                <p className="text-sm text-red-600text-red-400" role="alert">
+                <p className="text-sm text-red-600" role="alert">
                   {loginState.error}
                 </p>
               )}
-              <button
-                type="submit"
-                className="w-full py-3 px-4 rounded-xl bg-stone-900bg-white text-whitetext-stone-900 font-medium hover:bg-palette-olivehover:bg-stone-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-stone-500 transition"
-              >
+              <Button type="submit" variant="primary" fullWidth>
                 Se connecter
-              </button>
+              </Button>
             </form>
 
             <div className="relative my-8">
               <span className="absolute inset-0 flex items-center">
                 <span className="w-full border-t border-palette-forest-dark" />
               </span>
-              <span className="relative flex justify-center text-sm text-white0text-stone-400">
+              <span className="relative flex justify-center text-sm text-stone-400">
                 ou
               </span>
             </div>
 
             <form action={signupAction} className="space-y-5">
-              <p className="text-sm font-medium text-stone-700text-stone-300">
+              <p className="text-sm font-medium text-stone-700">
                 Créer mon compte
               </p>
               <div>
-                <span className="block text-sm font-medium text-stone-700text-stone-300 mb-2">
+                <span className="block text-sm font-medium text-stone-700 mb-2">
                   Je m&apos;inscris en tant que
                 </span>
                 <div className="grid grid-cols-2 gap-3">
                   <label
                     className={`flex flex-col items-center justify-center gap-1 rounded-xl border-2 p-4 cursor-pointer transition ${
                       signupRole === 'athlete'
-                        ? 'border-stone-900border-white bg-stone-100bg-stone-800 text-stone-900text-white'
-                        : 'border-stone-200border-stone-600 hover:border-stone-300hover:border-stone-500 text-stone-600text-stone-400'
+                        ? 'border-stone-900 bg-stone-100 text-stone-900'
+                        : 'border-stone-200 hover:border-stone-300 text-stone-600'
                     }`}
                   >
                     <input
@@ -109,8 +94,8 @@ export default function LoginPage() {
                   <label
                     className={`flex flex-col items-center justify-center gap-1 rounded-xl border-2 p-4 cursor-pointer transition ${
                       signupRole === 'coach'
-                        ? 'border-stone-900border-white bg-stone-100bg-stone-800 text-stone-900text-white'
-                        : 'border-stone-200border-stone-600 hover:border-stone-300hover:border-stone-500 text-stone-600text-stone-400'
+                        ? 'border-stone-900 bg-stone-100 text-stone-900'
+                        : 'border-stone-200 hover:border-stone-300 text-stone-600'
                     }`}
                   >
                     <input
@@ -126,52 +111,35 @@ export default function LoginPage() {
                   </label>
                 </div>
               </div>
-              <div>
-                <label
-                  htmlFor="signup-email"
-                  className="block text-sm font-medium text-stone-700text-stone-300 mb-1.5"
-                >
-                  Email (inscription)
-                </label>
-                <input
-                  id="signup-email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  placeholder="vous@exemple.com"
-                  className="w-full px-4 py-3 rounded-xl border border-stone-300border-stone-600 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-olive focus:border-transparent transition"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="signup-password"
-                  className="block text-sm font-medium text-stone-700text-stone-300 mb-1.5"
-                >
-                  Mot de passe (min. 6 caractères)
-                </label>
-                <input
-                  id="signup-password"
-                  name="password"
-                  type="password"
-                  autoComplete="new-password"
-                  required
-                  minLength={6}
-                  placeholder="••••••••"
-                  className="w-full px-4 py-3 rounded-xl border border-stone-300border-stone-600 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-olive focus:border-transparent transition"
-                />
-              </div>
+              <Input
+                id="signup-email"
+                label="Email (inscription)"
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+                placeholder="vous@exemple.com"
+                className="rounded-xl focus:ring-palette-olive"
+              />
+              <Input
+                id="signup-password"
+                label="Mot de passe (min. 6 caractères)"
+                name="password"
+                type="password"
+                autoComplete="new-password"
+                required
+                minLength={6}
+                placeholder="••••••••"
+                className="rounded-xl focus:ring-palette-olive"
+              />
               {signupState?.error && (
-                <p className="text-sm text-red-600text-red-400" role="alert">
+                <p className="text-sm text-red-600" role="alert">
                   {signupState.error}
                 </p>
               )}
-              <button
-                type="submit"
-                className="w-full rounded-lg bg-palette-forest-dark px-4 py-3 text-sm font-medium text-white hover:bg-palette-olive transition-colors focus:outline-none focus:ring-2 focus:ring-palette-olive focus:ring-offset-2"
-              >
+              <Button type="submit" variant="primary" fullWidth>
                 S&apos;inscrire
-              </button>
+              </Button>
             </form>
           </div>
         </div>

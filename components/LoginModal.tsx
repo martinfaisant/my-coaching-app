@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect } from 'react'
-import { createPortal } from 'react-dom'
 import { LoginForm } from './LoginForm'
 
 export type AuthModalMode = 'login' | 'signup'
@@ -28,12 +27,12 @@ export function LoginModal({ isOpen, mode, onClose, onModeChange }: LoginModalPr
     }
   }, [isOpen, onClose])
 
-  if (!isOpen || typeof document === 'undefined') return null
+  if (!isOpen) return null
 
-  return createPortal(
+  return (
     <>
       <div
-        className="fixed inset-0 bg-palette-forest-dark/50 backdrop-blur-sm z-[90]"
+        className="fixed inset-0 bg-stone-900/50 backdrop-blur-sm z-[90]"
         onClick={onClose}
         aria-hidden="true"
       />
@@ -47,7 +46,6 @@ export function LoginModal({ isOpen, mode, onClose, onModeChange }: LoginModalPr
           <LoginForm mode={mode} onModeChange={onModeChange} onClose={onClose} />
         </div>
       </div>
-    </>,
-    document.body
+    </>
   )
 }

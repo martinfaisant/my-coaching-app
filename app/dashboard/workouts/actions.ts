@@ -56,7 +56,7 @@ function parseWorkoutTargetParams(
 
 export type WorkoutFormState = {
   error?: string
-  success?: string
+  success?: boolean
   /** Workout créé ou mis à jour (pour mise à jour optimiste côté client). */
   workout?: Workout
 }
@@ -134,7 +134,7 @@ export async function createWorkout(
 
   if (error) return { error: error.message }
   revalidatePath(pathToRevalidate)
-  return { success: 'Entraînement enregistré.', workout: created as Workout }
+  return { success: true, workout: created as Workout }
 }
 
 export async function updateWorkout(
@@ -210,7 +210,7 @@ export async function updateWorkout(
 
   if (error) return { error: error.message }
   revalidatePath(pathToRevalidate)
-  return { success: 'Entraînement mis à jour.', workout: updated as Workout }
+  return { success: true, workout: updated as Workout }
 }
 
 export async function deleteWorkout(
@@ -246,12 +246,12 @@ export async function deleteWorkout(
 
   if (error) return { error: error.message }
   revalidatePath(pathToRevalidate)
-  return { success: 'Entraînement supprimé.' }
+  return { success: true }
 }
 
 export type CommentFormState = {
   error?: string
-  success?: string
+  success?: boolean
 }
 
 export async function getWorkoutsForDateRange(
@@ -448,5 +448,5 @@ export async function saveWorkoutComment(
 
   if (error) return { error: error.message }
   revalidatePath(pathToRevalidate)
-  return { success: 'Commentaire enregistré.' }
+  return { success: true }
 }

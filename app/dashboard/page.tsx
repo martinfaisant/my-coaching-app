@@ -4,9 +4,9 @@ import { getCurrentUserWithProfile } from '@/utils/auth'
 import { redirect } from 'next/navigation'
 import { PageHeader } from '@/components/PageHeader'
 import { AvatarImage } from '@/components/AvatarImage'
+import { Badge } from '@/components/Badge'
 import { FindCoachSection } from '@/app/dashboard/FindCoachSection'
 import { RespondToRequestButtons } from '@/app/dashboard/RespondToRequestButtons'
-import { PRACTICED_SPORTS_OPTIONS } from '@/app/dashboard/sportsOptions'
 import {
   getMyCoachRequests,
   getPendingCoachRequests,
@@ -57,7 +57,8 @@ export default async function DashboardPage() {
       supabase
         .from('coach_offers')
         .select('id, coach_id, title, description, price, price_type, is_featured, display_order')
-        .order('display_order'),
+        .order('display_order')
+        .range(0, 999),
     ])
     const coaches = coachesResult.data
     const allOffers = offersResult.data ?? []
@@ -300,17 +301,9 @@ export default async function DashboardPage() {
                           <p className="text-sm text-stone-600 mt-0.5">{req.athlete_email}</p>
                         )}
                         <div className="flex flex-wrap gap-1.5 mt-2">
-                          {sportValues.map((v) => {
-                            const opt = PRACTICED_SPORTS_OPTIONS.find((o) => o.value === v)
-                            return (
-                              <span
-                                key={v}
-                                className="inline-flex items-center rounded-full bg-stone-100 px-2.5 py-0.5 text-xs font-medium text-stone-700"
-                              >
-                                {opt ? `${opt.emoji} ${opt.label}` : v}
-                              </span>
-                            )
-                          })}
+                          {sportValues.map((v) => (
+                            <Badge key={v} sport={v as Parameters<typeof Badge>[0]['sport']} />
+                          ))}
                         </div>
                         {req.offer_title && (
                           <div className="mt-2 flex items-center gap-2">
@@ -380,17 +373,9 @@ export default async function DashboardPage() {
                         <div className="min-w-0">
                           <p className="font-semibold text-stone-900 truncate">{displayName}</p>
                           <div className="flex flex-wrap gap-1.5 mt-1">
-                            {practicedSports.map((v) => {
-                              const opt = PRACTICED_SPORTS_OPTIONS.find((o) => o.value === v)
-                              return (
-                                <span
-                                  key={v}
-                                  className="inline-flex items-center rounded-full bg-stone-100 px-2 py-0.5 text-xs font-medium text-stone-700"
-                                >
-                                  {opt ? `${opt.emoji} ${opt.label}` : v}
-                                </span>
-                              )
-                            })}
+                            {practicedSports.map((v) => (
+                              <Badge key={v} sport={v as Parameters<typeof Badge>[0]['sport']} />
+                            ))}
                           </div>
                         </div>
                       </div>
@@ -428,7 +413,7 @@ export default async function DashboardPage() {
                     <div className="mt-auto border-t border-stone-100 p-3 bg-stone-50 flex justify-end">
                       <Link
                         href={athleteHref}
-                        className="text-xs font-medium text-[#627e59] hover:text-[#506648] flex items-center transition-transform group-hover:translate-x-1"
+                        className="text-xs font-medium text-palette-forest-dark hover:text-palette-forest-darker flex items-center transition-transform group-hover:translate-x-1"
                       >
                         Voir le planning
                         <svg className="w-4 h-4 ml-1 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>

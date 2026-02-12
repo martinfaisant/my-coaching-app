@@ -9,7 +9,8 @@ import {
   type SignupState,
   type ResetPasswordState,
 } from '@/app/login/actions'
-import { PrimaryButton } from '@/components/PrimaryButton'
+import { Button } from '@/components/Button'
+import { Input } from '@/components/Input'
 import type { AuthModalMode } from './LoginModal'
 
 type SignupRole = 'athlete' | 'coach'
@@ -51,10 +52,11 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
           </h2>
           <div className="flex-1 flex justify-end">
             {onClose && (
-              <button
+              <Button
                 type="button"
+                variant="ghost"
                 onClick={onClose}
-                className="p-1.5 rounded-lg text-stone-400 hover:text-stone-600 hover:bg-stone-50 transition-colors -mt-1 -mr-1"
+                className="p-1.5 -mt-1 -mr-1"
                 aria-label="Fermer"
               >
                 <svg
@@ -71,66 +73,51 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
                   <path d="M18 6 6 18" />
                   <path d="m6 6 12 12" />
                 </svg>
-              </button>
+              </Button>
             )}
           </div>
         </div>
-        <p className="text-white0 text-sm text-center mb-8">
+        <p className="text-stone-400 text-sm text-center mb-8">
           Entrez vos identifiants pour accéder à votre espace
         </p>
 
         <form action={loginAction} className="space-y-5">
-          <div>
-            <label
-              htmlFor="modal-email"
-              className="block text-sm font-medium text-stone-700 mb-2"
-            >
-              Email
-            </label>
-            <input
-              ref={emailInputRef}
-              id="modal-email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              required
-              placeholder="vous@exemple.com"
-              defaultValue={prefilledEmail}
-              className="w-full px-4 py-2.5 rounded-lg border border-stone-200border-stone-700 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition"
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="modal-password"
-              className="block text-sm font-medium text-stone-700 mb-2"
-            >
-              Mot de passe
-            </label>
-            <input
-              id="modal-password"
-              name="password"
-              type="password"
-              autoComplete="current-password"
-              required
-              placeholder="••••••••"
-              className="w-full px-4 py-2.5 rounded-lg border border-stone-200border-stone-700 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition"
-            />
-          </div>
+          <Input
+            ref={emailInputRef}
+            id="modal-email"
+            label="Email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            required
+            placeholder="vous@exemple.com"
+            defaultValue={prefilledEmail}
+          />
+          <Input
+            id="modal-password"
+            label="Mot de passe"
+            name="password"
+            type="password"
+            autoComplete="current-password"
+            required
+            placeholder="••••••••"
+          />
           {loginState?.error && (
-            <p className="text-sm text-red-600text-red-400" role="alert">
+            <p className="text-sm text-red-600" role="alert">
               {loginState.error}
             </p>
           )}
-          <PrimaryButton type="submit" fullWidth>
+          <Button type="submit" fullWidth>
             Se connecter
-          </PrimaryButton>
-          <button
+          </Button>
+          <Button
             type="button"
+            variant="muted"
             onClick={() => setShowForgotPassword(true)}
-            className="w-full text-sm text-white0 hover:text-stone-700 transition-colors"
+            className="w-full border-0 bg-transparent hover:bg-transparent !min-h-0 py-0 text-sm text-stone-400 hover:text-stone-700"
           >
             Mot de passe oublié
-          </button>
+          </Button>
         </form>
       </div>
     )
@@ -145,10 +132,11 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
         </h2>
         <div className="flex-1 flex justify-end">
           {onClose && (
-            <button
+            <Button
               type="button"
+              variant="ghost"
               onClick={onClose}
-              className="p-1.5 rounded-lg text-stone-400 hover:text-stone-600 hover:bg-stone-50 transition-colors -mt-1 -mr-1"
+              className="p-1.5 -mt-1 -mr-1"
               aria-label="Fermer"
             >
               <svg
@@ -165,11 +153,11 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
                 <path d="M18 6 6 18" />
                 <path d="m6 6 12 12" />
               </svg>
-            </button>
+            </Button>
           )}
         </div>
       </div>
-      <p className="text-white0 text-sm text-center mb-8">
+      <p className="text-stone-400 text-sm text-center mb-8">
         Choisissez votre profil puis renseignez vos informations
       </p>
 
@@ -217,57 +205,42 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
             </label>
           </div>
         </div>
-        <div>
-          <label
-            htmlFor="modal-signup-email"
-            className="block text-sm font-medium text-stone-700 mb-2"
-          >
-            Email
-          </label>
-          <input
-            id="modal-signup-email"
-            name="email"
-            type="email"
-            autoComplete="email"
-            required
-            placeholder="vous@exemple.com"
-            className="w-full px-4 py-2.5 rounded-lg border border-stone-200border-stone-700 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition"
-          />
-        </div>
-        <div>
-          <label
-            htmlFor="modal-signup-password"
-            className="block text-sm font-medium text-stone-700 mb-2"
-          >
-            Mot de passe (min. 6 caractères)
-          </label>
-          <input
-            id="modal-signup-password"
-            name="password"
-            type="password"
-            autoComplete="new-password"
-            required
-            minLength={6}
-            placeholder="••••••••"
-            className="w-full px-4 py-2.5 rounded-lg border border-stone-200border-stone-700 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition"
-          />
-        </div>
+        <Input
+          id="modal-signup-email"
+          label="Email"
+          name="email"
+          type="email"
+          autoComplete="email"
+          required
+          placeholder="vous@exemple.com"
+        />
+        <Input
+          id="modal-signup-password"
+          label="Mot de passe (min. 6 caractères)"
+          name="password"
+          type="password"
+          autoComplete="new-password"
+          required
+          minLength={6}
+          placeholder="••••••••"
+        />
         {signupState?.error && (
-          <p className="text-sm text-red-600text-red-400" role="alert">
+          <p className="text-sm text-red-600" role="alert">
             {signupState.error}
             {signupState.userExists && signupState.existingEmail && onModeChange && (
               <>
                 {' '}
-                <button
+                <Button
                   type="button"
+                  variant="ghost"
                   onClick={() => {
                     setPrefilledEmail(signupState.existingEmail || '')
                     onModeChange('login')
                   }}
-                  className="underline text-palette-forest-dark hover:!text-palette-olive transition-colors"
+                  className="inline !min-h-0 !p-0 !border-0 bg-transparent hover:bg-transparent underline text-palette-forest-dark hover:!text-palette-olive"
                 >
                   Se connecter
-                </button>
+                </Button>
               </>
             )}
           </p>
@@ -277,9 +250,9 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
             {signupState.success}
           </p>
         )}
-        <PrimaryButton type="submit" fullWidth>
+        <Button type="submit" fullWidth>
           S&apos;inscrire
-        </PrimaryButton>
+        </Button>
       </form>
     </div>
   )
@@ -296,11 +269,12 @@ function ForgotPasswordForm({ onBack }: { onBack: () => void }) {
           Mot de passe oublié
         </h2>
         <div className="flex-1 flex justify-end">
-          <button
+          <Button
             type="button"
+            variant="ghost"
             onClick={onBack}
-            className="p-1.5 rounded-lg text-stone-400 hover:text-stone-600 hover:bg-stone-50 transition-colors -mt-1 -mr-1"
-            aria-label="Fermer"
+            className="p-1.5 -mt-1 -mr-1"
+            aria-label="Retour"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -316,33 +290,25 @@ function ForgotPasswordForm({ onBack }: { onBack: () => void }) {
               <path d="M18 6 6 18" />
               <path d="m6 6 12 12" />
             </svg>
-          </button>
+          </Button>
         </div>
       </div>
-      <p className="text-white0 text-sm text-center mb-8">
+      <p className="text-stone-400 text-sm text-center mb-8">
         Entrez votre adresse email. Un lien de réinitialisation vous sera envoyé.
       </p>
 
       <form action={resetAction} className="space-y-5">
-        <div>
-          <label
-            htmlFor="reset-email"
-            className="block text-sm font-medium text-stone-700 mb-2"
-          >
-            Email
-          </label>
-          <input
-            id="reset-email"
-            name="email"
-            type="email"
-            autoComplete="email"
-            required
-            placeholder="vous@exemple.com"
-            className="w-full px-4 py-2.5 rounded-lg border border-stone-200border-stone-700 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition"
-          />
-        </div>
+        <Input
+          id="reset-email"
+          label="Email"
+          name="email"
+          type="email"
+          autoComplete="email"
+          required
+          placeholder="vous@exemple.com"
+        />
         {resetState?.error && (
-          <p className="text-sm text-red-600text-red-400" role="alert">
+          <p className="text-sm text-red-600" role="alert">
             {resetState.error}
           </p>
         )}
@@ -351,16 +317,17 @@ function ForgotPasswordForm({ onBack }: { onBack: () => void }) {
             {resetState.success}
           </p>
         )}
-        <PrimaryButton type="submit" fullWidth>
+        <Button type="submit" fullWidth>
           Envoyer le lien de réinitialisation
-        </PrimaryButton>
-        <button
+        </Button>
+        <Button
           type="button"
+          variant="muted"
           onClick={onBack}
-          className="w-full text-sm text-white0 hover:text-stone-700 transition-colors"
+          className="w-full border-0 bg-transparent hover:bg-transparent !min-h-0 py-0 text-sm text-stone-400 hover:text-stone-700"
         >
           ← Retour à la connexion
-        </button>
+        </Button>
       </form>
     </div>
   )

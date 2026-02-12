@@ -124,7 +124,7 @@ export function CoachAthleteCalendarPage({
             <div className="pb-6 border-t border-stone-100">
               <section className="mt-6 px-6 lg:px-8">
                 <div className="mb-6 flex items-center gap-3">
-                  <div className="p-2 bg-[#627e59]/10 rounded-full text-[#627e59]">
+                  <div className="p-2 bg-palette-forest-dark/10 rounded-full text-palette-forest-dark">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
@@ -154,7 +154,7 @@ export function CoachAthleteCalendarPage({
                               <div
                                 key={goal.id}
                                 className={`bg-white rounded-2xl p-5 border-l-4 ${
-                                  isPrimary ? 'border-[#c9a544]' : 'border-[#aaaa51]'
+                                  isPrimary ? 'border-palette-amber' : 'border-palette-sage'
                                 } border-y border-r border-stone-200 shadow-sm hover:shadow-md transition-all group relative overflow-hidden ${
                                   isPast ? 'opacity-75' : ''
                                 }`}
@@ -173,11 +173,11 @@ export function CoachAthleteCalendarPage({
                                           {goal.race_name}
                                         </h3>
                                         {isPrimary ? (
-                                          <span className="bg-[#c9a544]/10 text-[#c9a544] text-[10px] font-bold px-2 py-0.5 rounded-full border border-[#c9a544]">
+                                          <span className="bg-palette-amber/10 text-palette-amber text-[10px] font-bold px-2 py-0.5 rounded-full border border-palette-amber">
                                             Principal
                                           </span>
                                         ) : (
-                                          <span className="bg-[#aaaa51]/10 text-[#aaaa51] text-[10px] font-bold px-2 py-0.5 rounded-full border border-[#aaaa51]">
+                                          <span className="bg-palette-sage/10 text-palette-sage text-[10px] font-bold px-2 py-0.5 rounded-full border border-palette-sage">
                                             Secondaire
                                           </span>
                                         )}
@@ -194,7 +194,7 @@ export function CoachAthleteCalendarPage({
                                   {/* Actions */}
                                   <div className="flex items-center gap-2 mt-4 sm:mt-0">
                                     {daysUntil !== null && !isPast && (
-                                      <span className="text-sm font-bold text-[#627e59] bg-[#627e59]/10 px-3 py-1 rounded-lg">
+                                      <span className="text-sm font-bold text-palette-forest-dark bg-palette-forest-dark/10 px-3 py-1 rounded-lg">
                                         J-{daysUntil}
                                       </span>
                                     )}

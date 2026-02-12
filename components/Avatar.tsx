@@ -12,8 +12,7 @@ export function Avatar({ initials, className = '' }: AvatarProps) {
 
   return (
     <div
-      className={`flex flex-shrink-0 items-center justify-center rounded-xl text-sm font-bold text-white w-9 h-9 ${className}`.trim()}
-      style={{ background: 'linear-gradient(to bottom right, #627e59, #8e9856)' }}
+      className={`flex flex-shrink-0 items-center justify-center rounded-xl text-sm font-bold text-white w-9 h-9 bg-gradient-palette-br ${className}`.trim()}
     >
       {display}
     </div>

@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { AvatarImage } from '@/components/AvatarImage'
+import { Button } from '@/components/Button'
 import type { Profile } from '@/types/database'
 
 type SidebarProps = {
@@ -46,11 +47,13 @@ export function Sidebar({ profile }: SidebarProps) {
   if (profile.role === 'athlete') {
     return (
       <aside className={`${isCollapsed ? 'w-14' : 'w-14 lg:w-52'} bg-white rounded-2xl shadow-sm flex flex-col justify-between shrink-0 relative transition-all duration-300 ease-in-out z-30`}>
-        {/* Bouton toggle comme dans le HTML : absolute -right-3 top-9 */}
-        <button
+        {/* Bouton toggle : absolute -right-3 top-14 */}
+        <Button
+          type="button"
+          variant="ghost"
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="absolute -right-3 top-9 bg-white border border-stone-200 text-stone-400 hover:text-[#627e59] p-1.5 rounded-full shadow-md hover:shadow-lg transition-all duration-300 transform group z-50 hidden lg:flex items-center justify-center"
-          aria-label={isCollapsed ? 'Ouvrir le menu' : 'Réduire le menu'}
+        className="absolute -right-3 top-14 bg-white border border-stone-200 text-stone-400 hover:text-palette-forest-dark p-1.5 rounded-full shadow-md hover:shadow-lg !min-w-0 !min-h-0 z-50 hidden lg:flex items-center justify-center group"
+        aria-label={isCollapsed ? 'Ouvrir le menu' : 'Réduire le menu'}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -64,11 +67,11 @@ export function Sidebar({ profile }: SidebarProps) {
           >
             <polyline points="15 18 9 12 15 6" />
           </svg>
-        </button>
+        </Button>
         <div>
           {/* Logo : h-20 px-6 quand ouvert, justify-center px-0 quand fermé (comme le HTML) */}
           <div className={`h-20 flex items-center transition-all duration-300 overflow-hidden shrink-0 hidden lg:flex ${isCollapsed ? 'justify-center px-0' : 'px-3 lg:px-5'}`}>
-            <div className="w-8 h-8 min-w-[2rem] bg-[#627e59] rounded-xl flex items-center justify-center text-white shadow-lg shadow-[#627e59]/30 shrink-0">
+            <div className="w-8 h-8 min-w-[2rem] bg-palette-forest-dark rounded-xl flex items-center justify-center text-white shadow-lg shadow-palette-forest-dark/30 shrink-0">
               <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
               </svg>
@@ -76,7 +79,7 @@ export function Sidebar({ profile }: SidebarProps) {
             <span className={`ml-3 text-base font-bold text-stone-800 tracking-tight transition-all duration-300 whitespace-nowrap ${showText ? 'opacity-100 w-auto' : 'opacity-0 w-0 overflow-hidden'}`}>CoachApp</span>
           </div>
           <div className={`lg:hidden flex items-center px-3 h-14 shrink-0 ${isCollapsed ? 'justify-center' : ''}`}>
-            <div className="w-8 h-8 bg-[#627e59] rounded-xl flex items-center justify-center text-white shadow-lg shadow-[#627e59]/30 shrink-0">
+            <div className="w-8 h-8 bg-palette-forest-dark rounded-xl flex items-center justify-center text-white shadow-lg shadow-palette-forest-dark/30 shrink-0">
               <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
               </svg>
@@ -92,8 +95,8 @@ export function Sidebar({ profile }: SidebarProps) {
                   isCollapsed ? 'w-10 justify-center px-0' : 'gap-2.5 px-2.5 lg:px-3'
                 } ${
                   pathname === '/dashboard'
-                    ? 'bg-[#627e59] text-white shadow-lg shadow-[#627e59]/20'
-                    : 'text-stone-500 hover:bg-stone-50 hover:text-[#627e59]'
+                    ? 'bg-palette-forest-dark text-white shadow-lg shadow-palette-forest-dark/20'
+                    : 'text-stone-500 hover:bg-stone-50 hover:text-palette-forest-dark'
                 }`}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 group-hover:scale-110 transition-transform shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -109,8 +112,8 @@ export function Sidebar({ profile }: SidebarProps) {
                 isCollapsed ? 'w-10 justify-center px-0' : 'gap-2.5 px-2.5 lg:px-3'
               } ${
                 pathname === '/dashboard/calendar'
-                  ? 'bg-[#627e59] text-white shadow-lg shadow-[#627e59]/20'
-                  : 'text-stone-500 hover:bg-stone-50 hover:text-[#627e59]'
+                  ? 'bg-palette-forest-dark text-white shadow-lg shadow-palette-forest-dark/20'
+                  : 'text-stone-500 hover:bg-stone-50 hover:text-palette-forest-dark'
               }`}
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -128,8 +131,8 @@ export function Sidebar({ profile }: SidebarProps) {
                 isCollapsed ? 'w-10 justify-center px-0' : 'gap-2.5 px-2.5 lg:px-3'
               } ${
                 pathname === '/dashboard/objectifs'
-                  ? 'bg-[#627e59] text-white shadow-lg shadow-[#627e59]/20'
-                  : 'text-stone-500 hover:bg-stone-50 hover:text-[#627e59]'
+                  ? 'bg-palette-forest-dark text-white shadow-lg shadow-palette-forest-dark/20'
+                  : 'text-stone-500 hover:bg-stone-50 hover:text-palette-forest-dark'
               }`}
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 group-hover:scale-110 transition-transform shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -145,8 +148,8 @@ export function Sidebar({ profile }: SidebarProps) {
                   isCollapsed ? 'w-10 justify-center px-0' : 'gap-2.5 px-2.5 lg:px-3'
                 } ${
                   pathname === '/dashboard/coach'
-                    ? 'bg-[#627e59] text-white shadow-lg shadow-[#627e59]/20'
-                    : 'text-stone-500 hover:bg-stone-50 hover:text-[#627e59]'
+                    ? 'bg-palette-forest-dark text-white shadow-lg shadow-palette-forest-dark/20'
+                    : 'text-stone-500 hover:bg-stone-50 hover:text-palette-forest-dark'
                 }`}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 group-hover:scale-110 transition-transform shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -164,8 +167,8 @@ export function Sidebar({ profile }: SidebarProps) {
                 isCollapsed ? 'w-10 justify-center px-0' : 'gap-2.5 px-2.5 lg:px-3'
               } ${
                 pathname === '/dashboard/devices'
-                  ? 'bg-[#627e59] text-white shadow-lg shadow-[#627e59]/20'
-                  : 'text-stone-500 hover:bg-stone-50 hover:text-[#627e59]'
+                  ? 'bg-palette-forest-dark text-white shadow-lg shadow-palette-forest-dark/20'
+                  : 'text-stone-500 hover:bg-stone-50 hover:text-palette-forest-dark'
               }`}
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 group-hover:scale-110 transition-transform shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -191,7 +194,7 @@ export function Sidebar({ profile }: SidebarProps) {
             <div className={`text-left transition-all duration-300 hidden lg:block min-w-0 overflow-hidden ${showText ? 'opacity-100 flex-1' : 'opacity-0 w-0'}`}>
               <p className="text-xs font-bold text-stone-800 truncate" title={displayName}>{profileLabel}</p>
             </div>
-            <svg xmlns="http://www.w3.org/2000/svg" className={`w-3.5 h-3.5 text-stone-300 group-hover:text-[#627e59] transition-all shrink-0 ml-auto hidden lg:block ${showText ? 'opacity-100' : 'opacity-0 w-0 overflow-hidden'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg xmlns="http://www.w3.org/2000/svg" className={`w-3.5 h-3.5 text-stone-300 group-hover:text-palette-forest-dark transition-all shrink-0 ml-auto hidden lg:block ${showText ? 'opacity-100' : 'opacity-0 w-0 overflow-hidden'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="m9 18 6-6-6-6" />
             </svg>
           </Link>
@@ -203,11 +206,13 @@ export function Sidebar({ profile }: SidebarProps) {
   // Coach sidebar (même animation et position flèche que le HTML de référence)
   return (
     <aside className={`${isCollapsed ? 'w-14' : 'w-14 lg:w-52'} bg-white rounded-2xl shadow-sm flex flex-col justify-between shrink-0 relative transition-all duration-300 ease-in-out z-30`}>
-      <button
+      <Button
+        type="button"
+        variant="ghost"
         onClick={() => setIsCollapsed(!isCollapsed)}
-        className="absolute -right-3 top-9 bg-white border border-stone-200 text-stone-400 hover:text-[#627e59] p-1.5 rounded-full shadow-md hover:shadow-lg transition-all duration-300 transform group z-50 hidden lg:flex items-center justify-center"
+        className="absolute -right-3 top-14 bg-white border border-stone-200 text-stone-400 hover:text-palette-forest-dark p-1.5 rounded-full shadow-md hover:shadow-lg !min-w-0 !min-h-0 z-50 hidden lg:flex items-center justify-center group"
         aria-label={isCollapsed ? 'Ouvrir le menu' : 'Réduire le menu'}
-      >
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className={`w-4 h-4 transition-transform duration-300 group-hover:scale-110 ${isCollapsed ? 'rotate-180' : ''}`}
@@ -220,10 +225,10 @@ export function Sidebar({ profile }: SidebarProps) {
           >
             <polyline points="15 18 9 12 15 6" />
           </svg>
-      </button>
+      </Button>
       <div>
         <div className={`h-20 flex items-center transition-all duration-300 overflow-hidden shrink-0 hidden lg:flex ${isCollapsed ? 'justify-center px-0' : 'px-3 lg:px-5'}`}>
-          <div className="w-8 h-8 min-w-[2rem] bg-[#627e59] rounded-xl flex items-center justify-center text-white shadow-lg shadow-[#627e59]/30 shrink-0">
+          <div className="w-8 h-8 min-w-[2rem] bg-palette-forest-dark rounded-xl flex items-center justify-center text-white shadow-lg shadow-palette-forest-dark/30 shrink-0">
             <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
             </svg>
@@ -231,7 +236,7 @@ export function Sidebar({ profile }: SidebarProps) {
           <span className={`ml-3 text-base font-bold text-stone-800 tracking-tight transition-all duration-300 whitespace-nowrap ${showText ? 'opacity-100 w-auto' : 'opacity-0 w-0 overflow-hidden'}`}>CoachApp</span>
         </div>
         <div className={`lg:hidden flex items-center px-3 h-14 shrink-0 ${isCollapsed ? 'justify-center' : ''}`}>
-          <div className="w-8 h-8 bg-[#627e59] rounded-xl flex items-center justify-center text-white shadow-lg shadow-[#627e59]/30 shrink-0">
+          <div className="w-8 h-8 bg-palette-forest-dark rounded-xl flex items-center justify-center text-white shadow-lg shadow-palette-forest-dark/30 shrink-0">
             <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
             </svg>
@@ -245,8 +250,8 @@ export function Sidebar({ profile }: SidebarProps) {
               isCollapsed ? 'w-10 justify-center px-0' : 'gap-2.5 px-2.5 lg:px-3'
             } ${
               (pathname === '/dashboard' || pathname.startsWith('/dashboard/athletes'))
-                ? 'bg-[#627e59] text-white shadow-lg shadow-[#627e59]/20'
-                : 'text-stone-500 hover:bg-stone-50 hover:text-[#627e59]'
+                ? 'bg-palette-forest-dark text-white shadow-lg shadow-palette-forest-dark/20'
+                : 'text-stone-500 hover:bg-stone-50 hover:text-palette-forest-dark'
             }`}
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -257,23 +262,46 @@ export function Sidebar({ profile }: SidebarProps) {
             </svg>
             <span className={`text-sm font-medium transition-all duration-300 whitespace-nowrap hidden lg:block ${showText ? 'opacity-100 w-auto' : 'opacity-0 w-0 overflow-hidden'}`}>Mes Athlètes</span>
           </Link>
-          <Link
-            href="/dashboard/profile/offers"
-            className={`flex items-center h-10 rounded-xl transition-all duration-300 group ${
-              isCollapsed ? 'w-10 justify-center px-0' : 'gap-2.5 px-2.5 lg:px-3'
-            } ${
-              pathname === '/dashboard/profile/offers'
-                ? 'bg-[#627e59] text-white shadow-lg shadow-[#627e59]/20'
-                : 'text-stone-500 hover:bg-stone-50 hover:text-[#627e59]'
-            }`}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 group-hover:scale-110 transition-transform shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <rect width="18" height="18" x="3" y="3" rx="2" />
-              <path d="M3 9h18" />
-              <path d="M9 21V9" />
-            </svg>
-            <span className={`text-sm font-medium transition-all duration-300 whitespace-nowrap hidden lg:block ${showText ? 'opacity-100 w-auto' : 'opacity-0 w-0 overflow-hidden'}`}>Mon offre</span>
-          </Link>
+          {profile.role !== 'admin' && (
+            <Link
+              href="/dashboard/profile/offers"
+              className={`flex items-center h-10 rounded-xl transition-all duration-300 group ${
+                isCollapsed ? 'w-10 justify-center px-0' : 'gap-2.5 px-2.5 lg:px-3'
+              } ${
+                pathname === '/dashboard/profile/offers'
+                  ? 'bg-palette-forest-dark text-white shadow-lg shadow-palette-forest-dark/20'
+                  : 'text-stone-500 hover:bg-stone-50 hover:text-palette-forest-dark'
+              }`}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 group-hover:scale-110 transition-transform shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect width="18" height="18" x="3" y="3" rx="2" />
+                <path d="M3 9h18" />
+                <path d="M9 21V9" />
+              </svg>
+              <span className={`text-sm font-medium transition-all duration-300 whitespace-nowrap hidden lg:block ${showText ? 'opacity-100 w-auto' : 'opacity-0 w-0 overflow-hidden'}`}>Mon offre</span>
+            </Link>
+          )}
+          {profile.role === 'admin' && (
+            <Link
+              href="/dashboard/admin/design-system"
+              className={`flex items-center h-10 rounded-xl transition-all duration-300 group ${
+                isCollapsed ? 'w-10 justify-center px-0' : 'gap-2.5 px-2.5 lg:px-3'
+              } ${
+                pathname === '/dashboard/admin/design-system'
+                  ? 'bg-palette-forest-dark text-white shadow-lg shadow-palette-forest-dark/20'
+                  : 'text-stone-500 hover:bg-stone-50 hover:text-palette-forest-dark'
+              }`}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="13.5" cy="6.5" r=".5" />
+                <circle cx="17.5" cy="10.5" r=".5" />
+                <circle cx="8.5" cy="7.5" r=".5" />
+                <circle cx="6.5" cy="12.5" r=".5" />
+                <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.555C21.965 6.012 17.461 2 12 2z" />
+              </svg>
+              <span className={`text-sm font-medium transition-all duration-300 whitespace-nowrap hidden lg:block ${showText ? 'opacity-100 w-auto' : 'opacity-0 w-0 overflow-hidden'}`}>Design System</span>
+            </Link>
+          )}
         </nav>
       </div>
       <div className={`p-2 lg:p-3 ${isCollapsed ? 'flex justify-center' : ''}`}>
@@ -287,7 +315,7 @@ export function Sidebar({ profile }: SidebarProps) {
           <div className={`text-left transition-all duration-300 hidden lg:block min-w-0 overflow-hidden ${showText ? 'opacity-100 flex-1' : 'opacity-0 w-0'}`}>
             <p className="text-xs font-bold text-stone-800 truncate" title={displayName}>{profileLabel}</p>
           </div>
-          <svg xmlns="http://www.w3.org/2000/svg" className={`w-3.5 h-3.5 text-stone-300 group-hover:text-[#627e59] transition-all shrink-0 ml-auto hidden lg:block ${showText ? 'opacity-100' : 'opacity-0 w-0 overflow-hidden'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg xmlns="http://www.w3.org/2000/svg" className={`w-3.5 h-3.5 text-stone-300 group-hover:text-palette-forest-dark transition-all shrink-0 ml-auto hidden lg:block ${showText ? 'opacity-100' : 'opacity-0 w-0 overflow-hidden'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="m9 18 6-6-6-6" />
           </svg>
         </Link>

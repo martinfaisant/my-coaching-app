@@ -7,7 +7,7 @@ export default function DashboardLoading() {
         </h1>
         <div className="w-48 h-1 bg-stone-200 rounded-full overflow-hidden">
           <div
-            className="h-full w-1/3 bg-[#627e59] rounded-full animate-loading-bar"
+            className="h-full w-1/3 bg-palette-forest-dark rounded-full animate-loading-bar"
           />
         </div>
       </div>

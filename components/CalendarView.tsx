@@ -3,6 +3,7 @@
 import { useState, useMemo, useCallback } from 'react'
 import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
+import { Button } from './Button'
 import { WorkoutModal } from './WorkoutModal'
 import { IconRunning, IconBiking, IconSwimming, IconDumbbell, IconNordicSki, IconBackcountrySki, IconIceSkating } from './SportIcons'
 import type { Workout, SportType, Goal, ImportedActivity, ImportedActivityWeeklyTotal, WorkoutWeeklyTotal } from '@/types/database'
@@ -34,14 +35,14 @@ const SPORT_CARD_STYLES: Record<
   { borderLeft: string; badge: string; badgeBg: string }
 > = {
   course: {
-    borderLeft: 'border-l-[#627e59]',
-    badge: 'text-[#627e59]',
-    badgeBg: 'bg-[#627e59]/10',
+    borderLeft: 'border-l-palette-forest-dark',
+    badge: 'text-palette-forest-dark',
+    badgeBg: 'bg-palette-forest-dark/10',
   },
   velo: {
-    borderLeft: 'border-l-[#8e9856]',
-    badge: 'text-[#8e9856]',
-    badgeBg: 'bg-[#8e9856]/10',
+    borderLeft: 'border-l-palette-olive',
+    badge: 'text-palette-olive',
+    badgeBg: 'bg-palette-olive/10',
   },
   natation: {
     borderLeft: 'border-l-sky-500',
@@ -54,14 +55,14 @@ const SPORT_CARD_STYLES: Record<
     badgeBg: 'bg-stone-100',
   },
   nordic_ski: {
-    borderLeft: 'border-l-[#aaaa51]',
-    badge: 'text-[#aaaa51]',
-    badgeBg: 'bg-[#aaaa51]/10',
+    borderLeft: 'border-l-palette-sage',
+    badge: 'text-palette-sage',
+    badgeBg: 'bg-palette-sage/10',
   },
   backcountry_ski: {
-    borderLeft: 'border-l-[#cbb44b]',
-    badge: 'text-[#cbb44b]',
-    badgeBg: 'bg-[#cbb44b]/10',
+    borderLeft: 'border-l-palette-gold',
+    badge: 'text-palette-gold',
+    badgeBg: 'bg-palette-gold/10',
   },
   ice_skating: {
     borderLeft: 'border-l-cyan-600',
@@ -75,9 +76,9 @@ const SPORT_COLORS: Record<
   { bg: string; border: string; text: string; comment: string }
 > = {
   course: {
-    bg: 'bg-[#627e59]/10',
-    border: 'border-[#627e59]',
-    text: 'text-[#627e59]',
+    bg: 'bg-palette-forest-dark/10',
+    border: 'border-palette-forest-dark',
+    text: 'text-palette-forest-dark',
     comment: 'text-palette-olive',
   },
   musculation: {
@@ -93,21 +94,21 @@ const SPORT_COLORS: Record<
     comment: 'text-palette-olive',
   },
   velo: {
-    bg: 'bg-[#8e9856]/10',
-    border: 'border-[#8e9856]',
-    text: 'text-[#8e9856]',
+    bg: 'bg-palette-olive/10',
+    border: 'border-palette-olive',
+    text: 'text-palette-olive',
     comment: 'text-palette-olive',
   },
   nordic_ski: {
-    bg: 'bg-[#aaaa51]/10',
-    border: 'border-[#aaaa51]',
-    text: 'text-[#aaaa51]',
+    bg: 'bg-palette-sage/10',
+    border: 'border-palette-sage',
+    text: 'text-palette-sage',
     comment: 'text-palette-olive',
   },
   backcountry_ski: {
-    bg: 'bg-[#cbb44b]/10',
-    border: 'border-[#cbb44b]',
-    text: 'text-[#cbb44b]',
+    bg: 'bg-palette-gold/10',
+    border: 'border-palette-gold',
+    text: 'text-palette-gold',
     comment: 'text-palette-olive',
   },
   ice_skating: {
@@ -662,7 +663,7 @@ export function CalendarView({
                   <div className="flex items-center gap-4 min-w-0">
                     {isDetailed ? (
                       <>
-                        <h2 className="text-xl font-bold text-[#627e59]">
+                        <h2 className="text-xl font-bold text-palette-forest-dark">
                           {week.label}
                         </h2>
                         <span className="text-stone-400 font-medium text-sm">— {week.rangeLabel.replace(' - ', ' au ')}</span>
@@ -698,13 +699,13 @@ export function CalendarView({
                               </>
                             )}
                             {(prevu?.course?.distanceKm ?? 0) > 0 || (fait?.course?.distanceKm ?? 0) > 0 ? (
-                              <span className="flex items-center gap-1.5 text-[#627e59]" title="Course : distance faite / prévue">
+                              <span className="flex items-center gap-1.5 text-palette-forest-dark" title="Course : distance faite / prévue">
                                 <IconRunning className="w-3.5 h-3.5" />
                                 {formatDist(fait?.course?.distanceKm ?? 0)} km / {formatDist(prevu?.course?.distanceKm ?? 0)} km
                               </span>
                             ) : null}
                             {(prevu?.velo?.distanceKm ?? 0) > 0 || (fait?.velo?.distanceKm ?? 0) > 0 ? (
-                              <span className="flex items-center gap-1.5 text-[#8e9856]" title="Vélo : distance faite / prévue">
+                              <span className="flex items-center gap-1.5 text-palette-olive" title="Vélo : distance faite / prévue">
                                 <IconBiking className="w-3.5 h-3.5" />
                                 {formatDist(fait?.velo?.distanceKm ?? 0)} km / {formatDist(prevu?.velo?.distanceKm ?? 0)} km
                               </span>
@@ -722,13 +723,13 @@ export function CalendarView({
                               </span>
                             ) : null}
                             {(prevu?.nordic_ski?.distanceKm ?? 0) > 0 || (fait?.nordic_ski?.distanceKm ?? 0) > 0 ? (
-                              <span className="flex items-center gap-1.5 text-[#aaaa51]" title="Ski de fond : distance faite / prévue">
+                              <span className="flex items-center gap-1.5 text-palette-sage" title="Ski de fond : distance faite / prévue">
                                 <IconNordicSki className="w-3.5 h-3.5" />
                                 {formatDist(fait?.nordic_ski?.distanceKm ?? 0)} km / {formatDist(prevu?.nordic_ski?.distanceKm ?? 0)} km
                               </span>
                             ) : null}
                             {(prevu?.backcountry_ski?.distanceKm ?? 0) > 0 || (fait?.backcountry_ski?.distanceKm ?? 0) > 0 ? (
-                              <span className="flex items-center gap-1.5 text-[#cbb44b]" title="Ski de randonnée : distance faite / prévue">
+                              <span className="flex items-center gap-1.5 text-palette-gold" title="Ski de randonnée : distance faite / prévue">
                                 <IconBackcountrySki className="w-3.5 h-3.5" />
                                 {formatDist(fait?.backcountry_ski?.distanceKm ?? 0)} km / {formatDist(prevu?.backcountry_ski?.distanceKm ?? 0)} km
                               </span>
@@ -756,8 +757,8 @@ export function CalendarView({
                 const diffPct = prevTotalMin > 0 ? Math.round(((totalFaitMin - prevTotalMin) / prevTotalMin) * 100) : 0
                 const progressPct = totalPrevuMin > 0 ? Math.round((totalFaitMin / totalPrevuMin) * 100) : 0
                 const sports = [
-                  { key: 'course' as const, Icon: IconRunning, color: 'text-[#627e59]', bg: 'bg-[#627e59]', label: 'Run', prevuVal: prevu?.course?.distanceKm ?? 0, faitVal: fait?.course?.distanceKm ?? 0, useTime: false },
-                  { key: 'velo' as const, Icon: IconBiking, color: 'text-[#8e9856]', bg: 'bg-[#8e9856]', label: 'Vélo', prevuVal: prevu?.velo?.distanceKm ?? 0, faitVal: fait?.velo?.distanceKm ?? 0, useTime: false },
+                  { key: 'course' as const, Icon: IconRunning, color: 'text-palette-forest-dark', bg: 'bg-palette-forest-dark', label: 'Run', prevuVal: prevu?.course?.distanceKm ?? 0, faitVal: fait?.course?.distanceKm ?? 0, useTime: false },
+                  { key: 'velo' as const, Icon: IconBiking, color: 'text-palette-olive', bg: 'bg-palette-olive', label: 'Vélo', prevuVal: prevu?.velo?.distanceKm ?? 0, faitVal: fait?.velo?.distanceKm ?? 0, useTime: false },
                   { 
                     key: 'natation' as const, 
                     Icon: IconSwimming, 
@@ -769,8 +770,8 @@ export function CalendarView({
                     useTime: false 
                   },
                   { key: 'musculation' as const, Icon: IconDumbbell, color: 'text-stone-600', bg: 'bg-stone-500', label: 'Muscu', prevuVal: prevu?.musculation?.minutes ?? 0, faitVal: fait?.musculation?.minutes ?? 0, useTime: true },
-                  { key: 'nordic_ski' as const, Icon: IconNordicSki, color: 'text-[#aaaa51]', bg: 'bg-[#aaaa51]', label: 'Ski de fond', prevuVal: prevu?.nordic_ski?.distanceKm ?? 0, faitVal: fait?.nordic_ski?.distanceKm ?? 0, useTime: false },
-                  { key: 'backcountry_ski' as const, Icon: IconBackcountrySki, color: 'text-[#cbb44b]', bg: 'bg-[#cbb44b]', label: 'Ski Rando', prevuVal: prevu?.backcountry_ski?.distanceKm ?? 0, faitVal: fait?.backcountry_ski?.distanceKm ?? 0, useTime: false },
+                  { key: 'nordic_ski' as const, Icon: IconNordicSki, color: 'text-palette-sage', bg: 'bg-palette-sage', label: 'Ski de fond', prevuVal: prevu?.nordic_ski?.distanceKm ?? 0, faitVal: fait?.nordic_ski?.distanceKm ?? 0, useTime: false },
+                  { key: 'backcountry_ski' as const, Icon: IconBackcountrySki, color: 'text-palette-gold', bg: 'bg-palette-gold', label: 'Ski Rando', prevuVal: prevu?.backcountry_ski?.distanceKm ?? 0, faitVal: fait?.backcountry_ski?.distanceKm ?? 0, useTime: false },
                   { key: 'ice_skating' as const, Icon: IconIceSkating, color: 'text-cyan-600', bg: 'bg-cyan-500', label: 'Patin', prevuVal: prevu?.ice_skating?.distanceKm ?? 0, faitVal: fait?.ice_skating?.distanceKm ?? 0, useTime: false },
                 ].filter(s => s.prevuVal > 0 || s.faitVal > 0)
                 const hasAnyTotals = (totalPrevuMin > 0 || totalFaitMin > 0) || sports.length > 0
@@ -863,7 +864,7 @@ export function CalendarView({
                         role={showAddInCondensed ? 'button' : undefined}
                         className={`min-h-24 rounded-lg border border-stone-200 p-1.5 flex flex-col ${
                           showAddInCondensed
-                            ? 'border-2 border-dashed border-stone-300 justify-center items-center cursor-pointer hover:border-[#627e59] hover:bg-[#627e59]/5 transition-all group'
+                            ? 'border-2 border-dashed border-stone-300 justify-center items-center cursor-pointer hover:border-palette-forest-dark hover:bg-palette-forest-dark/5 transition-all group'
                             : isEmpty
                               ? 'bg-stone-100/50'
                               : 'bg-white shadow-sm'
@@ -878,13 +879,13 @@ export function CalendarView({
                                 return (
                                   <div
                                     onClick={(e) => { e.stopPropagation(); setSelectedImportedActivity(firstImported) }}
-                                    className="bg-white rounded border-l-4 border-[#FC4C02] shadow-sm h-full p-1.5 flex flex-col justify-between cursor-pointer training-card w-full"
+                                    className="bg-white rounded border-l-4 border-palette-strava shadow-sm h-full p-1.5 flex flex-col justify-between cursor-pointer training-card w-full"
                                     role="button"
                                   >
                                     <div>
                                       <div className="inline-flex items-center gap-1 align-middle">
                                         <img src="/strava-icon.svg" alt="" className="h-3.5 w-3.5 shrink-0" aria-hidden />
-                                        <span className="text-[9px] font-bold uppercase text-[#FC4C02] bg-orange-100 px-1 py-0.5 rounded leading-none">
+                                        <span className="text-[9px] font-bold uppercase text-palette-strava bg-orange-100 px-1 py-0.5 rounded leading-none">
                                           {getImportedActivityTypeLabel(firstImported)}
                                         </span>
                                       </div>
@@ -913,7 +914,7 @@ export function CalendarView({
                                     setExtraActivitiesModalDate(day.dateStr)
                                     setExtraActivitiesModalOpen(true)
                                   }}
-                                  className="w-full text-center text-[10px] font-medium text-[#627e59] py-0.5 rounded border border-[#627e59]/30 bg-[#627e59]/5 hover:bg-[#627e59]/10 hover:border-[#627e59]/50 transition-colors cursor-pointer"
+                                  className="w-full text-center text-[10px] font-medium text-palette-forest-dark py-0.5 rounded border border-palette-forest-dark/30 bg-palette-forest-dark/5 hover:bg-palette-forest-dark/10 hover:border-palette-forest-dark/50 transition-colors cursor-pointer"
                                 >
                                   {dayExtraCount} autre{dayExtraCount > 1 ? 's' : ''}
                                 </button>
@@ -925,7 +926,7 @@ export function CalendarView({
                               role="button"
                               aria-label="Ajouter un entraînement"
                             >
-                              <div className="w-6 h-6 rounded-full bg-white border border-stone-300 flex items-center justify-center text-stone-400 hover:text-white hover:bg-[#627e59] hover:border-[#627e59] transition-all cursor-pointer">
+                              <div className="w-6 h-6 rounded-full bg-white border border-stone-300 flex items-center justify-center text-stone-400 hover:text-white hover:bg-palette-forest-dark hover:border-palette-forest-dark transition-all cursor-pointer">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
                                 </svg>
@@ -941,13 +942,13 @@ export function CalendarView({
                                 return (
                                   <div
                                     onClick={(e) => { e.stopPropagation(); setSelectedImportedActivity(firstImported) }}
-                                    className="bg-white rounded border-l-4 border-[#FC4C02] shadow-sm h-full p-1.5 flex flex-col justify-between cursor-pointer training-card w-full"
+                                    className="bg-white rounded border-l-4 border-palette-strava shadow-sm h-full p-1.5 flex flex-col justify-between cursor-pointer training-card w-full"
                                     role="button"
                                   >
                                     <div>
                                       <div className="inline-flex items-center gap-1 align-middle">
                                         <img src="/strava-icon.svg" alt="" className="h-3.5 w-3.5 shrink-0" aria-hidden />
-                                        <span className="text-[9px] font-bold uppercase text-[#FC4C02] bg-orange-100 px-1 py-0.5 rounded leading-none">
+                                        <span className="text-[9px] font-bold uppercase text-palette-strava bg-orange-100 px-1 py-0.5 rounded leading-none">
                                           {getImportedActivityTypeLabel(firstImported)}
                                         </span>
                                       </div>
@@ -974,14 +975,14 @@ export function CalendarView({
                                     setExtraActivitiesModalDate(day.dateStr)
                                     setExtraActivitiesModalOpen(true)
                                   }}
-                                  className="shrink-0 w-full text-center text-[10px] font-medium text-[#627e59] py-0.5 rounded border border-[#627e59]/30 bg-[#627e59]/5 hover:bg-[#627e59]/10 hover:border-[#627e59]/50 transition-colors cursor-pointer mt-1.5"
+                                  className="shrink-0 w-full text-center text-[10px] font-medium text-palette-forest-dark py-0.5 rounded border border-palette-forest-dark/30 bg-palette-forest-dark/5 hover:bg-palette-forest-dark/10 hover:border-palette-forest-dark/50 transition-colors cursor-pointer mt-1.5"
                                 >
                                   {dayExtraCount} autre{dayExtraCount > 1 ? 's' : ''}
                                 </button>
                               )}
                             </div>
                             {showAddInCondensed && (
-                              <div className="w-8 h-8 rounded-full bg-white border border-stone-300 flex items-center justify-center text-stone-300 shadow-sm group-hover:text-white group-hover:bg-[#627e59] group-hover:border-[#627e59] transition-all transform group-hover:scale-110">
+                              <div className="w-8 h-8 rounded-full bg-white border border-stone-300 flex items-center justify-center text-stone-300 shadow-sm group-hover:text-white group-hover:bg-palette-forest-dark group-hover:border-palette-forest-dark transition-all transform group-hover:scale-110">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
                                 </svg>
@@ -1004,10 +1005,10 @@ export function CalendarView({
                     return (
                       <div key={day.dateStr} className="flex flex-col gap-2 min-h-0">
                         <div
-                          className={`shrink-0 text-center pb-2 border-b ${day.isToday ? 'border-b-2 border-[#627e59]' : 'border-stone-200'}`}
+                          className={`shrink-0 text-center pb-2 border-b ${day.isToday ? 'border-b-2 border-palette-forest-dark' : 'border-stone-200'}`}
                         >
                           <span
-                            className={`inline-flex items-center justify-center gap-1.5 text-sm font-semibold ${day.isToday ? 'text-[#627e59]' : 'text-stone-600'}`}
+                            className={`inline-flex items-center justify-center gap-1.5 text-sm font-semibold ${day.isToday ? 'text-palette-forest-dark' : 'text-stone-600'}`}
                           >
                             <span className="uppercase">{day.dayName}.</span>
                             <span className={day.isToday ? 'font-bold' : ''}>{day.label}</span>
@@ -1016,11 +1017,11 @@ export function CalendarView({
                         <div
                           className={`flex-1 min-h-[202px] rounded-xl border p-1.5 flex flex-col gap-3 overflow-y-auto ${
                             day.isToday
-                              ? 'bg-[#627e59]/5 border-[#627e59]/30'
+                              ? 'bg-palette-forest-dark/5 border-palette-forest-dark/30'
                               : hasContent
                                 ? 'bg-white border-stone-200'
                                 : 'bg-stone-50 border-stone-200 border-dashed'
-                          } ${canAddWorkout && !hasContent ? 'border-2 border-dashed border-stone-300 cursor-pointer hover:border-[#627e59] hover:bg-[#627e59]/5 transition-all group' : ''}`}
+                          } ${canAddWorkout && !hasContent ? 'border-2 border-dashed border-stone-300 cursor-pointer hover:border-palette-forest-dark hover:bg-palette-forest-dark/5 transition-all group' : ''}`}
                           onClick={() => canAddWorkout && !hasContent && openDay(day.dateStr, day.isPast)}
                           role={canAddWorkout && !hasContent ? 'button' : undefined}
                         >
@@ -1029,8 +1030,8 @@ export function CalendarView({
                               <div className="min-h-0 flex flex-col gap-3 overflow-y-auto shrink-0 pb-3">
                               {dayGoals.map((g) => {
                                 const isPrimary = g.is_primary
-                                const borderColor = isPrimary ? 'border-[#c9a544]' : 'border-[#aaaa51]'
-                                const badgeColor = isPrimary ? 'text-[#c9a544] bg-[#c9a544]/10' : 'text-[#aaaa51] bg-[#aaaa51]/10'
+                                const borderColor = isPrimary ? 'border-palette-amber' : 'border-palette-sage'
+                                const badgeColor = isPrimary ? 'text-palette-amber bg-palette-amber/10' : 'text-palette-sage bg-palette-sage/10'
                                 
                                 return (
                                   <div
@@ -1075,12 +1076,12 @@ export function CalendarView({
                                       e.stopPropagation()
                                       setSelectedImportedActivity(a)
                                     }}
-                                    className="training-card bg-white p-3 rounded-lg shadow-sm border border-stone-100 border-l-4 border-l-[#FC4C02] cursor-pointer"
+                                    className="training-card bg-white p-3 rounded-lg shadow-sm border border-stone-100 border-l-4 border-l-palette-strava cursor-pointer"
                                     role="button"
                                   >
                                     <div className="inline-flex items-center gap-1.5 mb-2">
                                       <img src="/strava-icon.svg" alt="" className="h-4 w-4 shrink-0" aria-hidden />
-                                      <span className="text-[10px] font-bold uppercase text-[#FC4C02] bg-orange-100 px-1.5 py-0.5 rounded leading-none">
+                                      <span className="text-[10px] font-bold uppercase text-palette-strava bg-orange-100 px-1.5 py-0.5 rounded leading-none">
                                         {getImportedActivityTypeLabel(a)}
                                       </span>
                                     </div>
@@ -1126,7 +1127,7 @@ export function CalendarView({
                                   role="button"
                                   aria-label="Ajouter un entraînement"
                                 >
-                                  <div className="w-10 h-10 rounded-full bg-white border border-stone-300 flex items-center justify-center text-stone-400 shadow-sm hover:text-white hover:bg-[#627e59] hover:border-[#627e59] transition-all transform hover:scale-110 cursor-pointer">
+                                  <div className="w-10 h-10 rounded-full bg-white border border-stone-300 flex items-center justify-center text-stone-400 shadow-sm hover:text-white hover:bg-palette-forest-dark hover:border-palette-forest-dark transition-all transform hover:scale-110 cursor-pointer">
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
                                     </svg>
@@ -1136,7 +1137,7 @@ export function CalendarView({
                             </>
                           ) : canAddWorkout ? (
                             <div className="flex-1 flex items-center justify-center min-h-[126px]">
-                              <div className="w-10 h-10 rounded-full bg-white border border-stone-300 flex items-center justify-center text-stone-300 shadow-sm group-hover:text-white group-hover:bg-[#627e59] group-hover:border-[#627e59] transition-all transform group-hover:scale-110">
+                              <div className="w-10 h-10 rounded-full bg-white border border-stone-300 flex items-center justify-center text-stone-300 shadow-sm group-hover:text-white group-hover:bg-palette-forest-dark group-hover:border-palette-forest-dark transition-all transform group-hover:scale-110">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
                                 </svg>
@@ -1169,7 +1170,7 @@ export function CalendarView({
       {extraActivitiesModalOpen && extraActivitiesList.length > 0 && typeof document !== 'undefined' && createPortal(
         <>
           <div
-            className="fixed inset-0 bg-palette-forest-dark/50 backdrop-blur-sm z-[90]"
+            className="fixed inset-0 bg-stone-900/50 backdrop-blur-sm z-[90]"
             onClick={() => { setExtraActivitiesModalOpen(false); setExtraActivitiesModalDate(null) }}
             aria-hidden="true"
           />
@@ -1189,17 +1190,17 @@ export function CalendarView({
                     })()
                   : 'Activités du jour'}
               </h2>
-              <button
+              <Button
                 type="button"
+                variant="ghost"
                 onClick={() => { setExtraActivitiesModalOpen(false); setExtraActivitiesModalDate(null) }}
-                className="p-2 rounded-lg text-stone-500 hover:text-stone-700 hover:bg-stone-100 transition-colors"
                 aria-label="Fermer"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M18 6 6 18" />
                   <path d="m6 6 12 12" />
                 </svg>
-              </button>
+              </Button>
             </div>
             <div className="overflow-y-auto p-4 space-y-2">
               {extraActivitiesList.map((entry) => {
@@ -1215,7 +1216,7 @@ export function CalendarView({
                         setExtraActivitiesModalDate(null)
                         openWorkout(entry.dateStr, entry.item)
                       }}
-                      className="w-full text-left rounded-lg border border-stone-200 bg-white p-3 shadow-sm hover:border-[#627e59] hover:bg-[#627e59]/5 transition-all flex items-center gap-3"
+                      className="w-full text-left rounded-lg border border-stone-200 bg-white p-3 shadow-sm hover:border-palette-forest-dark hover:bg-palette-forest-dark/5 transition-all flex items-center gap-3"
                     >
                       <span className={`shrink-0 inline-flex ${style.badge} ${style.badgeBg} px-2 py-1 rounded`}>
                         <SportIcon className="w-4 h-4" />
@@ -1240,7 +1241,7 @@ export function CalendarView({
                       setExtraActivitiesModalDate(null)
                       setSelectedImportedActivity(a)
                     }}
-                    className="w-full text-left rounded-lg border border-l-4 border-l-[#FC4C02] border-stone-200 bg-white p-3 shadow-sm hover:bg-orange-50 transition-all flex items-center gap-3"
+                    className="w-full text-left rounded-lg border border-l-4 border-l-palette-strava border-stone-200 bg-white p-3 shadow-sm hover:bg-orange-50 transition-all flex items-center gap-3"
                   >
                     <img src="/strava-icon.svg" alt="" className="h-5 w-5 shrink-0" aria-hidden />
                     <div className="min-w-0 flex-1">
@@ -1255,13 +1256,14 @@ export function CalendarView({
               })}
             </div>
             <div className="p-4 border-t border-stone-200">
-              <button
+              <Button
                 type="button"
+                variant="muted"
                 onClick={() => { setExtraActivitiesModalOpen(false); setExtraActivitiesModalDate(null) }}
-                className="w-full rounded-lg border-2 border-palette-forest-dark px-4 py-2 text-sm font-medium text-stone-700 hover:bg-stone-50 transition-colors"
+                className="w-full"
               >
                 Fermer
-              </button>
+              </Button>
             </div>
             </div>
           </div>
@@ -1272,7 +1274,7 @@ export function CalendarView({
       {goalModalOpen && selectedGoal && typeof document !== 'undefined' && createPortal(
         <>
           <div
-            className="fixed inset-0 bg-palette-forest-dark/50 backdrop-blur-sm z-[90]"
+            className="fixed inset-0 bg-stone-900/50 backdrop-blur-sm z-[90]"
             onClick={() => setGoalModalOpen(false)}
             aria-hidden="true"
           />
@@ -1287,7 +1289,7 @@ export function CalendarView({
               <div className="shrink-0 px-6 py-4 border-b border-stone-100 bg-stone-50/50 flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3 min-w-0">
                   <div className={`p-2 rounded-full ${
-                    selectedGoal.is_primary ? 'bg-[#c9a544]/10 text-[#c9a544]' : 'bg-[#aaaa51]/10 text-[#aaaa51]'
+                    selectedGoal.is_primary ? 'bg-palette-amber/10 text-palette-amber' : 'bg-palette-sage/10 text-palette-sage'
                   }`}>
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <circle cx="12" cy="12" r="10" />
@@ -1299,16 +1301,17 @@ export function CalendarView({
                     Détails de l&apos;objectif
                   </h2>
                 </div>
-                <button
+                <Button
                   type="button"
+                  variant="ghost"
                   onClick={() => setGoalModalOpen(false)}
-                  className="p-2 rounded-lg text-stone-500 hover:text-stone-700 hover:bg-stone-100 transition-colors shrink-0"
+                  className="shrink-0"
                   aria-label="Fermer"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                   </svg>
-                </button>
+                </Button>
               </div>
               
               {/* Contenu scrollable */}
@@ -1338,11 +1341,11 @@ export function CalendarView({
                       <dt className="text-xs text-stone-500 uppercase tracking-wide font-bold mb-1.5">Type d&apos;objectif</dt>
                       <dd className="text-sm text-stone-900 flex items-center gap-2">
                         {selectedGoal.is_primary ? (
-                          <span className="bg-[#c9a544]/10 text-[#c9a544] text-[10px] font-bold px-2 py-0.5 rounded-full border border-[#c9a544]">
+                          <span className="bg-palette-amber/10 text-palette-amber text-[10px] font-bold px-2 py-0.5 rounded-full border border-palette-amber">
                             Principal
                           </span>
                         ) : (
-                          <span className="bg-[#aaaa51]/10 text-[#aaaa51] text-[10px] font-bold px-2 py-0.5 rounded-full border border-[#aaaa51]">
+                          <span className="bg-palette-sage/10 text-palette-sage text-[10px] font-bold px-2 py-0.5 rounded-full border border-palette-sage">
                             Secondaire
                           </span>
                         )}
@@ -1354,13 +1357,13 @@ export function CalendarView({
               
               {/* Footer */}
               <div className="shrink-0 px-6 py-4 border-t border-stone-100 bg-stone-50/50 flex justify-end">
-                <button
+                <Button
                   type="button"
+                  variant="muted"
                   onClick={() => setGoalModalOpen(false)}
-                  className="rounded-xl border border-stone-300 px-4 py-2 text-sm font-medium text-stone-700 bg-white hover:bg-stone-50 transition-colors focus:outline-none focus:ring-2 focus:ring-[#627e59]/20 focus:border-[#627e59]"
                 >
                   Fermer
-                </button>
+                </Button>
               </div>
             </div>
           </div>
@@ -1371,7 +1374,7 @@ export function CalendarView({
       {selectedImportedActivity && typeof document !== 'undefined' && createPortal(
         <>
           <div
-            className="fixed inset-0 bg-palette-forest-dark/50 backdrop-blur-sm z-[90]"
+            className="fixed inset-0 bg-stone-900/50 backdrop-blur-sm z-[90]"
             onClick={() => setSelectedImportedActivity(null)}
             aria-hidden="true"
           />
@@ -1385,11 +1388,11 @@ export function CalendarView({
               {/* En-tête comme dans WorkoutModal */}
               <div className="shrink-0 px-6 py-4 border-b border-stone-100 bg-stone-50/50 flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#f05222]">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-palette-strava">
                     <img src="/strava-icon.svg" alt="" className="h-5 w-5 object-contain" aria-hidden />
                   </div>
                   <div className="min-w-0">
-                    <div className="text-[10px] font-semibold text-[#FC4C02] uppercase tracking-wide mb-0.5">
+                    <div className="text-[10px] font-semibold text-palette-strava uppercase tracking-wide mb-0.5">
                       {getImportedActivityTypeLabel(selectedImportedActivity)}
                     </div>
                     <h2 id="imported-activity-modal-title" className="text-lg font-bold text-stone-900 truncate">
@@ -1397,16 +1400,17 @@ export function CalendarView({
                     </h2>
                   </div>
                 </div>
-                <button
+                <Button
                   type="button"
+                  variant="ghost"
                   onClick={() => setSelectedImportedActivity(null)}
-                  className="shrink-0 p-2 rounded-lg text-stone-500 hover:text-stone-700 hover:bg-stone-200/80 transition-colors"
+                  className="shrink-0"
                   aria-label="Fermer"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M18 6 6 18" /><path d="m6 6 12 12" />
                   </svg>
-                </button>
+                </Button>
               </div>
 
               {/* Contenu scrollable */}
@@ -1477,13 +1481,13 @@ export function CalendarView({
 
               {/* Footer comme dans WorkoutModal */}
               <div className="shrink-0 px-6 py-4 border-t border-stone-100 bg-stone-50/50 flex justify-end">
-                <button
+                <Button
                   type="button"
+                  variant="muted"
                   onClick={() => setSelectedImportedActivity(null)}
-                  className="rounded-xl border border-stone-300 bg-white text-stone-700 hover:bg-stone-50 px-4 py-3 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-stone-500 focus:ring-offset-2"
                 >
                   Fermer
-                </button>
+                </Button>
               </div>
             </div>
           </div>

@@ -1,5 +1,6 @@
 'use client'
 
+import { Button } from '@/components/Button'
 import { useState, useEffect, useCallback } from 'react'
 import { createPortal } from 'react-dom'
 import {
@@ -54,10 +55,11 @@ export function ChatModule({ initialChatRole }: ChatModuleProps = {}) {
 
   return (
     <>
-      <button
+      <Button
         type="button"
+        variant="primary"
         onClick={() => setOpen(true)}
-        className="fixed bottom-6 right-6 z-40 flex items-center gap-2 rounded-full bg-palette-forest-dark px-4 py-3 text-sm font-medium text-white shadow-lg hover:bg-palette-olive transition-colors focus:outline-none focus:ring-2 focus:ring-palette-olive focus:ring-offset-2"
+        className="fixed bottom-6 right-6 z-40 rounded-full shadow-lg"
         aria-label={label}
       >
         <svg
@@ -74,7 +76,7 @@ export function ChatModule({ initialChatRole }: ChatModuleProps = {}) {
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
         </svg>
         <span className="hidden sm:inline">{label}</span>
-      </button>
+      </Button>
 
       {open && typeof document !== 'undefined' && createPortal(
         <ChatOverlay
@@ -176,7 +178,7 @@ function ChatOverlay({ role, userId, onClose }: ChatOverlayProps) {
   return (
     <>
       <div
-        className="fixed inset-0 bg-palette-forest-dark/50 backdrop-blur-sm z-[90]"
+        className="fixed inset-0 bg-stone-900/50 backdrop-blur-sm z-[90]"
         onClick={onClose}
         aria-hidden="true"
       />
@@ -191,10 +193,10 @@ function ChatOverlay({ role, userId, onClose }: ChatOverlayProps) {
           <h2 className="text-lg font-semibold text-stone-900 truncate">
             {title}
           </h2>
-          <button
+          <Button
             type="button"
+            variant="ghost"
             onClick={onClose}
-            className="p-2 rounded-xl text-stone-600 hover:text-stone-900 hover:bg-stone-100 transition"
             aria-label="Fermer"
           >
             <svg
@@ -209,37 +211,38 @@ function ChatOverlay({ role, userId, onClose }: ChatOverlayProps) {
               <path d="M18 6 6 18" />
               <path d="m6 6 12 12" />
             </svg>
-          </button>
+          </Button>
         </div>
 
         {role === 'coach' && coachConvs.length > 0 && (
           <div className="shrink-0 flex gap-1 p-2 border-b-2 border-palette-forest-dark overflow-x-auto">
             {coachConvs.map((c) => (
-              <button
+              <Button
                 key={c.id}
                 type="button"
+                variant={selectedConvId === c.id ? 'primary' : 'muted'}
                 onClick={() => setSelectedConvId(c.id)}
-                className={`shrink-0 px-3 py-2 rounded-xl text-sm font-medium transition border-2 ${
+                className={`shrink-0 px-3 py-2 rounded-xl text-sm font-medium min-h-0 ${
                   selectedConvId === c.id
-                    ? 'bg-palette-forest-dark text-white border-palette-olive'
-                    : 'bg-stone-100 text-stone-700 border-palette-forest-dark hover:bg-stone-200'
+                    ? 'border-2 border-transparent hover:!bg-palette-forest-dark'
+                    : '!border-2 !border-palette-forest-dark !bg-stone-100 hover:!bg-stone-200'
                 }`}
               >
                 {c.athlete_name}
-              </button>
+              </Button>
             ))}
           </div>
         )}
 
         <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-0">
           {loading ? (
-            <p className="text-sm text-white0text-stone-400">Chargement...</p>
+            <p className="text-sm text-stone-400">Chargement...</p>
           ) : role === 'athlete' && !athleteData ? (
-            <p className="text-sm text-white0text-stone-400">
+            <p className="text-sm text-stone-400">
               Aucun coach assigné. Vous ne pouvez pas envoyer de message pour le moment.
             </p>
           ) : role === 'coach' && coachConvs.length === 0 ? (
-            <p className="text-sm text-white0text-stone-400">
+            <p className="text-sm text-stone-400">
               Aucune discussion avec vos athlètes pour le moment.
             </p>
           ) : (
@@ -261,8 +264,8 @@ function ChatOverlay({ role, userId, onClose }: ChatOverlayProps) {
                     <p
                       className={`text-xs mt-1 ${
                         isMe
-                          ? 'text-stone-400text-white0'
-                          : 'text-white0text-stone-400'
+                          ? 'text-stone-400'
+                          : 'text-stone-400'
                       }`}
                     >
                       {formatMessageTime(m.created_at)}
@@ -278,7 +281,7 @@ function ChatOverlay({ role, userId, onClose }: ChatOverlayProps) {
         {(role === 'athlete' ? athleteData : currentConversationId) && (
           <div className="shrink-0 p-4 border-t-2 border-palette-forest-dark bg-white">
             {sendError && (
-              <p className="text-sm text-red-600text-red-400 mb-2">{sendError}</p>
+              <p className="text-sm text-red-600 mb-2">{sendError}</p>
             )}
             <form
               onSubmit={(e) => {
@@ -295,13 +298,13 @@ function ChatOverlay({ role, userId, onClose }: ChatOverlayProps) {
                 className="flex-1 rounded-lg border-2 border-palette-forest-dark bg-white px-4 py-2 text-sm text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-olive focus:border-palette-olive transition"
                 disabled={sending}
               />
-              <button
+              <Button
                 type="submit"
+                variant="primary"
                 disabled={sending || !inputValue.trim()}
-                className="shrink-0 rounded-lg bg-palette-forest-dark px-4 py-2 text-sm font-medium text-white border-2 border-palette-olive hover:bg-palette-olive transition-colors disabled:opacity-50"
               >
                 Envoyer
-              </button>
+              </Button>
             </form>
           </div>
         )}
