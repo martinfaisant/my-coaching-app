@@ -62,9 +62,19 @@
 
 ---
 
-## 🟡 Phase 4 – Composants restants et optimisations
+## ✅ Phase 4 – Composants restants et optimisations
 
-### 4.1 Badge compteur (style custom)
+### 4.1 Modal réutilisable ✅
+
+- ✅ **Composant `Modal`** créé (`components/Modal.tsx`)
+  - 8 tailles : sm, md, lg, xl, 2xl, 3xl, 4xl, full
+  - 3 alignements : center, top, right
+  - Support icône, header personnalisable, footer
+  - Gestion Escape, overlay, body overflow, portal
+  - Page showcase : `ModalShowcase.tsx`
+  - Documentation complète dans `DESIGN_SYSTEM.md`
+
+### 4.2 Badge compteur (style custom) 🟡
 
 - **FindCoachSection** ligne 172 : Badge de compteur "Résultats" utilise classes custom inline
   ```tsx
@@ -72,15 +82,10 @@
   ```
 - **À faire :** Créer variante `Badge variant="counter"` pour réutilisation
 
-### 4.2 Cartes coach (cohérence hover/states)
+### 4.3 Cartes coach (cohérence hover/states) 🟡
 
 - **FindCoachSection** : Cartes coaches avec styles custom pour hover/états
 - **À faire :** Documenter ou créer composant `CoachCard` réutilisable
-
-### 4.3 Modales
-
-- Modales utilisent des styles inline cohérents mais non composés
-- **À faire :** Créer composant `Modal` réutilisable avec variantes (ou documenter le pattern actuel)
 
 ---
 
@@ -119,17 +124,18 @@
 
 ---
 
-## 🧹 Phase 6 – Nettoyage
+## ✅ Phase 6 – Nettoyage
 
-### 6.1 Code mort potentiel
+### 6.1 Code mort potentiel ✅
 
 - ~~Modal.tsx~~ ✅ (supprimé)
-- **ProfileMenu** : vérifier si importé/utilisé → supprimer si inutilisé
-- **input-group** (globals.css) : classe orpheline depuis suppression du profil → à supprimer ou documenter
+- ~~ProfileMenu.tsx~~ ✅ (supprimé - non utilisé)
+- ~~input-group~~ ✅ (supprimé de globals.css - classe orpheline)
 
-### 6.2 Duplication configuration
+### 6.2 Duplication configuration 🟡
 
 - Réduire duplication entre `tailwind.config.ts` et `globals.css` (variables CSS)
+- **Note** : Les deux sont nécessaires pour la compatibilité Tailwind v4 + custom properties, pas prioritaire
 
 ---
 
@@ -154,36 +160,43 @@
 ### ✅ Complété (100%)
 
 **Tokens & Fondations :**
-- Palette couleurs complète avec tokens
-- Corrections typos critiques
+- ✅ Palette couleurs complète avec tokens
+- ✅ Corrections typos critiques
 
 **Composants de base :**
 - ✅ Button (8 variantes)
 - ✅ Input / Textarea (avec états disabled/readOnly)
 - ✅ Badge (variantes default, primary, sport-*, success, warning)
 - ✅ SportTileSelectable (états cliquable/sélectionné)
+- ✅ Modal (8 tailles, 3 alignements, support icône/footer)
 
 **Migrations :**
 - ✅ Tous les formulaires (Login, Profile, Workout, Offers, Goals, etc.)
 - ✅ Tuiles sports & langues (Profile, FindCoach, RequestCoach, MonCoach)
 - ✅ Icônes sports alignées (Calendar, WorkoutModal, Badges)
 
-### 🟡 En cours / À prioriser
+**Documentation :**
+- ✅ `DESIGN_SYSTEM.md` complet avec tous les composants
+- ✅ Page showcase `/dashboard/admin/design-system`
 
-1. **Documentation DESIGN_SYSTEM.md** (HAUTE PRIORITÉ)
-   - Centraliser tokens, composants, conventions
-   - Exemples d'utilisation
-   - Guidelines typographie, espacements, rayons
+**Nettoyage :**
+- ✅ ProfileMenu supprimé (non utilisé)
+- ✅ input-group supprimé de globals.css (orphelin)
 
-2. **Optimisations mineures**
-   - Variante Badge `counter` pour compteurs
-   - Composant Modal réutilisable
-   - Nettoyage code mort (ProfileMenu, input-group)
+### 🟡 Optimisations futures (facultatif)
+
+1. **Variante Badge `counter`** pour compteurs (effort faible)
+2. **Composant CoachCard** pour cartes coaches (effort moyen)
+3. **Migration progressive** des modales existantes vers composant Modal
+4. **Documentation animations** (keyframes) dans DESIGN_SYSTEM.md
 
 ### 🎯 État actuel
 
-Le design system est **opérationnel et cohérent** pour :
-- Boutons, champs de formulaire, badges, tuiles sélectionnables
-- Couleurs, sports avec icônes, états interactifs
+Le design system est **complet et opérationnel** :
+- ✅ Tous les composants de base créés et documentés
+- ✅ Migrations principales effectuées
+- ✅ Documentation complète pour les développeurs
+- ✅ Page showcase accessible pour référence
+- ✅ Code mort nettoyé
 
-**Prochaine étape recommandée :** Rédiger DESIGN_SYSTEM.md pour documenter l'ensemble et faciliter la maintenance future.
+**Le design system est prêt à l'emploi. Les optimisations futures sont des améliorations mineures non bloquantes.**

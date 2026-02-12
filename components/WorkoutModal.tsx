@@ -368,7 +368,7 @@ export function WorkoutModal({
           </Button>
         </div>
 
-        <form action={action} className="flex flex-col flex-1 min-h-0">
+        <form action={action} className={`flex flex-col flex-1 min-h-0 ${!canEdit ? 'select-none' : ''}`} onSubmit={(e) => { if (!canEdit) e.preventDefault() }}>
           <input type="hidden" name="date" value={date} />
           {isEdit && <input type="hidden" name="workout_id" value={workout.id} />}
 
@@ -428,9 +428,9 @@ export function WorkoutModal({
             <div className="bg-stone-50 p-4 rounded-xl border border-stone-100">
               {/* En-tête avec titre et toggle */}
               <div className="flex items-center justify-between mb-3">
-                <label className="text-xs font-bold text-stone-500 uppercase tracking-wide">
+                <div className="text-xs font-bold text-stone-500 uppercase tracking-wide">
                   OBJECTIFS DE LA SÉANCE
-                </label>
+                </div>
                 {canEdit && hasTimeDistanceChoice && (
                   <div className="flex bg-stone-200 p-0.5 rounded-lg">
                     <label className="cursor-pointer">

@@ -20,6 +20,7 @@
    - [Textarea](#textarea)
    - [Badge](#badge)
    - [SportTileSelectable](#sporttileselectable)
+   - [Modal](#modal)
 4. [Icônes](#icônes)
 5. [Guidelines](#guidelines)
 6. [FAQ](#faq)
@@ -522,6 +523,162 @@ Pour les langues, utiliser la même structure visuelle avec des boutons simples 
 
 ---
 
+### Modal
+
+**Fichier :** `components/Modal.tsx`
+
+Composant modal réutilisable avec overlay, gestion automatique Escape + body overflow, portail DOM.
+
+#### Variantes de taille
+
+|| Taille | Largeur max | Usage |
+||--------|-------------|-------|
+|| `sm` | 384px | Confirmations simples, alertes |
+|| `md` | 448px | Par défaut, formulaires standards |
+|| `lg` | 512px | Formulaires étendus |
+|| `xl` | 576px | Contenu riche |
+|| `2xl` | 672px | Large contenu |
+|| `3xl` | 768px | Détails coach, galeries |
+|| `4xl` | 896px | Vues larges (détails coach complets) |
+|| `full` | 95vw | Plein écran (chat, panels) |
+
+#### Alignements
+
+- `center` : Centré (défaut)
+- `top` : En haut de l'écran
+- `right` : À droite (pour chat, panels latéraux)
+
+#### Props
+
+```typescript
+type ModalProps = {
+  isOpen: boolean
+  onClose: () => void
+  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | 'full'
+  alignment?: 'center' | 'top' | 'right'
+  title?: string
+  icon?: React.ReactNode
+  headerRight?: React.ReactNode
+  hideCloseButton?: boolean
+  disableOverlayClose?: boolean
+  disableEscapeClose?: boolean
+  footer?: React.ReactNode
+  className?: string
+  contentClassName?: string
+  titleId?: string
+  children: React.ReactNode
+}
+```
+
+#### Exemples
+
+```tsx
+// Modale simple
+const [isOpen, setIsOpen] = useState(false)
+
+<Modal
+  isOpen={isOpen}
+  onClose={() => setIsOpen(false)}
+  title="Modifier le profil"
+>
+  <div className="px-6 py-4">
+    <p>Contenu de la modale...</p>
+  </div>
+</Modal>
+
+// Modale avec icône et footer
+<Modal
+  isOpen={isOpen}
+  onClose={() => setIsOpen(false)}
+  title="Enregistrer les modifications"
+  icon={
+    <svg className="h-5 w-5" {...}>
+      <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+  }
+  footer={
+    <div className="flex gap-3 w-full">
+      <Button variant="muted" onClick={() => setIsOpen(false)} className="flex-1">
+        Annuler
+      </Button>
+      <Button variant="primaryDark" onClick={handleSave} className="flex-1">
+        Enregistrer
+      </Button>
+    </div>
+  }
+>
+  <div className="px-6 py-4">
+    {/* Formulaire ou contenu */}
+  </div>
+</Modal>
+
+// Confirmation de suppression (petite)
+<Modal
+  isOpen={confirmOpen}
+  onClose={() => setConfirmOpen(false)}
+  title="Confirmer la suppression ?"
+  size="sm"
+  footer={
+    <div className="flex gap-3 w-full">
+      <Button variant="muted" onClick={() => setConfirmOpen(false)} className="flex-1">
+        Annuler
+      </Button>
+      <Button variant="danger" onClick={handleDelete} className="flex-1">
+        Supprimer
+      </Button>
+    </div>
+  }
+>
+  <div className="px-6 py-4">
+    <p className="text-sm text-stone-600">
+      Cette action est irréversible. Continuer ?
+    </p>
+  </div>
+</Modal>
+
+// Modale large (détails coach)
+<Modal
+  isOpen={detailsOpen}
+  onClose={() => setDetailsOpen(false)}
+  size="4xl"
+  title="Détails du coach"
+  headerRight={
+    <Button variant="outline" onClick={handleContact}>
+      Contacter
+    </Button>
+  }
+>
+  <div className="px-6 py-4">
+    {/* Contenu large avec colonnes, images, etc. */}
+  </div>
+</Modal>
+```
+
+#### Caractéristiques
+
+- **Overlay** : Fond gris foncé avec flou (`backdrop-blur-sm`)
+- **Escape** : Fermeture automatique avec Escape (désactivable)
+- **Clic overlay** : Fermeture au clic sur l'overlay (désactivable)
+- **Body overflow** : Gestion automatique du `overflow: hidden` sur body
+- **Portal** : Rendu dans `document.body` avec `createPortal`
+- **Accessibilité** : `role="dialog"`, `aria-modal="true"`, `aria-labelledby`
+- **Z-index** : Overlay `z-[90]`, contenu `z-[100]`
+
+#### Structure
+
+```tsx
+<Modal> contient automatiquement :
+  - Header (si title ou headerRight fournis)
+    - Icône optionnelle (badge vert forêt)
+    - Titre
+    - Contenu custom à droite (headerRight)
+    - Bouton fermer (X) par défaut
+  - Corps scrollable (children)
+  - Footer optionnel (fixe, ne scroll pas)
+```
+
+---
+
 ## Icônes
 
 ### Sports
@@ -654,16 +811,16 @@ Actuellement, utiliser un span custom :
 ### Fichiers clés
 
 - **Tokens couleurs** : `tailwind.config.ts`, `app/globals.css`
-- **Composants** : `components/Button.tsx`, `components/Input.tsx`, `components/Textarea.tsx`, `components/Badge.tsx`, `components/SportTileSelectable.tsx`
+- **Composants** : `components/Button.tsx`, `components/Input.tsx`, `components/Textarea.tsx`, `components/Badge.tsx`, `components/SportTileSelectable.tsx`, `components/Modal.tsx`
 - **Sports** : `lib/sportStyles.ts`, `lib/sportsOptions.ts`, `components/SportIcons.tsx`
 - **Design system page** : `app/dashboard/admin/design-system/page.tsx`
 
 ### Évolutions futures
 
 - Créer variante `Badge variant="counter"` pour compteurs
-- Composant `Modal` réutilisable pour les modales
 - Composant `Card` pour cartes standardisées
 - Documenter animations (transitions, keyframes)
+- Migrer progressivement les modales existantes vers le composant `Modal`
 
 ---
 

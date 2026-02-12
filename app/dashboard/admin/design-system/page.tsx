@@ -5,6 +5,7 @@ import { ButtonShowcase } from './ButtonShowcase'
 import { InputShowcase } from './InputShowcase'
 import { TextareaShowcase } from './TextareaShowcase'
 import { BadgeShowcase } from './BadgeShowcase'
+import { ModalShowcase } from './ModalShowcase'
 
 const PALETTE = [
   { token: 'palette-forest-dark', hex: '#627e59', description: 'Principal — boutons, liens, focus' },
@@ -125,6 +126,18 @@ export default async function DesignSystemPage() {
           </p>
           <div className="rounded-xl border border-stone-200 bg-white p-6">
             <BadgeShowcase />
+          </div>
+        </section>
+
+        <section className="mt-12">
+          <h2 className="text-lg font-semibold text-stone-800 mb-4">
+            Composant Modal
+          </h2>
+          <p className="mb-6 text-sm text-stone-600">
+            Modales réutilisables avec overlay, gestion Escape, tailles variées (sm à 4xl), support icône, footer, et alignements.
+          </p>
+          <div className="rounded-xl border border-stone-200 bg-white p-6">
+            <ModalShowcase />
           </div>
         </section>
 

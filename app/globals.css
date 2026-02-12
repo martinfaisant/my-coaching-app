@@ -153,17 +153,6 @@ input[type="number"] {
   box-shadow: 0 4px 6px -1px rgba(98, 126, 89, 0.3);
 }
 
-/* Animation des champs (Focus) */
-.input-group:focus-within label {
-  color: var(--palette-forest-dark);
-}
-
-.input-group:focus-within input,
-.input-group:focus-within textarea {
-  border-color: var(--palette-forest-dark);
-  box-shadow: 0 0 0 2px rgba(98, 126, 89, 0.2);
-}
-
 /* Animation apparition du check "Enregistré" */
 @keyframes saved-check-in {
   from {
