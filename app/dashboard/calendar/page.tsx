@@ -90,7 +90,7 @@ export default async function CalendarPage() {
       initialWeeklyTotals={initialWeeklyTotals as ImportedActivityWeeklyTotal[]}
       initialWorkoutTotals={(initialWorkoutTotals ?? []) as WorkoutWeeklyTotal[]}
       goals={(goals ?? []) as Goal[]}
-      canEdit={!!current.profile.coach_id}
+      canEdit={false}
       pathToRevalidate="/dashboard/calendar"
     />
   )

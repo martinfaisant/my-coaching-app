@@ -514,8 +514,8 @@ export function CalendarView({
           e.stopPropagation()
           openWorkout(dateStr, w)
         }}
-        className={`bg-white rounded border-l-4 ${style.borderLeft} shadow-sm p-1.5 h-full flex flex-col justify-between ${canEdit ? 'cursor-pointer training-card' : ''}`}
-        role={canEdit ? 'button' : undefined}
+        className={`bg-white rounded border-l-4 ${style.borderLeft} shadow-sm p-1.5 h-full flex flex-col justify-between cursor-pointer ${canEdit ? 'training-card' : 'hover:shadow-md transition-shadow'}`}
+        role="button"
       >
         <div>
           <div>
@@ -584,8 +584,8 @@ export function CalendarView({
           e.stopPropagation()
           openWorkout(dateStr, w)
         }}
-        className={`training-card bg-white p-3 rounded-lg shadow-sm border border-stone-100 border-l-4 ${style.borderLeft} ${canEdit ? 'cursor-pointer' : ''}`}
-        role={canEdit ? 'button' : undefined}
+        className={`bg-white p-3 rounded-lg shadow-sm border border-stone-100 border-l-4 ${style.borderLeft} cursor-pointer ${canEdit ? 'training-card' : 'hover:shadow-md transition-shadow'}`}
+        role="button"
       >
         <div className="mb-2">
           <span className={`float-left inline-flex items-center mr-2 ${style.badge} ${style.badgeBg} px-1.5 py-0.5 rounded shrink-0`}>
