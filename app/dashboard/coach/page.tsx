@@ -5,31 +5,12 @@ import { PageHeader } from '@/components/PageHeader'
 import { AvatarImage } from '@/components/AvatarImage'
 import { getMyCoachRating } from './actions'
 import { CoachRatingForm } from './CoachRatingForm'
-
-const COACHED_SPORTS_LABELS: Record<string, string> = {
-  course_route: 'Course à pied sur route',
-  trail: 'Trail',
-  triathlon: 'Triathlon',
-  velo: 'Vélo',
-}
-
-const LANGUAGES_LABELS: Record<string, string> = {
-  fr: 'Français',
-  en: 'English',
-  es: 'Español',
-  de: 'Deutsch',
-  it: 'Italiano',
-  pt: 'Português',
-  nl: 'Nederlands',
-  zh: '中文',
-}
-
-function sportLabel(value: string): string {
-  return COACHED_SPORTS_LABELS[value] ?? value
-}
+import { LANGUAGES_OPTIONS } from '@/lib/sportsOptions'
+import { SPORT_ICONS, SPORT_LABELS } from '@/lib/sportStyles'
+import type { SportType } from '@/lib/sportStyles'
 
 function languageLabel(value: string): string {
-  return LANGUAGES_LABELS[value] ?? value
+  return LANGUAGES_OPTIONS.find((o) => o.value === value)?.label ?? value
 }
 
 function getInitials(fullName: string | null, email: string): string {
@@ -71,24 +52,6 @@ export default async function MonCoachPage() {
     )
   }
 
-  const COACHED_SPORTS_OPTIONS: { value: string; label: string; emoji: string }[] = [
-    { value: 'triathlon', label: 'Triathlon', emoji: '🏊‍♂️' },
-    { value: 'course_route', label: 'Course à pied', emoji: '🏃' },
-    { value: 'trail', label: 'Trail', emoji: '⛰️' },
-    { value: 'velo', label: 'Vélo', emoji: '🚴' },
-  ]
-
-  const LANGUAGES_OPTIONS: { value: string; label: string }[] = [
-    { value: 'fr', label: 'Français' },
-    { value: 'en', label: 'English' },
-    { value: 'es', label: 'Español' },
-    { value: 'de', label: 'Deutsch' },
-    { value: 'it', label: 'Italiano' },
-    { value: 'pt', label: 'Português' },
-    { value: 'nl', label: 'Nederlands' },
-    { value: 'zh', label: '中文' },
-  ]
-
   const myRating = await getMyCoachRating(current.profile.coach_id!)
 
   return (
@@ -98,7 +61,7 @@ export default async function MonCoachPage() {
         {/* Carte principale avec bannière et avatar */}
         <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-stone-100">
           {/* BANNIÈRE BRANDÉE : Dégradé Forest Dark -> Olive */}
-          <div className="h-[136px] bg-gradient-to-r from-[#627e59] to-[#8e9856] relative">
+          <div className="h-[136px] bg-gradient-palette relative">
             {/* Avatar positionné sur la bannière */}
             <div className="absolute -bottom-10 left-8">
               <div className="relative">
@@ -133,14 +96,16 @@ export default async function MonCoachPage() {
                       <h2 className="text-sm font-bold text-stone-900 uppercase tracking-wide mb-3">Sports coachés</h2>
                       <div className="flex flex-wrap gap-3">
                         {(coach.coached_sports ?? []).map((sportValue: string) => {
-                          const opt = COACHED_SPORTS_OPTIONS.find(o => o.value === sportValue)
+                          const sportKey = sportValue in SPORT_ICONS ? (sportValue as SportType) : 'course'
+                          const Icon = SPORT_ICONS[sportKey]
+                          const label = SPORT_LABELS[sportKey] ?? sportValue
                           return (
                             <div
                               key={sportValue}
-                              className="px-4 py-2 rounded-full border border-stone-200 bg-white text-stone-600 text-sm font-medium flex items-center gap-2"
+                              className="px-4 py-2 rounded-full border border-stone-200 bg-white text-stone-600 text-sm font-medium select-none flex items-center gap-2"
                             >
-                              <span>{opt?.emoji ?? ''}</span>
-                              <span>{opt?.label ?? sportLabel(sportValue)}</span>
+                              <Icon className="w-3.5 h-3.5 shrink-0" aria-hidden />
+                              <span>{label}</span>
                             </div>
                           )
                         })}
@@ -158,7 +123,7 @@ export default async function MonCoachPage() {
                           return (
                             <div
                               key={langCode}
-                              className="px-3 py-1.5 rounded-md border border-stone-200 bg-white text-stone-600 text-sm font-medium"
+                              className="px-4 py-2 rounded-full border border-stone-200 bg-white text-stone-600 text-sm font-medium select-none"
                             >
                               {opt?.label ?? languageLabel(langCode)}
                             </div>
@@ -194,7 +159,6 @@ export default async function MonCoachPage() {
         {/* Section Avis */}
         <div className="max-w-3xl mx-auto mt-8 bg-white rounded-2xl shadow-xl overflow-hidden border border-stone-100">
           <div className="px-8 py-6">
-            <h2 className="text-base font-semibold text-stone-900 mb-6">Donner votre avis</h2>
             <CoachRatingForm
               coachId={current.profile.coach_id!}
               initialRating={myRating?.rating ?? null}

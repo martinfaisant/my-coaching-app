@@ -12,14 +12,13 @@ import {
   type CommentFormState,
 } from '@/app/dashboard/workouts/actions'
 import type { SportType, Workout } from '@/types/database'
+import { Button } from '@/components/Button'
+import { Input } from '@/components/Input'
+import { Textarea } from '@/components/Textarea'
+import { SPORT_ICONS, SPORT_LABELS } from '@/lib/sportStyles'
 
-/** Options type de sport avec emoji (aligné page infos coach / profil). */
-const SPORT_OPTIONS: { value: SportType; label: string; emoji: string }[] = [
-  { value: 'course', label: 'Course', emoji: '🏃' },
-  { value: 'velo', label: 'Vélo', emoji: '🚴' },
-  { value: 'natation', label: 'Natation', emoji: '🏊' },
-  { value: 'musculation', label: 'Musculation', emoji: '💪' },
-]
+/** Sports pour entraînement (sous-ensemble du calendrier). */
+const WORKOUT_SPORT_TYPES: SportType[] = ['course', 'velo', 'natation', 'musculation']
 
 /** Course et vélo : choix temps ou distance + dénivelé facultatif. Musculation : temps. Natation : temps ou distance. */
 type TargetMode = 'time' | 'distance'
@@ -47,16 +46,27 @@ type WorkoutModalProps = {
   workout?: Workout | null
 }
 
-function SubmitButton({ disabled }: { disabled?: boolean }) {
+function SubmitButton({
+  disabled,
+  formState,
+}: {
+  disabled?: boolean
+  formState?: { success?: boolean; error?: string }
+}) {
   const { pending } = useFormStatus()
   return (
-    <button
+    <Button
       type="submit"
+      variant="primaryDark"
       disabled={disabled || pending}
-      className="flex-1 min-w-0 rounded-xl bg-[#627e59] hover:bg-[#506648] text-white px-4 py-3 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-[#627e59] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+      loading={pending}
+      loadingText="Enregistrement…"
+      success={!!formState?.success}
+      error={!!formState?.error}
+      className="flex-1 min-w-0"
     >
-      {pending ? 'Enregistrement…' : 'Enregistrer'}
-    </button>
+      Enregistrer
+    </Button>
   )
 }
 
@@ -323,7 +333,7 @@ export function WorkoutModal({
   const modalContent = (
     <>
       <div
-        className="fixed inset-0 bg-palette-forest-dark/50 backdrop-blur-sm z-[90]"
+        className="fixed inset-0 bg-stone-900/50 backdrop-blur-sm z-[90]"
         onClick={() => handleClose()}
         aria-hidden="true"
       />
@@ -337,7 +347,7 @@ export function WorkoutModal({
         {/* En-tête comme dans le HTML : px-6 py-4 border-b border-stone-100 bg-stone-50/50 + icône check + titre */}
         <div className="shrink-0 px-6 py-4 border-b border-stone-100 bg-stone-50/50 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="p-2 bg-[#627e59]/10 rounded-full text-[#627e59]">
+            <div className="p-2 bg-palette-forest-dark/10 rounded-full text-palette-forest-dark">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
@@ -346,16 +356,16 @@ export function WorkoutModal({
               {isEdit ? (athleteView ? 'Mon entrainement' : canEdit ? 'Modifier l\'entraînement' : 'Votre entraînement') : 'Nouvel entraînement'}
             </h2>
           </div>
-          <button
+          <Button
             type="button"
+            variant="ghost"
             onClick={() => handleClose()}
-            className="shrink-0 p-2 rounded-lg text-stone-500 hover:text-stone-700 hover:bg-stone-200/80 transition-colors"
             aria-label="Fermer"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M18 6 6 18" /><path d="m6 6 12 12" />
             </svg>
-          </button>
+          </Button>
         </div>
 
         <form action={action} className="flex flex-col flex-1 min-h-0">
@@ -377,33 +387,36 @@ export function WorkoutModal({
             <input type="hidden" name="sport_type" value={sportType} />
             {canEdit ? (
               <div className="grid grid-cols-4 gap-2" role="group" aria-label="Type de sport">
-                {SPORT_OPTIONS.map((opt) => {
-                  const selected = sportType === opt.value
+                {WORKOUT_SPORT_TYPES.map((sport) => {
+                  const selected = sportType === sport
+                  const Icon = SPORT_ICONS[sport as keyof typeof SPORT_ICONS]
+                  const label = SPORT_LABELS[sport as keyof typeof SPORT_LABELS] ?? sport
                   return (
                     <button
-                      key={opt.value}
+                      key={sport}
                       type="button"
-                      onClick={() => setSportType(opt.value)}
+                      onClick={() => setSportType(sport)}
                       className={`flex flex-col items-center justify-center gap-1 rounded-xl border-2 py-3 px-2 transition text-center min-h-[72px] ${
                         selected
-                          ? 'border-[#627e59] bg-[#627e59]/10 text-[#627e59] font-semibold'
+                          ? 'border-palette-forest-dark bg-palette-forest-dark/10 text-palette-forest-dark font-semibold'
                           : 'border-stone-200 bg-white text-stone-600 hover:border-stone-300 hover:bg-stone-50'
                       }`}
                     >
-                      <span className="text-2xl leading-none" aria-hidden>{opt.emoji}</span>
-                      <span className="text-xs font-medium">{opt.label}</span>
+                      <Icon className="w-8 h-8 shrink-0" aria-hidden />
+                      <span className="text-xs font-medium">{label}</span>
                     </button>
                   )
                 })}
               </div>
             ) : (
               (() => {
-                const opt = SPORT_OPTIONS.find((o) => o.value === sportType)
-                if (!opt) return null
+                if (!(sportType in SPORT_ICONS)) return null
+                const Icon = SPORT_ICONS[sportType as keyof typeof SPORT_ICONS]
+                const label = SPORT_LABELS[sportType as keyof typeof SPORT_LABELS] ?? sportType
                 return (
-                  <div className="flex flex-col items-center justify-center gap-1 rounded-xl border-2 border-[#627e59] bg-[#627e59]/10 text-[#627e59] font-semibold py-3 px-4 min-h-[72px] w-fit">
-                    <span className="text-2xl leading-none" aria-hidden>{opt.emoji}</span>
-                    <span className="text-xs font-medium">{opt.label}</span>
+                  <div className="flex flex-col items-center justify-center gap-1 rounded-xl border-2 border-palette-forest-dark bg-palette-forest-dark/10 text-palette-forest-dark font-semibold py-3 px-4 min-h-[72px] w-fit">
+                    <Icon className="w-8 h-8 shrink-0" aria-hidden />
+                    <span className="text-xs font-medium">{label}</span>
                   </div>
                 )
               })()
@@ -422,13 +435,13 @@ export function WorkoutModal({
                   <div className="flex bg-stone-200 p-0.5 rounded-lg">
                     <label className="cursor-pointer">
                       <input type="radio" name="target_mode" value="time" checked={targetMode === 'time'} onChange={() => setTargetMode('time')} className="sr-only" />
-                      <div className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${targetMode === 'time' ? 'bg-[#627e59] text-white shadow-sm' : 'text-stone-600'}`}>
+                      <div className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${targetMode === 'time' ? 'bg-palette-forest-dark text-white shadow-sm' : 'text-stone-600'}`}>
                         Temps
                       </div>
                     </label>
                     <label className="cursor-pointer">
                       <input type="radio" name="target_mode" value="distance" checked={targetMode === 'distance'} onChange={() => setTargetMode('distance')} className="sr-only" />
-                      <div className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${targetMode === 'distance' ? 'bg-[#627e59] text-white shadow-sm' : 'text-stone-600'}`}>
+                      <div className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${targetMode === 'distance' ? 'bg-palette-forest-dark text-white shadow-sm' : 'text-stone-600'}`}>
                         Distance
                       </div>
                     </label>
@@ -463,7 +476,7 @@ export function WorkoutModal({
                           value={targetDurationMinutes}
                           onChange={(e) => setTargetDurationMinutes(e.target.value)}
                           placeholder="22"
-                          className="w-full border border-stone-300 rounded-lg py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-[#627e59] focus:border-transparent transition-all bg-white text-stone-900 placeholder-stone-300 font-semibold pr-12"
+                          className="w-full border border-stone-300 rounded-lg py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition-all bg-white text-stone-900 placeholder-stone-300 font-semibold pr-12"
                         />
                         <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                           <span className="text-stone-400 text-xs font-normal">min</span>
@@ -490,7 +503,7 @@ export function WorkoutModal({
                               onChange={(e) => setTargetDistanceKm(e.target.value ? String(Number(e.target.value) / 1000) : '')}
                               placeholder={targetMode === 'time' ? '' : '1500'}
                               disabled={targetMode === 'time'}
-                              className={`w-full border border-stone-300 rounded-lg py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-[#627e59] focus:border-transparent transition-all font-semibold placeholder-stone-300 pr-10 ${
+                              className={`w-full border border-stone-300 rounded-lg py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition-all font-semibold placeholder-stone-300 pr-10 ${
                                 targetMode === 'time' 
                                   ? 'bg-stone-100 text-stone-400 cursor-not-allowed' 
                                   : 'bg-white text-stone-900'
@@ -513,7 +526,7 @@ export function WorkoutModal({
                               onChange={(e) => setTargetDistanceKm(e.target.value)}
                               placeholder={targetMode === 'time' ? '' : '14,3'}
                               disabled={targetMode === 'time'}
-                              className={`w-full border border-stone-300 rounded-lg py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-[#627e59] focus:border-transparent transition-all font-semibold placeholder-stone-300 pr-10 ${
+                              className={`w-full border border-stone-300 rounded-lg py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition-all font-semibold placeholder-stone-300 pr-10 ${
                                 targetMode === 'time' 
                                   ? 'bg-stone-100 text-stone-400 cursor-not-allowed' 
                                   : 'bg-white text-stone-900'
@@ -537,7 +550,7 @@ export function WorkoutModal({
                           onChange={(e) => setTargetDurationMinutes(e.target.value)}
                           placeholder={targetMode === 'distance' ? '' : '22'}
                           disabled={targetMode === 'distance'}
-                          className={`w-full border border-stone-300 rounded-lg py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-[#627e59] focus:border-transparent transition-all font-semibold placeholder-stone-300 pr-12 ${
+                          className={`w-full border border-stone-300 rounded-lg py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition-all font-semibold placeholder-stone-300 pr-12 ${
                             targetMode === 'distance' 
                               ? 'bg-stone-100 text-stone-400 cursor-not-allowed' 
                               : 'bg-white text-stone-900'
@@ -562,7 +575,7 @@ export function WorkoutModal({
                             value={targetElevationM}
                             onChange={(e) => setTargetElevationM(e.target.value)}
                             placeholder="200"
-                            className="w-full border border-stone-300 rounded-lg py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-[#627e59] focus:border-transparent transition-all bg-white text-stone-900 placeholder-stone-300 font-semibold pr-14"
+                            className="w-full border border-stone-300 rounded-lg py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition-all bg-white text-stone-900 placeholder-stone-300 font-semibold pr-14"
                           />
                           <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                             <span className="text-stone-400 text-xs font-normal">m D+</span>
@@ -585,7 +598,7 @@ export function WorkoutModal({
                             onChange={(e) => setTargetPace(e.target.value)}
                             placeholder={sportType === 'course' ? '5.0' : sportType === 'velo' ? '39' : '2.0'}
                             title="Obligatoire pour course, vélo et natation"
-                            className="w-full border border-stone-300 rounded-lg py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-[#627e59] focus:border-transparent transition-all bg-white text-stone-900 placeholder-stone-300 font-semibold pr-16"
+                            className="w-full border border-stone-300 rounded-lg py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition-all bg-white text-stone-900 placeholder-stone-300 font-semibold pr-16"
                           />
                           <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                             <span className="text-stone-400 text-xs font-normal">
@@ -601,48 +614,34 @@ export function WorkoutModal({
             </div>
           )}
 
-          <div>
-            <label htmlFor="title" className="block text-sm font-medium text-stone-700 mb-2">
-              Titre de l&apos;exercice
-            </label>
-            <input
-              id="title"
-              name="title"
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-              disabled={!canEdit}
-              placeholder="Ex. Footing 45 min"
-              className="w-full px-4 py-2.5 rounded-lg border border-stone-200 bg-white text-stone-900 placeholder-stone-300 focus:outline-none focus:ring-2 focus:ring-[#627e59] focus:border-[#627e59] transition disabled:opacity-60"
-            />
-          </div>
+          <Input
+            id="title"
+            label="Titre de l'exercice"
+            name="title"
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+            disabled={!canEdit}
+            placeholder="Ex. Footing 45 min"
+          />
 
           {(canEdit || description.trim()) && (
-            <div>
-              <label htmlFor="description" className="block text-sm font-medium text-stone-700 mb-2">
-                {canEdit ? (
-                  <>Description <span className="text-stone-400 font-normal">(facultatif)</span></>
-                ) : (
-                  'Description'
-                )}
-              </label>
-              <textarea
-                id="description"
-                name="description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                disabled={!canEdit}
-                rows={4}
-                placeholder="Détails de l'entraînement..."
-                className="w-full px-4 py-2.5 rounded-lg border border-stone-200 bg-white text-stone-900 placeholder-stone-300 focus:outline-none focus:ring-2 focus:ring-[#627e59] focus:border-[#627e59] resize-y transition disabled:opacity-60"
-              />
-            </div>
+            <Textarea
+              id="description"
+              label={canEdit ? 'Description (facultatif)' : 'Description'}
+              name="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              disabled={!canEdit}
+              rows={4}
+              placeholder="Détails de l'entraînement..."
+            />
           )}
 
           {(state?.error || state?.success) && (
             <p
-              className={`text-sm ${state.error ? 'text-red-600' : 'text-[#627e59] font-medium'}`}
+              className={`text-sm ${state.error ? 'text-red-600' : 'text-palette-forest-dark font-medium'}`}
               role="alert"
             >
               {state.error || state.success}
@@ -664,19 +663,19 @@ export function WorkoutModal({
               <div className="pt-2 pb-4">
                 {!canEdit ? (
                   <>
-                    <textarea
+                    <Textarea
                       value={commentText}
                       onChange={(e) => setCommentText(e.target.value)}
                       rows={3}
                       placeholder="Saisissez votre commentaire… Il est enregistré automatiquement."
-                      className="w-full px-4 py-3 rounded-xl border border-stone-200 bg-white text-stone-900 placeholder-stone-300 focus:outline-none focus:ring-2 focus:ring-[#627e59] focus:border-[#627e59] resize-y"
+                      className="rounded-xl py-3 min-h-0"
                       aria-label="Votre commentaire"
                     />
                     {commentSaveStatus === 'saving' && (
                       <p className="text-sm text-stone-500 mt-2">Enregistrement…</p>
                     )}
                     {commentSaveStatus === 'saved' && (
-                      <p className="text-sm text-[#627e59] font-medium mt-2">Commentaire enregistré.</p>
+                      <p className="text-sm text-palette-forest-dark font-medium mt-2">Commentaire enregistré.</p>
                     )}
                     {commentSaveStatus === 'error' && commentSaveMessage && (
                       <p className="text-sm text-red-600 mt-2" role="alert">{commentSaveMessage}</p>
@@ -706,16 +705,22 @@ export function WorkoutModal({
               )}
               <div className="flex gap-3">
                 {isEdit && (
-                  <button
+                  <Button
                     type="button"
+                    variant="danger"
                     onClick={handleDelete}
                     disabled={deleteLoading}
-                    className="flex-1 min-w-0 rounded-xl border border-red-300 bg-white text-red-600 hover:bg-red-50 px-4 py-3 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    loading={deleteLoading}
+                    loadingText="Suppression…"
+                    className="flex-1 min-w-0 flex items-center justify-center gap-2"
                   >
-                    {deleteLoading ? 'Suppression…' : 'Supprimer'}
-                  </button>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    Supprimer
+                  </Button>
                 )}
-                <SubmitButton disabled={!isValid} />
+                <SubmitButton disabled={!isValid} formState={state} />
               </div>
             </div>
           )}

@@ -2,9 +2,7 @@
 
 import { createClient, createAdminClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
-
-const COACHED_SPORTS_VALUES = ['course_route', 'trail', 'triathlon', 'velo'] as const
-const PRACTICED_SPORTS_VALUES = ['course', 'velo', 'natation', 'musculation', 'trail', 'triathlon'] as const
+import { COACHED_SPORTS_VALUES, PRACTICED_SPORTS_VALUES } from '@/lib/sportsOptions'
 
 export type ProfileFormState = {
   error?: string

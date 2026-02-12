@@ -3,9 +3,13 @@
 import { useState, useMemo, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { RequestCoachButton } from './RequestCoachButton'
+import { Button } from '@/components/Button'
+import { Textarea } from '@/components/Textarea'
 import { AvatarImage } from '@/components/AvatarImage'
+import { Badge } from '@/components/Badge'
+import { SportTileSelectable } from '@/components/SportTileSelectable'
 import { createCoachRequest } from './actions'
-import { PRACTICED_SPORTS_OPTIONS } from './sportsOptions'
+import { COACHED_SPORTS_OPTIONS, PRACTICED_SPORTS_OPTIONS, LANGUAGES_OPTIONS } from '@/lib/sportsOptions'
 import { useRouter } from 'next/navigation'
 
 function getInitials(fullName: string | null, email: string): string {
@@ -23,24 +27,6 @@ function getInitials(fullName: string | null, email: string): string {
 /** Environ 10 lignes en caractères (ordre de grandeur) pour afficher "Voir plus" */
 const PRESENTATION_LONG_THRESHOLD = 500
 
-/** Même ordre et libellés que le profil coach, avec emoji pour les tuiles. */
-const COACHED_SPORTS_OPTIONS: { value: string; label: string; emoji: string }[] = [
-  { value: 'course_route', label: 'Course à pied', emoji: '🏃' },
-  { value: 'trail', label: 'Trail', emoji: '⛰️' },
-  { value: 'triathlon', label: 'Triathlon', emoji: '🏊‍♂️' },
-  { value: 'velo', label: 'Vélo', emoji: '🚴' },
-]
-
-const LANGUAGES_OPTIONS: { value: string; label: string }[] = [
-  { value: 'fr', label: 'Français' },
-  { value: 'en', label: 'English' },
-  { value: 'es', label: 'Español' },
-  { value: 'de', label: 'Deutsch' },
-  { value: 'it', label: 'Italiano' },
-  { value: 'pt', label: 'Português' },
-  { value: 'nl', label: 'Nederlands' },
-  { value: 'zh', label: '中文' },
-]
 
 export type CoachForList = {
   user_id: string
@@ -120,8 +106,6 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
   }
 
   const languageLabel = (code: string) => LANGUAGES_OPTIONS.find((o) => o.value === code)?.label ?? code
-  const sportLabel = (value: string) => COACHED_SPORTS_OPTIONS.find((o) => o.value === value)?.label ?? value
-  const sportEmoji = (value: string) => COACHED_SPORTS_OPTIONS.find((o) => o.value === value)?.emoji ?? ''
 
   const clearFilters = () => {
     setSelectedSports([])
@@ -136,13 +120,14 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
           <div>
             <h1 className="text-lg font-bold text-stone-900">Filtre</h1>
           </div>
-          <button
+          <Button
             type="button"
+            variant="muted"
             onClick={clearFilters}
-            className="text-xs font-semibold text-[#627e59] hover:text-[#506648] underline transition-colors"
+            className="!border-0 !px-0 underline bg-transparent hover:bg-transparent text-palette-forest-dark hover:text-palette-forest-darker text-xs"
           >
             Réinitialiser
-          </button>
+          </Button>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -150,18 +135,12 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
             <h3 className="text-xs font-bold uppercase tracking-wider text-stone-400 mb-3">Sport coaché</h3>
             <div className="flex flex-wrap gap-2">
               {COACHED_SPORTS_OPTIONS.map((opt) => (
-                <label key={opt.value} className="cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={selectedSports.includes(opt.value)}
-                    onChange={() => toggleSport(opt.value)}
-                    className="hidden chip-checkbox"
-                  />
-                  <div className="px-4 py-2 rounded-full border border-stone-200 bg-white text-stone-600 hover:border-[#627e59] transition-all text-sm font-medium select-none flex items-center gap-2">
-                    <span aria-hidden>{opt.emoji}</span>
-                    <span>{opt.label}</span>
-                  </div>
-                </label>
+                <SportTileSelectable
+                  key={opt.value}
+                  value={opt.value}
+                  selected={selectedSports.includes(opt.value)}
+                  onChange={() => toggleSport(opt.value)}
+                />
               ))}
             </div>
           </div>
@@ -169,17 +148,18 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
             <h3 className="text-xs font-bold uppercase tracking-wider text-stone-400 mb-3">Langue parlée</h3>
             <div className="flex flex-wrap gap-2">
               {LANGUAGES_OPTIONS.map((opt) => (
-                <label key={opt.value} className="cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={selectedLanguages.includes(opt.value)}
-                    onChange={() => toggleLanguage(opt.value)}
-                    className="hidden chip-checkbox"
-                  />
-                  <div className="px-3 py-2 rounded-md border border-stone-200 bg-white text-stone-600 hover:border-[#627e59] transition-all text-sm font-medium select-none">
-                    {opt.label}
-                  </div>
-                </label>
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => toggleLanguage(opt.value)}
+                  className={`px-4 py-2 rounded-full border text-sm font-medium select-none transition-all ${
+                    selectedLanguages.includes(opt.value)
+                      ? 'border-palette-forest-dark bg-palette-forest-dark text-white shadow-[0_4px_6px_-1px_rgba(98,126,89,0.3)]'
+                      : 'border-stone-200 bg-white text-stone-600 hover:border-palette-forest-dark'
+                  }`}
+                >
+                  {opt.label}
+                </button>
               ))}
             </div>
           </div>
@@ -203,7 +183,7 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
           {filteredCoaches.map((c) => (
             <li
               key={c.user_id}
-              className="bg-white rounded-2xl border border-stone-200 shadow-sm hover:shadow-lg hover:border-[#627e59]/30 transition-all flex flex-col overflow-hidden group h-full"
+              className="bg-white rounded-2xl border border-stone-200 shadow-sm hover:shadow-lg hover:border-palette-forest-dark/30 transition-all flex flex-col overflow-hidden group h-full"
             >
               <div className="p-6 flex flex-col flex-grow">
                 {/* Header carte : avatar 12 + nom (HTML) */}
@@ -214,10 +194,10 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
                         <img
                           src={c.avatar_url}
                           alt=""
-                          className="w-12 h-12 rounded-full object-cover ring-2 ring-stone-100 group-hover:ring-[#627e59]/20 transition-all"
+                          className="w-12 h-12 rounded-full object-cover ring-2 ring-stone-100 group-hover:ring-palette-forest-dark/20 transition-all"
                         />
                       ) : (
-                        <div className="w-12 h-12 rounded-full bg-[#8e9856] text-white flex items-center justify-center text-base font-bold ring-2 ring-stone-100 group-hover:ring-[#627e59]/20 transition-all">
+                        <div className="w-12 h-12 rounded-full bg-palette-olive text-white flex items-center justify-center text-base font-bold ring-2 ring-stone-100 group-hover:ring-palette-forest-dark/20 transition-all">
                           {getInitials(c.full_name ?? null, c.email)}
                         </div>
                       )}
@@ -231,7 +211,7 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
                       )}
                     </div>
                     <div>
-                      <h3 className="font-bold text-lg leading-tight text-stone-900 group-hover:text-[#627e59] transition-colors">
+                      <h3 className="font-bold text-lg leading-tight text-stone-900 group-hover:text-palette-forest-dark transition-colors">
                         {c.full_name?.trim() || c.email}
                       </h3>
                       {ratingsByCoach[c.user_id] && ratingsByCoach[c.user_id].reviewCount > 0 ? (
@@ -251,16 +231,10 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
                   </div>
                 </div>
 
-                {/* Tags : sports (avec emoji) */}
+                {/* Tags : sports */}
                 <div className="flex flex-wrap gap-2 mb-4">
                   {(c.coached_sports ?? []).map((sportValue) => (
-                    <span
-                      key={sportValue}
-                      className="inline-flex items-center px-2 py-1 rounded-md bg-stone-100 text-stone-600 text-[10px] font-bold uppercase tracking-wide border border-stone-200"
-                    >
-                      <span aria-hidden>{sportEmoji(sportValue)}</span>
-                      <span>{sportLabel(sportValue)}</span>
-                    </span>
+                    <Badge key={sportValue} sport={sportValue as Parameters<typeof Badge>[0]['sport']} />
                   ))}
                 </div>
 
@@ -289,7 +263,7 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
                             </div>
                             <div className="text-right">
                               {isFree ? (
-                                <span className="text-xs font-bold text-[#627e59] bg-[#627e59]/10 px-1.5 py-0.5 rounded">Gratuit</span>
+                                <span className="text-xs font-bold text-palette-forest-dark bg-palette-forest-dark/10 px-1.5 py-0.5 rounded">Gratuit</span>
                               ) : (
                                 <>
                                   <span className="text-xs font-bold text-stone-900">{offer.price}€</span>
@@ -316,16 +290,17 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
                     initialPracticedSports={initialPracticedSports}
                   />
                 ) : (
-                  <button
+                  <Button
                     type="button"
+                    variant="outline"
                     onClick={() => setDetailModalCoach(c)}
-                    className="w-full py-2.5 rounded-xl bg-white border-2 border-[#627e59] text-[#627e59] font-bold text-sm hover:bg-[#627e59] hover:text-white transition-all flex items-center justify-center gap-2"
+                    className="w-full"
                   >
                     <span>Voir le détail</span>
                     <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="m9 18 6-6-6-6" />
                     </svg>
-                  </button>
+                  </Button>
                 )}
               </div>
             </li>
@@ -348,7 +323,7 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
       {presentationModalCoach && (
         <>
           <div
-            className="fixed inset-0 bg-palette-forest-dark/50 backdrop-blur-sm z-[90]"
+            className="fixed inset-0 bg-stone-900/50 backdrop-blur-sm z-[90]"
             onClick={() => setPresentationModalCoach(null)}
             aria-hidden="true"
           />
@@ -360,16 +335,16 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
           >
             <div className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto bg-white rounded-xl shadow-xl border border-stone-100">
             <div className="sticky top-0 flex justify-end p-3 bg-white rounded-t-xl z-10">
-              <button
+              <Button
                 type="button"
+                variant="ghost"
                 onClick={() => setPresentationModalCoach(null)}
-                className="p-2 rounded-lg text-stone-400 hover:text-stone-600 hover:bg-stone-50 transition-colors"
                 aria-label="Fermer"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M18 6 6 18" /><path d="m6 6 12 12" />
                 </svg>
-              </button>
+              </Button>
             </div>
             <div className="px-8 pb-8">
               <div className="flex items-center gap-4 mb-4">
@@ -387,13 +362,7 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
               {(presentationModalCoach.coached_sports?.length ?? 0) > 0 && (
                 <div className="flex flex-wrap gap-2 mb-3">
                   {presentationModalCoach.coached_sports!.map((sportValue) => (
-                    <span
-                      key={sportValue}
-                      className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#627e59]/10 text-[#627e59] border border-[#627e59]/20"
-                    >
-                      <span aria-hidden>{sportEmoji(sportValue)}</span>
-                      <span>{sportLabel(sportValue)}</span>
-                    </span>
+                    <Badge key={sportValue} sport={sportValue as Parameters<typeof Badge>[0]['sport']} />
                   ))}
                 </div>
               )}
@@ -402,7 +371,7 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
                   {presentationModalCoach.languages!.map((langCode) => (
                     <span
                       key={langCode}
-                      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#8e9856]/10 text-[#8e9856]"
+                      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-palette-olive/10 text-palette-olive"
                     >
                       {languageLabel(langCode)}
                     </span>
@@ -438,14 +407,11 @@ type OfferSelectButtonProps = {
 
 function OfferSelectButton({ isSelected, onClick }: OfferSelectButtonProps) {
   return (
-    <button
+    <Button
       type="button"
+      variant={isSelected ? 'primary' : 'outline'}
       onClick={onClick}
-      className={`w-full py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2 ${
-        isSelected
-          ? 'bg-[#627e59] text-white hover:bg-[#506648] shadow-md'
-          : 'border-2 border-stone-200 text-stone-600 hover:border-stone-400 hover:bg-stone-50'
-      }`}
+      className={`w-full ${!isSelected ? '!border-stone-200 !text-stone-600 hover:!border-stone-400 hover:!bg-stone-50' : ''}`}
     >
       {isSelected ? (
         <>
@@ -457,7 +423,7 @@ function OfferSelectButton({ isSelected, onClick }: OfferSelectButtonProps) {
       ) : (
         'Sélectionner'
       )}
-    </button>
+    </Button>
   )
 }
 
@@ -529,15 +495,15 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
   }
 
   const getOfferBadge = (offer: typeof offers[0]) => {
-    if (offer.is_featured) return { label: 'Recommandé', className: 'bg-[#627e59]/10 text-[#627e59]' }
+    if (offer.is_featured) return { label: 'Recommandé', className: 'bg-palette-forest-dark/10 text-palette-forest-dark' }
     if (offer.price_type === 'free') return { label: 'Découverte', className: 'bg-stone-100 text-stone-600' }
-    if (offer.price_type === 'monthly') return { label: 'Suivi Complet', className: 'bg-[#627e59]/10 text-[#627e59]' }
+    if (offer.price_type === 'monthly') return { label: 'Suivi Complet', className: 'bg-palette-forest-dark/10 text-palette-forest-dark' }
     return { label: 'Plan Unique', className: 'bg-blue-50 text-blue-600' }
   }
 
   return createPortal(
     <>
-      <div className="fixed inset-0 bg-palette-forest-dark/50 backdrop-blur-sm z-[90]" onClick={onClose} />
+      <div className="fixed inset-0 bg-stone-900/50 backdrop-blur-sm z-[90]" onClick={onClose} />
       <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 overflow-y-auto">
         <div className="relative w-full max-w-4xl bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] my-auto">
           {/* HEADER FIXE (Identité + Note) */}
@@ -563,18 +529,9 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
               {((coach.coached_sports ?? []).length > 0 || (coach.languages ?? []).length > 0) && (
                 <div className="flex flex-wrap gap-2 items-center mt-2">
                   {/* Tuiles Sports */}
-                  {(coach.coached_sports ?? []).map((sportValue) => {
-                    const opt = COACHED_SPORTS_OPTIONS.find(o => o.value === sportValue)
-                    return (
-                      <span
-                        key={sportValue}
-                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white border border-stone-200 text-stone-600 text-xs font-bold uppercase tracking-wide"
-                      >
-                        <span aria-hidden>{opt?.emoji ?? ''}</span>
-                        {opt?.label ?? sportValue}
-                      </span>
-                    )
-                  })}
+                  {(coach.coached_sports ?? []).map((sportValue) => (
+                    <Badge key={sportValue} sport={sportValue as Parameters<typeof Badge>[0]['sport']} />
+                  ))}
                   {/* Séparateur si sports ET langues */}
                   {(coach.coached_sports ?? []).length > 0 && (coach.languages ?? []).length > 0 && (
                     <div className="w-px h-6 bg-stone-300 mx-1" />
@@ -594,16 +551,17 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
                 </div>
               )}
             </div>
-            <button
+            <Button
               type="button"
+              variant="ghost"
               onClick={onClose}
-              className="w-10 h-10 rounded-full bg-stone-50 hover:bg-stone-100 flex items-center justify-center text-stone-400 hover:text-stone-600 transition-colors shrink-0"
+              className="rounded-full min-w-10 min-h-10"
               aria-label="Fermer"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M18 6 6 18" /><path d="m6 6 12 12" />
               </svg>
-            </button>
+            </Button>
           </div>
 
           {/* CORPS SCROLLABLE */}
@@ -628,7 +586,7 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
 
                 {/* SECTION OFFRES */}
                 <h3 className="text-lg font-bold text-stone-800 mb-4 flex items-center gap-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-[#627e59]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-palette-forest-dark" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path d="M20 7h-4m-2-4H8a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2Z" />
                   </svg>
                   Choisissez une formule
@@ -648,14 +606,14 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
                             key={offer.id}
                             className={`relative bg-white rounded-2xl border-2 p-6 cursor-pointer transition-all group flex flex-col ${
                               isSelected 
-                                ? 'border-[#627e59] shadow-md hover:border-[#627e59]' 
+                                ? 'border-palette-forest-dark shadow-md hover:border-palette-forest-dark' 
                                 : 'border-stone-200 hover:border-stone-300 hover:shadow-md'
                             }`}
                             onClick={() => setSelectedOfferId(offer.id)}
                           >
                             {isFeatured && (
                               <div className={`absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide shadow-sm transition-colors ${
-                                isSelected ? 'bg-[#627e59] text-white' : 'bg-stone-500 text-white group-hover:bg-[#627e59]'
+                                isSelected ? 'bg-palette-forest-dark text-white' : 'bg-stone-500 text-white group-hover:bg-palette-forest-dark'
                               }`}>
                                 Recommandé
                               </div>
@@ -669,7 +627,7 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
                               </div>
                               <div className={`w-5 h-5 rounded-full border-2 transition-colors shrink-0 ${
                                 isSelected 
-                                  ? 'border-[#627e59] bg-[#627e59]' 
+                                  ? 'border-palette-forest-dark bg-palette-forest-dark' 
                                   : 'border-stone-300 group-hover:border-stone-300'
                               }`}>
                                 {isSelected && (
@@ -715,50 +673,38 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
                           </label>
                           <div className="flex flex-wrap gap-2">
                             {PRACTICED_SPORTS_OPTIONS.map((opt) => (
-                              <label key={opt.value} className="cursor-pointer">
-                                <input
-                                  type="checkbox"
-                                  checked={sports.includes(opt.value)}
-                                  onChange={() => toggleSport(opt.value)}
-                                  className="hidden"
-                                />
-                                <div className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                                  sports.includes(opt.value)
-                                    ? 'bg-[#627e59] text-white'
-                                    : 'bg-white border border-stone-200 text-stone-600 hover:bg-stone-50'
-                                }`}>
-                                  {opt.emoji} {opt.label}
-                                </div>
-                              </label>
+                              <SportTileSelectable
+                                key={opt.value}
+                                value={opt.value}
+                                selected={sports.includes(opt.value)}
+                                onChange={() => toggleSport(opt.value)}
+                              />
                             ))}
                           </div>
                         </div>
-                        <div>
-                          <label htmlFor="coaching_need" className="block text-sm font-medium text-stone-700 mb-2">
-                            Besoin de coaching *
-                          </label>
-                          <textarea
-                            id="coaching_need"
-                            value={need}
-                            onChange={(e) => setNeed(e.target.value)}
-                            rows={4}
-                            placeholder="Décrivez votre objectif, votre niveau actuel, vos contraintes..."
-                            className="w-full px-4 py-3 rounded-xl border border-stone-300 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-[#627e59] focus:border-transparent resize-y"
-                            required
-                          />
-                        </div>
-                        <button
+                        <Textarea
+                          id="coaching_need"
+                          label="Besoin de coaching *"
+                          value={need}
+                          onChange={(e) => setNeed(e.target.value)}
+                          rows={4}
+                          placeholder="Décrivez votre objectif, votre niveau actuel, vos contraintes..."
+                          className="rounded-xl py-3"
+                          required
+                        />
+                        <Button
                           type="submit"
+                          variant="primary"
                           disabled={isSubmitting}
-                          className="w-full py-3 rounded-xl bg-[#627e59] text-white font-bold hover:bg-[#506648] shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                          loading={isSubmitting}
+                          loadingText="Envoi en cours…"
+                          className="w-full"
                         >
-                          {isSubmitting ? 'Envoi en cours...' : 'Envoyer la demande'}
-                          {!isSubmitting && (
-                            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                              <path d="m9 18 6-6-6-6" />
-                            </svg>
-                          )}
-                        </button>
+                          Envoyer la demande
+                          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                            <path d="m9 18 6-6-6-6" />
+                          </svg>
+                        </Button>
                       </form>
                     )}
                   </>

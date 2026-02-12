@@ -3,9 +3,11 @@
 import { useState, useTransition, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
-import { PrimaryButton } from '@/components/PrimaryButton'
+import { Button } from '@/components/Button'
+import { Textarea } from '@/components/Textarea'
 import { createCoachRequest, cancelCoachRequest } from './actions'
-import { PRACTICED_SPORTS_OPTIONS } from './sportsOptions'
+import { SportTileSelectable } from '@/components/SportTileSelectable'
+import { PRACTICED_SPORTS_OPTIONS } from '@/lib/sportsOptions'
 
 export { PRACTICED_SPORTS_OPTIONS }
 
@@ -19,12 +21,14 @@ type RequestCoachButtonProps = {
   initialPracticedSports?: string[]
 }
 
+import { SPORT_LABELS } from '@/lib/sportStyles'
+
 /** Affiche les sports pratiqués (valeur stockée en base, ex. "course,velo") avec les libellés. */
 export function formatSportPracticedDisplay(value: string): string {
   if (!value?.trim()) return '—'
   const labels = value.split(',').map((v) => {
-    const opt = PRACTICED_SPORTS_OPTIONS.find((o) => o.value === v.trim())
-    return opt ? opt.label : v.trim()
+    const key = v.trim()
+    return (SPORT_LABELS as Record<string, string>)[key] ?? key
   })
   return labels.filter(Boolean).join(', ')
 }
@@ -124,20 +128,21 @@ export function RequestCoachButton({ coachId, coachName, requestStatus, requestI
         </span>
         {requestId && (
           <>
-            <button
+            <Button
               type="button"
+              variant="muted"
               onClick={() => { setError(null); setConfirmCancelOpen(true) }}
               disabled={isPending}
-              className="text-sm font-medium text-stone-500 hover:text-stone-700 underline underline-offset-2 disabled:opacity-50 transition-colors"
+              className="underline underline-offset-2 border-0 p-0 bg-transparent hover:bg-transparent min-h-0"
             >
               Annuler la demande
-            </button>
+            </Button>
             {confirmCancelOpen &&
               typeof document !== 'undefined' &&
               createPortal(
                 <>
                   <div
-                    className="fixed inset-0 bg-palette-forest-dark/50 backdrop-blur-sm z-[90]"
+                    className="fixed inset-0 bg-stone-900/50 backdrop-blur-sm z-[90]"
                     onClick={() => { if (!isPending) { setError(null); setConfirmCancelOpen(false) } }}
                     aria-hidden="true"
                   />
@@ -149,16 +154,17 @@ export function RequestCoachButton({ coachId, coachName, requestStatus, requestI
                   >
                     <div className="relative w-full max-w-md bg-white rounded-xl shadow-xl border border-stone-100">
                       <div className="sticky top-0 flex justify-end p-3 bg-white rounded-t-xl z-10">
-                        <button
+                        <Button
                           type="button"
+                          variant="ghost"
                           onClick={() => { if (!isPending) { setError(null); setConfirmCancelOpen(false) } }}
-                          className="p-2 rounded-lg text-stone-400 hover:text-stone-600 hover:bg-stone-50 transition-colors"
+                          disabled={isPending}
                           aria-label="Fermer"
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path d="M18 6 6 18" /><path d="m6 6 12 12" />
                           </svg>
-                        </button>
+                        </Button>
                       </div>
                       <div className="px-8 pb-8">
                         <h2 id="confirm-cancel-title" className="text-xl font-semibold text-stone-900 text-center mb-2">
@@ -168,22 +174,26 @@ export function RequestCoachButton({ coachId, coachName, requestStatus, requestI
                           Êtes-vous sûr de vouloir annuler cette demande envoyée à ce coach ?
                         </p>
                         <div className="flex gap-3">
-                          <button
+                          <Button
                             type="button"
+                            variant="muted"
                             onClick={() => { setError(null); setConfirmCancelOpen(false) }}
-                            disabled={isPending}
-                            className="flex-1 py-2.5 rounded-lg border border-stone-300 text-sm font-medium text-stone-700 hover:bg-stone-50 transition-colors disabled:opacity-50"
-                          >
-                            Retour
-                          </button>
-                          <PrimaryButton
-                            type="button"
-                            onClick={handleConfirmCancel}
                             disabled={isPending}
                             className="flex-1"
                           >
-                            {isPending ? 'Annulation...' : 'Oui, annuler'}
-                          </PrimaryButton>
+                            Retour
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="primary"
+                            onClick={handleConfirmCancel}
+                            disabled={isPending}
+                            loading={isPending}
+                            loadingText="Annulation…"
+                            className="flex-1"
+                          >
+                            Oui, annuler
+                          </Button>
                         </div>
                         {error && (
                           <p className="text-sm text-red-600 mt-4 text-center" role="alert">{error}</p>
@@ -202,20 +212,21 @@ export function RequestCoachButton({ coachId, coachName, requestStatus, requestI
 
   return (
     <>
-      <PrimaryButton
+      <Button
         type="button"
+        variant="primary"
         onClick={() => setOpen(true)}
         disabled={isPending}
       >
         Choisir ce coach
-      </PrimaryButton>
+      </Button>
 
       {open &&
         typeof document !== 'undefined' &&
         createPortal(
           <>
             <div
-              className="fixed inset-0 bg-palette-forest-dark/50 backdrop-blur-sm z-[90]"
+              className="fixed inset-0 bg-stone-900/50 backdrop-blur-sm z-[90]"
               onClick={closeModal}
               aria-hidden="true"
             />
@@ -227,16 +238,16 @@ export function RequestCoachButton({ coachId, coachName, requestStatus, requestI
             >
             <div className="relative w-full max-w-md max-h-[90vh] overflow-y-auto bg-white rounded-xl shadow-xl border border-stone-100">
               <div className="sticky top-0 flex justify-end p-3 bg-white rounded-t-xl z-10">
-                <button
+                <Button
                   type="button"
+                  variant="ghost"
                   onClick={closeModal}
-                  className="p-2 rounded-lg text-stone-400 hover:text-stone-600 hover:bg-stone-50 transition-colors"
                   aria-label="Fermer"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M18 6 6 18" /><path d="m6 6 12 12" />
                   </svg>
-                </button>
+                </Button>
               </div>
               <div className="px-8 pb-8">
                 <h2 id="request-coach-title" className="text-2xl font-semibold text-stone-900 text-center mb-2">
@@ -250,56 +261,48 @@ export function RequestCoachButton({ coachId, coachName, requestStatus, requestI
                     <p className="block text-sm font-medium text-stone-700 mb-3">Sports pratiqués</p>
                     <div className="flex flex-wrap gap-3" role="group" aria-label="Sports pratiqués">
                       {PRACTICED_SPORTS_OPTIONS.map((opt) => (
-                        <label key={opt.value} className="cursor-pointer">
-                          <input
-                            type="checkbox"
-                            name="sport_practiced"
-                            value={opt.value}
-                            checked={sports.includes(opt.value)}
-                            onChange={() => toggleSport(opt.value)}
-                            className="hidden chip-checkbox"
-                          />
-                          <div className="px-4 py-2 rounded-full border border-stone-200 bg-white text-stone-600 hover:border-[#627e59] transition-all text-sm font-medium select-none flex items-center gap-2">
-                            <span>{opt.emoji}</span>
-                            <span>{opt.label}</span>
-                          </div>
-                        </label>
+                        <SportTileSelectable
+                          key={opt.value}
+                          value={opt.value}
+                          selected={sports.includes(opt.value)}
+                          onChange={() => toggleSport(opt.value)}
+                        />
                       ))}
                     </div>
                   </div>
-                  <div>
-                    <label htmlFor="need" className="block text-sm font-medium text-stone-700 mb-2">
-                      Besoin de coaching
-                    </label>
-                    <textarea
-                      id="need"
-                      value={need}
-                      onChange={(e) => setNeed(e.target.value)}
-                      required
-                      rows={4}
-                      placeholder="Décrivez votre objectif ou votre besoin d'accompagnement..."
-                      className="w-full px-4 py-2.5 rounded-lg border border-stone-300 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-olive focus:border-transparent resize-y transition"
-                    />
-                  </div>
+                  <Textarea
+                    id="need"
+                    label="Besoin de coaching"
+                    value={need}
+                    onChange={(e) => setNeed(e.target.value)}
+                    required
+                    rows={4}
+                    placeholder="Décrivez votre objectif ou votre besoin d'accompagnement..."
+                    className="focus:ring-palette-olive"
+                  />
                   {error && (
                     <p className="text-sm text-red-600" role="alert">{error}</p>
                   )}
                   <div className="flex gap-3 pt-2">
-                    <button
+                    <Button
                       type="button"
+                      variant="muted"
                       onClick={closeModal}
                       disabled={isPending}
-                      className="flex-1 py-2.5 rounded-lg border border-stone-300 text-stone-700 font-medium hover:bg-stone-50 transition-colors disabled:opacity-50"
-                    >
-                      Annuler
-                    </button>
-                    <PrimaryButton
-                      type="submit"
-                      disabled={isPending || sports.length === 0}
                       className="flex-1"
                     >
-                      {isPending ? 'Envoi...' : 'Envoyer la demande'}
-                    </PrimaryButton>
+                      Annuler
+                    </Button>
+                    <Button
+                      type="submit"
+                      variant="primary"
+                      disabled={isPending || sports.length === 0}
+                      loading={isPending}
+                      loadingText="Envoi en cours…"
+                      className="flex-1"
+                    >
+                      Envoyer la demande
+                    </Button>
                   </div>
                 </form>
               </div>

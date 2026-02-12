@@ -2,7 +2,7 @@
 
 import { useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { PrimaryButton } from '@/components/PrimaryButton'
+import { Button } from '@/components/Button'
 import { respondToCoachRequest } from './actions'
 
 export function RespondToRequestButtons({ requestId }: { requestId: string }) {
@@ -22,21 +22,22 @@ export function RespondToRequestButtons({ requestId }: { requestId: string }) {
 
   return (
     <div className="flex gap-2 shrink-0">
-      <button
+      <Button
         type="button"
+        variant="muted"
         onClick={() => handleRespond(false)}
         disabled={isPending}
-        className="rounded-lg border-2 border-palette-forest-dark px-3 py-2 text-sm font-medium text-stone-700 hover:bg-stone-50 transition-colors disabled:opacity-50"
       >
         Refuser
-      </button>
-      <PrimaryButton
+      </Button>
+      <Button
         type="button"
+        variant="primary"
         onClick={() => handleRespond(true)}
         disabled={isPending}
       >
         Accepter
-      </PrimaryButton>
+      </Button>
     </div>
   )
 }

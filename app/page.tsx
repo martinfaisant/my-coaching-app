@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { LoginModal } from '@/components/LoginModal'
+import { Button } from '@/components/Button'
 
 const HERO_CARDS = [
   {
@@ -55,20 +56,12 @@ export default function Home() {
               Coach Pro
             </Link>
             <div className="flex items-center gap-2.5">
-              <button
-                type="button"
-                onClick={openLogin}
-                className="rounded-lg px-4 py-2 text-sm font-medium text-stone-700 hover:bg-stone-100 transition-colors"
-              >
+              <Button variant="secondary" onClick={openLogin}>
                 Se connecter
-              </button>
-              <button
-                type="button"
-                onClick={openSignup}
-                className="rounded-lg px-4 py-2 text-sm font-medium text-white transition-colors" style={{ backgroundColor: '#627e59' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#8e9856'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#627e59'}
-              >
+              </Button>
+              <Button variant="primary" onClick={openSignup}>
                 Créer un compte
-              </button>
+              </Button>
             </div>
           </div>
         </header>

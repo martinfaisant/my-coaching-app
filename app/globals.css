@@ -7,15 +7,33 @@
   --section-bg: #fafaf9;
   --foreground: #1a1612;
   --palette-forest-dark: #627e59;
+  --palette-forest-darker: #506648;
   --palette-olive: #8e9856;
   --palette-sage: #aaaa51;
   --palette-gold: #cbb44b;
   --palette-amber: #c9a544;
+  --palette-strava: #FC4C02;
+  /* Danger : boutons Déconnexion, Supprimer, états d'erreur (Harmonie Nature) */
+  --palette-danger: #c0564b;
+  --palette-danger-light: #fdf2f1;
+  --palette-danger-dark: #9e3b31;
+  --palette-danger-darker: #7d3028;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-palette-forest-dark: var(--palette-forest-dark);
+  --color-palette-forest-darker: var(--palette-forest-darker);
+  --color-palette-olive: var(--palette-olive);
+  --color-palette-sage: var(--palette-sage);
+  --color-palette-gold: var(--palette-gold);
+  --color-palette-amber: var(--palette-amber);
+  --color-palette-strava: var(--palette-strava);
+  --color-palette-danger: var(--palette-danger);
+  --color-palette-danger-light: var(--palette-danger-light);
+  --color-palette-danger-dark: var(--palette-danger-dark);
+  --color-palette-danger-darker: var(--palette-danger-darker);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -48,28 +66,43 @@ input[type="number"] {
 
 /* Palette de couleurs personnalisée */
 .bg-palette-forest-dark { background-color: #627e59; }
+.bg-palette-forest-darker { background-color: #506648; }
 .bg-palette-olive { background-color: #8e9856; }
 .bg-palette-sage { background-color: #aaaa51; }
 .bg-palette-gold { background-color: #cbb44b; }
 .bg-palette-amber { background-color: #c9a544; }
+.bg-palette-strava { background-color: #FC4C02; }
+.bg-palette-danger { background-color: #c0564b; }
+.bg-palette-danger-light { background-color: #fdf2f1; }
+.bg-palette-danger-dark { background-color: #9e3b31; }
 
 .text-palette-forest-dark { color: #627e59; }
+.text-palette-forest-darker { color: #506648; }
 .text-palette-olive { color: #8e9856; }
 .text-palette-sage { color: #aaaa51; }
 .text-palette-gold { color: #cbb44b; }
 .text-palette-amber { color: #c9a544; }
+.text-palette-strava { color: #FC4C02; }
+.text-palette-danger { color: #c0564b; }
+.text-palette-danger-dark { color: #9e3b31; }
 
 .border-palette-forest-dark { border-color: #627e59; }
+.border-palette-forest-darker { border-color: #506648; }
 .border-palette-olive { border-color: #8e9856; }
 .border-palette-sage { border-color: #aaaa51; }
 .border-palette-gold { border-color: #cbb44b; }
 .border-palette-amber { border-color: #c9a544; }
+.border-palette-strava { border-color: #FC4C02; }
+.border-palette-danger { border-color: #c0564b; }
 
 .ring-palette-forest-dark { --tw-ring-color: #627e59; }
+.ring-palette-forest-darker { --tw-ring-color: #506648; }
 .ring-palette-olive { --tw-ring-color: #8e9856; }
 .ring-palette-sage { --tw-ring-color: #aaaa51; }
 .ring-palette-gold { --tw-ring-color: #cbb44b; }
 .ring-palette-amber { --tw-ring-color: #c9a544; }
+.ring-palette-strava { --tw-ring-color: #FC4C02; }
+.ring-palette-danger { --tw-ring-color: #c0564b; }
 
 /* Calendrier: scrollbar masquée, line-clamp, carte entraînement */
 .hide-scroll::-webkit-scrollbar { display: none; }
@@ -84,10 +117,13 @@ input[type="number"] {
 .training-card:hover { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
 
 /* Hover states pour la palette */
+.hover\:bg-palette-forest-darker:hover { background-color: #506648; }
 .hover\:bg-palette-olive:hover { background-color: #8e9856; }
 .hover\:bg-palette-sage:hover { background-color: #aaaa51; }
 .hover\:bg-palette-gold:hover { background-color: #cbb44b; }
 .hover\:bg-palette-amber:hover { background-color: #c9a544; }
+.hover\:bg-palette-danger-light:hover { background-color: #fdf2f1; }
+.hover\:text-palette-danger:hover { color: #c0564b; }
 
 /* Opacités pour la palette */
 .bg-palette-olive\/10 { background-color: rgba(142, 152, 86, 0.1); }
@@ -100,6 +136,14 @@ input[type="number"] {
 .border-palette-sage\/40 { border-color: rgba(170, 170, 81, 0.4); }
 .border-palette-gold\/40 { border-color: rgba(203, 180, 75, 0.4); }
 .border-palette-amber\/40 { border-color: rgba(201, 165, 68, 0.4); }
+
+/* Dégradés palette (bannière profil, avatar initiales) — fallback si from-/to- ne résolvent pas */
+.bg-gradient-palette {
+  background: linear-gradient(to right, var(--palette-forest-dark), var(--palette-olive));
+}
+.bg-gradient-palette-br {
+  background: linear-gradient(to bottom right, var(--palette-forest-dark), var(--palette-olive));
+}
 
 /* Style des Chips (Boutons de sélection) pour le formulaire profil coach */
 .chip-checkbox:checked + div {

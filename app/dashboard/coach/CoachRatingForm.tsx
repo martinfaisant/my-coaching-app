@@ -3,7 +3,8 @@
 import { useState, useTransition, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
-import { PrimaryButton } from '@/components/PrimaryButton'
+import { Button } from '@/components/Button'
+import { Textarea } from '@/components/Textarea'
 import { upsertCoachRating } from './actions'
 
 type CoachRatingFormProps = {
@@ -26,8 +27,11 @@ export function CoachRatingForm({ coachId, initialRating, initialComment }: Coac
 
   const initialRatingValue = initialRating ?? 0
   const initialCommentValue = initialComment ?? ''
+  // Valeurs de référence après un save réussi (comme ProfileForm)
+  const [savedValues, setSavedValues] = useState<{ rating: number; comment: string } | null>(null)
+  const refForComparison = savedValues ?? { rating: initialRatingValue, comment: initialCommentValue }
   const hasUnsavedChanges =
-    rating !== initialRatingValue || comment.trim() !== initialCommentValue.trim()
+    rating !== refForComparison.rating || comment.trim() !== refForComparison.comment.trim()
 
   // Réinitialiser "Enregistré" dès qu'une nouvelle modification est détectée (comportement profil)
   useEffect(() => {
@@ -35,6 +39,18 @@ export function CoachRatingForm({ coachId, initialRating, initialComment }: Coac
       setShowSavedFeedback(false)
     }
   }, [hasUnsavedChanges, showSavedFeedback])
+
+  // Réinitialiser l'erreur quand l'utilisateur modifie le formulaire
+  useEffect(() => {
+    if (hasUnsavedChanges && error) {
+      setError(null)
+    }
+  }, [hasUnsavedChanges, error])
+
+  // Réinitialiser savedValues quand les props changent (ex. après refresh/navigation)
+  useEffect(() => {
+    setSavedValues(null)
+  }, [initialRating, initialComment])
 
   // beforeunload : avertir si modifications non enregistrées
   useEffect(() => {
@@ -135,15 +151,40 @@ export function CoachRatingForm({ coachId, initialRating, initialComment }: Coac
         setError(result.error)
         return
       }
+      // Comme ProfileForm : mettre à jour les refs pour que hasUnsavedChanges passe à false
+      // (sinon le useEffect "clear on hasUnsavedChanges" efface immédiatement le feedback)
+      setSavedValues({ rating, comment })
       setShowSavedFeedback(true)
-      router.refresh()
-      setTimeout(() => setShowSavedFeedback(false), 2500)
+      setTimeout(() => {
+        setShowSavedFeedback(false)
+        router.refresh()
+      }, 2500)
     })
   }
 
   return (
     <>
     <form onSubmit={handleSubmit} className="space-y-4">
+      {/* En-tête : titre à gauche, bouton à droite */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+        <h2 className="text-base font-semibold text-stone-900">Donner votre avis</h2>
+        <Button
+          type="submit"
+          variant="primary"
+          disabled={!hasUnsavedChanges || isPending || rating < 1}
+          loading={isPending}
+          loadingText="Enregistrement…"
+          success={showSavedFeedback}
+          error={!!error}
+        >
+          Enregistrer
+        </Button>
+      </div>
+      {error && (
+        <p className="text-sm text-red-600 -mt-2 mb-2" role="alert">
+          {error}
+        </p>
+      )}
       <div>
         <p className="text-sm font-medium text-stone-700 mb-2">Votre note</p>
         <div className="flex gap-1" role="group" aria-label="Note sur 5">
@@ -170,58 +211,21 @@ export function CoachRatingForm({ coachId, initialRating, initialComment }: Coac
         <p className="text-xs text-stone-500 mt-1">{rating > 0 ? `${rating} / 5` : 'Cliquez pour choisir'}</p>
       </div>
 
-      <div>
-        <label htmlFor="rating-comment" className="block text-sm font-medium text-stone-700 mb-2">
-          Commentaire (facultatif)
-        </label>
-        <textarea
-          id="rating-comment"
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-          rows={3}
-          placeholder="Votre avis sur l'accompagnement..."
-          className="w-full px-4 py-2.5 rounded-lg border border-stone-300 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-olive focus:border-transparent resize-y transition"
-        />
-      </div>
-
-      <div className="flex flex-col items-start gap-2">
-        <PrimaryButton
-          type="submit"
-          disabled={!hasUnsavedChanges || isPending || rating < 1}
-          className={error ? '!bg-red-600 hover:!bg-red-700 focus:!ring-red-500' : ''}
-        >
-          {showSavedFeedback ? (
-            <>
-              <span>Enregistré</span>
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1.5 animate-saved-check" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
-            </>
-          ) : error ? (
-            <>
-              <span>Non enregistré</span>
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M18 6 6 18M6 6l12 12" />
-              </svg>
-            </>
-          ) : isPending ? (
-            'Enregistrement...'
-          ) : (
-            'Enregistrer'
-          )}
-        </PrimaryButton>
-        {error && (
-          <p className="text-sm text-red-600" role="alert">
-            {error}
-          </p>
-        )}
-      </div>
+      <Textarea
+        id="rating-comment"
+        label="Commentaire (facultatif)"
+        value={comment}
+        onChange={(e) => setComment(e.target.value)}
+        rows={3}
+        placeholder="Votre avis sur l'accompagnement..."
+        className="focus:ring-palette-olive"
+      />
     </form>
 
     {unsavedChangesModalOpen && typeof document !== 'undefined' && createPortal(
       <>
         <div
-          className="fixed inset-0 bg-palette-forest-dark/50 backdrop-blur-sm z-[90]"
+          className="fixed inset-0 bg-stone-900/50 backdrop-blur-sm z-[90]"
           onClick={() => !isSavingBeforeLeave && (setUnsavedChangesModalOpen(false), setPendingNavigation(null))}
           aria-hidden="true"
         />
@@ -233,17 +237,17 @@ export function CoachRatingForm({ coachId, initialRating, initialComment }: Coac
         >
           <div className="relative w-full max-w-md bg-white rounded-xl shadow-xl border border-stone-100">
           <div className="sticky top-0 flex justify-end p-3 bg-white rounded-t-xl z-10">
-            <button
+            <Button
               type="button"
+              variant="ghost"
               onClick={() => !isSavingBeforeLeave && (setUnsavedChangesModalOpen(false), setPendingNavigation(null))}
-              className="p-2 rounded-lg text-stone-400 hover:text-stone-600 hover:bg-stone-50 transition-colors"
-              aria-label="Fermer"
               disabled={isSavingBeforeLeave}
+              aria-label="Fermer"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M18 6 6 18" /><path d="m6 6 12 12" />
               </svg>
-            </button>
+            </Button>
           </div>
           <div className="px-8 pb-8">
             <h2 id="coach-rating-unsaved-title" className="text-xl font-semibold text-stone-900 mb-2">
@@ -253,22 +257,26 @@ export function CoachRatingForm({ coachId, initialRating, initialComment }: Coac
               Vous avez des modifications non enregistrées. Que souhaitez-vous faire ?
             </p>
             <div className="flex gap-3">
-              <button
+              <Button
                 type="button"
+                variant="muted"
                 onClick={handleLeaveWithoutSaving}
                 disabled={isSavingBeforeLeave}
-                className="flex-1 py-2.5 rounded-lg border border-stone-300 text-sm font-medium text-stone-700 hover:bg-stone-50 transition-colors disabled:opacity-50"
-              >
-                Quitter sans enregistrer
-              </button>
-              <PrimaryButton
-                type="button"
-                onClick={handleSaveAndLeave}
-                disabled={isSavingBeforeLeave || rating < 1}
                 className="flex-1"
               >
-                {isSavingBeforeLeave ? 'Enregistrement...' : 'Enregistrer et quitter'}
-              </PrimaryButton>
+                Quitter sans enregistrer
+              </Button>
+              <Button
+                type="button"
+                variant="primary"
+                onClick={handleSaveAndLeave}
+                disabled={isSavingBeforeLeave || rating < 1}
+                loading={isSavingBeforeLeave}
+                loadingText="Enregistrement…"
+                className="flex-1"
+              >
+                Enregistrer et quitter
+              </Button>
             </div>
           </div>
           </div>

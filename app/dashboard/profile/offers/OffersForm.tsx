@@ -3,7 +3,9 @@
 import { useState, useActionState, useEffect, useRef, useCallback } from 'react'
 import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
-import { PrimaryButton } from '@/components/PrimaryButton'
+import { Button } from '@/components/Button'
+import { Input } from '@/components/Input'
+import { Textarea } from '@/components/Textarea'
 import { saveOffers, deleteOffer, type OffersFormState } from './actions'
 import type { CoachOffer } from '@/types/database'
 
@@ -376,32 +378,18 @@ export function OffersForm({ offers }: OffersFormProps) {
         </div>
         
         {/* Bouton Sauvegarde */}
-        <PrimaryButton
+        <Button
           type="submit"
+          variant="primary"
           form="offers-form"
           disabled={!hasUnsavedChanges || isSubmitting}
-          className={`flex items-center gap-2 ${state?.error ? '!bg-red-600 hover:!bg-red-700 focus:!ring-red-500' : ''}`}
+          loading={isSubmitting}
+          loadingText="Enregistrement…"
+          success={showSavedFeedback}
+          error={!!state?.error}
         >
-          {showSavedFeedback ? (
-            <>
-              <span>Enregistré</span>
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 animate-saved-check" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
-            </>
-          ) : state?.error ? (
-            <>
-              <span>Non enregistré</span>
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M18 6 6 18M6 6l12 12" />
-              </svg>
-            </>
-          ) : isSubmitting ? (
-            'Enregistrement...'
-          ) : (
-            <span>Enregistrer</span>
-          )}
-        </PrimaryButton>
+          Enregistrer
+        </Button>
       </header>
 
       {/* CONTENU (GRILLE D'OFFRES) */}
@@ -426,12 +414,12 @@ export function OffersForm({ offers }: OffersFormProps) {
                 <div
                   key={index}
                   className={`bg-white rounded-2xl border-2 flex flex-col relative group ${
-                    isFeatured ? 'border-[#627e59] shadow-md' : 'border-stone-200 shadow-sm hover:shadow-md'
+                    isFeatured ? 'border-palette-forest-dark shadow-md' : 'border-stone-200 shadow-sm hover:shadow-md'
                   } transition-all`}
                 >
                   {/* Badge "Mis en avant" */}
                   {isFeatured && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#627e59] text-white px-3 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide shadow-sm flex items-center gap-1">
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-palette-forest-dark text-white px-3 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide shadow-sm flex items-center gap-1">
                       <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3 fill-current" viewBox="0 0 20 20">
                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                       </svg>
@@ -465,16 +453,17 @@ export function OffersForm({ offers }: OffersFormProps) {
                         </svg>
                       </button>
                       {/* Supprimer */}
-                      <button
+                      <Button
                         type="button"
+                        variant="ghost"
                         onClick={() => handleDeleteClick(index)}
-                        className="p-1.5 rounded-lg hover:bg-red-50 text-stone-400 hover:text-red-500 transition-colors"
+                        className="p-1.5 hover:bg-red-50 hover:text-red-500"
                         title="Supprimer l'offre"
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                         </svg>
-                      </button>
+                      </Button>
                     </div>
                   </div>
 
@@ -484,83 +473,102 @@ export function OffersForm({ offers }: OffersFormProps) {
                     <input type="hidden" name={`offer_${index}_featured`} value={isFeatured ? 'on' : ''} />
 
                     {/* Titre */}
-                    <div>
-                      <label htmlFor={`offer_${index}_title`} className="block text-[10px] uppercase font-bold text-stone-400 mb-1">
-                        Titre de l&apos;offre
-                      </label>
-                      <input
-                        id={`offer_${index}_title`}
-                        name={`offer_${index}_title`}
-                        type="text"
-                        defaultValue={offer?.title || ''}
-                        placeholder="Ex: Suivi Mensuel"
-                        className="w-full text-lg font-bold text-stone-800 bg-stone-50 border border-stone-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#627e59] focus:border-[#627e59] focus:outline-none transition-all placeholder-stone-300"
-                      />
-                    </div>
+                    <Input
+                      id={`offer_${index}_title`}
+                      label="Titre de l'offre"
+                      name={`offer_${index}_title`}
+                      type="text"
+                      defaultValue={offer?.title || ''}
+                      placeholder="Ex: Suivi Mensuel"
+                      className="rounded-xl text-stone-800 font-bold bg-stone-50"
+                    />
 
-                    {/* Prix & Type */}
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label htmlFor={`offer_${index}_price`} className="block text-[10px] uppercase font-bold text-stone-400 mb-1">
-                          Prix (€)
-                        </label>
-                        {priceTypes[index] === 'free' ? (
-                          <>
-                            <input type="hidden" name={`offer_${index}_price`} value="0" />
-                            <div className="w-full font-bold text-stone-800 bg-stone-50 border border-stone-200 rounded-lg px-3 py-2">
-                              0
+                    {/* Tarification : Prix + Récurrence */}
+                    <div>
+                      <label className="block text-sm font-medium text-stone-700 mb-2">
+                        Tarification
+                      </label>
+                      <div className="grid grid-cols-5 gap-3 items-stretch">
+                        {/* Input Prix (Col 2/5) */}
+                        <div className="col-span-2 flex">
+                          {priceTypes[index] === 'free' ? (
+                            <>
+                              <input type="hidden" name={`offer_${index}_price`} value="0" />
+                              <div className="w-full pl-3 pr-6 py-2.5 rounded-lg bg-white border border-stone-300 flex items-center text-stone-900 font-bold">
+                                <span>0</span>
+                                <span className="ml-auto text-stone-400 font-medium">€</span>
+                              </div>
+                            </>
+                          ) : (
+                            <div className="relative w-full">
+                              <input
+                                id={`offer_${index}_price`}
+                                name={`offer_${index}_price`}
+                                type="number"
+                                step="0.01"
+                                min={0}
+                                defaultValue={offer?.price !== undefined && offer.price_type !== 'free' ? String(offer.price) : ''}
+                                placeholder="0"
+                                className="w-full pl-3 pr-6 py-2.5 rounded-lg border border-stone-300 bg-white text-stone-900 placeholder-stone-400 font-bold focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                              />
+                              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 font-medium pointer-events-none">
+                                €
+                              </span>
                             </div>
-                          </>
-                        ) : (
-                          <input
-                            id={`offer_${index}_price`}
-                            name={`offer_${index}_price`}
-                            type="number"
-                            step="0.01"
-                            min="0"
-                            defaultValue={offer?.price !== undefined && offer.price_type !== 'free' ? String(offer.price) : ''}
-                            placeholder="0"
-                            className="w-full font-bold text-stone-800 bg-stone-50 border border-stone-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#627e59] focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                          />
-                        )}
-                      </div>
-                      <div>
-                        <label htmlFor={`offer_${index}_price_type`} className="block text-[10px] uppercase font-bold text-stone-400 mb-1">
-                          Récurrence
-                        </label>
-                        <select
-                          key={`price_type_${index}_${priceTypes[index] || 'one_time'}`}
-                          id={`offer_${index}_price_type`}
-                          name={`offer_${index}_price_type`}
-                          defaultValue={priceTypes[index] || offer?.price_type || 'one_time'}
-                          onChange={(e) => {
-                            const newType = e.target.value as 'one_time' | 'monthly' | 'free'
-                            setPriceTypes(prev => {
-                              const updated = { ...prev, [index]: newType }
-                              return updated
-                            })
-                          }}
-                          className="w-full text-sm font-medium text-stone-600 bg-stone-50 border border-stone-200 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-[#627e59] focus:outline-none appearance-none"
-                        >
-                          <option value="monthly">/ Mois</option>
-                          <option value="one_time">Paiement unique</option>
-                          <option value="free">Gratuit</option>
-                        </select>
+                          )}
+                        </div>
+
+                        {/* Sélecteur Récurrence (Col 3/5) */}
+                        <div className="col-span-3 flex gap-1 bg-white p-1 rounded-lg border border-stone-300 items-center h-full min-h-[42px]" role="group" aria-label="Récurrence">
+                          {(
+                            [
+                              { value: 'monthly' as const, label: '/ Mois' },
+                              { value: 'one_time' as const, label: 'Unique' },
+                              { value: 'free' as const, label: 'Gratuit' },
+                            ]
+                          ).map((opt) => {
+                            const selected = (priceTypes[index] || offer?.price_type || 'one_time') === opt.value
+                            return (
+                              <label key={opt.value} className="flex-1 cursor-pointer flex items-center justify-center min-h-0">
+                                <input
+                                  type="radio"
+                                  name={`offer_${index}_price_type`}
+                                  value={opt.value}
+                                  checked={selected}
+                                  onChange={() => {
+                                    setPriceTypes(prev => {
+                                      const updated = { ...prev, [index]: opt.value }
+                                      return updated
+                                    })
+                                  }}
+                                  className="sr-only"
+                                />
+                                <div
+                                  className={`w-full py-1.5 rounded-lg text-[10px] font-medium select-none transition-all text-center flex items-center justify-center text-stone-700 ${
+                                    selected
+                                      ? 'font-bold bg-stone-100 border border-stone-200'
+                                      : 'hover:bg-stone-50'
+                                  }`}
+                                >
+                                  {opt.label}
+                                </div>
+                              </label>
+                            )
+                          })}
+                        </div>
                       </div>
                     </div>
 
                     {/* Description */}
                     <div className="flex-1">
-                      <label htmlFor={`offer_${index}_description`} className="block text-[10px] uppercase font-bold text-stone-400 mb-1">
-                        Description & Avantages
-                      </label>
-                      <textarea
+                      <Textarea
                         id={`offer_${index}_description`}
+                        label="Description & Avantages"
                         name={`offer_${index}_description`}
                         rows={4}
                         defaultValue={offer?.description || ''}
                         placeholder="Décrivez ce que l'athlète obtient..."
-                        className="w-full h-32 text-sm text-stone-600 bg-stone-50 border border-stone-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#627e59] focus:outline-none resize-none"
+                        className="h-32 text-sm text-stone-600 bg-stone-50 resize-none min-h-0"
                       />
                     </div>
                   </div>
@@ -576,15 +584,15 @@ export function OffersForm({ offers }: OffersFormProps) {
                   setOfferCount(offerCount + 1)
                   setPriceTypes(prev => ({ ...prev, [offerCount]: 'one_time' }))
                 }}
-                className="bg-stone-50 rounded-2xl border-2 border-dashed border-stone-300 flex flex-col items-center justify-center gap-4 hover:border-[#627e59] hover:bg-[#627e59]/5 transition-all group cursor-pointer min-h-[400px]"
+                className="bg-stone-50 rounded-2xl border-2 border-dashed border-stone-300 flex flex-col items-center justify-center gap-4 hover:border-palette-forest-dark hover:bg-palette-forest-dark/5 transition-all group cursor-pointer min-h-[400px]"
               >
-                <div className="w-16 h-16 rounded-full bg-white border border-stone-200 flex items-center justify-center text-stone-400 shadow-sm group-hover:scale-110 group-hover:text-[#627e59] group-hover:border-[#627e59] transition-all">
+                <div className="w-16 h-16 rounded-full bg-white border border-stone-200 flex items-center justify-center text-stone-400 shadow-sm group-hover:scale-110 group-hover:text-palette-forest-dark group-hover:border-palette-forest-dark transition-all">
                   <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path d="M12 4v16m8-8H4" />
                   </svg>
                 </div>
                 <div className="text-center">
-                  <h3 className="text-lg font-bold text-stone-600 group-hover:text-[#627e59]">Ajouter une offre</h3>
+                  <h3 className="text-lg font-bold text-stone-600 group-hover:text-palette-forest-dark">Ajouter une offre</h3>
                   <p className="text-xs text-stone-400 mt-1">Vous pouvez encore créer {remainingOffers} offre{remainingOffers > 1 ? 's' : ''}</p>
                 </div>
               </button>
@@ -596,7 +604,7 @@ export function OffersForm({ offers }: OffersFormProps) {
       {deleteModalOpen && offerToDelete && typeof document !== 'undefined' && createPortal(
         <>
           <div
-            className="fixed inset-0 bg-palette-forest-dark/50 backdrop-blur-sm z-[90]"
+            className="fixed inset-0 bg-stone-900/50 backdrop-blur-sm z-[90]"
             onClick={() => !isDeleting && setDeleteModalOpen(false)}
             aria-hidden="true"
           />
@@ -608,17 +616,17 @@ export function OffersForm({ offers }: OffersFormProps) {
           >
             <div className="relative w-full max-w-md bg-white rounded-xl shadow-xl border border-stone-100">
               <div className="sticky top-0 flex justify-end p-3 bg-white rounded-t-xl z-10">
-              <button
+              <Button
                 type="button"
+                variant="ghost"
                 onClick={() => !isDeleting && setDeleteModalOpen(false)}
-                className="p-2 rounded-lg text-stone-400 hover:text-stone-600 hover:bg-stone-50 transition-colors"
-                aria-label="Fermer"
                 disabled={isDeleting}
+                aria-label="Fermer"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M18 6 6 18" /><path d="m6 6 12 12" />
                 </svg>
-              </button>
+              </Button>
             </div>
             <div className="px-8 pb-8">
               <h2 id="delete-offer-title" className="text-xl font-semibold text-stone-900 mb-2">
@@ -628,22 +636,26 @@ export function OffersForm({ offers }: OffersFormProps) {
                 Voulez-vous supprimer l&apos;offre &quot;{offerToDelete.title}&quot; ? Cette action est immédiate et définitive.
               </p>
               <div className="flex gap-3">
-                <button
+                <Button
                   type="button"
+                  variant="muted"
                   onClick={() => setDeleteModalOpen(false)}
-                  disabled={isDeleting}
-                  className="flex-1 py-2.5 rounded-lg border border-stone-300 text-sm font-medium text-stone-700 hover:bg-stone-50 transition-colors disabled:opacity-50"
-                >
-                  Annuler
-                </button>
-                <PrimaryButton
-                  type="button"
-                  onClick={handleConfirmDelete}
                   disabled={isDeleting}
                   className="flex-1"
                 >
-                  {isDeleting ? 'Suppression...' : 'Supprimer'}
-                </PrimaryButton>
+                  Annuler
+                </Button>
+                <Button
+                  type="button"
+                  variant="primary"
+                  onClick={handleConfirmDelete}
+                  disabled={isDeleting}
+                  loading={isDeleting}
+                  loadingText="Suppression…"
+                  className="flex-1"
+                >
+                  Supprimer
+                </Button>
               </div>
             </div>
             </div>
@@ -655,7 +667,7 @@ export function OffersForm({ offers }: OffersFormProps) {
       {unsavedChangesModalOpen && typeof document !== 'undefined' && createPortal(
         <>
           <div
-            className="fixed inset-0 bg-palette-forest-dark/50 backdrop-blur-sm z-[90]"
+            className="fixed inset-0 bg-stone-900/50 backdrop-blur-sm z-[90]"
             onClick={() => !isSavingBeforeLeave && setUnsavedChangesModalOpen(false)}
             aria-hidden="true"
           />
@@ -667,17 +679,17 @@ export function OffersForm({ offers }: OffersFormProps) {
           >
             <div className="relative w-full max-w-md bg-white rounded-xl shadow-xl border border-stone-100">
               <div className="sticky top-0 flex justify-end p-3 bg-white rounded-t-xl z-10">
-                <button
+                <Button
                   type="button"
+                  variant="ghost"
                   onClick={() => !isSavingBeforeLeave && setUnsavedChangesModalOpen(false)}
-                  className="p-2 rounded-lg text-stone-400 hover:text-stone-600 hover:bg-stone-50 transition-colors"
-                  aria-label="Fermer"
                   disabled={isSavingBeforeLeave}
+                  aria-label="Fermer"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M18 6 6 18" /><path d="m6 6 12 12" />
                   </svg>
-                </button>
+                </Button>
               </div>
               <div className="px-8 pb-8">
                 <h2 id="unsaved-changes-title" className="text-xl font-semibold text-stone-900 mb-2">
@@ -687,22 +699,26 @@ export function OffersForm({ offers }: OffersFormProps) {
                   Vous avez des modifications non enregistrées. Que souhaitez-vous faire ?
                 </p>
                 <div className="flex gap-3">
-                  <button
+                  <Button
                     type="button"
+                    variant="muted"
                     onClick={handleLeaveWithoutSaving}
-                    disabled={isSavingBeforeLeave}
-                    className="flex-1 py-2.5 rounded-lg border border-stone-300 text-sm font-medium text-stone-700 hover:bg-stone-50 transition-colors disabled:opacity-50"
-                  >
-                    Quitter sans enregistrer
-                  </button>
-                  <PrimaryButton
-                    type="button"
-                    onClick={handleSaveAndLeave}
                     disabled={isSavingBeforeLeave}
                     className="flex-1"
                   >
-                    {isSavingBeforeLeave ? 'Enregistrement...' : 'Enregistrer et quitter'}
-                  </PrimaryButton>
+                    Quitter sans enregistrer
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="primary"
+                    onClick={handleSaveAndLeave}
+                    disabled={isSavingBeforeLeave}
+                    loading={isSavingBeforeLeave}
+                    loadingText="Enregistrement…"
+                    className="flex-1"
+                  >
+                    Enregistrer et quitter
+                  </Button>
                 </div>
               </div>
             </div>

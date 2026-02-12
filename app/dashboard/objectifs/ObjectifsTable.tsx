@@ -1,7 +1,8 @@
 'use client'
 
 import { useActionState, useRef, useEffect, useState } from 'react'
-import { PrimaryButton } from '@/components/PrimaryButton'
+import { Button } from '@/components/Button'
+import { Input } from '@/components/Input'
 import { addGoal, deleteGoal, type GoalFormState } from './actions'
 import type { Goal } from '@/types/database'
 
@@ -130,7 +131,7 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
                     <div
                       key={goal.id}
                       className={`bg-white rounded-2xl p-5 border-l-4 ${
-                        isPrimary ? 'border-[#c9a544]' : 'border-[#aaaa51]'
+                        isPrimary ? 'border-palette-amber' : 'border-palette-sage'
                       } border-y border-r border-stone-200 shadow-sm hover:shadow-md transition-all group relative overflow-hidden ${
                         isPast ? 'opacity-75' : ''
                       }`}
@@ -149,11 +150,11 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
                                 {goal.race_name}
                               </h3>
                               {isPrimary ? (
-                                <span className="bg-[#c9a544]/10 text-[#c9a544] text-[10px] font-bold px-2 py-0.5 rounded-full border border-[#c9a544]">
+                                <span className="bg-palette-amber/10 text-palette-amber text-[10px] font-bold px-2 py-0.5 rounded-full border border-palette-amber">
                                   Principal
                                 </span>
                               ) : (
-                                <span className="bg-[#aaaa51]/10 text-[#aaaa51] text-[10px] font-bold px-2 py-0.5 rounded-full border border-[#aaaa51]">
+                                <span className="bg-palette-sage/10 text-palette-sage text-[10px] font-bold px-2 py-0.5 rounded-full border border-palette-sage">
                                   Secondaire
                                 </span>
                               )}
@@ -170,7 +171,7 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
                         {/* Actions */}
                         <div className="flex items-center gap-2 mt-4 sm:mt-0">
                           {daysUntil !== null && !isPast && (
-                            <span className="text-sm font-bold text-[#627e59] bg-[#627e59]/10 px-3 py-1 rounded-lg">
+                            <span className="text-sm font-bold text-palette-forest-dark bg-palette-forest-dark/10 px-3 py-1 rounded-lg">
                               J-{daysUntil}
                             </span>
                           )}
@@ -197,52 +198,35 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
           </h2>
 
           <div className="space-y-5">
-            {/* Nom */}
-            <div>
-              <label htmlFor="race_name" className="block text-xs font-bold text-stone-500 uppercase mb-1.5 ml-1">
-                Nom de la course
-              </label>
-              <input
-                id="race_name"
-                name="race_name"
-                type="text"
-                required
-                placeholder="Ex: Marathon de..."
-                className="w-full px-4 py-2.5 rounded-xl border border-stone-200 bg-stone-50 focus:bg-white focus:border-[#627e59] focus:ring-2 focus:ring-[#627e59]/20 outline-none transition-all text-sm font-medium"
-              />
-            </div>
+            <Input
+              id="race_name"
+              label="Nom de la course"
+              name="race_name"
+              type="text"
+              required
+              placeholder="Ex: Marathon de..."
+            />
 
-            {/* Date & Distance (Grid) */}
             <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="date" className="block text-xs font-bold text-stone-500 uppercase mb-1.5 ml-1">
-                  Date
-                </label>
-                <input
-                  ref={dateInputRef}
-                  id="date"
-                  name="date"
-                  type="date"
-                  required
-                  min={new Date().toISOString().slice(0, 10)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-stone-200 bg-stone-50 focus:bg-white focus:border-[#627e59] focus:ring-2 focus:ring-[#627e59]/20 outline-none transition-all text-sm font-medium text-stone-600"
-                />
-              </div>
-              <div>
-                <label htmlFor="distance" className="block text-xs font-bold text-stone-500 uppercase mb-1.5 ml-1">
-                  Distance (km)
-                </label>
-                <input
-                  id="distance"
-                  name="distance"
-                  type="number"
-                  required
-                  min="0"
-                  step="0.1"
-                  placeholder="42"
-                  className="w-full px-4 py-2.5 rounded-xl border border-stone-200 bg-stone-50 focus:bg-white focus:border-[#627e59] focus:ring-2 focus:ring-[#627e59]/20 outline-none transition-all text-sm font-medium"
-                />
-              </div>
+              <Input
+                ref={dateInputRef}
+                id="date"
+                label="Date"
+                name="date"
+                type="date"
+                required
+                min={new Date().toISOString().slice(0, 10)}
+              />
+              <Input
+                id="distance"
+                label="Distance (km)"
+                name="distance"
+                type="number"
+                required
+                min={0}
+                step="0.1"
+                placeholder="42"
+              />
             </div>
 
             {/* Type (Sélecteur Visuel) */}
@@ -261,7 +245,7 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
                   />
                   <div className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border text-[10px] font-bold transition-all ${
                     priority === 'primary' 
-                      ? 'bg-[#c9a544]/10 text-[#c9a544] border-[#c9a544]' 
+                      ? 'bg-palette-amber/10 text-palette-amber border-palette-amber' 
                       : 'bg-white text-stone-400 border-stone-200 hover:border-stone-300'
                   }`}>
                     <span>Principal</span>
@@ -279,7 +263,7 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
                   />
                   <div className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border text-[10px] font-bold transition-all ${
                     priority === 'secondary' 
-                      ? 'bg-[#aaaa51]/10 text-[#aaaa51] border-[#aaaa51]' 
+                      ? 'bg-palette-sage/10 text-palette-sage border-palette-sage' 
                       : 'bg-white text-stone-400 border-stone-200 hover:border-stone-300'
                   }`}>
                     <span>Secondaire</span>
@@ -290,7 +274,7 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
 
             {(state?.error || state?.success) && (
               <p
-                className={`text-sm ${state.error ? 'text-red-600' : 'text-[#627e59] font-medium'}`}
+                className={`text-sm ${state.error ? 'text-red-600' : 'text-palette-forest-dark font-medium'}`}
                 role="alert"
               >
                 {state.error || state.success}
@@ -298,12 +282,14 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
             )}
 
             {/* Bouton Ajouter */}
-            <button
+            <Button
               type="submit"
-              className="w-full py-3 rounded-xl bg-[#627e59] text-white font-bold shadow-md hover:bg-[#506648] hover:shadow-lg transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2 mt-2"
+              variant="primaryDark"
+              fullWidth
+              className="mt-2"
             >
               Ajouter l&apos;objectif
-            </button>
+            </Button>
           </div>
         </form>
       </div>
@@ -319,15 +305,16 @@ function DeleteGoalButton({ goalId }: { goalId: string }) {
       }}
       className="inline"
     >
-      <button
+      <Button
         type="submit"
-        className="p-2 text-stone-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+        variant="danger"
+        className="p-2"
         title="Supprimer"
       >
         <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
           <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
         </svg>
-      </button>
+      </Button>
     </form>
   )
 }

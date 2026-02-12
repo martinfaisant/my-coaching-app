@@ -2,7 +2,8 @@
 
 import { useState, useActionState, useEffect, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { PrimaryButton } from '@/components/PrimaryButton'
+import { Button } from '@/components/Button'
+import { Input } from '@/components/Input'
 import { createClient } from '@/utils/supabase/client'
 import { updatePassword, type UpdatePasswordState } from './actions'
 
@@ -118,10 +119,10 @@ export function ResetPasswordForm() {
   if (isValidSession === false) {
     return (
       <div className="p-8 sm:p-10">
-        <h1 className="text-2xl font-semibold text-stone-900text-white text-center mb-1">
+        <h1 className="text-2xl font-semibold text-stone-900 text-center mb-1">
           Lien invalide ou expiré
         </h1>
-        <p className="text-white0text-stone-400 text-sm text-center mb-6">
+        <p className="text-stone-400 text-sm text-center mb-6">
           Redirection vers la page de connexion...
         </p>
       </div>
@@ -131,7 +132,7 @@ export function ResetPasswordForm() {
   if (isValidSession === null) {
     return (
       <div className="p-8 sm:p-10">
-        <p className="text-white0text-stone-400 text-sm text-center">
+        <p className="text-stone-400 text-sm text-center">
           Vérification du lien...
         </p>
       </div>
@@ -140,56 +141,40 @@ export function ResetPasswordForm() {
 
   return (
     <div className="p-8 sm:p-10">
-      <h1 className="text-2xl font-semibold text-stone-900text-white text-center mb-1">
+      <h1 className="text-2xl font-semibold text-stone-900 text-center mb-1">
         Nouveau mot de passe
       </h1>
-      <p className="text-white0text-stone-400 text-sm text-center mb-6">
+      <p className="text-stone-400 text-sm text-center mb-6">
         Définissez votre nouveau mot de passe
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-5">
-        <div>
-          <label
-            htmlFor="new-password"
-            className="block text-sm font-medium text-stone-700text-stone-300 mb-2"
-          >
-            Nouveau mot de passe
-          </label>
-          <input
-            id="new-password"
-            name="password"
-            type="password"
-            autoComplete="new-password"
-            required
-            minLength={6}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="••••••••"
-            className="w-full px-4 py-2.5 rounded-lg border border-stone-200border-stone-700 bg-whitebg-palette-forest-dark text-stone-900text-white placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900focus:ring-stone-100 focus:border-transparent transition"
-          />
-        </div>
-        <div>
-          <label
-            htmlFor="confirm-password"
-            className="block text-sm font-medium text-stone-700text-stone-300 mb-2"
-          >
-            Confirmer le mot de passe
-          </label>
-          <input
-            id="confirm-password"
-            name="confirmPassword"
-            type="password"
-            autoComplete="new-password"
-            required
-            minLength={6}
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            placeholder="••••••••"
-            className="w-full px-4 py-2.5 rounded-lg border border-stone-200border-stone-700 bg-whitebg-palette-forest-dark text-stone-900text-white placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900focus:ring-stone-100 focus:border-transparent transition"
-          />
-        </div>
+        <Input
+          id="new-password"
+          label="Nouveau mot de passe"
+          name="password"
+          type="password"
+          autoComplete="new-password"
+          required
+          minLength={6}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="••••••••"
+        />
+        <Input
+          id="confirm-password"
+          label="Confirmer le mot de passe"
+          name="confirmPassword"
+          type="password"
+          autoComplete="new-password"
+          required
+          minLength={6}
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          placeholder="••••••••"
+        />
         {(localError || state?.error) && (
-          <p className="text-sm text-red-600text-red-400" role="alert">
+          <p className="text-sm text-red-600" role="alert">
             {localError || state.error}
           </p>
         )}
@@ -198,9 +183,16 @@ export function ResetPasswordForm() {
             {state.success}
           </p>
         )}
-        <PrimaryButton type="submit" disabled={isPending} fullWidth>
-          {isPending ? 'Enregistrement...' : 'Définir le nouveau mot de passe'}
-        </PrimaryButton>
+        <Button
+          type="submit"
+          variant="primary"
+          disabled={isPending}
+          fullWidth
+          loading={isPending}
+          loadingText="Enregistrement…"
+        >
+          Définir le nouveau mot de passe
+        </Button>
       </form>
     </div>
   )

@@ -1,5 +1,6 @@
 'use client'
 
+import { Button } from '@/components/Button'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useState } from 'react'
 import { syncStravaLastWeek, disconnectStrava } from './actions'
@@ -63,13 +64,9 @@ export function StravaDevicesSection({ userId, connected, connection }: StravaDe
   }
 
   const ConnectWithStravaButton = () => (
-    <a
-      href="/api/auth/strava"
-      className="inline-flex items-center justify-center rounded-lg bg-[#FC4C02] px-5 py-2.5 text-sm font-medium text-white no-underline transition-opacity hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-[#FC4C02]/20"
-      aria-label="Connecter Strava"
-    >
+    <Button href="/api/auth/strava" variant="strava" aria-label="Connecter Strava">
       Connecter Strava
-    </a>
+    </Button>
   )
 
   return (
@@ -78,7 +75,7 @@ export function StravaDevicesSection({ userId, connected, connection }: StravaDe
         <div className="px-8 py-6">
           <div className="flex items-start justify-between gap-6 flex-wrap">
             <div className="flex min-w-0 flex-1 items-center gap-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#f05222]">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-palette-strava">
                 <img
                   src="/strava-icon.svg"
                   alt="Strava"
@@ -99,28 +96,33 @@ export function StravaDevicesSection({ userId, connected, connection }: StravaDe
             <div className="flex shrink-0 flex-col sm:flex-row gap-3 items-stretch sm:items-center">
               {connected ? (
                 <>
-                  <a
+                  <Button
                     href="/api/auth/strava"
-                    className="inline-flex items-center justify-center rounded-lg border border-stone-300 px-4 py-2.5 text-sm font-medium text-stone-700 bg-white hover:bg-stone-50 transition-colors focus:outline-none focus:ring-2 focus:ring-[#627e59]/20 focus:border-[#627e59]"
+                    variant="muted"
                   >
                     Reconnecter
-                  </a>
-                  <button
+                  </Button>
+                  <Button
                     type="button"
+                    variant="strava"
                     onClick={handleSync}
                     disabled={syncing}
-                    className="inline-flex items-center justify-center rounded-lg bg-[#FC4C02] px-4 py-2.5 text-sm font-medium text-white hover:opacity-90 transition-opacity disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-[#FC4C02]/20"
+                    loading={syncing}
+                    loadingText="Import en cours…"
                   >
-                    {syncing ? 'Import en cours…' : 'Importer les 3 dernières semaines'}
-                  </button>
-                  <button
+                    Importer les 3 dernières semaines
+                  </Button>
+                  <Button
                     type="button"
+                    variant="muted"
                     onClick={handleDisconnect}
                     disabled={disconnecting}
-                    className="inline-flex items-center justify-center rounded-lg border border-red-300 px-4 py-2.5 text-sm font-medium text-red-700 bg-white hover:bg-red-50 transition-colors disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-red-200 focus:border-red-400"
+                    loading={disconnecting}
+                    loadingText="Déconnexion…"
+                    className="border-red-300 text-red-700 hover:bg-red-50 hover:border-red-400 hover:text-red-800"
                   >
                     Déconnecter
-                  </button>
+                  </Button>
                 </>
               ) : (
                 <ConnectWithStravaButton />
@@ -132,7 +134,7 @@ export function StravaDevicesSection({ userId, connected, connection }: StravaDe
               className={`mt-6 rounded-lg px-4 py-3 text-sm ${
                 message?.type === 'error' || (searchParams.get('error') && !urlMessage)
                   ? 'bg-red-50 text-red-800 border border-red-200'
-                  : 'bg-[#627e59]/10 text-[#627e59] border border-[#627e59]/20'
+                  : 'bg-palette-forest-dark/10 text-palette-forest-dark border border-palette-forest-dark/20'
               }`}
             >
               {message ? message.text : urlMessage}

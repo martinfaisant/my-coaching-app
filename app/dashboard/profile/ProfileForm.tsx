@@ -4,7 +4,10 @@ import { useState, useEffect, useLayoutEffect, useRef, useCallback } from 'react
 import { useActionState } from 'react'
 import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
-import { PrimaryButton } from '@/components/PrimaryButton'
+import { Button } from '@/components/Button'
+import { Input } from '@/components/Input'
+import { Textarea } from '@/components/Textarea'
+import { SportTileSelectable } from '@/components/SportTileSelectable'
 import { createClient } from '@/utils/supabase/client'
 import { updateProfile, checkCanDeleteAccount, deleteMyAccount, type ProfileFormState } from './actions'
 import type { Role } from '@/types/database'
@@ -20,33 +23,11 @@ function parseFullName(fullName: string): { firstName: string; lastName: string 
   }
 }
 
-const COACHED_SPORTS_OPTIONS: { value: string; label: string; emoji: string }[] = [
-  { value: 'triathlon', label: 'Triathlon', emoji: '🏊‍♂️' },
-  { value: 'course_route', label: 'Course à pied', emoji: '🏃' },
-  { value: 'trail', label: 'Trail', emoji: '⛰️' },
-  { value: 'velo', label: 'Vélo', emoji: '🚴' },
-]
-
-/** Mêmes sports que pour les entraînements (tuiles profil athlète). */
-const PRACTICED_SPORTS_OPTIONS: { value: string; label: string; emoji: string }[] = [
-  { value: 'course', label: 'Course', emoji: '🏃' },
-  { value: 'velo', label: 'Vélo', emoji: '🚴' },
-  { value: 'natation', label: 'Natation', emoji: '🏊' },
-  { value: 'musculation', label: 'Musculation', emoji: '💪' },
-  { value: 'trail', label: 'Trail', emoji: '⛰️' },
-  { value: 'triathlon', label: 'Triathlon', emoji: '🏅' },
-]
-
-const LANGUAGES_OPTIONS: { value: string; label: string }[] = [
-  { value: 'fr', label: 'Français' },
-  { value: 'en', label: 'English' },
-  { value: 'es', label: 'Español' },
-  { value: 'de', label: 'Deutsch' },
-  { value: 'it', label: 'Italiano' },
-  { value: 'pt', label: 'Português' },
-  { value: 'nl', label: 'Nederlands' },
-  { value: 'zh', label: '中文' },
-]
+import {
+  COACHED_SPORTS_OPTIONS,
+  PRACTICED_SPORTS_OPTIONS,
+  LANGUAGES_OPTIONS,
+} from '@/lib/sportsOptions'
 
 type ProfileFormProps = {
   email: string
@@ -79,6 +60,7 @@ export function ProfileForm({
   const [deleteError, setDeleteError] = useState<string | null>(null)
   const [deleteBlockReason, setDeleteBlockReason] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [isCheckingDelete, setIsCheckingDelete] = useState(false)
   const [unsavedChangesModalOpen, setUnsavedChangesModalOpen] = useState(false)
   const [pendingNavigation, setPendingNavigation] = useState<string | null>(null)
   const [isSavingBeforeLeave, setIsSavingBeforeLeave] = useState(false)
@@ -393,7 +375,7 @@ export function ProfileForm({
     <>
       <form ref={formRef} action={action} onSubmit={handleFormSubmit} className="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-stone-100">
         {/* BANNIÈRE BRANDÉE : Dégradé Forest Dark -> Olive */}
-        <div className="h-[136px] bg-gradient-to-r from-[#627e59] to-[#8e9856] relative">
+        <div className="h-[136px] bg-gradient-palette relative">
           {/* Avatar positionné sur la bannière */}
           <div className="absolute -bottom-10 left-8">
             <div className="relative group cursor-pointer">
@@ -410,7 +392,7 @@ export function ProfileForm({
               
               {/* Bouton d'ajout (+) */}
               <div 
-                className="absolute bottom-1 right-1 bg-[#627e59] text-white p-1.5 rounded-full shadow-lg border-2 border-white hover:bg-[#506648] transition-transform group-hover:scale-110 flex items-center justify-center cursor-pointer"
+                className="absolute bottom-1 right-1 bg-palette-forest-dark text-white p-1.5 rounded-full shadow-lg border-2 border-white hover:bg-palette-forest-darker transition-transform group-hover:scale-110 flex items-center justify-center cursor-pointer"
                 onClick={() => avatarInputRef.current?.click()}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -446,31 +428,17 @@ export function ProfileForm({
                 {isCoach ? 'Complétez votre profil pour vos athlètes.' : 'Gérez vos informations et votre photo de profil.'}
               </p>
             </div>
-            <PrimaryButton
+            <Button
               type="submit"
+              variant="primary"
               disabled={!hasUnsavedChanges || isSubmitting}
-              className={`flex items-center gap-2 ${state?.error ? '!bg-red-600 hover:!bg-red-700 focus:!ring-red-500' : ''}`}
+              loading={isSubmitting}
+              loadingText="Enregistrement"
+              success={showSavedFeedback}
+              error={!!state?.error}
             >
-              {showSavedFeedback ? (
-                <>
-                  <span>Enregistré</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 animate-saved-check" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                  </svg>
-                </>
-              ) : state?.error ? (
-                <>
-                  <span>Non enregistré</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M18 6 6 18M6 6l12 12" />
-                  </svg>
-                </>
-              ) : isSubmitting ? (
-                'Enregistrement...'
-              ) : (
-                <span>Enregistrer</span>
-              )}
-            </PrimaryButton>
+              Enregistrer
+            </Button>
             {state?.error && (
               <p className="text-sm text-red-600 mt-3" role="alert">
                 {state.error}
@@ -481,59 +449,55 @@ export function ProfileForm({
           {/* Grille Informations Personnelles */}
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-8">
             {/* Prénom */}
-            <div className="md:col-span-6 input-group">
-              <label htmlFor="first_name" className="block text-xs text-stone-500 uppercase tracking-wide font-bold mb-1.5">Prénom</label>
-              <input
+            <div className="md:col-span-6">
+              <Input
                 id="first_name"
+                label="Prénom"
                 name="first_name"
                 type="text"
                 defaultValue={firstName}
-                className="w-full border border-stone-300 rounded-lg px-4 py-2.5 outline-none text-stone-900 bg-stone-50 focus:bg-white transition-colors focus:border-[#627e59] focus:ring-2 focus:ring-[#627e59]/20"
               />
             </div>
-            
+
             {/* Nom */}
-            <div className="md:col-span-6 input-group">
-              <label htmlFor="last_name" className="block text-xs text-stone-500 uppercase tracking-wide font-bold mb-1.5">Nom</label>
-              <input
+            <div className="md:col-span-6">
+              <Input
                 id="last_name"
+                label="Nom"
                 name="last_name"
                 type="text"
                 defaultValue={lastName}
-                className="w-full border border-stone-300 rounded-lg px-4 py-2.5 outline-none text-stone-900 bg-stone-50 focus:bg-white transition-colors focus:border-[#627e59] focus:ring-2 focus:ring-[#627e59]/20"
               />
             </div>
 
             {/* Email */}
-            <div className="md:col-span-8 relative">
-              <label htmlFor="email" className="block text-xs text-stone-500 uppercase tracking-wide font-bold mb-1.5 flex justify-between">
+            <div className="md:col-span-8">
+              <label htmlFor="email" className="block text-sm font-medium text-stone-700 mb-2 flex justify-between items-center">
                 Adresse email
-                <span className="text-[10px] font-normal normal-case text-stone-400 flex items-center gap-1">
+                <span className="text-xs font-normal text-stone-400 flex items-center gap-1">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
                   </svg>
                   Non modifiable
                 </span>
               </label>
-              <input
+              <Input
                 id="email"
                 type="text"
                 value={email}
                 readOnly
-                className="w-full border border-stone-200 rounded-lg px-4 py-2.5 outline-none text-stone-500 bg-stone-100 cursor-not-allowed"
               />
             </div>
 
             {/* Code Postal */}
-            <div className="md:col-span-4 input-group">
-              <label htmlFor="postal_code" className="block text-xs text-stone-500 uppercase tracking-wide font-bold mb-1.5">Code Postal</label>
-              <input
+            <div className="md:col-span-4">
+              <Input
                 id="postal_code"
+                label="Code Postal"
                 name="postal_code"
                 type="text"
                 defaultValue={postalCode}
                 placeholder="Ex: 75001"
-                className="w-full border border-stone-300 rounded-lg px-4 py-2.5 outline-none text-stone-900 bg-stone-50 focus:bg-white transition-colors focus:border-[#627e59] focus:ring-2 focus:ring-[#627e59]/20"
               />
             </div>
           </div>
@@ -547,19 +511,12 @@ export function ProfileForm({
                 <h2 className="text-sm font-bold text-stone-900 uppercase tracking-wide mb-3">Sports coachés</h2>
                 <div className="flex flex-wrap gap-3">
                   {COACHED_SPORTS_OPTIONS.map((opt) => (
-                    <label key={opt.value} className="cursor-pointer">
-                      <input
-                        type="checkbox"
-                        name="coached_sports"
-                        value={opt.value}
-                        defaultChecked={coachedSports.includes(opt.value)}
-                        className="hidden chip-checkbox"
-                      />
-                      <div className="px-4 py-2 rounded-full border border-stone-200 bg-white text-stone-600 hover:border-[#627e59] transition-all text-sm font-medium select-none flex items-center gap-2">
-                        <span>{opt.emoji}</span>
-                        <span>{opt.label}</span>
-                      </div>
-                    </label>
+                    <SportTileSelectable
+                      key={opt.value}
+                      value={opt.value}
+                      name="coached_sports"
+                      defaultChecked={coachedSports.includes(opt.value)}
+                    />
                   ))}
                 </div>
               </>
@@ -568,19 +525,12 @@ export function ProfileForm({
                 <h2 className="text-sm font-bold text-stone-900 uppercase tracking-wide mb-3">Sport(s) pratiqué(s)</h2>
                 <div className="flex flex-wrap gap-3">
                   {PRACTICED_SPORTS_OPTIONS.map((opt) => (
-                    <label key={opt.value} className="cursor-pointer">
-                      <input
-                        type="checkbox"
-                        name="practiced_sports"
-                        value={opt.value}
-                        defaultChecked={practicedSports.includes(opt.value)}
-                        className="hidden chip-checkbox"
-                      />
-                      <div className="px-4 py-2 rounded-full border border-stone-200 bg-white text-stone-600 hover:border-[#627e59] transition-all text-sm font-medium select-none flex items-center gap-2">
-                        <span>{opt.emoji}</span>
-                        <span>{opt.label}</span>
-                      </div>
-                    </label>
+                    <SportTileSelectable
+                      key={opt.value}
+                      value={opt.value}
+                      name="practiced_sports"
+                      defaultChecked={practicedSports.includes(opt.value)}
+                    />
                   ))}
                 </div>
               </>
@@ -601,7 +551,7 @@ export function ProfileForm({
                     defaultChecked={languages.includes(opt.value)}
                     className="hidden chip-checkbox"
                   />
-                  <div className="px-3 py-1.5 rounded-md border border-stone-200 bg-white text-stone-600 hover:border-[#627e59] transition-all text-sm font-medium select-none">
+                  <div className="px-4 py-2 rounded-full border border-stone-200 bg-white text-stone-600 hover:border-palette-forest-dark transition-all text-sm font-medium select-none">
                     {opt.label}
                   </div>
                 </label>
@@ -616,19 +566,21 @@ export function ProfileForm({
 
           {/* Bio (coach uniquement) */}
           {isCoach && (
-          <div className="input-group">
+          <div>
             <div className="flex justify-between items-end mb-2">
-              <h2 className="text-sm font-bold text-stone-900 uppercase tracking-wide">Présentation</h2>
+              <label htmlFor="presentation" className="block text-sm font-medium text-stone-700">
+                Présentation
+              </label>
               <span className="text-xs text-stone-400">Pour votre profil public</span>
             </div>
             <div className="relative">
-              <textarea
+              <Textarea
+                id="presentation"
                 name="presentation"
                 defaultValue={presentation}
                 onChange={(e) => setPresentationLength(e.target.value.length)}
                 rows={8}
                 placeholder="Décrivez votre expérience..."
-                className="w-full border border-stone-300 rounded-xl p-4 text-stone-700 focus:outline-none transition-all leading-relaxed text-sm bg-stone-50 focus:bg-white resize-y focus:border-[#627e59] focus:ring-2 focus:ring-[#627e59]/20"
               />
               <div className="absolute bottom-3 right-3 text-[10px] text-stone-400 font-medium bg-white/80 px-2 py-1 rounded">
                 {presentationLength} / 500
@@ -639,25 +591,34 @@ export function ProfileForm({
 
           {/* Danger Zone */}
           <div className="mt-16 pt-6 border-t border-stone-100 flex flex-col items-center">
-            <button
+            <Button
               type="button"
+              variant="danger"
               onClick={async () => {
                 setDeleteBlockReason(null)
                 setDeleteError(null)
-                const result = await checkCanDeleteAccount()
-                if (!result.canDelete) {
-                  setDeleteBlockReason(result.error ?? 'La suppression n\'est pas possible.')
-                  return
+                setIsCheckingDelete(true)
+                try {
+                  const result = await checkCanDeleteAccount()
+                  if (!result.canDelete) {
+                    setDeleteBlockReason(result.error ?? 'La suppression n\'est pas possible.')
+                    return
+                  }
+                  setDeleteModalOpen(true)
+                } finally {
+                  setIsCheckingDelete(false)
                 }
-                setDeleteModalOpen(true)
               }}
-              className="text-stone-400 hover:text-red-600 text-xs font-medium transition-colors flex items-center gap-1"
+              disabled={isCheckingDelete}
+              loading={isCheckingDelete}
+              loadingText="Vérification…"
+              className="flex items-center gap-2"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
               </svg>
               Supprimer mon compte
-            </button>
+            </Button>
             <div className="min-h-[2.5rem] mt-2 text-center w-full max-w-md">
               {deleteBlockReason && (
                 <p className="text-sm text-red-600" role="alert">
@@ -673,7 +634,7 @@ export function ProfileForm({
       {deleteModalOpen && typeof document !== 'undefined' && createPortal(
         <>
           <div
-            className="fixed inset-0 bg-palette-forest-dark/50 backdrop-blur-sm z-[90]"
+            className="fixed inset-0 bg-stone-900/50 backdrop-blur-sm z-[90]"
             onClick={() => !isDeleting && setDeleteModalOpen(false)}
             aria-hidden="true"
           />
@@ -685,16 +646,16 @@ export function ProfileForm({
           >
             <div className="relative w-full max-w-md bg-white rounded-xl shadow-xl border border-stone-100">
             <div className="sticky top-0 flex justify-end p-3 bg-white rounded-t-xl z-10">
-              <button
+              <Button
                 type="button"
+                variant="ghost"
                 onClick={() => !isDeleting && setDeleteModalOpen(false)}
-                className="p-2 rounded-lg text-stone-400 hover:text-stone-600 hover:bg-stone-50 transition-colors"
                 aria-label="Fermer"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M18 6 6 18" /><path d="m6 6 12 12" />
                 </svg>
-              </button>
+              </Button>
             </div>
             <div className="px-8 pb-8">
               <h2 id="delete-account-title" className="text-xl font-semibold text-stone-900 mb-2">
@@ -707,16 +668,18 @@ export function ProfileForm({
                 <p className="text-sm text-red-600 mb-4" role="alert">{deleteError}</p>
               )}
               <div className="flex gap-3">
-                <button
+                <Button
                   type="button"
+                  variant="muted"
                   onClick={() => setDeleteModalOpen(false)}
                   disabled={isDeleting}
-                  className="flex-1 py-2.5 rounded-lg border border-stone-300 text-sm font-medium text-stone-700 hover:bg-stone-50 transition-colors disabled:opacity-50"
+                  className="flex-1"
                 >
                   Retour
-                </button>
-                <PrimaryButton
+                </Button>
+                <Button
                   type="button"
+                  variant="danger"
                   onClick={async () => {
                     setIsDeleting(true)
                     setDeleteError(null)
@@ -730,10 +693,12 @@ export function ProfileForm({
                     window.location.href = '/'
                   }}
                   disabled={isDeleting}
+                  loading={isDeleting}
+                  loadingText="Suppression…"
                   className="flex-1"
                 >
-                  {isDeleting ? 'Suppression...' : 'Confirmer'}
-                </PrimaryButton>
+                  Confirmer
+                </Button>
               </div>
             </div>
             </div>
@@ -745,7 +710,7 @@ export function ProfileForm({
       {unsavedChangesModalOpen && typeof document !== 'undefined' && createPortal(
         <>
           <div
-            className="fixed inset-0 bg-palette-forest-dark/50 backdrop-blur-sm z-[90]"
+            className="fixed inset-0 bg-stone-900/50 backdrop-blur-sm z-[90]"
             onClick={() => !isSavingBeforeLeave && setUnsavedChangesModalOpen(false)}
             aria-hidden="true"
           />
@@ -757,17 +722,17 @@ export function ProfileForm({
           >
             <div className="relative w-full max-w-md bg-white rounded-xl shadow-xl border border-stone-100">
             <div className="sticky top-0 flex justify-end p-3 bg-white rounded-t-xl z-10">
-              <button
+              <Button
                 type="button"
+                variant="ghost"
                 onClick={() => !isSavingBeforeLeave && setUnsavedChangesModalOpen(false)}
-                className="p-2 rounded-lg text-stone-400 hover:text-stone-600 hover:bg-stone-50 transition-colors"
-                aria-label="Fermer"
                 disabled={isSavingBeforeLeave}
+                aria-label="Fermer"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M18 6 6 18" /><path d="m6 6 12 12" />
                 </svg>
-              </button>
+              </Button>
             </div>
             <div className="px-8 pb-8">
               <h2 id="unsaved-changes-title" className="text-xl font-semibold text-stone-900 mb-2">
@@ -777,22 +742,26 @@ export function ProfileForm({
                 Vous avez des modifications non enregistrées. Que souhaitez-vous faire ?
               </p>
               <div className="flex gap-3">
-                <button
+                <Button
                   type="button"
+                  variant="muted"
                   onClick={handleLeaveWithoutSaving}
-                  disabled={isSavingBeforeLeave}
-                  className="flex-1 py-2.5 rounded-lg border border-stone-300 text-sm font-medium text-stone-700 hover:bg-stone-50 transition-colors disabled:opacity-50"
-                >
-                  Quitter sans enregistrer
-                </button>
-                <PrimaryButton
-                  type="button"
-                  onClick={handleSaveAndLeave}
                   disabled={isSavingBeforeLeave}
                   className="flex-1"
                 >
-                  {isSavingBeforeLeave ? 'Enregistrement...' : 'Enregistrer et quitter'}
-                </PrimaryButton>
+                  Quitter sans enregistrer
+                </Button>
+                <Button
+                  type="button"
+                  variant="primary"
+                  onClick={handleSaveAndLeave}
+                  disabled={isSavingBeforeLeave}
+                  loading={isSavingBeforeLeave}
+                  loadingText="Enregistrement"
+                  className="flex-1"
+                >
+                  Enregistrer et quitter
+                </Button>
               </div>
             </div>
             </div>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useTransition, useCallback } from 'react'
+import { Button } from './Button'
 import { CalendarView } from './CalendarView'
 import { getWorkoutsForDateRange, getImportedActivitiesForDateRange, getImportedActivityWeeklyTotals, getWorkoutWeeklyTotals } from '@/app/dashboard/workouts/actions'
 import type { Workout, Goal, ImportedActivity, ImportedActivityWeeklyTotal, WorkoutWeeklyTotal } from '@/types/database'
@@ -422,31 +423,33 @@ export function CalendarViewWithNavigation({
             <div className="flex items-center justify-between w-full pb-2 mb-0 flex-wrap gap-2">
               {title != null ? <div className="flex-1 min-w-0">{title}</div> : <div className="flex-1" />}
               <div className="flex items-center gap-3 bg-stone-100 p-1 rounded-lg shrink-0">
-                <button
+                <Button
                   type="button"
+                  variant="ghost"
                   onClick={() => handleNavigate(-1)}
                   disabled={isAnimating}
-                  className="p-1.5 hover:bg-white hover:text-[#627e59] rounded-md transition-all shadow-sm text-stone-500 disabled:opacity-60 disabled:pointer-events-none"
+                  className="p-1.5 min-w-10 min-h-10 hover:bg-white hover:text-palette-forest-dark text-stone-500"
                   aria-label="Semaine précédente"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="m15 18-7-7 7-7" />
                   </svg>
-                </button>
+                </Button>
                 <span className="text-sm font-semibold text-stone-700 px-2 w-[200px] text-center shrink-0">
                   {dateRangeLabel}
                 </span>
-                <button
+                <Button
                   type="button"
+                  variant="ghost"
                   onClick={() => handleNavigate(1)}
                   disabled={isAnimating}
-                  className="p-1.5 hover:bg-white hover:text-[#627e59] rounded-md transition-all shadow-sm text-stone-500 disabled:opacity-60 disabled:pointer-events-none"
+                  className="p-1.5 min-w-10 min-h-10 hover:bg-white hover:text-palette-forest-dark text-stone-500"
                   aria-label="Semaine suivante"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="m9 18 6-6-6-6" />
                   </svg>
-                </button>
+                </Button>
               </div>
             </div>
           )}
