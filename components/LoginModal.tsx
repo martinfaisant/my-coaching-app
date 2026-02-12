@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { LoginForm } from './LoginForm'
 
 export type AuthModalMode = 'login' | 'signup'
@@ -13,6 +14,13 @@ type LoginModalProps = {
 }
 
 export function LoginModal({ isOpen, mode, onClose, onModeChange }: LoginModalProps) {
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+    return () => setMounted(false)
+  }, [])
+
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose()
@@ -27,25 +35,27 @@ export function LoginModal({ isOpen, mode, onClose, onModeChange }: LoginModalPr
     }
   }, [isOpen, onClose])
 
-  if (!isOpen) return null
+  if (!isOpen || !mounted) return null
 
-  return (
-    <>
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+      {/* Overlay */}
       <div
-        className="fixed inset-0 bg-stone-900/50 backdrop-blur-sm z-[90]"
+        className="absolute inset-0 bg-stone-900/50 backdrop-blur-sm z-0"
         onClick={onClose}
         aria-hidden="true"
       />
+      {/* Modal Content */}
       <div
-        className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+        className="relative z-50 w-full max-w-md max-h-[90vh] overflow-y-auto bg-white rounded-xl shadow-2xl border border-stone-200"
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-title"
+        onClick={(e) => e.stopPropagation()}
       >
-        <div className="relative w-full max-w-md max-h-[90vh] overflow-y-auto bg-white rounded-xl shadow-xl border border-stone-100">
-          <LoginForm mode={mode} onModeChange={onModeChange} onClose={onClose} />
-        </div>
+        <LoginForm mode={mode} onModeChange={onModeChange} onClose={onClose} />
       </div>
-    </>
+    </div>,
+    document.body
   )
 }
