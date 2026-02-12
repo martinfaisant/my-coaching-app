@@ -3,6 +3,7 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
+import { headers } from 'next/headers'
 
 export type LoginState = {
   error?: string
@@ -23,7 +24,24 @@ export async function login(_prevState: LoginState, formData: FormData) {
     return { error: error.message }
   }
 
-  redirect('/dashboard')
+  // Récupérer l'URL de redirection depuis les headers si présente
+  const headersList = await headers()
+  const referer = headersList.get('referer')
+  let redirectPath = '/dashboard'
+  
+  if (referer) {
+    try {
+      const url = new URL(referer)
+      const redirectParam = url.searchParams.get('redirect')
+      if (redirectParam && redirectParam.startsWith('/dashboard')) {
+        redirectPath = redirectParam
+      }
+    } catch {
+      // Ignorer les erreurs de parsing d'URL
+    }
+  }
+
+  redirect(redirectPath)
 }
 
 export type SignupState = {

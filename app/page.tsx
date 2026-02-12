@@ -1,126 +1,365 @@
-'use client'
-
-import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { LoginModal } from '@/components/LoginModal'
-import { Button } from '@/components/Button'
+import { AuthButtons } from '@/components/AuthButtons'
+import { 
+  Calendar, 
+  MessageCircle, 
+  Target, 
+  TrendingUp, 
+  Users, 
+  Award,
+  CheckCircle2,
+  Activity,
+  Zap
+} from 'lucide-react'
 
-const HERO_CARDS = [
+const FEATURES = [
   {
-    src: 'https://images.unsplash.com/photo-1571008887538-b36bb32f4571?w=800&q=80',
-    alt: 'Coureur sur route',
-    title: 'Trouvez votre coach',
+    icon: Calendar,
+    title: 'Planning Personnalisé',
     description:
-      'Parcourez les profils de coachs professionnels (sports, langues, présentation) et envoyez une demande pour démarrer un accompagnement.',
+      'Calendrier d\'entraînement hebdomadaire avec séances détaillées : durée, distance, dénivelé et allure cible pour chaque sport.',
   },
   {
-    src: 'https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=800&q=80',
-    alt: 'Cycliste',
-    title: 'Suivi et plans sur mesure',
+    icon: Activity,
+    title: 'Connexion Strava',
     description:
-      "Objectifs, calendrier d'entraînement et suivi régulier pour progresser avec un coach dédié.",
+      'Synchronisez automatiquement vos activités Strava. Visualisez vos entraînements réels vs planifiés et suivez vos totaux hebdomadaires.',
   },
   {
-    src: 'https://images.unsplash.com/photo-1504025468847-0e438279542c?w=800&q=80',
-    alt: 'Traileur en montagne',
-    title: 'Échange en direct',
+    icon: MessageCircle,
+    title: 'Messagerie Directe',
     description:
-      'Messagerie intégrée entre athlète et coach pour poser vos questions et ajuster le programme à tout moment.',
+      'Chat en temps réel avec votre coach. Posez vos questions, partagez vos ressentis et ajustez votre programme à tout moment.',
+  },
+  {
+    icon: Target,
+    title: 'Gestion d\'Objectifs',
+    description:
+      'Définissez vos courses et événements cibles. Votre coach adapte votre préparation avec un compte à rebours vers votre objectif principal.',
+  },
+  {
+    icon: TrendingUp,
+    title: 'Suivi de Progression',
+    description:
+      'Totaux hebdomadaires par sport, historique de vos séances et comparaison avec votre plan pour mesurer vos progrès.',
+  },
+  {
+    icon: Award,
+    title: 'Coachs Certifiés',
+    description:
+      'Parcourez les profils détaillés, consultez les avis et notes des athlètes, et choisissez le coach qui correspond à vos besoins.',
   },
 ] as const
 
+const HOW_IT_WORKS = [
+  {
+    step: '1',
+    title: 'Créez votre profil',
+    description: 'Renseignez vos sports pratiqués, votre niveau et vos objectifs en quelques clics.',
+  },
+  {
+    step: '2',
+    title: 'Trouvez votre coach',
+    description: 'Filtrez par sport et langue, consultez les profils et envoyez une demande de coaching.',
+  },
+  {
+    step: '3',
+    title: 'Commencez à progresser',
+    description: 'Recevez votre plan personnalisé, échangez avec votre coach et atteignez vos objectifs.',
+  },
+] as const
+
+const STATS = [
+  { value: '500+', label: 'Athlètes actifs' },
+  { value: '50+', label: 'Coachs certifiés' },
+  { value: '10k+', label: 'Séances planifiées' },
+  { value: '4.8/5', label: 'Satisfaction' },
+] as const
+
 export default function Home() {
-  const [modalOpen, setModalOpen] = useState(false)
-  const [modalMode, setModalMode] = useState<'login' | 'signup'>('login')
-
-  const openLogin = () => {
-    setModalMode('login')
-    setModalOpen(true)
-  }
-  const openSignup = () => {
-    setModalMode('signup')
-    setModalOpen(true)
-  }
-
   return (
-    <>
-      <div className="min-h-screen bg-background">
-        {/* Header */}
-        <header className="sticky top-0 z-40 border-b border-stone-200 bg-background/95 backdrop-blur-md">
-          <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
-            <Link
-              href="/"
-              className="text-xl font-semibold text-stone-900 tracking-tight"
-            >
-              Coach Pro
-            </Link>
-            <div className="flex items-center gap-2.5">
-              <Button variant="secondary" onClick={openLogin}>
-                Se connecter
-              </Button>
-              <Button variant="primary" onClick={openSignup}>
-                Créer un compte
-              </Button>
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <header className="sticky top-0 z-50 border-b border-stone-200 bg-background/95 backdrop-blur-md">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+          <Link
+            href="/"
+            className="text-xl font-semibold text-stone-900 tracking-tight flex items-center gap-2"
+          >
+            <Zap className="w-6 h-6 text-palette-forest-dark" />
+            Coach Pro
+          </Link>
+          <AuthButtons />
+        </div>
+      </header>
+
+      <main>
+        {/* Hero Section */}
+        <section className="relative overflow-hidden bg-gradient-to-b from-palette-forest-light/10 to-background py-20 sm:py-32">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-4xl mx-auto">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-palette-forest-light/20 border border-palette-forest-light/30 mb-6">
+                <span className="w-2 h-2 bg-palette-forest-dark rounded-full animate-pulse"></span>
+                <span className="text-sm font-medium text-palette-forest-dark">
+                  La plateforme n°1 de coaching sportif personnalisé
+                </span>
+              </div>
+              
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-stone-900 mb-6">
+                Atteignez vos objectifs avec un{' '}
+                <span className="text-palette-forest-dark">coach dédié</span>
+              </h1>
+              
+              <p className="text-xl leading-relaxed text-stone-600 mb-10 max-w-2xl mx-auto">
+                Plans d&apos;entraînement personnalisés, suivi en temps réel, synchronisation Strava 
+                et messagerie directe. Tout pour progresser efficacement.
+              </p>
+
+              <div className="flex justify-center mb-16">
+                <AuthButtons variant="hero" />
+              </div>
+
+              {/* Stats */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-8 pt-8 border-t border-stone-200">
+                {STATS.map(({ value, label }) => (
+                  <div key={label} className="text-center">
+                    <div className="text-3xl font-bold text-palette-forest-dark mb-1">{value}</div>
+                    <div className="text-sm text-stone-600">{label}</div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-        </header>
+        </section>
 
-        {/* Hero - Présentation du produit */}
-        <main className="mx-auto max-w-6xl px-4 sm:px-6 py-20 sm:py-28">
-          <section className="text-center max-w-3xl mx-auto">
-            <p className="text-xs font-medium uppercase tracking-widest mb-3 text-palette-forest-dark">
-              La plateforme de coaching sportif
-            </p>
-            <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-stone-900 mb-6">
-              Progressez avec la bonne personne !
-            </h1>
-            <p className="text-lg leading-relaxed text-stone-700">
-              Coach Pro met en relation sportifs et coachs professionnels pour un suivi
-              personnalisé : plans d&apos;entraînement, objectifs et échanges en direct,
-              le tout dans un espace dédié.
-            </p>
-          </section>
+        {/* Screenshot Preview */}
+        <section className="py-20 bg-stone-50">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl sm:text-4xl font-bold text-stone-900 mb-4">
+                Une interface intuitive et complète
+              </h2>
+              <p className="text-lg text-stone-600 max-w-2xl mx-auto">
+                Accédez à tous vos entraînements, objectifs et échanges depuis un tableau de bord moderne
+              </p>
+            </div>
 
-          {/* Image + texte en bloc uni, hauteur texte égale — Unsplash (libre de droit) */}
-          <section className="mt-16 sm:mt-20 grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8" aria-label="Atouts de la plateforme">
-            {HERO_CARDS.map(({ src, alt, title, description }) => (
-              <article
-                key={title}
-                className="flex flex-col rounded-2xl border border-stone-200 overflow-hidden bg-section shadow-md"
-              >
-                <div className="group relative flex-none">
-                  <div className="aspect-[4/3] relative">
-                    <Image
-                      src={src}
-                      alt={alt}
-                      fill
-                      sizes="(max-width: 640px) 100vw, 33vw"
-                      className="object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
+            {/* Main Dashboard Preview */}
+            <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-stone-200 bg-white">
+              <div className="aspect-[16/10] relative">
+                <Image
+                  src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1600&q=80"
+                  alt="Dashboard de l'application Coach Pro"
+                  fill
+                  sizes="(max-width: 1280px) 100vw, 1280px"
+                  className="object-cover"
+                  priority
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-stone-900/20 to-transparent"></div>
+              </div>
+            </div>
+
+            {/* Feature Screenshots Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+              <div className="relative rounded-xl overflow-hidden shadow-lg border border-stone-200 bg-white group">
+                <div className="aspect-[4/3] relative">
+                  <Image
+                    src="https://images.unsplash.com/photo-1506784983877-45594efa4cbe?w=800&q=80"
+                    alt="Calendrier d'entraînement"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-stone-900/60 to-transparent"></div>
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <Calendar className="w-8 h-8 text-white mb-2" />
+                    <h3 className="text-lg font-semibold text-white">Planning hebdomadaire</h3>
                   </div>
                 </div>
-                <div className="flex flex-1 flex-col p-6">
-                  <h3 className="text-base font-semibold text-stone-900 mb-2">
+              </div>
+
+              <div className="relative rounded-xl overflow-hidden shadow-lg border border-stone-200 bg-white group">
+                <div className="aspect-[4/3] relative">
+                  <Image
+                    src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80"
+                    alt="Synchronisation Strava"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-stone-900/60 to-transparent"></div>
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <Activity className="w-8 h-8 text-white mb-2" />
+                    <h3 className="text-lg font-semibold text-white">Sync Strava</h3>
+                  </div>
+                </div>
+              </div>
+
+              <div className="relative rounded-xl overflow-hidden shadow-lg border border-stone-200 bg-white group">
+                <div className="aspect-[4/3] relative">
+                  <Image
+                    src="https://images.unsplash.com/photo-1577563908411-5077b6dc7624?w=800&q=80"
+                    alt="Messagerie avec votre coach"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-stone-900/60 to-transparent"></div>
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <MessageCircle className="w-8 h-8 text-white mb-2" />
+                    <h3 className="text-lg font-semibold text-white">Chat en direct</h3>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Features Section */}
+        <section className="py-20 bg-background">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl sm:text-4xl font-bold text-stone-900 mb-4">
+                Tout ce dont vous avez besoin pour progresser
+              </h2>
+              <p className="text-lg text-stone-600 max-w-2xl mx-auto">
+                Une plateforme complète qui réunit athlètes et coachs professionnels
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {FEATURES.map(({ icon: Icon, title, description }) => (
+                <div
+                  key={title}
+                  className="relative group p-8 rounded-2xl border border-stone-200 bg-white hover:shadow-lg transition-all duration-300 hover:border-palette-forest-light"
+                >
+                  <div className="flex items-start gap-4">
+                    <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-palette-forest-light/20 flex items-center justify-center group-hover:bg-palette-forest-light/30 transition-colors">
+                      <Icon className="w-6 h-6 text-palette-forest-dark" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold text-stone-900 mb-2">
+                        {title}
+                      </h3>
+                      <p className="text-sm leading-relaxed text-stone-600">
+                        {description}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* How it works */}
+        <section className="py-20 bg-stone-50">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl sm:text-4xl font-bold text-stone-900 mb-4">
+                Comment ça marche ?
+              </h2>
+              <p className="text-lg text-stone-600 max-w-2xl mx-auto">
+                Trois étapes simples pour commencer votre transformation sportive
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
+              {/* Connecting line */}
+              <div className="hidden md:block absolute top-24 left-[16.666%] right-[16.666%] h-0.5 bg-gradient-to-r from-palette-forest-light via-palette-forest-default to-palette-forest-light"></div>
+
+              {HOW_IT_WORKS.map(({ step, title, description }, index) => (
+                <div key={step} className="relative text-center">
+                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-palette-forest-dark text-white text-2xl font-bold mb-6 shadow-lg relative z-10">
+                    {step}
+                  </div>
+                  <h3 className="text-xl font-semibold text-stone-900 mb-3">
                     {title}
                   </h3>
-                  <p className="text-sm leading-relaxed text-stone-700">
+                  <p className="text-stone-600 leading-relaxed">
                     {description}
                   </p>
                 </div>
-              </article>
-            ))}
-          </section>
+              ))}
+            </div>
+          </div>
+        </section>
 
-        </main>
-      </div>
+        {/* For Coaches */}
+        <section className="py-20 bg-background">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-stone-200">
+                <div className="aspect-[4/3] relative">
+                  <Image
+                    src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=1200&q=80"
+                    alt="Coach avec athlète"
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                    className="object-cover"
+                  />
+                </div>
+              </div>
 
-      <LoginModal
-        isOpen={modalOpen}
-        mode={modalMode}
-        onClose={() => setModalOpen(false)}
-        onModeChange={setModalMode}
-      />
-    </>
+              <div>
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-palette-olive-light/20 border border-palette-olive-light/30 mb-6">
+                  <Users className="w-4 h-4 text-palette-olive-dark" />
+                  <span className="text-sm font-medium text-palette-olive-dark">
+                    Vous êtes coach ?
+                  </span>
+                </div>
+
+                <h2 className="text-3xl sm:text-4xl font-bold text-stone-900 mb-6">
+                  Développez votre activité de coaching
+                </h2>
+
+                <div className="space-y-4 mb-8">
+                  {[
+                    'Gérez tous vos athlètes depuis un seul espace',
+                    'Créez des plans d\'entraînement personnalisés',
+                    'Suivez la progression en temps réel',
+                    'Créez et gérez vos offres de coaching',
+                    'Communiquez facilement avec vos athlètes',
+                    'Recevez des avis pour développer votre notoriété',
+                  ].map((feature) => (
+                    <div key={feature} className="flex items-start gap-3">
+                      <CheckCircle2 className="w-6 h-6 text-palette-forest-dark flex-shrink-0 mt-0.5" />
+                      <span className="text-stone-700">{feature}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <AuthButtons variant="hero" />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* CTA Final */}
+        <section className="py-20 bg-gradient-to-br from-palette-forest-dark to-palette-forest-default text-white">
+          <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
+            <h2 className="text-3xl sm:text-4xl font-bold mb-6">
+              Prêt à passer au niveau supérieur ?
+            </h2>
+            <p className="text-xl text-white/90 mb-10 max-w-2xl mx-auto">
+              Rejoignez des centaines d&apos;athlètes qui progressent chaque jour avec Coach Pro
+            </p>
+            <AuthButtons variant="hero" />
+          </div>
+        </section>
+      </main>
+
+      {/* Footer */}
+      <footer className="border-t border-stone-200 bg-stone-50 py-12">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center text-stone-600">
+            <p className="text-sm">
+              © {new Date().getFullYear()} Coach Pro. Tous droits réservés.
+            </p>
+          </div>
+        </div>
+      </footer>
+    </div>
   )
 }
