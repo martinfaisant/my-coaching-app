@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { getCurrentUserWithProfile } from '@/utils/auth'
-import { PageHeader } from '@/components/PageHeader'
+import { DashboardPageShell } from '@/components/DashboardPageShell'
 import { StravaDevicesSection } from './StravaDevicesSection'
 import { getStravaConnection } from './actions'
 
@@ -20,17 +20,12 @@ export default async function DevicesPage() {
   const connection = result.connection ?? null
 
   return (
-    <main className="flex-1 flex flex-col h-full min-w-0 bg-white/50 rounded-2xl overflow-hidden relative border border-stone-200/50">
-      <PageHeader title="Mes appareils connectés" />
-
-      {/* ZONE SCROLLABLE */}
-      <div className="flex-1 overflow-y-auto px-6 lg:px-8 py-6">
-        <StravaDevicesSection
-          userId={current.id}
-          connected={connected}
-          connection={connection}
-        />
-      </div>
-    </main>
+    <DashboardPageShell title="Mes appareils connectés">
+      <StravaDevicesSection
+        userId={current.id}
+        connected={connected}
+        connection={connection}
+      />
+    </DashboardPageShell>
   )
 }

@@ -472,14 +472,13 @@ type BadgeProps = {
 
 Tous les sports ont une icône SVG dédiée (définie dans `components/SportIcons.tsx`) :
 - Course (`IconRunning`)
-- Vélo (`IconBike`)
+- Vélo (`IconBiking`)
 - Natation (`IconSwimming`)
 - Musculation (`IconDumbbell`)
 - Trail (`IconMountain`)
 - Randonnée (`IconPersonHiking`)
-- Triathlon (`IconTriathlon`)
-- Ski nordique (`IconSkiNordic`)
-- Ski de randonnée (`IconSkiBackcountry`)
+- Ski nordique (`IconNordicSki`)
+- Ski de randonnée (`IconBackcountrySki`)
 - Patin à glace (`IconIceSkating`)
 
 ---

@@ -21,11 +21,12 @@ alwaysApply: true
 
 ## Stack & Architecture
 
-- **Framework**: Next.js App Router
+- **Framework**: Next.js 16 App Router
 - **Backend**: Supabase (Auth, DB, RLS)
-- **Dependencies**: Always use **UV** library for Python dependencies
-- **Auth**: Server-side `getCurrentUserWithProfile()`, `requireRole()`
+- **Auth**: Server-side `getCurrentUserWithProfile()`, `requireRole()`, helpers from `lib/authHelpers.ts`
 - **Security**: RLS policies on all tables
+- **Error Handling**: Error boundaries (`app/error.tsx`, `app/dashboard/error.tsx`) + structured errors (`lib/errors.ts`)
+- **Logging**: Centralized logger (`lib/logger.ts`) - NO `console.log` in production
 
 ---
 
@@ -50,8 +51,19 @@ className="bg-[#2c3e2e] text-white"
 - `palette-danger` - Errors, destructive actions
 
 **Component library:**
-- Use existing components: `Button`, `Input`, `Textarea`, `Badge`, `SportTileSelectable`
+- Use existing components: `Button`, `Input`, `Textarea`, `Badge`, `Modal`, `DashboardPageShell`
+- Use existing icons: `IconClose`, `IconRunning`, `IconBiking`, etc. from `components/SportIcons.tsx`
 - Check `docs/DESIGN_SYSTEM.md` before creating new components
+
+**Centralized utilities:**
+- Date operations → `lib/dateUtils.ts`
+- String operations → `lib/stringUtils.ts`
+- Auth checks → `lib/authHelpers.ts`
+- Form validation → `lib/workoutValidation.ts`
+- Form styles → `lib/formStyles.ts`
+- Sport styles → `lib/sportStyles.ts`
+- Error handling → `lib/errors.ts`
+- Logging → `lib/logger.ts`
 
 ---
 
@@ -59,21 +71,124 @@ className="bg-[#2c3e2e] text-white"
 
 ### File Structure
 ```
-/app/dashboard     → Main app (role-based views)
-/app/admin         → Admin-only pages
-/components        → Shared components
-/utils             → Auth, Supabase clients
+/app/dashboard          → Main app (role-based views)
+/app/admin              → Admin-only pages
+/components             → Shared components
+  /icons                → Icon components (IconClose, etc.)
+/lib                    → Utilities, helpers, validation, styles
+/utils                  → Auth, Supabase clients
+/docs                   → Documentation
+  /archive              → Obsolete docs
 ```
 
 ### TypeScript
 - Strict mode enabled
 - No `any` types - use proper typing
-- Server actions in separate files
+- Server actions in separate `actions.ts` files
+- Use structured types (`ApiResult<T>`, `ApiError`, `ApiSuccess<T>`)
 
 ### React/Next.js
 - Server Components by default
 - Client Components only when needed (`'use client'`)
 - Colocate related code
+- Use `DashboardPageShell` for dashboard pages (NOT raw `<main>` tags)
+
+### Error Handling
+```typescript
+// ✅ GOOD - Use structured errors
+import { createError, createSuccess } from '@/lib/errors'
+
+export async function myAction(): Promise<ApiResult<Data>> {
+  if (!user) return createError('Non connecté.', 'AUTH_REQUIRED')
+  return createSuccess(data)
+}
+
+// ❌ BAD - Inconsistent returns
+export async function myAction() {
+  if (!user) return null  // Hides the error
+  return data
+}
+```
+
+### Logging
+```typescript
+// ✅ GOOD - Use logger
+import { logger } from '@/lib/logger'
+logger.error('Something went wrong', error, { context })
+
+// ❌ BAD - Direct console
+console.error('Something went wrong', error)
+```
+
+---
+
+## Component Patterns
+
+### Dashboard Pages
+**Always use `DashboardPageShell`** instead of raw `<main>` tags:
+
+```typescript
+// ✅ GOOD
+import { DashboardPageShell } from '@/components/DashboardPageShell'
+
+export default function MyPage() {
+  return (
+    <DashboardPageShell title="Mon Titre" rightContent={<Button>Action</Button>}>
+      {/* contenu */}
+    </DashboardPageShell>
+  )
+}
+
+// ❌ BAD - Don't duplicate layout
+export default function MyPage() {
+  return (
+    <main className="flex-1 flex flex-col h-full...">
+      <PageHeader title="Mon Titre" />
+      <div className="flex-1 overflow-y-auto...">
+        {/* contenu */}
+      </div>
+    </main>
+  )
+}
+```
+
+### Modals
+**Always use the centralized `<Modal>` component:**
+
+```typescript
+// ✅ GOOD
+import { Modal } from '@/components/Modal'
+
+<Modal isOpen={isOpen} onClose={onClose} title="Titre" size="md">
+  {/* contenu */}
+</Modal>
+
+// ❌ BAD - Don't create custom portals
+import { createPortal } from 'react-dom'
+createPortal(<div>...</div>, document.body)
+```
+
+### Forms
+**Use centralized form styles:**
+
+```typescript
+// ✅ GOOD - Import from lib
+import { FORM_BASE_CLASSES, FORM_ERROR_CLASSES } from '@/lib/formStyles'
+
+// ❌ BAD - Redefine locally
+const BASE_CLASSES = 'w-full px-4 py-3...'
+```
+
+### Sport Styles
+**Use centralized sport styles:**
+
+```typescript
+// ✅ GOOD - Import from lib
+import { SPORT_LABELS, SPORT_ICONS, SPORT_CARD_STYLES } from '@/lib/sportStyles'
+
+// ❌ BAD - Redefine locally
+const SPORT_LABELS = { course: 'Course', ... }
+```
 
 ---
 
@@ -83,6 +198,23 @@ className="bg-[#2c3e2e] text-white"
 1. RLS policies (Row Level Security)
 2. Role-based access (athlete/coach/admin)
 3. Server-side validation
+
+**Use auth helpers:**
+```typescript
+import { requireUser, requireRole, requireCoachOrAthleteAccess } from '@/lib/authHelpers'
+
+// Simple auth check
+const result = await requireUser(supabase)
+if ('error' in result) return result
+
+// Role check
+const result = await requireRole(supabase, 'coach')
+if ('error' in result) return result
+
+// Coach-athlete access (workouts, goals)
+const result = await requireCoachOrAthleteAccess(supabase, athleteId)
+if ('error' in result) return result
+```
 
 ---
 
@@ -101,21 +233,53 @@ className="bg-[#2c3e2e] text-white"
 - Minimize client-side JavaScript
 - Use Supabase queries efficiently (select only needed fields)
 - Avoid N+1 queries
+- Use `Promise.all()` for parallel queries
+- Images: Use Next.js `<Image>` component
+- Dynamic imports for heavy components when appropriate
 
 ---
 
 ## Documentation Sources (CHECK BEFORE CREATING!)
 
-**Before creating any new documentation, check `.cursorrules` for existing docs.**
+**Before creating any new documentation, check `DOCS_INDEX.md` for existing docs.**
 
 ### Primary references:
-1. **Project_context.md** - Product vision, roles, features, architecture
-2. **docs/DESIGN_SYSTEM.md** - Complete design system (tokens, components, guidelines)
-3. **README.md** - Setup and getting started
-4. **.cursorrules** - Full documentation index (prevents duplicates)
+1. **README.md** - Quick start, setup, stack overview
+2. **Project_context.md** - Product vision, roles, features, architecture
+3. **docs/DESIGN_SYSTEM.md** - Complete design system (tokens, components, guidelines)
+4. **DOCS_INDEX.md** - Full documentation index (prevents duplicates)
+5. **REFACTORING_P1_P2_COMPLETE.md** - Latest refactoring status
 
 ### When to reference what:
+- Setup/start → `README.md`
 - Product questions → `Project_context.md`
 - UI/components → `docs/DESIGN_SYSTEM.md`
+- Patterns → `docs/PATTERN_SAVE_BUTTON.md`
 - Deployment → `DEPLOYMENT_NOTES.md` or `MISE_EN_PROD.md`
-- Historical context → Check `.cursorrules` for audit/fix docs
+- Code quality → `AUDIT_COMPLET.md`, `REFACTORING_*.md`
+- All docs index → `DOCS_INDEX.md`
+
+---
+
+## Quality Standards
+
+**Current code quality: 8.3/10**
+
+- ✅ All P0 (Critical) tasks completed
+- ✅ All P1 (Important) tasks completed
+- ✅ All P2 (Recommended) tasks completed
+- ⏳ P3 (Future) tasks pending (tests, advanced optimizations)
+
+**Zero tolerance for:**
+- `any` types in TypeScript
+- Hardcoded colors instead of design tokens
+- `console.log` / `console.error` in production (use `logger`)
+- Duplicated code (use centralized utilities)
+- Raw `<main>` layouts in dashboard (use `DashboardPageShell`)
+- Custom portals for modals (use `<Modal>`)
+
+---
+
+**Version:** 2.0  
+**Last updated:** 13 février 2026  
+**Refactoring status:** 13/17 tasks completed (76%)

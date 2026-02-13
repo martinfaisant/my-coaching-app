@@ -1,48 +1,225 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🏃‍♂️ Coach Pro - Plateforme de Coaching Sportif
 
-## Getting Started
+Application web de coaching sportif connectant athlètes et coachs professionnels.
 
-First, run the development server:
+## 📋 Description
+
+Coach Pro est une marketplace + plateforme de coaching permettant aux athlètes de :
+- Trouver un coach facilement (filtres par sport, langue)
+- Suivre un programme d'entraînement structuré
+- Suivre leurs progrès et objectifs
+- Communiquer avec leur coach via messagerie intégrée
+- Synchroniser leurs activités Strava
+
+## 🚀 Quick Start
+
+### Prérequis
+
+- Node.js 18+ 
+- npm ou yarn
+- Compte Supabase (base de données + auth)
+
+### Installation
+
+```bash
+# Cloner le repo
+git clone <url-du-repo>
+cd my-coaching-app
+
+# Installer les dépendances
+npm install
+
+# Configurer les variables d'environnement
+cp .env.example .env.local
+```
+
+### Variables d'environnement (.env.local)
+
+```bash
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=https://votre-projet.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=votre_cle_publique
+SUPABASE_SERVICE_ROLE_KEY=votre_cle_service_role
+
+# Strava (optionnel - pour import d'activités)
+STRAVA_CLIENT_ID=votre_client_id
+STRAVA_CLIENT_SECRET=votre_client_secret
+NEXT_PUBLIC_APP_URL=http://localhost:3000  # ou votre domaine en production
+```
+
+### Lancer en développement
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Ouvrir [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Build de production
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm start
+```
 
-### Connexion Strava (athlètes)
+## 🔧 Stack Technique
 
-Pour activer l’import d’activités depuis Strava :
+- **Framework:** Next.js 16 (App Router)
+- **Langage:** TypeScript (strict mode)
+- **UI:** Tailwind CSS + Design System custom
+- **Backend:** Supabase (PostgreSQL + Auth + RLS)
+- **Déploiement:** Vercel (recommandé)
 
-1. Créez une application sur [Strava API](https://www.strava.com/settings/api) et récupérez **Client ID** et **Client Secret**.
-2. Définissez **Authorization Callback Domain** sur le domaine de votre app : en local `localhost`, en production votre domaine exact (ex. `mon-app.vercel.app`). En cas d’erreur « redirect_uri invalid », ajoutez `NEXT_PUBLIC_APP_URL` (voir ci‑dessous).
-3. Dans `.env.local` :
-   - `STRAVA_CLIENT_ID=votre_client_id`
-   - `STRAVA_CLIENT_SECRET=votre_client_secret`
-   - (Si erreur redirect_uri) `NEXT_PUBLIC_APP_URL=https://votre-domaine.com` — doit correspondre au domaine enregistré dans Strava.
-4. Les athlètes peuvent aller dans **Profil → Mes appareils connectés** pour lier Strava et importer la dernière semaine d’activités dans le calendrier.
+## 📚 Documentation
 
-## Learn More
+- **[Project_context.md](./Project_context.md)** - Vision produit, rôles, features
+- **[docs/DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md)** - Design system complet
+- **[DOCS_INDEX.md](./DOCS_INDEX.md)** - Index de toute la documentation
+- **[.cursor/rules/project-core.mdc](./.cursor/rules/project-core.mdc)** - Conventions de code
 
-To learn more about Next.js, take a look at the following resources:
+## 🎨 Design System
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Le projet utilise un design system cohérent avec :
+- **Palette de couleurs** : Tons forêt/olive/or (palette nature)
+- **Composants réutilisables** : `Button`, `Input`, `Textarea`, `Badge`, `Modal`, `DashboardPageShell`
+- **Design tokens** : Définis dans `tailwind.config.ts`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Voir [docs/DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md) pour tous les détails.
 
-## Deploy on Vercel
+## 🔐 Authentification & Rôles
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 3 rôles utilisateur :
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Athlète**
+- Chercher et choisir un coach
+- Consulter son calendrier d'entraînement
+- Gérer ses objectifs
+- Noter son coach
+- Synchroniser Strava
+
+**Coach**
+- Créer un profil professionnel et des offres
+- Gérer ses athlètes
+- Créer des entraînements
+- Consulter les totaux hebdomadaires
+- Communiquer avec les athlètes
+
+**Admin**
+- Gérer les membres et rôles
+- Accéder au design system (`/dashboard/admin/design-system`)
+
+## 🔗 Intégration Strava
+
+### Configuration
+
+1. Créer une app sur [Strava API](https://www.strava.com/settings/api)
+2. Récupérer **Client ID** et **Client Secret**
+3. Configurer **Authorization Callback Domain** :
+   - Local : `localhost`
+   - Production : votre domaine exact (ex: `mon-app.vercel.app`)
+4. Ajouter dans `.env.local` :
+   ```bash
+   STRAVA_CLIENT_ID=votre_client_id
+   STRAVA_CLIENT_SECRET=votre_client_secret
+   NEXT_PUBLIC_APP_URL=https://votre-domaine.com
+   ```
+
+### Utilisation
+
+Les athlètes peuvent lier leur compte Strava via **Profil → Mes appareils connectés** pour importer automatiquement leurs activités dans le calendrier.
+
+## 📁 Structure du Projet
+
+```
+my-coaching-app/
+├── app/                      # Next.js App Router
+│   ├── dashboard/           # Pages principales
+│   │   ├── calendar/       # Calendrier d'entraînement
+│   │   ├── objectifs/      # Gestion des objectifs
+│   │   ├── profile/        # Profil utilisateur
+│   │   └── ...
+│   ├── admin/              # Pages admin
+│   ├── api/                # API routes (Strava, etc.)
+│   └── login/              # Authentification
+├── components/             # Composants réutilisables
+│   ├── Button.tsx
+│   ├── Input.tsx
+│   ├── Modal.tsx
+│   ├── DashboardPageShell.tsx
+│   └── ...
+├── lib/                    # Utilitaires et helpers
+│   ├── dateUtils.ts
+│   ├── stringUtils.ts
+│   ├── authHelpers.ts
+│   ├── sportStyles.ts
+│   ├── errors.ts
+│   └── logger.ts
+├── utils/                  # Clients Supabase
+│   ├── supabase/
+│   └── auth.ts
+├── docs/                   # Documentation
+│   ├── DESIGN_SYSTEM.md
+│   ├── PATTERN_SAVE_BUTTON.md
+│   └── archive/           # Docs obsolètes
+└── proxy.ts               # Middleware d'authentification
+```
+
+## 🧪 Tests
+
+```bash
+# Linter
+npm run lint
+
+# Build de vérification
+npm run build
+```
+
+> Note : Les tests unitaires et E2E sont à implémenter (voir P3 de l'audit)
+
+## 🚢 Déploiement
+
+### Vercel (recommandé)
+
+1. Connecter le repo à Vercel
+2. Configurer les variables d'environnement (voir `.env.local`)
+3. Déployer automatiquement à chaque push
+
+Voir [DEPLOYMENT_NOTES.md](./DEPLOYMENT_NOTES.md) et [MISE_EN_PROD.md](./MISE_EN_PROD.md) pour plus de détails.
+
+## 📊 État du Projet
+
+**Score qualité actuel : 8.3/10**
+
+### Refactorings complétés (13/17 tâches) ✅
+
+- ✅ P0 : Utilitaires centralisés (date, string, auth, validation)
+- ✅ P1 : Composants cohérents (modals, layouts, styles)
+- ✅ P2 : Optimisations (SEO, loading, documentation, logger)
+
+### À venir (P3 - optionnel)
+
+- Tests unitaires et E2E
+- Optimisations performance avancées
+- Améliorations accessibilité
+
+Voir [AUDIT_COMPLET.md](./AUDIT_COMPLET.md) et [REFACTORING_P1_P2_COMPLETE.md](./REFACTORING_P1_P2_COMPLETE.md) pour tous les détails.
+
+## 🤝 Contribuer
+
+1. Lire [Project_context.md](./Project_context.md) et [.cursor/rules/project-core.mdc](./.cursor/rules/project-core.mdc)
+2. Suivre les conventions du design system
+3. Utiliser les composants existants
+4. Respecter la philosophie MVP-first
+
+## 📞 Support
+
+Pour toute question sur l'architecture ou les conventions, consulter :
+- [DOCS_INDEX.md](./DOCS_INDEX.md) - Index de toute la doc
+- [docs/DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md) - Composants et styles
+- Documentation des refactorings dans les fichiers `REFACTORING_*.md`
+
+---
+
+**Dernière mise à jour :** 13 février 2026  
+**Version :** 1.0.0  
+**License :** MIT
