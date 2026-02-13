@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react'
 import { createPortal, useFormStatus } from 'react-dom'
 import { useActionState } from 'react'
+import { useRouter } from 'next/navigation'
 import {
   createWorkout,
   updateWorkout,
@@ -70,6 +71,7 @@ export function WorkoutModal({
   athleteView = false,
   workout,
 }: WorkoutModalProps) {
+  const router = useRouter()
   const [sportType, setSportType] = useState<SportType>('course')
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
@@ -243,8 +245,12 @@ export function WorkoutModal({
       setCommentSaveStatus('saved')
       setCommentSaveMessage(null)
       setTimeout(() => setCommentSaveStatus('idle'), 2000)
+      
+      // 🔧 FIX: Forcer le refresh du cache Next.js pour que le commentaire persiste
+      // Le router.refresh() va revalider toutes les données serveur sans recharger la page
+      router.refresh()
     }
-  }, [workout, canEdit, commentText, athleteId, pathToRevalidate])
+  }, [workout, canEdit, commentText, athleteId, pathToRevalidate, router])
 
   // À la fermeture : sauvegarder tout de suite le commentaire s'il y a des changements non enregistrés (athlète)
   const handleClose = useCallback(() => {
@@ -267,11 +273,13 @@ export function WorkoutModal({
     const fd = new FormData()
     fd.set('comment', commentText)
     saveWorkoutComment(workout.id, athleteId, pathToRevalidate, {}, fd).then(() => {
+      // 🔧 FIX: Refresh le cache avant de fermer pour que le prochain ouverture ait les bonnes données
+      router.refresh()
       doClose()
     }).catch(() => {
       doClose()
     })
-  }, [workout, canEdit, commentText, athleteId, pathToRevalidate, onClose])
+  }, [workout, canEdit, commentText, athleteId, pathToRevalidate, onClose, router])
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
