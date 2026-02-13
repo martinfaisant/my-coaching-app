@@ -3,6 +3,7 @@
 import { useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { Button } from './Button'
+import { IconClose } from './icons/IconClose'
 
 /**
  * Modal — Composant modal réutilisable avec overlay, gestion Escape, scroll body.
@@ -164,20 +165,7 @@ export function Modal({
                     onClick={onClose}
                     aria-label="Fermer"
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="20"
-                      height="20"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M18 6 6 18" />
-                      <path d="m6 6 12 12" />
-                    </svg>
+                    <IconClose className="w-5 h-5" />
                   </Button>
                 )}
               </div>

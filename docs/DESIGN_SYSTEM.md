@@ -250,6 +250,53 @@ type ButtonProps = {
 
 ---
 
+#### ⚠️ Pattern "Enregistrer" avec Feedback
+
+**Pour tous les formulaires avec bouton "Enregistrer" qui affiche un feedback "✓ Enregistré", un pattern standard OBLIGATOIRE doit être suivi.**
+
+**📘 Documentation complète :**
+- **`docs/PATTERN_SAVE_BUTTON.md`** - Pattern détaillé avec explications
+- **`.cursor/rules/save-button-pattern.mdc`** - Règle Cursor pour l'IA
+
+**🎯 Résumé du pattern :**
+
+Le feedback "✓ Enregistré" doit s'afficher à **chaque** sauvegarde réussie. Pour cela, il faut détecter la **transition** de `pending: true → false` avec une ref, et utiliser une **clé composite** pour forcer le useEffect à se déclencher à chaque cycle.
+
+```typescript
+// Clé composite OBLIGATOIRE
+const saveFeedbackKey = `${state?.success ?? ''}|${state?.error ?? ''}|${isSubmitting}`
+
+// Ref pour détecter la transition
+const previousIsSubmittingRef = useRef(false)
+
+useEffect(() => {
+  const justFinishedSubmitting = previousIsSubmittingRef.current && !isSubmitting
+  previousIsSubmittingRef.current = isSubmitting
+  
+  if (state?.success && justFinishedSubmitting) {
+    setShowSavedFeedback(true)
+    const timer = setTimeout(() => setShowSavedFeedback(false), 2000)
+    return () => clearTimeout(timer)
+  }
+}, [saveFeedbackKey])
+```
+
+**❌ ERREUR COURANTE À ÉVITER :**
+
+```typescript
+// ❌ NE PAS FAIRE : Écouter state?.success directement
+useEffect(() => {
+  if (state?.success) setShowSavedFeedback(true)
+}, [state?.success]) // BUG : ne se déclenche pas au 2ème cycle !
+```
+
+**✅ Références :**
+- `app/dashboard/profile/ProfileForm.tsx` (implémentation de référence)
+- `app/dashboard/profile/offers/OffersForm.tsx`
+- `components/WorkoutModal.tsx`
+
+---
+
 ### Input
 
 **Fichier :** `components/Input.tsx`

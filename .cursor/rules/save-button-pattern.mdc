@@ -1,0 +1,166 @@
+# Save Button Pattern - Standard Obligatoire
+
+## Règle : Formulaires avec Bouton "Enregistrer"
+
+**Quand cette règle s'applique :**
+- Tout formulaire avec un bouton "Enregistrer" qui affiche un feedback "✓ Enregistré"
+- Tout formulaire avec `useActionState` ou `useTransition`
+- Toute page/modale de type "profil", "paramètres", "offres", etc.
+
+---
+
+## 🔴 Pattern OBLIGATOIRE
+
+### 1. États et Refs (TOUS requis)
+
+```typescript
+const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
+const [showSavedFeedback, setShowSavedFeedback] = useState(false)
+const [isSubmitting, setIsSubmitting] = useState(false)
+const previousIsSubmittingRef = useRef(false)
+const isSubmittingRef = useRef(false)
+```
+
+### 2. useActionState
+
+```typescript
+const [state, action] = useActionState<FormState, FormData>(
+  async (prevState, formData) => {
+    const result = await saveAction(formData)
+    return result
+  },
+  {}
+)
+```
+
+### 3. Clé Composite + useEffect (CRITIQUE)
+
+```typescript
+// ⚠️ OBLIGATOIRE : Cette clé force le useEffect à se déclencher à chaque cycle
+const saveFeedbackKey = `${state?.success ?? ''}|${state?.error ?? ''}|${isSubmitting}`
+
+useEffect(() => {
+  // Détecter la TRANSITION : était en pending, ne l'est plus
+  const justFinishedSubmitting = previousIsSubmittingRef.current && !isSubmitting
+  previousIsSubmittingRef.current = isSubmitting
+  
+  if (state?.success && justFinishedSubmitting) {
+    setShowSavedFeedback(true)
+    router.refresh()
+    
+    const timer = setTimeout(() => {
+      setShowSavedFeedback(false)
+    }, 2000)
+    
+    // Réinitialiser les valeurs initiales
+    setHasUnsavedChanges(false)
+    // ... (mise à jour de initialValuesRef si applicable)
+    
+    return () => clearTimeout(timer)
+  }
+  
+  if (state?.error) {
+    setShowSavedFeedback(false)
+  }
+}, [saveFeedbackKey]) // DÉPENDANCE : la clé composite
+```
+
+### 4. Bouton Enregistrer
+
+```typescript
+<Button
+  type="submit"
+  variant="primary"
+  disabled={!hasUnsavedChanges || isSubmitting}
+  loading={isSubmitting}
+  loadingText="Enregistrement…"
+  success={showSavedFeedback}
+  error={!!state?.error}
+>
+  Enregistrer
+</Button>
+```
+
+---
+
+## ❌ INTERDICTIONS ABSOLUES
+
+### ❌ NE JAMAIS faire :
+
+```typescript
+// ❌ Écouter state?.success directement (BUG au 2ème cycle)
+useEffect(() => {
+  if (state?.success) {
+    setShowSavedFeedback(true)
+  }
+}, [state?.success]) // BUG !
+```
+
+**Pourquoi ?** React ne détecte pas le changement `true → true` au 2ème cycle.
+
+### ❌ NE JAMAIS faire :
+
+```typescript
+// ❌ Utiliser un compteur incrémental (approche incorrecte)
+const [successCounter, setSuccessCounter] = useState(0)
+
+// Dans l'action :
+if (!result.error) {
+  setSuccessCounter(prev => prev + 1) // ❌ PAS LA BONNE APPROCHE
+}
+```
+
+**Pourquoi ?** On ne doit pas modifier l'état depuis l'action. La bonne approche est la **détection de transition**.
+
+---
+
+## ✅ Références à Utiliser
+
+**Fichier de référence principal :**
+- `app/dashboard/profile/ProfileForm.tsx` (lignes 57, 89-90, 187-229)
+
+**Autres exemples corrects :**
+- `app/dashboard/profile/offers/OffersForm.tsx` (lignes 29, 251-269)
+- `components/WorkoutModal.tsx` (lignes 115-116, 312-328)
+- `app/dashboard/coach/CoachRatingForm.tsx` (lignes 20-21, 139-162)
+
+**Documentation complète :**
+- `docs/PATTERN_SAVE_BUTTON.md` - Pattern complet avec explications
+- `BUGFIX_comment_button_success_state.md` - Historique du bug
+
+---
+
+## 🎯 Quand Créer un Nouveau Formulaire
+
+**Si tu dois créer un formulaire avec bouton "Enregistrer" :**
+
+1. ✅ **TOUJOURS** lire `docs/PATTERN_SAVE_BUTTON.md` en premier
+2. ✅ **TOUJOURS** copier le pattern de `ProfileForm.tsx`
+3. ✅ **TOUJOURS** utiliser la clé composite `saveFeedbackKey`
+4. ✅ **TOUJOURS** détecter la transition avec `justFinishedSubmitting`
+5. ✅ **TOUJOURS** tester 2-3 sauvegardes successives pour vérifier le feedback
+
+---
+
+## 🔍 Vérification Avant PR
+
+Avant de soumettre un formulaire, vérifier :
+
+- [ ] Clé composite définie : `saveFeedbackKey = ...`
+- [ ] `previousIsSubmittingRef` présent
+- [ ] useEffect avec `justFinishedSubmitting`
+- [ ] Timer de 2-2.5s pour cacher le check
+- [ ] `hasUnsavedChanges` réinitialisé après succès
+- [ ] Bouton avec `disabled={!hasUnsavedChanges || isSubmitting}`
+- [ ] ✅ **TESTÉ : Le check apparaît au 2ème et 3ème cycle**
+
+---
+
+## 🚨 En Cas de Doute
+
+**STOP et consulter :**
+1. `docs/PATTERN_SAVE_BUTTON.md`
+2. `ProfileForm.tsx` (référence)
+3. Demander une review si incertain
+
+**JAMAIS** deviner ou créer une variante du pattern sans valider.

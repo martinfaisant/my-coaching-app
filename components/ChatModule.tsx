@@ -1,8 +1,9 @@
 'use client'
 
 import { Button } from '@/components/Button'
+import { Modal } from '@/components/Modal'
+import { IconClose } from '@/components/icons/IconClose'
 import { useState, useEffect, useCallback } from 'react'
-import { createPortal } from 'react-dom'
 import {
   getChatRole,
   getOrCreateConversationForAthlete,
@@ -78,13 +79,12 @@ export function ChatModule({ initialChatRole }: ChatModuleProps = {}) {
         <span className="hidden sm:inline">{label}</span>
       </Button>
 
-      {open && typeof document !== 'undefined' && createPortal(
+      {open && (
         <ChatOverlay
           role={chatRole.role}
           userId={chatRole.userId}
           onClose={() => setOpen(false)}
-        />,
-        document.body
+        />
       )}
     </>
   )
@@ -105,18 +105,6 @@ function ChatOverlay({ role, userId, onClose }: ChatOverlayProps) {
   const [sendError, setSendError] = useState<string | null>(null)
   const [inputValue, setInputValue] = useState('')
   const [sending, setSending] = useState(false)
-
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose()
-    }
-    document.addEventListener('keydown', handleEscape)
-    document.body.style.overflow = 'hidden'
-    return () => {
-      document.removeEventListener('keydown', handleEscape)
-      document.body.style.overflow = ''
-    }
-  }, [onClose])
 
   const loadMessages = useCallback(async (conversationId: string) => {
     const list = await getMessages(conversationId)
@@ -175,67 +163,85 @@ function ChatOverlay({ role, userId, onClose }: ChatOverlayProps) {
         : 'Chater avec mon coach'
       : 'Discuter avec mes athlètes'
 
-  return (
-    <>
-      <div
-        className="fixed inset-0 bg-stone-900/50 backdrop-blur-sm z-[90]"
-        onClick={onClose}
-        aria-hidden="true"
-      />
-      <div
-        className="fixed inset-0 z-[100] flex items-center justify-end p-4"
-        role="dialog"
-        aria-modal="true"
-        aria-label="Discussion"
-      >
-      <div className="relative flex flex-col w-full max-w-md h-[80vh] max-h-[600px] rounded-2xl border-2 border-palette-forest-dark bg-white shadow-2xl overflow-hidden">
-        <div className="flex items-center justify-between shrink-0 p-4 border-b-2 border-palette-forest-dark bg-white">
-          <h2 className="text-lg font-semibold text-stone-900 truncate">
-            {title}
-          </h2>
+  const headerRight =
+    role === 'coach' && coachConvs.length > 0 ? (
+      <div className="flex gap-1 overflow-x-auto max-w-[300px]">
+        {coachConvs.map((c) => (
           <Button
+            key={c.id}
             type="button"
-            variant="ghost"
-            onClick={onClose}
-            aria-label="Fermer"
+            variant={selectedConvId === c.id ? 'primary' : 'muted'}
+            onClick={() => setSelectedConvId(c.id)}
+            className={`shrink-0 px-3 py-2 rounded-xl text-sm font-medium min-h-0 ${
+              selectedConvId === c.id
+                ? 'border-2 border-transparent hover:!bg-palette-forest-dark'
+                : '!border-2 !border-palette-forest-dark !bg-stone-100 hover:!bg-stone-200'
+            }`}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path d="M18 6 6 18" />
-              <path d="m6 6 12 12" />
-            </svg>
+            {c.athlete_name}
           </Button>
-        </div>
+        ))}
+      </div>
+    ) : undefined
 
-        {role === 'coach' && coachConvs.length > 0 && (
-          <div className="shrink-0 flex gap-1 p-2 border-b-2 border-palette-forest-dark overflow-x-auto">
-            {coachConvs.map((c) => (
-              <Button
-                key={c.id}
-                type="button"
-                variant={selectedConvId === c.id ? 'primary' : 'muted'}
-                onClick={() => setSelectedConvId(c.id)}
-                className={`shrink-0 px-3 py-2 rounded-xl text-sm font-medium min-h-0 ${
-                  selectedConvId === c.id
-                    ? 'border-2 border-transparent hover:!bg-palette-forest-dark'
-                    : '!border-2 !border-palette-forest-dark !bg-stone-100 hover:!bg-stone-200'
-                }`}
-              >
-                {c.athlete_name}
+  return (
+    <Modal
+      isOpen={true}
+      onClose={onClose}
+      size="md"
+      alignment="right"
+      title={title}
+      contentClassName="px-0 flex flex-col h-[calc(80vh-8rem)] max-h-[600px]"
+      className="border-2 border-palette-forest-dark"
+      footer={
+        (role === 'athlete' ? athleteData : currentConversationId) ? (
+          <div className="w-full">
+            {sendError && <p className="text-sm text-red-600 mb-2">{sendError}</p>}
+            <form
+              onSubmit={(e) => {
+                e.preventDefault()
+                handleSend()
+              }}
+              className="flex gap-2"
+            >
+              <input
+                type="text"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                placeholder="Votre message..."
+                className="flex-1 rounded-lg border-2 border-palette-forest-dark bg-white px-4 py-2 text-sm text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-olive focus:border-palette-olive transition"
+                disabled={sending}
+              />
+              <Button type="submit" variant="primary" disabled={sending || !inputValue.trim()}>
+                Envoyer
               </Button>
-            ))}
+            </form>
           </div>
-        )}
+        ) : undefined
+      }
+    >
+      {role === 'coach' && coachConvs.length > 0 && (
+        <div className="shrink-0 flex gap-1 p-2 border-b-2 border-palette-forest-dark overflow-x-auto">
+          {coachConvs.map((c) => (
+            <Button
+              key={c.id}
+              type="button"
+              variant={selectedConvId === c.id ? 'primary' : 'muted'}
+              onClick={() => setSelectedConvId(c.id)}
+              className={`shrink-0 px-3 py-2 rounded-xl text-sm font-medium min-h-0 ${
+                selectedConvId === c.id
+                  ? 'border-2 border-transparent hover:!bg-palette-forest-dark'
+                  : '!border-2 !border-palette-forest-dark !bg-stone-100 hover:!bg-stone-200'
+              }`}
+            >
+              {c.athlete_name}
+            </Button>
+          ))}
+        </div>
+      )}
 
-        <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-0">
-          {loading ? (
+      <div className="flex-1 overflow-y-auto px-4 space-y-3 min-h-0">
+        {loading ? (
             <p className="text-sm text-stone-400">Chargement...</p>
           ) : role === 'athlete' && !athleteData ? (
             <p className="text-sm text-stone-400">
@@ -276,40 +282,7 @@ function ChatOverlay({ role, userId, onClose }: ChatOverlayProps) {
               )
             })
           )}
-        </div>
-
-        {(role === 'athlete' ? athleteData : currentConversationId) && (
-          <div className="shrink-0 p-4 border-t-2 border-palette-forest-dark bg-white">
-            {sendError && (
-              <p className="text-sm text-red-600 mb-2">{sendError}</p>
-            )}
-            <form
-              onSubmit={(e) => {
-                e.preventDefault()
-                handleSend()
-              }}
-              className="flex gap-2"
-            >
-              <input
-                type="text"
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                placeholder="Votre message..."
-                className="flex-1 rounded-lg border-2 border-palette-forest-dark bg-white px-4 py-2 text-sm text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-olive focus:border-palette-olive transition"
-                disabled={sending}
-              />
-              <Button
-                type="submit"
-                variant="primary"
-                disabled={sending || !inputValue.trim()}
-              >
-                Envoyer
-              </Button>
-            </form>
-          </div>
-        )}
       </div>
-      </div>
-    </>
+    </Modal>
   )
 }
