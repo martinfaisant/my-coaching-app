@@ -6,10 +6,9 @@ type WeekSelectorProps = {
   dateRangeLabel: string
   onNavigate: (offset: number) => void
   isAnimating: boolean
-  onToday?: () => void
 }
 
-export function WeekSelector({ dateRangeLabel, onNavigate, isAnimating, onToday }: WeekSelectorProps) {
+export function WeekSelector({ dateRangeLabel, onNavigate, isAnimating }: WeekSelectorProps) {
   return (
     <div className="flex items-center gap-3 bg-stone-50 p-1.5 rounded-xl border border-stone-200 shadow-sm">
       <Button
@@ -39,19 +38,6 @@ export function WeekSelector({ dateRangeLabel, onNavigate, isAnimating, onToday 
           <path d="m9 18 6-6-6-6" />
         </svg>
       </Button>
-      {onToday && (
-        <>
-          <div className="w-px h-4 bg-stone-300 mx-1"></div>
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={onToday}
-            className="text-xs font-bold uppercase text-palette-forest-dark hover:bg-palette-forest-dark/10 px-2 py-1 !min-h-0 min-w-0"
-          >
-            Auj.
-          </Button>
-        </>
-      )}
     </div>
   )
 }

@@ -114,12 +114,11 @@ export function StravaDevicesSection({ userId, connected, connection }: StravaDe
                   </Button>
                   <Button
                     type="button"
-                    variant="muted"
+                    variant="danger"
                     onClick={handleDisconnect}
                     disabled={disconnecting}
                     loading={disconnecting}
                     loadingText="Déconnexion…"
-                    className="border-red-300 text-red-700 hover:bg-red-50 hover:border-red-400 hover:text-red-800"
                   >
                     Déconnecter
                   </Button>

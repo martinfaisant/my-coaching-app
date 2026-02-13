@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { getCurrentUserWithProfile } from '@/utils/auth'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
@@ -5,6 +6,10 @@ import { PageHeader } from '@/components/PageHeader'
 import { ObjectifsTable } from './ObjectifsTable'
 import type { Goal } from '@/types/database'
 import { getDaysUntil } from '@/lib/dateUtils'
+
+export const metadata: Metadata = {
+  title: "Mes objectifs"
+}
 
 export default async function ObjectifsPage() {
   const current = await getCurrentUserWithProfile()

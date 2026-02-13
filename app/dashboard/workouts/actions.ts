@@ -2,58 +2,10 @@
 
 import { createClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
-import type { SportType, Workout } from '@/types/database'
-import { requireCoachOrAthleteAccess, requireRole } from '@/lib/authHelpers'
-
-function parseWorkoutTargetParams(
-  sportType: SportType,
-  durationRaw: string,
-  distanceRaw: string,
-  elevationRaw: string
-): {
-  target_duration_minutes: number | null | undefined
-  target_distance_km: number | null | undefined
-  target_elevation_m: number | null | undefined
-} {
-  const duration = durationRaw ? parseInt(durationRaw, 10) : undefined
-  const distance = distanceRaw ? parseFloat(distanceRaw) : undefined
-  const elevation = elevationRaw ? parseInt(elevationRaw, 10) : undefined
-  const validDuration = duration != null && !Number.isNaN(duration) && duration > 0
-  const validDistance = distance != null && !Number.isNaN(distance) && distance > 0
-  const validElevation = elevation != null && !Number.isNaN(elevation) && elevation >= 0
-
-  if (sportType === 'musculation') {
-    return {
-      target_duration_minutes: validDuration ? duration : null,
-      target_distance_km: null,
-      target_elevation_m: null,
-    }
-  }
-  if (sportType === 'natation') {
-    // Permettre d'avoir les deux valeurs si elles sont toutes les deux valides (cas où l'une est calculée)
-    return {
-      target_duration_minutes: validDuration ? duration : (validDistance ? null : undefined),
-      target_distance_km: validDistance ? distance : (validDuration ? null : undefined),
-      target_elevation_m: null,
-    }
-  }
-  if (sportType === 'course' || sportType === 'velo') {
-    // Permettre d'avoir les deux valeurs si elles sont toutes les deux valides (cas où l'une est calculée)
-    // Si les deux sont valides, on les garde toutes les deux pour les totaux
-    const hasDuration = validDuration
-    const hasDistance = validDistance
-    return {
-      target_duration_minutes: hasDuration ? duration : (hasDistance ? null : undefined),
-      target_distance_km: hasDistance ? distance : (hasDuration ? null : undefined),
-      target_elevation_m: validElevation ? elevation : null,
-    }
-  }
-  return {
-    target_duration_minutes: null,
-    target_distance_km: null,
-    target_elevation_m: null,
-  }
-}
+import type { Workout } from '@/types/database'
+import { requireCoachOrAthleteAccess } from '@/lib/authHelpers'
+import { validateWorkoutFormData } from '@/lib/workoutValidation'
+import { logger } from '@/lib/logger'
 
 export type WorkoutFormState = {
   error?: string
@@ -76,36 +28,20 @@ export async function createWorkout(
   if (isAthlete) return { error: 'Seul le coach peut créer un entraînement.' }
   if (!isCoach) return { error: 'Non autorisé.' }
 
-  const date = formData.get('date') as string
-  const sportType = formData.get('sport_type') as SportType
-  const title = (formData.get('title') as string)?.trim()
-  const description = (formData.get('description') as string)?.trim()
-  const durationRaw = (formData.get('target_duration_minutes') as string)?.trim()
-  const distanceRaw = (formData.get('target_distance_km') as string)?.trim()
-  const elevationRaw = (formData.get('target_elevation_m') as string)?.trim()
-  const paceRaw = (formData.get('target_pace') as string)?.trim()
+  // Validation des données du formulaire
+  const validation = validateWorkoutFormData(formData)
+  if ('error' in validation) return validation
 
-  if (!date || !sportType || !title) {
-    return { error: 'Tous les champs sont obligatoires.' }
-  }
-  if (!['course', 'musculation', 'natation', 'velo'].includes(sportType)) {
-    return { error: 'Type de sport invalide.' }
-  }
-
-  const { target_duration_minutes, target_distance_km, target_elevation_m } = parseWorkoutTargetParams(
+  const {
+    date,
     sportType,
-    durationRaw,
-    distanceRaw,
-    elevationRaw
-  )
-  if (target_duration_minutes === undefined && target_distance_km === undefined) {
-    return { error: 'Indiquez un objectif (temps ou distance selon le sport).' }
-  }
-
-  const target_pace = paceRaw && paceRaw !== '' && Number(paceRaw) > 0 ? Number(paceRaw) : null
-  if (['course', 'velo', 'natation'].includes(sportType) && (target_pace == null || target_pace <= 0)) {
-    return { error: 'La vitesse (allure ou km/h) est obligatoire pour ce sport.' }
-  }
+    title,
+    description,
+    target_duration_minutes,
+    target_distance_km,
+    target_elevation_m,
+    target_pace,
+  } = validation.data
 
   const { data: created, error } = await supabase
     .from('workouts')
@@ -114,7 +50,7 @@ export async function createWorkout(
       date,
       sport_type: sportType,
       title,
-      description: description ?? '',
+      description,
       target_duration_minutes: target_duration_minutes ?? null,
       target_distance_km: target_distance_km ?? null,
       target_elevation_m: target_elevation_m ?? null,
@@ -142,36 +78,20 @@ export async function updateWorkout(
   const { isCoach } = accessResult
   if (!isCoach) return { error: 'Seul le coach peut modifier un entraînement.' }
 
-  const date = formData.get('date') as string
-  const sportType = formData.get('sport_type') as SportType
-  const title = (formData.get('title') as string)?.trim()
-  const description = (formData.get('description') as string)?.trim()
-  const durationRaw = (formData.get('target_duration_minutes') as string)?.trim()
-  const distanceRaw = (formData.get('target_distance_km') as string)?.trim()
-  const elevationRaw = (formData.get('target_elevation_m') as string)?.trim()
-  const paceRaw = (formData.get('target_pace') as string)?.trim()
+  // Validation des données du formulaire
+  const validation = validateWorkoutFormData(formData)
+  if ('error' in validation) return validation
 
-  if (!date || !sportType || !title) {
-    return { error: 'Tous les champs sont obligatoires.' }
-  }
-  if (!['course', 'musculation', 'natation', 'velo'].includes(sportType)) {
-    return { error: 'Type de sport invalide.' }
-  }
-
-  const { target_duration_minutes, target_distance_km, target_elevation_m } = parseWorkoutTargetParams(
+  const {
+    date,
     sportType,
-    durationRaw,
-    distanceRaw,
-    elevationRaw
-  )
-  if (target_duration_minutes === undefined && target_distance_km === undefined) {
-    return { error: 'Indiquez un objectif (temps ou distance selon le sport).' }
-  }
-
-  const target_pace = paceRaw && paceRaw !== '' && Number(paceRaw) > 0 ? Number(paceRaw) : null
-  if (['course', 'velo', 'natation'].includes(sportType) && (target_pace == null || target_pace <= 0)) {
-    return { error: 'La vitesse (allure ou km/h) est obligatoire pour ce sport.' }
-  }
+    title,
+    description,
+    target_duration_minutes,
+    target_distance_km,
+    target_elevation_m,
+    target_pace,
+  } = validation.data
 
   const { data: updated, error } = await supabase
     .from('workouts')
@@ -179,7 +99,7 @@ export async function updateWorkout(
       date,
       sport_type: sportType,
       title,
-      description: description ?? '',
+      description,
       target_duration_minutes: target_duration_minutes ?? null,
       target_distance_km: target_distance_km ?? null,
       target_elevation_m: target_elevation_m ?? null,
@@ -350,12 +270,15 @@ export async function saveWorkoutComment(
     .select()
 
   if (error) {
-    console.error('[saveWorkoutComment] Erreur:', error.message)
+    logger.error('[saveWorkoutComment] Erreur', error)
     return { error: error.message }
   }
 
   if (!data || data.length === 0) {
-    console.error('[saveWorkoutComment] Aucune ligne mise à jour (RLS?)')
+    logger.error('[saveWorkoutComment] Aucune ligne mise à jour (RLS?)', undefined, {
+      workoutId,
+      athleteId,
+    })
     return { error: 'Impossible de sauvegarder le commentaire.' }
   }
 

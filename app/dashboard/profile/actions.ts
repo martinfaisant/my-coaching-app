@@ -68,30 +68,6 @@ export async function updateProfile(
   return { success: 'Informations enregistrées.' }
 }
 
-export type UpdateAvatarResult = { error?: string }
-
-/** Enregistre immédiatement l'URL de l'avatar en base (appelé après upload du fichier). */
-export async function updateAvatarUrl(avatarUrl: string | null): Promise<UpdateAvatarResult> {
-  const supabase = await createClient()
-  const result = await requireUser(supabase)
-  if ('error' in result) return { error: result.error }
-
-  const { user } = result
-
-  const url = (avatarUrl ?? '').trim() || null
-
-  const { error } = await supabase
-    .from('profiles')
-    .update({ avatar_url: url })
-    .eq('user_id', user.id)
-
-  if (error) return { error: error.message }
-  revalidatePath('/dashboard')
-  revalidatePath('/dashboard/profile')
-  revalidatePath('/dashboard/coach')
-  return {}
-}
-
 export type CheckDeleteAccountResult = { canDelete: boolean; error?: string }
 
 /** Vérifie si l'utilisateur peut supprimer son compte. Le coach ne peut pas s'il a des athlètes associés. */

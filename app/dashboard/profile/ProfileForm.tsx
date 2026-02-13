@@ -12,6 +12,7 @@ import { createClient } from '@/utils/supabase/client'
 import { updateProfile, checkCanDeleteAccount, deleteMyAccount, type ProfileFormState } from './actions'
 import type { Role } from '@/types/database'
 import { compressProfileImage } from '@/utils/imageCompress'
+import { logger } from '@/lib/logger'
 
 function parseFullName(fullName: string): { firstName: string; lastName: string } {
   const parts = (fullName || '').trim().split(/\s+/)
@@ -175,7 +176,7 @@ export function ProfileForm({
       initialValuesRef.current.avatarUrl = urlWithCacheBust
       setTimeout(() => setHasUnsavedChanges(checkUnsavedChanges()), 0)
     } catch (err) {
-      console.error(err)
+      logger.error('Avatar upload failed', err)
     } finally {
       setAvatarUploading(false)
       e.target.value = ''

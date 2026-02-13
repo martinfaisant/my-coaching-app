@@ -9,8 +9,6 @@ import { createCoachRequest, cancelCoachRequest } from './actions'
 import { SportTileSelectable } from '@/components/SportTileSelectable'
 import { PRACTICED_SPORTS_OPTIONS } from '@/lib/sportsOptions'
 
-export { PRACTICED_SPORTS_OPTIONS }
-
 type RequestCoachButtonProps = {
   coachId: string
   coachName: string
@@ -19,18 +17,6 @@ type RequestCoachButtonProps = {
   requestId?: string | null
   /** Sports déjà renseignés dans le profil (préremplissent le formulaire à l'ouverture) */
   initialPracticedSports?: string[]
-}
-
-import { SPORT_LABELS } from '@/lib/sportStyles'
-
-/** Affiche les sports pratiqués (valeur stockée en base, ex. "course,velo") avec les libellés. */
-export function formatSportPracticedDisplay(value: string): string {
-  if (!value?.trim()) return '—'
-  const labels = value.split(',').map((v) => {
-    const key = v.trim()
-    return (SPORT_LABELS as Record<string, string>)[key] ?? key
-  })
-  return labels.filter(Boolean).join(', ')
 }
 
 export function RequestCoachButton({ coachId, coachName, requestStatus, requestId, initialPracticedSports = [] }: RequestCoachButtonProps) {

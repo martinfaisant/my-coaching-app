@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/utils/supabase/server'
 import { cookies } from 'next/headers'
+import { logger } from '@/lib/logger'
 
 const STRAVA_TOKEN_URL = 'https://www.strava.com/oauth/token'
 
@@ -108,13 +109,13 @@ export async function GET(request: NextRequest) {
       )
 
     if (error) {
-      console.error('Failed to save Strava connection:', error)
+      logger.error('Failed to save Strava connection', error)
       return redirectToDevices('error=strava_save')
     }
 
     return redirectToDevices('strava=connected')
   } catch (err) {
-    console.error('Strava callback error:', err)
+    logger.error('Strava callback error', err)
     return redirectToDevices('error=strava_config')
   }
 }

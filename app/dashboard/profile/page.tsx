@@ -1,7 +1,12 @@
+import type { Metadata } from 'next'
 import { getCurrentUserWithProfile } from '@/utils/auth'
 import { PageHeader } from '@/components/PageHeader'
 import { LogoutButton } from '@/components/LogoutButton'
 import { ProfileForm } from './ProfileForm'
+
+export const metadata: Metadata = {
+  title: "Mon profil"
+}
 
 export const dynamic = 'force-dynamic'
 

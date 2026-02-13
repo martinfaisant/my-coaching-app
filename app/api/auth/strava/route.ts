@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/utils/supabase/server'
 import { cookies } from 'next/headers'
+import { logger } from '@/lib/logger'
 
 const STRAVA_AUTH_URL = 'https://www.strava.com/oauth/authorize'
 const SCOPES = 'activity:read_all'
@@ -59,7 +60,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.redirect(`${STRAVA_AUTH_URL}?${params.toString()}`)
   } catch (err) {
-    console.error('Strava OAuth redirect error:', err)
+    logger.error('Strava OAuth redirect error', err)
     const origin = getOrigin(request) || 'https://localhost:3000'
     return NextResponse.redirect(new URL('/dashboard/devices?error=strava_config', origin))
   }

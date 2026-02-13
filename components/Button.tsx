@@ -30,7 +30,7 @@ const VARIANT_STYLES = {
     'rounded-lg min-h-10 min-w-10 p-0 text-stone-500 hover:text-stone-700 hover:bg-stone-200/80 transition-colors focus:outline-none',
   /** Déconnexion, Supprimer, actions destructives */
   danger:
-    `rounded-lg ${SIZE_CLASSES} text-stone-400 hover:text-palette-danger hover:bg-palette-danger-light transition-colors focus:outline-none`,
+    `rounded-lg ${SIZE_CLASSES} text-stone-700 hover:text-palette-danger hover:bg-palette-danger-light transition-colors focus:outline-none`,
   /** Connecter Strava */
   strava:
     `rounded-lg ${SIZE_CLASSES} text-white bg-palette-strava hover:opacity-90 transition-opacity focus:outline-none`,
