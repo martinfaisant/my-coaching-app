@@ -2,18 +2,18 @@ import type { Metadata } from 'next'
 import { getCurrentUserWithProfile } from '@/utils/auth'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
-import { PageHeader } from '@/components/PageHeader'
+import { DashboardPageShell } from '@/components/DashboardPageShell'
 import { AvatarImage } from '@/components/AvatarImage'
 import { getMyCoachRating } from './actions'
 import { CoachRatingForm } from './CoachRatingForm'
 import { LANGUAGES_OPTIONS } from '@/lib/sportsOptions'
 import { SPORT_ICONS, SPORT_LABELS } from '@/lib/sportStyles'
 import type { SportType } from '@/lib/sportStyles'
+import { getInitials } from '@/lib/stringUtils'
 
 export const metadata: Metadata = {
   title: "Mon coach"
 }
-import { getInitials } from '@/lib/stringUtils'
 
 function languageLabel(value: string): string {
   return LANGUAGES_OPTIONS.find((o) => o.value === value)?.label ?? value
@@ -41,23 +41,16 @@ export default async function MonCoachPage() {
 
   if (!coach) {
     return (
-      <main className="flex-1 flex flex-col h-full min-w-0 bg-white/50 rounded-2xl overflow-hidden relative border border-stone-200/50">
-        <PageHeader title="Mon Coach" />
-
-        {/* ZONE SCROLLABLE */}
-        <div className="flex-1 overflow-y-auto px-6 lg:px-8 py-6">
-          <p className="mt-1 text-sm text-stone-600">Coach introuvable.</p>
-        </div>
-      </main>
+      <DashboardPageShell title="Mon Coach">
+        <p className="mt-1 text-sm text-stone-600">Coach introuvable.</p>
+      </DashboardPageShell>
     )
   }
 
   const myRating = await getMyCoachRating(current.profile.coach_id!)
 
   return (
-    <main className="flex-1 flex flex-col h-full min-w-0 bg-white/50 rounded-2xl overflow-hidden relative border border-stone-200/50">
-      <PageHeader title="Mon Coach" />
-      <div className="flex-1 overflow-y-auto px-6 lg:px-8 py-6">
+    <DashboardPageShell title="Mon Coach">
         {/* Carte principale avec bannière et avatar */}
         <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-stone-100">
           {/* BANNIÈRE BRANDÉE : Dégradé Forest Dark -> Olive */}
@@ -166,7 +159,6 @@ export default async function MonCoachPage() {
             />
           </div>
         </div>
-      </div>
-    </main>
+      </DashboardPageShell>
   )
 }

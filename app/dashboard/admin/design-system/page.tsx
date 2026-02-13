@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { requireRole } from '@/utils/auth'
-import { PageHeader } from '@/components/PageHeader'
+import { DashboardPageShell } from '@/components/DashboardPageShell'
 import { ButtonShowcase } from './ButtonShowcase'
 import { InputShowcase } from './InputShowcase'
 import { TextareaShowcase } from './TextareaShowcase'
@@ -24,19 +24,18 @@ export default async function DesignSystemPage() {
   await requireRole(['admin'])
 
   return (
-    <main className="flex-1 flex flex-col h-full min-w-0 bg-white/50 rounded-2xl overflow-hidden relative border border-stone-200/50">
-      <PageHeader
-        title="Design System"
-        rightContent={
-          <Link
-            href="/admin/members"
-            className="text-sm font-medium text-stone-500 hover:text-palette-forest-dark"
-          >
-            Membres
-          </Link>
-        }
-      />
-      <div className="flex-1 overflow-y-auto px-6 lg:px-8 py-8">
+    <DashboardPageShell
+      title="Design System"
+      rightContent={
+        <Link
+          href="/admin/members"
+          className="text-sm font-medium text-stone-500 hover:text-palette-forest-dark"
+        >
+          Membres
+        </Link>
+      }
+      contentClassName="py-8"
+    >
         <p className="mb-8 text-stone-600">
           Référence des tokens et composants. Priorité : utiliser ces tokens plutôt que des couleurs hex en dur.
         </p>
@@ -159,7 +158,6 @@ export default async function DesignSystemPage() {
             </div>
           </div>
         </section>
-      </div>
-    </main>
+      </DashboardPageShell>
   )
 }

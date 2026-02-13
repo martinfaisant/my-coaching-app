@@ -1,27 +1,25 @@
 export default function AthleteCalendarLoading() {
   return (
-    <div className="min-h-screen bg-stone-50 animate-pulse">
-      <header className="sticky top-0 z-40 border-b border-stone-200 bg-white/80 backdrop-blur-md">
-        <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
-          <div className="h-4 w-36 bg-stone-200 rounded" />
+    <main className="flex-1 flex flex-col h-full min-w-0 bg-white/50 rounded-2xl overflow-hidden relative border border-stone-200/50 animate-pulse">
+      {/* Skeleton PageHeader */}
+      <div className="shrink-0 px-6 lg:px-8 h-20 flex items-center justify-between border-b border-stone-100 bg-stone-50/50">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-stone-200" />
+          <div className="h-6 w-48 bg-stone-200 rounded" />
         </div>
-      </header>
-
-      <main className="mx-auto max-w-5xl px-4 py-6 pb-28">
-        {/* Barre titre + navigation semaine */}
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
-          <div className="h-6 w-64 bg-stone-200 rounded" />
-          <div className="flex gap-2">
-            <div className="h-9 w-9 bg-stone-200 rounded-lg" />
-            <div className="h-9 w-32 bg-stone-200 rounded-lg" />
-            <div className="h-9 w-9 bg-stone-200 rounded-lg" />
-          </div>
+        <div className="flex gap-2">
+          <div className="h-9 w-9 bg-stone-200 rounded-lg" />
+          <div className="h-9 w-32 bg-stone-200 rounded-lg" />
+          <div className="h-9 w-9 bg-stone-200 rounded-lg" />
         </div>
-
+      </div>
+      
+      {/* Skeleton content */}
+      <div className="flex-1 overflow-y-auto px-6 lg:px-8 py-6 space-y-6">
         {/* Grille calendrier (3 semaines, 7 jours) */}
-        <div className="rounded-xl border border-stone-200 bg-white overflow-hidden mb-6">
+        <div className="rounded-xl border border-stone-200 bg-white overflow-hidden">
           <div className="grid grid-cols-7 border-b border-stone-200 bg-stone-50">
-            {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map((_, i) => (
+            {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map((day, i) => (
               <div key={i} className="p-2 text-center">
                 <div className="h-3 w-8 bg-stone-200 rounded mx-auto" />
               </div>
@@ -45,7 +43,7 @@ export default function AthleteCalendarLoading() {
         </div>
 
         {/* Section Objectifs de l'athlète */}
-        <section className="bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden">
           <div className="px-6 py-4 border-b border-stone-100 bg-stone-50/50 flex items-center gap-3">
             <div className="w-9 h-9 rounded-full bg-stone-200" />
             <div className="h-5 w-48 bg-stone-200 rounded" />
@@ -70,8 +68,8 @@ export default function AthleteCalendarLoading() {
               </div>
             </div>
           </div>
-        </section>
-      </main>
-    </div>
+        </div>
+      </div>
+    </main>
   )
 }

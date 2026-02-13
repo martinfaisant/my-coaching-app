@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { createClient } from '@/utils/supabase/server'
 import { getCurrentUserWithProfile } from '@/utils/auth'
 import { redirect } from 'next/navigation'
-import { PageHeader } from '@/components/PageHeader'
+import { DashboardPageShell } from '@/components/DashboardPageShell'
 import { AvatarImage } from '@/components/AvatarImage'
 import { Badge } from '@/components/Badge'
 import { FindCoachSection } from '@/app/dashboard/FindCoachSection'
@@ -14,12 +14,12 @@ import {
 } from '@/app/dashboard/actions'
 import type { Profile } from '@/types/database'
 import { formatShortDate } from '@/lib/dateUtils'
+import { getInitials } from '@/lib/stringUtils'
 
 export const metadata: Metadata = {
   title: "Tableau de bord",
   description: "Gérez vos entraînements, suivez vos progrès et communiquez avec votre coach."
 }
-import { getInitials } from '@/lib/stringUtils'
 
 const ROLE_LABELS: Record<Profile['role'], string> = {
   athlete: 'Athlète',
@@ -106,18 +106,15 @@ export default async function DashboardPage() {
       }))
 
     return (
-      <main className="flex-1 flex flex-col h-full min-w-0 bg-white/50 rounded-2xl overflow-hidden relative border border-stone-200/50">
-        <PageHeader title="Trouver mon coach" />
-        <div className="flex-1 overflow-y-auto px-6 lg:px-8 py-6">
-          {(coachesForList.length === 0) ? (
-            <p className="text-sm text-stone-600">
-              Aucun coach inscrit pour le moment. Revenez plus tard.
-            </p>
-          ) : (
-            <FindCoachSection coaches={coachesForList} statusByCoach={statusByCoach} requestIdByCoach={requestIdByCoach} initialPracticedSports={current.profile.practiced_sports ?? []} ratingsByCoach={ratingsByCoach} offersByCoach={offersByCoach} />
-          )}
-        </div>
-      </main>
+      <DashboardPageShell title="Trouver mon coach">
+        {(coachesForList.length === 0) ? (
+          <p className="text-sm text-stone-600">
+            Aucun coach inscrit pour le moment. Revenez plus tard.
+          </p>
+        ) : (
+          <FindCoachSection coaches={coachesForList} statusByCoach={statusByCoach} requestIdByCoach={requestIdByCoach} initialPracticedSports={current.profile.practiced_sports ?? []} ratingsByCoach={ratingsByCoach} offersByCoach={offersByCoach} />
+        )}
+      </DashboardPageShell>
     )
   }
 

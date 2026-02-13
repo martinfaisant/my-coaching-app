@@ -1,7 +1,7 @@
 export default function AdminMembersLoading() {
   return (
     <div className="min-h-screen bg-stone-50 animate-pulse">
-      <header className="sticky top-0 z-40 border-b border-palette-forest-dark bg-stone-50/95 backdrop-blur-md">
+      <header className="sticky top-0 z-40 border-b border-stone-200 bg-stone-50/95 backdrop-blur-md">
         <div className="mx-auto flex h-14 max-w-4xl items-center justify-between px-4">
           <div className="h-4 w-44 bg-stone-200 rounded" />
         </div>
