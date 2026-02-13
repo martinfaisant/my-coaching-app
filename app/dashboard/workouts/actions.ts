@@ -339,16 +339,7 @@ export async function saveWorkoutComment(
 
   const comment = (formData.get('comment') as string)?.trim() ?? ''
 
-  // Log pour diagnostic
-  console.log('[saveWorkoutComment] Tentative de sauvegarde:', {
-    workoutId,
-    athleteId,
-    userId: user.id,
-    commentLength: comment.length,
-    hasComment: !!comment,
-  })
-
-  const { data, error, status, statusText } = await supabase
+  const { data, error } = await supabase
     .from('workouts')
     .update({
       athlete_comment: comment || null,
@@ -358,24 +349,14 @@ export async function saveWorkoutComment(
     .eq('athlete_id', athleteId)
     .select()
 
-  // Log détaillé du résultat
-  console.log('[saveWorkoutComment] Résultat:', {
-    success: !error,
-    error: error?.message,
-    status,
-    statusText,
-    dataReturned: !!data,
-    dataLength: data?.length,
-  })
-
   if (error) {
-    console.error('[saveWorkoutComment] Erreur Supabase:', error)
+    console.error('[saveWorkoutComment] Erreur:', error.message)
     return { error: error.message }
   }
 
   if (!data || data.length === 0) {
-    console.error('[saveWorkoutComment] UPDATE réussi mais aucune ligne retournée (RLS?)')
-    return { error: 'Impossible de sauvegarder le commentaire. Vérifiez vos permissions.' }
+    console.error('[saveWorkoutComment] Aucune ligne mise à jour (RLS?)')
+    return { error: 'Impossible de sauvegarder le commentaire.' }
   }
 
   revalidatePath(pathToRevalidate)
