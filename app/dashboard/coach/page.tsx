@@ -8,21 +8,16 @@ import { CoachRatingForm } from './CoachRatingForm'
 import { LANGUAGES_OPTIONS } from '@/lib/sportsOptions'
 import { SPORT_ICONS, SPORT_LABELS } from '@/lib/sportStyles'
 import type { SportType } from '@/lib/sportStyles'
+import { getInitials } from '@/lib/stringUtils'
 
 function languageLabel(value: string): string {
   return LANGUAGES_OPTIONS.find((o) => o.value === value)?.label ?? value
 }
 
-function getInitials(fullName: string | null, email: string): string {
+function getInitialsForCoach(fullName: string | null, email: string): string {
   const name = (fullName ?? '').trim()
-  if (name) {
-    const parts = name.split(/\s+/).filter(Boolean)
-    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase()
-    if (parts[0].length >= 2) return parts[0].slice(0, 2).toUpperCase()
-    return parts[0][0].toUpperCase()
-  }
-  if (email.length >= 2) return email.slice(0, 2).toUpperCase()
-  return '?'
+  if (name) return getInitials(name)
+  return getInitials(email)
 }
 
 export default async function MonCoachPage() {
@@ -68,7 +63,7 @@ export default async function MonCoachPage() {
                 <div className="w-28 h-28 rounded-full bg-stone-100 border-4 border-white shadow-md flex items-center justify-center text-stone-300 overflow-hidden">
                   <AvatarImage
                     src={coach.avatar_url}
-                    initials={getInitials(coach.full_name, coach.email)}
+                    initials={getInitialsForCoach(coach.full_name, coach.email)}
                     alt="Photo du coach"
                     className="w-full h-full object-cover"
                   />

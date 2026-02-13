@@ -3,6 +3,7 @@
 import { createClient, createAdminClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { COACHED_SPORTS_VALUES, PRACTICED_SPORTS_VALUES } from '@/lib/sportsOptions'
+import { requireUserWithProfile, requireUser } from '@/lib/authHelpers'
 
 export type ProfileFormState = {
   error?: string
@@ -14,20 +15,14 @@ export async function updateProfile(
   formData: FormData
 ): Promise<ProfileFormState> {
   const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) return { error: 'Non connecté.' }
+  const result = await requireUserWithProfile(supabase, 'role, user_id')
+  if ('error' in result) return { error: result.error }
+
+  const { user, profile } = result
 
   const firstName = (formData.get('first_name') as string)?.trim() ?? ''
   const lastName = (formData.get('last_name') as string)?.trim() ?? ''
   const fullName = [firstName, lastName].filter(Boolean).join(' ').trim() || null
-
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('user_id', user.id)
-    .single()
 
   const payload: { full_name: string | null; coached_sports?: string[]; practiced_sports?: string[]; languages?: string[]; presentation?: string | null; avatar_url?: string | null; postal_code?: string | null } = {
     full_name: fullName,
@@ -78,10 +73,10 @@ export type UpdateAvatarResult = { error?: string }
 /** Enregistre immédiatement l'URL de l'avatar en base (appelé après upload du fichier). */
 export async function updateAvatarUrl(avatarUrl: string | null): Promise<UpdateAvatarResult> {
   const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) return { error: 'Non connecté.' }
+  const result = await requireUser(supabase)
+  if ('error' in result) return { error: result.error }
+
+  const { user } = result
 
   const url = (avatarUrl ?? '').trim() || null
 
@@ -102,18 +97,12 @@ export type CheckDeleteAccountResult = { canDelete: boolean; error?: string }
 /** Vérifie si l'utilisateur peut supprimer son compte. Le coach ne peut pas s'il a des athlètes associés. */
 export async function checkCanDeleteAccount(): Promise<CheckDeleteAccountResult> {
   const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) return { canDelete: false, error: 'Non connecté.' }
+  const result = await requireUserWithProfile(supabase, 'role')
+  if ('error' in result) return { canDelete: false, error: result.error }
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('user_id', user.id)
-    .single()
+  const { user, profile } = result
 
-  if (profile?.role === 'coach') {
+  if (profile.role === 'coach') {
     const { count } = await supabase
       .from('profiles')
       .select('*', { count: 'exact', head: true })
@@ -135,10 +124,10 @@ export type DeleteAccountResult = { error?: string }
 /** Supprime le compte de l'utilisateur connecté et toutes ses données. À appeler après checkCanDeleteAccount. */
 export async function deleteMyAccount(): Promise<DeleteAccountResult> {
   const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) return { error: 'Non connecté.' }
+  const result = await requireUser(supabase)
+  if ('error' in result) return { error: result.error }
+
+  const { user } = result
 
   const check = await checkCanDeleteAccount()
   if (!check.canDelete) return { error: check.error ?? 'Suppression impossible.' }

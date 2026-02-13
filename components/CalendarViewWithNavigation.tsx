@@ -5,26 +5,11 @@ import { Button } from './Button'
 import { CalendarView } from './CalendarView'
 import { getWorkoutsForDateRange, getImportedActivitiesForDateRange, getImportedActivityWeeklyTotals, getWorkoutWeeklyTotals } from '@/app/dashboard/workouts/actions'
 import type { Workout, Goal, ImportedActivity, ImportedActivityWeeklyTotal, WorkoutWeeklyTotal } from '@/types/database'
+import { getWeekMonday, toDateStr } from '@/lib/dateUtils'
 
 const SLIDE_DURATION_MS = 380
 /** Hauteur approximative d’une section « semaine » pour le glissement (px). */
 const SLIDE_PX = 320
-
-function getWeekMonday(d: Date): Date {
-  const date = new Date(d)
-  const day = date.getDay()
-  const diff = day === 0 ? -6 : 1 - day
-  date.setDate(date.getDate() + diff)
-  date.setHours(0, 0, 0, 0)
-  return date
-}
-
-function toDateStr(d: Date): string {
-  const y = d.getFullYear()
-  const m = String(d.getMonth() + 1).padStart(2, '0')
-  const day = String(d.getDate()).padStart(2, '0')
-  return `${y}-${m}-${day}`
-}
 
 /** Affiche "1 janv. - 21 janv." (premier jour de la 1ère semaine — dernier jour de la 3e semaine). */
 function formatWeekRangeLabel(referenceMonday: Date): string {

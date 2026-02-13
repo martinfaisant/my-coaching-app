@@ -36,7 +36,7 @@ export function LogoutButton() {
         <polyline points="16 17 21 12 16 7" />
         <line x1="21" x2="9" y1="12" y2="12" />
       </svg>
-      <span className="font-medium text-sm hidden lg:block">Déconnexion</span>
+      <span className="font-medium text-sm">Déconnexion</span>
     </Button>
   )
 }

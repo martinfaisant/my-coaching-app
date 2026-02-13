@@ -2,6 +2,7 @@
 
 import { createClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { requireUser } from '@/lib/authHelpers'
 import type { SportType } from '@/types/database'
 
 const STRAVA_TOKEN_URL = 'https://www.strava.com/oauth/token'
@@ -88,8 +89,8 @@ async function getValidStravaToken(
 
 export async function getStravaConnection(userId: string) {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user || user.id !== userId) return { connected: false, error: 'Non autorisé.' }
+  const result = await requireUser(supabase)
+  if ('error' in result || result.user.id !== userId) return { connected: false, error: 'Non autorisé.' }
 
   const { data, error } = await supabase
     .from('athlete_connected_services')
@@ -104,8 +105,8 @@ export async function getStravaConnection(userId: string) {
 
 export async function syncStravaLastWeek(userId: string): Promise<{ error?: string; imported?: number }> {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user || user.id !== userId) return { error: 'Non autorisé.' }
+  const result = await requireUser(supabase)
+  if ('error' in result || result.user.id !== userId) return { error: 'Non autorisé.' }
 
   const tokenResult = await getValidStravaToken(supabase, userId)
   if ('error' in tokenResult) return { error: tokenResult.error }
@@ -175,8 +176,8 @@ export async function syncStravaLastWeek(userId: string): Promise<{ error?: stri
 
 export async function disconnectStrava(userId: string): Promise<{ error?: string }> {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user || user.id !== userId) return { error: 'Non autorisé.' }
+  const result = await requireUser(supabase)
+  if ('error' in result || result.user.id !== userId) return { error: 'Non autorisé.' }
 
   await supabase
     .from('athlete_connected_services')

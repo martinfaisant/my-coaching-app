@@ -3,24 +3,18 @@
 import { createClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
 import type { CoachRating } from '@/types/database'
+import { requireUser, requireUserWithProfile } from '@/lib/authHelpers'
 
 export type CoachRatingResult = { error?: string }
 
 /** Athlète : récupérer sa note pour son coach (Mon coach). */
 export async function getMyCoachRating(coachId: string): Promise<CoachRating | null> {
   const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) return null
+  const result = await requireUserWithProfile(supabase, 'role, coach_id')
+  if ('error' in result) return null
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role, coach_id')
-    .eq('user_id', user.id)
-    .single()
-
-  if (profile?.role !== 'athlete' || profile?.coach_id !== coachId) return null
+  const { user, profile } = result
+  if (profile.role !== 'athlete' || profile.coach_id !== coachId) return null
 
   const { data } = await supabase
     .from('coach_ratings')
@@ -39,18 +33,11 @@ export async function upsertCoachRating(
   comment: string
 ): Promise<CoachRatingResult> {
   const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) return { error: 'Non connecté.' }
+  const result = await requireUserWithProfile(supabase, 'role, coach_id')
+  if ('error' in result) return { error: result.error }
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role, coach_id')
-    .eq('user_id', user.id)
-    .single()
-
-  if (profile?.role !== 'athlete' || profile?.coach_id !== coachId) {
+  const { user, profile } = result
+  if (profile.role !== 'athlete' || profile.coach_id !== coachId) {
     return { error: 'Vous ne pouvez noter que votre coach actuel.' }
   }
 

@@ -6,17 +6,10 @@ import { useState, useEffect } from 'react'
 import { AvatarImage } from '@/components/AvatarImage'
 import { Button } from '@/components/Button'
 import type { Profile } from '@/types/database'
+import { getInitials } from '@/lib/stringUtils'
 
 type SidebarProps = {
   profile: Profile & { email: string }
-}
-
-function getInitials(nameOrEmail: string): string {
-  const s = (nameOrEmail || '').trim()
-  if (!s) return '?'
-  const parts = s.split(/\s+/).filter(Boolean)
-  if (parts.length >= 2) return (parts[0][0]! + parts[parts.length - 1]![0]).toUpperCase()
-  return s.slice(0, 2).toUpperCase()
 }
 
 export function Sidebar({ profile }: SidebarProps) {
@@ -52,7 +45,7 @@ export function Sidebar({ profile }: SidebarProps) {
           type="button"
           variant="ghost"
           onClick={() => setIsCollapsed(!isCollapsed)}
-        className="absolute -right-3 top-14 bg-white border border-stone-200 text-stone-400 hover:text-palette-forest-dark p-1.5 rounded-full shadow-md hover:shadow-lg !min-w-0 !min-h-0 z-50 hidden lg:flex items-center justify-center group"
+        className="absolute -right-3 top-14 bg-white border border-stone-200 text-stone-400 hover:text-palette-forest-dark p-1.5 rounded-full shadow-md hover:shadow-lg !min-w-0 !min-h-0 z-50 !hidden lg:!flex items-center justify-center group"
         aria-label={isCollapsed ? 'Ouvrir le menu' : 'Réduire le menu'}
         >
           <svg
@@ -210,7 +203,7 @@ export function Sidebar({ profile }: SidebarProps) {
         type="button"
         variant="ghost"
         onClick={() => setIsCollapsed(!isCollapsed)}
-        className="absolute -right-3 top-14 bg-white border border-stone-200 text-stone-400 hover:text-palette-forest-dark p-1.5 rounded-full shadow-md hover:shadow-lg !min-w-0 !min-h-0 z-50 hidden lg:flex items-center justify-center group"
+        className="absolute -right-3 top-14 bg-white border border-stone-200 text-stone-400 hover:text-palette-forest-dark p-1.5 rounded-full shadow-md hover:shadow-lg !min-w-0 !min-h-0 z-50 !hidden lg:!flex items-center justify-center group"
         aria-label={isCollapsed ? 'Ouvrir le menu' : 'Réduire le menu'}
         >
           <svg

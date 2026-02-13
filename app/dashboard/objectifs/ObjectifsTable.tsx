@@ -5,6 +5,7 @@ import { Button } from '@/components/Button'
 import { Input } from '@/components/Input'
 import { addGoal, deleteGoal, type GoalFormState } from './actions'
 import type { Goal } from '@/types/database'
+import { getDaysUntil } from '@/lib/dateUtils'
 
 const PAST_DATE_MESSAGE = "Un objectif ne peut pas être défini dans le passé."
 
@@ -42,17 +43,6 @@ const MapIcon = ({ className = "w-3.5 h-3.5" }: { className?: string }) => (
     <path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
   </svg>
 )
-
-// Fonction pour calculer les jours restants
-function getDaysUntil(dateStr: string): number | null {
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  const targetDate = new Date(dateStr + 'T12:00:00')
-  targetDate.setHours(0, 0, 0, 0)
-  const diffTime = targetDate.getTime() - today.getTime()
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-  return diffDays >= 0 ? diffDays : null
-}
 
 // Fonction pour formater la date en mois/jour
 function formatDateBlock(dateStr: string): { month: string; day: string } {

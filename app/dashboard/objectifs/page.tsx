@@ -4,17 +4,7 @@ import { createClient } from '@/utils/supabase/server'
 import { PageHeader } from '@/components/PageHeader'
 import { ObjectifsTable } from './ObjectifsTable'
 import type { Goal } from '@/types/database'
-
-// Fonction pour calculer les jours restants
-function getDaysUntil(dateStr: string): number | null {
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  const targetDate = new Date(dateStr + 'T12:00:00')
-  targetDate.setHours(0, 0, 0, 0)
-  const diffTime = targetDate.getTime() - today.getTime()
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-  return diffDays >= 0 ? diffDays : null
-}
+import { getDaysUntil } from '@/lib/dateUtils'
 
 export default async function ObjectifsPage() {
   const current = await getCurrentUserWithProfile()

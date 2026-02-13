@@ -16,23 +16,13 @@ import { Button } from '@/components/Button'
 import { Input } from '@/components/Input'
 import { Textarea } from '@/components/Textarea'
 import { SPORT_ICONS, SPORT_LABELS } from '@/lib/sportStyles'
+import { formatDateFr } from '@/lib/dateUtils'
 
 /** Sports pour entraînement (sous-ensemble du calendrier). */
 const WORKOUT_SPORT_TYPES: SportType[] = ['course', 'velo', 'natation', 'musculation']
 
 /** Course et vélo : choix temps ou distance + dénivelé facultatif. Musculation : temps. Natation : temps ou distance. */
 type TargetMode = 'time' | 'distance'
-
-function formatDateFr(dateStr: string): string {
-  const d = new Date(dateStr + 'T12:00:00')
-  const s = d.toLocaleDateString('fr-FR', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  })
-  return s.charAt(0).toUpperCase() + s.slice(1)
-}
 
 type WorkoutModalProps = {
   isOpen: boolean
@@ -375,7 +365,7 @@ export function WorkoutModal({
           <div className="flex-1 overflow-y-auto min-h-0">
           <div className="px-6 py-4 space-y-5">
           <p className="text-sm font-medium text-stone-600">
-            {formatDateFr(date)}
+            {formatDateFr(date, true)}
           </p>
 
           <div>

@@ -2,6 +2,7 @@
 
 import { createClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { requireRole, requireUser } from '@/lib/authHelpers'
 
 export type GoalFormState = {
   error?: string
@@ -13,17 +14,10 @@ export async function addGoal(
   formData: FormData
 ): Promise<GoalFormState> {
   const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) return { error: 'Non connecté.' }
+  const result = await requireRole(supabase, 'athlete')
+  if ('error' in result) return { error: result.error }
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('user_id', user.id)
-    .single()
-  if (profile?.role !== 'athlete') return { error: 'Réservé aux athlètes.' }
+  const { user } = result
 
   const date = formData.get('date') as string
   const raceName = (formData.get('race_name') as string)?.trim()
@@ -54,10 +48,10 @@ export async function addGoal(
 
 export async function deleteGoal(goalId: string): Promise<GoalFormState> {
   const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) return { error: 'Non connecté.' }
+  const result = await requireUser(supabase)
+  if ('error' in result) return { error: result.error }
+
+  const { user } = result
 
   const { error } = await supabase
     .from('goals')

@@ -3,6 +3,7 @@
 import { createClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
 import type { Role } from '@/types/database'
+import { requireRole } from '@/lib/authHelpers'
 
 export type UpdateRoleState = {
   error?: string
@@ -14,22 +15,8 @@ export async function updateMemberRole(
   formData: FormData
 ): Promise<UpdateRoleState> {
   const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) {
-    return { error: 'Non connecté.' }
-  }
-
-  const { data: myProfile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('user_id', user.id)
-    .single()
-
-  if (myProfile?.role !== 'admin') {
-    return { error: 'Accès réservé aux administrateurs.' }
-  }
+  const result = await requireRole(supabase, 'admin')
+  if ('error' in result) return { error: result.error }
 
   const targetUserId = formData.get('user_id') as string
   const newRole = formData.get('role') as Role
