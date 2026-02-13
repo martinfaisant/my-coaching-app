@@ -10,6 +10,13 @@
  */
 export function getWeekMonday(dateInput: Date | string): Date {
   const date = typeof dateInput === 'string' ? new Date(dateInput) : new Date(dateInput)
+  
+  // Validation: vérifier si la date est valide
+  if (isNaN(date.getTime())) {
+    console.warn('[getWeekMonday] Date invalide reçue:', dateInput)
+    return new Date() // Retourner aujourd'hui par défaut
+  }
+  
   const day = date.getDay()
   const diff = date.getDate() - day + (day === 0 ? -6 : 1)
   date.setDate(diff)
@@ -37,6 +44,13 @@ export function toDateStr(date: Date): string {
  */
 export function formatDateFr(dateInput: Date | string, includeWeekday: boolean = false): string {
   const date = typeof dateInput === 'string' ? new Date(dateInput + 'T12:00:00') : dateInput
+  
+  // Validation: vérifier si la date est valide
+  if (isNaN(date.getTime())) {
+    console.warn('[formatDateFr] Date invalide reçue:', dateInput)
+    return 'Date invalide'
+  }
+  
   const formatted = new Intl.DateTimeFormat('fr-FR', {
     ...(includeWeekday && { weekday: 'long' }),
     year: 'numeric',
@@ -53,6 +67,13 @@ export function formatDateFr(dateInput: Date | string, includeWeekday: boolean =
  */
 export function getDaysUntil(targetDate: string | Date): number {
   const target = typeof targetDate === 'string' ? new Date(targetDate) : targetDate
+  
+  // Validation: vérifier si la date est valide
+  if (isNaN(target.getTime())) {
+    console.warn('[getDaysUntil] Date invalide reçue:', targetDate)
+    return 0
+  }
+  
   const today = new Date()
   today.setHours(0, 0, 0, 0)
   target.setHours(0, 0, 0, 0)
@@ -67,6 +88,13 @@ export function getDaysUntil(targetDate: string | Date): number {
  */
 export function formatShortDate(dateInput: Date | string): string {
   const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput
+  
+  // Validation: vérifier si la date est valide
+  if (isNaN(date.getTime())) {
+    console.warn('[formatShortDate] Date invalide reçue:', dateInput)
+    return '--/--/----'
+  }
+  
   return new Intl.DateTimeFormat('fr-FR').format(date)
 }
 

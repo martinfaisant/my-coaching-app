@@ -4,6 +4,7 @@ import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { headers } from 'next/headers'
+import { handleSignupError, handleResetPasswordError } from '@/lib/authErrors'
 
 export type LoginState = {
   error?: string
@@ -70,27 +71,7 @@ export async function signup(_prevState: SignupState, formData: FormData) {
   const { data, error } = await supabase.auth.signUp({ email, password })
 
   if (error) {
-    // Traduire les erreurs courantes
-    if (error.message.includes('rate limit') || error.message.includes('rate_limit')) {
-      return {
-        error:
-          'Trop de demandes d\'email ont été envoyées. Veuillez patienter quelques minutes avant de réessayer.',
-      }
-    }
-    // Détecter si l'utilisateur existe déjà
-    if (
-      error.message.includes('already registered') ||
-      error.message.includes('already exists') ||
-      error.message.includes('User already registered') ||
-      error.message.toLowerCase().includes('user already')
-    ) {
-      return {
-        userExists: true,
-        existingEmail: email,
-        error: 'Un compte existe déjà avec cet email.',
-      }
-    }
-    return { error: error.message }
+    return handleSignupError(error, email)
   }
 
   if (data?.user) {
@@ -151,14 +132,7 @@ export async function resetPassword(
   })
 
   if (error) {
-    // Traduire les erreurs courantes
-    if (error.message.includes('rate limit') || error.message.includes('rate_limit')) {
-      return {
-        error:
-          'Trop de demandes d\'email ont été envoyées. Veuillez patienter quelques minutes avant de réessayer.',
-      }
-    }
-    return { error: error.message }
+    return handleResetPasswordError(error)
   }
 
   return {

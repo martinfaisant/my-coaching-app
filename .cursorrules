@@ -9,6 +9,8 @@
 ### 🎨 Design & UI
 - **docs/DESIGN_SYSTEM.md** - Design system complet : tokens, composants, guidelines (828 lignes)
   → Source unique pour couleurs, composants, patterns UI
+- **docs/PATTERN_SAVE_BUTTON.md** - Pattern standard obligatoire pour boutons "Enregistrer"
+  → Feedback "✓ Enregistré" cohérent (voir aussi `.cursor/rules/save-button-pattern.mdc`)
 
 ### 🚀 Déploiement
 - **DEPLOYMENT_NOTES.md** - Notes de déploiement

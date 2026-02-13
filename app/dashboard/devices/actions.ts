@@ -4,6 +4,7 @@ import { createClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { requireUser } from '@/lib/authHelpers'
 import type { SportType } from '@/types/database'
+import { logger } from '@/lib/logger'
 
 const STRAVA_TOKEN_URL = 'https://www.strava.com/oauth/token'
 const STRAVA_ACTIVITIES_URL = 'https://www.strava.com/api/v3/athlete/activities'
@@ -63,7 +64,7 @@ async function getValidStravaToken(
 
   if (!res.ok) {
     const err = await res.text()
-    console.error('Strava refresh token failed:', err)
+    logger.error('Strava refresh token failed', err, { userId })
     return { error: 'Impossible de rafraîchir la connexion Strava.' }
   }
 
@@ -120,7 +121,7 @@ export async function syncStravaLastWeek(userId: string): Promise<{ error?: stri
 
   if (!res.ok) {
     const err = await res.text()
-    console.error('Strava activities fetch failed:', err)
+    logger.error('Strava activities fetch failed', err, { userId })
     return { error: 'Impossible de récupérer les activités Strava.' }
   }
 

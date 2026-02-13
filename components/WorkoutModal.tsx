@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useRef, useCallback } from 'react'
-import { createPortal, useFormStatus } from 'react-dom'
+import { useFormStatus } from 'react-dom'
 import { useActionState } from 'react'
 import { useRouter } from 'next/navigation'
 import {
@@ -13,6 +13,7 @@ import {
   type CommentFormState,
 } from '@/app/dashboard/workouts/actions'
 import type { SportType, Workout } from '@/types/database'
+import { Modal } from '@/components/Modal'
 import { Button } from '@/components/Button'
 import { Input } from '@/components/Input'
 import { Textarea } from '@/components/Textarea'
@@ -40,21 +41,52 @@ type WorkoutModalProps = {
 function SubmitButton({
   disabled,
   formState,
+  showSuccess,
+  isSubmitting,
 }: {
   disabled?: boolean
   formState?: { success?: boolean; error?: string }
+  showSuccess?: boolean
+  isSubmitting?: boolean
 }) {
   const { pending } = useFormStatus()
   return (
     <Button
       type="submit"
+      form="workout-form"
       variant="primaryDark"
-      disabled={disabled || pending}
-      loading={pending}
+      disabled={disabled || pending || isSubmitting}
+      loading={pending || isSubmitting}
       loadingText="Enregistrement…"
-      success={!!formState?.success}
+      success={showSuccess}
       error={!!formState?.error}
       className="flex-1 min-w-0"
+    >
+      Enregistrer
+    </Button>
+  )
+}
+
+function CommentSubmitButton({
+  formState,
+  hasChanges,
+  showSuccess,
+}: {
+  formState?: { success?: boolean; error?: string }
+  hasChanges?: boolean
+  showSuccess?: boolean
+}) {
+  const { pending } = useFormStatus()
+  
+  return (
+    <Button
+      type="submit"
+      variant="primaryDark"
+      disabled={!hasChanges || pending}
+      loading={pending}
+      loadingText="Enregistrement…"
+      success={showSuccess}
+      className="shrink-0"
     >
       Enregistrer
     </Button>
@@ -83,13 +115,29 @@ export function WorkoutModal({
   const [targetElevationM, setTargetElevationM] = useState<string>('')
   const [targetPace, setTargetPace] = useState<string>('')
   const [commentText, setCommentText] = useState('')
-  const [commentSaveStatus, setCommentSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
-  const [commentSaveMessage, setCommentSaveMessage] = useState<string | null>(null)
-  const commentDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const lastSavedCommentRef = useRef<string | null>(null)
+  const initialCommentRef = useRef<string>('')
+  const [hasCommentChanged, setHasCommentChanged] = useState(false)
+  const [showCommentSuccess, setShowCommentSuccess] = useState(false)
+  const previousCommentPendingRef = useRef(false)
   const workoutJustLoadedRef = useRef(false)
   const [deleteLoading, setDeleteLoading] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
+  
+  // Pattern standard pour le bouton "Enregistrer" du formulaire workout
+  const [showWorkoutSavedFeedback, setShowWorkoutSavedFeedback] = useState(false)
+  const previousWorkoutSubmittingRef = useRef(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const isSubmittingRef = useRef(false)
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
+  const initialWorkoutValuesRef = useRef<{
+    sportType: string
+    title: string
+    description: string
+    targetDurationMinutes: string
+    targetDistanceKm: string
+    targetElevationM: string
+    targetPace: string
+  } | null>(null)
 
   const isEdit = !!currentWorkout
   const hasTimeDistanceChoice = sportType === 'course' || sportType === 'velo' || sportType === 'natation'
@@ -124,14 +172,32 @@ export function WorkoutModal({
       setSportType(currentWorkout.sport_type)
       setTitle(currentWorkout.title)
       setDescription(currentWorkout.description)
-      setTargetDurationMinutes(currentWorkout.target_duration_minutes != null ? String(currentWorkout.target_duration_minutes) : '')
-      setTargetDistanceKm(currentWorkout.target_distance_km != null ? String(currentWorkout.target_distance_km) : '')
-      setTargetElevationM(currentWorkout.target_elevation_m != null ? String(currentWorkout.target_elevation_m) : '')
-      setTargetPace(currentWorkout.target_pace != null ? String(currentWorkout.target_pace) : '')
+      const durationStr = currentWorkout.target_duration_minutes != null ? String(currentWorkout.target_duration_minutes) : ''
+      const distanceStr = currentWorkout.target_distance_km != null ? String(currentWorkout.target_distance_km) : ''
+      const elevationStr = currentWorkout.target_elevation_m != null ? String(currentWorkout.target_elevation_m) : ''
+      const paceStr = currentWorkout.target_pace != null ? String(currentWorkout.target_pace) : ''
+      setTargetDurationMinutes(durationStr)
+      setTargetDistanceKm(distanceStr)
+      setTargetElevationM(elevationStr)
+      setTargetPace(paceStr)
       setTargetMode(
         currentWorkout.target_distance_km != null && currentWorkout.target_distance_km > 0 ? 'distance' : 'time'
       )
-      setCommentText(currentWorkout.athlete_comment ?? '')
+      // Stocker les valeurs initiales pour détecter les modifications
+      initialWorkoutValuesRef.current = {
+        sportType: currentWorkout.sport_type,
+        title: currentWorkout.title,
+        description: currentWorkout.description,
+        targetDurationMinutes: durationStr,
+        targetDistanceKm: distanceStr,
+        targetElevationM: elevationStr,
+        targetPace: paceStr,
+      }
+      setHasUnsavedChanges(false)
+      const initialComment = currentWorkout.athlete_comment ?? ''
+      setCommentText(initialComment)
+      initialCommentRef.current = initialComment
+      setHasCommentChanged(false)
     } else {
       setSportType('course')
       setTitle('')
@@ -141,7 +207,19 @@ export function WorkoutModal({
       setTargetDistanceKm('')
       setTargetElevationM('')
       setTargetPace('')
+      initialWorkoutValuesRef.current = {
+        sportType: 'course',
+        title: '',
+        description: '',
+        targetDurationMinutes: '',
+        targetDistanceKm: '',
+        targetElevationM: '',
+        targetPace: '',
+      }
+      setHasUnsavedChanges(false)
       setCommentText('')
+      initialCommentRef.current = ''
+      setHasCommentChanged(false)
     }
     if (!isOpen) {
       setDeleteError(null)
@@ -200,11 +278,11 @@ export function WorkoutModal({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [targetPace, targetMode, sportType, hasTimeDistanceChoice, targetDistanceKm, targetDurationMinutes])
 
-  const [createState, createAction] = useActionState<WorkoutFormState, FormData>(
+  const [createState, createAction, createPending] = useActionState<WorkoutFormState, FormData>(
     (_, fd) => createWorkout(athleteId, pathToRevalidate, {}, fd),
     {}
   )
-  const [updateState, updateAction] = useActionState<WorkoutFormState, FormData>(
+  const [updateState, updateAction, updatePending] = useActionState<WorkoutFormState, FormData>(
     (_, fd) =>
       currentWorkout
         ? updateWorkout(currentWorkout.id, athleteId, pathToRevalidate, {}, fd)
@@ -227,167 +305,222 @@ export function WorkoutModal({
 
   const state = isEdit ? updateState : createState
   const action = isEdit ? updateAction : createAction
+  const workoutPending = isEdit ? updatePending : createPending
 
+  // Réinitialiser isSubmitting après réponse serveur
   useEffect(() => {
-    if (state?.success) onClose(true, state.workout)
-    // onClose volontairement omis des deps pour éviter une boucle (référence change à chaque rendu du parent)
+    if (state?.success || state?.error) {
+      isSubmittingRef.current = false
+      setIsSubmitting(false)
+    }
+  }, [state])
+
+  // Pattern standard : Feedback "✓ Enregistré" à chaque sauvegarde
+  const workoutSaveFeedbackKey = `${state?.success ?? ''}|${state?.error ?? ''}|${isSubmitting}`
+  
+  useEffect(() => {
+    // Détecter la TRANSITION : était en train de soumettre, ne l'est plus
+    const justFinishedSubmitting = previousWorkoutSubmittingRef.current && !isSubmitting
+    previousWorkoutSubmittingRef.current = isSubmitting
+    
+    if (state?.success && justFinishedSubmitting) {
+      setShowWorkoutSavedFeedback(true)
+      // Réinitialiser hasUnsavedChanges après succès
+      setHasUnsavedChanges(false)
+      
+      const timer = setTimeout(() => {
+        setShowWorkoutSavedFeedback(false)
+        // Fermer la modal après le feedback
+        onClose(true, state.workout)
+      }, 1500) // 1.5s pour voir le check, puis fermeture
+      
+      return () => clearTimeout(timer)
+    }
+    
+    if (state?.error) {
+      setShowWorkoutSavedFeedback(false)
+    }
+  }, [workoutSaveFeedbackKey])
+  
+  // Détecter les modifications pour activer/désactiver le bouton
+  useEffect(() => {
+    if (!initialWorkoutValuesRef.current) {
+      setHasUnsavedChanges(false)
+      return
+    }
+    
+    const initial = initialWorkoutValuesRef.current
+    const hasChanges = 
+      sportType !== initial.sportType ||
+      title !== initial.title ||
+      description !== initial.description ||
+      targetDurationMinutes !== initial.targetDurationMinutes ||
+      targetDistanceKm !== initial.targetDistanceKm ||
+      targetElevationM !== initial.targetElevationM ||
+      targetPace !== initial.targetPace
+    
+    setHasUnsavedChanges(hasChanges)
+  }, [sportType, title, description, targetDurationMinutes, targetDistanceKm, targetElevationM, targetPace])
+
+  // Fermeture immédiate si erreur (pas de délai)
+  useEffect(() => {
+    if (state?.error && !workoutPending) {
+      // L'erreur sera affichée dans le footer, pas besoin de fermer
+    }
+    // onClose volontairement omis des deps pour éviter une boucle
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state?.success])
+  }, [state?.error, workoutPending])
 
-  // Auto-save du commentaire pour l'athlète (debounce 800 ms)
-  const saveCommentOnFly = useCallback(async () => {
-    if (!currentWorkout || canEdit) return
-    const value = commentText.trim()
-    if (value === (lastSavedCommentRef.current ?? '')) return
-    setCommentSaveStatus('saving')
-    setCommentSaveMessage(null)
-    const fd = new FormData()
-    fd.set('comment', commentText)
-    const result = await saveWorkoutComment(currentWorkout.id, athleteId, pathToRevalidate, {}, fd)
-    if (result.error) {
-      setCommentSaveStatus('error')
-      setCommentSaveMessage(result.error)
-    } else {
-      lastSavedCommentRef.current = value
-      setCommentSaveStatus('saved')
-      setCommentSaveMessage(null)
-      setTimeout(() => setCommentSaveStatus('idle'), 2000)
+  // State pour la sauvegarde du commentaire avec useActionState
+  const [commentState, commentAction, commentPending] = useActionState<
+    CommentFormState,
+    FormData
+  >(
+    async (prevState: CommentFormState, formData: FormData) => {
+      if (!currentWorkout) return { error: 'Workout non trouvé' }
+      const result = await saveWorkoutComment(currentWorkout.id, athleteId, pathToRevalidate, prevState, formData)
       
-      // 🔧 FIX: Mettre à jour le workout local avec le nouveau commentaire
-      setCurrentWorkout({
-        ...currentWorkout,
-        athlete_comment: value || null,
-        athlete_comment_at: value ? new Date().toISOString() : null,
-      })
-      
-      // Forcer le refresh du cache Next.js pour les autres composants
-      router.refresh()
-    }
-  }, [currentWorkout, canEdit, commentText, athleteId, pathToRevalidate, router])
-
-  // À la fermeture : sauvegarder tout de suite le commentaire s'il y a des changements non enregistrés (athlète)
-  const handleClose = useCallback(() => {
-    const doClose = () => onClose()
-
-    if (!currentWorkout || canEdit) {
-      doClose()
-      return
-    }
-    const current = commentText.trim()
-    const saved = lastSavedCommentRef.current ?? ''
-    if (current === saved) {
-      doClose()
-      return
-    }
-    if (commentDebounceRef.current) {
-      clearTimeout(commentDebounceRef.current)
-      commentDebounceRef.current = null
-    }
-    const fd = new FormData()
-    fd.set('comment', commentText)
-    saveWorkoutComment(currentWorkout.id, athleteId, pathToRevalidate, {}, fd).then(() => {
-      // Mettre à jour le workout local
-      setCurrentWorkout({
-        ...currentWorkout,
-        athlete_comment: current || null,
-        athlete_comment_at: current ? new Date().toISOString() : null,
-      })
-      // Refresh le cache pour les autres composants
-      router.refresh()
-      doClose()
-    }).catch(() => {
-      doClose()
-    })
-  }, [currentWorkout, canEdit, commentText, athleteId, pathToRevalidate, onClose, router])
-
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') handleClose()
-    }
-    if (isOpen) {
-      document.addEventListener('keydown', handleEscape)
-      document.body.style.overflow = 'hidden'
-    }
-    return () => {
-      document.removeEventListener('keydown', handleEscape)
-      document.body.style.overflow = ''
-    }
-  }, [isOpen, handleClose])
-
-  useEffect(() => {
-    if (!currentWorkout) lastSavedCommentRef.current = null
-    else if (lastSavedCommentRef.current === null) lastSavedCommentRef.current = currentWorkout.athlete_comment ?? ''
-  }, [currentWorkout])
-
-  useEffect(() => {
-    if (!currentWorkout || canEdit) return
-    commentDebounceRef.current = setTimeout(saveCommentOnFly, 800)
-    return () => {
-      if (commentDebounceRef.current) clearTimeout(commentDebounceRef.current)
-    }
-  }, [currentWorkout, canEdit, commentText, saveCommentOnFly])
-
-  useEffect(() => {
-    if (isOpen) {
-      const scrollY = window.scrollY
-      document.body.style.position = 'fixed'
-      document.body.style.top = `-${scrollY}px`
-      document.body.style.left = '0'
-      document.body.style.right = '0'
-      return () => {
-        document.body.style.position = ''
-        document.body.style.top = ''
-        document.body.style.left = ''
-        document.body.style.right = ''
-        window.scrollTo(0, scrollY)
+      if (!result.error) {
+        const savedComment = formData.get('comment')?.toString().trim() || ''
+        
+        // Mettre à jour le workout local
+        const updatedWorkout = {
+          ...currentWorkout,
+          athlete_comment: savedComment || null,
+          athlete_comment_at: savedComment ? new Date().toISOString() : null,
+        }
+        setCurrentWorkout(updatedWorkout)
+        
+        // Mettre à jour la référence initiale avec la valeur sauvegardée
+        initialCommentRef.current = savedComment
+        setHasCommentChanged(false)
+        
+        // Refresh le cache
+        router.refresh()
       }
+      
+      return result
+    },
+    {}
+  )
+
+  // Gérer l'affichage du feedback success (approche similaire à ProfileForm)
+  const commentSaveFeedbackKey = `${commentState?.success ?? ''}|${commentState?.error ?? ''}|${commentPending}`
+  useEffect(() => {
+    const justFinishedSubmitting = previousCommentPendingRef.current && !commentPending
+    previousCommentPendingRef.current = commentPending
+    
+    if (commentState?.success && justFinishedSubmitting) {
+      setShowCommentSuccess(true)
+      
+      const timer = setTimeout(() => {
+        setShowCommentSuccess(false)
+      }, 2000)
+      return () => clearTimeout(timer)
     }
-  }, [isOpen])
+    
+    if (commentState?.error) {
+      setShowCommentSuccess(false)
+    }
+  }, [commentSaveFeedbackKey])
 
-  if (!isOpen) return null
+  const handleClose = useCallback(() => {
+    onClose()
+  }, [onClose])
 
-  /* Structure identique au bloc "Objectifs de l'athlète" du HTML de référence */
-  const modalContent = (
-    <>
-      <div
-        className="fixed inset-0 bg-stone-900/50 backdrop-blur-sm z-[90]"
-        onClick={() => handleClose()}
-        aria-hidden="true"
-      />
-      <div
-        className="fixed inset-0 z-[100] flex items-center justify-center p-4"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="workout-modal-title"
-      >
-        <div className="relative w-full max-w-md max-h-[calc(100vh-2rem)] flex flex-col bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden">
-        {/* En-tête comme dans le HTML : px-6 py-4 border-b border-stone-100 bg-stone-50/50 + icône check + titre */}
-        <div className="shrink-0 px-6 py-4 border-b border-stone-100 bg-stone-50/50 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="p-2 bg-palette-forest-dark/10 rounded-full text-palette-forest-dark">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+  const modalTitle = isEdit
+    ? athleteView
+      ? 'Mon entrainement'
+      : canEdit
+        ? "Modifier l'entraînement"
+        : 'Votre entraînement'
+    : 'Nouvel entraînement'
+
+  const modalIcon = (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-5 w-5"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+  )
+
+  return (
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      size="md"
+      title={modalTitle}
+      icon={modalIcon}
+      titleId="workout-modal-title"
+      contentClassName="px-0"
+      footer={
+        canEdit && (
+          <div className="w-full">
+            {state?.error && (
+              <p className="text-sm text-palette-danger mb-3" role="alert">
+                {state.error}
+              </p>
+            )}
+            {deleteError && (
+              <p className="text-sm text-palette-danger mb-3" role="alert">
+                {deleteError}
+              </p>
+            )}
+            <div className="flex gap-3">
+              {isEdit && (
+                <Button
+                  type="button"
+                  variant="danger"
+                  onClick={handleDelete}
+                  disabled={deleteLoading}
+                  loading={deleteLoading}
+                  loadingText="Suppression…"
+                  className="flex-1 min-w-0 flex items-center justify-center gap-2"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                  Supprimer
+                </Button>
+              )}
+              <SubmitButton disabled={!isValid || !hasUnsavedChanges} formState={state} showSuccess={showWorkoutSavedFeedback} isSubmitting={isSubmitting} />
             </div>
-            <h2 id="workout-modal-title" className="text-lg font-bold text-stone-900 truncate">
-              {isEdit ? (athleteView ? 'Mon entrainement' : canEdit ? 'Modifier l\'entraînement' : 'Votre entraînement') : 'Nouvel entraînement'}
-            </h2>
           </div>
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={() => handleClose()}
-            aria-label="Fermer"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M18 6 6 18" /><path d="m6 6 12 12" />
-            </svg>
-          </Button>
-        </div>
-
-        <form action={action} className={`flex flex-col flex-1 min-h-0 ${!canEdit ? 'select-none' : ''}`} onSubmit={(e) => { if (!canEdit) e.preventDefault() }}>
-          <input type="hidden" name="date" value={date} />
-          {isEdit && <input type="hidden" name="workout_id" value={currentWorkout?.id} />}
+        )
+      }
+    >
+      <form
+        id="workout-form"
+        action={action}
+        className={`flex flex-col flex-1 min-h-0 ${!canEdit ? 'select-none' : ''}`}
+        onSubmit={(e) => {
+          if (!canEdit) {
+            e.preventDefault()
+            return
+          }
+          // Marquer comme en cours de soumission
+          isSubmittingRef.current = true
+          setIsSubmitting(true)
+        }}
+      >
+        <input type="hidden" name="date" value={date} />
+        {isEdit && <input type="hidden" name="workout_id" value={currentWorkout?.id} />}
 
           <div className="flex-1 overflow-y-auto min-h-0">
           <div className="px-6 py-4 space-y-5">
@@ -665,88 +798,96 @@ export function WorkoutModal({
             </p>
           )}
 
-          {currentWorkout && (
+          {currentWorkout && canEdit && (
             <div className="border-t border-stone-100 mt-6">
               <div className="pt-4 pb-2 flex items-center gap-3">
                 <div className="p-2 bg-stone-200/80 rounded-full text-stone-600">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-bold text-stone-900">
-                  {canEdit ? 'Commentaire de l\'athlète' : 'Votre commentaire'}
-                </h3>
+                <h3 className="text-lg font-bold text-stone-900">Commentaire de l'athlète</h3>
               </div>
               <div className="pt-2 pb-4">
-                {!canEdit ? (
-                  <>
-                    <Textarea
-                      value={commentText}
-                      onChange={(e) => setCommentText(e.target.value)}
-                      rows={3}
-                      placeholder="Saisissez votre commentaire… Il est enregistré automatiquement."
-                      className="rounded-xl py-3 min-h-0"
-                      aria-label="Votre commentaire"
-                    />
-                    {commentSaveStatus === 'saving' && (
-                      <p className="text-sm text-stone-500 mt-2">Enregistrement…</p>
-                    )}
-                    {commentSaveStatus === 'saved' && (
-                      <p className="text-sm text-palette-forest-dark font-medium mt-2">Commentaire enregistré.</p>
-                    )}
-                    {commentSaveStatus === 'error' && commentSaveMessage && (
-                      <p className="text-sm text-red-600 mt-2" role="alert">{commentSaveMessage}</p>
-                    )}
-                  </>
+                {(currentWorkout?.athlete_comment ?? null) ? (
+                  <p className="text-sm text-stone-600 whitespace-pre-wrap">
+                    {currentWorkout.athlete_comment}
+                  </p>
                 ) : (
-                  (currentWorkout?.athlete_comment ?? null) ? (
-                    <p className="text-sm text-stone-600 whitespace-pre-wrap">
-                      {currentWorkout.athlete_comment}
-                    </p>
-                  ) : (
-                    <p className="text-sm text-stone-500">Aucun commentaire.</p>
-                  )
+                  <p className="text-sm text-stone-500">Aucun commentaire.</p>
                 )}
               </div>
             </div>
           )}
-          </div>
-          </div>
-
-          {canEdit && (
-            <div className="shrink-0 px-6 py-4 border-t border-stone-100 bg-stone-50/50 space-y-3">
-              {deleteError && (
-                <p className="text-sm text-red-600" role="alert">
-                  {deleteError}
-                </p>
-              )}
-              <div className="flex gap-3">
-                {isEdit && (
-                  <Button
-                    type="button"
-                    variant="danger"
-                    onClick={handleDelete}
-                    disabled={deleteLoading}
-                    loading={deleteLoading}
-                    loadingText="Suppression…"
-                    className="flex-1 min-w-0 flex items-center justify-center gap-2"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                    Supprimer
-                  </Button>
-                )}
-                <SubmitButton disabled={!isValid} formState={state} />
-              </div>
-            </div>
-          )}
-        </form>
         </div>
-      </div>
-    </>
-  )
+        </div>
+      </form>
 
-  if (typeof document === 'undefined') return null
-  return createPortal(modalContent, document.body)
+      {/* Formulaire séparé pour le commentaire de l'athlète */}
+      {currentWorkout && !canEdit && (
+        <form action={commentAction} className="px-6 py-4 border-t border-stone-100">
+          <div className="flex items-center justify-between gap-3 mb-2">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-stone-200/80 rounded-full text-stone-600">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-bold text-stone-900">Votre commentaire</h3>
+            </div>
+            <CommentSubmitButton formState={commentState} hasChanges={hasCommentChanged} showSuccess={showCommentSuccess} />
+          </div>
+          <div>
+            <Textarea
+              name="comment"
+              value={commentText}
+              onChange={(e) => {
+                const newValue = e.target.value
+                setCommentText(newValue)
+                const changed = newValue.trim() !== initialCommentRef.current.trim()
+                setHasCommentChanged(changed)
+                
+                // Réinitialiser le success quand on modifie
+                if (showCommentSuccess) {
+                  setShowCommentSuccess(false)
+                }
+              }}
+              rows={3}
+              placeholder="Saisissez votre commentaire..."
+              className="rounded-xl py-3 min-h-0"
+              aria-label="Votre commentaire"
+            />
+            {commentState?.error && (
+              <p className="text-sm text-palette-danger mt-2" role="alert">
+                {commentState.error}
+              </p>
+            )}
+            {commentState?.success && (
+              <p className="text-sm text-palette-forest-dark font-medium mt-2">
+                Commentaire enregistré.
+              </p>
+            )}
+          </div>
+        </form>
+      )}
+    </Modal>
+  )
 }

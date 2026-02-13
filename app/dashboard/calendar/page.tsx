@@ -1,9 +1,14 @@
+import type { Metadata } from 'next'
 import { createClient } from '@/utils/supabase/server'
 import { getCurrentUserWithProfile } from '@/utils/auth'
 import { redirect } from 'next/navigation'
 import { AthleteCalendarPage } from '@/components/AthleteCalendarPage'
 import type { Workout, Goal, ImportedActivity, ImportedActivityWeeklyTotal, WorkoutWeeklyTotal } from '@/types/database'
 import { getWeekMonday } from '@/lib/dateUtils'
+
+export const metadata: Metadata = {
+  title: "Calendrier d'entraînement"
+}
 
 export default async function CalendarPage() {
   const current = await getCurrentUserWithProfile()

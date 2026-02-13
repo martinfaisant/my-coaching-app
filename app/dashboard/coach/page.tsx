@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { getCurrentUserWithProfile } from '@/utils/auth'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
@@ -8,6 +9,10 @@ import { CoachRatingForm } from './CoachRatingForm'
 import { LANGUAGES_OPTIONS } from '@/lib/sportsOptions'
 import { SPORT_ICONS, SPORT_LABELS } from '@/lib/sportStyles'
 import type { SportType } from '@/lib/sportStyles'
+
+export const metadata: Metadata = {
+  title: "Mon coach"
+}
 import { getInitials } from '@/lib/stringUtils'
 
 function languageLabel(value: string): string {

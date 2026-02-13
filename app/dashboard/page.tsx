@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { createClient } from '@/utils/supabase/server'
 import { getCurrentUserWithProfile } from '@/utils/auth'
@@ -13,6 +14,11 @@ import {
 } from '@/app/dashboard/actions'
 import type { Profile } from '@/types/database'
 import { formatShortDate } from '@/lib/dateUtils'
+
+export const metadata: Metadata = {
+  title: "Tableau de bord",
+  description: "Gérez vos entraînements, suivez vos progrès et communiquez avec votre coach."
+}
 import { getInitials } from '@/lib/stringUtils'
 
 const ROLE_LABELS: Record<Profile['role'], string> = {

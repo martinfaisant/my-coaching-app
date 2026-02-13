@@ -2,8 +2,8 @@
 
 import { createClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
-import type { CoachRequest } from '@/types/database'
-import { requireUserWithProfile, requireUser, requireRole } from '@/lib/authHelpers'
+import { requireUserWithProfile, requireUser } from '@/lib/authHelpers'
+import { logger } from '@/lib/logger'
 
 export type SetCoachResult = { error?: string }
 export type CoachRequestResult = { error?: string }
@@ -70,7 +70,7 @@ export async function createCoachRequest(
 
   if (updateError) {
     // Ne pas faire échouer la demande si la mise à jour du profil échoue
-    console.error('Mise à jour practiced_sports:', updateError.message)
+    logger.error('Mise à jour practiced_sports', updateError)
   }
 
   revalidatePath('/dashboard')

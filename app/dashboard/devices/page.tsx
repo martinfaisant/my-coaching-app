@@ -1,8 +1,13 @@
+import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { getCurrentUserWithProfile } from '@/utils/auth'
 import { PageHeader } from '@/components/PageHeader'
 import { StravaDevicesSection } from './StravaDevicesSection'
 import { getStravaConnection } from './actions'
+
+export const metadata: Metadata = {
+  title: "Appareils connectés"
+}
 
 export default async function DevicesPage() {
   const current = await getCurrentUserWithProfile()
