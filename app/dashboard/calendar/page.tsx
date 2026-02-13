@@ -3,15 +3,7 @@ import { getCurrentUserWithProfile } from '@/utils/auth'
 import { redirect } from 'next/navigation'
 import { AthleteCalendarPage } from '@/components/AthleteCalendarPage'
 import type { Workout, Goal, ImportedActivity, ImportedActivityWeeklyTotal, WorkoutWeeklyTotal } from '@/types/database'
-
-function getWeekMonday(d: Date): Date {
-  const date = new Date(d)
-  const day = date.getDay()
-  const diff = day === 0 ? -6 : 1 - day
-  date.setDate(date.getDate() + diff)
-  date.setHours(0, 0, 0, 0)
-  return date
-}
+import { getWeekMonday } from '@/lib/dateUtils'
 
 export default async function CalendarPage() {
   const current = await getCurrentUserWithProfile()

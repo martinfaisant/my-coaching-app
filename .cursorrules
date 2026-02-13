@@ -1,0 +1,41 @@
+# 📚 Documentation Index - NE PAS DUPLIQUER
+
+## Documentation principale (TOUJOURS vérifier avant de créer)
+
+### 🎯 Contexte projet
+- **Project_context.md** - Vision produit, rôles, features, architecture (363 lignes)
+  → Référence PRINCIPALE du projet
+
+### 🎨 Design & UI
+- **docs/DESIGN_SYSTEM.md** - Design system complet : tokens, composants, guidelines (828 lignes)
+  → Source unique pour couleurs, composants, patterns UI
+
+### 🚀 Déploiement
+- **DEPLOYMENT_NOTES.md** - Notes de déploiement
+- **MISE_EN_PROD.md** - Procédure de mise en production
+
+### 📋 Documentation historique (ne pas éditer)
+- **MODALES_ETAT_DES_LIEUX_FINAL.md** - État des lieux final modales (5 fév. 2026)
+- **AUDIT_COMPLET.md** - Audit complet projet
+- **PLAN_AMELIORATION.md** - Plan d'amélioration
+
+---
+
+## 🤖 Instructions pour l'IA
+
+### Avant de créer un nouveau document :
+1. ✅ Vérifier si le sujet est déjà couvert dans la liste ci-dessus
+2. ✅ Demander à l'utilisateur s'il veut mettre à jour un document existant
+3. ❌ Ne JAMAIS dupliquer du contenu existant
+
+### Hiérarchie des sources :
+1. **Project_context.md** → Vision, rôles, features
+2. **docs/DESIGN_SYSTEM.md** → UI, composants, tokens
+3. **README.md** → Setup, démarrage rapide
+4. Règles Cursor (`.cursor/rules/`) → Conventions automatiques
+
+### Nommage des nouveaux docs :
+- `/docs/` → Documentation technique longue
+- Racine → Documents de référence rapide
+- `UPPERCASE.md` → Documents importants/process
+- `lowercase.md` → Documentation technique

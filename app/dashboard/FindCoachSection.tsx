@@ -11,17 +11,12 @@ import { SportTileSelectable } from '@/components/SportTileSelectable'
 import { createCoachRequest } from './actions'
 import { COACHED_SPORTS_OPTIONS, PRACTICED_SPORTS_OPTIONS, LANGUAGES_OPTIONS } from '@/lib/sportsOptions'
 import { useRouter } from 'next/navigation'
+import { getInitials } from '@/lib/stringUtils'
 
-function getInitials(fullName: string | null, email: string): string {
+function getInitialsForCoach(fullName: string | null, email: string): string {
   const name = (fullName ?? '').trim()
-  if (name) {
-    const parts = name.split(/\s+/).filter(Boolean)
-    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase()
-    if (parts[0].length >= 2) return parts[0].slice(0, 2).toUpperCase()
-    return parts[0][0].toUpperCase()
-  }
-  if (email.length >= 2) return email.slice(0, 2).toUpperCase()
-  return '?'
+  if (name) return getInitials(name)
+  return getInitials(email)
 }
 
 /** Environ 10 lignes en caractères (ordre de grandeur) pour afficher "Voir plus" */
@@ -198,7 +193,7 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
                         />
                       ) : (
                         <div className="w-12 h-12 rounded-full bg-palette-olive text-white flex items-center justify-center text-base font-bold ring-2 ring-stone-100 group-hover:ring-palette-forest-dark/20 transition-all">
-                          {getInitials(c.full_name ?? null, c.email)}
+                          {getInitialsForCoach(c.full_name ?? null, c.email)}
                         </div>
                       )}
                       {/* Badge "Pro" optionnel - à afficher si le coach a des avis */}
@@ -511,7 +506,7 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
             <div className="relative">
               <AvatarImage
                 src={coach.avatar_url}
-                initials={getInitials(coach.full_name, coach.email)}
+                initials={getInitialsForCoach(coach.full_name, coach.email)}
                 className="w-16 h-16 rounded-2xl object-cover ring-4 ring-stone-50"
               />
             </div>

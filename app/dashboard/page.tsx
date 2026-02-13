@@ -12,22 +12,8 @@ import {
   getPendingCoachRequests,
 } from '@/app/dashboard/actions'
 import type { Profile } from '@/types/database'
-
-/** Formate une date YYYY-MM-DD en court français (ex. "30 Mars"). */
-function formatShortDate(dateStr: string): string {
-  const d = new Date(dateStr + 'T12:00:00')
-  const day = d.getDate()
-  const month = d.toLocaleDateString('fr-FR', { month: 'long' })
-  return `${day} ${month.charAt(0).toUpperCase() + month.slice(1)}`
-}
-
-function getInitials(nameOrEmail: string): string {
-  const s = (nameOrEmail || '').trim()
-  if (!s) return '?'
-  const parts = s.split(/\s+/).filter(Boolean)
-  if (parts.length >= 2) return (parts[0][0]! + parts[parts.length - 1]![0]).toUpperCase()
-  return s.slice(0, 2).toUpperCase()
-}
+import { formatShortDate } from '@/lib/dateUtils'
+import { getInitials } from '@/lib/stringUtils'
 
 const ROLE_LABELS: Record<Profile['role'], string> = {
   athlete: 'Athlète',

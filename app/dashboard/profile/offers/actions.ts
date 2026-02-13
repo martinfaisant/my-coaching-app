@@ -2,6 +2,7 @@
 
 import { createClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { requireRole } from '@/lib/authHelpers'
 
 export type OffersFormState = {
   error?: string
@@ -13,20 +14,10 @@ export async function saveOffers(
   formData: FormData
 ): Promise<OffersFormState> {
   const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) return { error: 'Non connecté.' }
+  const result = await requireRole(supabase, 'coach')
+  if ('error' in result) return { error: result.error }
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('user_id', user.id)
-    .single()
-
-  if (profile?.role !== 'coach') {
-    return { error: 'Seuls les coaches peuvent gérer des offres.' }
-  }
+  const { user } = result
 
   // Récupérer les offres depuis le formulaire
   const offers: Array<{
@@ -124,20 +115,10 @@ export async function saveOffers(
 
 export async function deleteOffer(offerId: string): Promise<{ error?: string }> {
   const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) return { error: 'Non connecté.' }
+  const roleResult = await requireRole(supabase, 'coach')
+  if ('error' in roleResult) return { error: roleResult.error }
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('user_id', user.id)
-    .single()
-
-  if (profile?.role !== 'coach') {
-    return { error: 'Seuls les coaches peuvent gérer des offres.' }
-  }
+  const { user } = roleResult
 
   const { error } = await supabase
     .from('coach_offers')

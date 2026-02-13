@@ -1,0 +1,121 @@
+---
+description: Conventions et philosophie générale du projet coaching marketplace
+alwaysApply: true
+---
+
+# 🎯 Sport & Health Marketplace - Core Rules
+
+## Product Philosophy
+
+**Always prioritize:**
+- **MVP-first thinking**: Simple solutions over complex ones
+- **Clean UX**: Mobile-friendly, clear hierarchy
+- **Role separation**: Athlete, Coach, Admin (never break this)
+
+**Never:**
+- Over-engineer or add enterprise patterns prematurely
+- Add features not explicitly requested
+- Use hardcoded color values (hex) instead of design tokens
+
+---
+
+## Stack & Architecture
+
+- **Framework**: Next.js App Router
+- **Backend**: Supabase (Auth, DB, RLS)
+- **Dependencies**: Always use **UV** library for Python dependencies
+- **Auth**: Server-side `getCurrentUserWithProfile()`, `requireRole()`
+- **Security**: RLS policies on all tables
+
+---
+
+## Design System (CRITICAL)
+
+**Always use design tokens from `tailwind.config.ts`:**
+
+```typescript
+// ✅ GOOD - Use palette tokens
+className="bg-palette-forest-dark text-white"
+className="border-palette-olive hover:bg-palette-sage"
+
+// ❌ BAD - Hardcoded colors
+className="bg-[#2c3e2e] text-white"
+```
+
+**Color palette:**
+- `palette-forest-dark`, `palette-forest-darker` - Primary actions
+- `palette-olive`, `palette-sage` - Secondary, backgrounds
+- `palette-gold`, `palette-amber` - Highlights
+- `palette-strava` - Strava integration
+- `palette-danger` - Errors, destructive actions
+
+**Component library:**
+- Use existing components: `Button`, `Input`, `Textarea`, `Badge`, `SportTileSelectable`
+- Check `docs/DESIGN_SYSTEM.md` before creating new components
+
+---
+
+## Code Conventions
+
+### File Structure
+```
+/app/dashboard     → Main app (role-based views)
+/app/admin         → Admin-only pages
+/components        → Shared components
+/utils             → Auth, Supabase clients
+```
+
+### TypeScript
+- Strict mode enabled
+- No `any` types - use proper typing
+- Server actions in separate files
+
+### React/Next.js
+- Server Components by default
+- Client Components only when needed (`'use client'`)
+- Colocate related code
+
+---
+
+## Security
+
+**Every database operation MUST respect:**
+1. RLS policies (Row Level Security)
+2. Role-based access (athlete/coach/admin)
+3. Server-side validation
+
+---
+
+## User Roles
+
+| Role | Can | Cannot |
+|------|-----|--------|
+| **Athlete** | View workouts, send requests, chat, rate coach | Create workouts for others |
+| **Coach** | Create offers, manage athletes, create workouts | Access other coaches' data |
+| **Admin** | Manage members, view all data | Break RLS policies |
+
+---
+
+## Performance
+
+- Minimize client-side JavaScript
+- Use Supabase queries efficiently (select only needed fields)
+- Avoid N+1 queries
+
+---
+
+## Documentation Sources (CHECK BEFORE CREATING!)
+
+**Before creating any new documentation, check `.cursorrules` for existing docs.**
+
+### Primary references:
+1. **Project_context.md** - Product vision, roles, features, architecture
+2. **docs/DESIGN_SYSTEM.md** - Complete design system (tokens, components, guidelines)
+3. **README.md** - Setup and getting started
+4. **.cursorrules** - Full documentation index (prevents duplicates)
+
+### When to reference what:
+- Product questions → `Project_context.md`
+- UI/components → `docs/DESIGN_SYSTEM.md`
+- Deployment → `DEPLOYMENT_NOTES.md` or `MISE_EN_PROD.md`
+- Historical context → Check `.cursorrules` for audit/fix docs

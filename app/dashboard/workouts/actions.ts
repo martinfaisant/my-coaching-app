@@ -3,6 +3,7 @@
 import { createClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
 import type { SportType, Workout } from '@/types/database'
+import { requireCoachOrAthleteAccess, requireRole } from '@/lib/authHelpers'
 
 function parseWorkoutTargetParams(
   sportType: SportType,
@@ -68,22 +69,12 @@ export async function createWorkout(
   formData: FormData
 ): Promise<WorkoutFormState> {
   const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) return { error: 'Non connecté.' }
+  const accessResult = await requireCoachOrAthleteAccess(supabase, athleteId)
+  if ('error' in accessResult) return { error: accessResult.error }
 
-  const [myProfileRes, athleteProfileRes] = await Promise.all([
-    supabase.from('profiles').select('role, user_id').eq('user_id', user.id).single(),
-    supabase.from('profiles').select('coach_id').eq('user_id', athleteId).single(),
-  ])
-  const myProfile = myProfileRes.data
-  const athleteProfile = athleteProfileRes.data
-  const isCoach = myProfile?.role === 'coach'
-  const isAthlete = myProfile?.role === 'athlete' && user.id === athleteId
-  if (!isCoach && !isAthlete) return { error: 'Non autorisé.' }
+  const { isCoach, isAthlete } = accessResult
   if (isAthlete) return { error: 'Seul le coach peut créer un entraînement.' }
-  if (athleteProfile?.coach_id !== user.id) return { error: 'Cet athlète n\'est pas sous votre responsabilité.' }
+  if (!isCoach) return { error: 'Non autorisé.' }
 
   const date = formData.get('date') as string
   const sportType = formData.get('sport_type') as SportType
@@ -145,19 +136,11 @@ export async function updateWorkout(
   formData: FormData
 ): Promise<WorkoutFormState> {
   const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) return { error: 'Non connecté.' }
+  const accessResult = await requireCoachOrAthleteAccess(supabase, athleteId)
+  if ('error' in accessResult) return { error: accessResult.error }
 
-  const [myProfileRes, athleteProfileRes] = await Promise.all([
-    supabase.from('profiles').select('role').eq('user_id', user.id).single(),
-    supabase.from('profiles').select('coach_id').eq('user_id', athleteId).single(),
-  ])
-  const myProfile = myProfileRes.data
-  const athleteProfile = athleteProfileRes.data
-  if (myProfile?.role !== 'coach') return { error: 'Seul le coach peut modifier un entraînement.' }
-  if (athleteProfile?.coach_id !== user.id) return { error: 'Non autorisé.' }
+  const { isCoach } = accessResult
+  if (!isCoach) return { error: 'Seul le coach peut modifier un entraînement.' }
 
   const date = formData.get('date') as string
   const sportType = formData.get('sport_type') as SportType
@@ -219,24 +202,11 @@ export async function deleteWorkout(
   pathToRevalidate: string
 ): Promise<WorkoutFormState> {
   const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) return { error: 'Non connecté.' }
+  const accessResult = await requireCoachOrAthleteAccess(supabase, athleteId)
+  if ('error' in accessResult) return { error: accessResult.error }
 
-  const { data: myProfile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('user_id', user.id)
-    .single()
-  if (myProfile?.role !== 'coach') return { error: 'Seul le coach peut supprimer un entraînement.' }
-
-  const { data: athleteProfile } = await supabase
-    .from('profiles')
-    .select('coach_id')
-    .eq('user_id', athleteId)
-    .single()
-  if (athleteProfile?.coach_id !== user.id) return { error: 'Non autorisé.' }
+  const { isCoach } = accessResult
+  if (!isCoach) return { error: 'Seul le coach peut supprimer un entraînement.' }
 
   const { error } = await supabase
     .from('workouts')
@@ -260,32 +230,8 @@ export async function getWorkoutsForDateRange(
   endDate: string
 ) {
   const supabase = await createClient()
-  
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) return { error: 'Non connecté.', workouts: [] }
-
-  const { data: myProfile } = await supabase
-    .from('profiles')
-    .select('role, user_id')
-    .eq('user_id', user.id)
-    .single()
-
-  const isCoach = myProfile?.role === 'coach'
-  const isAthlete = myProfile?.role === 'athlete' && user.id === athleteId
-  if (!isCoach && !isAthlete) return { error: 'Non autorisé.', workouts: [] }
-
-  if (isCoach) {
-    const { data: athleteProfile } = await supabase
-      .from('profiles')
-      .select('coach_id')
-      .eq('user_id', athleteId)
-      .single()
-    if (athleteProfile?.coach_id !== user.id) {
-      return { error: 'Non autorisé.', workouts: [] }
-    }
-  }
+  const accessResult = await requireCoachOrAthleteAccess(supabase, athleteId)
+  if ('error' in accessResult) return { error: accessResult.error, workouts: [] }
 
   const { data: workouts, error } = await supabase
     .from('workouts')
@@ -336,31 +282,10 @@ export async function getImportedActivityWeeklyTotals(
   endDate: string
 ) {
   const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) return { error: 'Non connecté.', weeklyTotals: [] }
+  const accessResult = await requireCoachOrAthleteAccess(supabase, athleteId)
+  if ('error' in accessResult) return { error: accessResult.error, weeklyTotals: [] }
 
-  const { data: myProfile } = await supabase
-    .from('profiles')
-    .select('role, user_id')
-    .eq('user_id', user.id)
-    .single()
-
-  const isCoach = myProfile?.role === 'coach'
-  const isAthlete = myProfile?.role === 'athlete' && user.id === athleteId
-  if (!isCoach && !isAthlete) return { error: 'Non autorisé.', weeklyTotals: [] }
-
-  if (isCoach) {
-    const { data: athleteProfile } = await supabase
-      .from('profiles')
-      .select('coach_id')
-      .eq('user_id', athleteId)
-      .single()
-    if (athleteProfile?.coach_id !== user.id) {
-      return { error: 'Non autorisé.', weeklyTotals: [] }
-    }
-  }
+  const { isCoach } = accessResult
 
   const { data: weeklyTotals, error } = await supabase
     .from('imported_activity_weekly_totals')
@@ -382,31 +307,8 @@ export async function getWorkoutWeeklyTotals(
   endDate: string
 ) {
   const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) return { error: 'Non connecté.', workoutTotals: [] }
-
-  const { data: myProfile } = await supabase
-    .from('profiles')
-    .select('role, user_id')
-    .eq('user_id', user.id)
-    .single()
-
-  const isCoach = myProfile?.role === 'coach'
-  const isAthlete = myProfile?.role === 'athlete' && user.id === athleteId
-  if (!isCoach && !isAthlete) return { error: 'Non autorisé.', workoutTotals: [] }
-
-  if (isCoach) {
-    const { data: athleteProfile } = await supabase
-      .from('profiles')
-      .select('coach_id')
-      .eq('user_id', athleteId)
-      .single()
-    if (athleteProfile?.coach_id !== user.id) {
-      return { error: 'Non autorisé.', workoutTotals: [] }
-    }
-  }
+  const accessResult = await requireCoachOrAthleteAccess(supabase, athleteId)
+  if ('error' in accessResult) return { error: accessResult.error, workoutTotals: [] }
 
   const { data: workoutTotals, error } = await supabase
     .from('workout_weekly_totals')
@@ -437,7 +339,16 @@ export async function saveWorkoutComment(
 
   const comment = (formData.get('comment') as string)?.trim() ?? ''
 
-  const { error } = await supabase
+  // Log pour diagnostic
+  console.log('[saveWorkoutComment] Tentative de sauvegarde:', {
+    workoutId,
+    athleteId,
+    userId: user.id,
+    commentLength: comment.length,
+    hasComment: !!comment,
+  })
+
+  const { data, error, status, statusText } = await supabase
     .from('workouts')
     .update({
       athlete_comment: comment || null,
@@ -445,8 +356,28 @@ export async function saveWorkoutComment(
     })
     .eq('id', workoutId)
     .eq('athlete_id', athleteId)
+    .select()
 
-  if (error) return { error: error.message }
+  // Log détaillé du résultat
+  console.log('[saveWorkoutComment] Résultat:', {
+    success: !error,
+    error: error?.message,
+    status,
+    statusText,
+    dataReturned: !!data,
+    dataLength: data?.length,
+  })
+
+  if (error) {
+    console.error('[saveWorkoutComment] Erreur Supabase:', error)
+    return { error: error.message }
+  }
+
+  if (!data || data.length === 0) {
+    console.error('[saveWorkoutComment] UPDATE réussi mais aucune ligne retournée (RLS?)')
+    return { error: 'Impossible de sauvegarder le commentaire. Vérifiez vos permissions.' }
+  }
+
   revalidatePath(pathToRevalidate)
   return { success: true }
 }

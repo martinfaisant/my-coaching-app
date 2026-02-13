@@ -5,17 +5,8 @@ import { CalendarViewWithNavigation } from './CalendarViewWithNavigation'
 import { WeekSelector } from './WeekSelector'
 import { AvatarImage } from './AvatarImage'
 import type { Workout, Goal, ImportedActivityWeeklyTotal, WorkoutWeeklyTotal } from '@/types/database'
-
-// Fonction pour calculer les jours restants
-function getDaysUntil(dateStr: string): number | null {
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  const targetDate = new Date(dateStr + 'T12:00:00')
-  targetDate.setHours(0, 0, 0, 0)
-  const diffTime = targetDate.getTime() - today.getTime()
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-  return diffDays >= 0 ? diffDays : null
-}
+import { getDaysUntil } from '@/lib/dateUtils'
+import { getInitials } from '@/lib/stringUtils'
 
 // Fonction pour formater la date en mois/jour
 function formatDateBlock(dateStr: string): { month: string; day: string } {
@@ -42,14 +33,6 @@ type CoachAthleteCalendarPageProps = {
   goals?: Goal[]
   canEdit: boolean
   pathToRevalidate: string
-}
-
-function getInitials(nameOrEmail: string): string {
-  const s = (nameOrEmail || '').trim()
-  if (!s) return '?'
-  const parts = s.split(/\s+/).filter(Boolean)
-  if (parts.length >= 2) return (parts[0][0]! + parts[parts.length - 1]![0]).toUpperCase()
-  return s.slice(0, 2).toUpperCase()
 }
 
 export function CoachAthleteCalendarPage({

@@ -3,6 +3,7 @@
 import { createClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
 import type { CoachRequest } from '@/types/database'
+import { requireUserWithProfile, requireUser, requireRole } from '@/lib/authHelpers'
 
 export type SetCoachResult = { error?: string }
 export type CoachRequestResult = { error?: string }
@@ -15,19 +16,12 @@ export async function createCoachRequest(
   offerId?: string | null
 ): Promise<CoachRequestResult> {
   const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) return { error: 'Non connecté.' }
+  const result = await requireUserWithProfile(supabase, 'role, coach_id')
+  if ('error' in result) return { error: result.error }
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role, coach_id')
-    .eq('user_id', user.id)
-    .single()
-
-  if (profile?.role !== 'athlete') return { error: 'Réservé aux athlètes.' }
-  if (profile?.coach_id) return { error: 'Vous avez déjà un coach.' }
+  const { user, profile } = result
+  if (profile.role !== 'athlete') return { error: 'Réservé aux athlètes.' }
+  if (profile.coach_id) return { error: 'Vous avez déjà un coach.' }
 
   const sports = (sportsPracticed ?? []).map((s) => s.trim()).filter(Boolean)
   const need = (coachingNeed ?? '').trim()
@@ -87,10 +81,10 @@ export async function createCoachRequest(
 /** Athlète : liste des demandes envoyées (pour afficher "Demande envoyée" par coach). */
 export async function getMyCoachRequests(): Promise<{ id: string; coach_id: string; status: string }[]> {
   const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) return []
+  const result = await requireUser(supabase)
+  if ('error' in result) return []
+
+  const { user } = result
 
   const { data } = await supabase
     .from('coach_requests')
@@ -104,10 +98,10 @@ export async function getMyCoachRequests(): Promise<{ id: string; coach_id: stri
 /** Athlète : annuler une demande en attente. */
 export async function cancelCoachRequest(requestId: string): Promise<CoachRequestResult> {
   const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) return { error: 'Non connecté.' }
+  const result = await requireUser(supabase)
+  if ('error' in result) return { error: result.error }
+
+  const { user } = result
 
   const { data: req } = await supabase
     .from('coach_requests')
@@ -143,10 +137,10 @@ export type PendingRequestWithAthlete = {
 /** Coach : demandes en attente. */
 export async function getPendingCoachRequests(): Promise<PendingRequestWithAthlete[]> {
   const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) return []
+  const result = await requireUser(supabase)
+  if ('error' in result) return []
+
+  const { user } = result
 
   const { data: rows } = await supabase
     .from('coach_requests')
@@ -214,10 +208,10 @@ export async function respondToCoachRequest(
   accept: boolean
 ): Promise<CoachRequestResult> {
   const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) return { error: 'Non connecté.' }
+  const result = await requireUser(supabase)
+  if ('error' in result) return { error: result.error }
+
+  const { user } = result
 
   const { data: req } = await supabase
     .from('coach_requests')

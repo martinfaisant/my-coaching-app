@@ -207,24 +207,9 @@ const MountainIcon = () => (
   </svg>
 )
 
+import { getWeekMonday, toDateStr } from '@/lib/dateUtils'
+
 const DAY_NAMES = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']
-
-function getWeekMonday(d: Date): Date {
-  const date = new Date(d)
-  const day = date.getDay()
-  const diff = day === 0 ? -6 : 1 - day
-  date.setDate(date.getDate() + diff)
-  date.setHours(0, 0, 0, 0)
-  return date
-}
-
-/** Date au format YYYY-MM-DD en heure locale (évite le décalage UTC). */
-function toDateStr(d: Date): string {
-  const y = d.getFullYear()
-  const m = String(d.getMonth() + 1).padStart(2, '0')
-  const day = String(d.getDate()).padStart(2, '0')
-  return `${y}-${m}-${day}`
-}
 
 /** Totaux "fait" par sport pour une semaine (minutes, distance km). */
 type WeekFaitBySport = Record<SportType, { minutes: number; distanceKm: number }>
