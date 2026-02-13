@@ -72,6 +72,8 @@ export function WorkoutModal({
   workout,
 }: WorkoutModalProps) {
   const router = useRouter()
+  // 🔧 FIX: Stocker le workout localement pour pouvoir le mettre à jour après sauvegarde du commentaire
+  const [currentWorkout, setCurrentWorkout] = useState<Workout | null>(workout)
   const [sportType, setSportType] = useState<SportType>('course')
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
@@ -89,7 +91,7 @@ export function WorkoutModal({
   const [deleteLoading, setDeleteLoading] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
 
-  const isEdit = !!workout
+  const isEdit = !!currentWorkout
   const hasTimeDistanceChoice = sportType === 'course' || sportType === 'velo' || sportType === 'natation'
   const hasElevation = sportType === 'course' || sportType === 'velo'
   const isTimeOnly = sportType === 'musculation'
@@ -111,20 +113,25 @@ export function WorkoutModal({
           : targetDistanceKm.trim() !== '' && Number(targetDistanceKm) > 0) &&
         paceFilled)
 
+  // Synchroniser currentWorkout avec le prop workout quand il change
   useEffect(() => {
-    if (workout) {
+    setCurrentWorkout(workout)
+  }, [workout])
+
+  useEffect(() => {
+    if (currentWorkout) {
       workoutJustLoadedRef.current = true
-      setSportType(workout.sport_type)
-      setTitle(workout.title)
-      setDescription(workout.description)
-      setTargetDurationMinutes(workout.target_duration_minutes != null ? String(workout.target_duration_minutes) : '')
-      setTargetDistanceKm(workout.target_distance_km != null ? String(workout.target_distance_km) : '')
-      setTargetElevationM(workout.target_elevation_m != null ? String(workout.target_elevation_m) : '')
-      setTargetPace(workout.target_pace != null ? String(workout.target_pace) : '')
+      setSportType(currentWorkout.sport_type)
+      setTitle(currentWorkout.title)
+      setDescription(currentWorkout.description)
+      setTargetDurationMinutes(currentWorkout.target_duration_minutes != null ? String(currentWorkout.target_duration_minutes) : '')
+      setTargetDistanceKm(currentWorkout.target_distance_km != null ? String(currentWorkout.target_distance_km) : '')
+      setTargetElevationM(currentWorkout.target_elevation_m != null ? String(currentWorkout.target_elevation_m) : '')
+      setTargetPace(currentWorkout.target_pace != null ? String(currentWorkout.target_pace) : '')
       setTargetMode(
-        workout.target_distance_km != null && workout.target_distance_km > 0 ? 'distance' : 'time'
+        currentWorkout.target_distance_km != null && currentWorkout.target_distance_km > 0 ? 'distance' : 'time'
       )
-      setCommentText(workout.athlete_comment ?? '')
+      setCommentText(currentWorkout.athlete_comment ?? '')
     } else {
       setSportType('course')
       setTitle('')
@@ -139,7 +146,7 @@ export function WorkoutModal({
     if (!isOpen) {
       setDeleteError(null)
     }
-  }, [workout, isOpen])
+  }, [currentWorkout, isOpen])
 
   useEffect(() => {
     if (sportType === 'musculation') setTargetMode('time')
@@ -199,17 +206,17 @@ export function WorkoutModal({
   )
   const [updateState, updateAction] = useActionState<WorkoutFormState, FormData>(
     (_, fd) =>
-      workout
-        ? updateWorkout(workout.id, athleteId, pathToRevalidate, {}, fd)
+      currentWorkout
+        ? updateWorkout(currentWorkout.id, athleteId, pathToRevalidate, {}, fd)
         : Promise.resolve({}),
     {}
   )
   const handleDelete = async () => {
-    if (!workout || !canEdit) return
+    if (!currentWorkout || !canEdit) return
     if (!confirm('Supprimer cet entraînement ? Cette action est irréversible.')) return
     setDeleteError(null)
     setDeleteLoading(true)
-    const result = await deleteWorkout(workout.id, athleteId, pathToRevalidate)
+    const result = await deleteWorkout(currentWorkout.id, athleteId, pathToRevalidate)
     setDeleteLoading(false)
     if (result.error) {
       setDeleteError(result.error)
@@ -229,14 +236,14 @@ export function WorkoutModal({
 
   // Auto-save du commentaire pour l'athlète (debounce 800 ms)
   const saveCommentOnFly = useCallback(async () => {
-    if (!workout || canEdit) return
+    if (!currentWorkout || canEdit) return
     const value = commentText.trim()
     if (value === (lastSavedCommentRef.current ?? '')) return
     setCommentSaveStatus('saving')
     setCommentSaveMessage(null)
     const fd = new FormData()
     fd.set('comment', commentText)
-    const result = await saveWorkoutComment(workout.id, athleteId, pathToRevalidate, {}, fd)
+    const result = await saveWorkoutComment(currentWorkout.id, athleteId, pathToRevalidate, {}, fd)
     if (result.error) {
       setCommentSaveStatus('error')
       setCommentSaveMessage(result.error)
@@ -246,17 +253,23 @@ export function WorkoutModal({
       setCommentSaveMessage(null)
       setTimeout(() => setCommentSaveStatus('idle'), 2000)
       
-      // 🔧 FIX: Forcer le refresh du cache Next.js pour que le commentaire persiste
-      // Le router.refresh() va revalider toutes les données serveur sans recharger la page
+      // 🔧 FIX: Mettre à jour le workout local avec le nouveau commentaire
+      setCurrentWorkout({
+        ...currentWorkout,
+        athlete_comment: value || null,
+        athlete_comment_at: value ? new Date().toISOString() : null,
+      })
+      
+      // Forcer le refresh du cache Next.js pour les autres composants
       router.refresh()
     }
-  }, [workout, canEdit, commentText, athleteId, pathToRevalidate, router])
+  }, [currentWorkout, canEdit, commentText, athleteId, pathToRevalidate, router])
 
   // À la fermeture : sauvegarder tout de suite le commentaire s'il y a des changements non enregistrés (athlète)
   const handleClose = useCallback(() => {
     const doClose = () => onClose()
 
-    if (!workout || canEdit) {
+    if (!currentWorkout || canEdit) {
       doClose()
       return
     }
@@ -272,14 +285,20 @@ export function WorkoutModal({
     }
     const fd = new FormData()
     fd.set('comment', commentText)
-    saveWorkoutComment(workout.id, athleteId, pathToRevalidate, {}, fd).then(() => {
-      // 🔧 FIX: Refresh le cache avant de fermer pour que le prochain ouverture ait les bonnes données
+    saveWorkoutComment(currentWorkout.id, athleteId, pathToRevalidate, {}, fd).then(() => {
+      // Mettre à jour le workout local
+      setCurrentWorkout({
+        ...currentWorkout,
+        athlete_comment: current || null,
+        athlete_comment_at: current ? new Date().toISOString() : null,
+      })
+      // Refresh le cache pour les autres composants
       router.refresh()
       doClose()
     }).catch(() => {
       doClose()
     })
-  }, [workout, canEdit, commentText, athleteId, pathToRevalidate, onClose, router])
+  }, [currentWorkout, canEdit, commentText, athleteId, pathToRevalidate, onClose, router])
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -296,17 +315,17 @@ export function WorkoutModal({
   }, [isOpen, handleClose])
 
   useEffect(() => {
-    if (!workout) lastSavedCommentRef.current = null
-    else if (lastSavedCommentRef.current === null) lastSavedCommentRef.current = workout.athlete_comment ?? ''
-  }, [workout])
+    if (!currentWorkout) lastSavedCommentRef.current = null
+    else if (lastSavedCommentRef.current === null) lastSavedCommentRef.current = currentWorkout.athlete_comment ?? ''
+  }, [currentWorkout])
 
   useEffect(() => {
-    if (!workout || canEdit) return
+    if (!currentWorkout || canEdit) return
     commentDebounceRef.current = setTimeout(saveCommentOnFly, 800)
     return () => {
       if (commentDebounceRef.current) clearTimeout(commentDebounceRef.current)
     }
-  }, [workout, canEdit, commentText, saveCommentOnFly])
+  }, [currentWorkout, canEdit, commentText, saveCommentOnFly])
 
   useEffect(() => {
     if (isOpen) {
@@ -368,7 +387,7 @@ export function WorkoutModal({
 
         <form action={action} className={`flex flex-col flex-1 min-h-0 ${!canEdit ? 'select-none' : ''}`} onSubmit={(e) => { if (!canEdit) e.preventDefault() }}>
           <input type="hidden" name="date" value={date} />
-          {isEdit && <input type="hidden" name="workout_id" value={workout.id} />}
+          {isEdit && <input type="hidden" name="workout_id" value={currentWorkout?.id} />}
 
           <div className="flex-1 overflow-y-auto min-h-0">
           <div className="px-6 py-4 space-y-5">
@@ -422,7 +441,7 @@ export function WorkoutModal({
           </div>
 
           {/* Objectifs de la séance — Design avec titre à gauche, toggle à droite, grille 2x2 */}
-          {(canEdit || (workout && (workout.target_duration_minutes != null || workout.target_distance_km != null))) && (
+          {(canEdit || (currentWorkout && (currentWorkout.target_duration_minutes != null || currentWorkout.target_distance_km != null))) && (
             <div className="bg-stone-50 p-4 rounded-xl border border-stone-100">
               {/* En-tête avec titre et toggle */}
               <div className="flex items-center justify-between mb-3">
@@ -447,16 +466,16 @@ export function WorkoutModal({
                 )}
               </div>
 
-              {!canEdit && workout && (workout.target_duration_minutes != null || workout.target_distance_km != null) && (
+              {!canEdit && currentWorkout && (currentWorkout.target_duration_minutes != null || currentWorkout.target_distance_km != null) && (
                 <p className="text-sm text-stone-600">
-                  {workout.target_duration_minutes != null && workout.target_duration_minutes > 0 && (
-                    <span>{workout.target_duration_minutes} min</span>
+                  {currentWorkout.target_duration_minutes != null && currentWorkout.target_duration_minutes > 0 && (
+                    <span>{currentWorkout.target_duration_minutes} min</span>
                   )}
-                  {workout.target_distance_km != null && workout.target_distance_km > 0 && (
-                    <span>{workout.target_duration_minutes != null && workout.target_duration_minutes > 0 ? ' · ' : ''}{workout.sport_type === 'natation' ? `${Math.round(workout.target_distance_km * 1000)} m` : `${workout.target_distance_km} km`}</span>
+                  {currentWorkout.target_distance_km != null && currentWorkout.target_distance_km > 0 && (
+                    <span>{currentWorkout.target_duration_minutes != null && currentWorkout.target_duration_minutes > 0 ? ' · ' : ''}{currentWorkout.sport_type === 'natation' ? `${Math.round(currentWorkout.target_distance_km * 1000)} m` : `${currentWorkout.target_distance_km} km`}</span>
                   )}
-                  {workout.target_elevation_m != null && workout.target_elevation_m > 0 && (
-                    <span> · {workout.target_elevation_m} m D+</span>
+                  {currentWorkout.target_elevation_m != null && currentWorkout.target_elevation_m > 0 && (
+                    <span> · {currentWorkout.target_elevation_m} m D+</span>
                   )}
                 </p>
               )}
@@ -646,7 +665,7 @@ export function WorkoutModal({
             </p>
           )}
 
-          {workout && (
+          {currentWorkout && (
             <div className="border-t border-stone-100 mt-6">
               <div className="pt-4 pb-2 flex items-center gap-3">
                 <div className="p-2 bg-stone-200/80 rounded-full text-stone-600">
@@ -680,9 +699,9 @@ export function WorkoutModal({
                     )}
                   </>
                 ) : (
-                  (workout.athlete_comment ?? null) ? (
+                  (currentWorkout?.athlete_comment ?? null) ? (
                     <p className="text-sm text-stone-600 whitespace-pre-wrap">
-                      {workout.athlete_comment}
+                      {currentWorkout.athlete_comment}
                     </p>
                   ) : (
                     <p className="text-sm text-stone-500">Aucun commentaire.</p>
