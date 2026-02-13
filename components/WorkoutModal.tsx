@@ -880,11 +880,6 @@ export function WorkoutModal({
                 {commentState.error}
               </p>
             )}
-            {commentState?.success && (
-              <p className="text-sm text-palette-forest-dark font-medium mt-2">
-                Commentaire enregistré.
-              </p>
-            )}
           </div>
         </form>
       )}

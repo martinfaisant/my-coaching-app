@@ -63,7 +63,7 @@ export function OffersForm({ offers }: OffersFormProps) {
       const featuredIdx = featuredIndex >= 0 ? featuredIndex : null
       setFeaturedOfferIndex(featuredIdx)
       initialFeaturedIndexRef.current = featuredIdx
-      initialOffersRef.current = offers
+      initialOffersRef.current = [...offers].sort((a, b) => a.display_order - b.display_order)
       isInitializedRef.current = true
       lastOffersLengthRef.current = offers.length
       return
@@ -109,7 +109,7 @@ export function OffersForm({ offers }: OffersFormProps) {
       const title = (form.querySelector(`[name="offer_${i}_title"]`) as HTMLInputElement)?.value.trim() || ''
       const description = (form.querySelector(`[name="offer_${i}_description"]`) as HTMLTextAreaElement)?.value.trim() || ''
       const price = (form.querySelector(`[name="offer_${i}_price"]`) as HTMLInputElement)?.value.trim() || ''
-      const priceType = (form.querySelector(`[name="offer_${i}_price_type"]`) as HTMLSelectElement)?.value || ''
+      const priceType = priceTypes[i] ?? (initialOffersRef.current[i] as { price_type?: string })?.price_type ?? 'one_time'
 
       if (title || description || price || priceType) {
         currentOffers.push({ title, description, price, price_type: priceType })
@@ -125,8 +125,8 @@ export function OffersForm({ offers }: OffersFormProps) {
       if (!initial) return true
 
       if (
-        current.title !== (initial.title || '') ||
-        current.description !== (initial.description || '') ||
+        current.title !== (initial.title || '').trim() ||
+        current.description !== (initial.description || '').trim() ||
         current.price !== String(initial.price || '') ||
         current.price_type !== (initial.price_type || '')
       ) {
@@ -140,7 +140,7 @@ export function OffersForm({ offers }: OffersFormProps) {
     }
 
     return false
-  }, [offerCount, featuredOfferIndex])
+  }, [offerCount, featuredOfferIndex, priceTypes])
 
   // Mettre à jour l'état des modifications
   useEffect(() => {
@@ -165,10 +165,7 @@ export function OffersForm({ offers }: OffersFormProps) {
     }
   }, [checkUnsavedChanges])
 
-  // Détecter les changements de l'offre privilégiée
-  useEffect(() => {
-    setHasUnsavedChanges(checkUnsavedChanges())
-  }, [featuredOfferIndex, checkUnsavedChanges])
+
 
   // Réinitialiser après sauvegarde réussie
   useEffect(() => {
@@ -252,13 +249,12 @@ export function OffersForm({ offers }: OffersFormProps) {
   useEffect(() => {
     const justFinishedSubmitting = previousIsSubmittingRef.current && !isSubmitting
     previousIsSubmittingRef.current = isSubmitting
-
+  
     if (state?.success && justFinishedSubmitting) {
       setShowSavedFeedback(true)
       router.refresh()
       const t = setTimeout(() => setShowSavedFeedback(false), 2500)
-      // Réinitialiser les valeurs initiales après succès
-      initialOffersRef.current = offers
+      initialOffersRef.current = offers  // garder pour le run actuel
       initialFeaturedIndexRef.current = featuredOfferIndex
       setHasUnsavedChanges(false)
       return () => clearTimeout(t)
@@ -266,7 +262,7 @@ export function OffersForm({ offers }: OffersFormProps) {
     if (state?.error) {
       setShowSavedFeedback(false)
     }
-  }, [saveFeedbackKey, router, offers])
+  }, [saveFeedbackKey])
 
   // Réinitialiser "Enregistré" dès qu'une nouvelle modification est détectée
   useEffect(() => {
@@ -440,6 +436,7 @@ export function OffersForm({ offers }: OffersFormProps) {
                           } else {
                             setFeaturedOfferIndex(index)
                           }
+                          setTimeout(() => setHasUnsavedChanges(checkUnsavedChanges()), 0)
                         }}
                         className={`p-1.5 rounded-lg transition-colors ${
                           isFeatured
