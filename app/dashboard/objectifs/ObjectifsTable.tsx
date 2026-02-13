@@ -1,6 +1,7 @@
 'use client'
 
-import { useActionState, useRef, useEffect, useState } from 'react'
+import { useActionState, useRef, useEffect, useState, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/Button'
 import { Input } from '@/components/Input'
 import { addGoal, deleteGoal, type GoalFormState } from './actions'
@@ -53,9 +54,24 @@ function formatDateBlock(dateStr: string): { month: string; day: string } {
 }
 
 export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
+  const router = useRouter()
   const [state, action] = useActionState<GoalFormState, FormData>(addGoal, {})
   const dateInputRef = useRef<HTMLInputElement>(null)
+  const formRef = useRef<HTMLFormElement>(null)
   const [priority, setPriority] = useState<'primary' | 'secondary'>('primary')
+
+  // Pattern bouton Enregistrer (PATTERN_SAVE_BUTTON.md)
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
+  const [showSavedFeedback, setShowSavedFeedback] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const previousIsSubmittingRef = useRef(false)
+  const isSubmittingRef = useRef(false)
+  const initialValuesRef = useRef({
+    race_name: '',
+    date: '',
+    distance: '',
+    is_primary: 'primary' as const,
+  })
 
   useEffect(() => {
     const input = dateInputRef.current
@@ -72,6 +88,75 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
       input.removeEventListener('input', check)
     }
   }, [])
+
+  const checkUnsavedChanges = useCallback((priorityOverride?: 'primary' | 'secondary') => {
+    const form = formRef.current
+    if (!form) return false
+    const raceName = (form.querySelector('[name="race_name"]') as HTMLInputElement)?.value.trim() || ''
+    const date = (form.querySelector('[name="date"]') as HTMLInputElement)?.value.trim() || ''
+    const distance = (form.querySelector('[name="distance"]') as HTMLInputElement)?.value.trim() || ''
+    // Bouton actif uniquement quand les 3 champs requis sont remplis
+    if (!raceName || !date || !distance) return false
+    const currentPriority = priorityOverride ?? priority
+    const initial = initialValuesRef.current
+    if (raceName !== initial.race_name) return true
+    if (date !== initial.date) return true
+    if (distance !== initial.distance) return true
+    if (currentPriority !== initial.is_primary) return true
+    return false
+  }, [priority])
+
+  useEffect(() => {
+    const form = formRef.current
+    if (!form) return
+    const updateUnsavedChanges = () => setHasUnsavedChanges(checkUnsavedChanges())
+    const inputs = form.querySelectorAll('input, textarea')
+    inputs.forEach((input) => {
+      input.addEventListener('input', updateUnsavedChanges)
+      input.addEventListener('change', updateUnsavedChanges)
+    })
+    return () => {
+      inputs.forEach((input) => {
+        input.removeEventListener('input', updateUnsavedChanges)
+        input.removeEventListener('change', updateUnsavedChanges)
+      })
+    }
+  }, [checkUnsavedChanges])
+
+  const saveFeedbackKey = `${state?.success ?? ''}|${state?.error ?? ''}|${isSubmitting}`
+  useEffect(() => {
+    const justFinishedSubmitting = previousIsSubmittingRef.current && !isSubmitting
+    previousIsSubmittingRef.current = isSubmitting
+
+    if (state?.success && justFinishedSubmitting) {
+      setShowSavedFeedback(true)
+      router.refresh()
+      const t = setTimeout(() => setShowSavedFeedback(false), 2500)
+      if (formRef.current) {
+        formRef.current.reset()
+        setPriority('primary')
+        initialValuesRef.current = { race_name: '', date: '', distance: '', is_primary: 'primary' }
+        setHasUnsavedChanges(false)
+      }
+      return () => clearTimeout(t)
+    }
+    if (state?.error) {
+      setShowSavedFeedback(false)
+    }
+  }, [saveFeedbackKey])
+
+  useEffect(() => {
+    if (hasUnsavedChanges && showSavedFeedback) {
+      setShowSavedFeedback(false)
+    }
+  }, [hasUnsavedChanges, showSavedFeedback])
+
+  useEffect(() => {
+    if (state?.success || state?.error) {
+      isSubmittingRef.current = false
+      setIsSubmitting(false)
+    }
+  }, [state])
 
   // Séparer les objectifs futurs et passés
   const today = new Date().toISOString().slice(0, 10)
@@ -180,7 +265,13 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
       {/* COLONNE DROITE : FORMULAIRE D'AJOUT (1/3) */}
       <div className="xl:col-span-1">
         <form
+          ref={formRef}
+          id="objectif-form"
           action={action}
+          onSubmit={() => {
+            isSubmittingRef.current = true
+            setIsSubmitting(true)
+          }}
           className="bg-white rounded-3xl p-6 border border-stone-200 shadow-lg sticky top-6"
         >
           <h2 className="text-lg font-bold text-stone-800 mb-6 flex items-center gap-2">
@@ -230,7 +321,10 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
                     name="is_primary"
                     value="primary"
                     checked={priority === 'primary'}
-                    onChange={() => setPriority('primary')}
+                    onChange={() => {
+                      setPriority('primary')
+                      setTimeout(() => setHasUnsavedChanges(checkUnsavedChanges('primary')), 0)
+                    }}
                     className="hidden peer"
                   />
                   <div className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border text-[10px] font-bold transition-all ${
@@ -248,7 +342,10 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
                     name="is_primary"
                     value="secondary"
                     checked={priority === 'secondary'}
-                    onChange={() => setPriority('secondary')}
+                    onChange={() => {
+                      setPriority('secondary')
+                      setTimeout(() => setHasUnsavedChanges(checkUnsavedChanges('secondary')), 0)
+                    }}
                     className="hidden peer"
                   />
                   <div className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border text-[10px] font-bold transition-all ${
@@ -277,6 +374,11 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
               variant="primaryDark"
               fullWidth
               className="mt-2"
+              disabled={!hasUnsavedChanges || isSubmitting}
+              loading={isSubmitting}
+              loadingText="Enregistrement…"
+              success={showSavedFeedback}
+              error={!!state?.error}
             >
               Ajouter l&apos;objectif
             </Button>
