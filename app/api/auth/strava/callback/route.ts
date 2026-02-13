@@ -78,7 +78,7 @@ export async function GET(request: NextRequest) {
 
     if (!tokenRes.ok) {
       const err = await tokenRes.text()
-      console.error('Strava token exchange failed:', err)
+      logger.error('Strava token exchange failed', err)
       return redirectToDevices('error=strava_token')
     }
 

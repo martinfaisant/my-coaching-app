@@ -14,11 +14,12 @@
 ### 1. États et Refs (TOUS requis)
 
 ```typescript
-const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
+const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)  // ⚠️ CRITIQUE : bouton désactivé si false
 const [showSavedFeedback, setShowSavedFeedback] = useState(false)
-const [isSubmitting, setIsSubmitting] = useState(false)
+const [isSubmitting, setIsSubmitting] = useState(false)            // ⚠️ CRITIQUE : loader si true
 const previousIsSubmittingRef = useRef(false)
 const isSubmittingRef = useRef(false)
+const initialValuesRef = useRef<{...}>({...})                      // ⚠️ CRITIQUE : pour détecter modifications
 ```
 
 ### 2. useActionState
@@ -65,52 +66,135 @@ useEffect(() => {
 }, [saveFeedbackKey]) // DÉPENDANCE : la clé composite
 ```
 
-### 4. Bouton Enregistrer
+### 4. Détection des Modifications (OBLIGATOIRE)
+
+```typescript
+useEffect(() => {
+  if (!initialValuesRef.current) {
+    setHasUnsavedChanges(false)
+    return
+  }
+  
+  const initial = initialValuesRef.current
+  const hasChanges = 
+    field1 !== initial.field1 ||
+    field2 !== initial.field2
+  
+  setHasUnsavedChanges(hasChanges)
+}, [field1, field2]) // Tous les champs
+```
+
+### 5. Gestion de la Soumission (OBLIGATOIRE)
+
+```typescript
+// Marquer isSubmitting=true à la soumission
+<form
+  action={action}
+  onSubmit={() => {
+    isSubmittingRef.current = true
+    setIsSubmitting(true)
+  }}
+>
+
+// Réinitialiser après réponse
+useEffect(() => {
+  if (state?.success || state?.error) {
+    isSubmittingRef.current = false
+    setIsSubmitting(false)
+  }
+}, [state])
+```
+
+### 6. Bouton Enregistrer
 
 ```typescript
 <Button
   type="submit"
+  form="form-id"  // ⚠️ OBLIGATOIRE si le bouton est HORS du <form> (ex: footer de modal)
   variant="primary"
-  disabled={!hasUnsavedChanges || isSubmitting}
-  loading={isSubmitting}
+  disabled={!hasUnsavedChanges || isSubmitting}  // ⚠️ LES DEUX conditions
+  loading={isSubmitting}                         // ⚠️ isSubmitting, PAS pending
   loadingText="Enregistrement…"
-  success={showSavedFeedback}
+  success={showSavedFeedback}                    // ⚠️ showSavedFeedback, PAS state?.success
   error={!!state?.error}
 >
   Enregistrer
 </Button>
 ```
 
+**⚠️ CRITIQUE : Bouton HORS du formulaire ?**
+- Si le bouton est dans un footer de modal (hors du `<form>`), ajouter `id="form-id"` au form ET `form="form-id"` au bouton
+- Sans cela, le formulaire ne se soumettra JAMAIS
+
 ---
 
 ## ❌ INTERDICTIONS ABSOLUES
 
-### ❌ NE JAMAIS faire :
+### ❌ NE JAMAIS faire - Écouter state?.success directement
 
 ```typescript
-// ❌ Écouter state?.success directement (BUG au 2ème cycle)
+// ❌ BUG au 2ème cycle
 useEffect(() => {
   if (state?.success) {
     setShowSavedFeedback(true)
   }
-}, [state?.success]) // BUG !
+}, [state?.success])
 ```
 
-**Pourquoi ?** React ne détecte pas le changement `true → true` au 2ème cycle.
+**Pourquoi ?** React ne détecte pas `true → true` au 2ème cycle.
 
-### ❌ NE JAMAIS faire :
+### ❌ NE JAMAIS faire - Compteur incrémental
 
 ```typescript
-// ❌ Utiliser un compteur incrémental (approche incorrecte)
+// ❌ MAUVAISE APPROCHE
 const [successCounter, setSuccessCounter] = useState(0)
-
-// Dans l'action :
-if (!result.error) {
-  setSuccessCounter(prev => prev + 1) // ❌ PAS LA BONNE APPROCHE
-}
+setSuccessCounter(prev => prev + 1)
 ```
 
-**Pourquoi ?** On ne doit pas modifier l'état depuis l'action. La bonne approche est la **détection de transition**.
+**Pourquoi ?** On ne doit pas modifier l'état depuis l'action.
+
+### ❌ NE JAMAIS faire - Bouton sans hasUnsavedChanges
+
+```typescript
+// ❌ Le bouton sera TOUJOURS activé, même sans modifications
+<Button disabled={!isValid || isSubmitting} ... />
+```
+
+**Correct :**
+```typescript
+// ✅ Bouton désactivé si pas de modifications
+<Button disabled={!hasUnsavedChanges || !isValid || isSubmitting} ... />
+```
+
+### ❌ NE JAMAIS faire - Utiliser pending sans isSubmitting
+
+```typescript
+// ❌ Le loader ne s'affichera pas correctement
+<Button loading={pending} ... />
+```
+
+**Correct :**
+```typescript
+// ✅ isSubmitting géré manuellement
+<Button loading={isSubmitting} ... />
+```
+
+### ❌ NE JAMAIS faire - Bouton hors du form sans attribut form
+
+```typescript
+// ❌ Le formulaire ne se soumettra JAMAIS
+<Modal footer={<Button type="submit" />}>
+  <form>...</form>
+</Modal>
+```
+
+**Correct :**
+```typescript
+// ✅ Attribut form pour lier le bouton
+<Modal footer={<Button type="submit" form="my-form" />}>
+  <form id="my-form">...</form>
+</Modal>
+```
 
 ---
 

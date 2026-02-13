@@ -41,19 +41,24 @@ type WorkoutModalProps = {
 function SubmitButton({
   disabled,
   formState,
+  showSuccess,
+  isSubmitting,
 }: {
   disabled?: boolean
   formState?: { success?: boolean; error?: string }
+  showSuccess?: boolean
+  isSubmitting?: boolean
 }) {
   const { pending } = useFormStatus()
   return (
     <Button
       type="submit"
+      form="workout-form"
       variant="primaryDark"
-      disabled={disabled || pending}
-      loading={pending}
+      disabled={disabled || pending || isSubmitting}
+      loading={pending || isSubmitting}
       loadingText="Enregistrement…"
-      success={!!formState?.success}
+      success={showSuccess}
       error={!!formState?.error}
       className="flex-1 min-w-0"
     >
@@ -117,6 +122,22 @@ export function WorkoutModal({
   const workoutJustLoadedRef = useRef(false)
   const [deleteLoading, setDeleteLoading] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
+  
+  // Pattern standard pour le bouton "Enregistrer" du formulaire workout
+  const [showWorkoutSavedFeedback, setShowWorkoutSavedFeedback] = useState(false)
+  const previousWorkoutSubmittingRef = useRef(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const isSubmittingRef = useRef(false)
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
+  const initialWorkoutValuesRef = useRef<{
+    sportType: string
+    title: string
+    description: string
+    targetDurationMinutes: string
+    targetDistanceKm: string
+    targetElevationM: string
+    targetPace: string
+  } | null>(null)
 
   const isEdit = !!currentWorkout
   const hasTimeDistanceChoice = sportType === 'course' || sportType === 'velo' || sportType === 'natation'
@@ -151,13 +172,28 @@ export function WorkoutModal({
       setSportType(currentWorkout.sport_type)
       setTitle(currentWorkout.title)
       setDescription(currentWorkout.description)
-      setTargetDurationMinutes(currentWorkout.target_duration_minutes != null ? String(currentWorkout.target_duration_minutes) : '')
-      setTargetDistanceKm(currentWorkout.target_distance_km != null ? String(currentWorkout.target_distance_km) : '')
-      setTargetElevationM(currentWorkout.target_elevation_m != null ? String(currentWorkout.target_elevation_m) : '')
-      setTargetPace(currentWorkout.target_pace != null ? String(currentWorkout.target_pace) : '')
+      const durationStr = currentWorkout.target_duration_minutes != null ? String(currentWorkout.target_duration_minutes) : ''
+      const distanceStr = currentWorkout.target_distance_km != null ? String(currentWorkout.target_distance_km) : ''
+      const elevationStr = currentWorkout.target_elevation_m != null ? String(currentWorkout.target_elevation_m) : ''
+      const paceStr = currentWorkout.target_pace != null ? String(currentWorkout.target_pace) : ''
+      setTargetDurationMinutes(durationStr)
+      setTargetDistanceKm(distanceStr)
+      setTargetElevationM(elevationStr)
+      setTargetPace(paceStr)
       setTargetMode(
         currentWorkout.target_distance_km != null && currentWorkout.target_distance_km > 0 ? 'distance' : 'time'
       )
+      // Stocker les valeurs initiales pour détecter les modifications
+      initialWorkoutValuesRef.current = {
+        sportType: currentWorkout.sport_type,
+        title: currentWorkout.title,
+        description: currentWorkout.description,
+        targetDurationMinutes: durationStr,
+        targetDistanceKm: distanceStr,
+        targetElevationM: elevationStr,
+        targetPace: paceStr,
+      }
+      setHasUnsavedChanges(false)
       const initialComment = currentWorkout.athlete_comment ?? ''
       setCommentText(initialComment)
       initialCommentRef.current = initialComment
@@ -171,6 +207,16 @@ export function WorkoutModal({
       setTargetDistanceKm('')
       setTargetElevationM('')
       setTargetPace('')
+      initialWorkoutValuesRef.current = {
+        sportType: 'course',
+        title: '',
+        description: '',
+        targetDurationMinutes: '',
+        targetDistanceKm: '',
+        targetElevationM: '',
+        targetPace: '',
+      }
+      setHasUnsavedChanges(false)
       setCommentText('')
       initialCommentRef.current = ''
       setHasCommentChanged(false)
@@ -232,11 +278,11 @@ export function WorkoutModal({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [targetPace, targetMode, sportType, hasTimeDistanceChoice, targetDistanceKm, targetDurationMinutes])
 
-  const [createState, createAction] = useActionState<WorkoutFormState, FormData>(
+  const [createState, createAction, createPending] = useActionState<WorkoutFormState, FormData>(
     (_, fd) => createWorkout(athleteId, pathToRevalidate, {}, fd),
     {}
   )
-  const [updateState, updateAction] = useActionState<WorkoutFormState, FormData>(
+  const [updateState, updateAction, updatePending] = useActionState<WorkoutFormState, FormData>(
     (_, fd) =>
       currentWorkout
         ? updateWorkout(currentWorkout.id, athleteId, pathToRevalidate, {}, fd)
@@ -259,12 +305,71 @@ export function WorkoutModal({
 
   const state = isEdit ? updateState : createState
   const action = isEdit ? updateAction : createAction
+  const workoutPending = isEdit ? updatePending : createPending
 
+  // Réinitialiser isSubmitting après réponse serveur
   useEffect(() => {
-    if (state?.success) onClose(true, state.workout)
-    // onClose volontairement omis des deps pour éviter une boucle (référence change à chaque rendu du parent)
+    if (state?.success || state?.error) {
+      isSubmittingRef.current = false
+      setIsSubmitting(false)
+    }
+  }, [state])
+
+  // Pattern standard : Feedback "✓ Enregistré" à chaque sauvegarde
+  const workoutSaveFeedbackKey = `${state?.success ?? ''}|${state?.error ?? ''}|${isSubmitting}`
+  
+  useEffect(() => {
+    // Détecter la TRANSITION : était en train de soumettre, ne l'est plus
+    const justFinishedSubmitting = previousWorkoutSubmittingRef.current && !isSubmitting
+    previousWorkoutSubmittingRef.current = isSubmitting
+    
+    if (state?.success && justFinishedSubmitting) {
+      setShowWorkoutSavedFeedback(true)
+      // Réinitialiser hasUnsavedChanges après succès
+      setHasUnsavedChanges(false)
+      
+      const timer = setTimeout(() => {
+        setShowWorkoutSavedFeedback(false)
+        // Fermer la modal après le feedback
+        onClose(true, state.workout)
+      }, 1500) // 1.5s pour voir le check, puis fermeture
+      
+      return () => clearTimeout(timer)
+    }
+    
+    if (state?.error) {
+      setShowWorkoutSavedFeedback(false)
+    }
+  }, [workoutSaveFeedbackKey])
+  
+  // Détecter les modifications pour activer/désactiver le bouton
+  useEffect(() => {
+    if (!initialWorkoutValuesRef.current) {
+      setHasUnsavedChanges(false)
+      return
+    }
+    
+    const initial = initialWorkoutValuesRef.current
+    const hasChanges = 
+      sportType !== initial.sportType ||
+      title !== initial.title ||
+      description !== initial.description ||
+      targetDurationMinutes !== initial.targetDurationMinutes ||
+      targetDistanceKm !== initial.targetDistanceKm ||
+      targetElevationM !== initial.targetElevationM ||
+      targetPace !== initial.targetPace
+    
+    setHasUnsavedChanges(hasChanges)
+  }, [sportType, title, description, targetDurationMinutes, targetDistanceKm, targetElevationM, targetPace])
+
+  // Fermeture immédiate si erreur (pas de délai)
+  useEffect(() => {
+    if (state?.error && !workoutPending) {
+      // L'erreur sera affichée dans le footer, pas besoin de fermer
+    }
+    // onClose volontairement omis des deps pour éviter une boucle
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state?.success])
+  }, [state?.error, workoutPending])
 
   // State pour la sauvegarde du commentaire avec useActionState
   const [commentState, commentAction, commentPending] = useActionState<
@@ -394,17 +499,24 @@ export function WorkoutModal({
                   Supprimer
                 </Button>
               )}
-              <SubmitButton disabled={!isValid} formState={state} />
+              <SubmitButton disabled={!isValid || !hasUnsavedChanges} formState={state} showSuccess={showWorkoutSavedFeedback} isSubmitting={isSubmitting} />
             </div>
           </div>
         )
       }
     >
       <form
+        id="workout-form"
         action={action}
         className={`flex flex-col flex-1 min-h-0 ${!canEdit ? 'select-none' : ''}`}
         onSubmit={(e) => {
-          if (!canEdit) e.preventDefault()
+          if (!canEdit) {
+            e.preventDefault()
+            return
+          }
+          // Marquer comme en cours de soumission
+          isSubmittingRef.current = true
+          setIsSubmitting(true)
         }}
       >
         <input type="hidden" name="date" value={date} />

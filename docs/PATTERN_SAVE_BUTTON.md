@@ -14,20 +14,28 @@ Ce document définit le **pattern standard** pour tous les formulaires avec bout
 
 Le feedback "✓ Enregistré" doit s'afficher à **chaque** sauvegarde réussie, pas seulement la première fois. Sans ce pattern, React ne détecte pas les changements entre deux sauvegardes successives (transition `success: true → true`).
 
+### Comportement attendu
+
+1. **Au chargement** : Bouton désactivé (grisé) car aucune modification
+2. **Après modification** : Bouton activé et cliquable
+3. **Pendant l'envoi** : "Enregistrement..." avec spinner
+4. **Après succès** : "✓ Enregistré" en vert pendant 2-2.5s
+5. **Après le feedback** : Bouton redevient désactivé jusqu'à la prochaine modification
+
 ---
 
 ## ✅ Pattern Standard (Obligatoire)
 
-### 1. États et Refs nécessaires
+### 1. États et Refs nécessaires (TOUS requis)
 
 ```typescript
-// État pour tracking des modifications
+// État pour tracking des modifications (CRITIQUE pour désactiver le bouton)
 const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
 
 // État pour afficher le feedback success
 const [showSavedFeedback, setShowSavedFeedback] = useState(false)
 
-// État pour l'envoi en cours
+// État pour l'envoi en cours (CRITIQUE pour le loader)
 const [isSubmitting, setIsSubmitting] = useState(false)
 
 // Ref pour détecter la TRANSITION de pending
@@ -35,7 +43,19 @@ const previousIsSubmittingRef = useRef(false)
 
 // Ref pour éviter les avertissements "beforeunload" pendant l'envoi
 const isSubmittingRef = useRef(false)
+
+// Valeurs initiales pour détecter les modifications (CRITIQUE)
+const initialValuesRef = useRef<{
+  field1: string
+  field2: string
+  // ... tous les champs du formulaire
+}>({
+  field1: initialValue1,
+  field2: initialValue2,
+})
 ```
+
+**⚠️ IMPORTANT** : Sans `hasUnsavedChanges`, le bouton sera toujours activé. Sans `isSubmitting`, le loader ne s'affichera pas. Sans `initialValuesRef`, impossible de détecter les modifications.
 
 ### 2. useActionState (ou useTransition)
 
@@ -115,13 +135,46 @@ useEffect(() => {
 }, [hasUnsavedChanges, showSavedFeedback])
 ```
 
-### 5. Gestion de la Soumission
+### 5. Détecter les Modifications (CRITIQUE)
 
 ```typescript
-const handleFormSubmit = () => {
+// useEffect qui compare les valeurs actuelles avec initialValuesRef
+useEffect(() => {
+  if (!initialValuesRef.current) {
+    setHasUnsavedChanges(false)
+    return
+  }
+  
+  const initial = initialValuesRef.current
+  const hasChanges = 
+    currentField1 !== initial.field1 ||
+    currentField2 !== initial.field2
+  
+  setHasUnsavedChanges(hasChanges)
+}, [currentField1, currentField2]) // Tous les champs du formulaire
+```
+
+**⚠️ CRITIQUE** : Sans cette détection, le bouton sera toujours activé même sans modifications.
+
+### 6. Gestion de la Soumission
+
+```typescript
+// Marquer comme en cours lors de la soumission
+const handleFormSubmit = (e: React.FormEvent) => {
+  e.preventDefault() // Si pas avec action={}
   isSubmittingRef.current = true
   setIsSubmitting(true)
+  // ... puis soumettre le formulaire
 }
+
+// OU avec form action={} :
+<form
+  action={action}
+  onSubmit={() => {
+    isSubmittingRef.current = true
+    setIsSubmitting(true)
+  }}
+>
 
 // Réinitialiser après la réponse
 useEffect(() => {
@@ -132,16 +185,16 @@ useEffect(() => {
 }, [state])
 ```
 
-### 6. Bouton "Enregistrer"
+### 7. Bouton "Enregistrer"
 
 ```typescript
 <Button
   type="submit"
   variant="primary"
-  disabled={!hasUnsavedChanges || isSubmitting}
-  loading={isSubmitting}
+  disabled={!hasUnsavedChanges || isSubmitting}  // ⚠️ Les DEUX conditions
+  loading={isSubmitting}                          // ⚠️ isSubmitting, pas pending
   loadingText="Enregistrement…"
-  success={showSavedFeedback}
+  success={showSavedFeedback}                     // ⚠️ showSavedFeedback, pas state?.success
   error={!!state?.error}
 >
   Enregistrer
@@ -149,10 +202,45 @@ useEffect(() => {
 ```
 
 **Props du Button :**
-- `disabled` : Désactivé si pas de modifications OU en cours d'envoi
-- `loading` : Affiche le spinner pendant l'envoi
-- `success` : Affiche "✓ Enregistré" (géré automatiquement par le Button)
+- `disabled` : Désactivé si **pas de modifications** OU **en cours d'envoi** (les deux conditions obligatoires)
+- `loading` : Affiche le spinner pendant l'envoi (utiliser `isSubmitting`, pas `pending`)
+- `success` : Affiche "✓ Enregistré" (utiliser `showSavedFeedback`, pas `state?.success`)
 - `error` : Affiche "✗ Non enregistré" en cas d'erreur
+
+### 8. 🚨 CRITIQUE : Bouton HORS du Formulaire (Modales avec Footer)
+
+**Si le bouton Submit est dans le footer d'une modale, HORS de la balise `<form>` :**
+
+```typescript
+// 1. Ajouter un ID au formulaire
+<form id="my-form" action={action}>
+  {/* contenu du formulaire */}
+</form>
+
+// 2. Lier le bouton avec l'attribut form
+<Button
+  type="submit"
+  form="my-form"  // ⚠️ OBLIGATOIRE si le bouton est hors du <form>
+  ...
+>
+  Enregistrer
+</Button>
+```
+
+**⚠️ SANS l'attribut `form="..."` sur le bouton, LE FORMULAIRE NE SE SOUMETTRA JAMAIS !**
+
+**Exemple dans WorkoutModal.tsx :**
+```typescript
+<Modal
+  footer={
+    <SubmitButton form="workout-form" ... />  // Bouton dans le footer
+  }
+>
+  <form id="workout-form" action={action}>   // Form avec ID
+    {/* champs */}
+  </form>
+</Modal>
+```
 
 ---
 
@@ -259,21 +347,49 @@ const handleSubmit = async (e: React.FormEvent) => {
   })
 }
 ```
-
+### Formulaires en mode création (vs édition)
+En création, initialValuesRef doit contenir les valeurs par défaut vides du formulaire (ex. '', 'course', etc.) et non null, pour que la détection des modifications fonctionne.
 ---
 
-## ⚠️ Checklist de Vérification
+## ⚠️ Checklist de Vérification (OBLIGATOIRE)
 
-Avant de valider un formulaire avec bouton "Enregistrer", vérifier :
+Avant de valider un formulaire avec bouton "Enregistrer", vérifier **TOUS** ces points :
 
+### États et Refs
+- [ ] ✅ `hasUnsavedChanges` state défini
+- [ ] ✅ `showSavedFeedback` state défini
+- [ ] ✅ `isSubmitting` state défini
+- [ ] ✅ `previousIsSubmittingRef` ref définie
+- [ ] ✅ `isSubmittingRef` ref définie
+- [ ] ✅ `initialValuesRef` ref avec tous les champs initiaux
+
+### Logique de Feedback
 - [ ] ✅ Utilise `useActionState` (ou `useTransition`)
 - [ ] ✅ Clé composite `saveFeedbackKey` définie
-- [ ] ✅ `previousIsSubmittingRef` pour détecter la transition
 - [ ] ✅ useEffect avec `justFinishedSubmitting` pour afficher le check
 - [ ] ✅ Timer de 2-2.5s pour cacher le check automatiquement
 - [ ] ✅ `hasUnsavedChanges` réinitialisé après succès
-- [ ] ✅ Bouton désactivé si `!hasUnsavedChanges || isSubmitting`
-- [ ] ✅ Props `success={showSavedFeedback}` sur le Button
+
+### Détection des Modifications
+- [ ] ✅ useEffect qui compare valeurs actuelles vs `initialValuesRef`
+- [ ] ✅ Dépendances : TOUS les champs du formulaire
+- [ ] ✅ `setHasUnsavedChanges(true/false)` selon les changements
+
+### Soumission
+- [ ] ✅ `onSubmit` marque `isSubmitting = true`
+- [ ] ✅ useEffect réinitialise `isSubmitting` après réponse
+
+### Bouton
+- [ ] ✅ `disabled={!hasUnsavedChanges || isSubmitting}` (LES DEUX)
+- [ ] ✅ `loading={isSubmitting}` (pas `pending`)
+- [ ] ✅ `success={showSavedFeedback}` (pas `state?.success`)
+- [ ] ✅ Si bouton hors du `<form>` : attribut `form="form-id"` présent
+
+### Tests
+- [ ] ✅ Au chargement : bouton désactivé (grisé)
+- [ ] ✅ Après modification : bouton activé
+- [ ] ✅ Au clic : loader "Enregistrement..." visible
+- [ ] ✅ Après succès : check "✓ Enregistré" visible
 - [ ] ✅ Le check s'affiche à CHAQUE sauvegarde (tester 2-3 fois de suite)
 
 ---
@@ -303,6 +419,16 @@ Si le check ne s'affiche pas au 2ème cycle :
   - Cause : useEffect écoutait `state?.success` qui restait à `true`
   - Solution : Détecter la **transition** de `pending: true → false` avec une ref
   - Documents associés : `BUGFIX_comment_button_success_state.md`
+
+- **v1.1 (13/02/2026)** : Ajout sections critiques suite au bug du bouton "Enregistrer" coach
+  - Bug #1 : Le formulaire ne se soumettait pas (bouton hors du `<form>`)
+  - Bug #2 : Le bouton était toujours activé (manquait `hasUnsavedChanges`)
+  - Bug #3 : Pas de loader "Enregistrement..." (manquait `isSubmitting` géré manuellement)
+  - Solutions : 
+    - Attribut `form="form-id"` sur le bouton
+    - Tracking complet des modifications avec `initialValuesRef`
+    - État `isSubmitting` géré manuellement dans `onSubmit` + useEffect
+  - Documents associés : `BUGFIX_workout_modal_save_button.md`
 
 ---
 
