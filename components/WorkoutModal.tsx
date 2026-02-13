@@ -73,7 +73,7 @@ export function WorkoutModal({
 }: WorkoutModalProps) {
   const router = useRouter()
   // 🔧 FIX: Stocker le workout localement pour pouvoir le mettre à jour après sauvegarde du commentaire
-  const [currentWorkout, setCurrentWorkout] = useState<Workout | null>(workout)
+  const [currentWorkout, setCurrentWorkout] = useState<Workout | null>(workout ?? null)
   const [sportType, setSportType] = useState<SportType>('course')
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
@@ -115,7 +115,7 @@ export function WorkoutModal({
 
   // Synchroniser currentWorkout avec le prop workout quand il change
   useEffect(() => {
-    setCurrentWorkout(workout)
+    setCurrentWorkout(workout ?? null)
   }, [workout])
 
   useEffect(() => {
