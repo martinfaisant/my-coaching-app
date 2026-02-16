@@ -62,11 +62,16 @@ npm run build
 npm start
 ```
 
+## 🌐 Internationalisation (bilingue FR/EN)
+
+L'application est **bilingue** (français par défaut, anglais). Toute nouvelle feature doit être traduite dès le départ via next-intl (`messages/fr.json`, `messages/en.json`). Voir **[docs/I18N.md](./docs/I18N.md)** pour la référence complète et la checklist nouvelles features.
+
 ## 🔧 Stack Technique
 
 - **Framework:** Next.js 16 (App Router)
 - **Langage:** TypeScript (strict mode)
 - **UI:** Tailwind CSS + Design System custom
+- **i18n:** next-intl (FR/EN)
 - **Backend:** Supabase (PostgreSQL + Auth + RLS)
 - **Déploiement:** Vercel (recommandé)
 
@@ -74,6 +79,7 @@ npm start
 
 - **[Project_context.md](./Project_context.md)** - Vision produit, rôles, features
 - **[docs/DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md)** - Design system complet
+- **[docs/I18N.md](./docs/I18N.md)** - Internationalisation (bilingue), checklist nouvelles features
 - **[DOCS_INDEX.md](./DOCS_INDEX.md)** - Index de toute la documentation
 - **[.cursor/rules/project-core.mdc](./.cursor/rules/project-core.mdc)** - Conventions de code
 
@@ -133,14 +139,19 @@ Les athlètes peuvent lier leur compte Strava via **Profil → Mes appareils con
 ```
 my-coaching-app/
 ├── app/                      # Next.js App Router
-│   ├── dashboard/           # Pages principales
-│   │   ├── calendar/       # Calendrier d'entraînement
-│   │   ├── objectifs/      # Gestion des objectifs
-│   │   ├── profile/        # Profil utilisateur
-│   │   └── ...
-│   ├── admin/              # Pages admin
+│   ├── [locale]/             # Routes localisées (FR/EN)
+│   │   ├── dashboard/       # Pages principales
+│   │   │   ├── calendar/   # Calendrier d'entraînement
+│   │   │   ├── objectifs/  # Gestion des objectifs
+│   │   │   ├── profile/    # Profil utilisateur
+│   │   │   └── ...
+│   │   ├── admin/          # Pages admin
+│   │   ├── login/          # Authentification
+│   │   └── page.tsx        # Landing
 │   ├── api/                # API routes (Strava, etc.)
-│   └── login/              # Authentification
+│   └── auth/               # Auth callbacks
+├── i18n/                    # Config next-intl
+├── messages/                # fr.json, en.json
 ├── components/             # Composants réutilisables
 │   ├── Button.tsx
 │   ├── Input.tsx
@@ -159,8 +170,9 @@ my-coaching-app/
 │   └── auth.ts
 ├── docs/                   # Documentation
 │   ├── DESIGN_SYSTEM.md
+│   ├── I18N.md            # Référence bilingue FR/EN
 │   ├── PATTERN_SAVE_BUTTON.md
-│   └── archive/           # Docs obsolètes
+│   └── archive/           # Docs archivés (historique)
 └── proxy.ts               # Middleware d'authentification
 ```
 
@@ -202,12 +214,12 @@ Voir [DEPLOYMENT_NOTES.md](./DEPLOYMENT_NOTES.md) et [MISE_EN_PROD.md](./MISE_EN
 - Optimisations performance avancées
 - Améliorations accessibilité
 
-Voir [AUDIT_COMPLET.md](./AUDIT_COMPLET.md) et [REFACTORING_P1_P2_COMPLETE.md](./REFACTORING_P1_P2_COMPLETE.md) pour tous les détails.
+Voir [DOCS_INDEX.md](./DOCS_INDEX.md) et [docs/archive/](./docs/archive/) pour l'historique.
 
 ## 🤝 Contribuer
 
 1. Lire [Project_context.md](./Project_context.md) et [.cursor/rules/project-core.mdc](./.cursor/rules/project-core.mdc)
-2. Suivre les conventions du design system
+2. Suivre les conventions du design system et **penser bilingue** pour toute nouvelle feature ([docs/I18N.md](./docs/I18N.md))
 3. Utiliser les composants existants
 4. Respecter la philosophie MVP-first
 
@@ -216,10 +228,11 @@ Voir [AUDIT_COMPLET.md](./AUDIT_COMPLET.md) et [REFACTORING_P1_P2_COMPLETE.md](.
 Pour toute question sur l'architecture ou les conventions, consulter :
 - [DOCS_INDEX.md](./DOCS_INDEX.md) - Index de toute la doc
 - [docs/DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md) - Composants et styles
-- Documentation des refactorings dans les fichiers `REFACTORING_*.md`
+- [docs/I18N.md](./docs/I18N.md) - Internationalisation (bilingue FR/EN)
+- Historique et refactorings : [docs/archive/](./docs/archive/)
 
 ---
 
-**Dernière mise à jour :** 13 février 2026  
+**Dernière mise à jour :** 16 février 2026  
 **Version :** 1.0.0  
 **License :** MIT

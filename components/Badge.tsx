@@ -6,7 +6,8 @@
  * Pour les sports : utiliser sport="course" (etc.) pour icône + couleur alignés calendrier.
  */
 import type { SportType } from '@/lib/sportStyles'
-import { SPORT_ICONS, SPORT_LABELS, SPORT_BADGE_STYLES } from '@/lib/sportStyles'
+import { SPORT_ICONS, SPORT_BADGE_STYLES } from '@/lib/sportStyles'
+import { useSportLabel } from '@/lib/hooks/useSportLabel'
 
 const BADGE_STYLES = {
   default:
@@ -65,10 +66,12 @@ export function Badge({
   children,
   className = '',
 }: BadgeProps) {
+  const getSportLabel = useSportLabel()
+  
   if (sport && sport in SPORT_BADGE_STYLES) {
     const styles = SPORT_BADGE_STYLES[sport as SportType]
     const Icon = SPORT_ICONS[sport as SportType]
-    const label = children ?? SPORT_LABELS[sport as SportType]
+    const label = children ?? getSportLabel(sport as SportType)
     const baseClasses =
       'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border'
     const classes = `${baseClasses} ${styles.bg} ${styles.text} ${styles.border} ${className}`.trim()

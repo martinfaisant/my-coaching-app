@@ -1,11 +1,26 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import createIntlMiddleware from 'next-intl/middleware'
+import { routing } from './i18n/routing'
+
+// Create the i18n middleware
+const intlMiddleware = createIntlMiddleware(routing)
 
 export async function proxy(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({
-    request,
-  })
+  const { pathname } = request.nextUrl
 
+  // Skip i18n for API routes and auth callbacks
+  const isApiRoute = pathname.startsWith('/api') || pathname.startsWith('/auth')
+  
+  // Handle i18n first (unless it's an API route)
+  let response: NextResponse
+  if (isApiRoute) {
+    response = NextResponse.next({ request })
+  } else {
+    response = intlMiddleware(request)
+  }
+
+  // Then handle Supabase auth
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -18,75 +33,70 @@ export async function proxy(request: NextRequest) {
           cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value)
           )
-          supabaseResponse = NextResponse.next({
-            request,
-          })
           cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
+            response.cookies.set(name, value, options)
           )
         },
       },
     }
   )
 
-  // Rafraîchir la session si nécessaire (important pour maintenir l'authentification)
+  // Refresh session if necessary
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
-  const { pathname } = request.nextUrl
+  // Extract locale from pathname if present
+  const localeMatch = pathname.match(/^\/(fr|en)(\/|$)/)
+  const locale = localeMatch ? localeMatch[1] : 'fr'
+  const pathnameWithoutLocale = localeMatch ? pathname.slice(3) || '/' : pathname
 
-  // Routes publiques accessibles sans authentification
+  // Public routes accessible without authentication
   const publicRoutes = [
     '/',
     '/login',
     '/reset-password',
-    '/auth/callback',
-    '/api/auth/strava',
-    '/api/auth/strava/callback',
   ]
 
-  // Vérifier si la route est publique
-  const isPublicRoute = publicRoutes.some((route) => pathname === route)
+  // Check if route is public
+  const isPublicRoute = publicRoutes.includes(pathnameWithoutLocale) || isApiRoute
 
-  // Routes protégées (dashboard et admin)
-  const isProtectedRoute = pathname.startsWith('/dashboard') || pathname.startsWith('/admin')
+  // Protected routes (dashboard and admin)
+  const isProtectedRoute = pathnameWithoutLocale.startsWith('/dashboard') || pathnameWithoutLocale.startsWith('/admin')
 
-  // Si l'utilisateur n'est pas connecté et tente d'accéder à une route protégée
-  if (!user && isProtectedRoute) {
+  // Never redirect POST requests: they are typically Next.js Server Actions.
+  // Redirecting would return HTML/302 instead of the RSC payload and cause
+  // "An unexpected response was received from the server" on the client.
+  const isGet = request.method === 'GET' || request.method === 'HEAD'
+
+  // If user is not logged in and tries to access protected route
+  if (!user && isProtectedRoute && isGet) {
     const redirectUrl = request.nextUrl.clone()
-    redirectUrl.pathname = '/login'
-    // Sauvegarder l'URL d'origine pour rediriger après la connexion
+    redirectUrl.pathname = locale === 'fr' ? '/login' : `/${locale}/login`
     redirectUrl.searchParams.set('redirect', pathname)
     return NextResponse.redirect(redirectUrl)
   }
 
-  // Si l'utilisateur est connecté et tente d'accéder à /login
-  if (user && pathname === '/login') {
+  // If user is logged in and tries to access /login
+  if (user && pathnameWithoutLocale === '/login' && isGet) {
     const redirectUrl = request.nextUrl.clone()
-    // S'il y a un paramètre 'redirect', utiliser celui-ci, sinon rediriger vers /dashboard
     const redirectParam = request.nextUrl.searchParams.get('redirect')
-    if (redirectParam && redirectParam.startsWith('/dashboard')) {
+    if (redirectParam && redirectParam.includes('/dashboard')) {
       redirectUrl.pathname = redirectParam
       redirectUrl.searchParams.delete('redirect')
     } else {
-      redirectUrl.pathname = '/dashboard'
+      redirectUrl.pathname = locale === 'fr' ? '/dashboard' : `/${locale}/dashboard`
     }
     return NextResponse.redirect(redirectUrl)
   }
 
-  return supabaseResponse
+  return response
 }
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public folder
-     */
+    // Match all pathnames except for:
+    // - Static files and assets
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }

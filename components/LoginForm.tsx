@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useActionState, useEffect, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import {
   login,
   signup,
@@ -8,7 +9,7 @@ import {
   type LoginState,
   type SignupState,
   type ResetPasswordState,
-} from '@/app/login/actions'
+} from '@/app/[locale]/login/actions'
 import { Button } from '@/components/Button'
 import { Input } from '@/components/Input'
 import type { AuthModalMode } from './LoginModal'
@@ -22,6 +23,8 @@ type LoginFormProps = {
 }
 
 export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
+  const t = useTranslations('auth')
+  const tCommon = useTranslations('common')
   const [loginState, loginAction] = useActionState<LoginState, FormData>(login, {})
   const [signupState, signupAction] = useActionState<SignupState, FormData>(signup, {})
   const [signupRole, setSignupRole] = useState<SignupRole>('athlete')
@@ -48,7 +51,7 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
         <div className="flex items-start justify-between mb-2">
           <div className="flex-1"></div>
           <h2 id="modal-title" className="text-2xl font-semibold text-stone-900 flex-1 text-center whitespace-nowrap">
-            Se connecter
+            {t('login')}
           </h2>
           <div className="flex-1 flex justify-end">
             {onClose && (
@@ -57,7 +60,7 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
                 variant="ghost"
                 onClick={onClose}
                 className="p-1.5 -mt-1 -mr-1"
-                aria-label="Fermer"
+                aria-label={tCommon('close')}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -78,29 +81,29 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
           </div>
         </div>
         <p className="text-stone-400 text-sm text-center mb-8">
-          Entrez vos identifiants pour accéder à votre espace
+          {t('enterCredentials')}
         </p>
 
         <form action={loginAction} className="space-y-5">
           <Input
             ref={emailInputRef}
             id="modal-email"
-            label="Email"
+            label={t('email')}
             name="email"
             type="email"
             autoComplete="email"
             required
-            placeholder="vous@exemple.com"
+            placeholder={t('emailPlaceholder')}
             defaultValue={prefilledEmail}
           />
           <Input
             id="modal-password"
-            label="Mot de passe"
+            label={t('password')}
             name="password"
             type="password"
             autoComplete="current-password"
             required
-            placeholder="••••••••"
+            placeholder={t('passwordPlaceholder')}
           />
           {loginState?.error && (
             <p className="text-sm text-red-600" role="alert">
@@ -108,7 +111,7 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
             </p>
           )}
           <Button type="submit" fullWidth>
-            Se connecter
+            {t('login')}
           </Button>
           <Button
             type="button"
@@ -116,7 +119,7 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
             onClick={() => setShowForgotPassword(true)}
             className="w-full border-0 bg-transparent hover:bg-transparent !min-h-0 py-0 text-sm text-stone-400 hover:text-stone-700"
           >
-            Mot de passe oublié
+            {t('forgotPassword')}
           </Button>
         </form>
       </div>
@@ -128,7 +131,7 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
       <div className="flex items-start justify-between mb-2">
         <div className="flex-1"></div>
         <h2 id="modal-title" className="text-2xl font-semibold text-stone-900 flex-1 text-center whitespace-nowrap">
-          Créer un compte
+          {t('signup')}
         </h2>
         <div className="flex-1 flex justify-end">
           {onClose && (
@@ -137,7 +140,7 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
               variant="ghost"
               onClick={onClose}
               className="p-1.5 -mt-1 -mr-1"
-              aria-label="Fermer"
+              aria-label={tCommon('close')}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -158,13 +161,13 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
         </div>
       </div>
       <p className="text-stone-400 text-sm text-center mb-8">
-        Choisissez votre profil puis renseignez vos informations
+        {t('chooseProfile')}
       </p>
 
       <form action={signupAction} className="space-y-5">
         <div>
           <span className="block text-sm font-medium text-stone-700 mb-3">
-            Je m&apos;inscris en tant que
+            {t('signupAs')}
           </span>
           <div className="grid grid-cols-2 gap-3">
             <label
@@ -182,8 +185,8 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
                 onChange={() => setSignupRole('athlete')}
                 className="sr-only"
               />
-              <span className="text-base font-semibold">Athlète</span>
-              <span className="text-xs text-center">Suivi d&apos;entraînement</span>
+              <span className="text-base font-semibold">{t('athlete')}</span>
+              <span className="text-xs text-center">{t('athleteDesc')}</span>
             </label>
             <label
               className={`flex flex-col items-center justify-center gap-1.5 rounded-lg border-2 p-4 cursor-pointer transition-all ${
@@ -200,29 +203,29 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
                 onChange={() => setSignupRole('coach')}
                 className="sr-only"
               />
-              <span className="text-base font-semibold">Coach</span>
-              <span className="text-xs text-center">Accompagner des athlètes</span>
+              <span className="text-base font-semibold">{t('coach')}</span>
+              <span className="text-xs text-center">{t('coachDesc')}</span>
             </label>
           </div>
         </div>
         <Input
           id="modal-signup-email"
-          label="Email"
+          label={t('email')}
           name="email"
           type="email"
           autoComplete="email"
           required
-          placeholder="vous@exemple.com"
+          placeholder={t('emailPlaceholder')}
         />
         <Input
           id="modal-signup-password"
-          label="Mot de passe (min. 6 caractères)"
+          label={t('passwordMin')}
           name="password"
           type="password"
           autoComplete="new-password"
           required
           minLength={6}
-          placeholder="••••••••"
+          placeholder={t('passwordPlaceholder')}
         />
         {signupState?.error && (
           <p className="text-sm text-red-600" role="alert">
@@ -239,7 +242,7 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
                   }}
                   className="inline !min-h-0 !p-0 !border-0 bg-transparent hover:bg-transparent underline text-palette-forest-dark hover:!text-palette-olive"
                 >
-                  Se connecter
+                  {t('login')}
                 </Button>
               </>
             )}
@@ -251,7 +254,7 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
           </p>
         )}
         <Button type="submit" fullWidth>
-          S&apos;inscrire
+          {t('signup')}
         </Button>
       </form>
     </div>
@@ -259,6 +262,8 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
 }
 
 function ForgotPasswordForm({ onBack }: { onBack: () => void }) {
+  const t = useTranslations('auth')
+  const tCommon = useTranslations('common')
   const [resetState, resetAction] = useActionState<ResetPasswordState, FormData>(resetPassword, {})
 
   return (
@@ -266,7 +271,7 @@ function ForgotPasswordForm({ onBack }: { onBack: () => void }) {
       <div className="flex items-start justify-between mb-2">
         <div className="flex-1"></div>
         <h2 id="modal-title" className="text-2xl font-semibold text-stone-900 flex-1 text-center whitespace-nowrap">
-          Mot de passe oublié
+          {t('forgotPassword')}
         </h2>
         <div className="flex-1 flex justify-end">
           <Button
@@ -274,7 +279,7 @@ function ForgotPasswordForm({ onBack }: { onBack: () => void }) {
             variant="ghost"
             onClick={onBack}
             className="p-1.5 -mt-1 -mr-1"
-            aria-label="Retour"
+            aria-label={tCommon('close')}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -294,18 +299,18 @@ function ForgotPasswordForm({ onBack }: { onBack: () => void }) {
         </div>
       </div>
       <p className="text-stone-400 text-sm text-center mb-8">
-        Entrez votre adresse email. Un lien de réinitialisation vous sera envoyé.
+        {t('resetInstructions')}
       </p>
 
       <form action={resetAction} className="space-y-5">
         <Input
           id="reset-email"
-          label="Email"
+          label={t('email')}
           name="email"
           type="email"
           autoComplete="email"
           required
-          placeholder="vous@exemple.com"
+          placeholder={t('emailPlaceholder')}
         />
         {resetState?.error && (
           <p className="text-sm text-red-600" role="alert">
@@ -318,7 +323,7 @@ function ForgotPasswordForm({ onBack }: { onBack: () => void }) {
           </p>
         )}
         <Button type="submit" fullWidth>
-          Envoyer le lien de réinitialisation
+          {t('sendResetLink')}
         </Button>
         <Button
           type="button"
@@ -326,7 +331,7 @@ function ForgotPasswordForm({ onBack }: { onBack: () => void }) {
           onClick={onBack}
           className="w-full border-0 bg-transparent hover:bg-transparent !min-h-0 py-0 text-sm text-stone-400 hover:text-stone-700"
         >
-          ← Retour à la connexion
+          ← {t('backToLogin')}
         </Button>
       </form>
     </div>

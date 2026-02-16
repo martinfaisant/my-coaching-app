@@ -7,10 +7,23 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Profile, Role } from '@/types/database'
 
 /**
+ * Error codes for auth operations.
+ * Map to translation keys: auth.errors.{code}
+ */
+export const AUTH_ERROR_CODES = {
+  NOT_AUTHENTICATED: 'notAuthenticated',
+  ACCESS_DENIED: 'accessDenied',
+  PROFILE_NOT_FOUND: 'profileNotFound',
+  ROLE_REQUIRED: 'roleRequired',
+} as const
+
+/**
  * Résultat avec erreur.
+ * errorCode can be used to get translated message: t(`auth.errors.${errorCode}`)
  */
 export type ErrorResult = {
   error: string
+  errorCode?: string
 }
 
 /**
@@ -35,7 +48,10 @@ export async function requireUser(supabase: SupabaseClient) {
   } = await supabase.auth.getUser()
 
   if (!user) {
-    return { error: 'Non connecté.' } as ErrorResult
+    return { 
+      error: 'Non connecté.', 
+      errorCode: AUTH_ERROR_CODES.NOT_AUTHENTICATED 
+    } as ErrorResult
   }
 
   return { user }
@@ -88,7 +104,10 @@ export async function requireRole(
   const profile = await getProfile(supabase, user.id, 'role, user_id, email, full_name')
 
   if (!profile || profile.role !== requiredRole) {
-    return { error: `Accès refusé. Rôle requis : ${requiredRole}` }
+    return { 
+      error: `Accès refusé. Rôle requis : ${requiredRole}`,
+      errorCode: AUTH_ERROR_CODES.ACCESS_DENIED
+    }
   }
 
   return { user: { id: user.id, email: user.email }, profile }
@@ -141,7 +160,10 @@ export async function requireCoachOrAthleteAccess(
   ])
 
   if (!myProfile || !athleteProfile) {
-    return { error: 'Profil introuvable.' }
+    return { 
+      error: 'Profil introuvable.',
+      errorCode: AUTH_ERROR_CODES.PROFILE_NOT_FOUND
+    }
   }
 
   // Déterminer si l'utilisateur a accès
@@ -149,7 +171,10 @@ export async function requireCoachOrAthleteAccess(
   const isAthlete = myProfile.role === 'athlete' && user.id === athleteId
 
   if (!isCoach && !isAthlete) {
-    return { error: 'Accès refusé.' }
+    return { 
+      error: 'Accès refusé.',
+      errorCode: AUTH_ERROR_CODES.ACCESS_DENIED
+    }
   }
 
   return { user: { id: user.id, email: user.email }, profile: myProfile, athleteProfile, isCoach, isAthlete }
@@ -179,7 +204,10 @@ export async function requireUserWithProfile(
   const profile = await getProfile(supabase, user.id, fields)
 
   if (!profile) {
-    return { error: 'Profil introuvable.' }
+    return { 
+      error: 'Profil introuvable.',
+      errorCode: AUTH_ERROR_CODES.PROFILE_NOT_FOUND
+    }
   }
 
   return { user: { id: user.id, email: user.email }, profile }

@@ -1,0 +1,660 @@
+{
+  "common": {
+    "save": "Enregistrer",
+    "saving": "Enregistrement…",
+    "saved": "Enregistré",
+    "notSaved": "Non enregistré",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "deleting": "Suppression…",
+    "edit": "Modifier",
+    "close": "Fermer",
+    "retry": "Réessayer",
+    "add": "Ajouter",
+    "search": "Rechercher",
+    "filter": "Filtrer",
+    "yes": "Oui",
+    "no": "Non",
+    "primaryGoal": "Objectif principal",
+    "secondaryGoal": "Objectif secondaire",
+    "paceRequiredHint": "Obligatoire pour course, vélo et natation",
+    "weekPrevious": "Semaine précédente",
+    "weekNext": "Semaine suivante"
+  },
+  "auth": {
+    "login": "Se connecter",
+    "loginTitle": "Connexion",
+    "loginSubtitle": "Connectez-vous ou créez un compte",
+    "logout": "Se déconnecter",
+    "loggingOut": "Déconnexion…",
+    "signup": "Créer un compte",
+    "signupButton": "S'inscrire",
+    "createAccount": "Créer mon compte",
+    "or": "ou",
+    "emailSignup": "Email (inscription)",
+    "email": "Email",
+    "password": "Mot de passe",
+    "passwordMin": "Mot de passe (min. 6 caractères)",
+    "forgotPassword": "Mot de passe oublié",
+    "resetPassword": "Réinitialiser le mot de passe",
+    "sendResetLink": "Envoyer le lien de réinitialisation",
+    "newPassword": "Nouveau mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "startFree": "Commencer gratuitement",
+    "enterCredentials": "Entrez vos identifiants pour accéder à votre espace",
+    "chooseProfile": "Choisissez votre profil puis renseignez vos informations",
+    "signupAs": "Je m'inscris en tant que",
+    "athlete": "Athlète",
+    "coach": "Coach",
+    "athleteDesc": "Suivi d'entraînement",
+    "coachDesc": "Accompagner des athlètes",
+    "emailPlaceholder": "vous@exemple.com",
+    "passwordPlaceholder": "••••••••",
+    "alreadyHaveAccount": "Vous avez déjà un compte ?",
+    "noAccountYet": "Pas encore de compte ?",
+    "backToLogin": "Retour à la connexion",
+    "resetInstructions": "Entrez votre email pour recevoir un lien de réinitialisation",
+    "invalidOrExpiredLink": "Lien invalide ou expiré",
+    "redirectingToLogin": "Redirection vers la page de connexion...",
+    "checkingLink": "Vérification du lien...",
+    "newPasswordTitle": "Nouveau mot de passe",
+    "newPasswordSubtitle": "Définissez votre nouveau mot de passe",
+    "setNewPasswordButton": "Définir le nouveau mot de passe",
+    "errors": {
+      "notAuthenticated": "Non connecté.",
+      "accessDenied": "Accès refusé.",
+      "profileNotFound": "Profil introuvable.",
+      "emailRequired": "Email et mot de passe requis.",
+      "passwordRequirements": "Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule et un chiffre.",
+      "accountCreated": "Compte créé avec succès. Vérifiez votre email pour confirmer.",
+      "invalidCredentials": "Email ou mot de passe invalide.",
+      "passwordMismatch": "Les deux mots de passe doivent être identiques.",
+      "bothFieldsRequired": "Les deux champs sont obligatoires.",
+      "passwordMinLength": "Le mot de passe doit contenir au moins 6 caractères.",
+      "sessionExpired": "Session expirée. Veuillez réessayer.",
+      "resetLinkSent": "Lien de réinitialisation envoyé. Vérifiez votre email.",
+      "rateLimitExceeded": "Trop de demandes d'email ont été envoyées. Veuillez patienter quelques minutes avant de réessayer.",
+      "userExists": "Un compte existe déjà avec cet email."
+    }
+  },
+  "navigation": {
+    "findCoach": "Trouver mon coach",
+    "calendar": "Mon calendrier",
+    "goals": "Mes Objectifs",
+    "myCoach": "Mon Coach",
+    "devices": "Mes appareils connectés",
+    "athletes": "Mes Athlètes",
+    "offers": "Mon offre",
+    "profile": "Mon profil",
+    "dashboard": "Tableau de bord",
+    "openMenu": "Ouvrir le menu",
+    "collapseMenu": "Réduire le menu"
+  },
+  "sports": {
+    "course": "Course",
+    "velo": "Vélo",
+    "natation": "Natation",
+    "muscu": "Musculation",
+    "triathlon": "Triathlon",
+    "ski_fond": "Ski de fond",
+    "rando": "Randonnée",
+    "trail": "Trail",
+    "vtt": "VTT",
+    "yoga": "Yoga",
+    "autre": "Autre"
+  },
+  "workouts": {
+    "title": "Mon entrainement",
+    "editTitle": "Modifier l'entraînement",
+    "createTitle": "Créer un entraînement",
+    "myWorkout": "Mon entraînement",
+    "editWorkout": "Modifier l'entraînement",
+    "deleteWorkout": "Supprimer",
+    "deleteConfirmation": "Supprimer cet entraînement ? Cette action est irréversible.",
+    "addWorkout": "Ajouter un entraînement",
+    "exerciseTitle": "Titre de l'exercice",
+    "description": "Description",
+    "sport": "Sport",
+    "date": "Date",
+    "duration": "Durée (minutes)",
+    "intensity": "Intensité",
+    "notes": "Notes",
+    "deleteConfirm": "Êtes-vous sûr de vouloir supprimer cet entraînement ?",
+    "form": {
+      "sportType": "Type de sport",
+      "title": "Titre de la séance",
+      "titlePlaceholder": "Ex : Sortie longue",
+      "description": "Description (facultatif)",
+      "descriptionPlaceholder": "Détails de la séance...",
+      "sessionGoals": "OBJECTIFS DE LA SÉANCE",
+      "targetMode": {
+        "time": "Temps",
+        "distance": "Distance"
+      },
+      "distance": "Distance",
+      "distanceUnit": "m",
+      "distanceUnitKm": "km",
+      "duration": "Temps",
+      "durationUnit": "min",
+      "elevation": "Dénivelé",
+      "elevationUnit": "m D+",
+      "pace": "Vitesse",
+      "paceUnitRunning": "min/km",
+      "paceUnitCycling": "km/h",
+      "paceUnitSwimming": "min/100m"
+    },
+    "comments": {
+      "athleteComment": "Commentaire de l'athlète",
+      "noComment": "Aucun commentaire.",
+      "yourComment": "Votre commentaire",
+      "placeholder": "Saisissez votre commentaire...",
+      "ariaLabel": "Votre commentaire"
+    },
+    "validation": {
+      "allFieldsRequired": "Tous les champs sont obligatoires.",
+      "invalidSport": "Type de sport invalide.",
+      "onlyCoachCanCreate": "Seul le coach peut créer un entraînement.",
+      "notFound": "Entraînement introuvable.",
+      "deleteSuccess": "Entraînement supprimé avec succès."
+    }
+  },
+  "goals": {
+    "title": "Mes Objectifs",
+    "athleteGoalsTitle": "Objectifs de l'athlète",
+    "addGoal": "Ajouter un objectif",
+    "editGoal": "Modifier l'objectif",
+    "goalTitle": "Titre de l'objectif",
+    "targetDate": "Date cible",
+    "status": "Statut",
+    "completed": "Terminé",
+    "inProgress": "En cours",
+    "pending": "À venir",
+    "noGoals": "Aucun objectif pour le moment.",
+    "noAthleteGoals": "L'athlète n'a pas défini d'objectif.",
+    "raceName": "Nom de la course",
+    "distance": "Distance (km)",
+    "date": "Date de la course",
+    "priority": {
+      "primary": "Principal",
+      "secondary": "Secondaire",
+      "label": "Priorité"
+    },
+    "goalDetails": "Détails de l'objectif",
+    "goalType": "Type d'objectif",
+    "deleteTitle": "Supprimer",
+    "pastDateError": "Un objectif ne peut pas être défini dans le passé.",
+    "nextRace": "Prochaine course",
+    "daysUntil": "J-{days}",
+    "season": "Saison {year}",
+    "raceNamePlaceholder": "Ex: Marathon de...",
+    "validation": {
+      "cannotSetInPast": "Un objectif ne peut pas être défini dans le passé.",
+      "allFieldsRequired": "Date, nom de la course et distance sont obligatoires.",
+      "goalAdded": "Objectif ajouté.",
+      "goalUpdated": "Objectif mis à jour.",
+      "goalDeleted": "Objectif supprimé."
+    }
+  },
+  "profile": {
+    "title": "Mon profil",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "bio": "Bio",
+    "location": "Localisation",
+    "practicedSports": "Sports pratiqués",
+    "coachedSports": "Sports coachés",
+    "languages": "Langues",
+    "hourlyRate": "Tarif horaire",
+    "deleteAccount": "Supprimer mon compte",
+    "deleteConfirm": "Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.",
+    "profilePhoto": "Photo de profil",
+    "myInformation": "Mes informations",
+    "coachSubtitle": "Complétez votre profil pour vos athlètes.",
+    "athleteSubtitle": "Gérez vos informations et votre photo de profil.",
+    "emailAddress": "Adresse email",
+    "nonEditable": "Non modifiable",
+    "postalCode": "Code Postal",
+    "postalCodePlaceholder": "Ex: 75001",
+    "spokenLanguages": "Langues parlées",
+    "presentation": "Présentation",
+    "presentationSubtitle": "Pour votre profil public (affichée selon la langue du visiteur)",
+    "presentationFr": "Présentation (français)",
+    "presentationEn": "Présentation (anglais)",
+    "presentationPlaceholder": "Décrivez votre expérience...",
+    "checking": "Vérification…",
+    "deleteConfirmTitle": "Supprimer mon compte",
+    "deleteConfirmMessage": "Vous allez perdre toutes vos données. Cette action est irréversible. Êtes-vous sûr de vouloir supprimer votre compte ?",
+    "back": "Retour",
+    "confirm": "Confirmer",
+    "unsavedChangesTitle": "Modifications non enregistrées",
+    "unsavedChangesMessage": "Vous avez des modifications non enregistrées. Que souhaitez-vous faire ?",
+    "leaveWithoutSaving": "Quitter sans enregistrer",
+    "saveAndLeave": "Enregistrer et quitter",
+    "unsavedChangesAlert": "Vous avez des modifications non enregistrées. Voulez-vous vraiment quitter cette page ?",
+    "deletionNotPossible": "La suppression n'est pas possible.",
+    "validation": {
+      "saved": "Informations enregistrées.",
+      "cannotDelete": "La suppression n'est pas possible. Vous devez d'abord mettre un terme à votre contrat avec vos athlètes.",
+      "deletionFailed": "Suppression impossible.",
+      "deletionError": "Erreur lors de la suppression."
+    }
+  },
+  "coach": {
+    "findCoach": "Trouver un coach",
+    "myCoach": "Mon coach",
+    "requestCoach": "Demander ce coach",
+    "cancelRequest": "Annuler la demande",
+    "acceptRequest": "Accepter",
+    "declineRequest": "Refuser",
+    "rating": "Note",
+    "rateCoach": "Noter mon coach",
+    "pendingRequest": "Demande en attente",
+    "validation": {
+      "athletesOnly": "Réservé aux athlètes.",
+      "alreadyHasCoach": "Vous avez déjà un coach.",
+      "requestSent": "Demande envoyée.",
+      "requestNotFound": "Demande introuvable.",
+      "requestAccepted": "Demande acceptée.",
+      "requestDeclined": "Demande refusée.",
+      "cannotAcceptOwnRequest": "Vous ne pouvez pas accepter votre propre demande."
+    }
+  },
+  "devices": {
+    "title": "Appareils connectés",
+    "connectStrava": "Connecter Strava",
+    "disconnectStrava": "Déconnecter",
+    "reconnect": "Reconnecter",
+    "stravaConnected": "Strava connecté",
+    "syncActivities": "Importer les 3 dernières semaines",
+    "lastSync": "Dernière synchronisation",
+    "connectedDescription": "Connecté — importez les 3 dernières semaines d'activités dans votre calendrier.",
+    "notConnectedDescription": "Afficher vos activités Strava dans le calendrier.",
+    "syncInProgress": "Import en cours…",
+    "disconnecting": "Déconnexion…",
+    "disconnectConfirm": "Déconnecter Strava supprimera aussi les activités déjà importées. Continuer ?",
+    "messages": {
+      "connected": "Strava est connecté.",
+      "disconnected": "Strava déconnecté.",
+      "importSuccess": "Import : {count} activité(s) (3 dernières semaines).",
+      "importComplete": "Import terminé.",
+      "errorInvalid": "Connexion Strava annulée ou invalide.",
+      "errorConfig": "Strava n'est pas configuré côté serveur.",
+      "errorToken": "Échec de l'échange du code Strava.",
+      "errorSave": "Échec de l'enregistrement de la connexion."
+    },
+    "validation": {
+      "stravaNotConnected": "Strava non connecté.",
+      "cannotFetchActivities": "Impossible de récupérer les activités Strava.",
+      "missingConfig": "Configuration Strava manquante.",
+      "cannotRefresh": "Impossible de rafraîchir la connexion Strava.",
+      "unauthorized": "Non autorisé.",
+      "activityTitleDefault": "Activité",
+      "activityTitleUntitled": "Sans titre"
+    }
+  },
+  "chat": {
+    "placeholder": "Votre message...",
+    "send": "Envoyer",
+    "noMessages": "Aucun message",
+    "chatWithCoach": "Chater avec mon coach",
+    "chatWithAthletes": "Discuter avec mes athlètes",
+    "conversationWith": "Discussion avec {name}",
+    "loading": "Chargement...",
+    "noCoachAssigned": "Aucun coach assigné. Vous ne pouvez pas envoyer de message pour le moment.",
+    "noConversations": "Aucune discussion avec vos athlètes pour le moment.",
+    "you": "Vous",
+    "validation": {
+      "notConnected": "Non connecté.",
+      "emptyMessage": "Message vide."
+    }
+  },
+  "calendar": {
+    "currentWeek": "Semaine actuelle",
+    "previousWeek": "Semaine précédente",
+    "nextWeek": "Semaine suivante",
+    "weeksAgo": "Il y a {weeks} semaines",
+    "inWeeks": "Dans {weeks} semaines",
+    "days": {
+      "mon": "Lun",
+      "tue": "Mar",
+      "wed": "Mer",
+      "thu": "Jeu",
+      "fri": "Ven",
+      "sat": "Sam",
+      "sun": "Dim"
+    },
+    "previousWeekButton": "Semaine précédente",
+    "nextWeekButton": "Semaine suivante",
+    "weekly": {
+      "planned": "prévu",
+      "completed": "réalisé",
+      "totalTimeVolume": "Volume horaire total",
+      "timeCompletedPlanned": "Temps réalisé / prévu",
+      "runningDistanceCompletedPlanned": "Course : distance faite / prévue",
+      "cyclingDistanceCompletedPlanned": "Vélo : distance faite / prévue",
+      "swimmingDistanceCompletedPlanned": "Natation : distance réalisée / prévue",
+      "strengthTimeCompletedPlanned": "Musculation : temps réalisé / prévu",
+      "nordicSkiDistanceCompletedPlanned": "Ski de fond : distance faite / prévue",
+      "backcountrySkiDistanceCompletedPlanned": "Ski de randonnée : distance faite / prévue",
+      "iceSkatingDistanceCompletedPlanned": "Patin à glace : distance faite / prévue",
+      "sportLabels": {
+        "run": "Run",
+        "cycling": "Vélo",
+        "swimming": "Nage",
+        "strength": "Muscu",
+        "nordicSki": "Ski de fond",
+        "backcountrySki": "Ski Rando",
+        "iceSkating": "Patin"
+      }
+    },
+    "modals": {
+      "dayActivities": "Activités du jour",
+      "goalDetails": "Détails de l'objectif",
+      "activityDetails": "Détails de l'activité",
+      "activityType": "Type d'activité",
+      "distance": "Distance",
+      "date": "Date",
+      "source": "Source",
+      "sportType": "Type de sport",
+      "title": "Titre",
+      "description": "Description",
+      "movingTime": "Temps de déplacement",
+      "elevationGain": "Dénivelé positif"
+    },
+    "moreActivities": "{count} autre",
+    "moreActivities_plural": "{count} autres"
+  },
+  "errors": {
+    "somethingWrong": "Une erreur s'est produite",
+    "errorOccurred": "Une erreur est survenue",
+    "tryAgain": "Veuillez réessayer.",
+    "cannotLoadPage": "Impossible de charger cette page. Veuillez réessayer.",
+    "somethingWentWrong": "Quelque chose s'est mal passé. Veuillez réessayer.",
+    "retry": "Réessayer",
+    "backToDashboard": "Retour au tableau de bord",
+    "backToHome": "Retour à l'accueil",
+    "notFound": "Page non trouvée",
+    "unauthorized": "Non autorisé",
+    "serverError": "Erreur serveur",
+    "supabaseGeneric": "Une erreur est survenue. Veuillez réessayer."
+  },
+  "admin": {
+    "members": {
+      "validation": {
+        "missingData": "Données manquantes.",
+        "invalidRole": "Rôle invalide.",
+        "roleUpdated": "Rôle mis à jour."
+      }
+    }
+  },
+  "metadata": {
+    "dashboardTitle": "Tableau de bord",
+    "dashboardDescription": "Gérez vos entraînements, objectifs et coach",
+    "calendarTitle": "Mon calendrier",
+    "goalsTitle": "Mes Objectifs",
+    "profileTitle": "Mon profil",
+    "devicesTitle": "Appareils connectés"
+  },
+  "landing": {
+    "hero": {
+      "badge": "La plateforme n°1 de coaching sportif personnalisé",
+      "title": "Atteignez vos objectifs avec un",
+      "titleHighlight": "coach dédié",
+      "subtitle": "Plans d'entraînement personnalisés, suivi en temps réel, synchronisation Strava et messagerie directe. Tout pour progresser efficacement."
+    },
+    "stats": {
+      "athletes": "Athlètes actifs",
+      "coaches": "Coachs certifiés",
+      "workouts": "Séances planifiées",
+      "satisfaction": "Satisfaction"
+    },
+    "preview": {
+      "title": "Une interface intuitive et complète",
+      "subtitle": "Accédez à tous vos entraînements, objectifs et échanges depuis un tableau de bord moderne",
+      "dashboardAlt": "Dashboard de l'application Coach Pro",
+      "calendarAlt": "Calendrier d'entraînement",
+      "stravaAlt": "Synchronisation Strava",
+      "chatAlt": "Messagerie avec votre coach",
+      "weeklyPlanning": "Planning hebdomadaire",
+      "stravaSync": "Sync Strava",
+      "liveChat": "Chat en direct"
+    },
+    "features": {
+      "title": "Tout ce dont vous avez besoin pour progresser",
+      "subtitle": "Une plateforme complète qui réunit athlètes et coachs professionnels",
+      "personalizedPlanning": {
+        "title": "Planning Personnalisé",
+        "description": "Calendrier d'entraînement hebdomadaire avec séances détaillées : durée, distance, dénivelé et allure cible pour chaque sport."
+      },
+      "stravaConnection": {
+        "title": "Connexion Strava",
+        "description": "Synchronisez automatiquement vos activités Strava. Visualisez vos entraînements réels vs planifiés et suivez vos totaux hebdomadaires."
+      },
+      "directMessaging": {
+        "title": "Messagerie Directe",
+        "description": "Chat en temps réel avec votre coach. Posez vos questions, partagez vos ressentis et ajustez votre programme à tout moment."
+      },
+      "goalsManagement": {
+        "title": "Gestion d'Objectifs",
+        "description": "Définissez vos courses et événements cibles. Votre coach adapte votre préparation avec un compte à rebours vers votre objectif principal."
+      },
+      "progressTracking": {
+        "title": "Suivi de Progression",
+        "description": "Totaux hebdomadaires par sport, historique de vos séances et comparaison avec votre plan pour mesurer vos progrès."
+      },
+      "certifiedCoaches": {
+        "title": "Coachs Certifiés",
+        "description": "Parcourez les profils détaillés, consultez les avis et notes des athlètes, et choisissez le coach qui correspond à vos besoins."
+      }
+    },
+    "howItWorks": {
+      "title": "Comment ça marche ?",
+      "subtitle": "Trois étapes simples pour commencer votre transformation sportive",
+      "step1": {
+        "title": "Créez votre profil",
+        "description": "Renseignez vos sports pratiqués, votre niveau et vos objectifs en quelques clics."
+      },
+      "step2": {
+        "title": "Trouvez votre coach",
+        "description": "Filtrez par sport et langue, consultez les profils et envoyez une demande de coaching."
+      },
+      "step3": {
+        "title": "Commencez à progresser",
+        "description": "Recevez votre plan personnalisé, échangez avec votre coach et atteignez vos objectifs."
+      }
+    },
+    "forCoaches": {
+      "badge": "Vous êtes coach ?",
+      "title": "Développez votre activité de coaching",
+      "coachAlt": "Coach avec athlète",
+      "features": {
+        "manageAthletes": "Gérez tous vos athlètes depuis un seul espace",
+        "createPlans": "Créez des plans d'entraînement personnalisés",
+        "trackProgress": "Suivez la progression en temps réel",
+        "manageOffers": "Créez et gérez vos offres de coaching",
+        "communicate": "Communiquez facilement avec vos athlètes",
+        "receiveReviews": "Recevez des avis pour développer votre notoriété"
+      }
+    },
+    "cta": {
+      "title": "Prêt à passer au niveau supérieur ?",
+      "subtitle": "Rejoignez des centaines d'athlètes qui progressent chaque jour avec Coach Pro"
+    },
+    "footer": {
+      "copyright": "Tous droits réservés."
+    }
+  },
+  "offers": {
+    "title": "Mon Offre",
+    "offerNumber": "Offre {number}",
+    "recommended": "Recommandé",
+    "feature": "Mettre en avant",
+    "unfeature": "Retirer de la mise en avant",
+    "deleteOffer": "Supprimer l'offre",
+    "offerTitle": "Titre de l'offre",
+    "offerTitleFr": "Titre (français)",
+    "offerTitleEn": "Titre (anglais)",
+    "offerTitlePlaceholder": "Ex: Suivi Mensuel",
+    "pricing": "Tarification",
+    "priceTypes": {
+      "monthly": "/ Mois",
+      "oneTime": "Unique",
+      "free": "Gratuit"
+    },
+    "recurrence": "Récurrence",
+    "descriptionLabel": "Description & Avantages",
+    "descriptionLabelFr": "Description & avantages (français)",
+    "descriptionLabelEn": "Description & avantages (anglais)",
+    "descriptionPlaceholder": "Décrivez ce que l'athlète obtient...",
+    "addOffer": "Ajouter une offre",
+    "remainingOffers": "Vous pouvez encore créer {count} offre",
+    "remainingOffers_plural": "Vous pouvez encore créer {count} offres",
+    "deleteModal": {
+      "title": "Supprimer l'offre",
+      "message": "Voulez-vous supprimer l'offre \"{title}\" ? Cette action est immédiate et définitive."
+    },
+    "unsavedChangesModal": {
+      "title": "Modifications non enregistrées",
+      "message": "Vous avez des modifications non enregistrées. Que souhaitez-vous faire ?",
+      "leaveWithoutSaving": "Quitter sans enregistrer",
+      "saveAndLeave": "Enregistrer et quitter"
+    },
+    "unsavedChangesAlert": "Vous avez des modifications non enregistrées. Voulez-vous vraiment quitter cette page ?",
+    "validation": {
+      "priceRequired": "Le prix de l'offre {number} est requis pour ce type de prix.",
+      "priceInvalid": "Le prix de l'offre {number} est invalide.",
+      "onlyOneFeatured": "Une seule offre peut être privilégiée."
+    }
+  },
+  "athletes": {
+    "pageTitle": "Mes Athlètes ({count})",
+    "allMembers": "Tous les membres",
+    "dashboard": "Tableau de bord",
+    "manageMembers": "Gérer les membres et les rôles",
+    "completeProfilePrompt": {
+      "title": "Faites-vous connaître auprès des athlètes",
+      "description": "Complétez votre profil pour apparaître dans leurs recherches et recevoir vos premières demandes de coaching.",
+      "button": "Compléter mon profil"
+    },
+    "pendingRequests": {
+      "title": "Demandes en attente",
+      "description": "Acceptez ou refusez les demandes d'athlètes qui souhaitent vous avoir comme coach.",
+      "offerChosen": "Offre choisie :",
+      "free": "Gratuit",
+      "perMonth": "/mois"
+    },
+    "noAthletes": {
+      "title": "Vos demandes de coaching apparaîtront sur cette page.",
+      "description": "Les athlètes qui vous choisiront apparaitront ici. Vous pourrez l'accepter ou la refuser."
+    },
+    "myAthletes": "Mes athlètes",
+    "athleteCard": {
+      "nextGoal": "Prochain objectif",
+      "noGoal": "Aucun",
+      "plannedUntil": "Planifié jusqu'au",
+      "upToDate": "À jour",
+      "late": "En retard",
+      "viewPlanning": "Voir le planning"
+    },
+    "roles": {
+      "athlete": "Athlète",
+      "coach": "Coach",
+      "admin": "Administrateur"
+    },
+    "you": "Vous"
+  },
+  "findCoach": {
+    "pageTitle": "Trouver mon coach",
+    "noCoaches": "Aucun coach inscrit pour le moment. Revenez plus tard.",
+    "filters": {
+      "title": "Filtre",
+      "reset": "Réinitialiser",
+      "coachedSport": "Sport coaché",
+      "spokenLanguage": "Langue parlée"
+    },
+    "results": "Résultats",
+    "noResults": "Aucun coach ne correspond à vos critères. Modifiez les filtres ou revenez plus tard.",
+    "coachCard": {
+      "new": "Nouveau",
+      "reviews": "avis",
+      "availableOffers": "Formules disponibles",
+      "free": "Gratuit",
+      "perMonth": "mois",
+      "plan": "plan",
+      "viewDetails": "Voir le détail",
+      "defaultBio": "Coach disponible pour vous accompagner dans votre progression."
+    },
+    "modal": {
+      "presentation": "Présentation —",
+      "pendingRequest": "Demande en attente",
+      "alreadySent": "Vous avez déjà envoyé une demande à ce coach.",
+      "chooseOffer": "Choisissez une formule",
+      "noOffers": "Ce coach n'a pas encore d'offres disponibles.",
+      "recommended": "Recommandé",
+      "free": "Gratuit",
+      "discovery": "Découverte",
+      "fullTracking": "Suivi Complet",
+      "singlePlan": "Plan Unique",
+      "selectOffer": "Veuillez sélectionner une offre ci-dessus pour continuer.",
+      "completeRequest": "Compléter votre demande",
+      "practicedSports": "Sports pratiqués *",
+      "coachingNeed": "Besoin de coaching *",
+      "coachingNeedPlaceholder": "Décrivez votre objectif, votre niveau actuel, vos contraintes...",
+      "sendRequest": "Envoyer la demande",
+      "sending": "Envoi en cours…",
+      "selected": "Sélectionné",
+      "select": "Sélectionner"
+    },
+    "validation": {
+      "selectOffer": "Veuillez sélectionner une offre.",
+      "fillRequired": "Veuillez renseigner au moins un sport pratiqué et votre besoin de coaching."
+    }
+  },
+  "coachRequests": {
+    "accept": "Accepter",
+    "decline": "Refuser",
+    "validation": {
+      "athletesOnly": "Réservé aux athlètes.",
+      "alreadyHasCoach": "Vous avez déjà un coach.",
+      "requireSportAndNeed": "Au moins un sport pratiqué et le besoin de coaching sont obligatoires.",
+      "coachNotFound": "Ce coach n'existe pas.",
+      "offerNotFound": "Cette offre n'existe pas ou n'appartient pas à ce coach.",
+      "requestNotFound": "Demande introuvable.",
+      "requestCannotBeCancelled": "Cette demande ne peut plus être annulée.",
+      "accepted": "Demande acceptée.",
+      "declined": "Demande refusée."
+    }
+  },
+  "myCoach": {
+    "title": "Mon Coach",
+    "notFound": "Coach introuvable.",
+    "avatarAlt": "Photo du coach",
+    "coachedSports": "Sports coachés",
+    "spokenLanguages": "Langues parlées",
+    "presentation": "Présentation",
+    "rating": {
+      "title": "Donner votre avis",
+      "save": "Enregistrer",
+      "saving": "Enregistrement…",
+      "yourRating": "Votre note",
+      "ratingLabel": "Note sur 5",
+      "starLabel": "{value} sur 5",
+      "ratingDisplay": "{rating} / 5",
+      "clickToChoose": "Cliquez pour choisir",
+      "commentLabel": "Commentaire (facultatif)",
+      "commentPlaceholder": "Votre avis sur l'accompagnement...",
+      "validationError": "Veuillez sélectionner une note entre 1 et 5.",
+      "unsavedChangesAlert": "Vous avez des modifications non enregistrées. Voulez-vous vraiment quitter cette page ?",
+      "unsavedChangesModal": {
+        "title": "Modifications non enregistrées",
+        "message": "Vous avez des modifications non enregistrées. Que souhaitez-vous faire ?",
+        "leaveWithoutSaving": "Quitter sans enregistrer",
+        "saveAndLeave": "Enregistrer et quitter"
+      }
+    },
+    "validation": {
+      "onlyYourCoach": "Vous ne pouvez noter que votre coach actuel.",
+      "saveFailed": "Impossible d'enregistrer la note. Veuillez réessayer."
+    }
+  }
+}

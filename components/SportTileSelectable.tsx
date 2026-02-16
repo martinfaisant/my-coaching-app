@@ -5,7 +5,8 @@
  * États : non sélectionné (hover bordure forest), sélectionné (fond forest, texte blanc).
  */
 import type { SportType } from '@/lib/sportStyles'
-import { SPORT_ICONS, SPORT_LABELS } from '@/lib/sportStyles'
+import { SPORT_ICONS } from '@/lib/sportStyles'
+import { useSportLabel } from '@/lib/hooks/useSportLabel'
 
 const BASE_CLASSES =
   'px-4 py-2 rounded-full border text-sm font-medium select-none flex items-center gap-2 transition-all'
@@ -31,14 +32,15 @@ type SportTileSelectableProps =
     }
 
 function isSportType(value: string): value is SportType {
-  return value in SPORT_LABELS
+  return value in SPORT_ICONS
 }
 
 export function SportTileSelectable(props: SportTileSelectableProps) {
   const { value, disabled = false } = props
+  const getSportLabel = useSportLabel()
   const sportKey = isSportType(value) ? value : ('course' as SportType)
   const Icon = SPORT_ICONS[sportKey]
-  const label = SPORT_LABELS[sportKey] ?? value
+  const label = getSportLabel(sportKey)
 
   if ('name' in props) {
     const { name, defaultChecked } = props

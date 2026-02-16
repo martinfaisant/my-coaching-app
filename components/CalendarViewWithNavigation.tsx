@@ -1,9 +1,10 @@
 'use client'
 
 import { useState, useEffect, useRef, useTransition, useCallback } from 'react'
+import { useLocale, useTranslations } from 'next-intl'
 import { Button } from './Button'
 import { CalendarView } from './CalendarView'
-import { getWorkoutsForDateRange, getImportedActivitiesForDateRange, getImportedActivityWeeklyTotals, getWorkoutWeeklyTotals } from '@/app/dashboard/workouts/actions'
+import { getWorkoutsForDateRange, getImportedActivitiesForDateRange, getImportedActivityWeeklyTotals, getWorkoutWeeklyTotals } from '@/app/[locale]/dashboard/workouts/actions'
 import type { Workout, Goal, ImportedActivity, ImportedActivityWeeklyTotal, WorkoutWeeklyTotal } from '@/types/database'
 import { getWeekMonday, toDateStr } from '@/lib/dateUtils'
 
@@ -12,13 +13,14 @@ const SLIDE_DURATION_MS = 380
 const SLIDE_PX = 320
 
 /** Affiche "1 janv. - 21 janv." (premier jour de la 1ère semaine — dernier jour de la 3e semaine). */
-function formatWeekRangeLabel(referenceMonday: Date): string {
+function formatWeekRangeLabel(referenceMonday: Date, locale: string): string {
+  const localeTag = locale === 'fr' ? 'fr-FR' : 'en-US'
   const startMonday = new Date(referenceMonday)
   startMonday.setDate(startMonday.getDate() - 7)
   const endDay = new Date(startMonday)
   endDay.setDate(endDay.getDate() + 7 * 3 - 1)
-  const startLabel = startMonday.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })
-  const endLabel = endDay.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })
+  const startLabel = startMonday.toLocaleDateString(localeTag, { day: 'numeric', month: 'short' })
+  const endLabel = endDay.toLocaleDateString(localeTag, { day: 'numeric', month: 'short' })
   return `${startLabel} – ${endLabel}`
 }
 
@@ -95,6 +97,8 @@ export function CalendarViewWithNavigation({
   disableContentScroll = false,
   renderAfterCalendar,
 }: CalendarViewWithNavigationProps) {
+  const locale = useLocale()
+  const tCalendar = useTranslations('calendar')
   const today = new Date()
   const currentMonday = getWeekMonday(today)
   const [referenceMonday, setReferenceMonday] = useState<Date>(currentMonday)
@@ -349,7 +353,7 @@ export function CalendarViewWithNavigation({
     }, SLIDE_DURATION_MS)
   }
 
-  const dateRangeLabel = formatWeekRangeLabel(referenceMonday)
+  const dateRangeLabel = formatWeekRangeLabel(referenceMonday, locale)
 
   // Suivant = semaines plus tard = le calendrier « remonte » (nouveau contenu vient du bas et monte)
   // Précédent = semaines plus tôt = le calendrier « descend » (nouveau contenu vient du haut et descend)
@@ -414,7 +418,7 @@ export function CalendarViewWithNavigation({
                   onClick={() => handleNavigate(-1)}
                   disabled={isAnimating}
                   className="p-1.5 min-w-10 min-h-10 hover:bg-white hover:text-palette-forest-dark text-stone-500"
-                  aria-label="Semaine précédente"
+                  aria-label={tCalendar('previousWeekButton')}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="m15 18-7-7 7-7" />
@@ -429,7 +433,7 @@ export function CalendarViewWithNavigation({
                   onClick={() => handleNavigate(1)}
                   disabled={isAnimating}
                   className="p-1.5 min-w-10 min-h-10 hover:bg-white hover:text-palette-forest-dark text-stone-500"
-                  aria-label="Semaine suivante"
+                  aria-label={tCalendar('nextWeekButton')}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="m9 18 6-6-6-6" />

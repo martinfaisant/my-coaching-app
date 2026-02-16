@@ -65,8 +65,12 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> &
     loadingText?: string
     /** Affichage temporaire après enregistrement : ✓ Enregistré */
     success?: boolean
+    /** Texte du statut de succès (défaut: "Enregistré") */
+    successText?: string
     /** Affichage en cas d'erreur : ✗ Non enregistré + style rouge */
     error?: boolean
+    /** Texte du statut d'erreur (défaut: "Non enregistré") */
+    errorText?: string
     /** Quand fourni, rend un <a> au lieu de <button> */
     href?: string
   }
@@ -79,7 +83,9 @@ export const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonPr
       loading = false,
       loadingText,
       success = false,
+      successText = 'Enregistré',
       error = false,
+      errorText = 'Non enregistré',
       disabled,
       className = '',
       children,
@@ -114,14 +120,14 @@ export const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonPr
         return (
           <span className="inline-flex items-center gap-1.5">
             <CheckIcon animated />
-            <span>Enregistré</span>
+            <span>{successText}</span>
           </span>
         )
       if (error)
         return (
           <span className="inline-flex items-center gap-1.5">
             <CrossIcon />
-            <span>Non enregistré</span>
+            <span>{errorText}</span>
           </span>
         )
       return children

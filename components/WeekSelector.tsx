@@ -6,9 +6,13 @@ type WeekSelectorProps = {
   dateRangeLabel: string
   onNavigate: (offset: number) => void
   isAnimating: boolean
+  /** Aria-label for previous week button (passed from parent to avoid useTranslations in this component). */
+  prevWeekAriaLabel?: string
+  /** Aria-label for next week button (passed from parent to avoid useTranslations in this component). */
+  nextWeekAriaLabel?: string
 }
 
-export function WeekSelector({ dateRangeLabel, onNavigate, isAnimating }: WeekSelectorProps) {
+export function WeekSelector({ dateRangeLabel, onNavigate, isAnimating, prevWeekAriaLabel = 'Semaine précédente', nextWeekAriaLabel = 'Semaine suivante' }: WeekSelectorProps) {
   return (
     <div className="flex items-center gap-3 bg-stone-50 p-1.5 rounded-xl border border-stone-200 shadow-sm">
       <Button
@@ -17,7 +21,7 @@ export function WeekSelector({ dateRangeLabel, onNavigate, isAnimating }: WeekSe
         onClick={() => onNavigate(-1)}
         disabled={isAnimating}
         className="p-1.5 min-w-10 min-h-10 hover:bg-white text-stone-500 hover:text-palette-forest-dark shadow-sm"
-        aria-label="Semaine précédente"
+        aria-label={prevWeekAriaLabel}
       >
         <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="m15 18-7-7 7-7" />
@@ -32,7 +36,7 @@ export function WeekSelector({ dateRangeLabel, onNavigate, isAnimating }: WeekSe
         onClick={() => onNavigate(1)}
         disabled={isAnimating}
         className="p-1.5 min-w-10 min-h-10 hover:bg-white text-stone-500 hover:text-palette-forest-dark shadow-sm"
-        aria-label="Semaine suivante"
+        aria-label={nextWeekAriaLabel}
       >
         <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="m9 18 6-6-6-6" />

@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 13 février 2026
+**Dernière mise à jour :** 16 février 2026
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -25,6 +25,12 @@
 - **Taille :** ~850 lignes
 - **Dernière mise à jour :** 13 février 2026 (noms d'icônes corrigés)
 
+### **docs/I18N.md** ⭐
+- **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces, utilisation dans composants et server actions, **checklist pour nouvelles features** (toujours penser bilingue)
+- **Utiliser pour :** Toute nouvelle feature ou texte visible, ajout de clés de traduction, dépannage i18n
+- **Taille :** ~180 lignes
+- **Dernière mise à jour :** 16 février 2026
+
 ---
 
 ## 🛠️ Documentation Patterns & Conventions
@@ -35,11 +41,11 @@
 - **Taille :** 441 lignes
 
 ### **.cursor/rules/project-core.mdc** ⭐
-- **Contenu :** Règles de code principales, philosophie MVP-first, design tokens, conventions, nouveaux patterns (Error boundaries, Logger, DashboardPageShell, etc.)
+- **Contenu :** Règles de code principales, philosophie MVP-first, design tokens, **i18n (toujours penser bilingue)**, conventions, patterns (Error boundaries, Logger, DashboardPageShell, etc.)
 - **Utiliser pour :** Conventions de code, règles automatiques Cursor AI
 - **Type :** Always-applied workspace rule
-- **Taille :** ~210 lignes
-- **Dernière mise à jour :** 13 février 2026
+- **Taille :** ~230 lignes
+- **Dernière mise à jour :** 16 février 2026
 
 ### **.cursor/rules/save-button-pattern.mdc**
 - **Contenu :** Règle Cursor pour pattern de bouton de sauvegarde
@@ -69,7 +75,7 @@
 > **Tous les documents d'audit, de refactoring et d'états des lieux ont été archivés dans `docs/archive/`**  
 > Ils servent de référence historique mais ne sont plus nécessaires au quotidien.
 
-### Documents archivés (16 fichiers)
+### Documents archivés (25 fichiers)
 
 **Audit & Plan initial :**
 - `AUDIT_COMPLET.md` - Audit complet du projet (13 février 2026) - 1202 lignes
@@ -101,6 +107,12 @@
 ✅ **Code refactorisé :** Tous les changements sont appliqués dans le code  
 ✅ **Score qualité atteint :** 8.3/10 (objectif atteint)  
 ✅ **Documentation à jour :** Toute l'information pertinente est dans les docs actives
+
+**Migrations i18n (archivées 16 février 2026) :**
+- `I18N_IMPLEMENTATION.md` - Implémentation de base i18n (contenu consolidé dans docs/I18N.md)
+- `STATUT_MIGRATION_I18N.md` - Statut des pages migrées
+- `HOTFIX_I18N_PROXY.md` - Correctif proxy + i18n
+- `MIGRATION_OFFRES_COMPLETE.md`, `MIGRATION_MES_ATHLETES_COMPLETE.md`, `MIGRATION_MON_COACH_COMPLETE.md`, `MIGRATION_APPAREILS_CONNECTES_COMPLETE.md`, `MIGRATION_CHAT_COMPLETE.md`, `MIGRATION_SPORTS_I18N_COMPLETE.md` - Récaps par feature
 
 **Ces documents restent disponibles dans `docs/archive/` pour référence historique si besoin.**
 
@@ -189,12 +201,18 @@
 
 **Fréquence de mise à jour :** À chaque ajout/suppression de documentation
 
-**Dernier scan :** 13 février 2026  
-**Dernier nettoyage :** 13 février 2026
+**Dernier scan :** 16 février 2026  
+**Dernier nettoyage :** 16 février 2026
 
 ### Changements récents :
 
-✅ **Archivé 12 documents** dans `docs/archive/` :
+✅ **16 février 2026 – Documentation i18n et bilingue :**
+- Création de **docs/I18N.md** : référence unique pour l’internationalisation (FR/EN), checklist pour nouvelles features (toujours penser bilingue).
+- Mise à jour **.cursor/rules/project-core.mdc** : règle i18n, zéro tolérance pour textes en dur, référence à `docs/I18N.md`.
+- Archivage des docs de migration i18n (I18N_IMPLEMENTATION, STATUT_MIGRATION_I18N, HOTFIX_I18N_PROXY, MIGRATION_*.md) dans `docs/archive/`.
+- Mise à jour README, Project_context, DOCS_INDEX : mention bilingue, lien vers docs/I18N.md.
+
+✅ **13 février 2026 – Archivé 12 documents** dans `docs/archive/` :
 - 2 documents d'audit (AUDIT_COMPLET.md, PLAN_AMELIORATION.md)
 - 7 documents de refactoring (REFACTORING_*.md, SPRINT_*.md)
 - 3 documents d'états des lieux / simplifications
@@ -221,11 +239,12 @@
 | Comment démarrer le projet | `README.md` |
 | Vision produit, rôles | `Project_context.md` |
 | Composants UI, couleurs | `docs/DESIGN_SYSTEM.md` |
+| **i18n / bilingue / traductions / nouvelles features** | **`docs/I18N.md`** |
 | Conventions de code | `.cursor/rules/project-core.mdc` |
 | Pattern bouton sauvegarde | `docs/PATTERN_SAVE_BUTTON.md` |
 | Déploiement | `DEPLOYMENT_NOTES.md`, `MISE_EN_PROD.md` |
 | Historique refactoring | `docs/archive/REFACTORING_P1_P2_COMPLETE.md` |
-| Historique audit | `docs/archive/AUDIT_COMPLET.md` |
+| Historique audit / migrations i18n | `docs/archive/` |
 
 ---
 

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/Button'
 import { LoginModal } from '@/components/LoginModal'
 import { ArrowRight } from 'lucide-react'
@@ -10,6 +11,7 @@ interface AuthButtonsProps {
 }
 
 export function AuthButtons({ variant = 'default' }: AuthButtonsProps) {
+  const t = useTranslations('auth')
   const [modalOpen, setModalOpen] = useState(false)
   const [modalMode, setModalMode] = useState<'login' | 'signup'>('login')
 
@@ -31,14 +33,14 @@ export function AuthButtons({ variant = 'default' }: AuthButtonsProps) {
             onClick={openSignup}
             className="group w-full sm:w-auto px-8 py-4 bg-palette-forest-dark text-white rounded-xl font-semibold text-lg hover:bg-palette-forest-default transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
           >
-            Commencer gratuitement
+            {t('startFree')}
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </button>
           <button
             onClick={openLogin}
             className="w-full sm:w-auto px-8 py-4 bg-white text-stone-900 rounded-xl font-semibold text-lg border-2 border-stone-200 hover:border-stone-300 transition-all duration-300"
           >
-            Se connecter
+            {t('login')}
           </button>
         </div>
 
@@ -56,10 +58,10 @@ export function AuthButtons({ variant = 'default' }: AuthButtonsProps) {
     <>
       <div className="flex items-center gap-2.5">
         <Button variant="secondary" onClick={openLogin}>
-          Se connecter
+          {t('login')}
         </Button>
         <Button variant="primary" onClick={openSignup}>
-          Créer un compte
+          {t('signup')}
         </Button>
       </div>
 

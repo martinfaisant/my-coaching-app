@@ -1,7 +1,7 @@
 # 🎨 Design System
 
-**Version :** 1.0  
-**Dernière mise à jour :** 12 février 2026
+**Version :** 1.2  
+**Dernière mise à jour :** 16 février 2026
 
 ---
 
@@ -20,7 +20,10 @@
    - [Textarea](#textarea)
    - [Badge](#badge)
    - [SportTileSelectable](#sporttileselectable)
+   - [ActivityTile](#activitytile)
+   - [TileCard](#tilecard)
    - [Modal](#modal)
+   - [LanguageSwitcher](#languageswitcher)
 4. [Icônes](#icônes)
 5. [Guidelines](#guidelines)
 6. [FAQ](#faq)
@@ -49,9 +52,9 @@ Toutes les couleurs sont définies dans `tailwind.config.ts` et `app/globals.css
 
 | Token | Hex | Usage | Classes Tailwind |
 |-------|-----|-------|------------------|
-| `palette-forest-dark` | `#627e59` | Principal (boutons, liens, focus) | `bg-palette-forest-dark`, `text-palette-forest-dark`, `border-palette-forest-dark` |
+| `palette-forest-dark` | `#627e59` | Principal (boutons, liens, focus), **préfixe langue EN/FR** | `bg-palette-forest-dark`, `text-palette-forest-dark`, `border-palette-forest-dark`, `bg-palette-forest-dark/10` |
 | `palette-forest-darker` | `#506648` | Hover foncé, CTA accentués | `bg-palette-forest-darker`, `hover:bg-palette-forest-darker` |
-| `palette-olive` | `#8e9856` | Hover principal, avatar fallback | `bg-palette-olive`, `hover:bg-palette-olive` |
+| `palette-olive` | `#8e9856` | Hover principal, avatar fallback | `bg-palette-olive`, `hover:bg-palette-olive`, `text-palette-olive` |
 | `palette-sage` | `#aaaa51` | Accents, randonnée, ski nordique | `bg-palette-sage`, `text-palette-sage` |
 | `palette-gold` | `#cbb44b` | Trail, ski de randonnée | `bg-palette-gold`, `text-palette-gold` |
 | `palette-amber` | `#c9a544` | Objectifs primaires, triathlon | `bg-palette-amber`, `text-palette-amber` |
@@ -365,6 +368,30 @@ type InputProps = {
 - **Disabled** : Fond `bg-stone-100`, texte `text-stone-500`, cursor not-allowed
 - **ReadOnly** : Fond `bg-stone-100`, texte `text-stone-500`
 
+#### Variante : champ avec préfixe langue (EN/FR)
+
+Pour les champs bilingues (ex. offres coach : titre et description en français et anglais), on utilise un **champ dont la zone de saisie est précédée d’un préfixe langue** à l’intérieur du même bloc visuel.
+
+- **Structure** : un conteneur flex avec `rounded-lg border border-stone-300 bg-white` et `focus-within:ring-2 focus-within:ring-palette-forest-dark` ; à gauche un `<span>` préfixe (EN ou FR), à droite l’`<input>` ou `<textarea>` (`border-0 bg-white`).
+- **Préfixe EN et FR** : vert principal (même que les boutons) `text-palette-forest-dark bg-palette-forest-dark/10`, typo `text-[10px] font-bold uppercase tracking-wide`, séparateur `border-r border-stone-200`.
+- **Champs titre** : conteneur en `flex`, préfixe avec `px-3 py-2.5` et `items-center`.
+- **Champs description (textarea)** : conteneur en `flex items-stretch` pour que le préfixe prenne toute la hauteur du champ ; préfixe avec `min-h-full flex items-center justify-center` pour que la couleur couvre toute la hauteur.
+- **Disposition** : EN à gauche, FR à droite (grille `grid-cols-2` pour titre et pour description).
+- **Usage** : formulaire des offres coach (`app/[locale]/dashboard/profile/offers/OffersForm.tsx`).
+
+```tsx
+// Exemple : titre bilingue
+<div className="flex rounded-lg border border-stone-300 bg-white overflow-hidden focus-within:ring-2 focus-within:ring-palette-forest-dark">
+  <span className="shrink-0 px-2.5 py-2.5 text-[10px] font-bold uppercase text-palette-forest-dark bg-palette-forest-dark/10 border-r border-stone-200">EN</span>
+  <input name="title_en" className="flex-1 min-w-0 py-2.5 pl-2 pr-4 bg-white border-0 ..." />
+</div>
+// Exemple : description (préfixe sur toute la hauteur)
+<div className="flex rounded-lg border border-stone-300 bg-white overflow-hidden items-stretch focus-within:ring-2 focus-within:ring-palette-forest-dark">
+  <span className="shrink-0 px-2.5 min-h-full text-[10px] font-bold uppercase text-palette-forest-dark bg-palette-forest-dark/10 flex items-center justify-center border-r border-stone-200">FR</span>
+  <textarea name="description_fr" className="flex-1 min-w-0 py-2.5 pr-4 bg-transparent border-0 ..." />
+</div>
+```
+
 ---
 
 ### Textarea
@@ -569,6 +596,260 @@ Pour les langues, utiliser la même structure visuelle avec des boutons simples 
 
 ---
 
+### ActivityTile
+
+**Fichier :** `components/ActivityTile.tsx`
+
+Tuile d'activité unifiée pour afficher 3 types de contenus :
+- Entraînements planifiés (workout)
+- Activités Strava importées (strava)
+- Objectifs de course (goal)
+
+Design inspiré du style Strava avec bordure gauche colorée (4px) et badge en haut. La couleur s'adapte automatiquement selon le type d'activité ou de sport.
+
+#### Types supportés
+
+| Type | Badge | Bordure | Usage |
+|------|-------|---------|-------|
+| `workout` | Icône sport (variable) | Couleur du sport | Entraînements planifiés par le coach |
+| `strava` | Logo Strava + label | Orange (`palette-strava`) | Activités importées depuis Strava |
+| `goal` | Icône cible | Amber (principal) / Sage (secondaire) | Objectifs de course/compétition |
+
+#### Props
+
+**Props communes :**
+```typescript
+{
+  title: string              // Titre principal de l'activité
+  date?: string              // Date affichée en bas (ex: "Lun. 12 fév.")
+  onClick?: () => void       // Fonction appelée au clic
+  className?: string         // Classes CSS supplémentaires
+}
+```
+
+**Props spécifiques par type :**
+
+```typescript
+// Type: workout
+{
+  type: 'workout'
+  sportType: SportType       // 'course', 'velo', 'natation', etc.
+  metadata?: string[]        // ["1h30", "15 km", "200m D+"]
+}
+
+// Type: strava
+{
+  type: 'strava'
+  activityLabel: string      // "Run", "Ride", "Swim", etc.
+  metadata?: string[]        // ["10.5 km", "150m D+", "50:24"]
+}
+
+// Type: goal
+{
+  type: 'goal'
+  distance: number           // Distance en km (ex: 42.2)
+  isPrimary: boolean         // true = amber, false = sage
+}
+```
+
+#### Exemples
+
+```tsx
+// Entraînement planifié
+<ActivityTile
+  type="workout"
+  sportType="course"
+  title="Sortie longue en endurance"
+  metadata={["1h30", "15 km", "200m D+"]}
+  date="Lun. 12 fév."
+  onClick={() => openWorkoutModal(workout)}
+/>
+
+// Activité Strava
+<ActivityTile
+  type="strava"
+  activityLabel="Run"
+  title="Morning run"
+  metadata={["10.5 km", "150m D+", "50:24"]}
+  date="Sam. 10 fév."
+  onClick={() => openStravaDetails(activity)}
+/>
+
+// Objectif principal
+<ActivityTile
+  type="goal"
+  isPrimary={true}
+  title="Marathon de Paris"
+  distance={42.2}
+  date="Dim. 7 avr."
+  onClick={() => openGoalModal(goal)}
+/>
+
+// Objectif secondaire
+<ActivityTile
+  type="goal"
+  isPrimary={false}
+  title="Semi-marathon de Lyon"
+  distance={21.1}
+  date="Sam. 23 mar."
+  onClick={() => openGoalModal(goal)}
+/>
+
+// Sans date ni métadonnées (minimal)
+<ActivityTile
+  type="workout"
+  sportType="velo"
+  title="Sortie vélo"
+  onClick={() => console.log('click')}
+/>
+```
+
+#### États visuels
+
+- **Normal** : Bordure `border-stone-200`, fond blanc, ombre légère (`shadow-sm`)
+- **Hover** : Animation identique aux tuiles du calendrier (même comportement pour les 3 types)
+  - Légère montée (`translateY(-2px)`)
+  - Ombre plus prononcée (`box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1)`)
+  - Transition fluide (0.2s)
+  - **Fond reste blanc** pour tous les types d'activités
+
+**Note technique :** Utilise la classe CSS globale `.training-card` définie dans `app/globals.css`
+
+#### Cas d'usage
+
+**Modale "Activités du jour" (calendrier)**
+
+Lorsqu'un jour contient plusieurs activités (X autres), la modale affiche une liste de tuiles unifiées :
+
+```tsx
+<Modal isOpen={modalOpen} onClose={onClose} title="Lundi 12 février">
+  <div className="space-y-3 px-6 py-4">
+    {activities.map(activity => {
+      if (activity.type === 'goal') {
+        return (
+          <ActivityTile
+            key={activity.id}
+            type="goal"
+            isPrimary={activity.isPrimary}
+            title={activity.raceName}
+            distance={activity.distance}
+            date={activity.dateLabel}
+            onClick={() => openGoal(activity)}
+          />
+        )
+      }
+      if (activity.type === 'workout') {
+        return (
+          <ActivityTile
+            key={activity.id}
+            type="workout"
+            sportType={activity.sportType}
+            title={activity.title}
+            metadata={formatWorkoutMetadata(activity)}
+            date={activity.dateLabel}
+            onClick={() => openWorkout(activity)}
+          />
+        )
+      }
+      if (activity.type === 'strava') {
+        return (
+          <ActivityTile
+            key={activity.id}
+            type="strava"
+            activityLabel={activity.activityType}
+            title={activity.title}
+            metadata={formatStravaMetadata(activity)}
+            date={activity.dateLabel}
+            onClick={() => openStrava(activity)}
+          />
+        )
+      }
+    })}
+  </div>
+</Modal>
+```
+
+#### Avantages du composant unifié
+
+- ✅ **Cohérence visuelle** : Toutes les tuiles ont le même style de base
+- ✅ **Couleurs adaptées** : La bordure et le badge s'adaptent automatiquement
+- ✅ **Flexibilité** : Metadata optionnel pour contextes simplifiés
+- ✅ **Accessibilité** : Bouton cliquable avec hover/focus states
+- ✅ **Maintenabilité** : Un seul composant à maintenir pour 3 types d'activités
+
+---
+
+### TileCard
+
+**Fichier :** `components/TileCard.tsx`
+
+Conteneur réutilisable qui applique **le même style de tour (bordure)** que les tuiles de la modale « Activités du jour » (ActivityTile). Permet d’uniformiser l’affichage des cartes : page Objectifs, listes d’activités, etc., sans dupliquer les classes de bordure et de forme.
+
+#### Style appliqué
+
+- `rounded-lg` — Coins arrondis
+- `border border-l-4` — Bordure générale grise + bordure gauche colorée 4px
+- `border-stone-200` — Couleur de la bordure (hors gauche)
+- `bg-white p-3 shadow-sm` — Fond, padding, ombre légère
+- Optionnel : classe `.training-card` pour le hover (léger lift + ombre)
+
+#### Props
+
+```typescript
+type TileCardProps = {
+  leftBorderColor: 'amber' | 'sage' | 'forest' | 'strava' | 'gold' | 'olive'
+  children: React.ReactNode
+  className?: string
+  interactive?: boolean   // true = applique training-card (hover)
+  as?: 'div' | 'button'
+  onClick?: () => void   // utilisé lorsque as="button"
+  type?: 'button' | 'submit'
+}
+```
+
+#### Couleurs de bordure gauche
+
+| Valeur | Token | Usage |
+|--------|--------|-------|
+| `amber` | `palette-amber` | Objectif principal |
+| `sage` | `palette-sage` | Objectif secondaire |
+| `forest` | `palette-forest-dark` | Entraînement / action principale |
+| `strava` | `palette-strava` | Activité Strava |
+| `gold` | `palette-gold` | Trail, ski de randonnée |
+| `olive` | `palette-olive` | Vélo, secondaire |
+
+#### Exemples
+
+```tsx
+// Carte statique (ex. objectif sur la page Objectifs)
+<TileCard leftBorderColor="amber">
+  <div className="flex items-center gap-3">
+    <div className="...">...</div>
+    <div>
+      <h3 className="font-semibold text-stone-900">Marathon de Paris</h3>
+      <p className="text-sm text-stone-500">42 km</p>
+    </div>
+  </div>
+</TileCard>
+
+// Carte cliquable avec hover
+<TileCard leftBorderColor="sage" interactive as="button" onClick={() => openGoal(goal)}>
+  <div className="flex items-center gap-3">...</div>
+</TileCard>
+
+// Même style de tour que ActivityTile (objectif secondaire)
+<TileCard leftBorderColor="sage" interactive>
+  ...
+</TileCard>
+```
+
+#### Cas d’usage
+
+- **Page Objectifs** : Afficher chaque objectif dans une TileCard avec `leftBorderColor="amber"` ou `"sage"` pour avoir le même contour que les tuiles de la modale Activités du jour.
+- **Listes personnalisées** : Tout contenu qui doit reprendre le style « tuile avec bordure gauche colorée » sans utiliser le contenu prédéfini d’ActivityTile.
+
+---
+
 ### Modal
 
 **Fichier :** `components/Modal.tsx`
@@ -725,6 +1006,20 @@ const [isOpen, setIsOpen] = useState(false)
 
 ---
 
+### LanguageSwitcher
+
+**Fichier :** `components/LanguageSwitcher.tsx`
+
+Dropdown de changement de langue (FR/EN) : bouton avec icône globe, code langue courante (FR/EN) et chevron ; menu déroulant avec libellés « Français » / « English » et coche sur la langue active. Utilise les tokens `palette-forest-dark`, `stone-*`, `rounded-lg` / `rounded-xl`. Affiché dans le header de la page d'accueil et dans la sidebar du dashboard. Aperçu dans la page Design System (admin).
+
+```tsx
+import { LanguageSwitcher } from '@/components/LanguageSwitcher'
+
+<LanguageSwitcher />
+```
+
+---
+
 ## Icônes
 
 ### Sports
@@ -857,7 +1152,7 @@ Actuellement, utiliser un span custom :
 ### Fichiers clés
 
 - **Tokens couleurs** : `tailwind.config.ts`, `app/globals.css`
-- **Composants** : `components/Button.tsx`, `components/Input.tsx`, `components/Textarea.tsx`, `components/Badge.tsx`, `components/SportTileSelectable.tsx`, `components/Modal.tsx`
+- **Composants** : `components/Button.tsx`, `components/Input.tsx`, `components/Textarea.tsx`, `components/Badge.tsx`, `components/SportTileSelectable.tsx`, `components/ActivityTile.tsx`, `components/Modal.tsx`
 - **Sports** : `lib/sportStyles.ts`, `lib/sportsOptions.ts`, `components/SportIcons.tsx`
 - **Design system page** : `app/dashboard/admin/design-system/page.tsx`
 

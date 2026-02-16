@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { CalendarViewWithNavigation } from './CalendarViewWithNavigation'
 import { WeekSelector } from './WeekSelector'
 import type { Workout, Goal, ImportedActivity, ImportedActivityWeeklyTotal, WorkoutWeeklyTotal } from '@/types/database'
@@ -27,6 +28,9 @@ export function AthleteCalendarPage({
   canEdit,
   pathToRevalidate,
 }: AthleteCalendarPageProps) {
+  const t = useTranslations('navigation')
+  const tCommon = useTranslations('common')
+
   return (
     <main className="flex-1 flex flex-col h-full min-w-0 bg-white/50 rounded-2xl overflow-hidden relative border border-stone-200/50">
       <CalendarViewWithNavigation
@@ -44,9 +48,9 @@ export function AthleteCalendarPage({
         renderWeekSelector={({ dateRangeLabel, onNavigate, isAnimating }) => (
           <header className="h-20 flex items-center justify-between px-6 lg:px-8 shrink-0 bg-white/80 backdrop-blur-md border-b border-stone-100 z-10">
             <div>
-              <h1 className="text-xl font-bold text-stone-800">Mon calendrier</h1>
+              <h1 className="text-xl font-bold text-stone-800">{t('calendar')}</h1>
             </div>
-            <WeekSelector dateRangeLabel={dateRangeLabel} onNavigate={onNavigate} isAnimating={isAnimating} />
+            <WeekSelector dateRangeLabel={dateRangeLabel} onNavigate={onNavigate} isAnimating={isAnimating} prevWeekAriaLabel={tCommon('weekPrevious')} nextWeekAriaLabel={tCommon('weekNext')} />
           </header>
         )}
       />

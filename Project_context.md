@@ -32,6 +32,7 @@ Always prioritize:
 - Clean UX
 - Mobile-friendly design
 - Clear separation between roles (athlete, coach, admin)
+- **Bilingual (FR/EN):** any new user-facing text must be translated from day one (next-intl; see `docs/I18N.md`)
 - Scalable but not over-engineered architecture
 
 Avoid:
@@ -246,12 +247,14 @@ Athletes filter coaches by:
 
 ## 6. Technical Guidelines
 
-- **Stack:** Next.js (App Router), Supabase (Auth, DB, RLS)
+- **Stack:** Next.js (App Router), Supabase (Auth, DB, RLS), **next-intl (i18n FR/EN)**
 - **Folder structure:**
-  - `/app/dashboard` — main app (role-based views)
-  - `/app/admin` — admin-only pages
+  - `/app/[locale]` — localised routes (dashboard, admin, login, etc.)
+  - `/app/api`, `/app/auth` — API and auth callbacks (not localised)
   - `/components` — shared components
+  - `/messages` — fr.json, en.json (translations)
   - `/utils` — auth, Supabase clients
+- **i18n:** Application is bilingual (French default, English). **Every new feature must be translated from day one** — use next-intl, no hardcoded user-facing strings. See `docs/I18N.md`.
 - **Auth:** Supabase Auth, server-side `getCurrentUserWithProfile()`, `requireRole()`
 - **Security:** RLS on all tables, role-based policies
 - **Stripe:** Not implemented yet; schema is payment-ready
@@ -272,7 +275,7 @@ Athletes filter coaches by:
 - Clear hierarchy
 - Dashboard-centric navigation
 - Mobile-friendly sidebar
-- French as primary language (app labels)
+- **Bilingual:** French (default) and English — all UI and messages via next-intl; new features must include translations (see `docs/I18N.md`).
 
 ---
 
@@ -342,6 +345,7 @@ Affiche tous les composants, variantes, et exemples d'utilisation.
 When generating code:
 
 - **Couleurs :** privilégier les tokens de la palette (`palette-forest-dark`, `palette-olive`, etc.) — pas de valeurs hex en dur.
+- **i18n :** toujours penser bilingue — pas de texte utilisateur en dur ; utiliser next-intl et `docs/I18N.md`.
 - Prioritize simplicity
 - Deliver MVP solutions first
 - Avoid unnecessary abstraction
@@ -358,5 +362,6 @@ When generating code:
 - Add features not explicitly requested
 - Break role separation
 - Introduce new global state unless necessary
+- Add hardcoded user-facing strings (always use next-intl; see `docs/I18N.md`)
 
-The product must remain **simple**, **accessible**, and **scalable**.
+The product must remain **simple**, **accessible**, **scalable**, and **bilingual (FR/EN)**.

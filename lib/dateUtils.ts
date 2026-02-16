@@ -40,9 +40,10 @@ export function toDateStr(date: Date): string {
  * Formate une date en français long (ex: "13 février 2026").
  * @param dateInput - Date ou string ISO
  * @param includeWeekday - Inclure le jour de la semaine (ex: "Vendredi 13 février 2026")
- * @returns Date formatée en français
+ * @param locale - Locale à utiliser (défaut: 'fr-FR')
+ * @returns Date formatée
  */
-export function formatDateFr(dateInput: Date | string, includeWeekday: boolean = false): string {
+export function formatDateFr(dateInput: Date | string, includeWeekday: boolean = false, locale: string = 'fr-FR'): string {
   const date = typeof dateInput === 'string' ? new Date(dateInput + 'T12:00:00') : dateInput
   
   // Validation: vérifier si la date est valide
@@ -51,7 +52,7 @@ export function formatDateFr(dateInput: Date | string, includeWeekday: boolean =
     return 'Date invalide'
   }
   
-  const formatted = new Intl.DateTimeFormat('fr-FR', {
+  const formatted = new Intl.DateTimeFormat(locale, {
     ...(includeWeekday && { weekday: 'long' }),
     year: 'numeric',
     month: 'long',
@@ -82,11 +83,12 @@ export function getDaysUntil(targetDate: string | Date): number {
 }
 
 /**
- * Formate une date courte (ex: "13/02/2026").
+ * Formate une date courte (ex: "13/02/2026" en FR, "02/13/2026" en EN).
  * @param dateInput - Date ou string ISO
- * @returns Date formatée DD/MM/YYYY
+ * @param locale - Locale à utiliser (défaut: 'fr-FR')
+ * @returns Date formatée
  */
-export function formatShortDate(dateInput: Date | string): string {
+export function formatShortDate(dateInput: Date | string, locale: string = 'fr-FR'): string {
   const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput
   
   // Validation: vérifier si la date est valide
@@ -95,7 +97,7 @@ export function formatShortDate(dateInput: Date | string): string {
     return '--/--/----'
   }
   
-  return new Intl.DateTimeFormat('fr-FR').format(date)
+  return new Intl.DateTimeFormat(locale).format(date)
 }
 
 /**

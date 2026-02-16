@@ -4,6 +4,7 @@ import { useEffect, useState, useRef, useCallback } from 'react'
 import { useFormStatus } from 'react-dom'
 import { useActionState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useLocale, useTranslations } from 'next-intl'
 import {
   createWorkout,
   updateWorkout,
@@ -11,13 +12,13 @@ import {
   saveWorkoutComment,
   type WorkoutFormState,
   type CommentFormState,
-} from '@/app/dashboard/workouts/actions'
+} from '@/app/[locale]/dashboard/workouts/actions'
 import type { SportType, Workout } from '@/types/database'
 import { Modal } from '@/components/Modal'
 import { Button } from '@/components/Button'
 import { Input } from '@/components/Input'
 import { Textarea } from '@/components/Textarea'
-import { SPORT_ICONS, SPORT_LABELS } from '@/lib/sportStyles'
+import { SPORT_ICONS, SPORT_TRANSLATION_KEYS } from '@/lib/sportStyles'
 import { formatDateFr } from '@/lib/dateUtils'
 
 /** Sports pour entraînement (sous-ensemble du calendrier). */
@@ -50,6 +51,7 @@ function SubmitButton({
   isSubmitting?: boolean
 }) {
   const { pending } = useFormStatus()
+  const t = useTranslations('common')
   return (
     <Button
       type="submit"
@@ -57,12 +59,13 @@ function SubmitButton({
       variant="primaryDark"
       disabled={disabled || pending || isSubmitting}
       loading={pending || isSubmitting}
-      loadingText="Enregistrement…"
+      loadingText={t('saving')}
       success={showSuccess}
+      successText={t('saved')}
       error={!!formState?.error}
       className="flex-1 min-w-0"
     >
-      Enregistrer
+      {t('save')}
     </Button>
   )
 }
@@ -77,6 +80,7 @@ function CommentSubmitButton({
   showSuccess?: boolean
 }) {
   const { pending } = useFormStatus()
+  const t = useTranslations('common')
   
   return (
     <Button
@@ -84,11 +88,12 @@ function CommentSubmitButton({
       variant="primaryDark"
       disabled={!hasChanges || pending}
       loading={pending}
-      loadingText="Enregistrement…"
+      loadingText={t('saving')}
       success={showSuccess}
+      successText={t('saved')}
       className="shrink-0"
     >
-      Enregistrer
+      {t('save')}
     </Button>
   )
 }
@@ -103,6 +108,10 @@ export function WorkoutModal({
   athleteView = false,
   workout,
 }: WorkoutModalProps) {
+  const locale = useLocale()
+  const tWorkouts = useTranslations('workouts')
+  const tCommon = useTranslations('common')
+  const tSports = useTranslations('sports')
   const router = useRouter()
   // 🔧 FIX: Stocker le workout localement pour pouvoir le mettre à jour après sauvegarde du commentaire
   const [currentWorkout, setCurrentWorkout] = useState<Workout | null>(workout ?? null)
@@ -291,7 +300,7 @@ export function WorkoutModal({
   )
   const handleDelete = async () => {
     if (!currentWorkout || !canEdit) return
-    if (!confirm('Supprimer cet entraînement ? Cette action est irréversible.')) return
+    if (!confirm(tWorkouts('deleteConfirmation'))) return
     setDeleteError(null)
     setDeleteLoading(true)
     const result = await deleteWorkout(currentWorkout.id, athleteId, pathToRevalidate)
@@ -430,11 +439,11 @@ export function WorkoutModal({
 
   const modalTitle = isEdit
     ? athleteView
-      ? 'Mon entrainement'
+      ? tWorkouts('myWorkout')
       : canEdit
-        ? "Modifier l'entraînement"
-        : 'Votre entraînement'
-    : 'Nouvel entraînement'
+        ? tWorkouts('editWorkout')
+        : tWorkouts('myWorkout')
+    : tWorkouts('myWorkout')
 
   const modalIcon = (
     <svg
@@ -496,7 +505,7 @@ export function WorkoutModal({
                   >
                     <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                   </svg>
-                  Supprimer
+                  {tWorkouts('deleteWorkout')}
                 </Button>
               )}
               <SubmitButton disabled={!isValid || !hasUnsavedChanges} formState={state} showSuccess={showWorkoutSavedFeedback} isSubmitting={isSubmitting} />
@@ -525,22 +534,23 @@ export function WorkoutModal({
           <div className="flex-1 overflow-y-auto min-h-0">
           <div className="px-6 py-4 space-y-5">
           <p className="text-sm font-medium text-stone-600">
-            {formatDateFr(date, true)}
+            {formatDateFr(date, true, locale === 'fr' ? 'fr-FR' : 'en-US')}
           </p>
 
           <div>
             {canEdit && (
               <span className="block text-sm font-medium text-stone-700 mb-2">
-                Type de sport
+                {tWorkouts('form.sportType')}
               </span>
             )}
             <input type="hidden" name="sport_type" value={sportType} />
             {canEdit ? (
-              <div className="grid grid-cols-4 gap-2" role="group" aria-label="Type de sport">
+              <div className="grid grid-cols-4 gap-2" role="group" aria-label={tWorkouts('form.sportType')}>
                 {WORKOUT_SPORT_TYPES.map((sport) => {
                   const selected = sportType === sport
                   const Icon = SPORT_ICONS[sport as keyof typeof SPORT_ICONS]
-                  const label = SPORT_LABELS[sport as keyof typeof SPORT_LABELS] ?? sport
+                  const translationKey = SPORT_TRANSLATION_KEYS[sport as keyof typeof SPORT_TRANSLATION_KEYS]
+                  const label = translationKey ? tSports(translationKey) : sport
                   return (
                     <button
                       key={sport}
@@ -562,7 +572,8 @@ export function WorkoutModal({
               (() => {
                 if (!(sportType in SPORT_ICONS)) return null
                 const Icon = SPORT_ICONS[sportType as keyof typeof SPORT_ICONS]
-                const label = SPORT_LABELS[sportType as keyof typeof SPORT_LABELS] ?? sportType
+                const translationKey = SPORT_TRANSLATION_KEYS[sportType as keyof typeof SPORT_TRANSLATION_KEYS]
+                const label = translationKey ? tSports(translationKey) : sportType
                 return (
                   <div className="flex flex-col items-center justify-center gap-1 rounded-xl border-2 border-palette-forest-dark bg-palette-forest-dark/10 text-palette-forest-dark font-semibold py-3 px-4 min-h-[72px] w-fit">
                     <Icon className="w-8 h-8 shrink-0" aria-hidden />
@@ -579,20 +590,20 @@ export function WorkoutModal({
               {/* En-tête avec titre et toggle */}
               <div className="flex items-center justify-between mb-3">
                 <div className="text-xs font-bold text-stone-500 uppercase tracking-wide">
-                  OBJECTIFS DE LA SÉANCE
+                  {tWorkouts('form.sessionGoals')}
                 </div>
                 {canEdit && hasTimeDistanceChoice && (
                   <div className="flex bg-stone-200 p-0.5 rounded-lg">
                     <label className="cursor-pointer">
                       <input type="radio" name="target_mode" value="time" checked={targetMode === 'time'} onChange={() => setTargetMode('time')} className="sr-only" />
                       <div className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${targetMode === 'time' ? 'bg-palette-forest-dark text-white shadow-sm' : 'text-stone-600'}`}>
-                        Temps
+                        {tWorkouts('form.targetMode.time')}
                       </div>
                     </label>
                     <label className="cursor-pointer">
                       <input type="radio" name="target_mode" value="distance" checked={targetMode === 'distance'} onChange={() => setTargetMode('distance')} className="sr-only" />
                       <div className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${targetMode === 'distance' ? 'bg-palette-forest-dark text-white shadow-sm' : 'text-stone-600'}`}>
-                        Distance
+                        {tWorkouts('form.targetMode.distance')}
                       </div>
                     </label>
                   </div>
@@ -629,7 +640,7 @@ export function WorkoutModal({
                           className="w-full border border-stone-300 rounded-lg py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition-all bg-white text-stone-900 placeholder-stone-300 font-semibold pr-12"
                         />
                         <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                          <span className="text-stone-400 text-xs font-normal">min</span>
+                          <span className="text-stone-400 text-xs font-normal">{tWorkouts('form.durationUnit')}</span>
                         </div>
                         <input type="hidden" name="target_distance_km" value="" />
                         <input type="hidden" name="target_elevation_m" value="" />
@@ -683,7 +694,7 @@ export function WorkoutModal({
                               }`}
                             />
                             <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                              <span className={`text-xs font-normal ${targetMode === 'time' ? 'text-stone-300' : 'text-stone-400'}`}>km</span>
+                              <span className={`text-xs font-normal ${targetMode === 'time' ? 'text-stone-300' : 'text-stone-400'}`}>{tWorkouts('form.distanceUnitKm')}</span>
                             </div>
                           </>
                         )}
@@ -707,14 +718,14 @@ export function WorkoutModal({
                           }`}
                         />
                         <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                          <span className={`text-xs font-normal ${targetMode === 'distance' ? 'text-stone-300' : 'text-stone-400'}`}>min</span>
+                          <span className={`text-xs font-normal ${targetMode === 'distance' ? 'text-stone-300' : 'text-stone-400'}`}>{tWorkouts('form.durationUnit')}</span>
                         </div>
                         <input type="hidden" name="target_duration_minutes" value={targetMode === 'time' ? targetDurationMinutes : (showDisabledDuration ? targetDurationMinutes : '')} />
                         <input type="hidden" name="target_distance_km" value={targetMode === 'distance' ? targetDistanceKm : (showDisabledDistance ? targetDistanceKm : '')} />
                         <input type="hidden" name="target_elevation_m" value={hasElevation ? targetElevationM : ''} />
                       </div>
 
-                      {/* Dénivelé (bas gauche) */}
+                      {/* {tWorkouts('form.elevation')} (bas gauche) */}
                       {hasElevation ? (
                         <div className="relative">
                           <input
@@ -728,7 +739,7 @@ export function WorkoutModal({
                             className="w-full border border-stone-300 rounded-lg py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition-all bg-white text-stone-900 placeholder-stone-300 font-semibold pr-14"
                           />
                           <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                            <span className="text-stone-400 text-xs font-normal">m D+</span>
+                            <span className="text-stone-400 text-xs font-normal">{tWorkouts('form.elevationUnit')}</span>
                           </div>
                         </div>
                       ) : (
@@ -747,12 +758,12 @@ export function WorkoutModal({
                             value={targetPace}
                             onChange={(e) => setTargetPace(e.target.value)}
                             placeholder={sportType === 'course' ? '5.0' : sportType === 'velo' ? '39' : '2.0'}
-                            title="Obligatoire pour course, vélo et natation"
+                            title={tCommon('paceRequiredHint')}
                             className="w-full border border-stone-300 rounded-lg py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition-all bg-white text-stone-900 placeholder-stone-300 font-semibold pr-16"
                           />
                           <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                             <span className="text-stone-400 text-xs font-normal">
-                              {sportType === 'course' ? 'min/km' : sportType === 'velo' ? 'km/h' : 'min/100m'}
+                              {sportType === 'course' ? tWorkouts('form.paceUnitRunning') : sportType === 'velo' ? tWorkouts('form.paceUnitCycling') : tWorkouts('form.paceUnitSwimming')}
                             </span>
                           </div>
                         </div>
@@ -766,26 +777,26 @@ export function WorkoutModal({
 
           <Input
             id="title"
-            label="Titre de l'exercice"
+            label={tWorkouts('form.title')}
             name="title"
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
             disabled={!canEdit}
-            placeholder="Ex. Footing 45 min"
+            placeholder={tWorkouts('form.titlePlaceholder')}
           />
 
           {(canEdit || description.trim()) && (
             <Textarea
               id="description"
-              label={canEdit ? 'Description (facultatif)' : 'Description'}
+              label={canEdit ? tWorkouts('form.description') : tWorkouts('form.description')}
               name="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               disabled={!canEdit}
               rows={4}
-              placeholder="Détails de l'entraînement..."
+              placeholder={tWorkouts('form.descriptionPlaceholder')}
             />
           )}
 
@@ -815,7 +826,7 @@ export function WorkoutModal({
                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-bold text-stone-900">Commentaire de l'athlète</h3>
+                <h3 className="text-lg font-bold text-stone-900">{tWorkouts('comments.athleteComment')}</h3>
               </div>
               <div className="pt-2 pb-4">
                 {(currentWorkout?.athlete_comment ?? null) ? (
@@ -823,7 +834,7 @@ export function WorkoutModal({
                     {currentWorkout.athlete_comment}
                   </p>
                 ) : (
-                  <p className="text-sm text-stone-500">Aucun commentaire.</p>
+                  <p className="text-sm text-stone-500">{tWorkouts('comments.noComment')}</p>
                 )}
               </div>
             </div>
@@ -851,7 +862,7 @@ export function WorkoutModal({
                   <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                 </svg>
               </div>
-              <h3 className="text-lg font-bold text-stone-900">Votre commentaire</h3>
+              <h3 className="text-lg font-bold text-stone-900">{tWorkouts('comments.yourComment')}</h3>
             </div>
             <CommentSubmitButton formState={commentState} hasChanges={hasCommentChanged} showSuccess={showCommentSuccess} />
           </div>
@@ -871,9 +882,9 @@ export function WorkoutModal({
                 }
               }}
               rows={3}
-              placeholder="Saisissez votre commentaire..."
+              placeholder={tWorkouts('comments.placeholder')}
               className="rounded-xl py-3 min-h-0"
-              aria-label="Votre commentaire"
+              aria-label={tWorkouts('comments.ariaLabel')}
             />
             {commentState?.error && (
               <p className="text-sm text-palette-danger mt-2" role="alert">

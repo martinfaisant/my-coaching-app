@@ -4,6 +4,7 @@ import { Button } from '@/components/Button'
 import { Modal } from '@/components/Modal'
 import { IconClose } from '@/components/icons/IconClose'
 import { useState, useEffect, useCallback } from 'react'
+import { useLocale, useTranslations } from 'next-intl'
 import {
   getChatRole,
   getOrCreateConversationForAthlete,
@@ -13,10 +14,10 @@ import {
   type ChatRoleResult,
   type AthleteConversationResult,
   type ConversationWithMeta,
-} from '@/app/actions/chat'
+} from '@/app/[locale]/actions/chat'
 import type { ChatMessage } from '@/types/database'
 
-function formatMessageTime(iso: string): string {
+function formatMessageTime(iso: string, localeTag: string): string {
   const d = new Date(iso)
   const now = new Date()
   const sameDay =
@@ -24,9 +25,9 @@ function formatMessageTime(iso: string): string {
     d.getMonth() === now.getMonth() &&
     d.getFullYear() === now.getFullYear()
   if (sameDay) {
-    return d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+    return d.toLocaleTimeString(localeTag, { hour: '2-digit', minute: '2-digit' })
   }
-  return d.toLocaleDateString('fr-FR', {
+  return d.toLocaleDateString(localeTag, {
     day: 'numeric',
     month: 'short',
     hour: '2-digit',
@@ -40,6 +41,9 @@ type ChatModuleProps = {
 }
 
 export function ChatModule({ initialChatRole }: ChatModuleProps = {}) {
+  const locale = useLocale()
+  const localeTag = locale === 'fr' ? 'fr-FR' : 'en-US'
+  const t = useTranslations('chat')
   const [chatRole, setChatRole] = useState<ChatRoleResult>(initialChatRole ?? null)
   const [open, setOpen] = useState(false)
 
@@ -52,7 +56,7 @@ export function ChatModule({ initialChatRole }: ChatModuleProps = {}) {
   if (chatRole.role === 'athlete' && !chatRole.hasCoach) return null
 
   const label =
-    chatRole.role === 'athlete' ? 'Chater avec mon coach' : 'Discuter avec mes athlètes'
+    chatRole.role === 'athlete' ? t('chatWithCoach') : t('chatWithAthletes')
 
   return (
     <>
@@ -97,6 +101,9 @@ type ChatOverlayProps = {
 }
 
 function ChatOverlay({ role, userId, onClose }: ChatOverlayProps) {
+  const locale = useLocale()
+  const localeTag = locale === 'fr' ? 'fr-FR' : 'en-US'
+  const t = useTranslations('chat')
   const [athleteData, setAthleteData] = useState<AthleteConversationResult | null>(null)
   const [coachConvs, setCoachConvs] = useState<ConversationWithMeta[]>([])
   const [selectedConvId, setSelectedConvId] = useState<string | null>(null)
@@ -146,7 +153,7 @@ function ChatOverlay({ role, userId, onClose }: ChatOverlayProps) {
     if (!currentConversationId || !inputValue.trim() || sending) return
     setSending(true)
     setSendError(null)
-    const result = await sendMessage(currentConversationId, inputValue.trim())
+    const result = await sendMessage(currentConversationId, inputValue.trim(), locale)
     if (result.error) {
       setSendError(result.error)
     } else {
@@ -159,9 +166,9 @@ function ChatOverlay({ role, userId, onClose }: ChatOverlayProps) {
   const title =
     role === 'athlete'
       ? athleteData
-        ? `Discussion avec ${athleteData.coachName}`
-        : 'Chater avec mon coach'
-      : 'Discuter avec mes athlètes'
+        ? t('conversationWith', { name: athleteData.coachName })
+        : t('chatWithCoach')
+      : t('chatWithAthletes')
 
   const headerRight =
     role === 'coach' && coachConvs.length > 0 ? (
@@ -208,12 +215,12 @@ function ChatOverlay({ role, userId, onClose }: ChatOverlayProps) {
                 type="text"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
-                placeholder="Votre message..."
+                placeholder={t('placeholder')}
                 className="flex-1 rounded-lg border-2 border-palette-forest-dark bg-white px-4 py-2 text-sm text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-olive focus:border-palette-olive transition"
                 disabled={sending}
               />
               <Button type="submit" variant="primary" disabled={sending || !inputValue.trim()}>
-                Envoyer
+                {t('send')}
               </Button>
             </form>
           </div>
@@ -242,14 +249,14 @@ function ChatOverlay({ role, userId, onClose }: ChatOverlayProps) {
 
       <div className="flex-1 overflow-y-auto px-4 space-y-3 min-h-0">
         {loading ? (
-            <p className="text-sm text-stone-400">Chargement...</p>
+            <p className="text-sm text-stone-400">{t('loading')}</p>
           ) : role === 'athlete' && !athleteData ? (
             <p className="text-sm text-stone-400">
-              Aucun coach assigné. Vous ne pouvez pas envoyer de message pour le moment.
+              {t('noCoachAssigned')}
             </p>
           ) : role === 'coach' && coachConvs.length === 0 ? (
             <p className="text-sm text-stone-400">
-              Aucune discussion avec vos athlètes pour le moment.
+              {t('noConversations')}
             </p>
           ) : (
             messages.map((m) => {
@@ -274,8 +281,8 @@ function ChatOverlay({ role, userId, onClose }: ChatOverlayProps) {
                           : 'text-stone-400'
                       }`}
                     >
-                      {formatMessageTime(m.created_at)}
-                      {isMe && ' · Vous'}
+                      {formatMessageTime(m.created_at, localeTag)}
+                      {isMe && ` · ${t('you')}`}
                     </p>
                   </div>
                 </div>
