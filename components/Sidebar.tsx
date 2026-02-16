@@ -15,7 +15,7 @@ type SidebarProps = {
 }
 
 /** Pathname sans le segment locale (ex: /en/dashboard → /dashboard) pour la comparaison avec les href. */
-function pathWithoutLocale(pathname: string, locales: string[]): string {
+function pathWithoutLocale(pathname: string, locales: readonly string[]): string {
   const segment = pathname.split('/')[1]
   if (segment && locales.includes(segment)) {
     return '/' + pathname.split('/').slice(2).join('/') || ''
