@@ -14,6 +14,10 @@ export type Profile = {
   coached_sports?: string[] | null
   languages?: string[] | null
   presentation?: string | null
+  /** Présentation du coach en français (affichée lorsque la langue = fr). */
+  presentation_fr?: string | null
+  /** Présentation du coach en anglais (affichée lorsque la langue = en). */
+  presentation_en?: string | null
   avatar_url?: string | null
   postal_code?: string | null
   /** Sport(s) pratiqué(s) par l'athlète (course, velo, natation, musculation). */
@@ -98,6 +102,14 @@ export type CoachOffer = {
   coach_id: string
   title: string
   description: string
+  /** Titre en français (affichage selon langue). */
+  title_fr?: string | null
+  /** Titre en anglais. */
+  title_en?: string | null
+  /** Description et avantages en français. */
+  description_fr?: string | null
+  /** Description et avantages en anglais. */
+  description_en?: string | null
   price: number
   price_type: 'one_time' | 'monthly' | 'free'
   display_order: number

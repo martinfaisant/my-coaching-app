@@ -2,18 +2,31 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
+import { useTranslations } from 'next-intl'
 import { AvatarImage } from '@/components/AvatarImage'
 import { Button } from '@/components/Button'
 import type { Profile } from '@/types/database'
 import { getInitials } from '@/lib/stringUtils'
+import { routing } from '@/i18n/routing'
 
 type SidebarProps = {
   profile: Profile & { email: string }
 }
 
+/** Pathname sans le segment locale (ex: /en/dashboard → /dashboard) pour la comparaison avec les href. */
+function pathWithoutLocale(pathname: string, locales: string[]): string {
+  const segment = pathname.split('/')[1]
+  if (segment && locales.includes(segment)) {
+    return '/' + pathname.split('/').slice(2).join('/') || ''
+  }
+  return pathname
+}
+
 export function Sidebar({ profile }: SidebarProps) {
+  const t = useTranslations('navigation')
   const pathname = usePathname()
+  const path = useMemo(() => pathWithoutLocale(pathname, routing.locales), [pathname])
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [textVisible, setTextVisible] = useState(true)
   const displayName = profile.full_name?.trim() || profile.email
@@ -46,7 +59,7 @@ export function Sidebar({ profile }: SidebarProps) {
           variant="ghost"
           onClick={() => setIsCollapsed(!isCollapsed)}
         className="absolute -right-3 top-14 bg-white border border-stone-200 text-stone-400 hover:text-palette-forest-dark p-1.5 rounded-full shadow-md hover:shadow-lg !min-w-0 !min-h-0 z-50 !hidden lg:!flex items-center justify-center group"
-        aria-label={isCollapsed ? 'Ouvrir le menu' : 'Réduire le menu'}
+        aria-label={isCollapsed ? t('openMenu') : t('collapseMenu')}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -87,7 +100,7 @@ export function Sidebar({ profile }: SidebarProps) {
                 className={`flex items-center h-10 rounded-xl transition-all duration-300 group ${
                   isCollapsed ? 'w-10 justify-center px-0' : 'gap-2.5 px-2.5 lg:px-3'
                 } ${
-                  pathname === '/dashboard'
+                  path === '/dashboard'
                     ? 'bg-palette-forest-dark text-white shadow-lg shadow-palette-forest-dark/20'
                     : 'text-stone-500 hover:bg-stone-50 hover:text-palette-forest-dark'
                 }`}
@@ -96,7 +109,7 @@ export function Sidebar({ profile }: SidebarProps) {
                   <circle cx="11" cy="11" r="8" />
                   <path d="m21 21-4.3-4.3" />
                 </svg>
-                <span className={`text-sm font-medium transition-all duration-300 whitespace-nowrap hidden lg:block ${showText ? 'opacity-100 w-auto' : 'opacity-0 w-0 overflow-hidden'}`}>Trouver mon coach</span>
+                <span className={`text-sm font-medium transition-all duration-300 whitespace-nowrap hidden lg:block ${showText ? 'opacity-100 w-auto' : 'opacity-0 w-0 overflow-hidden'}`}>{t('findCoach')}</span>
               </Link>
             )}
             <Link
@@ -104,7 +117,7 @@ export function Sidebar({ profile }: SidebarProps) {
               className={`flex items-center h-10 rounded-xl transition-all duration-300 group ${
                 isCollapsed ? 'w-10 justify-center px-0' : 'gap-2.5 px-2.5 lg:px-3'
               } ${
-                pathname === '/dashboard/calendar'
+                path === '/dashboard/calendar'
                   ? 'bg-palette-forest-dark text-white shadow-lg shadow-palette-forest-dark/20'
                   : 'text-stone-500 hover:bg-stone-50 hover:text-palette-forest-dark'
               }`}
@@ -116,14 +129,14 @@ export function Sidebar({ profile }: SidebarProps) {
                 <line x1="3" x2="21" y1="10" y2="10" />
                 <path d="m9 16 2 2 4-4" />
               </svg>
-                <span className={`text-sm font-medium transition-all duration-300 whitespace-nowrap hidden lg:block ${showText ? 'opacity-100 w-auto' : 'opacity-0 w-0 overflow-hidden'}`}>Mon calendrier</span>
+                <span className={`text-sm font-medium transition-all duration-300 whitespace-nowrap hidden lg:block ${showText ? 'opacity-100 w-auto' : 'opacity-0 w-0 overflow-hidden'}`}>{t('calendar')}</span>
             </Link>
             <Link
               href="/dashboard/objectifs"
               className={`flex items-center h-10 rounded-xl transition-all duration-300 group ${
                 isCollapsed ? 'w-10 justify-center px-0' : 'gap-2.5 px-2.5 lg:px-3'
               } ${
-                pathname === '/dashboard/objectifs'
+                path === '/dashboard/objectifs'
                   ? 'bg-palette-forest-dark text-white shadow-lg shadow-palette-forest-dark/20'
                   : 'text-stone-500 hover:bg-stone-50 hover:text-palette-forest-dark'
               }`}
@@ -132,7 +145,7 @@ export function Sidebar({ profile }: SidebarProps) {
                 <circle cx="12" cy="12" r="10" />
                 <path d="M12 6v6l4 2" />
               </svg>
-              <span className={`text-sm font-medium transition-all duration-300 whitespace-nowrap hidden lg:block ${showText ? 'opacity-100 w-auto' : 'opacity-0 w-0 overflow-hidden'}`}>Mes Objectifs</span>
+              <span className={`text-sm font-medium transition-all duration-300 whitespace-nowrap hidden lg:block ${showText ? 'opacity-100 w-auto' : 'opacity-0 w-0 overflow-hidden'}`}>{t('goals')}</span>
             </Link>
             {profile.coach_id && (
               <Link
@@ -140,7 +153,7 @@ export function Sidebar({ profile }: SidebarProps) {
                 className={`flex items-center h-10 rounded-xl transition-all duration-300 group ${
                   isCollapsed ? 'w-10 justify-center px-0' : 'gap-2.5 px-2.5 lg:px-3'
                 } ${
-                  pathname === '/dashboard/coach'
+                  path === '/dashboard/coach'
                     ? 'bg-palette-forest-dark text-white shadow-lg shadow-palette-forest-dark/20'
                     : 'text-stone-500 hover:bg-stone-50 hover:text-palette-forest-dark'
                 }`}
@@ -151,7 +164,7 @@ export function Sidebar({ profile }: SidebarProps) {
                   <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
                   <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                 </svg>
-                <span className={`text-sm font-medium transition-all duration-300 whitespace-nowrap hidden lg:block ${showText ? 'opacity-100 w-auto' : 'opacity-0 w-0 overflow-hidden'}`}>Mon Coach</span>
+                <span className={`text-sm font-medium transition-all duration-300 whitespace-nowrap hidden lg:block ${showText ? 'opacity-100 w-auto' : 'opacity-0 w-0 overflow-hidden'}`}>{t('myCoach')}</span>
               </Link>
             )}
             <Link
@@ -159,7 +172,7 @@ export function Sidebar({ profile }: SidebarProps) {
               className={`flex items-center h-10 rounded-xl transition-all duration-300 group ${
                 isCollapsed ? 'w-10 justify-center px-0' : 'gap-2.5 px-2.5 lg:px-3'
               } ${
-                pathname === '/dashboard/devices'
+                path === '/dashboard/devices'
                   ? 'bg-palette-forest-dark text-white shadow-lg shadow-palette-forest-dark/20'
                   : 'text-stone-500 hover:bg-stone-50 hover:text-palette-forest-dark'
               }`}
@@ -170,13 +183,13 @@ export function Sidebar({ profile }: SidebarProps) {
                 <path d="m7.88 16.36.8 4a2 2 0 0 0 2 1.61h2.72a2 2 0 0 0 2-1.61l.81-4.05" />
                 <circle cx="12" cy="12" r="6" />
               </svg>
-              <span className={`text-sm font-medium transition-all duration-300 hidden lg:block ${showText ? 'opacity-100 w-auto' : 'opacity-0 w-0 overflow-hidden'}`}>Mes appareils connectés</span>
+              <span className={`text-sm font-medium transition-all duration-300 hidden lg:block ${showText ? 'opacity-100 w-auto' : 'opacity-0 w-0 overflow-hidden'}`}>{t('devices')}</span>
             </Link>
           </nav>
         </div>
 
         {/* Profil Bas */}
-        <div className={`p-2 lg:p-3 space-y-2 ${isCollapsed ? 'flex justify-center' : ''}`}>
+        <div className={`p-2 lg:p-3 space-y-2 ${isCollapsed ? 'flex flex-col items-center gap-2' : ''}`}>
           <Link
             href="/dashboard/profile"
             className={`flex items-center h-10 rounded-xl border border-stone-100 bg-stone-50 hover:bg-white hover:shadow-md transition-all duration-300 group ${
@@ -204,7 +217,7 @@ export function Sidebar({ profile }: SidebarProps) {
         variant="ghost"
         onClick={() => setIsCollapsed(!isCollapsed)}
         className="absolute -right-3 top-14 bg-white border border-stone-200 text-stone-400 hover:text-palette-forest-dark p-1.5 rounded-full shadow-md hover:shadow-lg !min-w-0 !min-h-0 z-50 !hidden lg:!flex items-center justify-center group"
-        aria-label={isCollapsed ? 'Ouvrir le menu' : 'Réduire le menu'}
+        aria-label={isCollapsed ? t('openMenu') : t('collapseMenu')}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -242,7 +255,7 @@ export function Sidebar({ profile }: SidebarProps) {
             className={`flex items-center h-10 rounded-xl transition-all duration-300 group ${
               isCollapsed ? 'w-10 justify-center px-0' : 'gap-2.5 px-2.5 lg:px-3'
             } ${
-              (pathname === '/dashboard' || pathname.startsWith('/dashboard/athletes'))
+              (path === '/dashboard' || path.startsWith('/dashboard/athletes'))
                 ? 'bg-palette-forest-dark text-white shadow-lg shadow-palette-forest-dark/20'
                 : 'text-stone-500 hover:bg-stone-50 hover:text-palette-forest-dark'
             }`}
@@ -253,7 +266,7 @@ export function Sidebar({ profile }: SidebarProps) {
               <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
               <path d="M16 3.13a4 4 0 0 1 0 7.75" />
             </svg>
-            <span className={`text-sm font-medium transition-all duration-300 whitespace-nowrap hidden lg:block ${showText ? 'opacity-100 w-auto' : 'opacity-0 w-0 overflow-hidden'}`}>Mes Athlètes</span>
+            <span className={`text-sm font-medium transition-all duration-300 whitespace-nowrap hidden lg:block ${showText ? 'opacity-100 w-auto' : 'opacity-0 w-0 overflow-hidden'}`}>{t('athletes')}</span>
           </Link>
           {profile.role !== 'admin' && (
             <Link
@@ -261,7 +274,7 @@ export function Sidebar({ profile }: SidebarProps) {
               className={`flex items-center h-10 rounded-xl transition-all duration-300 group ${
                 isCollapsed ? 'w-10 justify-center px-0' : 'gap-2.5 px-2.5 lg:px-3'
               } ${
-                pathname === '/dashboard/profile/offers'
+                path === '/dashboard/profile/offers'
                   ? 'bg-palette-forest-dark text-white shadow-lg shadow-palette-forest-dark/20'
                   : 'text-stone-500 hover:bg-stone-50 hover:text-palette-forest-dark'
               }`}
@@ -271,7 +284,7 @@ export function Sidebar({ profile }: SidebarProps) {
                 <path d="M3 9h18" />
                 <path d="M9 21V9" />
               </svg>
-              <span className={`text-sm font-medium transition-all duration-300 whitespace-nowrap hidden lg:block ${showText ? 'opacity-100 w-auto' : 'opacity-0 w-0 overflow-hidden'}`}>Mon offre</span>
+              <span className={`text-sm font-medium transition-all duration-300 whitespace-nowrap hidden lg:block ${showText ? 'opacity-100 w-auto' : 'opacity-0 w-0 overflow-hidden'}`}>{t('offers')}</span>
             </Link>
           )}
           {profile.role === 'admin' && (
@@ -280,7 +293,7 @@ export function Sidebar({ profile }: SidebarProps) {
               className={`flex items-center h-10 rounded-xl transition-all duration-300 group ${
                 isCollapsed ? 'w-10 justify-center px-0' : 'gap-2.5 px-2.5 lg:px-3'
               } ${
-                pathname === '/dashboard/admin/design-system'
+                path === '/dashboard/admin/design-system'
                   ? 'bg-palette-forest-dark text-white shadow-lg shadow-palette-forest-dark/20'
                   : 'text-stone-500 hover:bg-stone-50 hover:text-palette-forest-dark'
               }`}
@@ -297,7 +310,7 @@ export function Sidebar({ profile }: SidebarProps) {
           )}
         </nav>
       </div>
-      <div className={`p-2 lg:p-3 ${isCollapsed ? 'flex justify-center' : ''}`}>
+      <div className={`p-2 lg:p-3 space-y-2 ${isCollapsed ? 'flex flex-col items-center gap-2' : ''}`}>
         <Link
           href="/dashboard/profile"
           className={`flex items-center h-10 rounded-xl border border-stone-100 bg-stone-50 hover:bg-white hover:shadow-md transition-all duration-300 group ${

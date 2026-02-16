@@ -1,11 +1,22 @@
 import type { SportType } from '@/types/database'
 
 /**
+ * Error codes for workout validation.
+ * Map to translation keys: workouts.validation.{code}
+ */
+export const WORKOUT_VALIDATION_ERROR_CODES = {
+  ALL_FIELDS_REQUIRED: 'allFieldsRequired',
+  INVALID_SPORT: 'invalidSport',
+  TARGET_REQUIRED: 'targetRequired',
+  PACE_REQUIRED: 'paceRequired',
+} as const
+
+/**
  * Valide les données d'un formulaire de workout (création ou mise à jour).
  * Retourne soit les données validées, soit une erreur.
  */
 export function validateWorkoutFormData(formData: FormData): 
-  | { error: string }
+  | { error: string; errorCode?: string }
   | {
       data: {
         date: string
@@ -29,7 +40,10 @@ export function validateWorkoutFormData(formData: FormData):
 
   // Validation des champs obligatoires
   if (!date || !sportType || !title) {
-    return { error: 'Tous les champs sont obligatoires.' }
+    return { 
+      error: 'Tous les champs sont obligatoires.',
+      errorCode: WORKOUT_VALIDATION_ERROR_CODES.ALL_FIELDS_REQUIRED
+    }
   }
 
   // Validation du type de sport
@@ -43,7 +57,10 @@ export function validateWorkoutFormData(formData: FormData):
     'ice_skating',
   ]
   if (!validSports.includes(sportType)) {
-    return { error: 'Type de sport invalide.' }
+    return { 
+      error: 'Type de sport invalide.',
+      errorCode: WORKOUT_VALIDATION_ERROR_CODES.INVALID_SPORT
+    }
   }
 
   // Parse et validation des targets
@@ -55,13 +72,19 @@ export function validateWorkoutFormData(formData: FormData):
   )
 
   if (target_duration_minutes === undefined && target_distance_km === undefined) {
-    return { error: 'Indiquez un objectif (temps ou distance selon le sport).' }
+    return { 
+      error: 'Indiquez un objectif (temps ou distance selon le sport).',
+      errorCode: WORKOUT_VALIDATION_ERROR_CODES.TARGET_REQUIRED
+    }
   }
 
   // Validation de la vitesse/allure
   const target_pace = paceRaw && paceRaw !== '' && Number(paceRaw) > 0 ? Number(paceRaw) : null
   if (['course', 'velo', 'natation'].includes(sportType) && (target_pace == null || target_pace <= 0)) {
-    return { error: 'La vitesse (allure ou km/h) est obligatoire pour ce sport.' }
+    return { 
+      error: 'La vitesse (allure ou km/h) est obligatoire pour ce sport.',
+      errorCode: WORKOUT_VALIDATION_ERROR_CODES.PACE_REQUIRED
+    }
   }
 
   return {

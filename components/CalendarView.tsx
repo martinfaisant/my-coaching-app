@@ -3,11 +3,14 @@
 import { useState, useMemo, useCallback } from 'react'
 import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
+import { useLocale, useTranslations } from 'next-intl'
 import { Button } from './Button'
 import { IconClose } from './icons/IconClose'
 import { WorkoutModal } from './WorkoutModal'
+import { Modal } from './Modal'
 import { IconRunning, IconBiking, IconSwimming, IconDumbbell, IconNordicSki, IconBackcountrySki, IconIceSkating } from './SportIcons'
-import { SPORT_LABELS, SPORT_ICONS, SPORT_CARD_STYLES } from '@/lib/sportStyles'
+import { SPORT_ICONS, SPORT_CARD_STYLES, SPORT_TRANSLATION_KEYS } from '@/lib/sportStyles'
+import { ActivityTile } from './ActivityTile'
 import type { Workout, SportType, Goal, ImportedActivity, ImportedActivityWeeklyTotal, WorkoutWeeklyTotal } from '@/types/database'
 
 /** Formate une durée en minutes (ex. "4h00", "45'"). */
@@ -53,12 +56,50 @@ function formatWorkoutTarget(w: Workout): { primary: string; secondary?: string;
   return { primary: '' }
 }
 
+/** Formate les métadonnées d'un entraînement pour ActivityTile (ex. ["1h30", "15 km", "200m D+"]). */
+function formatWorkoutMetadata(w: Workout): string[] {
+  const metadata: string[] = []
+  if (w.target_duration_minutes != null && w.target_duration_minutes > 0) {
+    metadata.push(formatDuration(w.target_duration_minutes))
+  }
+  if (w.target_distance_km != null && w.target_distance_km > 0) {
+    const dist = w.sport_type === 'natation'
+      ? `${Math.round(w.target_distance_km * 1000)} m`
+      : `${Number(w.target_distance_km) % 1 === 0 ? w.target_distance_km : (w.target_distance_km as number).toFixed(1)} km`
+    metadata.push(dist)
+  }
+  if (w.target_elevation_m != null && w.target_elevation_m > 0) {
+    metadata.push(`${w.target_elevation_m}m D+`)
+  }
+  return metadata
+}
+
+/** Formate les métadonnées d'une activité Strava pour ActivityTile (ex. ["10.5 km", "150m D+"]). */
+function formatStravaMetadata(a: ImportedActivity): string[] {
+  const metadata: string[] = []
+  const raw = a.raw_data as { moving_time?: number; distance?: number; total_elevation_gain?: number } | null
+  if (!raw) return metadata
+  
+  const distanceM = raw.distance
+  const elevationM = raw.total_elevation_gain
+  
+  if (distanceM != null && distanceM > 0) {
+    const km = distanceM / 1000
+    metadata.push(`${km % 1 === 0 ? km : km.toFixed(1)} km`)
+  }
+  if (elevationM != null && elevationM > 0) {
+    metadata.push(`${Math.round(elevationM)}m D+`)
+  }
+  return metadata
+}
+
 /** Libellé du type d'activité pour l'affichage (activity_type, raw_data.type ou type de sport). */
-function getImportedActivityTypeLabel(a: ImportedActivity): string {
+function getImportedActivityTypeLabel(a: ImportedActivity, tSports: (key: string) => string): string {
   if (a.activity_type && String(a.activity_type).trim()) return String(a.activity_type).trim()
   const raw = a.raw_data as { type?: string } | null
   if (raw?.type && typeof raw.type === 'string') return raw.type.trim()
-  return SPORT_LABELS[a.sport_type]
+  const translationKey = SPORT_TRANSLATION_KEYS[a.sport_type]
+  return translationKey ? tSports(translationKey) : a.sport_type
 }
 
 /** Formate les infos Strava (raw_data) comme les objectifs des cartes coach (temps, distance, dénivelé). Préfère distance + D+ si présents. */
@@ -100,7 +141,7 @@ const MountainIcon = () => (
 
 import { getWeekMonday, toDateStr } from '@/lib/dateUtils'
 
-const DAY_NAMES = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']
+// Day names will be dynamically loaded using translations
 
 /** Totaux "fait" par sport pour une semaine (minutes, distance km). */
 type WeekFaitBySport = Record<SportType, { minutes: number; distanceKm: number }>
@@ -128,9 +169,9 @@ type CalendarViewProps = {
 }
 
 /** Icône cible avec badge 1 (objectif principal) ou 2 (secondaire). */
-function GoalTargetBadge({ isPrimary }: { isPrimary: boolean }) {
+function GoalTargetBadge({ isPrimary, title }: { isPrimary: boolean; title: string }) {
   return (
-    <span className="inline-flex items-center justify-center shrink-0" title={isPrimary ? 'Objectif principal' : 'Objectif secondaire'}>
+    <span className="inline-flex items-center justify-center shrink-0" title={title}>
       <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-palette-forest-dark">
         <circle cx="12" cy="12" r="10" />
         <circle cx="12" cy="12" r="6" />
@@ -166,6 +207,13 @@ export function CalendarView({
   onWorkoutSaved,
   hideFirstWeekTitle = false,
 }: CalendarViewProps) {
+  const locale = useLocale()
+  const localeTag = locale === 'fr' ? 'fr-FR' : 'en-US'
+  const tCalendar = useTranslations('calendar')
+  const tWorkouts = useTranslations('workouts')
+  const tGoals = useTranslations('goals')
+  const tCommon = useTranslations('common')
+  const tSports = useTranslations('sports')
   const router = useRouter()
   const [modalOpen, setModalOpen] = useState(false)
   const [modalDate, setModalDate] = useState<string>('')
@@ -175,7 +223,7 @@ export function CalendarView({
   const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null)
   const [selectedImportedActivity, setSelectedImportedActivity] = useState<ImportedActivity | null>(null)
   const [extraActivitiesModalOpen, setExtraActivitiesModalOpen] = useState(false)
-  const [extraActivitiesList, setExtraActivitiesList] = useState<Array<{ type: 'workout'; item: Workout; dateStr: string } | { type: 'imported'; item: ImportedActivity; dateStr: string }>>([])
+  const [extraActivitiesList, setExtraActivitiesList] = useState<Array<{ type: 'workout'; item: Workout; dateStr: string } | { type: 'imported'; item: ImportedActivity; dateStr: string } | { type: 'goal'; item: Goal; dateStr: string }>>([])
   const [extraActivitiesModalDate, setExtraActivitiesModalDate] = useState<string | null>(null)
 
   const openGoal = (goal: Goal) => {
@@ -189,7 +237,31 @@ export function CalendarView({
     const startMonday = new Date(baseMonday)
     startMonday.setDate(startMonday.getDate() - 7)
 
-    const MONTHS_FR = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre']
+    // Get month names based on locale
+    const getMonthName = (monthIndex: number): string => {
+      const date = new Date(2000, monthIndex, 1)
+      return new Intl.DateTimeFormat(localeTag, { month: 'long' }).format(date)
+    }
+    
+    const getShortMonthName = (monthIndex: number): string => {
+      const date = new Date(2000, monthIndex, 1)
+      return new Intl.DateTimeFormat(localeTag, { month: 'short' }).format(date).replace('.', '')
+    }
+    
+    const getDayNames = (): string[] => {
+      return [
+        tCalendar('days.mon'),
+        tCalendar('days.tue'),
+        tCalendar('days.wed'),
+        tCalendar('days.thu'),
+        tCalendar('days.fri'),
+        tCalendar('days.sat'),
+        tCalendar('days.sun'),
+      ]
+    }
+    
+    const DAY_NAMES = getDayNames()
+    
     const weeks: { label: string; monthLabel: string; rangeLabel: string; isCurrentWeek: boolean; days: { dateStr: string; label: string; dayName: string; isToday: boolean; isTomorrow: boolean; isPast: boolean }[] }[] = []
     
     const todayMonday = getWeekMonday(today)
@@ -198,23 +270,23 @@ export function CalendarView({
       const weekStart = new Date(startMonday)
       weekStart.setDate(weekStart.getDate() + w * 7)
       const weekMonday = getWeekMonday(weekStart)
-      const monthLabel = MONTHS_FR[weekStart.getMonth()]
+      const monthLabel = getMonthName(weekStart.getMonth())
       
       const firstDay = new Date(weekStart)
       const lastDay = new Date(weekStart)
       lastDay.setDate(lastDay.getDate() + 6)
-      const rangeLabel = `${firstDay.getDate()} ${['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'][firstDay.getMonth()]} - ${lastDay.getDate()} ${['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'][lastDay.getMonth()]}`
+      const rangeLabel = `${firstDay.getDate()} ${getShortMonthName(firstDay.getMonth())} - ${lastDay.getDate()} ${getShortMonthName(lastDay.getMonth())}`
       let weekLabel = ''
       let isCurrentWeek = false
       if (weekMonday.getTime() === todayMonday.getTime()) {
-        weekLabel = 'Semaine actuelle'
+        weekLabel = tCalendar('currentWeek')
         isCurrentWeek = true
       } else if (weekMonday.getTime() < todayMonday.getTime()) {
         const diffWeeks = Math.round((todayMonday.getTime() - weekMonday.getTime()) / (7 * 24 * 60 * 60 * 1000))
-        weekLabel = diffWeeks === 1 ? `Semaine précédente` : `Il y a ${diffWeeks} semaines`
+        weekLabel = diffWeeks === 1 ? tCalendar('previousWeek') : tCalendar('weeksAgo', { weeks: diffWeeks })
       } else {
         const diffWeeks = Math.round((weekMonday.getTime() - todayMonday.getTime()) / (7 * 24 * 60 * 60 * 1000))
-        weekLabel = diffWeeks === 1 ? `Semaine suivante` : `Dans ${diffWeeks} semaines`
+        weekLabel = diffWeeks === 1 ? tCalendar('nextWeek') : tCalendar('inWeeks', { weeks: diffWeeks })
       }
 
       const days: { dateStr: string; label: string; dayName: string; isToday: boolean; isTomorrow: boolean; isPast: boolean }[] = []
@@ -243,7 +315,7 @@ export function CalendarView({
     }
 
     return { startMonday, weeks }
-  }, [referenceMonday])
+  }, [referenceMonday, locale, localeTag, tCalendar])
 
   const workoutsByDate = useMemo(() => {
     const map: Record<string, Workout[]> = {}
@@ -565,7 +637,7 @@ export function CalendarView({
                           <>
                             {showTime && (
                               <>
-                                <span className="flex items-center gap-1.5 text-stone-600" title="Temps réalisé / prévu">
+                                <span className="flex items-center gap-1.5 text-stone-600" title={tCalendar('weekly.timeCompletedPlanned')}>
                                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                   </svg>
@@ -575,43 +647,43 @@ export function CalendarView({
                               </>
                             )}
                             {(prevu?.course?.distanceKm ?? 0) > 0 || (fait?.course?.distanceKm ?? 0) > 0 ? (
-                              <span className="flex items-center gap-1.5 text-palette-forest-dark" title="Course : distance faite / prévue">
+                              <span className="flex items-center gap-1.5 text-palette-forest-dark" title={tCalendar('weekly.runningDistanceCompletedPlanned')}>
                                 <IconRunning className="w-3.5 h-3.5" />
                                 {formatDist(fait?.course?.distanceKm ?? 0)} km / {formatDist(prevu?.course?.distanceKm ?? 0)} km
                               </span>
                             ) : null}
                             {(prevu?.velo?.distanceKm ?? 0) > 0 || (fait?.velo?.distanceKm ?? 0) > 0 ? (
-                              <span className="flex items-center gap-1.5 text-palette-olive" title="Vélo : distance faite / prévue">
+                              <span className="flex items-center gap-1.5 text-palette-olive" title={tCalendar('weekly.cyclingDistanceCompletedPlanned')}>
                                 <IconBiking className="w-3.5 h-3.5" />
                                 {formatDist(fait?.velo?.distanceKm ?? 0)} km / {formatDist(prevu?.velo?.distanceKm ?? 0)} km
                               </span>
                             ) : null}
                             {((prevu?.natation?.distanceKm ?? 0) > 0 || (fait?.natation?.distanceKm ?? 0) > 0 || (prevu?.natation?.minutes ?? 0) > 0 || (fait?.natation?.minutes ?? 0) > 0) ? (
-                              <span className="flex items-center gap-1.5 text-sky-600" title="Natation : distance réalisée / prévue">
+                              <span className="flex items-center gap-1.5 text-sky-600" title={tCalendar('weekly.swimmingDistanceCompletedPlanned')}>
                                 <IconSwimming className="w-3.5 h-3.5" />
                                 {formatDist(fait?.natation?.distanceKm ?? 0)} km / {formatDist(prevu?.natation?.distanceKm ?? 0)} km
                               </span>
                             ) : null}
                             {(prevu?.musculation?.minutes ?? 0) > 0 || (fait?.musculation?.minutes ?? 0) > 0 ? (
-                              <span className="flex items-center gap-1.5 text-stone-600" title="Musculation : temps réalisé / prévu">
+                              <span className="flex items-center gap-1.5 text-stone-600" title={tCalendar('weekly.strengthTimeCompletedPlanned')}>
                                 <IconDumbbell className="w-3.5 h-3.5" />
                                 {formatDuration(fait?.musculation?.minutes ?? 0)} / {formatDuration(prevu?.musculation?.minutes ?? 0)}
                               </span>
                             ) : null}
                             {(prevu?.nordic_ski?.distanceKm ?? 0) > 0 || (fait?.nordic_ski?.distanceKm ?? 0) > 0 ? (
-                              <span className="flex items-center gap-1.5 text-palette-sage" title="Ski de fond : distance faite / prévue">
+                              <span className="flex items-center gap-1.5 text-palette-sage" title={tCalendar('weekly.nordicSkiDistanceCompletedPlanned')}>
                                 <IconNordicSki className="w-3.5 h-3.5" />
                                 {formatDist(fait?.nordic_ski?.distanceKm ?? 0)} km / {formatDist(prevu?.nordic_ski?.distanceKm ?? 0)} km
                               </span>
                             ) : null}
                             {(prevu?.backcountry_ski?.distanceKm ?? 0) > 0 || (fait?.backcountry_ski?.distanceKm ?? 0) > 0 ? (
-                              <span className="flex items-center gap-1.5 text-palette-gold" title="Ski de randonnée : distance faite / prévue">
+                              <span className="flex items-center gap-1.5 text-palette-gold" title={tCalendar('weekly.backcountrySkiDistanceCompletedPlanned')}>
                                 <IconBackcountrySki className="w-3.5 h-3.5" />
                                 {formatDist(fait?.backcountry_ski?.distanceKm ?? 0)} km / {formatDist(prevu?.backcountry_ski?.distanceKm ?? 0)} km
                               </span>
                             ) : null}
                             {(prevu?.ice_skating?.distanceKm ?? 0) > 0 || (fait?.ice_skating?.distanceKm ?? 0) > 0 ? (
-                              <span className="flex items-center gap-1.5 text-cyan-600" title="Patin à glace : distance faite / prévue">
+                              <span className="flex items-center gap-1.5 text-cyan-600" title={tCalendar('weekly.iceSkatingDistanceCompletedPlanned')}>
                                 <IconIceSkating className="w-3.5 h-3.5" />
                                 {formatDist(fait?.ice_skating?.distanceKm ?? 0)} km / {formatDist(prevu?.ice_skating?.distanceKm ?? 0)} km
                               </span>
@@ -633,22 +705,22 @@ export function CalendarView({
                 const diffPct = prevTotalMin > 0 ? Math.round(((totalFaitMin - prevTotalMin) / prevTotalMin) * 100) : 0
                 const progressPct = totalPrevuMin > 0 ? Math.round((totalFaitMin / totalPrevuMin) * 100) : 0
                 const sports = [
-                  { key: 'course' as const, Icon: IconRunning, color: 'text-palette-forest-dark', bg: 'bg-palette-forest-dark', label: 'Run', prevuVal: prevu?.course?.distanceKm ?? 0, faitVal: fait?.course?.distanceKm ?? 0, useTime: false },
-                  { key: 'velo' as const, Icon: IconBiking, color: 'text-palette-olive', bg: 'bg-palette-olive', label: 'Vélo', prevuVal: prevu?.velo?.distanceKm ?? 0, faitVal: fait?.velo?.distanceKm ?? 0, useTime: false },
+                  { key: 'course' as const, Icon: IconRunning, color: 'text-palette-forest-dark', bg: 'bg-palette-forest-dark', label: tCalendar('weekly.sportLabels.run'), prevuVal: prevu?.course?.distanceKm ?? 0, faitVal: fait?.course?.distanceKm ?? 0, useTime: false },
+                  { key: 'velo' as const, Icon: IconBiking, color: 'text-palette-olive', bg: 'bg-palette-olive', label: tCalendar('weekly.sportLabels.cycling'), prevuVal: prevu?.velo?.distanceKm ?? 0, faitVal: fait?.velo?.distanceKm ?? 0, useTime: false },
                   { 
                     key: 'natation' as const, 
                     Icon: IconSwimming, 
                     color: 'text-sky-600', 
                     bg: 'bg-sky-500', 
-                    label: 'Nage', 
+                    label: tCalendar('weekly.sportLabels.swimming'), 
                     prevuVal: prevu?.natation?.distanceKm ?? 0, 
                     faitVal: fait?.natation?.distanceKm ?? 0, 
                     useTime: false 
                   },
-                  { key: 'musculation' as const, Icon: IconDumbbell, color: 'text-stone-600', bg: 'bg-stone-500', label: 'Muscu', prevuVal: prevu?.musculation?.minutes ?? 0, faitVal: fait?.musculation?.minutes ?? 0, useTime: true },
-                  { key: 'nordic_ski' as const, Icon: IconNordicSki, color: 'text-palette-sage', bg: 'bg-palette-sage', label: 'Ski de fond', prevuVal: prevu?.nordic_ski?.distanceKm ?? 0, faitVal: fait?.nordic_ski?.distanceKm ?? 0, useTime: false },
-                  { key: 'backcountry_ski' as const, Icon: IconBackcountrySki, color: 'text-palette-gold', bg: 'bg-palette-gold', label: 'Ski Rando', prevuVal: prevu?.backcountry_ski?.distanceKm ?? 0, faitVal: fait?.backcountry_ski?.distanceKm ?? 0, useTime: false },
-                  { key: 'ice_skating' as const, Icon: IconIceSkating, color: 'text-cyan-600', bg: 'bg-cyan-500', label: 'Patin', prevuVal: prevu?.ice_skating?.distanceKm ?? 0, faitVal: fait?.ice_skating?.distanceKm ?? 0, useTime: false },
+                  { key: 'musculation' as const, Icon: IconDumbbell, color: 'text-stone-600', bg: 'bg-stone-500', label: tCalendar('weekly.sportLabels.strength'), prevuVal: prevu?.musculation?.minutes ?? 0, faitVal: fait?.musculation?.minutes ?? 0, useTime: true },
+                  { key: 'nordic_ski' as const, Icon: IconNordicSki, color: 'text-palette-sage', bg: 'bg-palette-sage', label: tCalendar('weekly.sportLabels.nordicSki'), prevuVal: prevu?.nordic_ski?.distanceKm ?? 0, faitVal: fait?.nordic_ski?.distanceKm ?? 0, useTime: false },
+                  { key: 'backcountry_ski' as const, Icon: IconBackcountrySki, color: 'text-palette-gold', bg: 'bg-palette-gold', label: tCalendar('weekly.sportLabels.backcountrySki'), prevuVal: prevu?.backcountry_ski?.distanceKm ?? 0, faitVal: fait?.backcountry_ski?.distanceKm ?? 0, useTime: false },
+                  { key: 'ice_skating' as const, Icon: IconIceSkating, color: 'text-cyan-600', bg: 'bg-cyan-500', label: tCalendar('weekly.sportLabels.iceSkating'), prevuVal: prevu?.ice_skating?.distanceKm ?? 0, faitVal: fait?.ice_skating?.distanceKm ?? 0, useTime: false },
                 ].filter(s => s.prevuVal > 0 || s.faitVal > 0)
                 const hasAnyTotals = (totalPrevuMin > 0 || totalFaitMin > 0) || sports.length > 0
                 if (!hasAnyTotals) return null
@@ -662,7 +734,7 @@ export function CalendarView({
                               <circle cx="12" cy="12" r="10" />
                               <polyline points="12 6 12 12 16 14" />
                             </svg>
-                            <span className="font-semibold text-palette-amber leading-tight">Volume horaire total</span>
+                            <span className="font-semibold text-palette-amber leading-tight">{tCalendar('weekly.totalTimeVolume')}</span>
                           </div>
                           <div className="relative w-full mt-2">
                             <div className="w-full bg-stone-100 rounded-full h-1.5 relative">
@@ -676,7 +748,7 @@ export function CalendarView({
                             </div>
                             {totalPrevuMin > 0 && (
                               <span className="absolute right-0 top-full mt-0.5 text-[10px] text-stone-400">
-                                {formatDuration(totalPrevuMin)} prévu
+                                {formatDuration(totalPrevuMin)} {tCalendar('weekly.planned')}
                               </span>
                             )}
                           </div>
@@ -704,7 +776,7 @@ export function CalendarView({
                                   </div>
                                   {prevuVal > 0 && (
                                     <span className="absolute right-0 top-full mt-0.5 text-[10px] text-stone-400">
-                                      {prevuDisplay} prévu
+                                      {prevuDisplay} {tCalendar('weekly.planned')}
                                     </span>
                                   )}
                                 </div>
@@ -721,15 +793,18 @@ export function CalendarView({
                   {week.days.map((day) => {
                     const dayWorkouts = workoutsByDate[day.dateStr] ?? []
                     const dayImported = importedByDate[day.dateStr] ?? []
+                    const dayGoals = goalsByDate[day.dateStr] ?? []
                     const firstWorkout = dayWorkouts[0]
                     const firstImported = dayImported[0]
-                    const isEmpty = !firstWorkout && !firstImported
+                    const firstGoal = dayGoals[0]
+                    const isEmpty = !firstWorkout && !firstImported && !firstGoal
                     const showAddInCondensed = (wi === 0 || wi === 2) && canEdit && !day.isPast && isEmpty
                     const showAddAtBottom = (wi === 0 || wi === 2) && canEdit && !day.isPast && !isEmpty
-                    const dayTotal = dayWorkouts.length + dayImported.length
+                    const dayTotal = dayWorkouts.length + dayImported.length + dayGoals.length
                     const dayExtraCount = dayTotal > 1 ? dayTotal - 1 : 0
-                    const dayFullList: Array<{ type: 'workout'; item: Workout; dateStr: string } | { type: 'imported'; item: ImportedActivity; dateStr: string }> = []
+                    const dayFullList: Array<{ type: 'workout'; item: Workout; dateStr: string } | { type: 'imported'; item: ImportedActivity; dateStr: string } | { type: 'goal'; item: Goal; dateStr: string }> = []
                     if (dayTotal > 0) {
+                      dayGoals.forEach((goal) => dayFullList.push({ type: 'goal', item: goal, dateStr: day.dateStr }))
                       dayWorkouts.forEach((workout) => dayFullList.push({ type: 'workout', item: workout, dateStr: day.dateStr }))
                       dayImported.forEach((act) => dayFullList.push({ type: 'imported', item: act, dateStr: day.dateStr }))
                     }
@@ -749,8 +824,42 @@ export function CalendarView({
                         {showAddAtBottom ? (
                           <>
                             <div className="min-h-0 shrink-0">
+                              {firstGoal && !firstWorkout && !firstImported && (() => {
+                                const isPrimary = firstGoal.is_primary
+                                const borderColor = isPrimary ? 'border-palette-amber' : 'border-palette-sage'
+                                const badgeColor = isPrimary ? 'text-palette-amber bg-palette-amber/10' : 'text-palette-sage bg-palette-sage/10'
+                                return (
+                                  <div
+                                    onClick={(e) => { e.stopPropagation(); openGoal(firstGoal) }}
+                                    className={`bg-white rounded border-l-4 ${borderColor} shadow-sm p-1.5 h-full flex flex-col justify-between cursor-pointer training-card`}
+                                    role="button"
+                                  >
+                                    <div>
+                                      <div>
+                                        <span className={`float-left inline-flex items-center mr-1.5 ${badgeColor} px-1 py-0.5 rounded shrink-0`}>
+                                          <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <circle cx="12" cy="12" r="10" />
+                                            <circle cx="12" cy="12" r="6" />
+                                            <circle cx="12" cy="12" r="2" />
+                                          </svg>
+                                        </span>
+                                        <div className="text-xs font-semibold text-stone-700 leading-tight">{firstGoal.race_name}</div>
+                                        <div className="clear-both"></div>
+                                      </div>
+                                    </div>
+                                    <div className="flex items-center gap-1 flex-wrap text-[10px] text-stone-400 font-medium mt-1">
+                                      <div className="flex items-center gap-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                                        </svg>
+                                        <span>{firstGoal.distance} km</span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                )
+                              })()}
                               {firstWorkout && renderCompactCard(firstWorkout, day.dateStr)}
-                              {!firstWorkout && firstImported && (() => {
+                              {!firstWorkout && !firstGoal && firstImported && (() => {
                                 const target = formatImportedActivityTarget(firstImported)
                                 return (
                                   <div
@@ -762,7 +871,7 @@ export function CalendarView({
                                       <div className="inline-flex items-center gap-1 align-middle">
                                         <img src="/strava-icon.svg" alt="" className="h-3.5 w-3.5 shrink-0" aria-hidden />
                                         <span className="text-[9px] font-bold uppercase text-palette-strava bg-orange-100 px-1 py-0.5 rounded leading-none">
-                                          {getImportedActivityTypeLabel(firstImported)}
+                                          {getImportedActivityTypeLabel(firstImported, tSports)}
                                         </span>
                                       </div>
                                       <div className="text-xs font-semibold text-stone-700 mt-1 truncate">{firstImported.title}</div>
@@ -782,25 +891,26 @@ export function CalendarView({
                             </div>
                             {(wi === 0 || wi === 2) && dayExtraCount > 0 && (
                               <div className="flex-1 min-h-0 flex items-center justify-center pt-1.5">
-                                <button
+                                <Button
                                   type="button"
+                                  variant="muted"
                                   onClick={(e) => {
                                     e.stopPropagation()
                                     setExtraActivitiesList(dayFullList)
                                     setExtraActivitiesModalDate(day.dateStr)
                                     setExtraActivitiesModalOpen(true)
                                   }}
-                                  className="w-full text-center text-[10px] font-medium text-palette-forest-dark py-0.5 rounded border border-palette-forest-dark/30 bg-palette-forest-dark/5 hover:bg-palette-forest-dark/10 hover:border-palette-forest-dark/50 transition-colors cursor-pointer"
+                                  className="w-full text-[10px] py-1"
                                 >
-                                  {dayExtraCount} autre{dayExtraCount > 1 ? 's' : ''}
-                                </button>
+                                  {tCalendar(dayExtraCount === 1 ? 'moreActivities' : 'moreActivities_plural', { count: dayExtraCount })}
+                                </Button>
                               </div>
                             )}
                             <div
                               className="shrink-0 w-full flex justify-center pt-1"
                               onClick={(e) => { e.stopPropagation(); openDay(day.dateStr, day.isPast) }}
                               role="button"
-                              aria-label="Ajouter un entraînement"
+                              aria-label={tWorkouts('addWorkout')}
                             >
                               <div className="w-6 h-6 rounded-full bg-white border border-stone-300 flex items-center justify-center text-stone-400 hover:text-white hover:bg-palette-forest-dark hover:border-palette-forest-dark transition-all cursor-pointer">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -812,8 +922,42 @@ export function CalendarView({
                         ) : (
                           <>
                             <div className="min-h-0 shrink-0 flex flex-col gap-0.5">
+                              {firstGoal && !firstWorkout && !firstImported && (() => {
+                                const isPrimary = firstGoal.is_primary
+                                const borderColor = isPrimary ? 'border-palette-amber' : 'border-palette-sage'
+                                const badgeColor = isPrimary ? 'text-palette-amber bg-palette-amber/10' : 'text-palette-sage bg-palette-sage/10'
+                                return (
+                                  <div
+                                    onClick={(e) => { e.stopPropagation(); openGoal(firstGoal) }}
+                                    className={`bg-white rounded border-l-4 ${borderColor} shadow-sm p-1.5 h-full flex flex-col justify-between cursor-pointer training-card`}
+                                    role="button"
+                                  >
+                                    <div>
+                                      <div>
+                                        <span className={`float-left inline-flex items-center mr-1.5 ${badgeColor} px-1 py-0.5 rounded shrink-0`}>
+                                          <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <circle cx="12" cy="12" r="10" />
+                                            <circle cx="12" cy="12" r="6" />
+                                            <circle cx="12" cy="12" r="2" />
+                                          </svg>
+                                        </span>
+                                        <div className="text-xs font-semibold text-stone-700 leading-tight">{firstGoal.race_name}</div>
+                                        <div className="clear-both"></div>
+                                      </div>
+                                    </div>
+                                    <div className="flex items-center gap-1 flex-wrap text-[10px] text-stone-400 font-medium mt-1">
+                                      <div className="flex items-center gap-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                                        </svg>
+                                        <span>{firstGoal.distance} km</span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                )
+                              })()}
                               {firstWorkout && renderCompactCard(firstWorkout, day.dateStr)}
-                              {!firstWorkout && firstImported && (() => {
+                              {!firstWorkout && !firstGoal && firstImported && (() => {
                                 const target = formatImportedActivityTarget(firstImported)
                                 return (
                                   <div
@@ -825,7 +969,7 @@ export function CalendarView({
                                       <div className="inline-flex items-center gap-1 align-middle">
                                         <img src="/strava-icon.svg" alt="" className="h-3.5 w-3.5 shrink-0" aria-hidden />
                                         <span className="text-[9px] font-bold uppercase text-palette-strava bg-orange-100 px-1 py-0.5 rounded leading-none">
-                                          {getImportedActivityTypeLabel(firstImported)}
+                                          {getImportedActivityTypeLabel(firstImported, tSports)}
                                         </span>
                                       </div>
                                       <div className="text-xs font-semibold text-stone-700 mt-1 truncate">{firstImported.title}</div>
@@ -843,18 +987,19 @@ export function CalendarView({
                                 )
                               })()}
                               {(wi === 0 || wi === 2) && dayExtraCount > 0 && (
-                                <button
+                                <Button
                                   type="button"
+                                  variant="muted"
                                   onClick={(e) => {
                                     e.stopPropagation()
                                     setExtraActivitiesList(dayFullList)
                                     setExtraActivitiesModalDate(day.dateStr)
                                     setExtraActivitiesModalOpen(true)
                                   }}
-                                  className="shrink-0 w-full text-center text-[10px] font-medium text-palette-forest-dark py-0.5 rounded border border-palette-forest-dark/30 bg-palette-forest-dark/5 hover:bg-palette-forest-dark/10 hover:border-palette-forest-dark/50 transition-colors cursor-pointer mt-1.5"
+                                  className="shrink-0 w-full text-[10px] py-1 mt-1.5"
                                 >
-                                  {dayExtraCount} autre{dayExtraCount > 1 ? 's' : ''}
-                                </button>
+                                  {tCalendar(dayExtraCount === 1 ? 'moreActivities' : 'moreActivities_plural', { count: dayExtraCount })}
+                                </Button>
                               )}
                             </div>
                             {showAddInCondensed && (
@@ -958,7 +1103,7 @@ export function CalendarView({
                                     <div className="inline-flex items-center gap-1.5 mb-2">
                                       <img src="/strava-icon.svg" alt="" className="h-4 w-4 shrink-0" aria-hidden />
                                       <span className="text-[10px] font-bold uppercase text-palette-strava bg-orange-100 px-1.5 py-0.5 rounded leading-none">
-                                        {getImportedActivityTypeLabel(a)}
+                                        {getImportedActivityTypeLabel(a, tSports)}
                                       </span>
                                     </div>
                                     <h4 className="text-sm font-bold text-stone-900 leading-tight mb-2">{a.title}</h4>
@@ -1001,7 +1146,7 @@ export function CalendarView({
                                   className="flex-1 min-h-0 flex items-center justify-center"
                                   onClick={(e) => { e.stopPropagation(); openDay(day.dateStr, day.isPast) }}
                                   role="button"
-                                  aria-label="Ajouter un entraînement"
+                                  aria-label={tWorkouts('addWorkout')}
                                 >
                                   <div className="w-10 h-10 rounded-full bg-white border border-stone-300 flex items-center justify-center text-stone-400 shadow-sm hover:text-white hover:bg-palette-forest-dark hover:border-palette-forest-dark transition-all transform hover:scale-110 cursor-pointer">
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1043,106 +1188,81 @@ export function CalendarView({
         workout={modalWorkout}
       />
 
-      {extraActivitiesModalOpen && extraActivitiesList.length > 0 && typeof document !== 'undefined' && createPortal(
-        <>
-          <div
-            className="fixed inset-0 bg-stone-900/50 backdrop-blur-sm z-[90]"
-            onClick={() => { setExtraActivitiesModalOpen(false); setExtraActivitiesModalDate(null) }}
-            aria-hidden="true"
-          />
-          <div
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="extra-activities-modal-title"
-          >
-            <div className="relative w-full max-w-md max-h-[80vh] rounded-xl border-2 border-palette-forest-dark bg-white shadow-xl flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between gap-2 p-4 border-b border-stone-200">
-              <h2 id="extra-activities-modal-title" className="text-lg font-semibold text-stone-900">
-                {extraActivitiesModalDate
-                  ? (() => {
-                      const s = new Date(extraActivitiesModalDate + 'T12:00:00').toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
-                      return s.charAt(0).toUpperCase() + s.slice(1)
-                    })()
-                  : 'Activités du jour'}
-              </h2>
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => { setExtraActivitiesModalOpen(false); setExtraActivitiesModalDate(null) }}
-                aria-label="Fermer"
-              >
-                <IconClose className="w-[18px] h-[18px]" />
-              </Button>
-            </div>
-            <div className="overflow-y-auto p-4 space-y-2">
-              {extraActivitiesList.map((entry) => {
-                if (entry.type === 'workout') {
-                  const style = SPORT_CARD_STYLES[entry.item.sport_type]
-                  const SportIcon = SPORT_ICONS[entry.item.sport_type]
-                  return (
-                    <button
-                      key={`w-${entry.item.id}`}
-                      type="button"
-                      onClick={() => {
-                        setExtraActivitiesModalOpen(false)
-                        setExtraActivitiesModalDate(null)
-                        openWorkout(entry.dateStr, entry.item)
-                      }}
-                      className="w-full text-left rounded-lg border border-stone-200 bg-white p-3 shadow-sm hover:border-palette-forest-dark hover:bg-palette-forest-dark/5 transition-all flex items-center gap-3"
-                    >
-                      <span className={`shrink-0 inline-flex ${style.badge} ${style.badgeBg} px-2 py-1 rounded`}>
-                        <SportIcon className="w-4 h-4" />
-                      </span>
-                      <div className="min-w-0 flex-1">
-                        <div className="font-semibold text-stone-900 truncate">{entry.item.title}</div>
-                        <div className="text-xs text-stone-500">
-                          {new Date(entry.dateStr + 'T12:00:00').toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })}
-                        </div>
-                      </div>
-                    </button>
-                  )
-                }
-                const a = entry.item
-                const target = formatImportedActivityTarget(a)
-                return (
-                  <button
-                    key={`i-${a.id}`}
-                    type="button"
-                    onClick={() => {
-                      setExtraActivitiesModalOpen(false)
-                      setExtraActivitiesModalDate(null)
-                      setSelectedImportedActivity(a)
-                    }}
-                    className="w-full text-left rounded-lg border border-l-4 border-l-palette-strava border-stone-200 bg-white p-3 shadow-sm hover:bg-orange-50 transition-all flex items-center gap-3"
-                  >
-                    <img src="/strava-icon.svg" alt="" className="h-5 w-5 shrink-0" aria-hidden />
-                    <div className="min-w-0 flex-1">
-                      <div className="font-semibold text-stone-900 truncate">{a.title}</div>
-                      <div className="text-xs text-stone-500">
-                        {new Date(entry.dateStr + 'T12:00:00').toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })}
-                        {target.primary && ` · ${target.primary}`}
-                      </div>
-                    </div>
-                  </button>
-                )
-              })}
-            </div>
-            <div className="p-4 border-t border-stone-200">
-              <Button
-                type="button"
-                variant="muted"
-                onClick={() => { setExtraActivitiesModalOpen(false); setExtraActivitiesModalDate(null) }}
-                className="w-full"
-              >
-                Fermer
-              </Button>
-            </div>
-            </div>
-          </div>
-        </>,
-        document.body
-      )}
+      <Modal
+        isOpen={extraActivitiesModalOpen && extraActivitiesList.length > 0}
+        onClose={() => { setExtraActivitiesModalOpen(false); setExtraActivitiesModalDate(null) }}
+        size="md"
+        title={extraActivitiesModalDate
+          ? (() => {
+              const s = new Date(extraActivitiesModalDate + 'T12:00:00').toLocaleDateString(localeTag, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+              return s.charAt(0).toUpperCase() + s.slice(1)
+            })()
+          : tCalendar('modals.dayActivities')}
+        titleId="extra-activities-modal-title"
+        contentClassName="px-6 py-4"
+      >
+        <div className="space-y-3">
+          {extraActivitiesList.map((entry) => {
+            const dateLabel = new Date(entry.dateStr + 'T12:00:00').toLocaleDateString(localeTag, { weekday: 'short', day: 'numeric', month: 'short' })
+            
+            if (entry.type === 'goal') {
+              const g = entry.item
+              return (
+                <ActivityTile
+                  key={`g-${g.id}`}
+                  type="goal"
+                  isPrimary={g.is_primary}
+                  title={g.race_name}
+                  distance={Number(g.distance)}
+                  date={dateLabel}
+                  onClick={() => {
+                    setExtraActivitiesModalOpen(false)
+                    setExtraActivitiesModalDate(null)
+                    openGoal(g)
+                  }}
+                />
+              )
+            }
+            
+            if (entry.type === 'workout') {
+              const w = entry.item
+              return (
+                <ActivityTile
+                  key={`w-${w.id}`}
+                  type="workout"
+                  sportType={w.sport_type}
+                  title={w.title}
+                  metadata={formatWorkoutMetadata(w)}
+                  date={dateLabel}
+                  onClick={() => {
+                    setExtraActivitiesModalOpen(false)
+                    setExtraActivitiesModalDate(null)
+                    openWorkout(entry.dateStr, w)
+                  }}
+                />
+              )
+            }
+            
+            // Type: imported (Strava)
+            const a = entry.item
+            return (
+              <ActivityTile
+                key={`i-${a.id}`}
+                type="strava"
+                activityLabel={getImportedActivityTypeLabel(a, tSports)}
+                title={a.title}
+                metadata={formatStravaMetadata(a)}
+                date={dateLabel}
+                onClick={() => {
+                  setExtraActivitiesModalOpen(false)
+                  setExtraActivitiesModalDate(null)
+                  setSelectedImportedActivity(a)
+                }}
+              />
+            )
+          })}
+        </div>
+      </Modal>
 
       {goalModalOpen && selectedGoal && typeof document !== 'undefined' && createPortal(
         <>
@@ -1171,7 +1291,7 @@ export function CalendarView({
                     </svg>
                   </div>
                   <h2 id="goal-modal-title" className="text-lg font-bold text-stone-900 truncate">
-                    Détails de l&apos;objectif
+                    {tCalendar('modals.goalDetails')}
                   </h2>
                 </div>
                 <Button
@@ -1179,11 +1299,9 @@ export function CalendarView({
                   variant="ghost"
                   onClick={() => setGoalModalOpen(false)}
                   className="shrink-0"
-                  aria-label="Fermer"
+                  aria-label={tCommon('close')}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
+                  <IconClose className="w-5 h-5" />
                 </Button>
               </div>
               
@@ -1194,15 +1312,15 @@ export function CalendarView({
                     <div>
                       <dt className="text-xs text-stone-500 uppercase tracking-wide font-bold mb-1.5">Date</dt>
                       <dd className="text-sm text-stone-900">
-                        {new Date(selectedGoal.date + 'T12:00:00').toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+                        {new Date(selectedGoal.date + 'T12:00:00').toLocaleDateString(localeTag, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
                       </dd>
                     </div>
                     <div>
-                      <dt className="text-xs text-stone-500 uppercase tracking-wide font-bold mb-1.5">Nom de la course</dt>
+                      <dt className="text-xs text-stone-500 uppercase tracking-wide font-bold mb-1.5">{tGoals('raceName')}</dt>
                       <dd className="text-sm text-stone-900">{selectedGoal.race_name}</dd>
                     </div>
                     <div>
-                      <dt className="text-xs text-stone-500 uppercase tracking-wide font-bold mb-1.5">Distance</dt>
+                      <dt className="text-xs text-stone-500 uppercase tracking-wide font-bold mb-1.5">{tGoals('distance')}</dt>
                       <dd className="text-sm text-stone-900 flex items-center gap-1.5">
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
@@ -1211,7 +1329,7 @@ export function CalendarView({
                       </dd>
                     </div>
                     <div>
-                      <dt className="text-xs text-stone-500 uppercase tracking-wide font-bold mb-1.5">Type d&apos;objectif</dt>
+                      <dt className="text-xs text-stone-500 uppercase tracking-wide font-bold mb-1.5">{tGoals('goalType')}</dt>
                       <dd className="text-sm text-stone-900 flex items-center gap-2">
                         {selectedGoal.is_primary ? (
                           <span className="bg-palette-amber/10 text-palette-amber text-[10px] font-bold px-2 py-0.5 rounded-full border border-palette-amber">
@@ -1226,17 +1344,6 @@ export function CalendarView({
                     </div>
                   </dl>
                 </div>
-              </div>
-              
-              {/* Footer */}
-              <div className="shrink-0 px-6 py-4 border-t border-stone-100 bg-stone-50/50 flex justify-end">
-                <Button
-                  type="button"
-                  variant="muted"
-                  onClick={() => setGoalModalOpen(false)}
-                >
-                  Fermer
-                </Button>
               </div>
             </div>
           </div>
@@ -1266,10 +1373,10 @@ export function CalendarView({
                   </div>
                   <div className="min-w-0">
                     <div className="text-[10px] font-semibold text-palette-strava uppercase tracking-wide mb-0.5">
-                      {getImportedActivityTypeLabel(selectedImportedActivity)}
+                      {getImportedActivityTypeLabel(selectedImportedActivity, tSports)}
                     </div>
                     <h2 id="imported-activity-modal-title" className="text-lg font-bold text-stone-900 truncate">
-                      Détails de l&apos;activité
+                      {tCalendar('modals.activityDetails')}
                     </h2>
                   </div>
                 </div>
@@ -1278,7 +1385,7 @@ export function CalendarView({
                   variant="ghost"
                   onClick={() => setSelectedImportedActivity(null)}
                   className="shrink-0"
-                  aria-label="Fermer"
+                  aria-label={tCommon('close')}
                 >
                   <IconClose className="w-5 h-5" />
                 </Button>
@@ -1289,32 +1396,32 @@ export function CalendarView({
                 <div className="px-6 py-4">
                   <dl className="space-y-4">
                     <div>
-                      <dt className="text-sm font-medium text-stone-700 mb-1">Date</dt>
+                      <dt className="text-sm font-medium text-stone-700 mb-1">{tCalendar('modals.date')}</dt>
                       <dd className="text-stone-900">
-                        {new Date(selectedImportedActivity.date + 'T12:00:00').toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+                        {new Date(selectedImportedActivity.date + 'T12:00:00').toLocaleDateString(localeTag, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
                       </dd>
                     </div>
                     <div>
-                      <dt className="text-sm font-medium text-stone-700 mb-1">Source</dt>
+                      <dt className="text-sm font-medium text-stone-700 mb-1">{tCalendar('modals.source')}</dt>
                       <dd className="text-stone-900 capitalize">{selectedImportedActivity.source}</dd>
                     </div>
                     <div>
-                      <dt className="text-sm font-medium text-stone-700 mb-1">Type de sport</dt>
-                      <dd className="text-stone-900">{SPORT_LABELS[selectedImportedActivity.sport_type]}</dd>
+                      <dt className="text-sm font-medium text-stone-700 mb-1">{tCalendar('modals.sportType')}</dt>
+                      <dd className="text-stone-900">{tSports(SPORT_TRANSLATION_KEYS[selectedImportedActivity.sport_type])}</dd>
                     </div>
                     {selectedImportedActivity.activity_type && (
                       <div>
-                        <dt className="text-sm font-medium text-stone-700 mb-1">Type d&apos;activité</dt>
+                        <dt className="text-sm font-medium text-stone-700 mb-1">{tCalendar('modals.activityType')}</dt>
                         <dd className="text-stone-900">{selectedImportedActivity.activity_type}</dd>
                       </div>
                     )}
                     <div>
-                      <dt className="text-sm font-medium text-stone-700 mb-1">Titre</dt>
+                      <dt className="text-sm font-medium text-stone-700 mb-1">{tCalendar('modals.title')}</dt>
                       <dd className="text-stone-900">{selectedImportedActivity.title}</dd>
                     </div>
                     {selectedImportedActivity.description && (
                       <div>
-                        <dt className="text-sm font-medium text-stone-700 mb-1">Description</dt>
+                        <dt className="text-sm font-medium text-stone-700 mb-1">{tCalendar('modals.description')}</dt>
                         <dd className="text-stone-900 whitespace-pre-wrap">{selectedImportedActivity.description}</dd>
                       </div>
                     )}
@@ -1322,7 +1429,7 @@ export function CalendarView({
                       <>
                         {typeof (selectedImportedActivity.raw_data as { distance?: number }).distance === 'number' && (
                           <div>
-                            <dt className="text-sm font-medium text-stone-700 mb-1">Distance</dt>
+                            <dt className="text-sm font-medium text-stone-700 mb-1">{tCalendar('modals.distance')}</dt>
                             <dd className="text-stone-900">
                               {((selectedImportedActivity.raw_data as { distance: number }).distance / 1000).toFixed(2)} km
                             </dd>
@@ -1330,7 +1437,7 @@ export function CalendarView({
                         )}
                         {typeof (selectedImportedActivity.raw_data as { moving_time?: number }).moving_time === 'number' && (
                           <div>
-                            <dt className="text-sm font-medium text-stone-700 mb-1">Temps de déplacement</dt>
+                            <dt className="text-sm font-medium text-stone-700 mb-1">{tCalendar('modals.movingTime')}</dt>
                             <dd className="text-stone-900">
                               {Math.floor((selectedImportedActivity.raw_data as { moving_time: number }).moving_time / 60)} min
                             </dd>
@@ -1338,7 +1445,7 @@ export function CalendarView({
                         )}
                         {typeof (selectedImportedActivity.raw_data as { total_elevation_gain?: number }).total_elevation_gain === 'number' && (
                           <div>
-                            <dt className="text-sm font-medium text-stone-700 mb-1">Dénivelé positif</dt>
+                            <dt className="text-sm font-medium text-stone-700 mb-1">{tCalendar('modals.elevationGain')}</dt>
                             <dd className="text-stone-900">
                               {Math.round((selectedImportedActivity.raw_data as { total_elevation_gain: number }).total_elevation_gain)} m
                             </dd>
@@ -1348,17 +1455,6 @@ export function CalendarView({
                     )}
                   </dl>
                 </div>
-              </div>
-
-              {/* Footer comme dans WorkoutModal */}
-              <div className="shrink-0 px-6 py-4 border-t border-stone-100 bg-stone-50/50 flex justify-end">
-                <Button
-                  type="button"
-                  variant="muted"
-                  onClick={() => setSelectedImportedActivity(null)}
-                >
-                  Fermer
-                </Button>
               </div>
             </div>
           </div>

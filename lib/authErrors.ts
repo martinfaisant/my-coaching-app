@@ -1,13 +1,24 @@
 import type { AuthError } from '@supabase/supabase-js'
 
 /**
+ * Error codes for auth errors.
+ * Map to translation keys: auth.errors.{code}
+ */
+export const AUTH_ERROR_CODES = {
+  RATE_LIMIT: 'rateLimitExceeded',
+  USER_EXISTS: 'userExists',
+  INVALID_CREDENTIALS: 'invalidCredentials',
+} as const
+
+/**
  * Gère les erreurs de rate limiting Supabase Auth.
  * Retourne un message d'erreur traduit si c'est une erreur de rate limit, null sinon.
  */
-export function handleAuthRateLimitError(error: AuthError): { error: string } | null {
+export function handleAuthRateLimitError(error: AuthError): { error: string; errorCode?: string } | null {
   if (error.message.includes('rate limit') || error.message.includes('rate_limit')) {
     return {
       error: "Trop de demandes d'email ont été envoyées. Veuillez patienter quelques minutes avant de réessayer.",
+      errorCode: AUTH_ERROR_CODES.RATE_LIMIT,
     }
   }
   return null
@@ -22,6 +33,7 @@ export function handleSignupError(
   email: string
 ): {
   error: string
+  errorCode?: string
   userExists?: boolean
   existingEmail?: string
 } {
@@ -38,6 +50,7 @@ export function handleSignupError(
   ) {
     return {
       error: 'Un compte existe déjà avec cet email.',
+      errorCode: AUTH_ERROR_CODES.USER_EXISTS,
       userExists: true,
       existingEmail: email,
     }
@@ -50,7 +63,7 @@ export function handleSignupError(
 /**
  * Gère les erreurs de réinitialisation de mot de passe (rate limit principalement).
  */
-export function handleResetPasswordError(error: AuthError): { error: string } {
+export function handleResetPasswordError(error: AuthError): { error: string; errorCode?: string } {
   const rateLimitError = handleAuthRateLimitError(error)
   if (rateLimitError) return rateLimitError
 

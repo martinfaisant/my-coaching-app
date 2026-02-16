@@ -1,17 +1,19 @@
 'use client'
 
+import { useLocale, useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { CalendarViewWithNavigation } from './CalendarViewWithNavigation'
 import { WeekSelector } from './WeekSelector'
 import { AvatarImage } from './AvatarImage'
+import { TileCard } from './TileCard'
 import type { Workout, Goal, ImportedActivityWeeklyTotal, WorkoutWeeklyTotal } from '@/types/database'
 import { getDaysUntil } from '@/lib/dateUtils'
 import { getInitials } from '@/lib/stringUtils'
 
 // Fonction pour formater la date en mois/jour
-function formatDateBlock(dateStr: string): { month: string; day: string } {
+function formatDateBlock(dateStr: string, localeTag: string): { month: string; day: string } {
   const date = new Date(dateStr + 'T12:00:00')
-  const month = date.toLocaleDateString('fr-FR', { month: 'short' })
+  const month = date.toLocaleDateString(localeTag, { month: 'short' })
   const day = date.getDate().toString()
   return { month: month.charAt(0).toUpperCase() + month.slice(1), day }
 }
@@ -47,7 +49,11 @@ export function CoachAthleteCalendarPage({
   canEdit,
   pathToRevalidate,
 }: CoachAthleteCalendarPageProps) {
+  const locale = useLocale()
+  const localeTag = locale === 'fr' ? 'fr-FR' : 'en-US'
   const initials = getInitials(athleteName)
+  const t = useTranslations('goals')
+  const tCommon = useTranslations('common')
 
   return (
     <main className="flex-1 flex flex-col h-full min-w-0 bg-white/50 rounded-2xl overflow-hidden relative border border-stone-200/50">
@@ -80,7 +86,7 @@ export function CoachAthleteCalendarPage({
                 </div>
               </div>
             </div>
-            <WeekSelector dateRangeLabel={dateRangeLabel} onNavigate={onNavigate} isAnimating={isAnimating} />
+            <WeekSelector dateRangeLabel={dateRangeLabel} onNavigate={onNavigate} isAnimating={isAnimating} prevWeekAriaLabel={tCommon('weekPrevious')} nextWeekAriaLabel={tCommon('weekNext')} />
           </header>
         )}
         renderAfterCalendar={() => {
@@ -112,12 +118,12 @@ export function CoachAthleteCalendarPage({
                       <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </div>
-                  <h2 className="text-lg font-bold text-stone-900">Objectifs de l&apos;athlète</h2>
+                  <h2 className="text-lg font-bold text-stone-900">{t('athleteGoalsTitle')}</h2>
                 </div>
                 {seasons.length === 0 ? (
                   <div className="bg-white rounded-2xl p-8 border border-stone-200 text-center">
                     <p className="text-sm text-stone-500">
-                      L&apos;athlète n&apos;a pas défini d&apos;objectif.
+                      {t('noAthleteGoals')}
                     </p>
                   </div>
                 ) : (
@@ -126,64 +132,57 @@ export function CoachAthleteCalendarPage({
                       const seasonGoals = goalsBySeason.get(seasonYear)!
                       return (
                         <div key={seasonYear} className="space-y-6">
-                          <h3 className="text-sm font-bold text-stone-400 uppercase tracking-wide">Saison {seasonYear}</h3>
+                          <h3 className="text-sm font-bold text-stone-400 uppercase tracking-wide">{t('season', { year: seasonYear })}</h3>
                           {seasonGoals.map((goal) => {
                             const isPast = goal.date < today
                             const daysUntil = getDaysUntil(goal.date)
-                            const dateBlock = formatDateBlock(goal.date)
+                            const dateBlock = formatDateBlock(goal.date, localeTag)
                             const isPrimary = goal.is_primary
 
                             return (
-                              <div
+                              <TileCard
                                 key={goal.id}
-                                className={`bg-white rounded-2xl p-5 border-l-4 ${
-                                  isPrimary ? 'border-palette-amber' : 'border-palette-sage'
-                                } border-y border-r border-stone-200 shadow-sm hover:shadow-md transition-all group relative overflow-hidden ${
-                                  isPast ? 'opacity-75' : ''
-                                }`}
+                                leftBorderColor={isPrimary ? 'amber' : 'sage'}
+                                className={isPast ? 'opacity-75' : ''}
                               >
-                                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
-                                  <div className="flex gap-5 items-center">
+                                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                  <div className="flex gap-4 items-center min-w-0">
                                     {/* Date Block */}
-                                    <div className={`flex flex-col items-center justify-center bg-stone-50 border border-stone-200 rounded-xl w-16 h-16 shrink-0 ${isPast ? 'opacity-75' : ''}`}>
-                                      <span className="text-xs font-bold text-stone-400 uppercase">{dateBlock.month}</span>
-                                      <span className="text-2xl font-bold text-stone-800">{dateBlock.day}</span>
+                                    <div className={`flex flex-col items-center justify-center bg-stone-50 border border-stone-200 rounded-xl w-14 h-14 shrink-0 ${isPast ? 'opacity-75' : ''}`}>
+                                      <span className="text-[10px] font-bold text-stone-400 uppercase">{dateBlock.month}</span>
+                                      <span className="text-xl font-bold text-stone-800">{dateBlock.day}</span>
                                     </div>
 
-                                    <div>
-                                      <div className="flex items-center gap-2 mb-1">
-                                        <h3 className={`text-lg font-bold ${isPast ? 'text-stone-700' : 'text-stone-900'}`}>
+                                    <div className="min-w-0">
+                                      <div className="flex items-center gap-2 mb-0.5">
+                                        <h3 className={`text-base font-bold truncate ${isPast ? 'text-stone-700' : 'text-stone-900'}`}>
                                           {goal.race_name}
                                         </h3>
                                         {isPrimary ? (
-                                          <span className="bg-palette-amber/10 text-palette-amber text-[10px] font-bold px-2 py-0.5 rounded-full border border-palette-amber">
-                                            Principal
+                                          <span className="bg-palette-amber/10 text-palette-amber text-[10px] font-bold px-2 py-0.5 rounded-full border border-palette-amber shrink-0">
+                                            {t('priority.primary')}
                                           </span>
                                         ) : (
-                                          <span className="bg-palette-sage/10 text-palette-sage text-[10px] font-bold px-2 py-0.5 rounded-full border border-palette-sage">
-                                            Secondaire
+                                          <span className="bg-palette-sage/10 text-palette-sage text-[10px] font-bold px-2 py-0.5 rounded-full border border-palette-sage shrink-0">
+                                            {t('priority.secondary')}
                                           </span>
                                         )}
                                       </div>
-                                      <div className="flex items-center gap-3 text-sm text-stone-500 font-medium">
-                                        <span className="flex items-center gap-1">
-                                          <MapIcon className="w-3.5 h-3.5 text-stone-400" />
-                                          {goal.distance} km
-                                        </span>
+                                      <div className="flex items-center gap-1 text-sm text-stone-500 font-medium">
+                                        <MapIcon className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+                                        <span>{goal.distance} km</span>
                                       </div>
                                     </div>
                                   </div>
 
                                   {/* Actions */}
-                                  <div className="flex items-center gap-2 mt-4 sm:mt-0">
-                                    {daysUntil !== null && !isPast && (
-                                      <span className="text-sm font-bold text-palette-forest-dark bg-palette-forest-dark/10 px-3 py-1 rounded-lg">
-                                        J-{daysUntil}
-                                      </span>
-                                    )}
-                                  </div>
+                                  {daysUntil !== null && !isPast && (
+                                    <span className="text-sm font-bold text-palette-forest-dark bg-palette-forest-dark/10 px-3 py-1 rounded-lg shrink-0">
+                                      {t('daysUntil', { days: daysUntil })}
+                                    </span>
+                                  )}
                                 </div>
-                              </div>
+                              </TileCard>
                             )
                           })}
                         </div>

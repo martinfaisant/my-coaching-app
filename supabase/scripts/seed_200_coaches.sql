@@ -76,8 +76,8 @@ BEGIN
   VALUES ('00000000-0000-0000-0000-000000000000', v_user_id, 'authenticated', 'authenticated', v_email, crypt('CoachDev2025!', gen_salt('bf')), NOW(), '{"provider":"email","providers":["email"]}', jsonb_build_object('full_name', v_full_name), NOW(), NOW(), '', '', '', '');
   INSERT INTO auth.identities (id, user_id, provider_id, identity_data, provider, last_sign_in_at, created_at, updated_at)
   VALUES (gen_random_uuid(), v_user_id, v_user_id, jsonb_build_object('sub', v_user_id::text, 'email', v_email), 'email', NOW(), NOW(), NOW());
-  INSERT INTO public.profiles (user_id, email, full_name, role, coach_id, coached_sports, languages, presentation, postal_code, created_at, updated_at)
-  VALUES (v_user_id, v_email, v_full_name, 'coach', NULL, v_coached_sports, v_languages, v_presentation, v_postal_code, NOW(), NOW());
+  INSERT INTO public.profiles (user_id, email, full_name, role, coach_id, coached_sports, languages, presentation, presentation_fr, presentation_en, postal_code, created_at, updated_at)
+  VALUES (v_user_id, v_email, v_full_name, 'coach', NULL, v_coached_sports, v_languages, v_presentation, v_presentation, v_presentation, v_postal_code, NOW(), NOW());
 
   FOR i IN 1..200 LOOP
     v_user_id := gen_random_uuid();
@@ -157,7 +157,7 @@ BEGIN
 
     -- 3. public.profiles (coached_sports et languages pour chaque coach)
     INSERT INTO public.profiles (
-      user_id, email, full_name, role, coach_id, coached_sports, languages, presentation, postal_code, created_at, updated_at
+      user_id, email, full_name, role, coach_id, coached_sports, languages, presentation, presentation_fr, presentation_en, postal_code, created_at, updated_at
     ) VALUES (
       v_user_id,
       v_email,
@@ -166,6 +166,8 @@ BEGIN
       NULL,
       v_coached_sports,
       v_languages,
+      v_presentation,
+      v_presentation,
       v_presentation,
       v_postal_code,
       NOW(),
@@ -176,8 +178,8 @@ BEGIN
   RAISE NOTICE '201 coachs créés (coach@ + coach1-200). Mot de passe : CoachDev2025!';
 END $$;
 
--- Optionnel : ajouter des offres pour 100 coachs (1 offre chacun)
-INSERT INTO public.coach_offers (coach_id, title, description, price, price_type, display_order, is_featured, created_at, updated_at)
+-- Optionnel : ajouter des offres pour 100 coachs (1 offre chacun, titre/description FR et EN)
+INSERT INTO public.coach_offers (coach_id, title, description, title_fr, title_en, description_fr, description_en, price, price_type, display_order, is_featured, created_at, updated_at)
 SELECT
   p.user_id,
   CASE (p.rn - 1) % 5
@@ -188,6 +190,22 @@ SELECT
     ELSE 'Première consultation'
   END,
   'Plan adapté à vos objectifs et votre niveau.',
+  CASE (p.rn - 1) % 5
+    WHEN 0 THEN 'Accompagnement Premium'
+    WHEN 1 THEN 'Suivi mensuel'
+    WHEN 2 THEN 'Plan personnalisé'
+    WHEN 3 THEN 'Préparation objectif'
+    ELSE 'Première consultation'
+  END,
+  CASE (p.rn - 1) % 5
+    WHEN 0 THEN 'Premium Coaching'
+    WHEN 1 THEN 'Monthly follow-up'
+    WHEN 2 THEN 'Custom plan'
+    WHEN 3 THEN 'Goal preparation'
+    ELSE 'First consultation'
+  END,
+  'Plan adapté à vos objectifs et votre niveau.',
+  'Plan tailored to your goals and level.',
   CASE (p.rn - 1) % 4 WHEN 0 THEN 0 WHEN 1 THEN 49 WHEN 2 THEN 79 ELSE 99 END,
   CASE (p.rn - 1) % 4 WHEN 0 THEN 'free'::TEXT WHEN 1 THEN 'monthly' ELSE 'one_time' END,
   0,

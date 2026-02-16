@@ -16,6 +16,18 @@ alwaysApply: true
 - Over-engineer or add enterprise patterns prematurely
 - Add features not explicitly requested
 - Use hardcoded color values (hex) instead of design tokens
+- Introduce hardcoded user-facing strings (FR/EN) — always use next-intl
+
+---
+
+## Internationalisation (i18n) – Bilingue FR/EN
+
+**Toujours penser bilingue pour toute nouvelle feature.**
+
+- **Framework :** next-intl (déjà en place). Routes sous `app/[locale]/`.
+- **Règle :** Aucun texte visible en dur dans les composants ou server actions. Utiliser `useTranslations('namespace')` / `getTranslations()` et les fichiers `messages/fr.json` et `messages/en.json`.
+- **Server actions :** Recevoir la locale (ex. `formData.get('_locale')`) et utiliser `getTranslations({ locale, namespace })` pour les messages d'erreur et de succès.
+- **Référence complète :** `docs/I18N.md` (structure, namespaces, checklist nouvelles features, dépannage).
 
 ---
 
@@ -247,16 +259,17 @@ if ('error' in result) return result
 1. **README.md** - Quick start, setup, stack overview
 2. **Project_context.md** - Product vision, roles, features, architecture
 3. **docs/DESIGN_SYSTEM.md** - Complete design system (tokens, components, guidelines)
-4. **DOCS_INDEX.md** - Full documentation index (prevents duplicates)
-5. **REFACTORING_P1_P2_COMPLETE.md** - Latest refactoring status
+4. **docs/I18N.md** - Internationalisation (bilingue FR/EN), checklist nouvelles features
+5. **DOCS_INDEX.md** - Full documentation index (prevents duplicates)
 
 ### When to reference what:
 - Setup/start → `README.md`
 - Product questions → `Project_context.md`
 - UI/components → `docs/DESIGN_SYSTEM.md`
+- i18n / traductions / nouvelles features → `docs/I18N.md`
 - Patterns → `docs/PATTERN_SAVE_BUTTON.md`
 - Deployment → `DEPLOYMENT_NOTES.md` or `MISE_EN_PROD.md`
-- Code quality → `AUDIT_COMPLET.md`, `REFACTORING_*.md`
+- Code quality / historique → `docs/archive/`
 - All docs index → `DOCS_INDEX.md`
 
 ---
@@ -273,6 +286,7 @@ if ('error' in result) return result
 **Zero tolerance for:**
 - `any` types in TypeScript
 - Hardcoded colors instead of design tokens
+- Hardcoded user-facing strings (use next-intl; see `docs/I18N.md`)
 - `console.log` / `console.error` in production (use `logger`)
 - Duplicated code (use centralized utilities)
 - Raw `<main>` layouts in dashboard (use `DashboardPageShell`)
@@ -280,6 +294,7 @@ if ('error' in result) return result
 
 ---
 
-**Version:** 2.0  
-**Last updated:** 13 février 2026  
-**Refactoring status:** 13/17 tasks completed (76%)
+**Version:** 2.1  
+**Last updated:** 16 février 2026  
+**Refactoring status:** 13/17 tasks completed (76%)  
+**i18n:** Bilingue FR/EN complété — toujours penser bilingue pour les nouvelles features

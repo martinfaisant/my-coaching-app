@@ -28,18 +28,23 @@ export type SportType =
   | 'randonnee'
   | 'triathlon'
 
-export const SPORT_LABELS: Record<SportType, string> = {
-  course: 'Course',
-  course_route: 'Course à pied',
-  velo: 'Vélo',
-  natation: 'Natation',
-  musculation: 'Musculation',
-  nordic_ski: 'Ski de fond',
-  backcountry_ski: 'Ski de randonnée',
-  ice_skating: 'Patin à glace',
-  trail: 'Trail',
-  randonnee: 'Randonnée',
-  triathlon: 'Triathlon',
+/**
+ * Translation keys for sport labels.
+ * Use with next-intl: t(SPORT_TRANSLATION_KEYS[sportType])
+ * Note: Keys are relative to the 'sports' namespace
+ */
+export const SPORT_TRANSLATION_KEYS: Record<SportType, string> = {
+  course: 'course',
+  course_route: 'course',
+  velo: 'velo',
+  natation: 'natation',
+  musculation: 'muscu',
+  nordic_ski: 'ski_fond',
+  backcountry_ski: 'ski_fond',
+  ice_skating: 'autre',
+  trail: 'trail',
+  randonnee: 'rando',
+  triathlon: 'triathlon',
 }
 
 export const SPORT_ICONS: Record<SportType, ComponentType<{ className?: string }>> = {

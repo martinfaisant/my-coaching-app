@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 import { createPortal } from 'react-dom'
+import { useTranslations } from 'next-intl'
 import { Button } from './Button'
 import { IconClose } from './icons/IconClose'
 
@@ -91,6 +92,8 @@ export function Modal({
   titleId = 'modal-title',
   children,
 }: ModalProps) {
+  const t = useTranslations('common')
+  
   // Gestion Escape + overflow body
   useEffect(() => {
     if (!isOpen) return
@@ -163,7 +166,7 @@ export function Modal({
                     type="button"
                     variant="ghost"
                     onClick={onClose}
-                    aria-label="Fermer"
+                    aria-label={t('close')}
                   >
                     <IconClose className="w-5 h-5" />
                   </Button>
