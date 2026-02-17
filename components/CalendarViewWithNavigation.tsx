@@ -12,16 +12,35 @@ const SLIDE_DURATION_MS = 380
 /** Hauteur approximative d’une section « semaine » pour le glissement (px). */
 const SLIDE_PX = 320
 
-/** Affiche "1 janv. - 21 janv." (premier jour de la 1ère semaine — dernier jour de la 3e semaine). */
+const localeTag = (locale: string) => (locale === 'fr' ? 'fr-FR' : 'en-US')
+
+/** Formate une date en "j janv." (jour + mois court). */
+function formatShortDate(date: Date, locale: string): string {
+  return date.toLocaleDateString(localeTag(locale), { day: 'numeric', month: 'short' })
+}
+
+/** Affiche la plage de la semaine du milieu uniquement (ex. "16 févr. – 22 févr."). */
 function formatWeekRangeLabel(referenceMonday: Date, locale: string): string {
-  const localeTag = locale === 'fr' ? 'fr-FR' : 'en-US'
   const startMonday = new Date(referenceMonday)
-  startMonday.setDate(startMonday.getDate() - 7)
-  const endDay = new Date(startMonday)
-  endDay.setDate(endDay.getDate() + 7 * 3 - 1)
-  const startLabel = startMonday.toLocaleDateString(localeTag, { day: 'numeric', month: 'short' })
-  const endLabel = endDay.toLocaleDateString(localeTag, { day: 'numeric', month: 'short' })
+  const endSunday = new Date(referenceMonday)
+  endSunday.setDate(endSunday.getDate() + 6)
+  const startLabel = formatShortDate(startMonday, locale)
+  const endLabel = formatShortDate(endSunday, locale)
   return `${startLabel} – ${endLabel}`
+}
+
+/** Dernier jour (dimanche) de la semaine précédente par rapport à referenceMonday. */
+function getPreviousWeekLastDay(referenceMonday: Date): Date {
+  const d = new Date(referenceMonday)
+  d.setDate(d.getDate() - 1)
+  return d
+}
+
+/** Premier jour (lundi) de la semaine suivante par rapport à referenceMonday. */
+function getNextWeekFirstDay(referenceMonday: Date): Date {
+  const d = new Date(referenceMonday)
+  d.setDate(d.getDate() + 7)
+  return d
 }
 
 /** Retourne le lundi de la première et de la dernière des 3 semaines affichées. */
@@ -48,7 +67,15 @@ type CalendarViewWithNavigationProps = {
   /** Titre affiché à gauche de la barre (ex. "Calendrier d'entraînement — email"). Même niveau que le sélecteur de semaine. */
   title?: React.ReactNode
   /** Si fourni, le sélecteur de semaine sera rendu via cette fonction au lieu d'être dans le composant */
-  renderWeekSelector?: (props: { dateRangeLabel: string; onNavigate: (offset: number) => void; isAnimating: boolean }) => React.ReactNode
+  renderWeekSelector?: (props: {
+    dateRangeLabel: string
+    onNavigate: (offset: number) => void
+    isAnimating: boolean
+    /** Dernier jour de la 1ère semaine (ex. "9 févr.") pour le chevron gauche */
+    prevWeekLastDayLabel: string
+    /** Premier jour de la 3e semaine (ex. "23 févr.") pour le chevron droit */
+    nextWeekFirstDayLabel: string
+  }) => React.ReactNode
   /** Si true, n'affiche pas le sélecteur intégré (utilisé avec renderWeekSelector) */
   hideBuiltInSelector?: boolean
   /** Si true, désactive le scroll du contenu du calendrier (pour permettre un layout avec contenu scrollable en dessous) */
@@ -365,7 +392,13 @@ export function CalendarViewWithNavigation({
     return 'translateY(0)'
   }
 
-  const weekSelectorProps = { dateRangeLabel, onNavigate: handleNavigate, isAnimating }
+  const weekSelectorProps = {
+    dateRangeLabel,
+    onNavigate: handleNavigate,
+    isAnimating,
+    prevWeekLastDayLabel: formatShortDate(getPreviousWeekLastDay(referenceMonday), locale),
+    nextWeekFirstDayLabel: formatShortDate(getNextWeekFirstDay(referenceMonday), locale),
+  }
 
   return (
     <div className={`${disableContentScroll ? 'flex-auto' : 'flex-1'} flex flex-col ${disableContentScroll ? 'min-h-0' : 'h-full'} min-w-0 overflow-hidden`}>
@@ -417,12 +450,15 @@ export function CalendarViewWithNavigation({
                   variant="ghost"
                   onClick={() => handleNavigate(-1)}
                   disabled={isAnimating}
-                  className="p-1.5 min-w-10 min-h-10 hover:bg-white hover:text-palette-forest-dark text-stone-500"
+                  className="p-1.5 min-h-10 hover:bg-white hover:text-palette-forest-dark text-stone-500 flex items-center gap-1.5"
                   aria-label={tCalendar('previousWeekButton')}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="m15 18-7-7 7-7" />
                   </svg>
+                  <span className="text-xs text-stone-600 whitespace-nowrap">
+                    {formatShortDate(getPreviousWeekLastDay(referenceMonday), locale)}
+                  </span>
                 </Button>
                 <span className="text-sm font-semibold text-stone-700 px-2 w-[200px] text-center shrink-0">
                   {dateRangeLabel}
@@ -432,10 +468,13 @@ export function CalendarViewWithNavigation({
                   variant="ghost"
                   onClick={() => handleNavigate(1)}
                   disabled={isAnimating}
-                  className="p-1.5 min-w-10 min-h-10 hover:bg-white hover:text-palette-forest-dark text-stone-500"
+                  className="p-1.5 min-h-10 hover:bg-white hover:text-palette-forest-dark text-stone-500 flex items-center gap-1.5"
                   aria-label={tCalendar('nextWeekButton')}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <span className="text-xs text-stone-600 whitespace-nowrap">
+                    {formatShortDate(getNextWeekFirstDay(referenceMonday), locale)}
+                  </span>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="m9 18 6-6-6-6" />
                   </svg>
                 </Button>

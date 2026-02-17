@@ -262,7 +262,7 @@ export function CalendarView({
     
     const DAY_NAMES = getDayNames()
     
-    const weeks: { label: string; monthLabel: string; rangeLabel: string; isCurrentWeek: boolean; days: { dateStr: string; label: string; dayName: string; isToday: boolean; isTomorrow: boolean; isPast: boolean }[] }[] = []
+    const weeks: { label: string; monthLabel: string; rangeLabel: string; isCurrentWeek: boolean; days: { dateStr: string; label: string; dayName: string; shortDateLabel: string; isToday: boolean; isTomorrow: boolean; isPast: boolean }[] }[] = []
     
     const todayMonday = getWeekMonday(today)
 
@@ -289,7 +289,7 @@ export function CalendarView({
         weekLabel = diffWeeks === 1 ? tCalendar('nextWeek') : tCalendar('inWeeks', { weeks: diffWeeks })
       }
 
-      const days: { dateStr: string; label: string; dayName: string; isToday: boolean; isTomorrow: boolean; isPast: boolean }[] = []
+      const days: { dateStr: string; label: string; dayName: string; shortDateLabel: string; isToday: boolean; isTomorrow: boolean; isPast: boolean }[] = []
       const todayStr = toDateStr(today)
       const tomorrowDate = new Date(today)
       tomorrowDate.setDate(tomorrowDate.getDate() + 1)
@@ -302,10 +302,12 @@ export function CalendarView({
         const isTomorrow = tomorrowStr === dateStr
         const isPast = dateStr < todayStr
         const dayIndex = (day.getDay() + 6) % 7
+        const shortDateLabel = `${day.getDate()} ${getShortMonthName(day.getMonth())}`
         days.push({
           dateStr,
           label: day.getDate().toString(),
           dayName: DAY_NAMES[dayIndex],
+          shortDateLabel,
           isToday,
           isTomorrow,
           isPast,
@@ -787,9 +789,19 @@ export function CalendarView({
                   </div>
                 )
               })()}
-              <div className={`grid grid-cols-7 gap-2 min-w-[800px] overflow-x-auto hide-scroll items-stretch ${isDetailed ? 'gap-3' : ''}`}>
+              <div className={`grid grid-cols-7 min-w-[800px] overflow-x-auto hide-scroll items-stretch ${isCondensed ? 'gap-x-2 gap-y-1' : isDetailed ? 'gap-3' : 'gap-2'}`}>
                 {isCondensed &&
                   <>
+                  {/* Ligne d'en-têtes des jours (même style que "9 févr. au 15 févr.") — espace réduit d’environ 40 % sous la date */}
+                  {week.days.map((day) => (
+                    <div
+                      key={`head-${day.dateStr}`}
+                      className={`shrink-0 text-center pb-1 text-xs font-medium text-stone-500 ${day.isToday ? 'text-palette-forest-dark font-semibold' : ''}`}
+                    >
+                      <span className="uppercase">{day.dayName}.</span>
+                      <span className={day.isToday ? ' font-bold' : ''}> {day.label}</span>
+                    </div>
+                  ))}
                   {week.days.map((day) => {
                     const dayWorkouts = workoutsByDate[day.dateStr] ?? []
                     const dayImported = importedByDate[day.dateStr] ?? []

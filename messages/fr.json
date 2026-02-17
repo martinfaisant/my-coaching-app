@@ -496,6 +496,7 @@
     "offerTitleEn": "Titre (anglais)",
     "offerTitlePlaceholder": "Ex: Suivi Mensuel",
     "pricing": "Tarification",
+    "noPrice": "—",
     "priceTypes": {
       "monthly": "/ Mois",
       "oneTime": "Unique",
@@ -523,7 +524,36 @@
     "validation": {
       "priceRequired": "Le prix de l'offre {number} est requis pour ce type de prix.",
       "priceInvalid": "Le prix de l'offre {number} est invalide.",
-      "onlyOneFeatured": "Une seule offre peut être privilégiée."
+      "onlyOneFeatured": "Une seule offre peut être privilégiée.",
+      "displayOrderConflict": "Cet emplacement est déjà utilisé. Veuillez rafraîchir la page et réessayer.",
+      "offerSlotRequired": "Veuillez renseigner le titre, la description et choisir une récurrence pour cette offre.",
+      "offerSlotEmpty": "Renseignez au moins un champ pour enregistrer cette offre.",
+      "offerNotFound": "Cette offre n'existe pas ou n'appartient pas à ce coach."
+    },
+    "archivedOffersSection": "Offres archivées",
+    "noArchivedOffers": "Aucune offre archivée.",
+    "status": {
+      "draft": "Brouillon",
+      "published": "En ligne",
+      "archived": "Archivée"
+    },
+    "publish": "Publier",
+    "archive": "Archiver",
+    "priceLockedHint": "Non modifiable après publication",
+    "publishModal": {
+      "title": "Publier l'offre",
+      "message": "Confirmez-vous que tout est correct ? Une fois l'offre en ligne, vous ne pourrez plus modifier le prix. Vous pourrez toujours modifier la description.",
+      "confirm": "Publier"
+    },
+    "savePublishedModal": {
+      "title": "Modification d'une offre en ligne",
+      "message": "Vous ne pouvez pas faire de modifications structurelles à l'offre (prix, type). Si vous souhaitez changer le prix ou la structure, archivez cette offre et créez une nouvelle offre. Seules les modifications du titre et de la description seront enregistrées.",
+      "confirm": "Enregistrer"
+    },
+    "archiveModal": {
+      "title": "Archiver l'offre",
+      "message": "Les nouveaux athlètes ne pourront plus souscrire à cette offre. Les athlètes qui ont déjà cette offre y ont toujours accès. Vous devez honorer l'offre tant que vous n'avez pas mis fin à celle-ci avec l'athlète.",
+      "confirm": "Archiver"
     }
   },
   "athletes": {

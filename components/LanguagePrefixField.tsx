@@ -1,5 +1,7 @@
 'use client'
 
+import { forwardRef } from 'react'
+
 /**
  * Champ input ou textarea avec bandeau langue (EN/FR) à gauche.
  * Aligné sur les autres champs : fond blanc, tour vert au focus (focus-within),
@@ -26,17 +28,20 @@ type LanguagePrefixTextareaProps = Omit<React.TextareaHTMLAttributes<HTMLTextAre
   className?: string
 }
 
-export function LanguagePrefixInput({ lang, className = '', ...props }: LanguagePrefixInputProps) {
-  return (
-    <div className={WRAPPER_CLASSES}>
-      <span className={`${PREFIX_CLASSES} py-2.5 flex items-center`}>{lang}</span>
-      <input
-        className={`${FIELD_BASE} ${className}`.trim()}
-        {...props}
-      />
-    </div>
-  )
-}
+export const LanguagePrefixInput = forwardRef<HTMLInputElement, LanguagePrefixInputProps>(
+  function LanguagePrefixInput({ lang, className = '', ...props }, ref) {
+    return (
+      <div className={WRAPPER_CLASSES}>
+        <span className={`${PREFIX_CLASSES} py-2.5 flex items-center`}>{lang}</span>
+        <input
+          ref={ref}
+          className={`${FIELD_BASE} ${className}`.trim()}
+          {...props}
+        />
+      </div>
+    )
+  }
+)
 
 export function LanguagePrefixTextarea({ lang, className = '', ...props }: LanguagePrefixTextareaProps) {
   return (

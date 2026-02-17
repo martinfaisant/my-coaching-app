@@ -8,6 +8,7 @@ import { Button } from '@/components/Button'
 import { Textarea } from '@/components/Textarea'
 import { AvatarImage } from '@/components/AvatarImage'
 import { Badge } from '@/components/Badge'
+import { CoachTile } from '@/components/CoachTile'
 import { SportTileSelectable } from '@/components/SportTileSelectable'
 import { createCoachRequest } from './actions'
 import { LANGUAGES_OPTIONS } from '@/lib/sportsOptions'
@@ -225,128 +226,53 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
       ) : (
         <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredCoaches.map((c) => (
-            <li
-              key={c.user_id}
-              className="bg-white rounded-2xl border border-stone-200 shadow-sm hover:shadow-lg hover:border-palette-forest-dark/30 transition-all flex flex-col overflow-hidden group h-full"
-            >
-              <div className="p-6 flex flex-col flex-grow">
-                {/* Header carte : avatar 12 + nom (HTML) */}
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="relative">
-                      {c.avatar_url?.trim() ? (
-                        <img
-                          src={c.avatar_url}
-                          alt=""
-                          className="w-12 h-12 rounded-full object-cover ring-2 ring-stone-100 group-hover:ring-palette-forest-dark/20 transition-all"
-                        />
-                      ) : (
-                        <div className="w-12 h-12 rounded-full bg-palette-olive text-white flex items-center justify-center text-base font-bold ring-2 ring-stone-100 group-hover:ring-palette-forest-dark/20 transition-all">
-                          {getInitialsForCoach(c.full_name ?? null, c.email)}
-                        </div>
-                      )}
-                      {/* Badge "Pro" optionnel - à afficher si le coach a des avis */}
-                      {ratingsByCoach[c.user_id] && ratingsByCoach[c.user_id].reviewCount > 0 && (
-                        <div className="absolute -bottom-1 -right-1 bg-blue-500 text-white p-0.5 rounded-full ring-2 ring-white">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                            <polyline points="20 6 9 17 4 12" />
-                          </svg>
-                        </div>
-                      )}
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-lg leading-tight text-stone-900 group-hover:text-palette-forest-dark transition-colors">
-                        {c.full_name?.trim() || c.email}
-                      </h3>
-                      {ratingsByCoach[c.user_id] && ratingsByCoach[c.user_id].reviewCount > 0 ? (
-                        <div className="flex items-center gap-1 text-xs text-stone-500 mt-0.5">
-                          <span className="text-amber-500 font-bold flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3 fill-current mr-0.5" viewBox="0 0 20 20">
-                              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                            </svg>
-                            {ratingsByCoach[c.user_id].averageRating}
-                          </span>
-                          <span>({ratingsByCoach[c.user_id].reviewCount} {t('coachCard.reviews')})</span>
-                        </div>
-                      ) : (
-                        <span className="text-[10px] bg-stone-100 text-stone-500 px-1.5 py-0.5 rounded">{t('coachCard.new')}</span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Tags : sports */}
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {(c.coached_sports ?? []).map((sportValue) => (
-                    <Badge key={sportValue} sport={sportValue as Parameters<typeof Badge>[0]['sport']} />
-                  ))}
-                </div>
-
-                {/* Bio Courte (selon langue d'affichage) */}
-                <p className="text-sm text-stone-500 line-clamp-2 mb-5 flex-1">
-                  {getDisplayPresentation(c, locale) || t('coachCard.defaultBio')}
-                </p>
-
-                {/* BLOC OFFRES */}
-                {offersByCoach[c.user_id] && offersByCoach[c.user_id].length > 0 && (
-                  <div className="bg-stone-50 rounded-xl p-3 border border-stone-100 mb-4">
-                    <div className="mb-3">
-                      <p className="text-[10px] font-bold text-stone-400 uppercase tracking-wider">{t('coachCard.availableOffers')}</p>
-                    </div>
-                    <div className="space-y-2.5">
-                      {offersByCoach[c.user_id].slice(0, 3).map((offer) => {
-                        const isFree = offer.price_type === 'free'
-                        const isMonthly = offer.price_type === 'monthly'
-                        const isFeatured = offer.is_featured
-                        const dotColor = isFeatured ? 'bg-emerald-500 shadow-sm shadow-emerald-200' : isMonthly ? 'bg-blue-500' : 'bg-stone-400'
-                        return (
-                          <div key={offer.id} className="flex justify-between items-center">
-                            <div className="flex items-center gap-2">
-                              <span className={`w-1.5 h-1.5 rounded-full ${dotColor}`}></span>
-                              <span className={`text-xs ${isFeatured ? 'font-semibold text-stone-700' : 'font-medium text-stone-600'}`}>{getOfferDisplayTitle(offer, locale)}</span>
-                            </div>
-                            <div className="text-right">
-                              {isFree ? (
-                                <span className="text-xs font-bold text-palette-forest-dark bg-palette-forest-dark/10 px-1.5 py-0.5 rounded">{t('coachCard.free')}</span>
-                              ) : (
-                                <>
-                                  <span className="text-xs font-bold text-stone-900">{offer.price}€</span>
-                                  <span className="text-[10px] text-stone-400">/{isMonthly ? t('coachCard.perMonth') : t('coachCard.plan')}</span>
-                                </>
-                              )}
-                            </div>
-                          </div>
-                        )
-                      })}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Footer carte : bouton pleine largeur (HTML) */}
-              <div className="p-4 border-t border-stone-100 bg-stone-50 mt-auto w-full [&_button]:w-full">
-                {getStatus(c.user_id) === 'pending' ? (
-                  <RequestCoachButton
-                    coachId={c.user_id}
-                    coachName={c.full_name?.trim() || c.email}
-                    requestStatus={getStatus(c.user_id)}
-                    requestId={getRequestId(c.user_id)}
-                    initialPracticedSports={initialPracticedSports}
-                  />
-                ) : (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setDetailModalCoach(c)}
-                    className="w-full"
-                  >
-                    <span>{t('coachCard.viewDetails')}</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="m9 18 6-6-6-6" />
-                    </svg>
-                  </Button>
-                )}
-              </div>
+            <li key={c.user_id}>
+              <CoachTile
+                avatarUrl={c.avatar_url}
+                fullName={c.full_name}
+                email={c.email}
+                coachedSports={c.coached_sports ?? []}
+                bio={getDisplayPresentation(c, locale) || t('coachCard.defaultBio')}
+                rating={ratingsByCoach[c.user_id] ?? null}
+                offers={(offersByCoach[c.user_id] ?? []).slice(0, 3).map((offer) => ({
+                  id: offer.id,
+                  title: getOfferDisplayTitle(offer, locale),
+                  price: offer.price ?? 0,
+                  priceType: (offer.price_type === 'free' ? 'free' : offer.price_type === 'monthly' ? 'monthly' : 'one_time') as 'free' | 'monthly' | 'one_time',
+                  isFeatured: offer.is_featured,
+                }))}
+                footer={
+                  getStatus(c.user_id) === 'pending' ? (
+                    <RequestCoachButton
+                      coachId={c.user_id}
+                      coachName={c.full_name?.trim() || c.email}
+                      requestStatus={getStatus(c.user_id)}
+                      requestId={getRequestId(c.user_id)}
+                      initialPracticedSports={initialPracticedSports}
+                    />
+                  ) : (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setDetailModalCoach(c)}
+                      className="w-full"
+                    >
+                      <span>{t('coachCard.viewDetails')}</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="m9 18 6-6-6-6" />
+                      </svg>
+                    </Button>
+                  )
+                }
+                labels={{
+                  new: t('coachCard.new'),
+                  reviews: t('coachCard.reviews'),
+                  availableOffers: t('coachCard.availableOffers'),
+                  free: t('coachCard.free'),
+                  perMonth: t('coachCard.perMonth'),
+                  plan: t('coachCard.plan'),
+                }}
+              />
             </li>
           ))}
         </ul>

@@ -508,6 +508,7 @@
     "offerTitleEn": "Title (English)",
     "offerTitlePlaceholder": "E.g.: Monthly Coaching",
     "pricing": "Pricing",
+    "noPrice": "—",
     "priceTypes": {
       "monthly": "/ Month",
       "oneTime": "One-time",
@@ -535,7 +536,36 @@
     "validation": {
       "priceRequired": "The price for offer {number} is required for this price type.",
       "priceInvalid": "The price for offer {number} is invalid.",
-      "onlyOneFeatured": "Only one offer can be featured."
+      "onlyOneFeatured": "Only one offer can be featured.",
+      "displayOrderConflict": "This slot is already in use. Please refresh the page and try again.",
+      "offerSlotRequired": "Please fill in the title, description and select a recurrence for this offer.",
+      "offerSlotEmpty": "Fill in at least one field to save this offer.",
+      "offerNotFound": "This offer does not exist or does not belong to this coach."
+    },
+    "archivedOffersSection": "Archived offers",
+    "noArchivedOffers": "No archived offers.",
+    "status": {
+      "draft": "Draft",
+      "published": "Published",
+      "archived": "Archived"
+    },
+    "publish": "Publish",
+    "archive": "Archive",
+    "priceLockedHint": "Cannot be changed after publication",
+    "publishModal": {
+      "title": "Publish offer",
+      "message": "Do you confirm that everything is correct? Once the offer is published, you will not be able to change the price. You will still be able to edit the description.",
+      "confirm": "Publish"
+    },
+    "savePublishedModal": {
+      "title": "Editing a published offer",
+      "message": "You cannot make structural changes to the offer (price, type). If you want to change the price or structure, archive this offer and create a new one. Only title and description changes will be saved.",
+      "confirm": "Save"
+    },
+    "archiveModal": {
+      "title": "Archive offer",
+      "message": "New athletes will no longer be able to subscribe to this offer. Athletes who already have this offer will still have access. You must honour the offer until you have ended it with the athlete.",
+      "confirm": "Archive"
     }
   },
   "athletes": {

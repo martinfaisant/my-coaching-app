@@ -10,6 +10,7 @@ import { ActivityTileShowcase } from './ActivityTileShowcase'
 import { TileCardShowcase } from './TileCardShowcase'
 import { LanguageSwitcherShowcase } from './LanguageSwitcherShowcase'
 import { LanguagePrefixFieldShowcase } from './LanguagePrefixFieldShowcase'
+import { PersonTileShowcase } from './PersonTileShowcase'
 
 const PALETTE = [
   { token: 'palette-forest-dark', hex: '#627e59', description: 'Principal — boutons, liens, focus' },
@@ -157,6 +158,18 @@ export default async function DesignSystemPage() {
           </p>
           <div className="rounded-xl border border-stone-200 bg-white p-6">
             <TileCardShowcase />
+          </div>
+        </section>
+
+        <section className="mt-12">
+          <h2 className="text-lg font-semibold text-stone-800 mb-4">
+            Tuiles Coach et Athlète (CoachTile / AthleteTile)
+          </h2>
+          <p className="mb-6 text-sm text-stone-600">
+            Tuiles de liste au design unifié : carte rounded-2xl, header (avatar + nom), badges sports, zone contenu, footer d’action. CoachTile pour « Trouver un coach », AthleteTile pour « Mes athlètes ».
+          </p>
+          <div className="rounded-xl border border-stone-200 bg-white p-6">
+            <PersonTileShowcase />
           </div>
         </section>
 
