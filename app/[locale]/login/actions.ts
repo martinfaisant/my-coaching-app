@@ -1,6 +1,6 @@
 'use server'
 
-import { createClient } from '@/utils/supabase/server'
+import { createClient, createAdminClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { headers } from 'next/headers'
@@ -84,8 +84,11 @@ export async function signup(_prevState: SignupState, formData: FormData) {
   }
 
   if (data?.user) {
-    // Créer le profil
-    const { error: profileError } = await supabase.from('profiles').insert({
+    // Créer le profil avec le client admin : en prod, la confirmation d'email peut être
+    // activée donc il n'y a pas encore de session (auth.uid() = null), et la RLS
+    // "profiles_insert_own" (authenticated only) bloquerait l'insert.
+    const admin = createAdminClient()
+    const { error: profileError } = await admin.from('profiles').insert({
       user_id: data.user.id,
       email: data.user.email ?? email,
       role,
