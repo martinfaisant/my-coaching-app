@@ -28,8 +28,12 @@ export async function updateProfile(
   const lastName = (formData.get('last_name') as string)?.trim() ?? ''
   const fullName = [firstName, lastName].filter(Boolean).join(' ').trim() || null
 
-  const payload: { full_name: string | null; coached_sports?: string[]; practiced_sports?: string[]; languages?: string[]; presentation_fr?: string | null; presentation_en?: string | null; avatar_url?: string | null; postal_code?: string | null } = {
+  const preferredLocaleRaw = (formData.get('preferred_locale') as string)?.trim() || null
+  const preferredLocale = preferredLocaleRaw === 'fr' || preferredLocaleRaw === 'en' ? preferredLocaleRaw : null
+
+  const payload: { full_name: string | null; coached_sports?: string[]; practiced_sports?: string[]; languages?: string[]; presentation_fr?: string | null; presentation_en?: string | null; avatar_url?: string | null; postal_code?: string | null; preferred_locale?: string | null } = {
     full_name: fullName,
+    preferred_locale: preferredLocale,
   }
 
   const avatarUrlRaw = (formData.get('avatar_url') as string)?.trim()

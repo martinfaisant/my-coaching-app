@@ -98,10 +98,12 @@ export async function signup(_prevState: SignupState, formData: FormData) {
     // activée donc il n'y a pas encore de session (auth.uid() = null), et la RLS
     // "profiles_insert_own" (authenticated only) bloquerait l'insert.
     const admin = createAdminClient()
+    const preferredLocale = locale === 'en' || locale === 'fr' ? locale : null
     const { error: profileError } = await admin.from('profiles').insert({
       user_id: data.user.id,
       email: data.user.email ?? email,
       role,
+      preferred_locale: preferredLocale,
     })
 
     if (profileError) {

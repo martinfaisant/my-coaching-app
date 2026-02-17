@@ -33,6 +33,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ locale
           coachedSports={current.profile.coached_sports ?? []}
           practicedSports={[]}
           languages={current.profile.languages ?? []}
+          preferredLocale={current.profile.preferred_locale ?? undefined}
           presentation={current.profile.presentation ?? ''}
           presentationFr={current.profile.presentation_fr ?? ''}
           presentationEn={current.profile.presentation_en ?? ''}
@@ -47,6 +48,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ locale
           coachedSports={[]}
           practicedSports={current.profile.practiced_sports ?? []}
           languages={current.profile.languages ?? []}
+          preferredLocale={current.profile.preferred_locale ?? undefined}
           presentation={current.profile.presentation ?? ''}
           postalCode={current.profile.postal_code ?? ''}
         />

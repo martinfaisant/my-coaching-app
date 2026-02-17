@@ -79,15 +79,40 @@ export async function proxy(request: NextRequest) {
 
   // If user is logged in and tries to access /login
   if (user && pathnameWithoutLocale === '/login' && isGet) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('preferred_locale')
+      .eq('user_id', user.id)
+      .single()
+    const preferred = profile?.preferred_locale === 'fr' || profile?.preferred_locale === 'en' ? profile.preferred_locale : null
+    const targetLocale = preferred ?? locale
+
     const redirectUrl = request.nextUrl.clone()
     const redirectParam = request.nextUrl.searchParams.get('redirect')
     if (redirectParam && redirectParam.includes('/dashboard')) {
       redirectUrl.pathname = redirectParam
       redirectUrl.searchParams.delete('redirect')
     } else {
-      redirectUrl.pathname = locale === 'fr' ? '/dashboard' : `/${locale}/dashboard`
+      redirectUrl.pathname = targetLocale === 'fr' ? '/dashboard' : '/en/dashboard'
     }
     return NextResponse.redirect(redirectUrl)
+  }
+
+  // Logged-in user: redirect to preferred display locale if set and different from current path
+  if (user && isGet && !isApiRoute && (isProtectedRoute || pathnameWithoutLocale === '/')) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('preferred_locale')
+      .eq('user_id', user.id)
+      .single()
+
+    const preferred = profile?.preferred_locale === 'fr' || profile?.preferred_locale === 'en' ? profile.preferred_locale : null
+    if (preferred && preferred !== locale) {
+      const targetPath = preferred === 'fr' ? pathnameWithoutLocale : `/en${pathnameWithoutLocale === '/' ? '' : pathnameWithoutLocale}`
+      const redirectUrl = request.nextUrl.clone()
+      redirectUrl.pathname = targetPath
+      return NextResponse.redirect(redirectUrl)
+    }
   }
 
   return response
