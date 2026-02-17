@@ -335,10 +335,11 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
     setArchiveError(null)
     const result = await archiveOffer(archiveTargetOfferId, locale)
     setIsArchiving(false)
-    if ('error' in result) {
-      setArchiveError(result.error ?? null)
+    if ('error' in result && result.error) {
+      setArchiveError(result.error)
       return
     }
+    if (!('archived' in result) || !result.archived) return
     const archivedIndex = displayedOffers.findIndex((o) => o.id === archiveTargetOfferId)
     setArchivedIdsInThisSession((prev) => new Set(prev).add(archiveTargetOfferId))
     setOptimisticArchivedList((prev) => [...prev, result.archived])
