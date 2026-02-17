@@ -6,6 +6,7 @@ import { redirect } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
 import { DashboardPageShell } from '@/components/DashboardPageShell'
 import { AvatarImage } from '@/components/AvatarImage'
+import { AthleteTile } from '@/components/AthleteTile'
 import { Badge } from '@/components/Badge'
 import { FindCoachSection } from '@/app/[locale]/dashboard/FindCoachSection'
 import { RespondToRequestButtons } from '@/app/[locale]/dashboard/RespondToRequestButtons'
@@ -352,7 +353,7 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
                   </h2>
                 </>
               )}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {visibleProfiles.map((p) => {
                 const displayName = (p.full_name?.trim() || p.email) as string
                 const athleteHref = `/dashboard/athletes/${p.user_id}`
@@ -363,69 +364,33 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
                 const practicedSports = p.practiced_sports ?? []
 
                 return (
-                  <article
+                  <AthleteTile
                     key={p.user_id}
-                    className="group rounded-xl border border-stone-200 bg-section overflow-hidden flex flex-col"
-                  >
-                    <div className="p-4">
-                      <div className="flex items-center gap-3 mb-3">
-                        <AvatarImage
-                          src={p.avatar_url ? `${p.avatar_url}?t=${p.updated_at}` : null}
-                          initials={getInitials(displayName)}
-                          className="w-12 h-12 flex-shrink-0"
-                        />
-                        <div className="min-w-0">
-                          <p className="font-semibold text-stone-900 truncate">{displayName}</p>
-                          <div className="flex flex-wrap gap-1.5 mt-1">
-                            {practicedSports.map((v) => (
-                              <Badge key={v} sport={v as Parameters<typeof Badge>[0]['sport']} />
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-3 text-sm">
-                        <div>
-                          <p className="text-stone-500 font-medium">{t('athleteCard.nextGoal')}</p>
-                          <p className="text-stone-900 mt-0.5">
-                            {nextGoal
-                              ? `${formatShortDate(nextGoal.date)} · ${nextGoal.race_name}`
-                              : t('athleteCard.noGoal')}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-stone-500 font-medium">{t('athleteCard.plannedUntil')}</p>
-                          <p className="text-stone-900 font-semibold mt-0.5 text-sm">
-                            {plannedUntil ? formatShortDate(plannedUntil) : '—'}
-                          </p>
-                          <div className="flex items-center gap-1 mt-0.5">
-                            <span
-                              className={`w-1.5 h-1.5 rounded-full shrink-0 ${
-                                isUpToDate ? 'bg-emerald-500' : 'bg-red-400'
-                              }`}
-                            />
-                            <span
-                              className={`text-[10px] font-medium ${
-                                isUpToDate ? 'text-stone-500' : 'text-red-400'
-                              }`}
-                            >
-                              {isUpToDate ? t('athleteCard.upToDate') : t('athleteCard.late')}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="mt-auto border-t border-stone-100 p-3 bg-stone-50 flex justify-end">
+                    avatarUrl={p.avatar_url ? `${p.avatar_url}?t=${p.updated_at}` : null}
+                    displayName={displayName}
+                    practicedSports={practicedSports}
+                    nextGoal={nextGoal ? { date: formatShortDate(nextGoal.date), raceName: nextGoal.race_name } : null}
+                    plannedUntil={plannedUntil ? formatShortDate(plannedUntil) : undefined}
+                    isUpToDate={isUpToDate}
+                    footer={
                       <Link
                         href={athleteHref}
-                        className="text-xs font-medium text-palette-forest-dark hover:text-palette-forest-darker flex items-center transition-transform group-hover:translate-x-1"
+                        className="text-xs font-medium text-palette-forest-dark hover:text-palette-forest-darker flex items-center justify-end transition-transform group-hover:translate-x-1"
                       >
                         {t('athleteCard.viewPlanning')}
                         <svg className="w-4 h-4 ml-1 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                         </svg>
                       </Link>
-                    </div>
-                  </article>
+                    }
+                    labels={{
+                      nextGoal: t('athleteCard.nextGoal'),
+                      noGoal: t('athleteCard.noGoal'),
+                      plannedUntil: t('athleteCard.plannedUntil'),
+                      upToDate: t('athleteCard.upToDate'),
+                      late: t('athleteCard.late'),
+                    }}
+                  />
                 )
               })}
               </div>

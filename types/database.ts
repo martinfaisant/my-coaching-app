@@ -83,6 +83,7 @@ export type CoachRequest = {
   coaching_need: string
   status: CoachRequestStatus
   offer_id: string | null
+  offer_snapshot_id: string | null
   created_at: string
   responded_at: string | null
 }
@@ -97,6 +98,9 @@ export type CoachRating = {
   updated_at: string
 }
 
+/** Statut du cycle de vie d'une offre catalogue */
+export type CoachOfferStatus = 'draft' | 'published' | 'archived'
+
 export type CoachOffer = {
   id: string
   coach_id: string
@@ -110,10 +114,86 @@ export type CoachOffer = {
   description_fr?: string | null
   /** Description et avantages en anglais. */
   description_en?: string | null
+  /** Prix (null = non renseigné en brouillon) */
+  price: number | null
+  /** Récurrence (null = non renseigné en brouillon) */
+  price_type: 'one_time' | 'monthly' | 'free' | null
+  display_order: number
+  is_featured: boolean
+  /** draft: brouillon invisible aux athlètes; published: en ligne; archived: plus proposée aux nouveaux */
+  /** Présent uniquement si les migrations 033+ sont appliquées (draft | published | archived). Sinon toutes les offres sont visibles. */
+  status?: CoachOfferStatus
+  created_at: string
+  updated_at: string
+}
+
+/** Offre archivée (copie dans coach_offers_archived au moment de l'archive) */
+export type CoachOfferArchived = {
+  id: string
+  original_id: string
+  archived_at: string
+  coach_id: string
+  title: string
+  description: string
+  title_fr?: string | null
+  title_en?: string | null
+  description_fr?: string | null
+  description_en?: string | null
   price: number
   price_type: 'one_time' | 'monthly' | 'free'
   display_order: number
   is_featured: boolean
+  created_at: string
+  updated_at: string
+}
+
+/** Version historisée (titre/description) d'une offre */
+export type CoachOfferVersion = {
+  id: string
+  offer_id: string
+  version: number
+  title: string
+  description: string
+  title_fr?: string | null
+  title_en?: string | null
+  description_fr?: string | null
+  description_en?: string | null
+  created_at: string
+}
+
+/** Snapshot figé d'une offre (à la demande, puis lié à la souscription) */
+export type OfferSnapshot = {
+  id: string
+  coach_id: string
+  source_offer_id: string | null
+  title: string
+  description: string
+  title_fr?: string | null
+  title_en?: string | null
+  description_fr?: string | null
+  description_en?: string | null
+  price: number
+  price_type: 'one_time' | 'monthly' | 'free'
+  display_order: number
+  is_featured: boolean
+  created_at: string
+}
+
+/** Statut d'une souscription athlète–coach */
+export type AthleteSubscriptionStatus = 'active' | 'cancelled_at_period_end' | 'ended'
+
+export type AthleteSubscription = {
+  id: string
+  athlete_id: string
+  coach_id: string
+  offer_snapshot_id: string
+  price_type: 'one_time' | 'monthly' | 'free'
+  started_at: string
+  current_period_end: string | null
+  status: AthleteSubscriptionStatus
+  cancelled_at: string | null
+  coach_delivered_at: string | null
+  athlete_confirmed_at: string | null
   created_at: string
   updated_at: string
 }

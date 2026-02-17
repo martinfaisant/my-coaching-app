@@ -68,7 +68,7 @@ export function CoachAthleteCalendarPage({
         pathToRevalidate={pathToRevalidate}
         hideBuiltInSelector={true}
         disableContentScroll={true}
-        renderWeekSelector={({ dateRangeLabel, onNavigate, isAnimating }) => (
+        renderWeekSelector={({ dateRangeLabel, onNavigate, isAnimating, prevWeekLastDayLabel, nextWeekFirstDayLabel }) => (
           <header className="h-20 flex items-center justify-between px-6 lg:px-8 shrink-0 bg-white/80 backdrop-blur-md border-b border-stone-100 z-10">
             <div className="flex items-center gap-4">
               <Link
@@ -86,7 +86,15 @@ export function CoachAthleteCalendarPage({
                 </div>
               </div>
             </div>
-            <WeekSelector dateRangeLabel={dateRangeLabel} onNavigate={onNavigate} isAnimating={isAnimating} prevWeekAriaLabel={tCommon('weekPrevious')} nextWeekAriaLabel={tCommon('weekNext')} />
+            <WeekSelector
+              dateRangeLabel={dateRangeLabel}
+              onNavigate={onNavigate}
+              isAnimating={isAnimating}
+              prevWeekLastDayLabel={prevWeekLastDayLabel}
+              nextWeekFirstDayLabel={nextWeekFirstDayLabel}
+              prevWeekAriaLabel={tCommon('weekPrevious')}
+              nextWeekAriaLabel={tCommon('weekNext')}
+            />
           </header>
         )}
         renderAfterCalendar={() => {

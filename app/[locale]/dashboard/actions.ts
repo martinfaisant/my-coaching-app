@@ -63,7 +63,6 @@ export async function createCoachRequest(
     coach_id: coachId,
     sport_practiced: sportPracticedValue,
     coaching_need: need,
-    offer_id: offerId || null,
     status: 'pending',
   })
 
@@ -157,7 +156,7 @@ export async function getPendingCoachRequests(locale: string = 'fr'): Promise<Pe
 
   const { data: rows } = await supabase
     .from('coach_requests')
-    .select('id, athlete_id, sport_practiced, coaching_need, offer_id, created_at')
+    .select('id, athlete_id, sport_practiced, coaching_need, created_at')
     .eq('coach_id', user.id)
     .eq('status', 'pending')
     .order('created_at', { ascending: false })
@@ -179,45 +178,20 @@ export async function getPendingCoachRequests(locale: string = 'fr'): Promise<Pe
     avatarByUserId.set(p.user_id, p.avatar_url ?? null)
   }
 
-  const offerIds = rows.filter(r => r.offer_id).map(r => r.offer_id!)
-  const offersByOfferId = new Map<string, { title: string; price: number; price_type: string }>()
-  if (offerIds.length > 0) {
-    const { data: offers } = await supabase
-      .from('coach_offers')
-      .select('id, title, title_fr, title_en, price, price_type')
-      .in('id', offerIds)
-    for (const offer of offers ?? []) {
-      const titleFr = (offer.title_fr ?? '').trim()
-      const titleEn = (offer.title_en ?? '').trim()
-      const legacy = (offer.title ?? '').trim()
-      const title = locale === 'fr'
-        ? (titleFr || titleEn || legacy)
-        : (titleEn || titleFr || legacy)
-      offersByOfferId.set(offer.id, {
-        title,
-        price: offer.price,
-        price_type: offer.price_type,
-      })
-    }
-  }
-
-  return rows.map((r) => {
-    const offer = r.offer_id ? offersByOfferId.get(r.offer_id) : null
-    return {
-      id: r.id,
-      athlete_id: r.athlete_id,
-      athlete_name: nameByUserId.get(r.athlete_id) ?? emailByUserId.get(r.athlete_id) ?? '—',
-      athlete_email: emailByUserId.get(r.athlete_id) ?? '',
-      athlete_avatar_url: avatarByUserId.get(r.athlete_id) ?? null,
-      sport_practiced: r.sport_practiced,
-      coaching_need: r.coaching_need,
-      offer_id: r.offer_id ?? null,
-      offer_title: offer?.title ?? null,
-      offer_price: offer?.price ?? null,
-      offer_price_type: offer?.price_type ?? null,
-      created_at: r.created_at,
-    }
-  })
+  return rows.map((r) => ({
+    id: r.id,
+    athlete_id: r.athlete_id,
+    athlete_name: nameByUserId.get(r.athlete_id) ?? emailByUserId.get(r.athlete_id) ?? '—',
+    athlete_email: emailByUserId.get(r.athlete_id) ?? '',
+    athlete_avatar_url: avatarByUserId.get(r.athlete_id) ?? null,
+    sport_practiced: r.sport_practiced,
+    coaching_need: r.coaching_need,
+    offer_id: null,
+    offer_title: null,
+    offer_price: null,
+    offer_price_type: null,
+    created_at: r.created_at,
+  }))
 }
 
 /** Coach : accepter ou refuser une demande. */

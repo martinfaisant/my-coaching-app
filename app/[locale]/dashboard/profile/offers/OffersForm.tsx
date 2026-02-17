@@ -1,43 +1,65 @@
 'use client'
 
-import { useState, useActionState, useEffect, useRef, useCallback } from 'react'
-import { createPortal } from 'react-dom'
+import { useState, useActionState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations, useLocale } from 'next-intl'
 import { Button } from '@/components/Button'
 import { Modal } from '@/components/Modal'
 import { LanguagePrefixInput, LanguagePrefixTextarea } from '@/components/LanguagePrefixField'
-import { saveOffers, deleteOffer, type OffersFormState } from './actions'
-import type { CoachOffer } from '@/types/database'
+import { saveOffers, archiveOffer, type OffersFormState } from './actions'
+import type { CoachOffer, CoachOfferArchived } from '@/types/database'
 
 type OffersFormProps = {
   offers: CoachOffer[]
+  archivedOffers?: CoachOfferArchived[]
 }
 
-export function OffersForm({ offers }: OffersFormProps) {
+export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
   const router = useRouter()
   const t = useTranslations('offers')
   const tCommon = useTranslations('common')
   const locale = useLocale()
   const [state, action] = useActionState<OffersFormState, FormData>(saveOffers, {})
-  const [offerCount, setOfferCount] = useState(Math.max(offers.length || 0, 0))
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
-  const [offerToDelete, setOfferToDelete] = useState<{ index: number; title: string; id?: string } | null>(null)
-  const [isDeleting, setIsDeleting] = useState(false)
+  /** IDs archivés pendant cette session : on les retire de l'affichage sans refetch (préserve les modifications non enregistrées des autres offres). */
+  const [archivedIdsInThisSession, setArchivedIdsInThisSession] = useState<Set<string>>(new Set())
+  /** Offres archivées ajoutées pendant cette session pour affichage immédiat dans la section archivée. */
+  const [optimisticArchivedList, setOptimisticArchivedList] = useState<CoachOfferArchived[]>([])
+
+  /** Offres « live » affichées : props moins celles archivées dans cette session (sans refetch). */
+  const displayedOffers = useMemo(
+    () =>
+      offers
+        .filter((o) => !archivedIdsInThisSession.has(o.id))
+        .sort((a, b) => a.display_order - b.display_order),
+    [offers, archivedIdsInThisSession]
+  )
+  /** Section archivée : props + offres archivées optimistes, dédoublonnée par id (évite le doublon si le serveur a refetch après revalidatePath). */
+  const displayedArchivedOffers = useMemo(() => {
+    const byId = new Map<string, CoachOfferArchived>()
+    archivedOffers.forEach((a) => byId.set(a.id, a))
+    optimisticArchivedList.forEach((a) => byId.set(a.id, a))
+    return Array.from(byId.values()).sort(
+      (a, b) => new Date(b.archived_at).getTime() - new Date(a.archived_at).getTime()
+    )
+  }, [archivedOffers, optimisticArchivedList])
+  const sortedOffers = displayedOffers
+
+  const [offerCount, setOfferCount] = useState(() => Math.min(3, Math.max(sortedOffers.length, 1)))
   const [unsavedChangesModalOpen, setUnsavedChangesModalOpen] = useState(false)
   const [pendingNavigation, setPendingNavigation] = useState<string | null>(null)
   const [isSavingBeforeLeave, setIsSavingBeforeLeave] = useState(false)
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
   const [showSavedFeedback, setShowSavedFeedback] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const needsInitialOffersUpdateRef = useRef(false)
   const previousIsSubmittingRef = useRef(false)
   const isSubmittingRef = useRef(false)
   const formRef = useRef<HTMLFormElement>(null)
-  const sortedOffers = [...offers].sort((a, b) => a.display_order - b.display_order)
-  const [priceTypes, setPriceTypes] = useState<Record<number, 'one_time' | 'monthly' | 'free'>>(() => {
-    const initial: Record<number, 'one_time' | 'monthly' | 'free'> = {}
+  const [priceTypes, setPriceTypes] = useState<Record<string, 'one_time' | 'monthly' | 'free' | undefined>>(() => {
+    const initial: Record<string, 'one_time' | 'monthly' | 'free' | undefined> = {}
     sortedOffers.forEach((offer, idx) => {
-      initial[idx] = offer.price_type || 'one_time'
+      const key = offer.id ?? `new-${idx - sortedOffers.length}`
+      initial[key] = offer.price_type ?? undefined
     })
     return initial
   })
@@ -45,57 +67,39 @@ export function OffersForm({ offers }: OffersFormProps) {
     const featuredIndex = sortedOffers.findIndex(offer => offer.is_featured)
     return featuredIndex >= 0 ? featuredIndex : null
   })
+  const [archiveModalOpen, setArchiveModalOpen] = useState(false)
+  const [archiveTargetOfferId, setArchiveTargetOfferId] = useState<string | null>(null)
+  const [archiveError, setArchiveError] = useState<string | null>(null)
+  const [isArchiving, setIsArchiving] = useState(false)
+  /** IDs archivés pendant cette session : on les retire de l’affichage sans refetch (préserve les modifications non enregistrées des autres offres). */
   const initialOffersRef = useRef(offers)
   const initialFeaturedIndexRef = useRef<number | null>((() => {
     const featuredIndex = sortedOffers.findIndex(offer => offer.is_featured)
     return featuredIndex >= 0 ? featuredIndex : null
   })())
-  const lastOffersLengthRef = useRef(offers.length)
   const isInitializedRef = useRef(false)
 
-  // Synchroniser le compteur avec les offres après suppression en base
   useEffect(() => {
-    // Premier chargement : initialiser les types de prix depuis les offres en base
     if (!isInitializedRef.current) {
-      const sorted = [...offers].sort((a, b) => a.display_order - b.display_order)
-      const newPriceTypes: Record<number, 'one_time' | 'monthly' | 'free'> = {}
-      sorted.forEach((offer, idx) => {
-        newPriceTypes[idx] = offer.price_type || 'one_time'
+      const newPriceTypes: Record<string, 'one_time' | 'monthly' | 'free' | undefined> = {}
+      sortedOffers.forEach((offer, idx) => {
+        const key = offer.id ?? `new-${idx - sortedOffers.length}`
+        newPriceTypes[key] = offer.price_type ?? undefined
       })
       setPriceTypes(newPriceTypes)
-      const featuredIndex = sorted.findIndex(offer => offer.is_featured)
-      const featuredIdx = featuredIndex >= 0 ? featuredIndex : null
-      setFeaturedOfferIndex(featuredIdx)
-      initialFeaturedIndexRef.current = featuredIdx
-      initialOffersRef.current = [...offers].sort((a, b) => a.display_order - b.display_order)
+      const featuredIdx = sortedOffers.findIndex(offer => offer.is_featured)
+      setFeaturedOfferIndex(featuredIdx >= 0 ? featuredIdx : null)
+      initialOffersRef.current = [...sortedOffers]
       isInitializedRef.current = true
-      lastOffersLengthRef.current = offers.length
+      setOfferCount(Math.min(3, Math.max(sortedOffers.length, 1)))
       return
     }
-    
-    // Si le nombre d'offres a diminué (suppression en base), mettre à jour
-    // Ne pas toucher aux types de prix si l'utilisateur a fait des modifications
-    if (offers.length < lastOffersLengthRef.current) {
-      setOfferCount(Math.max(offers.length || 0, 0))
-      initialOffersRef.current = offers
-      
-      // Réinitialiser les types de prix seulement si une offre a été supprimée
-      const sorted = [...offers].sort((a, b) => a.display_order - b.display_order)
-      setPriceTypes(prev => {
-        const newPriceTypes: Record<number, 'one_time' | 'monthly' | 'free'> = {}
-        sorted.forEach((offer, idx) => {
-          newPriceTypes[idx] = offer.price_type || 'one_time'
-        })
-        return newPriceTypes
-      })
-      const featuredIndex = sorted.findIndex(offer => offer.is_featured)
-      const featuredIdx = featuredIndex >= 0 ? featuredIndex : null
-      setFeaturedOfferIndex(featuredIdx)
-      initialFeaturedIndexRef.current = featuredIdx
-      lastOffersLengthRef.current = offers.length
+    if (needsInitialOffersUpdateRef.current) {
+      initialOffersRef.current = [...sortedOffers]
+      initialFeaturedIndexRef.current = featuredOfferIndex
+      needsInitialOffersUpdateRef.current = false
     }
-    // Ne rien faire si le nombre d'offres est le même - ne pas écraser les modifications de l'utilisateur
-  }, [offers])
+  }, [offers, sortedOffers, featuredOfferIndex])
 
   // Fonction pour vérifier les modifications
   const checkUnsavedChanges = useCallback(() => {
@@ -117,10 +121,12 @@ export function OffersForm({ offers }: OffersFormProps) {
       const descriptionFr = (form.querySelector(`[name="offer_${i}_description_fr"]`) as HTMLTextAreaElement)?.value.trim() || ''
       const descriptionEn = (form.querySelector(`[name="offer_${i}_description_en"]`) as HTMLTextAreaElement)?.value.trim() || ''
       const price = (form.querySelector(`[name="offer_${i}_price"]`) as HTMLInputElement)?.value.trim() || ''
-      const priceType = priceTypes[i] ?? (initialOffersRef.current[i] as { price_type?: string })?.price_type ?? 'one_time'
+      const initialAtI = initialOffersRef.current[i] as { id?: string; price_type?: string } | undefined
+      const slotKey = initialAtI?.id ?? `new-${i - (initialOffersRef.current?.length ?? 0)}`
+      const priceType = priceTypes[slotKey] ?? initialAtI?.price_type ?? (initialAtI ? 'one_time' : undefined)
 
       if (titleFr || titleEn || descriptionFr || descriptionEn || price || priceType) {
-        currentOffers.push({ title_fr: titleFr, title_en: titleEn, description_fr: descriptionFr, description_en: descriptionEn, price, price_type: priceType })
+        currentOffers.push({ title_fr: titleFr, title_en: titleEn, description_fr: descriptionFr, description_en: descriptionEn, price, price_type: priceType ?? '' })
       }
     }
 
@@ -129,33 +135,32 @@ export function OffersForm({ offers }: OffersFormProps) {
 
     for (let i = 0; i < currentOffers.length; i++) {
       const current = currentOffers[i]
-      const initial = initialOffers[i] as (CoachOffer & { title_fr?: string; title_en?: string; description_fr?: string; description_en?: string }) | undefined
+      const initial = initialOffers[i] as (CoachOffer & { title_fr?: string; title_en?: string; description_fr?: string; description_en?: string; price?: number | null; price_type?: string | null }) | undefined
       if (!initial) return true
-      const initTitleFr = (initial.title_fr ?? initial.title ?? '').trim()
+      const initTitleFr = (initial.title_fr ?? '').trim()
       const initTitleEn = (initial.title_en ?? '').trim()
-      const initDescFr = (initial.description_fr ?? initial.description ?? '').trim()
+      const initDescFr = (initial.description_fr ?? '').trim()
       const initDescEn = (initial.description_en ?? '').trim()
+      const initPrice = initial.price != null ? String(initial.price) : ''
+      const initPriceType = (initial.price_type ?? '') as string
       if (
         current.title_fr !== initTitleFr ||
         current.title_en !== initTitleEn ||
         current.description_fr !== initDescFr ||
         current.description_en !== initDescEn ||
-        current.price !== String(initial.price ?? '') ||
-        current.price_type !== (initial.price_type || '')
+        current.price !== initPrice ||
+        current.price_type !== initPriceType
       ) {
         return true
       }
     }
 
-    // Vérifier si l'offre privilégiée a changé
-    if (featuredOfferIndex !== initialFeaturedIndexRef.current) {
-      return true
-    }
+    if (featuredOfferIndex !== initialFeaturedIndexRef.current) return true
 
     return false
   }, [offerCount, featuredOfferIndex, priceTypes])
 
-  // Mettre à jour l'état des modifications
+  // Détection des modifications : écouter les champs du formulaire (comme ProfileForm)
   useEffect(() => {
     const form = formRef.current
     if (!form) return
@@ -164,7 +169,7 @@ export function OffersForm({ offers }: OffersFormProps) {
       setHasUnsavedChanges(checkUnsavedChanges())
     }
 
-    const inputs = form.querySelectorAll('input, textarea, select')
+    const inputs = form.querySelectorAll('input, textarea')
     inputs.forEach((input) => {
       input.addEventListener('input', updateUnsavedChanges)
       input.addEventListener('change', updateUnsavedChanges)
@@ -178,15 +183,11 @@ export function OffersForm({ offers }: OffersFormProps) {
     }
   }, [checkUnsavedChanges])
 
+  const triggerUnsavedCheck = useCallback(() => {
+    setHasUnsavedChanges(checkUnsavedChanges())
+  }, [checkUnsavedChanges])
 
 
-  // Réinitialiser après sauvegarde réussie
-  useEffect(() => {
-    if (state?.success) {
-      initialOffersRef.current = offers
-      setHasUnsavedChanges(false)
-    }
-  }, [state?.success, offers])
 
   // Intercepter la fermeture de page
   useEffect(() => {
@@ -241,21 +242,36 @@ export function OffersForm({ offers }: OffersFormProps) {
     return () => window.removeEventListener('popstate', handlePopState)
   }, [hasUnsavedChanges, t])
 
-  // Gérer la soumission du formulaire
-  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    // Ajouter la locale au formData
-    const form = e.currentTarget
-    const localeInput = document.createElement('input')
-    localeInput.type = 'hidden'
-    localeInput.name = '_locale'
-    localeInput.value = locale
-    form.appendChild(localeInput)
-    
+  /** Offre complète (titre FR/EN, description FR/EN, prix et récurrence) → bouton Publier actif */
+  const canPublishOfferAtSlot = useCallback(
+    (index: number) => {
+      const form = formRef.current
+      if (!form) return false
+      const offer = sortedOffers[index] as (CoachOffer & { price_type?: string }) | undefined
+      const titleFr = (form.querySelector(`[name="offer_${index}_title_fr"]`) as HTMLInputElement)?.value?.trim() ?? ''
+      const titleEn = (form.querySelector(`[name="offer_${index}_title_en"]`) as HTMLInputElement)?.value?.trim() ?? ''
+      const descFr = (form.querySelector(`[name="offer_${index}_description_fr"]`) as HTMLTextAreaElement)?.value?.trim() ?? ''
+      const descEn = (form.querySelector(`[name="offer_${index}_description_en"]`) as HTMLTextAreaElement)?.value?.trim() ?? ''
+      const slotKey = offer?.id ?? `new-${index - sortedOffers.length}`
+      const priceType = priceTypes[slotKey] ?? offer?.price_type
+      const priceStr = (form.querySelector(`[name="offer_${index}_price"]`) as HTMLInputElement)?.value?.trim() ?? ''
+      const hasTitles = titleFr.length > 0 && titleEn.length > 0
+      const hasDescriptions = descFr.length > 0 && descEn.length > 0
+      const hasRecurrence = priceType === 'one_time' || priceType === 'monthly' || priceType === 'free'
+      const hasValidPrice =
+        priceType === 'free' || (priceStr.length > 0 && !isNaN(parseFloat(priceStr)) && parseFloat(priceStr) >= 0)
+      return hasTitles && hasDescriptions && hasRecurrence && hasValidPrice
+    },
+    [sortedOffers, priceTypes]
+  )
+
+  // Soumission : marquer l’envoi en cours et le slot (aligné sur ProfileForm handleFormSubmit)
+  const handleFormSubmit = () => {
     isSubmittingRef.current = true
     setIsSubmitting(true)
   }
 
-  // Réinitialiser le flag après la soumission
+  // Réinitialiser l’état d’envoi à la réception de la réponse (pattern PATTERN_SAVE_BUTTON)
   useEffect(() => {
     if (state?.success || state?.error) {
       isSubmittingRef.current = false
@@ -263,85 +279,36 @@ export function OffersForm({ offers }: OffersFormProps) {
     }
   }, [state])
 
-  // À chaque succès : afficher "Enregistré", réinitialiser les valeurs de référence et hasUnsavedChanges
+  // Feedback success/error : détecter la transition pending → terminé (aligné sur ProfileForm / PATTERN_SAVE_BUTTON)
   const saveFeedbackKey = `${state?.success ?? ''}|${state?.error ?? ''}|${isSubmitting}`
   useEffect(() => {
     const justFinishedSubmitting = previousIsSubmittingRef.current && !isSubmitting
     previousIsSubmittingRef.current = isSubmitting
-  
+
     if (state?.success && justFinishedSubmitting) {
-      setShowSavedFeedback(true)
+      needsInitialOffersUpdateRef.current = true
       router.refresh()
-      const t = setTimeout(() => setShowSavedFeedback(false), 2500)
-      initialOffersRef.current = offers  // garder pour le run actuel
-      initialFeaturedIndexRef.current = featuredOfferIndex
       setHasUnsavedChanges(false)
+      setShowSavedFeedback(true)
+      const t = setTimeout(() => setShowSavedFeedback(false), 2500)
       return () => clearTimeout(t)
     }
+
     if (state?.error) {
       setShowSavedFeedback(false)
     }
   }, [saveFeedbackKey])
 
-  // Réinitialiser "Enregistré" dès qu'une nouvelle modification est détectée
+  // Cacher le feedback « Enregistré » dès qu’une modification est détectée (pattern PATTERN_SAVE_BUTTON)
   useEffect(() => {
-    if (hasUnsavedChanges && showSavedFeedback) {
-      setShowSavedFeedback(false)
-    }
+    if (hasUnsavedChanges && showSavedFeedback) setShowSavedFeedback(false)
   }, [hasUnsavedChanges, showSavedFeedback])
-
-  // Gérer la suppression d'offre
-  const handleDeleteClick = (index: number) => {
-    const offer = sortedOffers[index]
-    const form = formRef.current
-    const titleFr = (form?.querySelector(`[name="offer_${index}_title_fr"]`) as HTMLInputElement)?.value?.trim()
-    const titleEn = (form?.querySelector(`[name="offer_${index}_title_en"]`) as HTMLInputElement)?.value?.trim()
-    const title = titleFr || titleEn || (offer?.title_fr ?? offer?.title_en ?? offer?.title) || `Offre ${index + 1}`
-    setOfferToDelete({ index, title, id: offer?.id })
-    setDeleteModalOpen(true)
-  }
-
-  const handleConfirmDelete = async () => {
-    if (!offerToDelete) return
-    setIsDeleting(true)
-
-    try {
-      // Si l'offre existe en base, la supprimer immédiatement
-      if (offerToDelete.id) {
-        const result = await deleteOffer(offerToDelete.id)
-        if (result.error) {
-          alert(result.error)
-          setIsDeleting(false)
-          return
-        }
-        // Mettre à jour les offres initiales après suppression
-        initialOffersRef.current = initialOffersRef.current.filter((o) => o.id !== offerToDelete.id)
-        router.refresh()
-      }
-
-      // Réduire le compteur d'offres
-      const newCount = Math.max(0, offerCount - 1)
-      setOfferCount(newCount)
-      
-      // Si toutes les offres sont supprimées, réinitialiser les modifications
-      if (newCount === 0) {
-        setHasUnsavedChanges(false)
-      }
-      
-      setDeleteModalOpen(false)
-      setOfferToDelete(null)
-    } catch (error) {
-      alert('Erreur lors de la suppression')
-    } finally {
-      setIsDeleting(false)
-    }
-  }
 
   const handleSaveAndLeave = async () => {
     if (!formRef.current) return
     setIsSavingBeforeLeave(true)
     const formData = new FormData(formRef.current)
-    formData.append('_locale', locale)
+    formData.set('_locale', locale)
     const result = await saveOffers({}, formData)
     setIsSavingBeforeLeave(false)
 
@@ -362,20 +329,37 @@ export function OffersForm({ offers }: OffersFormProps) {
     setPendingNavigation(null)
   }
 
-  // Gérer Escape pour fermer les modales
+  const handleArchiveConfirm = async () => {
+    if (!archiveTargetOfferId) return
+    setIsArchiving(true)
+    setArchiveError(null)
+    const result = await archiveOffer(archiveTargetOfferId, locale)
+    setIsArchiving(false)
+    if ('error' in result) {
+      setArchiveError(result.error ?? null)
+      return
+    }
+    const archivedIndex = displayedOffers.findIndex((o) => o.id === archiveTargetOfferId)
+    setArchivedIdsInThisSession((prev) => new Set(prev).add(archiveTargetOfferId))
+    setOptimisticArchivedList((prev) => [...prev, result.archived])
+    setOfferCount((prev) => Math.max(1, prev - 1))
+    if (featuredOfferIndex === archivedIndex) {
+      setFeaturedOfferIndex(null)
+    } else if (featuredOfferIndex !== null && featuredOfferIndex > archivedIndex) {
+      setFeaturedOfferIndex((prev) => (prev !== null ? prev - 1 : null))
+    }
+    setArchiveModalOpen(false)
+    setArchiveTargetOfferId(null)
+  }
+
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        if (unsavedChangesModalOpen && !isSavingBeforeLeave) {
-          setUnsavedChangesModalOpen(false)
-          setPendingNavigation(null)
-        } else if (deleteModalOpen && !isDeleting) {
-          setDeleteModalOpen(false)
-          setOfferToDelete(null)
-        }
+      if (e.key === 'Escape' && unsavedChangesModalOpen && !isSavingBeforeLeave) {
+        setUnsavedChangesModalOpen(false)
+        setPendingNavigation(null)
       }
     }
-    if (deleteModalOpen || unsavedChangesModalOpen) {
+    if (unsavedChangesModalOpen) {
       document.addEventListener('keydown', handleEscape)
       document.body.style.overflow = 'hidden'
     }
@@ -383,61 +367,64 @@ export function OffersForm({ offers }: OffersFormProps) {
       document.removeEventListener('keydown', handleEscape)
       document.body.style.overflow = ''
     }
-  }, [deleteModalOpen, unsavedChangesModalOpen, isDeleting, isSavingBeforeLeave])
+  }, [unsavedChangesModalOpen, isSavingBeforeLeave])
 
   const remainingOffers = 3 - offerCount
 
   return (
     <>
-      {/* HEADER */}
-      <header className="h-20 flex items-center justify-between px-6 lg:px-8 shrink-0 bg-white border-b border-stone-100">
-        <div>
+      <form
+        id="offers-form"
+        ref={formRef}
+        action={action}
+        onSubmit={handleFormSubmit}
+        className="flex flex-1 flex-col min-h-0 min-w-0"
+      >
+        <input type="hidden" name="_locale" value={locale} />
+        <input type="hidden" name="_save_slot" value="" />
+        <header className="h-20 flex items-center justify-between px-6 lg:px-8 shrink-0 bg-white border-b border-stone-100">
           <h1 className="text-2xl font-bold text-stone-800">{t('title')}</h1>
-        </div>
-        
-        {/* Bouton Sauvegarde */}
-        <Button
-          type="submit"
-          variant="primary"
-          form="offers-form"
-          disabled={!hasUnsavedChanges || isSubmitting}
-          loading={isSubmitting}
-          loadingText={tCommon('saving')}
-          success={showSavedFeedback}
-          successText={tCommon('saved')}
-          error={!!state?.error}
-          errorText={tCommon('notSaved')}
-        >
-          {tCommon('save')}
-        </Button>
-      </header>
-
-      {/* CONTENU (GRILLE D'OFFRES) */}
-      <div className="flex-1 overflow-y-auto px-6 lg:px-8 py-8">
-        {state?.error && (
-          <div
-            className="mb-6 p-3 rounded-lg text-sm bg-red-50 border border-red-200 text-red-700"
-            role="alert"
+          <Button
+            type="submit"
+            variant="primary"
+            disabled={!hasUnsavedChanges || isSubmitting}
+            loading={isSubmitting}
+            loadingText={tCommon('saving')}
+            success={showSavedFeedback}
+            successText={tCommon('saved')}
+            error={!!state?.error}
+            errorText={tCommon('notSaved')}
           >
-            {state.error}
-          </div>
-        )}
+            {tCommon('save')}
+          </Button>
+        </header>
 
-        <form id="offers-form" ref={formRef} action={action} onSubmit={handleFormSubmit}>
+        {/* CONTENU (GRILLE D'OFFRES) */}
+        <div className="flex-1 min-h-0 overflow-y-auto px-6 lg:px-8 py-8">
+          {state?.error && (
+            <div
+              className="mb-6 p-3 rounded-lg text-sm bg-red-50 border border-red-200 text-red-700"
+              role="alert"
+            >
+              {state.error}
+            </div>
+          )}
+
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pb-20">
             {/* Cartes d'offres existantes */}
             {Array.from({ length: Math.min(offerCount, 3) }).map((_, index) => {
-              const offer = sortedOffers[index] || null
+              const offer = sortedOffers[index] as CoachOffer | null
               const isFeatured = featuredOfferIndex === index
-              
+              // Clé stable pour les slots "nouveaux" (sans offre sauvegardée) : new-0, new-1... pour ne pas créer de carte vide à l'archivage
+              const slotKey = offer?.id ?? `new-${index - sortedOffers.length}`
+
               return (
                 <div
-                  key={index}
+                  key={slotKey}
                   className={`bg-white rounded-2xl border-2 flex flex-col relative group ${
                     isFeatured ? 'border-palette-forest-dark shadow-md' : 'border-stone-200 shadow-sm hover:shadow-md'
                   } transition-all`}
                 >
-                  {/* Badge "Mis en avant" */}
                   {isFeatured && (
                     <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-palette-forest-dark text-white px-3 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide shadow-sm flex items-center gap-1">
                       <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3 fill-current" viewBox="0 0 20 20">
@@ -447,25 +434,34 @@ export function OffersForm({ offers }: OffersFormProps) {
                     </div>
                   )}
 
-                  {/* Header Carte & Actions */}
-                  <div className="p-4 border-b border-stone-100 flex justify-between items-center bg-stone-50/50 rounded-t-2xl">
+                  <div className="p-4 border-b border-stone-100 flex justify-between items-center bg-stone-50/50 rounded-t-2xl flex-wrap gap-2">
                     <span className="text-xs font-bold text-stone-400 uppercase">{t('offerNumber', { number: index + 1 })}</span>
-                    <div className="flex gap-2">
-                      {/* Toggle "Privilégié" */}
+                    <div className="flex items-center gap-1">
+                      {offer?.id && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setArchiveTargetOfferId(offer.id)
+                            setArchiveError(null)
+                            setArchiveModalOpen(true)
+                          }}
+                          className="p-1.5 rounded-lg transition-colors hover:bg-stone-100 text-stone-400 hover:text-stone-600"
+                          title={t('archive')}
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                          </svg>
+                        </button>
+                      )}
                       <button
                         type="button"
                         onClick={() => {
-                          if (isFeatured) {
-                            setFeaturedOfferIndex(null)
-                          } else {
-                            setFeaturedOfferIndex(index)
-                          }
+                          if (isFeatured) setFeaturedOfferIndex(null)
+                          else setFeaturedOfferIndex(index)
                           setTimeout(() => setHasUnsavedChanges(checkUnsavedChanges()), 0)
                         }}
                         className={`p-1.5 rounded-lg transition-colors ${
-                          isFeatured
-                            ? 'bg-yellow-50 text-yellow-600 hover:bg-yellow-100'
-                            : 'hover:bg-yellow-50 text-stone-300 hover:text-yellow-600'
+                          isFeatured ? 'bg-yellow-50 text-yellow-600 hover:bg-yellow-100' : 'hover:bg-yellow-50 text-stone-300 hover:text-yellow-600'
                         }`}
                         title={isFeatured ? t('unfeature') : t('feature')}
                       >
@@ -473,23 +469,14 @@ export function OffersForm({ offers }: OffersFormProps) {
                           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                         </svg>
                       </button>
-                      {/* Supprimer */}
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        onClick={() => handleDeleteClick(index)}
-                        className="p-1.5 hover:bg-red-50 hover:text-red-500"
-                        title={t('deleteOffer')}
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                      </Button>
                     </div>
                   </div>
 
-                  {/* Formulaire Intégré */}
-                  <div className="p-5 flex flex-col gap-4 flex-1">
+                  <div
+                    className="p-5 flex flex-col gap-4 flex-1"
+                    onInputCapture={triggerUnsavedCheck}
+                    onChangeCapture={triggerUnsavedCheck}
+                  >
                     <input type="hidden" name={`offer_${index}_id`} value={offer?.id || ''} />
                     <input type="hidden" name={`offer_${index}_featured`} value={isFeatured ? 'on' : ''} />
 
@@ -504,14 +491,16 @@ export function OffersForm({ offers }: OffersFormProps) {
                           type="text"
                           defaultValue={(offer as { title_en?: string })?.title_en ?? ''}
                           placeholder={t('offerTitlePlaceholder')}
+                          onInput={triggerUnsavedCheck}
                         />
                         <LanguagePrefixInput
                           lang="FR"
                           id={`offer_${index}_title_fr`}
                           name={`offer_${index}_title_fr`}
                           type="text"
-                          defaultValue={(offer as { title_fr?: string })?.title_fr ?? offer?.title ?? ''}
+                          defaultValue={(offer as { title_fr?: string })?.title_fr ?? ''}
                           placeholder={t('offerTitlePlaceholder')}
+                          onInput={triggerUnsavedCheck}
                         />
                       </div>
                     </div>
@@ -527,89 +516,81 @@ export function OffersForm({ offers }: OffersFormProps) {
                           rows={3}
                           defaultValue={(offer as { description_en?: string })?.description_en ?? ''}
                           placeholder={t('descriptionPlaceholder')}
+                          onInput={triggerUnsavedCheck}
                         />
                         <LanguagePrefixTextarea
                           lang="FR"
                           id={`offer_${index}_description_fr`}
                           name={`offer_${index}_description_fr`}
                           rows={3}
-                          defaultValue={(offer as { description_fr?: string })?.description_fr ?? offer?.description ?? ''}
+                          defaultValue={(offer as { description_fr?: string })?.description_fr ?? ''}
                           placeholder={t('descriptionPlaceholder')}
+                          onInput={triggerUnsavedCheck}
                         />
                       </div>
                     </div>
 
-                    {/* Tarification : Prix + Récurrence (toute la largeur) */}
                     <div className="w-full border-t border-stone-100 pt-4">
-                      <label className="block text-sm font-medium text-stone-700 mb-2">
-                        {t('pricing')}
-                      </label>
+                      <label className="block text-sm font-medium text-stone-700 mb-2">{t('pricing')}</label>
                       <div className="grid grid-cols-5 gap-3 items-stretch">
-                        <div className="col-span-2 flex">
-                          {priceTypes[index] === 'free' ? (
-                            <>
-                              <input type="hidden" name={`offer_${index}_price`} value="0" />
-                              <div className="w-full pl-3 pr-6 py-2.5 rounded-lg bg-white border border-stone-300 flex items-center text-stone-900 font-bold">
-                                <span>0</span>
-                                <span className="ml-auto text-stone-400 font-medium">€</span>
+                          <div className="col-span-2 flex">
+                            {(priceTypes[slotKey] ?? offer?.price_type) === 'free' ? (
+                              <>
+                                <input type="hidden" name={`offer_${index}_price`} value="0" />
+                                <div className="w-full pl-3 pr-6 py-2.5 rounded-lg bg-white border border-stone-300 flex items-center text-stone-900 font-bold">
+                                  <span>0</span>
+                                  <span className="ml-auto text-stone-400 font-medium">€</span>
+                                </div>
+                              </>
+                            ) : (
+                              <div className="relative w-full">
+                                <input
+                                  id={`offer_${index}_price`}
+                                  name={`offer_${index}_price`}
+                                  type="number"
+                                  step="0.01"
+                                  min={0}
+                                  defaultValue={offer?.price != null && offer?.price_type !== 'free' ? String(offer.price) : ''}
+                                  placeholder="0"
+                                  onInput={triggerUnsavedCheck}
+                                  className="w-full pl-3 pr-6 py-2.5 rounded-lg border border-stone-300 bg-white text-stone-900 placeholder-stone-400 font-bold focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                />
+                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 font-medium pointer-events-none">€</span>
                               </div>
-                            </>
-                          ) : (
-                            <div className="relative w-full">
-                              <input
-                                id={`offer_${index}_price`}
-                                name={`offer_${index}_price`}
-                                type="number"
-                                step="0.01"
-                                min={0}
-                                defaultValue={offer?.price !== undefined && offer.price_type !== 'free' ? String(offer.price) : ''}
-                                placeholder="0"
-                                className="w-full pl-3 pr-6 py-2.5 rounded-lg border border-stone-300 bg-white text-stone-900 placeholder-stone-400 font-bold focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                              />
-                              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 font-medium pointer-events-none">
-                                €
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                        <div className="col-span-3 flex gap-1 bg-stone-100 p-1 rounded-lg border border-stone-200 items-center h-full min-h-[42px]" role="group" aria-label={t('recurrence')}>
-                          {(
-                            [
+                            )}
+                          </div>
+                          <div className="col-span-3 flex gap-1 bg-stone-100 p-1 rounded-lg border border-stone-200 items-center h-full min-h-[42px]" role="group" aria-label={t('recurrence')}>
+                            {[
                               { value: 'monthly' as const, label: t('priceTypes.monthly') },
                               { value: 'one_time' as const, label: t('priceTypes.oneTime') },
                               { value: 'free' as const, label: t('priceTypes.free') },
-                            ]
-                          ).map((opt) => {
-                            const selected = (priceTypes[index] || offer?.price_type || 'one_time') === opt.value
-                            return (
-                              <label key={opt.value} className="flex-1 cursor-pointer flex items-center justify-center min-h-0">
-                                <input
-                                  type="radio"
-                                  name={`offer_${index}_price_type`}
-                                  value={opt.value}
-                                  checked={selected}
-                                  onChange={() => {
-                                    setPriceTypes(prev => {
-                                      const updated = { ...prev, [index]: opt.value }
-                                      return updated
-                                    })
-                                  }}
-                                  className="sr-only"
-                                />
-                                <div
-                                  className={`w-full py-2 rounded-md text-sm font-medium select-none transition-all text-center flex items-center justify-center ${
-                                    selected
-                                      ? 'bg-palette-forest-dark text-white border border-palette-forest-dark shadow-[0_2px_4px_-1px_rgba(98,126,89,0.25)]'
-                                      : 'bg-white text-stone-600 border border-stone-200 hover:border-palette-forest-dark'
-                                  }`}
-                                >
-                                  {opt.label}
-                                </div>
-                              </label>
-                            )
-                          })}
+                            ].map((opt) => {
+                              const selected = (priceTypes[slotKey] ?? offer?.price_type ?? undefined) === opt.value
+                              return (
+                                <label key={opt.value} className="flex-1 cursor-pointer flex items-center justify-center min-h-0">
+                                  <input
+                                    type="radio"
+                                    name={`offer_${index}_price_type`}
+                                    value={opt.value}
+                                    checked={selected}
+                                    onChange={() => {
+                                      setPriceTypes(prev => ({ ...prev, [slotKey]: opt.value }))
+                                      triggerUnsavedCheck()
+                                    }}
+                                    className="sr-only"
+                                  />
+                                  <div
+                                    className={`w-full py-2 rounded-md text-sm font-medium select-none transition-all text-center flex items-center justify-center ${
+                                      selected ? 'bg-palette-forest-dark text-white border border-palette-forest-dark shadow-[0_2px_4px_-1px_rgba(98,126,89,0.25)]' : 'bg-white text-stone-600 border border-stone-200 hover:border-palette-forest-dark'
+                                    }`}
+                                  >
+                                    {opt.label}
+                                  </div>
+                                </label>
+                              )
+                            })}
+                          </div>
                         </div>
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -622,7 +603,7 @@ export function OffersForm({ offers }: OffersFormProps) {
                 type="button"
                 onClick={() => {
                   setOfferCount(offerCount + 1)
-                  setPriceTypes(prev => ({ ...prev, [offerCount]: 'one_time' }))
+                  setPriceTypes(prev => ({ ...prev, [`new-${offerCount - sortedOffers.length}`]: undefined }))
                 }}
                 className="bg-stone-50 rounded-2xl border-2 border-dashed border-stone-300 flex flex-col items-center justify-center gap-4 hover:border-palette-forest-dark hover:bg-palette-forest-dark/5 transition-all group cursor-pointer min-h-[400px]"
               >
@@ -638,71 +619,95 @@ export function OffersForm({ offers }: OffersFormProps) {
               </button>
             )}
           </div>
-        </form>
-      </div>
 
-      {deleteModalOpen && offerToDelete && typeof document !== 'undefined' && createPortal(
-        <>
-          <div
-            className="fixed inset-0 bg-stone-900/50 backdrop-blur-sm z-[90]"
-            onClick={() => !isDeleting && setDeleteModalOpen(false)}
-            aria-hidden="true"
-          />
-          <div
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="delete-offer-title"
-          >
-            <div className="relative w-full max-w-md bg-white rounded-xl shadow-xl border border-stone-100">
-              <div className="sticky top-0 flex justify-end p-3 bg-white rounded-t-xl z-10">
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => !isDeleting && setDeleteModalOpen(false)}
-                disabled={isDeleting}
-                aria-label={tCommon('close')}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M18 6 6 18" /><path d="m6 6 12 12" />
-                </svg>
-              </Button>
-            </div>
-            <div className="px-8 pb-8">
-              <h2 id="delete-offer-title" className="text-xl font-semibold text-stone-900 mb-2">
-                {t('deleteModal.title')}
+          {/* Section Offres archivées */}
+          {displayedArchivedOffers.length > 0 && (
+            <section className="mt-10 pt-8 border-t border-stone-200" aria-labelledby="archived-offers-heading">
+              <h2 id="archived-offers-heading" className="text-lg font-bold text-stone-800 mb-4">
+                {t('archivedOffersSection')}
               </h2>
-              <p className="text-sm text-stone-600 mb-8">
-                {t('deleteModal.message', { title: offerToDelete.title })}
-              </p>
-              <div className="flex gap-3">
-                <Button
-                  type="button"
-                  variant="muted"
-                  onClick={() => setDeleteModalOpen(false)}
-                  disabled={isDeleting}
-                  className="flex-1"
-                >
-                  {tCommon('cancel')}
-                </Button>
-                <Button
-                  type="button"
-                  variant="primary"
-                  onClick={handleConfirmDelete}
-                  disabled={isDeleting}
-                  loading={isDeleting}
-                  loadingText={tCommon('deleting')}
-                  className="flex-1"
-                >
-                  {tCommon('delete')}
-                </Button>
-              </div>
-            </div>
-            </div>
+              <ul className="space-y-3">
+                {displayedArchivedOffers.map((archived) => {
+                  const title = (locale === 'fr' ? archived.title_fr : archived.title_en) || archived.title
+                  const priceLabel =
+                    archived.price_type === 'free'
+                      ? t('priceTypes.free')
+                      : `${archived.price} € / ${archived.price_type === 'monthly' ? t('priceTypes.monthly') : t('priceTypes.oneTime')}`
+                  const archivedDate = new Date(archived.archived_at).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-GB', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric',
+                  })
+                  return (
+                    <li
+                      key={archived.id}
+                      className="bg-stone-50 rounded-xl border border-stone-200 p-4 flex flex-wrap items-center justify-between gap-2"
+                    >
+                      <div className="min-w-0">
+                        <p className="font-medium text-stone-800 truncate">{title}</p>
+                        <p className="text-sm text-stone-500">{priceLabel}</p>
+                      </div>
+                      <p className="text-xs text-stone-400 shrink-0">{archivedDate}</p>
+                    </li>
+                  )
+                })}
+              </ul>
+            </section>
+          )}
+          {displayedArchivedOffers.length === 0 && (
+            <section className="mt-10 pt-8 border-t border-stone-200" aria-labelledby="archived-offers-heading">
+              <h2 id="archived-offers-heading" className="text-lg font-bold text-stone-800 mb-2">
+                {t('archivedOffersSection')}
+              </h2>
+              <p className="text-sm text-stone-500">{t('noArchivedOffers')}</p>
+            </section>
+          )}
+
+        </div>
+      </form>
+
+      <Modal
+        isOpen={archiveModalOpen}
+        onClose={() => !isArchiving && (setArchiveModalOpen(false), setArchiveTargetOfferId(null), setArchiveError(null))}
+        title={t('archiveModal.title')}
+        size="md"
+        titleId="archive-offer-title"
+        disableOverlayClose={isArchiving}
+        disableEscapeClose={isArchiving}
+        footer={
+          <div className="flex gap-3 w-full">
+            <Button
+              type="button"
+              variant="muted"
+              onClick={() => !isArchiving && (setArchiveModalOpen(false), setArchiveTargetOfferId(null), setArchiveError(null))}
+              disabled={isArchiving}
+              className="flex-1"
+            >
+              {tCommon('cancel')}
+            </Button>
+            <Button
+              type="button"
+              variant="primary"
+              onClick={handleArchiveConfirm}
+              disabled={isArchiving}
+              loading={isArchiving}
+              loadingText={tCommon('saving')}
+              className="flex-1"
+            >
+              {t('archiveModal.confirm')}
+            </Button>
           </div>
-        </>,
-        document.body
-      )}
+        }
+      >
+        <div className="px-6 py-4 space-y-3">
+          <p className="text-sm text-stone-600">{t('archiveModal.message')}</p>
+          {archiveError && (
+            <p className="text-sm text-palette-danger" role="alert">
+              {archiveError}
+            </p>
+          )}
+        </div>
+      </Modal>
 
       <Modal
         isOpen={unsavedChangesModalOpen}
