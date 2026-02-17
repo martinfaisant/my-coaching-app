@@ -120,32 +120,16 @@ export type CoachOffer = {
   price_type: 'one_time' | 'monthly' | 'free' | null
   display_order: number
   is_featured: boolean
-  /** draft: brouillon invisible aux athlètes; published: en ligne; archived: plus proposée aux nouveaux */
-  /** Présent uniquement si les migrations 033+ sont appliquées (draft | published | archived). Sinon toutes les offres sont visibles. */
+  /** published = visibles dans les 3 slots et par les athlètes ; archived = liste en bas côté coach uniquement */
   status?: CoachOfferStatus
+  /** Date d'archivage (rempli quand status = archived) */
+  archived_at?: string | null
   created_at: string
   updated_at: string
 }
 
-/** Offre archivée (copie dans coach_offers_archived au moment de l'archive) */
-export type CoachOfferArchived = {
-  id: string
-  original_id: string
-  archived_at: string
-  coach_id: string
-  title: string
-  description: string
-  title_fr?: string | null
-  title_en?: string | null
-  description_fr?: string | null
-  description_en?: string | null
-  price: number
-  price_type: 'one_time' | 'monthly' | 'free'
-  display_order: number
-  is_featured: boolean
-  created_at: string
-  updated_at: string
-}
+/** Offre archivée : CoachOffer avec status = 'archived' (même table coach_offers). Pour affichage liste. */
+export type CoachOfferArchived = CoachOffer & { status: 'archived'; archived_at: string }
 
 /** Version historisée (titre/description) d'une offre */
 export type CoachOfferVersion = {

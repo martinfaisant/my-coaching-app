@@ -540,7 +540,8 @@
       "displayOrderConflict": "This slot is already in use. Please refresh the page and try again.",
       "offerSlotRequired": "Please fill in the title, description and select a recurrence for this offer.",
       "offerSlotEmpty": "Fill in at least one field to save this offer.",
-      "offerNotFound": "This offer does not exist or does not belong to this coach."
+      "offerNotFound": "This offer does not exist or does not belong to this coach.",
+      "publishFieldsRequired": "Please fill in all 6 fields (FR/EN titles, FR/EN descriptions, price and recurrence) to publish."
     },
     "archivedOffersSection": "Archived offers",
     "noArchivedOffers": "No archived offers.",

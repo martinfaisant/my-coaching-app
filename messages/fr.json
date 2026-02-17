@@ -528,7 +528,8 @@
       "displayOrderConflict": "Cet emplacement est déjà utilisé. Veuillez rafraîchir la page et réessayer.",
       "offerSlotRequired": "Veuillez renseigner le titre, la description et choisir une récurrence pour cette offre.",
       "offerSlotEmpty": "Renseignez au moins un champ pour enregistrer cette offre.",
-      "offerNotFound": "Cette offre n'existe pas ou n'appartient pas à ce coach."
+      "offerNotFound": "Cette offre n'existe pas ou n'appartient pas à ce coach.",
+      "publishFieldsRequired": "Veuillez remplir les 6 champs (titres FR/EN, descriptions FR/EN, prix et récurrence) pour publier."
     },
     "archivedOffersSection": "Offres archivées",
     "noArchivedOffers": "Aucune offre archivée.",
