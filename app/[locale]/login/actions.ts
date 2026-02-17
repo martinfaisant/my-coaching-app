@@ -74,8 +74,18 @@ export async function signup(_prevState: SignupState, formData: FormData) {
 
   const role = roleRaw === 'coach' ? 'coach' : 'athlete'
 
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null) ||
+    'http://localhost:3000'
+  const redirectTo = `${siteUrl}/auth/callback`
+
   const supabase = await createClient()
-  const { data, error } = await supabase.auth.signUp({ email, password })
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: { emailRedirectTo: redirectTo },
+  })
 
   if (error) {
     const handled = handleSignupError(error, email)
