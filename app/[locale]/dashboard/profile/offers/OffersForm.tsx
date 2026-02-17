@@ -6,7 +6,7 @@ import { useTranslations, useLocale } from 'next-intl'
 import { Button } from '@/components/Button'
 import { Modal } from '@/components/Modal'
 import { LanguagePrefixInput, LanguagePrefixTextarea } from '@/components/LanguagePrefixField'
-import { saveOffers, archiveOffer, type OffersFormState } from './actions'
+import { saveOffers, archiveOffer, publishOffer, type OffersFormState } from './actions'
 import type { CoachOffer, CoachOfferArchived } from '@/types/database'
 
 type OffersFormProps = {
@@ -24,6 +24,10 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
   const [archivedIdsInThisSession, setArchivedIdsInThisSession] = useState<Set<string>>(new Set())
   /** Offres archivées ajoutées pendant cette session pour affichage immédiat dans la section archivée. */
   const [optimisticArchivedList, setOptimisticArchivedList] = useState<CoachOfferArchived[]>([])
+  /** IDs publiés pendant cette session : on les affiche comme published sans refetch (préserve l'état des autres tuiles). */
+  const [publishedIdsInThisSession, setPublishedIdsInThisSession] = useState<Set<string>>(new Set())
+  const [publishError, setPublishError] = useState<string | null>(null)
+  const [publishingOfferId, setPublishingOfferId] = useState<string | null>(null)
 
   /** Offres « live » affichées : props moins celles archivées dans cette session (sans refetch). */
   const displayedOffers = useMemo(
@@ -410,6 +414,14 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
               {state.error}
             </div>
           )}
+          {publishError && (
+            <div
+              className="mb-6 p-3 rounded-lg text-sm bg-red-50 border border-red-200 text-red-700"
+              role="alert"
+            >
+              {publishError}
+            </div>
+          )}
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pb-20">
             {/* Cartes d'offres existantes */}
@@ -436,8 +448,48 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
                   )}
 
                   <div className="p-4 border-b border-stone-100 flex justify-between items-center bg-stone-50/50 rounded-t-2xl flex-wrap gap-2">
-                    <span className="text-xs font-bold text-stone-400 uppercase">{t('offerNumber', { number: index + 1 })}</span>
+                    <span className="text-xs font-bold text-stone-400 uppercase flex items-center gap-2">
+                      {t('offerNumber', { number: index + 1 })}
+                      {offer?.id && (offer as { status?: string }).status === 'draft' && !publishedIdsInThisSession.has(offer.id) && (
+                        <span className="px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 text-[10px] font-medium">
+                          {t('status.draft')}
+                        </span>
+                      )}
+                    </span>
                     <div className="flex items-center gap-1">
+                      {offer?.id && (offer as { status?: string }).status === 'draft' && !publishedIdsInThisSession.has(offer.id) && (
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            const form = formRef.current
+                            if (!form || !offer?.id) return
+                            setPublishError(null)
+                            setPublishingOfferId(offer.id)
+                            const fd = new FormData()
+                            fd.set('_locale', locale)
+                            fd.set('_publish_title_fr', (form.querySelector(`[name="offer_${index}_title_fr"]`) as HTMLInputElement)?.value?.trim() ?? '')
+                            fd.set('_publish_title_en', (form.querySelector(`[name="offer_${index}_title_en"]`) as HTMLInputElement)?.value?.trim() ?? '')
+                            fd.set('_publish_description_fr', (form.querySelector(`[name="offer_${index}_description_fr"]`) as HTMLTextAreaElement)?.value?.trim() ?? '')
+                            fd.set('_publish_description_en', (form.querySelector(`[name="offer_${index}_description_en"]`) as HTMLTextAreaElement)?.value?.trim() ?? '')
+                            fd.set('_publish_price', (form.querySelector(`[name="offer_${index}_price"]`) as HTMLInputElement)?.value?.trim() ?? '')
+                            const slotKey = offer.id ?? `new-${index - sortedOffers.length}`
+                            fd.set('_publish_price_type', (priceTypes[slotKey] ?? offer.price_type) ?? '')
+                            const result = await publishOffer(offer.id, fd, locale)
+                            setPublishingOfferId(null)
+                            if ('error' in result && result.error) {
+                              setPublishError(result.error)
+                              return
+                            }
+                            setPublishedIdsInThisSession((prev) => new Set(prev).add(offer.id))
+                            setPublishError(null)
+                          }}
+                          disabled={!canPublishOfferAtSlot(index) || publishingOfferId === offer.id}
+                          className="px-2.5 py-1 rounded-lg text-xs font-medium bg-palette-forest-dark text-white hover:bg-palette-forest-darker disabled:opacity-50 disabled:pointer-events-none"
+                          title={t('publish')}
+                        >
+                          {publishingOfferId === offer.id ? tCommon('saving') : t('publish')}
+                        </button>
+                      )}
                       {offer?.id && (
                         <button
                           type="button"

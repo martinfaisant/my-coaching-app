@@ -17,9 +17,11 @@ export default async function OffersPage() {
     .select('*')
     .eq('coach_id', current.id)
 
+  // Offres pour les tuiles : published + drafts, tri par display_order uniquement (affichage comme aujourd'hui)
   const offers = (allOffers ?? [])
-    .filter((o) => o.status === 'published')
+    .filter((o) => o.status === 'published' || o.status === 'draft')
     .sort((a, b) => a.display_order - b.display_order)
+    .slice(0, 3)
   const archivedOffers = (allOffers ?? [])
     .filter((o): o is typeof o & { status: 'archived'; archived_at: string } => o.status === 'archived')
     .sort(
