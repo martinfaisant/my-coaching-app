@@ -95,6 +95,7 @@ export async function saveOffers(
     .from('coach_offers')
     .select('id, display_order')
     .eq('coach_id', user.id)
+    .eq('status', 'published')
   // Utiliser les display_order qu'on assigne aux offres existantes dans ce formulaire (pas la DB),
   // pour que l'insert de la nouvelle offre choisisse un slot libre sans conflit.
   const usedOrders = new Set(offers.filter((o) => o.id).map((o) => o.display_order))
@@ -111,6 +112,7 @@ export async function saveOffers(
         .from('coach_offers')
         .update({ is_featured: false })
         .eq('coach_id', user.id)
+        .eq('status', 'published')
         .neq('id', offer.id)
     }
 
@@ -120,6 +122,7 @@ export async function saveOffers(
         .select('id, coach_id')
         .eq('id', offer.id)
         .eq('coach_id', user.id)
+        .eq('status', 'published')
         .single()
 
       if (existing.error || !existing.data) return { error: t('offerNotFound') }
@@ -147,7 +150,11 @@ export async function saveOffers(
       }
     } else {
       if (offer.is_featured) {
-        await supabase.from('coach_offers').update({ is_featured: false }).eq('coach_id', user.id)
+        await supabase
+          .from('coach_offers')
+          .update({ is_featured: false })
+          .eq('coach_id', user.id)
+          .eq('status', 'published')
       }
       const displayOrder = nextFreeDisplayOrder()
       const { error: insertError } = await supabase.from('coach_offers').insert({
@@ -199,38 +206,25 @@ export async function archiveOffer(
 
   if (fetchError || !offer) return { error: t('offerNotFound') }
 
-  const { data: insertedArchived, error: insertError } = await supabase
-    .from('coach_offers_archived')
-    .insert({
-      original_id: offer.id,
-      coach_id: offer.coach_id,
-      title: offer.title,
-      description: offer.description,
-      title_fr: offer.title_fr ?? null,
-      title_en: offer.title_en ?? null,
-      description_fr: offer.description_fr ?? null,
-      description_en: offer.description_en ?? null,
-      price: offer.price ?? 0,
-      price_type: offer.price_type ?? 'one_time',
-      display_order: offer.display_order,
-      is_featured: offer.is_featured,
-      created_at: offer.created_at,
-      updated_at: offer.updated_at,
+  const { data: updated, error: updateError } = await supabase
+    .from('coach_offers')
+    .update({
+      status: 'archived',
+      archived_at: new Date().toISOString(),
+      is_featured: false,
     })
+    .eq('id', offerId)
+    .eq('coach_id', user.id)
     .select()
     .single()
 
-  if (insertError) return { error: insertError.message }
-  if (!insertedArchived) return { error: t('offerNotFound') }
-
-  const { error: deleteError } = await supabase
-    .from('coach_offers')
-    .delete()
-    .eq('id', offerId)
-    .eq('coach_id', user.id)
-
-  if (deleteError) return { error: deleteError.message }
+  if (updateError) return { error: updateError.message }
+  if (!updated || updated.status !== 'archived' || !updated.archived_at)
+    return { error: t('offerNotFound') }
 
   revalidatePath('/dashboard/profile/offers')
-  return { success: true, archived: insertedArchived }
+  return {
+    success: true,
+    archived: { ...updated, status: 'archived' as const, archived_at: updated.archived_at },
+  }
 }

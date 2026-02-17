@@ -59,6 +59,7 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
       supabase
         .from('coach_offers')
         .select('id, coach_id, title, description, title_fr, title_en, description_fr, description_en, price, price_type, is_featured, display_order')
+        .eq('status', 'published')
         .order('display_order')
         .range(0, 999),
     ])

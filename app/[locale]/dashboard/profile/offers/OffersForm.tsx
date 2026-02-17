@@ -633,7 +633,7 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
                   const priceLabel =
                     archived.price_type === 'free'
                       ? t('priceTypes.free')
-                      : `${archived.price} € / ${archived.price_type === 'monthly' ? t('priceTypes.monthly') : t('priceTypes.oneTime')}`
+                      : `${archived.price ?? 0} € / ${archived.price_type === 'monthly' ? t('priceTypes.monthly') : t('priceTypes.oneTime')}`
                   const archivedDate = new Date(archived.archived_at).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-GB', {
                     day: 'numeric',
                     month: 'short',
