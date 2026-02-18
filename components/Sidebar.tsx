@@ -1,32 +1,20 @@
 'use client'
 
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
+import { Link, usePathname } from '@/i18n/navigation'
 import { AvatarImage } from '@/components/AvatarImage'
 import { Button } from '@/components/Button'
 import type { Profile } from '@/types/database'
 import { getInitials } from '@/lib/stringUtils'
-import { routing } from '@/i18n/routing'
 
 type SidebarProps = {
   profile: Profile & { email: string }
 }
 
-/** Pathname sans le segment locale (ex: /en/dashboard → /dashboard) pour la comparaison avec les href. */
-function pathWithoutLocale(pathname: string, locales: readonly string[]): string {
-  const segment = pathname.split('/')[1]
-  if (segment && locales.includes(segment)) {
-    return '/' + pathname.split('/').slice(2).join('/') || ''
-  }
-  return pathname
-}
-
 export function Sidebar({ profile }: SidebarProps) {
   const t = useTranslations('navigation')
-  const pathname = usePathname()
-  const path = useMemo(() => pathWithoutLocale(pathname, routing.locales), [pathname])
+  const path = usePathname()
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [textVisible, setTextVisible] = useState(true)
   const displayName = profile.full_name?.trim() || profile.email

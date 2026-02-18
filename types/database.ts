@@ -22,6 +22,8 @@ export type Profile = {
   postal_code?: string | null
   /** Sport(s) pratiqué(s) par l'athlète (course, velo, natation, musculation). */
   practiced_sports?: string[] | null
+  /** Langue d'affichage préférée (fr/en). Utilisée sur tout le site quand l'utilisateur est connecté. */
+  preferred_locale?: string | null
 }
 
 export type SportType = 'course' | 'musculation' | 'natation' | 'velo' | 'nordic_ski' | 'backcountry_ski' | 'ice_skating'
