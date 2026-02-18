@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useLayoutEffect, useRef, useCallback } from 'react'
 import { useActionState } from 'react'
-import { useRouter, usePathname } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useLocale, useTranslations } from 'next-intl'
 import { Button } from '@/components/Button'
 import { Input } from '@/components/Input'
@@ -12,7 +12,7 @@ import { Modal } from '@/components/Modal'
 import { SportTileSelectable } from '@/components/SportTileSelectable'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { createClient } from '@/utils/supabase/client'
-import { updateProfile, updatePreferredLocale, checkCanDeleteAccount, deleteMyAccount, type ProfileFormState } from './actions'
+import { updateProfile, checkCanDeleteAccount, deleteMyAccount, type ProfileFormState } from './actions'
 import type { Role } from '@/types/database'
 import { compressProfileImage } from '@/utils/imageCompress'
 import { logger } from '@/lib/logger'
@@ -29,11 +29,6 @@ function parseFullName(fullName: string): { firstName: string; lastName: string 
 
 import { LANGUAGES_OPTIONS } from '@/lib/sportsOptions'
 import { useCoachedSportsOptions, usePracticedSportsOptions } from '@/lib/hooks/useSportsOptions'
-
-const DISPLAY_LOCALE_OPTIONS = [
-  { value: 'fr', labelKey: 'displayLanguageFr' },
-  { value: 'en', labelKey: 'displayLanguageEn' },
-] as const
 
 type ProfileFormProps = {
   email: string
@@ -69,9 +64,7 @@ export function ProfileForm({
   preferredLocale: preferredLocaleProp = null,
 }: ProfileFormProps) {
   const locale = useLocale()
-  const pathname = usePathname()
   const effectiveInitialLocale = preferredLocaleProp === 'fr' || preferredLocaleProp === 'en' ? preferredLocaleProp : (locale === 'en' ? 'en' : 'fr')
-  const [preferredLocaleState, setPreferredLocaleState] = useState(effectiveInitialLocale)
   const tProfile = useTranslations('profile')
   const tCommon = useTranslations('common')
   const router = useRouter()
@@ -96,8 +89,6 @@ export function ProfileForm({
   const isCoach = role === 'coach'
   const [presentationFrLength, setPresentationFrLength] = useState((presentationFr || '').length)
   const [presentationEnLength, setPresentationEnLength] = useState((presentationEn || '').length)
-  const [localeSaving, setLocaleSaving] = useState(false)
-  const [localeError, setLocaleError] = useState<string | null>(null)
 
   // Valeurs initiales pour détecter les modifications
   const initialValuesRef = useRef({
@@ -135,9 +126,6 @@ export function ProfileForm({
 
     const currentPostalCode = (form.querySelector('[name="postal_code"]') as HTMLInputElement)?.value.trim() || ''
     if (currentPostalCode !== initialValuesRef.current.postalCode) return true
-
-    const currentPreferredLocale = (form.querySelector('[name="preferred_locale"]') as HTMLInputElement)?.value || ''
-    if (currentPreferredLocale !== initialValuesRef.current.preferredLocale) return true
 
     if (isCoach) {
       const currentCoachedSports = Array.from(form.querySelectorAll<HTMLInputElement>('[name="coached_sports"]:checked'))
@@ -227,18 +215,11 @@ export function ProfileForm({
       setShowSavedFeedback(true)
       router.refresh()
       const t = setTimeout(() => setShowSavedFeedback(false), 2500)
-      const savedPreferredLocale = preferredLocaleState
-      const pathWithoutLocale = pathname?.startsWith('/en') ? pathname.slice(3) || '/' : pathname ?? '/dashboard'
-      if (savedPreferredLocale !== locale) {
-        const newPath = savedPreferredLocale === 'fr' ? pathWithoutLocale : `/en${pathWithoutLocale === '/' ? '' : pathWithoutLocale}`
-        router.push(newPath)
-      }
       const form = formRef.current
       if (form) {
         const currentFirstName = (form.querySelector('[name="first_name"]') as HTMLInputElement)?.value.trim() || ''
         const currentLastName = (form.querySelector('[name="last_name"]') as HTMLInputElement)?.value.trim() || ''
         const currentPostalCode = (form.querySelector('[name="postal_code"]') as HTMLInputElement)?.value.trim() || ''
-        const currentPreferredLocale = (form.querySelector('[name="preferred_locale"]') as HTMLSelectElement)?.value || effectiveInitialLocale
         const currentCoachedSports = Array.from(form.querySelectorAll<HTMLInputElement>('[name="coached_sports"]:checked'))
           .map((cb) => cb.value)
           .sort()
@@ -255,7 +236,7 @@ export function ProfileForm({
           lastName: currentLastName,
           avatarUrl: avatarUrlState,
           postalCode: currentPostalCode,
-          preferredLocale: currentPreferredLocale,
+          preferredLocale: effectiveInitialLocale,
           coachedSports: currentCoachedSports,
           practicedSports: currentPracticedSports,
           languages: currentLanguages,
@@ -521,7 +502,7 @@ export function ProfileForm({
             </div>
 
             {/* Email */}
-            <div className="md:col-span-12">
+            <div className="md:col-span-6">
               <label htmlFor="email" className="block text-sm font-medium text-stone-700 mb-2 flex justify-between items-center">
                 {tProfile('emailAddress')}
                 <span className="text-xs font-normal text-stone-400 flex items-center gap-1">
@@ -539,49 +520,7 @@ export function ProfileForm({
               />
             </div>
 
-            {/* Langue d'affichage — sauvegarde immédiate en BD au changement */}
-            <div className="md:col-span-6">
-              <label htmlFor="preferred_locale" className="block text-sm font-medium text-stone-700 mb-2">
-                {tProfile('displayLanguage')}
-              </label>
-              <p className="text-xs text-stone-500 mb-2">{tProfile('displayLanguageHelp')}</p>
-              <select
-                id="preferred_locale"
-                name="preferred_locale"
-                value={preferredLocaleState}
-                disabled={localeSaving}
-                onChange={async (e) => {
-                  const newValue = e.target.value as 'fr' | 'en'
-                  setPreferredLocaleState(newValue)
-                  setLocaleError(null)
-                  setLocaleSaving(true)
-                  const result = await updatePreferredLocale(newValue)
-                  if (result.error) {
-                    setLocaleError(result.error)
-                    setLocaleSaving(false)
-                    return
-                  }
-                  const pathWithoutLocale = pathname?.startsWith('/en') ? pathname.slice(3) || '/' : pathname ?? '/dashboard'
-                  const newPath = newValue === 'fr' ? pathWithoutLocale : `/en${pathWithoutLocale === '/' ? '' : pathWithoutLocale}`
-                  router.push(newPath)
-                  setLocaleSaving(false)
-                }}
-                className="w-full px-4 py-3 border border-stone-300 rounded-lg text-stone-900 bg-white focus:ring-2 focus:ring-palette-forest-dark focus:border-palette-forest-dark disabled:opacity-60"
-              >
-                {DISPLAY_LOCALE_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {tProfile(opt.labelKey)}
-                  </option>
-                ))}
-              </select>
-              {localeError && (
-                <p className="mt-1 text-sm text-palette-danger" role="alert">
-                  {localeError}
-                </p>
-              )}
-            </div>
-
-            {/* Code Postal */}
+            {/* Code Postal — même ligne que l'email sur md+ */}
             <div className="md:col-span-6">
               <Input
                 id="postal_code"
