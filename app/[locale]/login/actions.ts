@@ -117,9 +117,10 @@ export async function signup(_prevState: SignupState, formData: FormData) {
     const { data: { session } } = await supabase.auth.getSession()
     
     if (session) {
-      // Session créée, revalider les chemins et rediriger vers le dashboard
+      // Rediriger vers le dashboard dans la locale du compte (évite boucle de redirections)
+      const localePrefix = preferredLocale === 'en' ? '/en' : ''
       revalidatePath('/dashboard')
-      redirect('/dashboard')
+      redirect(`${localePrefix}/dashboard`)
     } else {
       // Pas de session (email doit être confirmé), afficher un message
       return {

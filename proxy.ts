@@ -3,7 +3,6 @@ import { NextResponse, type NextRequest } from 'next/server'
 import createIntlMiddleware from 'next-intl/middleware'
 import { routing } from './i18n/routing'
 
-// Create the i18n middleware
 const intlMiddleware = createIntlMiddleware(routing)
 
 export async function proxy(request: NextRequest) {
