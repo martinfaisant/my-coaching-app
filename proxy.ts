@@ -98,8 +98,10 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(redirectUrl)
   }
 
-  // Logged-in user: redirect to preferred display locale if set and different from current path
-  if (user && isGet && !isApiRoute && (isProtectedRoute || pathnameWithoutLocale === '/')) {
+  // Logged-in user: redirect to preferred display locale if set and different from current path.
+  // Exclure la page profil pour permettre d'y changer la langue (sélecteur ou LanguageSwitcher) puis enregistrer.
+  const isProfilePage = pathnameWithoutLocale === '/dashboard/profile'
+  if (user && isGet && !isApiRoute && !isProfilePage && (isProtectedRoute || pathnameWithoutLocale === '/')) {
     const { data: profile } = await supabase
       .from('profiles')
       .select('preferred_locale')
