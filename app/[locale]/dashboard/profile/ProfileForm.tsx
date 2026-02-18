@@ -12,7 +12,7 @@ import { Modal } from '@/components/Modal'
 import { SportTileSelectable } from '@/components/SportTileSelectable'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { createClient } from '@/utils/supabase/client'
-import { updateProfile, checkCanDeleteAccount, deleteMyAccount, type ProfileFormState } from './actions'
+import { updateProfile, updatePreferredLocale, checkCanDeleteAccount, deleteMyAccount, type ProfileFormState } from './actions'
 import type { Role } from '@/types/database'
 import { compressProfileImage } from '@/utils/imageCompress'
 import { logger } from '@/lib/logger'
@@ -96,6 +96,8 @@ export function ProfileForm({
   const isCoach = role === 'coach'
   const [presentationFrLength, setPresentationFrLength] = useState((presentationFr || '').length)
   const [presentationEnLength, setPresentationEnLength] = useState((presentationEn || '').length)
+  const [localeSaving, setLocaleSaving] = useState(false)
+  const [localeError, setLocaleError] = useState<string | null>(null)
 
   // Valeurs initiales pour détecter les modifications
   const initialValuesRef = useRef({
@@ -537,7 +539,7 @@ export function ProfileForm({
               />
             </div>
 
-            {/* Langue d'affichage */}
+            {/* Langue d'affichage — sauvegarde immédiate en BD au changement */}
             <div className="md:col-span-6">
               <label htmlFor="preferred_locale" className="block text-sm font-medium text-stone-700 mb-2">
                 {tProfile('displayLanguage')}
@@ -547,8 +549,24 @@ export function ProfileForm({
                 id="preferred_locale"
                 name="preferred_locale"
                 value={preferredLocaleState}
-                onChange={(e) => setPreferredLocaleState(e.target.value as 'fr' | 'en')}
-                className="w-full px-4 py-3 border border-stone-300 rounded-lg text-stone-900 bg-white focus:ring-2 focus:ring-palette-forest-dark focus:border-palette-forest-dark"
+                disabled={localeSaving}
+                onChange={async (e) => {
+                  const newValue = e.target.value as 'fr' | 'en'
+                  setPreferredLocaleState(newValue)
+                  setLocaleError(null)
+                  setLocaleSaving(true)
+                  const result = await updatePreferredLocale(newValue)
+                  if (result.error) {
+                    setLocaleError(result.error)
+                    setLocaleSaving(false)
+                    return
+                  }
+                  const pathWithoutLocale = pathname?.startsWith('/en') ? pathname.slice(3) || '/' : pathname ?? '/dashboard'
+                  const newPath = newValue === 'fr' ? pathWithoutLocale : `/en${pathWithoutLocale === '/' ? '' : pathWithoutLocale}`
+                  router.push(newPath)
+                  setLocaleSaving(false)
+                }}
+                className="w-full px-4 py-3 border border-stone-300 rounded-lg text-stone-900 bg-white focus:ring-2 focus:ring-palette-forest-dark focus:border-palette-forest-dark disabled:opacity-60"
               >
                 {DISPLAY_LOCALE_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -556,6 +574,11 @@ export function ProfileForm({
                   </option>
                 ))}
               </select>
+              {localeError && (
+                <p className="mt-1 text-sm text-palette-danger" role="alert">
+                  {localeError}
+                </p>
+              )}
             </div>
 
             {/* Code Postal */}

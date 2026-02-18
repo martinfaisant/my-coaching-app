@@ -3,6 +3,7 @@
 import { useParams, usePathname, useRouter } from 'next/navigation'
 import { useRef, useEffect, useState } from 'react'
 import { Globe, ChevronDown, Check } from 'lucide-react'
+import { updatePreferredLocale } from '@/app/[locale]/dashboard/profile/actions'
 
 const LOCALES = [
   { code: 'fr', label: 'Français' },
@@ -27,8 +28,11 @@ export function LanguageSwitcher() {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  const switchLocale = (newLocale: string) => {
+  const switchLocale = async (newLocale: string) => {
     setOpen(false)
+    if (newLocale === 'fr' || newLocale === 'en') {
+      await updatePreferredLocale(newLocale)
+    }
     if (pathname.startsWith(`/${currentLocale}`)) {
       const newPathname = pathname.replace(`/${currentLocale}`, `/${newLocale}`)
       router.push(newPathname)
@@ -45,7 +49,7 @@ export function LanguageSwitcher() {
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-stone-600 hover:text-stone-900 hover:bg-stone-50 transition-all text-sm font-medium border border-transparent focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:ring-offset-2"
+        className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-stone-600 hover:text-stone-900 hover:bg-stone-50 transition-all text-sm font-medium border border-transparent focus:outline-none focus:ring-2 focus:ring-stone-300 focus:ring-offset-2"
         aria-expanded={open}
         aria-haspopup="true"
         aria-label="Changer de langue"
