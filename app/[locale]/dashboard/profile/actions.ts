@@ -33,7 +33,10 @@ export async function updateProfile(
 
   const payload: { full_name: string | null; coached_sports?: string[]; practiced_sports?: string[]; languages?: string[]; presentation_fr?: string | null; presentation_en?: string | null; avatar_url?: string | null; postal_code?: string | null; preferred_locale?: string | null } = {
     full_name: fullName,
-    preferred_locale: preferredLocale,
+  }
+  // Ne mettre à jour preferred_locale que si une valeur valide est envoyée (évite d'écraser avec null par erreur)
+  if (preferredLocale !== null) {
+    payload.preferred_locale = preferredLocale
   }
 
   const avatarUrlRaw = (formData.get('avatar_url') as string)?.trim()
@@ -76,6 +79,27 @@ export async function updateProfile(
   revalidatePath('/dashboard/profile')
   revalidatePath('/dashboard/coach')
   return { success: t('saved') }
+}
+
+export type UpdatePreferredLocaleResult = { error?: string }
+
+/** Met à jour la langue d'affichage préférée en BD et revalide. À appeler dès que l'utilisateur change la langue (sélecteur sur la page profil ou LanguageSwitcher). */
+export async function updatePreferredLocale(newLocale: 'fr' | 'en'): Promise<UpdatePreferredLocaleResult> {
+  const supabase = await createClient()
+  const result = await requireUserWithProfile(supabase, 'user_id')
+  if ('error' in result) return { error: result.error }
+
+  const { user } = result
+  const { error } = await supabase
+    .from('profiles')
+    .update({ preferred_locale: newLocale })
+    .eq('user_id', user.id)
+
+  if (error) return { error: error.message }
+  revalidatePath('/dashboard')
+  revalidatePath('/dashboard/profile')
+  revalidatePath('/dashboard/coach')
+  return {}
 }
 
 export type CheckDeleteAccountResult = { canDelete: boolean; error?: string }
