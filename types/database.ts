@@ -85,9 +85,31 @@ export type CoachRequest = {
   coaching_need: string
   status: CoachRequestStatus
   offer_id: string | null
-  offer_snapshot_id: string | null
+  /** Prix figé de l'offre au moment de la demande */
+  frozen_price: number | null
+  /** Titre figé de l'offre au moment de la demande */
+  frozen_title: string | null
+  /** Description figée de l'offre au moment de la demande */
+  frozen_description: string | null
   created_at: string
   responded_at: string | null
+}
+
+/** Souscription active ou annulée (données figées depuis coach_requests à l'acceptation) */
+export type SubscriptionStatus = 'active' | 'cancelled'
+
+export type Subscription = {
+  id: string
+  athlete_id: string
+  coach_id: string
+  request_id: string
+  frozen_price: number | null
+  frozen_title: string | null
+  frozen_description: string | null
+  status: SubscriptionStatus
+  start_date: string
+  end_date: string | null
+  created_at: string
 }
 
 export type CoachRating = {

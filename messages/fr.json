@@ -645,6 +645,24 @@
       "fillRequired": "Veuillez renseigner au moins un sport pratiqué et votre besoin de coaching."
     }
   },
+  "requestCoachButton": {
+    "requestSent": "Demande envoyée",
+    "cancelRequest": "Annuler la demande",
+    "cancelRequestConfirmTitle": "Annuler la demande ?",
+    "cancelRequestConfirmMessage": "Êtes-vous sûr de vouloir annuler cette demande envoyée à ce coach ?",
+    "back": "Retour",
+    "confirmCancel": "Oui, annuler",
+    "cancelling": "Annulation…",
+    "chooseCoach": "Choisir ce coach",
+    "requestTitle": "Demande de coaching",
+    "requestIntro": "Renseignez les informations ci-dessous. Le coach pourra accepter ou refuser votre demande.",
+    "practicedSports": "Sports pratiqués",
+    "coachingNeed": "Besoin de coaching",
+    "coachingNeedPlaceholder": "Décrivez votre objectif ou votre besoin d'accompagnement…",
+    "sending": "Envoi en cours…",
+    "sendRequest": "Envoyer la demande",
+    "closeAria": "Fermer"
+  },
   "coachRequests": {
     "accept": "Accepter",
     "decline": "Refuser",
@@ -654,6 +672,7 @@
       "requireSportAndNeed": "Au moins un sport pratiqué et le besoin de coaching sont obligatoires.",
       "coachNotFound": "Ce coach n'existe pas.",
       "offerNotFound": "Cette offre n'existe pas ou n'appartient pas à ce coach.",
+      "offerNotPublished": "Cette offre n'est pas disponible.",
       "requestNotFound": "Demande introuvable.",
       "requestCannotBeCancelled": "Cette demande ne peut plus être annulée.",
       "accepted": "Demande acceptée.",

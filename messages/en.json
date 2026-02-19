@@ -684,6 +684,7 @@
       "requireSportAndNeed": "At least one practiced sport and coaching need are required.",
       "coachNotFound": "This coach does not exist.",
       "offerNotFound": "This offer does not exist or does not belong to this coach.",
+      "offerNotPublished": "This offer is not available.",
       "requestNotFound": "Request not found.",
       "requestCannotBeCancelled": "This request can no longer be cancelled.",
       "accepted": "Request accepted.",

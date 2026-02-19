@@ -1,5 +1,0 @@
-{"sessionId":"b719b8","hypothesisId":"D","location":"login/actions.ts:redirect","message":"login redirect","data":{"locale":"en","redirectPath":"/dashboard","referer":"http://localhost:3000/en"},"timestamp":1771451159877}
-{"sessionId":"b719b8","hypothesisId":"D","location":"login/actions.ts:redirect","message":"login redirect","data":{"locale":"en","redirectPath":"/dashboard","referer":"http://localhost:3000/en"},"timestamp":1771451280661}
-{"sessionId":"b719b8","hypothesisId":"D","location":"login/actions.ts:redirect","message":"login redirect","data":{"locale":"en","redirectPath":"/dashboard","referer":"http://localhost:3000/en"},"timestamp":1771451509175}
-{"sessionId":"b719b8","hypothesisId":"D","location":"login/actions.ts:redirect","message":"login redirect","data":{"locale":"en","redirectPath":"/dashboard","referer":"http://localhost:3000/en"},"timestamp":1771451754864}
-{"sessionId":"b719b8","hypothesisId":"D","location":"login/actions.ts:redirect","message":"login redirect","data":{"locale":"fr","redirectPath":"/dashboard","referer":"http://localhost:3000/"},"timestamp":1771451802326}
