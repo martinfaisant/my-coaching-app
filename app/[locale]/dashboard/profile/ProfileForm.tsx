@@ -17,22 +17,13 @@ import type { Role } from '@/types/database'
 import { compressProfileImage } from '@/utils/imageCompress'
 import { logger } from '@/lib/logger'
 
-function parseFullName(fullName: string): { firstName: string; lastName: string } {
-  const parts = (fullName || '').trim().split(/\s+/)
-  if (parts.length === 0) return { firstName: '', lastName: '' }
-  if (parts.length === 1) return { firstName: parts[0], lastName: '' }
-  return {
-    firstName: parts[0],
-    lastName: parts.slice(1).join(' '),
-  }
-}
-
 import { LANGUAGES_OPTIONS } from '@/lib/sportsOptions'
 import { useCoachedSportsOptions, usePracticedSportsOptions } from '@/lib/hooks/useSportsOptions'
 
 type ProfileFormProps = {
   email: string
-  fullName: string
+  firstName: string
+  lastName: string
   role: Role
   avatarUrl: string
   coachedSports: string[]
@@ -51,7 +42,8 @@ type ProfileFormProps = {
 
 export function ProfileForm({
   email,
-  fullName,
+  firstName,
+  lastName,
   role,
   avatarUrl,
   coachedSports,
@@ -85,7 +77,6 @@ export function ProfileForm({
   const formRef = useRef<HTMLFormElement>(null)
   const avatarInputRef = useRef<HTMLInputElement>(null)
   const hiddenAvatarUrlRef = useRef<HTMLInputElement>(null)
-  const { firstName, lastName } = parseFullName(fullName)
   const isCoach = role === 'coach'
   const [presentationFrLength, setPresentationFrLength] = useState((presentationFr || '').length)
   const [presentationEnLength, setPresentationEnLength] = useState((presentationEn || '').length)

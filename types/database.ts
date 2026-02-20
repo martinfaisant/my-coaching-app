@@ -6,7 +6,8 @@ export type CoachSport = 'course_route' | 'trail' | 'triathlon' | 'velo'
 export type Profile = {
   user_id: string
   email: string
-  full_name: string | null
+  first_name: string | null
+  last_name: string | null
   role: Role
   coach_id: string | null
   created_at: string
@@ -87,16 +88,25 @@ export type CoachRequest = {
   offer_id: string | null
   /** Prix figé de l'offre au moment de la demande */
   frozen_price: number | null
+  /** Type de tarification figé (free / one_time / monthly) au moment de la demande */
+  frozen_price_type: FrozenPriceType | null
   /** Titre figé de l'offre au moment de la demande */
   frozen_title: string | null
   /** Description figée de l'offre au moment de la demande */
   frozen_description: string | null
+  frozen_title_fr: string | null
+  frozen_title_en: string | null
+  frozen_description_fr: string | null
+  frozen_description_en: string | null
   created_at: string
   responded_at: string | null
 }
 
 /** Souscription active ou annulée (données figées depuis coach_requests à l'acceptation) */
 export type SubscriptionStatus = 'active' | 'cancelled'
+
+/** Type de tarification figé (snapshot) pour affichage et résiliation */
+export type FrozenPriceType = 'free' | 'one_time' | 'monthly'
 
 export type Subscription = {
   id: string
@@ -106,6 +116,11 @@ export type Subscription = {
   frozen_price: number | null
   frozen_title: string | null
   frozen_description: string | null
+  frozen_title_fr: string | null
+  frozen_title_en: string | null
+  frozen_description_fr: string | null
+  frozen_description_en: string | null
+  frozen_price_type: FrozenPriceType | null
   status: SubscriptionStatus
   start_date: string
   end_date: string | null

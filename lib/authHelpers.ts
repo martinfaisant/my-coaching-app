@@ -101,7 +101,7 @@ export async function requireRole(
   if ('error' in userResult) return userResult
 
   const { user } = userResult
-  const profile = await getProfile(supabase, user.id, 'role, user_id, email, full_name')
+  const profile = await getProfile(supabase, user.id, 'role, user_id, email, first_name, last_name')
 
   if (!profile || profile.role !== requiredRole) {
     return { 
@@ -155,8 +155,8 @@ export async function requireCoachOrAthleteAccess(
 
   // Récupérer les deux profils en parallèle
   const [myProfile, athleteProfile] = await Promise.all([
-    getProfile(supabase, user.id, 'role, user_id, email, full_name'),
-    getProfile(supabase, athleteId, 'coach_id, user_id, email, full_name'),
+    getProfile(supabase, user.id, 'role, user_id, email, first_name, last_name'),
+    getProfile(supabase, athleteId, 'coach_id, user_id, email, first_name, last_name'),
   ])
 
   if (!myProfile || !athleteProfile) {
@@ -195,7 +195,7 @@ export async function requireCoachOrAthleteAccess(
  */
 export async function requireUserWithProfile(
   supabase: SupabaseClient,
-  fields: string = 'role, user_id, email, full_name'
+  fields: string = 'role, user_id, email, first_name, last_name'
 ): Promise<ErrorResult | { user: { id: string; email: string | undefined }; profile: Partial<Profile> }> {
   const userResult = await requireUser(supabase)
   if ('error' in userResult) return userResult

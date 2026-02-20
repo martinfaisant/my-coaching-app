@@ -13,7 +13,7 @@ const ROLE_LABELS: Record<Role, string> = {
 }
 
 type MembersListProps = {
-  profiles: Pick<Profile, 'user_id' | 'email' | 'full_name' | 'role' | 'coach_id' | 'created_at'>[]
+  profiles: Pick<Profile, 'user_id' | 'email' | 'first_name' | 'last_name' | 'role' | 'coach_id' | 'created_at'>[]
 }
 
 const ROLES: Role[] = ['athlete', 'coach', 'admin']
@@ -56,7 +56,7 @@ export function MembersList({ profiles }: MembersListProps) {
 function MemberRow({
   profile,
 }: {
-  profile: Pick<Profile, 'user_id' | 'email' | 'role'>
+  profile: Pick<Profile, 'user_id' | 'email' | 'first_name' | 'last_name' | 'role'>
 }) {
   const [state, formAction] = useActionState<UpdateRoleState, FormData>(updateMemberRole, {})
 

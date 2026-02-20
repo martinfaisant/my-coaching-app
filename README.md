@@ -97,14 +97,15 @@ Voir [docs/DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md) pour tous les détails.
 ### 3 rôles utilisateur :
 
 **Athlète**
-- Chercher et choisir un coach
+- Chercher un coach et envoyer une demande (avec choix d’une offre ; l’offre est figée au moment de la demande)
 - Consulter son calendrier d'entraînement
 - Gérer ses objectifs
 - Noter son coach
 - Synchroniser Strava
 
 **Coach**
-- Créer un profil professionnel et des offres
+- Créer un profil professionnel et des offres (statuts : brouillon → en ligne → archivée)
+- Recevoir des demandes, accepter ou refuser ; à l’acceptation une souscription active est créée (données d’offre figées)
 - Gérer ses athlètes
 - Créer des entraînements
 - Consulter les totaux hebdomadaires
@@ -113,6 +114,14 @@ Voir [docs/DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md) pour tous les détails.
 **Admin**
 - Gérer les membres et rôles
 - Accéder au design system (`/dashboard/admin/design-system`)
+
+## 📦 Offres et souscriptions
+
+- **Offres** : chaque coach a des offres avec statut **brouillon** (invisible aux athlètes), **en ligne** (visibles, au plus 3), ou **archivée** (plus de nouvelles demandes). En ligne, seul le titre/description restent modifiables (prix et type figés).
+- **Demande** : l’athlète envoie une demande en choisissant une offre ; le serveur enregistre un **snapshot** (titre, description, prix) dans `coach_requests`. Si le coach modifie l’offre ensuite, la demande ne change pas.
+- **Acceptation** : quand le coach accepte, une **souscription** est créée en recopiant les données figées de la demande (pas depuis l’offre actuelle). Les souscriptions existantes ne sont pas modifiées si le coach change ou archive une offre.
+
+Détails complets : [Project_context.md](./Project_context.md) (sections 4.4 et 5).
 
 ## 🔗 Intégration Strava
 
@@ -233,6 +242,6 @@ Pour toute question sur l'architecture ou les conventions, consulter :
 
 ---
 
-**Dernière mise à jour :** 16 février 2026  
+**Dernière mise à jour :** 18 février 2026  
 **Version :** 1.0.0  
 **License :** MIT

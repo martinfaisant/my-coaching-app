@@ -11,6 +11,12 @@ import { LANGUAGES_OPTIONS } from '@/lib/sportsOptions'
 import { SPORT_ICONS, SPORT_TRANSLATION_KEYS } from '@/lib/sportStyles'
 import type { SportType } from '@/lib/sportStyles'
 import { getInitials } from '@/lib/stringUtils'
+import { getDisplayName } from '@/lib/displayName'
+import { formatShortDate, formatDateFr, getNextMonthlyCycleEndDate } from '@/lib/dateUtils'
+import { getFrozenTitleForLocale, getFrozenDescriptionForLocale } from '@/lib/frozenOfferI18n'
+import type { FrozenPriceType } from '@/types/database'
+import { EndSubscriptionButton } from './EndSubscriptionButton'
+import { CancelCancellationButton } from './CancelCancellationButton'
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params
@@ -30,6 +36,17 @@ function getInitialsForCoach(fullName: string | null, email: string): string {
   return getInitials(email)
 }
 
+function formatPriceType(
+  sub: { frozen_price: number | null; frozen_price_type: FrozenPriceType | null },
+  t: (key: string, values?: Record<string, string | number>) => string
+): string {
+  const type = sub.frozen_price_type ?? 'one_time'
+  const price = sub.frozen_price ?? 0
+  if (type === 'free' || price === 0) return t('subscription.free')
+  if (type === 'monthly') return t('subscription.monthly', { price })
+  return t('subscription.oneTime', { price })
+}
+
 export default async function MonCoachPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params
   const t = await getTranslations({ locale, namespace: 'myCoach' })
@@ -41,9 +58,32 @@ export default async function MonCoachPage({ params }: { params: Promise<{ local
   }
 
   const supabase = await createClient()
+
+  const { data: subscriptions } = await supabase
+    .from('subscriptions')
+    .select('id, frozen_title, frozen_title_fr, frozen_title_en, frozen_description, frozen_description_fr, frozen_description_en, frozen_price, frozen_price_type, start_date, end_date, status, cancellation_requested_by_user_id')
+    .eq('athlete_id', current.id)
+    .in('status', ['active', 'cancellation_scheduled'])
+    .limit(2)
+
+  const now = new Date()
+  const activeSubscription = (subscriptions ?? []).find(
+    (s) => !s.end_date || new Date(s.end_date) > now
+  ) ?? null
+
+  const isCancellationScheduled =
+    activeSubscription?.status === 'cancellation_scheduled' ||
+    (activeSubscription?.status === 'active' &&
+      !!activeSubscription?.end_date &&
+      new Date(activeSubscription.end_date) > now)
+  const canCancelCancellation =
+    isCancellationScheduled &&
+    activeSubscription != null &&
+    (activeSubscription.cancellation_requested_by_user_id ?? null) === current.id
+
   const { data: coach } = await supabase
     .from('profiles')
-    .select('full_name, email, coached_sports, languages, presentation_fr, presentation_en, avatar_url')
+    .select('first_name, last_name, email, coached_sports, languages, presentation_fr, presentation_en, avatar_url')
     .eq('user_id', current.profile.coach_id)
     .single()
 
@@ -62,6 +102,21 @@ export default async function MonCoachPage({ params }: { params: Promise<{ local
       ? (coach.presentation_fr ?? '').trim() || (coach.presentation_en ?? '').trim()
       : (coach.presentation_en ?? '').trim() || (coach.presentation_fr ?? '').trim()
 
+  const dateLocale = locale === 'en' ? 'en-GB' : 'fr-FR'
+
+  const isMonthly =
+    activeSubscription?.frozen_price_type === 'monthly'
+  const endDateFormattedForModal =
+    activeSubscription && isMonthly
+      ? activeSubscription.end_date
+        ? formatDateFr(activeSubscription.end_date, false, dateLocale)
+        : formatDateFr(
+            getNextMonthlyCycleEndDate(activeSubscription.start_date),
+            false,
+            dateLocale
+          )
+      : null
+
   return (
     <DashboardPageShell title={t('title')}>
         {/* Carte principale avec bannière et avatar */}
@@ -74,7 +129,7 @@ export default async function MonCoachPage({ params }: { params: Promise<{ local
                 <div className="w-28 h-28 rounded-full bg-stone-100 border-4 border-white shadow-md flex items-center justify-center text-stone-300 overflow-hidden">
                   <AvatarImage
                     src={coach.avatar_url}
-                    initials={getInitialsForCoach(coach.full_name, coach.email)}
+                    initials={getInitialsForCoach(getDisplayName(coach), coach.email)}
                     alt={t('avatarAlt')}
                     className="w-full h-full object-cover"
                   />
@@ -88,7 +143,7 @@ export default async function MonCoachPage({ params }: { params: Promise<{ local
             {/* Header section */}
             <div className="mb-8">
               <h1 className="text-2xl font-bold text-stone-900">
-                {(coach.full_name ?? '').trim() || coach.email}
+                {getDisplayName(coach, coach.email)}
               </h1>
             </div>
 
@@ -157,6 +212,69 @@ export default async function MonCoachPage({ params }: { params: Promise<{ local
                   </p>
                 </div>
               </div>
+            )}
+          </div>
+        </div>
+
+        {/* Bloc Ma souscription (US1) – design aligné mockup 01 */}
+        <div className="max-w-3xl mx-auto mt-8 bg-white rounded-2xl shadow-xl overflow-hidden border border-stone-100 mb-8">
+          <div className="px-8 py-6">
+            <h2 className="text-sm font-bold text-stone-900 uppercase tracking-wide mb-4">{t('subscription.blockTitle')}</h2>
+            {activeSubscription ? (
+              <div className="border border-stone-200 rounded-xl p-5 bg-stone-50/50">
+                <div className="flex flex-wrap items-start justify-between gap-2">
+                  <h3 className="text-base font-semibold text-stone-900">
+                    {getFrozenTitleForLocale(activeSubscription, locale) || t('subscription.inProgress')}
+                  </h3>
+                  {isCancellationScheduled ? (
+                    <span className="inline-flex shrink-0 px-2.5 py-0.5 rounded-full text-xs font-medium bg-palette-amber/10 text-palette-amber border border-palette-amber/20">
+                      {t('subscription.cancellationScheduledBadge')}
+                    </span>
+                  ) : (
+                    <span className="inline-flex shrink-0 px-2.5 py-0.5 rounded-full text-xs font-medium bg-palette-forest-dark/10 text-palette-forest-dark border border-palette-forest-dark/20">
+                      {t('subscription.activeBadge')}
+                    </span>
+                  )}
+                </div>
+                {(() => {
+                  const desc = getFrozenDescriptionForLocale(activeSubscription, locale)
+                  return desc ? <p className="text-sm text-stone-600 mt-1 line-clamp-2">{desc}</p> : null
+                })()}
+                <div className="flex flex-wrap items-center justify-between gap-3 mt-4">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-palette-forest-dark/10 text-palette-forest-dark border border-palette-forest-dark/20">
+                      {formatPriceType(activeSubscription, t)}
+                    </span>
+                    <span className="text-xs text-stone-500">
+                      {t('subscription.startedOn', {
+                        date: formatShortDate(activeSubscription.start_date, dateLocale),
+                      })}
+                      {activeSubscription.end_date && (
+                        <> · {t('subscription.endPlannedOn', {
+                          date: formatShortDate(activeSubscription.end_date, dateLocale),
+                        })}</>
+                      )}
+                    </span>
+                  </div>
+                  {isCancellationScheduled ? (
+                    canCancelCancellation && (
+                      <CancelCancellationButton
+                        subscriptionId={activeSubscription.id}
+                        locale={locale}
+                      />
+                    )
+                  ) : (
+                    <EndSubscriptionButton
+                      subscriptionId={activeSubscription.id}
+                      isMonthly={isMonthly}
+                      endDateFormatted={endDateFormattedForModal}
+                      locale={locale}
+                    />
+                  )}
+                </div>
+              </div>
+            ) : (
+              <p className="text-sm text-stone-500">{t('subscription.noActiveSubscription')}</p>
             )}
           </div>
         </div>

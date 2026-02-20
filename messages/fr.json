@@ -84,9 +84,11 @@
     "myCoach": "Mon Coach",
     "devices": "Mes appareils connectés",
     "athletes": "Mes Athlètes",
+    "subscriptions": "Souscriptions",
     "offers": "Mon offre",
     "profile": "Mon profil",
     "dashboard": "Tableau de bord",
+    "subscriptionHistory": "Historique des souscriptions",
     "openMenu": "Ouvrir le menu",
     "collapseMenu": "Réduire le menu"
   },
@@ -596,7 +598,11 @@
       "coach": "Coach",
       "admin": "Administrateur"
     },
-    "you": "Vous"
+    "you": "Vous",
+    "subscriptionDetail": {
+      "title": "Détail de la souscription",
+      "athleteLabel": "Athlète"
+    }
   },
   "findCoach": {
     "pageTitle": "Trouver mon coach",
@@ -709,6 +715,67 @@
     "validation": {
       "onlyYourCoach": "Vous ne pouvez noter que votre coach actuel.",
       "saveFailed": "Impossible d'enregistrer la note. Veuillez réessayer."
+    },
+    "subscription": {
+      "blockTitle": "Ma souscription",
+      "free": "Gratuit",
+      "oneTime": "{price} € (unique)",
+      "monthly": "{price} € / mois",
+      "fromDate": "Du {date}",
+      "startedOn": "A débuté le {date}",
+      "endPlannedOn": "Fin prévue le {date}",
+      "inProgress": "En cours",
+      "activeBadge": "Active",
+      "noActiveSubscription": "Aucune souscription active.",
+      "endButton": "Mettre fin à la souscription",
+      "cancellationScheduledBadge": "En résiliation",
+      "cancelCancellationButton": "Annuler la résiliation"
+    },
+    "cancelCancellation": {
+      "modalTitle": "Annuler la résiliation ?",
+      "modalBody": "La souscription restera active au-delà de la date prévue, sans date de fin programmée.",
+      "onlyRequesterHint": "Seule la personne ayant demandé la résiliation peut l'annuler.",
+      "cancel": "Annuler",
+      "confirm": "Oui, annuler la résiliation",
+      "errors": {
+        "notFound": "Souscription introuvable.",
+        "forbidden": "Vous ne pouvez pas modifier cette souscription.",
+        "onlyRequesterCanCancel": "Seule la personne ayant demandé la résiliation peut l'annuler.",
+        "server": "Une erreur est survenue. Veuillez réessayer."
+      }
+    },
+    "subscriptionEnd": {
+      "modalTitle": "Mettre fin à la souscription ?",
+      "consequences": "Vous n'aurez plus accès au programme et au chat avec votre coach. Votre historique restera consultable.",
+      "monthlyActiveUntil": "La souscription restera active jusqu'au {date}.",
+      "cancel": "Annuler",
+      "confirm": "Mettre fin",
+      "errors": {
+        "notFound": "Souscription introuvable.",
+        "forbidden": "Vous ne pouvez pas modifier cette souscription.",
+        "server": "Une erreur est survenue. Veuillez réessayer.",
+        "alreadyScheduled": "La fin de souscription est déjà programmée.",
+        "profileUpdateFailed": "La souscription a été annulée mais la mise à jour de votre profil a échoué. Rechargez la page ou réessayez."
+      }
     }
+  },
+  "subscriptionHistory": {
+    "title": "Historique des souscriptions",
+    "coachLabel": "Coach",
+    "terminatedBadge": "Terminée",
+    "periodFromTo": "Du {start} au {end}",
+    "noSubscriptions": "Aucune souscription passée."
+  },
+  "coachSubscriptions": {
+    "title": "Souscriptions",
+    "activeSection": "Souscriptions actives",
+    "cancellationScheduledSection": "En résiliation",
+    "historySection": "Historique",
+    "historyIntro": "Souscriptions terminées et athlètes archivés.",
+    "viewDetail": "Voir le détail",
+    "inProgress": "En cours",
+    "noActive": "Aucune souscription active.",
+    "noCancellationScheduled": "Aucune souscription en résiliation.",
+    "noHistory": "Aucune souscription dans l'historique."
   }
 }

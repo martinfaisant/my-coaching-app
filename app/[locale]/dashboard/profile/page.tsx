@@ -27,7 +27,8 @@ export default async function ProfilePage({ params }: { params: Promise<{ locale
       {isCoach ? (
         <ProfileForm
           email={current.email}
-          fullName={current.profile.full_name ?? ''}
+          firstName={current.profile.first_name ?? ''}
+          lastName={current.profile.last_name ?? ''}
           role={current.profile.role}
           avatarUrl={current.profile.avatar_url ? `${current.profile.avatar_url}?t=${current.profile.updated_at}` : ''}
           coachedSports={current.profile.coached_sports ?? []}
@@ -42,7 +43,8 @@ export default async function ProfilePage({ params }: { params: Promise<{ locale
       ) : (
         <ProfileForm
           email={current.email}
-          fullName={current.profile.full_name ?? ''}
+          firstName={current.profile.first_name ?? ''}
+          lastName={current.profile.last_name ?? ''}
           role={current.profile.role}
           avatarUrl={current.profile.avatar_url ? `${current.profile.avatar_url}?t=${current.profile.updated_at}` : ''}
           coachedSports={[]}

@@ -5,6 +5,8 @@ import { revalidatePath } from 'next/cache'
 import { requireUserWithProfile, requireUser } from '@/lib/authHelpers'
 import { logger } from '@/lib/logger'
 import { getTranslations, getLocale } from 'next-intl/server'
+import { getFrozenTitleForLocale } from '@/lib/frozenOfferI18n'
+import { getDisplayName } from '@/lib/displayName'
 
 export type SetCoachResult = { error?: string }
 export type CoachRequestResult = { error?: string }
@@ -53,8 +55,13 @@ export async function createCoachRequest(
     status: string
     offer_id?: string | null
     frozen_price?: number | null
+    frozen_price_type?: string | null
     frozen_title?: string | null
     frozen_description?: string | null
+    frozen_title_fr?: string | null
+    frozen_title_en?: string | null
+    frozen_description_fr?: string | null
+    frozen_description_en?: string | null
   } = {
     athlete_id: user.id,
     coach_id: coachId,
@@ -82,12 +89,24 @@ export async function createCoachRequest(
         ? offer.description_en.trim()
         : (offer.description_fr?.trim() ?? offer.description?.trim() ?? '')
 
+    const frozen_title_fr = (offer.title_fr ?? '').trim() || null
+    const frozen_title_en = (offer.title_en ?? '').trim() || null
+    const frozen_description_fr = (offer.description_fr ?? '').trim() || null
+    const frozen_description_en = (offer.description_en ?? '').trim() || null
+
+    const frozen_price_type = (offer.price_type ?? '').trim() || null
+
     insertPayload = {
       ...insertPayload,
       offer_id: offerId,
       frozen_price: offer.price ?? null,
+      frozen_price_type: frozen_price_type && ['free', 'one_time', 'monthly'].includes(frozen_price_type) ? frozen_price_type : null,
       frozen_title: frozen_title || null,
       frozen_description: frozen_description || null,
+      frozen_title_fr,
+      frozen_title_en,
+      frozen_description_fr,
+      frozen_description_en,
     }
   }
 
@@ -183,7 +202,7 @@ export async function getPendingCoachRequests(locale: string = 'fr'): Promise<Pe
 
   const { data: rows } = await supabase
     .from('coach_requests')
-    .select('id, athlete_id, sport_practiced, coaching_need, created_at, offer_id, frozen_title, frozen_price, frozen_description')
+    .select('id, athlete_id, sport_practiced, coaching_need, created_at, offer_id, frozen_title, frozen_title_fr, frozen_title_en, frozen_price, frozen_description, frozen_description_fr, frozen_description_en')
     .eq('coach_id', user.id)
     .eq('status', 'pending')
     .order('created_at', { ascending: false })
@@ -193,14 +212,14 @@ export async function getPendingCoachRequests(locale: string = 'fr'): Promise<Pe
   const athleteIds = [...new Set(rows.map((r) => r.athlete_id))]
   const { data: profiles } = await supabase
     .from('profiles')
-    .select('user_id, full_name, email, avatar_url')
+    .select('user_id, first_name, last_name, email, avatar_url')
     .in('user_id', athleteIds)
 
   const nameByUserId = new Map<string, string>()
   const emailByUserId = new Map<string, string>()
   const avatarByUserId = new Map<string, string | null>()
   for (const p of profiles ?? []) {
-    nameByUserId.set(p.user_id, p.full_name?.trim() || p.email)
+    nameByUserId.set(p.user_id, getDisplayName(p, p.email))
     emailByUserId.set(p.user_id, p.email)
     avatarByUserId.set(p.user_id, p.avatar_url ?? null)
   }
@@ -214,7 +233,7 @@ export async function getPendingCoachRequests(locale: string = 'fr'): Promise<Pe
     sport_practiced: r.sport_practiced,
     coaching_need: r.coaching_need,
     offer_id: r.offer_id ?? null,
-    offer_title: r.frozen_title ?? null,
+    offer_title: getFrozenTitleForLocale(r, locale) ?? null,
     offer_price: r.frozen_price ?? null,
     offer_price_type: null,
     created_at: r.created_at,
@@ -240,7 +259,7 @@ export async function respondToCoachRequest(
 
   const { data: req } = await supabase
     .from('coach_requests')
-    .select('id, coach_id, athlete_id, status, frozen_price, frozen_title, frozen_description')
+    .select('id, coach_id, athlete_id, status, frozen_price, frozen_price_type, frozen_title, frozen_description, frozen_title_fr, frozen_title_en, frozen_description_fr, frozen_description_en')
     .eq('id', requestId)
     .single()
 
@@ -269,8 +288,13 @@ export async function respondToCoachRequest(
       coach_id: req.coach_id,
       request_id: req.id,
       frozen_price: req.frozen_price ?? null,
+      frozen_price_type: req.frozen_price_type ?? null,
       frozen_title: req.frozen_title ?? null,
       frozen_description: req.frozen_description ?? null,
+      frozen_title_fr: req.frozen_title_fr ?? null,
+      frozen_title_en: req.frozen_title_en ?? null,
+      frozen_description_fr: req.frozen_description_fr ?? null,
+      frozen_description_en: req.frozen_description_en ?? null,
       status: 'active',
       start_date: now,
     })

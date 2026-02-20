@@ -6,8 +6,10 @@ import { redirect } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
 import { DashboardPageShell } from '@/components/DashboardPageShell'
 import { AvatarImage } from '@/components/AvatarImage'
-import { AthleteTile } from '@/components/AthleteTile'
+import { CoachAthleteTileWithModal } from '@/app/[locale]/dashboard/CoachAthleteTileWithModal'
+import type { CoachSubscriptionRow } from '@/app/[locale]/dashboard/CoachSubscriptionDetailModal'
 import { Badge } from '@/components/Badge'
+import { getFrozenTitleForLocale } from '@/lib/frozenOfferI18n'
 import { FindCoachSection } from '@/app/[locale]/dashboard/FindCoachSection'
 import { RespondToRequestButtons } from '@/app/[locale]/dashboard/RespondToRequestButtons'
 import {
@@ -16,6 +18,7 @@ import {
 } from '@/app/[locale]/dashboard/actions'
 import type { Profile } from '@/types/database'
 import { formatShortDate } from '@/lib/dateUtils'
+import { getDisplayName } from '@/lib/displayName'
 import { getInitials } from '@/lib/stringUtils'
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -51,7 +54,7 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
     const [coachesResult, myRequests, ratingStats, offersResult] = await Promise.all([
       supabase
         .from('profiles')
-        .select('user_id, email, full_name, coached_sports, languages, presentation_fr, presentation_en, avatar_url')
+        .select('user_id, email, first_name, last_name, coached_sports, languages, presentation_fr, presentation_en, avatar_url')
         .eq('role', 'coach')
         .order('email'),
       getMyCoachRequests(),
@@ -104,7 +107,9 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
 
     const coachesForList = (coaches ?? [])
       .filter((c) => {
-        const hasName = (c.full_name ?? '').trim() !== ''
+        const first = (c.first_name ?? '').trim()
+        const last = (c.last_name ?? '').trim()
+        const hasName = [first, last].filter(Boolean).join(' ').trim() !== ''
         const hasSports = (c.coached_sports ?? []).length > 0
         const hasLanguages = (c.languages ?? []).length > 0
         const hasPresentation =
@@ -114,7 +119,8 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
       .map((c) => ({
         user_id: c.user_id,
         email: c.email,
-        full_name: c.full_name,
+        first_name: c.first_name ?? null,
+        last_name: c.last_name ?? null,
         coached_sports: c.coached_sports ?? null,
         languages: c.languages ?? null,
         presentation_fr: c.presentation_fr ?? null,
@@ -142,7 +148,7 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
 
   const isCoachProfileComplete =
     current.profile.role === 'coach' &&
-    (current.profile.full_name ?? '').trim() !== '' &&
+    ([(current.profile.first_name ?? '').trim(), (current.profile.last_name ?? '').trim()].filter(Boolean).join(' ').trim() !== '') &&
     (current.profile.coached_sports ?? []).length > 0 &&
     (current.profile.languages ?? []).length > 0 &&
     (((current.profile.presentation_fr ?? '').trim() !== '' || (current.profile.presentation_en ?? '').trim() !== ''))
@@ -158,7 +164,7 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
       getPendingCoachRequests(locale),
       supabase
         .from('profiles')
-        .select('user_id, email, full_name, role, coach_id, created_at, updated_at, practiced_sports, avatar_url')
+        .select('user_id, email, first_name, last_name, role, coach_id, created_at, updated_at, practiced_sports, avatar_url')
         .eq('coach_id', current.id)
         .order('email'),
     ])
@@ -176,8 +182,9 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
     isUpToDate: boolean
   }
   let coachAthleteData: Record<string, CoachAthleteData> = {}
+  let subscriptionByAthleteId: Record<string, CoachSubscriptionRow> = {}
   if (current.profile.role === 'coach' && coachAthleteIds.length > 0) {
-    const [workoutsResult, goalsResult] = await Promise.all([
+    const [workoutsResult, goalsResult, subscriptionsResult] = await Promise.all([
       supabase
         .from('workouts')
         .select('athlete_id, date')
@@ -187,11 +194,22 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
         .select('athlete_id, date, race_name, is_primary')
         .in('athlete_id', coachAthleteIds)
         .order('date', { ascending: true }),
+      supabase
+        .from('subscriptions')
+        .select('id, athlete_id, frozen_title, frozen_title_fr, frozen_title_en, frozen_description, frozen_description_fr, frozen_description_en, frozen_price, frozen_price_type, start_date, end_date, status, cancellation_requested_by_user_id')
+        .eq('coach_id', current.id)
+        .in('status', ['active', 'cancellation_scheduled']),
     ])
+    const now = new Date()
+    for (const sub of subscriptionsResult.data ?? []) {
+      const endDate = sub.end_date ? new Date(sub.end_date) : null
+      if (!endDate || endDate > now) {
+        subscriptionByAthleteId[sub.athlete_id] = sub as CoachSubscriptionRow
+      }
+    }
     const workoutsRows = workoutsResult.data
     const goalsRows = goalsResult.data
 
-    const now = new Date()
     const todayStr =
       now.getFullYear() +
       '-' +
@@ -356,34 +374,32 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
               )}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {visibleProfiles.map((p) => {
-                const displayName = (p.full_name?.trim() || p.email) as string
+                const displayName = getDisplayName(p, p.email ?? '')
                 const athleteHref = `/dashboard/athletes/${p.user_id}`
                 const data = coachAthleteData[p.user_id]
                 const plannedUntil = data?.plannedUntil ?? null
                 const nextGoal = data?.nextGoal ?? null
                 const isUpToDate = data?.isUpToDate ?? false
                 const practicedSports = p.practiced_sports ?? []
+                const subscription = subscriptionByAthleteId[p.user_id] ?? null
+                const subscriptionTitle = subscription ? getFrozenTitleForLocale(subscription, locale) : null
 
                 return (
-                  <AthleteTile
+                  <CoachAthleteTileWithModal
                     key={p.user_id}
-                    avatarUrl={p.avatar_url ? `${p.avatar_url}?t=${p.updated_at}` : null}
-                    displayName={displayName}
+                    athlete={{
+                      displayName,
+                      avatarUrl: p.avatar_url ? `${p.avatar_url}?t=${p.updated_at}` : null,
+                    }}
+                    subscription={subscription}
+                    subscriptionTitle={subscriptionTitle}
+                    locale={locale}
+                    currentUserId={current.id}
+                    athleteHref={athleteHref}
                     practicedSports={practicedSports}
                     nextGoal={nextGoal ? { date: formatShortDate(nextGoal.date), raceName: nextGoal.race_name } : null}
                     plannedUntil={plannedUntil ? formatShortDate(plannedUntil) : undefined}
                     isUpToDate={isUpToDate}
-                    footer={
-                      <Link
-                        href={athleteHref}
-                        className="text-xs font-medium text-palette-forest-dark hover:text-palette-forest-darker flex items-center justify-end transition-transform group-hover:translate-x-1"
-                      >
-                        {t('athleteCard.viewPlanning')}
-                        <svg className="w-4 h-4 ml-1 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                      </Link>
-                    }
                     labels={{
                       nextGoal: t('athleteCard.nextGoal'),
                       noGoal: t('athleteCard.noGoal'),
@@ -391,6 +407,7 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
                       upToDate: t('athleteCard.upToDate'),
                       late: t('athleteCard.late'),
                     }}
+                    viewPlanningLabel={t('athleteCard.viewPlanning')}
                   />
                 )
               })}
@@ -400,7 +417,7 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
           ) : (
             <ul className="space-y-2.5">
               {visibleProfiles.map((p) => {
-                const displayName = (p.full_name?.trim() || p.email) as string
+                const displayName = getDisplayName(p, p.email ?? '')
                 const isAthleteOfMine = current.profile.role === 'coach' && p.coach_id === current.id
                 const athleteHref = `/dashboard/athletes/${p.user_id}`
 
