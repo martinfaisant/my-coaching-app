@@ -91,9 +91,11 @@
     "myCoach": "My Coach",
     "devices": "Connected devices",
     "athletes": "My Athletes",
+    "subscriptions": "Subscriptions",
     "offers": "My offer",
     "profile": "My profile",
     "dashboard": "Dashboard",
+    "subscriptionHistory": "Subscription history",
     "openMenu": "Open menu",
     "collapseMenu": "Collapse menu"
   },
@@ -608,7 +610,11 @@
       "coach": "Coach",
       "admin": "Administrator"
     },
-    "you": "You"
+    "you": "You",
+    "subscriptionDetail": {
+      "title": "Subscription details",
+      "athleteLabel": "Athlete"
+    }
   },
   "findCoach": {
     "pageTitle": "Find my coach",
@@ -684,6 +690,7 @@
       "requireSportAndNeed": "At least one practiced sport and coaching need are required.",
       "coachNotFound": "This coach does not exist.",
       "offerNotFound": "This offer does not exist or does not belong to this coach.",
+      "offerNotPublished": "This offer is not available.",
       "requestNotFound": "Request not found.",
       "requestCannotBeCancelled": "This request can no longer be cancelled.",
       "accepted": "Request accepted.",
@@ -720,6 +727,67 @@
     "validation": {
       "onlyYourCoach": "You can only rate your current coach.",
       "saveFailed": "Unable to save the rating. Please try again."
+    },
+    "subscription": {
+      "blockTitle": "My subscription",
+      "free": "Free",
+      "oneTime": "€{price} (one-time)",
+      "monthly": "€{price} / month",
+      "fromDate": "From {date}",
+      "startedOn": "Started on {date}",
+      "endPlannedOn": "Ends on {date}",
+      "inProgress": "In progress",
+      "activeBadge": "Active",
+      "noActiveSubscription": "No active subscription.",
+      "endButton": "End subscription",
+      "cancellationScheduledBadge": "Cancellation scheduled",
+      "cancelCancellationButton": "Cancel cancellation"
+    },
+    "cancelCancellation": {
+      "modalTitle": "Cancel cancellation?",
+      "modalBody": "The subscription will remain active beyond the planned date, with no end date set.",
+      "onlyRequesterHint": "Only the person who requested the cancellation can cancel it.",
+      "cancel": "Cancel",
+      "confirm": "Yes, cancel cancellation",
+      "errors": {
+        "notFound": "Subscription not found.",
+        "forbidden": "You cannot modify this subscription.",
+        "onlyRequesterCanCancel": "Only the person who requested the cancellation can cancel it.",
+        "server": "An error occurred. Please try again."
+      }
+    },
+    "subscriptionEnd": {
+      "modalTitle": "End subscription?",
+      "consequences": "You will no longer have access to your programme and chat with your coach. Your history will remain available.",
+      "monthlyActiveUntil": "The subscription will remain active until {date}.",
+      "cancel": "Cancel",
+      "confirm": "End",
+      "errors": {
+        "notFound": "Subscription not found.",
+        "forbidden": "You cannot modify this subscription.",
+        "server": "An error occurred. Please try again.",
+        "alreadyScheduled": "Subscription end is already scheduled.",
+        "profileUpdateFailed": "The subscription was cancelled but updating your profile failed. Refresh the page or try again."
+      }
     }
+  },
+  "subscriptionHistory": {
+    "title": "Subscription history",
+    "coachLabel": "Coach",
+    "terminatedBadge": "Ended",
+    "periodFromTo": "From {start} to {end}",
+    "noSubscriptions": "No past subscriptions."
+  },
+  "coachSubscriptions": {
+    "title": "Subscriptions",
+    "activeSection": "Active subscriptions",
+    "cancellationScheduledSection": "Cancellation scheduled",
+    "historySection": "History",
+    "historyIntro": "Ended subscriptions and archived athletes.",
+    "viewDetail": "View details",
+    "inProgress": "In progress",
+    "noActive": "No active subscriptions.",
+    "noCancellationScheduled": "No subscriptions with scheduled cancellation.",
+    "noHistory": "No subscriptions in history."
   }
 }

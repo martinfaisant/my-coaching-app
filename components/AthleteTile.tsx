@@ -30,6 +30,10 @@ export type AthleteTileProps = {
   isUpToDate?: boolean
   /** Contenu du footer (lien « Voir le planning », etc.) */
   footer: React.ReactNode
+  /** Titre de la souscription active (affiché sous le nom avec flèche, clic → détail) */
+  subscriptionTitle?: string | null
+  /** Appelé au clic sur la ligne souscription (ouvrir détail en modale) */
+  onSubscriptionClick?: () => void
   /** Labels optionnels (pour i18n côté appelant) */
   labels?: {
     nextGoal?: string
@@ -51,6 +55,8 @@ export function AthleteTile({
   plannedUntil,
   isUpToDate = true,
   footer,
+  subscriptionTitle,
+  onSubscriptionClick,
   labels = {},
 }: AthleteTileProps) {
   const {
@@ -80,10 +86,28 @@ export function AthleteTile({
                 </div>
               )}
             </div>
-            <div>
+            <div className="min-w-0 flex-1">
               <h3 className="font-bold text-lg leading-tight text-stone-900 group-hover:text-palette-forest-dark transition-colors">
                 {displayName}
               </h3>
+              {subscriptionTitle && (
+                onSubscriptionClick ? (
+                  <button
+                    type="button"
+                    onClick={onSubscriptionClick}
+                    className="mt-1.5 flex items-center gap-1 text-sm font-medium text-palette-forest-dark hover:text-palette-forest-darker transition-colors text-left w-full min-w-0"
+                  >
+                    <span className="truncate">{subscriptionTitle}</span>
+                    <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                ) : (
+                  <p className="mt-1.5 text-sm font-medium text-palette-forest-dark truncate">
+                    {subscriptionTitle}
+                  </p>
+                )
+              )}
             </div>
           </div>
         </div>

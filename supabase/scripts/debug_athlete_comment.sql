@@ -55,7 +55,7 @@ SELECT
   w.athlete_comment,
   w.athlete_comment_at,
   p.email AS athlete_email,
-  p.full_name AS athlete_name
+  trim(concat_ws(' ', p.first_name, p.last_name)) AS athlete_name
 FROM workouts w
 JOIN profiles p ON p.user_id = w.athlete_id
 WHERE p.role = 'athlete'

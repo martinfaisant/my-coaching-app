@@ -24,15 +24,15 @@ export async function updateProfile(
 
   const { user, profile } = result
 
-  const firstName = (formData.get('first_name') as string)?.trim() ?? ''
-  const lastName = (formData.get('last_name') as string)?.trim() ?? ''
-  const fullName = [firstName, lastName].filter(Boolean).join(' ').trim() || null
+  const firstName = (formData.get('first_name') as string)?.trim() || null
+  const lastName = (formData.get('last_name') as string)?.trim() || null
 
   const preferredLocaleRaw = (formData.get('preferred_locale') as string)?.trim() || null
   const preferredLocale = preferredLocaleRaw === 'fr' || preferredLocaleRaw === 'en' ? preferredLocaleRaw : null
 
-  const payload: { full_name: string | null; coached_sports?: string[]; practiced_sports?: string[]; languages?: string[]; presentation_fr?: string | null; presentation_en?: string | null; avatar_url?: string | null; postal_code?: string | null; preferred_locale?: string | null } = {
-    full_name: fullName,
+  const payload: { first_name: string | null; last_name: string | null; coached_sports?: string[]; practiced_sports?: string[]; languages?: string[]; presentation_fr?: string | null; presentation_en?: string | null; avatar_url?: string | null; postal_code?: string | null; preferred_locale?: string | null } = {
+    first_name: firstName,
+    last_name: lastName,
   }
   // Ne mettre à jour preferred_locale que si une valeur valide est envoyée (évite d'écraser avec null par erreur)
   if (preferredLocale !== null) {

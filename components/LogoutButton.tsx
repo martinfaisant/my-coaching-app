@@ -1,14 +1,13 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { createClient } from '@/utils/supabase/client'
 import { Button } from '@/components/Button'
 
 export function LogoutButton() {
   const t = useTranslations('auth')
-  const router = useRouter()
+  const locale = useLocale()
   const [isLoggingOut, setIsLoggingOut] = useState(false)
 
   async function handleLogout() {
@@ -16,8 +15,11 @@ export function LogoutButton() {
     try {
       const supabase = createClient()
       await supabase.auth.signOut()
-      router.push('/')
-      router.refresh()
+      // Full page navigation so the next request uses cleared cookies.
+      // router.push('/') caused a loop when user preferred_locale !== page locale
+      // (middleware still saw the user as logged in on client nav and redirected back).
+      const homePath = locale === 'fr' ? '/' : '/en'
+      window.location.href = homePath
     } finally {
       setIsLoggingOut(false)
     }

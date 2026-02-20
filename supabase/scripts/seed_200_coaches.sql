@@ -24,7 +24,9 @@ DECLARE
   i INT;
   v_user_id UUID;
   v_email TEXT;
-  v_full_name TEXT;
+  v_first_name TEXT;
+  v_last_name TEXT;
+  v_full_name TEXT;  /* pour raw_user_meta_data auth */
   v_coached_sports TEXT[];
   v_languages TEXT[];
   v_presentation TEXT;
@@ -67,7 +69,9 @@ BEGIN
   -- coach@dev.local : compte principal dev, varié comme les autres (sport combo 9, lang combo 2)
   v_user_id := gen_random_uuid();
   v_email := 'coach@dev.local';
-  v_full_name := v_first_names[1] || ' ' || v_last_names[1];
+  v_first_name := v_first_names[1];
+  v_last_name := v_last_names[1];
+  v_full_name := v_first_name || ' ' || v_last_name;
   v_coached_sports := ARRAY['course_route','trail','velo'];
   v_languages := ARRAY['fr','en'];
   v_presentation := v_presentations_long[1];
@@ -76,13 +80,15 @@ BEGIN
   VALUES ('00000000-0000-0000-0000-000000000000', v_user_id, 'authenticated', 'authenticated', v_email, crypt('CoachDev2025!', gen_salt('bf')), NOW(), '{"provider":"email","providers":["email"]}', jsonb_build_object('full_name', v_full_name), NOW(), NOW(), '', '', '', '');
   INSERT INTO auth.identities (id, user_id, provider_id, identity_data, provider, last_sign_in_at, created_at, updated_at)
   VALUES (gen_random_uuid(), v_user_id, v_user_id, jsonb_build_object('sub', v_user_id::text, 'email', v_email), 'email', NOW(), NOW(), NOW());
-  INSERT INTO public.profiles (user_id, email, full_name, role, coach_id, coached_sports, languages, presentation, presentation_fr, presentation_en, postal_code, created_at, updated_at)
-  VALUES (v_user_id, v_email, v_full_name, 'coach', NULL, v_coached_sports, v_languages, v_presentation, v_presentation, v_presentation, v_postal_code, NOW(), NOW());
+  INSERT INTO public.profiles (user_id, email, first_name, last_name, role, coach_id, coached_sports, languages, presentation, presentation_fr, presentation_en, postal_code, created_at, updated_at)
+  VALUES (v_user_id, v_email, v_first_name, v_last_name, 'coach', NULL, v_coached_sports, v_languages, v_presentation, v_presentation, v_presentation, v_postal_code, NOW(), NOW());
 
   FOR i IN 1..200 LOOP
     v_user_id := gen_random_uuid();
     v_email := 'coach' || i || '@dev.local';
-    v_full_name := v_first_names[1 + (i-1) % array_length(v_first_names, 1)] || ' ' || v_last_names[1 + (i-1) % array_length(v_last_names, 1)];
+    v_first_name := v_first_names[1 + (i-1) % array_length(v_first_names, 1)];
+    v_last_name := v_last_names[1 + (i-1) % array_length(v_last_names, 1)];
+    v_full_name := v_first_name || ' ' || v_last_name;
     v_sport_combo_idx := 1 + (i-1) % 12;
     v_lang_combo_idx := 1 + (i-1) % 10;
     CASE v_sport_combo_idx
@@ -157,11 +163,12 @@ BEGIN
 
     -- 3. public.profiles (coached_sports et languages pour chaque coach)
     INSERT INTO public.profiles (
-      user_id, email, full_name, role, coach_id, coached_sports, languages, presentation, presentation_fr, presentation_en, postal_code, created_at, updated_at
+      user_id, email, first_name, last_name, role, coach_id, coached_sports, languages, presentation, presentation_fr, presentation_en, postal_code, created_at, updated_at
     ) VALUES (
       v_user_id,
       v_email,
-      v_full_name,
+      v_first_name,
+      v_last_name,
       'coach',
       NULL,
       v_coached_sports,

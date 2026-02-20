@@ -7,6 +7,7 @@ import { AvatarImage } from '@/components/AvatarImage'
 import { Button } from '@/components/Button'
 import type { Profile } from '@/types/database'
 import { getInitials } from '@/lib/stringUtils'
+import { getDisplayName } from '@/lib/displayName'
 
 type SidebarProps = {
   profile: Profile & { email: string }
@@ -17,7 +18,7 @@ export function Sidebar({ profile }: SidebarProps) {
   const path = usePathname()
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [textVisible, setTextVisible] = useState(true)
-  const displayName = profile.full_name?.trim() || profile.email
+  const displayName = getDisplayName(profile, '')
   const initials = getInitials(displayName)
 
   useEffect(() => {
@@ -135,6 +136,24 @@ export function Sidebar({ profile }: SidebarProps) {
               </svg>
               <span className={`text-sm font-medium transition-all duration-300 whitespace-nowrap hidden lg:block ${showText ? 'opacity-100 w-auto' : 'opacity-0 w-0 overflow-hidden'}`}>{t('goals')}</span>
             </Link>
+            <Link
+              href="/dashboard/devices"
+              className={`flex items-center h-10 rounded-xl transition-all duration-300 group ${
+                isCollapsed ? 'w-10 justify-center px-0' : 'gap-2.5 px-2.5 lg:px-3'
+              } ${
+                path === '/dashboard/devices'
+                  ? 'bg-palette-forest-dark text-white shadow-lg shadow-palette-forest-dark/20'
+                  : 'text-stone-500 hover:bg-stone-50 hover:text-palette-forest-dark'
+              }`}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 group-hover:scale-110 transition-transform shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 10v2.2l1.6 1" />
+                <path d="m16.13 7.66-.81-4.05a2 2 0 0 0-2-1.61h-2.68a2 2 0 0 0-2 1.61l-.78 4.05" />
+                <path d="m7.88 16.36.8 4a2 2 0 0 0 2 1.61h2.72a2 2 0 0 0 2-1.61l.81-4.05" />
+                <circle cx="12" cy="12" r="6" />
+              </svg>
+              <span className={`text-sm font-medium transition-all duration-300 hidden lg:block ${showText ? 'opacity-100 w-auto' : 'opacity-0 w-0 overflow-hidden'}`}>{t('devices')}</span>
+            </Link>
             {profile.coach_id && (
               <Link
                 href="/dashboard/coach"
@@ -156,22 +175,23 @@ export function Sidebar({ profile }: SidebarProps) {
               </Link>
             )}
             <Link
-              href="/dashboard/devices"
-              className={`flex items-center h-10 rounded-xl transition-all duration-300 group ${
-                isCollapsed ? 'w-10 justify-center px-0' : 'gap-2.5 px-2.5 lg:px-3'
+              href="/dashboard/subscriptions/history"
+              className={`flex items-center min-h-10 rounded-xl transition-all duration-300 group ${
+                isCollapsed ? 'w-10 justify-center px-0 h-10' : 'gap-2.5 px-2.5 lg:px-3 py-2'
               } ${
-                path === '/dashboard/devices'
+                path === '/dashboard/subscriptions/history'
                   ? 'bg-palette-forest-dark text-white shadow-lg shadow-palette-forest-dark/20'
                   : 'text-stone-500 hover:bg-stone-50 hover:text-palette-forest-dark'
               }`}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 group-hover:scale-110 transition-transform shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 10v2.2l1.6 1" />
-                <path d="m16.13 7.66-.81-4.05a2 2 0 0 0-2-1.61h-2.68a2 2 0 0 0-2 1.61l-.78 4.05" />
-                <path d="m7.88 16.36.8 4a2 2 0 0 0 2 1.61h2.72a2 2 0 0 0 2-1.61l.81-4.05" />
-                <circle cx="12" cy="12" r="6" />
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 group-hover:scale-110 transition-transform shrink-0 self-center" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M16 14v2.2l1.6 1" />
+                <path d="M16 4h2a2 2 0 0 1 2 2v.832" />
+                <path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h2" />
+                <circle cx="16" cy="16" r="6" />
+                <rect x="8" y="2" width="8" height="4" rx="1" />
               </svg>
-              <span className={`text-sm font-medium transition-all duration-300 hidden lg:block ${showText ? 'opacity-100 w-auto' : 'opacity-0 w-0 overflow-hidden'}`}>{t('devices')}</span>
+              <span className={`text-sm font-medium transition-all duration-300 hidden lg:block min-w-0 break-words ${showText ? 'opacity-100 w-auto' : 'opacity-0 w-0 overflow-hidden'}`}>{t('subscriptionHistory')}</span>
             </Link>
           </nav>
         </div>
@@ -273,6 +293,27 @@ export function Sidebar({ profile }: SidebarProps) {
                 <path d="M9 21V9" />
               </svg>
               <span className={`text-sm font-medium transition-all duration-300 whitespace-nowrap hidden lg:block ${showText ? 'opacity-100 w-auto' : 'opacity-0 w-0 overflow-hidden'}`}>{t('offers')}</span>
+            </Link>
+          )}
+          {profile.role === 'coach' && (
+            <Link
+              href="/dashboard/subscriptions"
+              className={`flex items-center h-10 rounded-xl transition-all duration-300 group ${
+                isCollapsed ? 'w-10 justify-center px-0' : 'gap-2.5 px-2.5 lg:px-3'
+              } ${
+                path === '/dashboard/subscriptions'
+                  ? 'bg-palette-forest-dark text-white shadow-lg shadow-palette-forest-dark/20'
+                  : 'text-stone-500 hover:bg-stone-50 hover:text-palette-forest-dark'
+              }`}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 group-hover:scale-110 transition-transform shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M16 14v2.2l1.6 1" />
+                <path d="M16 4h2a2 2 0 0 1 2 2v.832" />
+                <path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h2" />
+                <circle cx="16" cy="16" r="6" />
+                <rect x="8" y="2" width="8" height="4" rx="1" />
+              </svg>
+              <span className={`text-sm font-medium transition-all duration-300 whitespace-nowrap hidden lg:block ${showText ? 'opacity-100 w-auto' : 'opacity-0 w-0 overflow-hidden'}`}>{t('subscriptions')}</span>
             </Link>
           )}
           {profile.role === 'admin' && (

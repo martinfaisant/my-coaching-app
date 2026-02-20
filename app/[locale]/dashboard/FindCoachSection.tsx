@@ -15,9 +15,10 @@ import { LANGUAGES_OPTIONS } from '@/lib/sportsOptions'
 import { useCoachedSportsOptions, usePracticedSportsOptions } from '@/lib/hooks/useSportsOptions'
 import { useRouter } from 'next/navigation'
 import { getInitials } from '@/lib/stringUtils'
+import { getDisplayName } from '@/lib/displayName'
 
-function getInitialsForCoach(fullName: string | null, email: string): string {
-  const name = (fullName ?? '').trim()
+function getInitialsForCoach(displayName: string | null, email: string): string {
+  const name = (displayName ?? '').trim()
   if (name) return getInitials(name)
   return getInitials(email)
 }
@@ -29,7 +30,8 @@ const PRESENTATION_LONG_THRESHOLD = 500
 export type CoachForList = {
   user_id: string
   email: string
-  full_name: string | null
+  first_name: string | null
+  last_name: string | null
   coached_sports: string[] | null
   languages: string[] | null
   /** Présentation selon la langue d'affichage (dérivée de presentation_fr / presentation_en côté appelant ou ici). */
@@ -229,7 +231,7 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
             <li key={c.user_id}>
               <CoachTile
                 avatarUrl={c.avatar_url}
-                fullName={c.full_name}
+                fullName={getDisplayName(c)}
                 email={c.email}
                 coachedSports={c.coached_sports ?? []}
                 bio={getDisplayPresentation(c, locale) || t('coachCard.defaultBio')}
@@ -245,7 +247,7 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
                   getStatus(c.user_id) === 'pending' ? (
                     <RequestCoachButton
                       coachId={c.user_id}
-                      coachName={c.full_name?.trim() || c.email}
+                      coachName={getDisplayName(c)}
                       requestStatus={getStatus(c.user_id)}
                       requestId={getRequestId(c.user_id)}
                       initialPracticedSports={initialPracticedSports}
@@ -326,7 +328,7 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
                   />
                 )}
                 <h2 id="presentation-modal-title" className="text-xl font-semibold text-stone-900">
-                  {t('modal.presentation')} {presentationModalCoach.full_name?.trim() || presentationModalCoach.email}
+                  {t('modal.presentation')} {getDisplayName(presentationModalCoach, presentationModalCoach.email)}
                 </h2>
               </div>
               {(presentationModalCoach.coached_sports?.length ?? 0) > 0 && (
@@ -487,12 +489,12 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
             <div className="relative">
               <AvatarImage
                 src={coach.avatar_url}
-                initials={getInitialsForCoach(coach.full_name, coach.email)}
+                initials={getInitialsForCoach(getDisplayName(coach), coach.email)}
                 className="w-16 h-16 rounded-2xl object-cover ring-4 ring-stone-50"
               />
             </div>
             <div className="flex-1">
-              <h2 className="text-xl font-bold text-stone-900">{coach.full_name?.trim() || coach.email}</h2>
+              <h2 className="text-xl font-bold text-stone-900">{getDisplayName(coach, coach.email)}</h2>
               {ratings && ratings.reviewCount > 0 && (
                 <div className="flex items-center gap-1 text-sm text-amber-500 font-bold mt-0.5">
                   <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 fill-current" viewBox="0 0 20 20">

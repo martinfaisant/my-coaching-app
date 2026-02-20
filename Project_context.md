@@ -153,12 +153,24 @@ Athletes filter coaches by:
 - Type: `free` | `monthly` | `one_time`
 - `display_order`, `is_featured`
 
+**Offer status (lifecycle):**
+
+| Status | Visibility | Meaning |
+|--------|------------|---------|
+| **draft** | Coach only | Work in progress; price/title/description can be incomplete. Not visible to athletes. Not selectable in a coach request. |
+| **published** | Athletes + coach | Live offer. Shown in the coach’s 3 main slots (by `display_order` 0–2) and in discovery. Athletes can choose it when sending a request. At most 3 published offers per coach. |
+| **archived** | Coach only | No longer available for new requests. Shown in a separate “Archived offers” list for the coach. Existing subscriptions linked to this offer (via snapshot) are unchanged. |
+
+- A coach can **publish** a draft once the required fields are filled (titres FR/EN, descriptions FR/EN, price, recurrence). After publication, price and type are locked; only title/description can still be edited.
+- A coach **archives** an offer instead of deleting it (no delete policy); new athletes cannot select it, but current subscriptions keep their frozen snapshot.
+
 **Flow:**
 
-- Athlete sends a **coach request** (sport practiced, coaching need, optional offer_id)
-- Coach accepts or declines
-- On accept: `profiles.coach_id` is set, athlete is linked to coach
-- No Stripe/payment yet — subscription model is structural only
+- Athlete sends a **coach request** (sport practiced, coaching need, optional offer_id).
+- When an offer is chosen, the server immediately stores a **snapshot** of that offer in `coach_requests`: `offer_id`, `frozen_price`, `frozen_title`, `frozen_description`. This is the version of the offer **as seen by the athlete** at request time. If the coach later changes or archives the offer, the request row does not change.
+- Coach accepts or declines the request.
+- **On accept:** (1) `profiles.coach_id` is set (athlete linked to coach), (2) `coach_requests.status` → `accepted`, (3) a row is inserted into **`subscriptions`** with the same `frozen_*` data copied from `coach_requests` (the subscription is **not** filled from the current `coach_offers` table). Thus the active subscription between athlete and coach reflects the exact offer the athlete requested; if the coach changes the offer afterwards, existing subscriptions are unchanged.
+- No Stripe/payment yet — subscription model is structural only (billing history ready via `subscriptions.frozen_*`).
 
 ---
 
@@ -224,6 +236,28 @@ Athletes filter coaches by:
 
 ---
 
+### 4.10 Subscription view, end, and cancellation scheduled ✅
+
+**Athlete (Mon Coach):**
+
+- Bloc « Ma souscription » shows frozen offer (title, description, price/type, dates).
+- Button « Mettre fin » opens confirmation modal. For **monthly** subscriptions, ending schedules the subscription end at next cycle → status becomes « En résiliation » (amber badge), line « Fin prévue le {date} » (same line as « A débuté le »).
+- Button « Annuler la résiliation » is shown **only to the person who requested the cancellation** (stored in `cancellation_requested_by_user_id`). The other party sees nothing in that slot.
+- Sidebar: « Historique des souscriptions » → `/dashboard/subscriptions/history` (past subscriptions, read-only).
+
+**Coach:**
+
+- Mes athlètes: click on subscription line opens detail modal (same content as « Ma souscription » + athlete name). Badge Active or « En résiliation »; button « Mettre fin » or « Annuler la résiliation » (latter only for the requester; otherwise optional hint « Seule la personne ayant demandé… »).
+- Page Souscriptions (`/dashboard/subscriptions`): **three sections** — (1) **Souscriptions actives** (green left border), (2) **En résiliation** (amber left border), (3) **Historique** (grey). Same rule: only the requester can use « Annuler la résiliation ».
+
+**Rules:**
+
+- **Immediate end (free / one_time):** `subscriptions.status = 'cancelled'`, `end_date = now`, `profiles.coach_id = null` for the athlete.
+- **Monthly:** On « Mettre fin », set `status = 'cancellation_scheduled'`, `end_date` = next cycle, `cancellation_requested_by_user_id` = current user. At `end_date`, a daily cron sets `status = 'cancelled'` and `profiles.coach_id = null`.
+- **Cancel cancellation:** Allowed only when `auth.uid() === cancellation_requested_by_user_id`; then `status = 'active'`, `end_date = null`, `cancellation_requested_by_user_id = null`.
+
+---
+
 ## 5. Data Model (Current)
 
 **Main entities:**
@@ -231,8 +265,9 @@ Athletes filter coaches by:
 | Entity | Purpose |
 |--------|---------|
 | `profiles` | User profile, role, coach_id, coached_sports, languages, presentation, avatar, postal_code |
-| `coach_offers` | Coach offers (title, description, price, price_type) |
-| `coach_requests` | Athlete → Coach request (status: pending / accepted / declined) |
+| `coach_offers` | Coach offers (title, description, price, price_type). Status: `draft` (coach only) / `published` (3 slots, visible to athletes) / `archived` (coach only, no new requests). |
+| `coach_requests` | Athlete → Coach request (status: pending / accepted / declined). When offer is chosen: `offer_id` + snapshot `frozen_price`, `frozen_title`, `frozen_description` (offer as seen by athlete at request time). |
+| `subscriptions` | Subscription per accepted request: `athlete_id`, `coach_id`, `request_id`, same `frozen_*` copied from `coach_requests` (not from offers). `status`: `'active'` \| `'cancellation_scheduled'` \| `'cancelled'`. `cancellation_requested_by_user_id` (UUID, nullable): user who requested the scheduled cancellation; only they can cancel the cancellation. Used for billing history; unchanged if coach later changes the offer. |
 | `workouts` | Planned training sessions for an athlete |
 | `goals` | Athlete race/event objectives |
 | `conversations` | 1-to-1 coach–athlete |

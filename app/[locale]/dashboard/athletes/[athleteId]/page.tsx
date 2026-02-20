@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation'
 import { CoachAthleteCalendarPage } from '@/components/CoachAthleteCalendarPage'
 import type { Workout, Goal, ImportedActivityWeeklyTotal, WorkoutWeeklyTotal } from '@/types/database'
 import { getWeekMonday } from '@/lib/dateUtils'
+import { getDisplayName } from '@/lib/displayName'
 
 type PageProps = { params: Promise<{ athleteId: string }> }
 
@@ -19,7 +20,7 @@ export default async function AthleteCalendarPage({ params }: PageProps) {
   const supabase = await createClient()
   const { data: athleteProfile } = await supabase
     .from('profiles')
-    .select('user_id, email, coach_id, full_name, avatar_url')
+    .select('user_id, email, coach_id, first_name, last_name, avatar_url')
     .eq('user_id', athleteId)
     .single()
 
@@ -79,7 +80,7 @@ export default async function AthleteCalendarPage({ params }: PageProps) {
   const initialWeeklyTotals = weeklyTotalsResult.data ?? []
   const initialWorkoutTotals = workoutTotalsResult.data ?? []
 
-  const displayName = athleteProfile.full_name?.trim() || athleteProfile.email
+  const displayName = getDisplayName(athleteProfile, athleteProfile.email)
 
   return (
     <CoachAthleteCalendarPage

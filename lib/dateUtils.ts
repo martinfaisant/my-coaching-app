@@ -44,9 +44,13 @@ export function toDateStr(date: Date): string {
  * @returns Date formatée
  */
 export function formatDateFr(dateInput: Date | string, includeWeekday: boolean = false, locale: string = 'fr-FR'): string {
-  const date = typeof dateInput === 'string' ? new Date(dateInput + 'T12:00:00') : dateInput
-  
-  // Validation: vérifier si la date est valide
+  let date: Date
+  if (typeof dateInput === 'string') {
+    // Chaîne déjà ISO avec heure (ex. Supabase timestamptz) → parser telle quelle
+    date = dateInput.includes('T') ? new Date(dateInput) : new Date(dateInput + 'T12:00:00')
+  } else {
+    date = dateInput
+  }
   if (isNaN(date.getTime())) {
     console.warn('[formatDateFr] Date invalide reçue:', dateInput)
     return 'Date invalide'
@@ -89,14 +93,16 @@ export function getDaysUntil(targetDate: string | Date): number {
  * @returns Date formatée
  */
 export function formatShortDate(dateInput: Date | string, locale: string = 'fr-FR'): string {
-  const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput
-  
-  // Validation: vérifier si la date est valide
+  let date: Date
+  if (typeof dateInput === 'string') {
+    date = dateInput.includes('T') ? new Date(dateInput) : new Date(dateInput + 'T12:00:00')
+  } else {
+    date = dateInput
+  }
   if (isNaN(date.getTime())) {
     console.warn('[formatShortDate] Date invalide reçue:', dateInput)
     return '--/--/----'
   }
-  
   return new Intl.DateTimeFormat(locale).format(date)
 }
 
@@ -121,4 +127,22 @@ export function getWeekRange(date: Date | string): { start: Date; end: Date } {
   const start = getWeekMonday(date)
   const end = addDays(start, 6)
   return { start, end }
+}
+
+/**
+ * Calcule la date de fin du prochain cycle mensuel (anniversaire) à partir d'une date de début.
+ * Utilisé pour les souscriptions monthly : si start_date est le 4 mars, et qu'on est le 7 juin,
+ * retourne le 4 juillet (même jour, mois suivant).
+ * @param startDate - Date de début du cycle (string ISO ou Date)
+ * @returns Date de fin du prochain cycle (début de journée en UTC)
+ */
+export function getNextMonthlyCycleEndDate(startDate: Date | string): Date {
+  const start = typeof startDate === 'string' ? new Date(startDate) : startDate
+  const dayOfMonth = start.getDate()
+  const now = new Date()
+  let candidate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), dayOfMonth))
+  if (candidate.getTime() <= now.getTime()) {
+    candidate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, dayOfMonth))
+  }
+  return candidate
 }

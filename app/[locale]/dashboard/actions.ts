@@ -5,6 +5,8 @@ import { revalidatePath } from 'next/cache'
 import { requireUserWithProfile, requireUser } from '@/lib/authHelpers'
 import { logger } from '@/lib/logger'
 import { getTranslations, getLocale } from 'next-intl/server'
+import { getFrozenTitleForLocale } from '@/lib/frozenOfferI18n'
+import { getDisplayName } from '@/lib/displayName'
 
 export type SetCoachResult = { error?: string }
 export type CoachRequestResult = { error?: string }
@@ -45,26 +47,70 @@ export async function createCoachRequest(
 
   const sportPracticedValue = sports.join(',')
 
-  // Vérifier que l'offre appartient bien au coach si offerId est fourni
-  if (offerId) {
-    const { data: offer } = await supabase
-      .from('coach_offers')
-      .select('coach_id')
-      .eq('id', offerId)
-      .eq('coach_id', coachId)
-      .single()
-    if (!offer) {
-      return { error: t('offerNotFound') }
-    }
-  }
-
-  const { error } = await supabase.from('coach_requests').insert({
+  let insertPayload: {
+    athlete_id: string
+    coach_id: string
+    sport_practiced: string
+    coaching_need: string
+    status: string
+    offer_id?: string | null
+    frozen_price?: number | null
+    frozen_price_type?: string | null
+    frozen_title?: string | null
+    frozen_description?: string | null
+    frozen_title_fr?: string | null
+    frozen_title_en?: string | null
+    frozen_description_fr?: string | null
+    frozen_description_en?: string | null
+  } = {
     athlete_id: user.id,
     coach_id: coachId,
     sport_practiced: sportPracticedValue,
     coaching_need: need,
     status: 'pending',
-  })
+  }
+
+  if (offerId) {
+    const { data: offer } = await supabase
+      .from('coach_offers')
+      .select('id, coach_id, status, title, description, title_fr, title_en, description_fr, description_en, price, price_type')
+      .eq('id', offerId)
+      .eq('coach_id', coachId)
+      .single()
+    if (!offer) return { error: t('offerNotFound') }
+    if (offer.status !== 'published') return { error: t('offerNotPublished') }
+
+    const frozen_title =
+      locale === 'en' && offer.title_en?.trim()
+        ? offer.title_en.trim()
+        : (offer.title_fr?.trim() ?? offer.title?.trim() ?? '')
+    const frozen_description =
+      locale === 'en' && offer.description_en?.trim()
+        ? offer.description_en.trim()
+        : (offer.description_fr?.trim() ?? offer.description?.trim() ?? '')
+
+    const frozen_title_fr = (offer.title_fr ?? '').trim() || null
+    const frozen_title_en = (offer.title_en ?? '').trim() || null
+    const frozen_description_fr = (offer.description_fr ?? '').trim() || null
+    const frozen_description_en = (offer.description_en ?? '').trim() || null
+
+    const frozen_price_type = (offer.price_type ?? '').trim() || null
+
+    insertPayload = {
+      ...insertPayload,
+      offer_id: offerId,
+      frozen_price: offer.price ?? null,
+      frozen_price_type: frozen_price_type && ['free', 'one_time', 'monthly'].includes(frozen_price_type) ? frozen_price_type : null,
+      frozen_title: frozen_title || null,
+      frozen_description: frozen_description || null,
+      frozen_title_fr,
+      frozen_title_en,
+      frozen_description_fr,
+      frozen_description_en,
+    }
+  }
+
+  const { error } = await supabase.from('coach_requests').insert(insertPayload)
 
   if (error) return { error: tErrors('supabaseGeneric') }
 
@@ -156,7 +202,7 @@ export async function getPendingCoachRequests(locale: string = 'fr'): Promise<Pe
 
   const { data: rows } = await supabase
     .from('coach_requests')
-    .select('id, athlete_id, sport_practiced, coaching_need, created_at')
+    .select('id, athlete_id, sport_practiced, coaching_need, created_at, offer_id, frozen_title, frozen_title_fr, frozen_title_en, frozen_price, frozen_description, frozen_description_fr, frozen_description_en')
     .eq('coach_id', user.id)
     .eq('status', 'pending')
     .order('created_at', { ascending: false })
@@ -166,14 +212,14 @@ export async function getPendingCoachRequests(locale: string = 'fr'): Promise<Pe
   const athleteIds = [...new Set(rows.map((r) => r.athlete_id))]
   const { data: profiles } = await supabase
     .from('profiles')
-    .select('user_id, full_name, email, avatar_url')
+    .select('user_id, first_name, last_name, email, avatar_url')
     .in('user_id', athleteIds)
 
   const nameByUserId = new Map<string, string>()
   const emailByUserId = new Map<string, string>()
   const avatarByUserId = new Map<string, string | null>()
   for (const p of profiles ?? []) {
-    nameByUserId.set(p.user_id, p.full_name?.trim() || p.email)
+    nameByUserId.set(p.user_id, getDisplayName(p, p.email))
     emailByUserId.set(p.user_id, p.email)
     avatarByUserId.set(p.user_id, p.avatar_url ?? null)
   }
@@ -186,9 +232,9 @@ export async function getPendingCoachRequests(locale: string = 'fr'): Promise<Pe
     athlete_avatar_url: avatarByUserId.get(r.athlete_id) ?? null,
     sport_practiced: r.sport_practiced,
     coaching_need: r.coaching_need,
-    offer_id: null,
-    offer_title: null,
-    offer_price: null,
+    offer_id: r.offer_id ?? null,
+    offer_title: getFrozenTitleForLocale(r, locale) ?? null,
+    offer_price: r.frozen_price ?? null,
     offer_price_type: null,
     created_at: r.created_at,
   }))
@@ -213,12 +259,14 @@ export async function respondToCoachRequest(
 
   const { data: req } = await supabase
     .from('coach_requests')
-    .select('id, coach_id, athlete_id, status')
+    .select('id, coach_id, athlete_id, status, frozen_price, frozen_price_type, frozen_title, frozen_description, frozen_title_fr, frozen_title_en, frozen_description_fr, frozen_description_en')
     .eq('id', requestId)
     .single()
 
   if (!req || req.coach_id !== user.id) return { error: t('requestNotFound') }
   if (req.status !== 'pending') return { error: t('requestNotFound') }
+
+  const now = new Date().toISOString()
 
   if (accept) {
     const { error: updateProfileError } = await supabase
@@ -227,17 +275,40 @@ export async function respondToCoachRequest(
       .eq('user_id', req.athlete_id)
 
     if (updateProfileError) return { error: tErrors('supabaseGeneric') }
+
+    const { error: updateRequestError } = await supabase
+      .from('coach_requests')
+      .update({ status: 'accepted', responded_at: now })
+      .eq('id', requestId)
+
+    if (updateRequestError) return { error: tErrors('supabaseGeneric') }
+
+    const { error: insertSubError } = await supabase.from('subscriptions').insert({
+      athlete_id: req.athlete_id,
+      coach_id: req.coach_id,
+      request_id: req.id,
+      frozen_price: req.frozen_price ?? null,
+      frozen_price_type: req.frozen_price_type ?? null,
+      frozen_title: req.frozen_title ?? null,
+      frozen_description: req.frozen_description ?? null,
+      frozen_title_fr: req.frozen_title_fr ?? null,
+      frozen_title_en: req.frozen_title_en ?? null,
+      frozen_description_fr: req.frozen_description_fr ?? null,
+      frozen_description_en: req.frozen_description_en ?? null,
+      status: 'active',
+      start_date: now,
+    })
+
+    if (insertSubError) return { error: tErrors('supabaseGeneric') }
+  } else {
+    const { error } = await supabase
+      .from('coach_requests')
+      .update({ status: 'declined', responded_at: now })
+      .eq('id', requestId)
+
+    if (error) return { error: tErrors('supabaseGeneric') }
   }
 
-  const { error } = await supabase
-    .from('coach_requests')
-    .update({
-      status: accept ? 'accepted' : 'declined',
-      responded_at: new Date().toISOString(),
-    })
-    .eq('id', requestId)
-
-  if (error) return { error: tErrors('supabaseGeneric') }
   revalidatePath('/dashboard')
   return {}
 }

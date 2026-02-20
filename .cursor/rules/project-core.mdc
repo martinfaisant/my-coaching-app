@@ -66,6 +66,7 @@ className="bg-[#2c3e2e] text-white"
 - Use existing components: `Button`, `Input`, `Textarea`, `Badge`, `Modal`, `DashboardPageShell`
 - Use existing icons: `IconClose`, `IconRunning`, `IconBiking`, etc. from `components/SportIcons.tsx`
 - Check `docs/DESIGN_SYSTEM.md` before creating new components
+- **When adding a new reusable component:** document it in `docs/DESIGN_SYSTEM.md` (Composants section: name, usage, code example), update the table of contents and the "Fichiers clés" list at the end
 
 **Centralized utilities:**
 - Date operations → `lib/dateUtils.ts`
@@ -234,9 +235,24 @@ if ('error' in result) return result
 
 | Role | Can | Cannot |
 |------|-----|--------|
-| **Athlete** | View workouts, send requests, chat, rate coach | Create workouts for others |
-| **Coach** | Create offers, manage athletes, create workouts | Access other coaches' data |
+| **Athlete** | View workouts, send requests (with offer choice), chat, rate coach | Create workouts for others |
+| **Coach** | Create offers (draft → published → archived), accept/decline requests, manage athletes, create workouts | Access other coaches' data |
 | **Admin** | Manage members, view all data | Break RLS policies |
+
+---
+
+## Offres & Souscriptions (règles métier)
+
+**Statuts des offres (`coach_offers.status`) :**
+- **draft** : visible uniquement par le coach, champs optionnels ; pas sélectionnable dans une demande.
+- **published** : visibles aux athlètes, au plus 3 par coach (display_order 0–2) ; prix/type figés après publication.
+- **archived** : liste « Offres archivées » côté coach ; plus de nouvelles demandes ; pas de suppression (archivage uniquement).
+
+**Demande (coach_requests) :** Quand l’athlète envoie une demande avec une offre, copier immédiatement dans `coach_requests` : `offer_id`, `frozen_price`, `frozen_title`, `frozen_description` (snapshot = offre telle que vue par l’athlète). Ne jamais mettre à jour ces champs après coup si l’offre change.
+
+**Acceptation :** À l’acceptation, créer une ligne dans `subscriptions` en copiant les champs `frozen_*` depuis `coach_requests` uniquement. Ne pas lire `coach_offers` pour remplir la souscription. Ainsi, les souscriptions actives restent inchangées si le coach modifie ou archive l’offre.
+
+**Référence détaillée :** `Project_context.md` (sections 4.4 Offers, 5 Data Model).
 
 ---
 
@@ -294,7 +310,8 @@ if ('error' in result) return result
 
 ---
 
-**Version:** 2.1  
-**Last updated:** 16 février 2026  
+**Version:** 2.2  
+**Last updated:** 18 février 2026  
 **Refactoring status:** 13/17 tasks completed (76%)  
-**i18n:** Bilingue FR/EN complété — toujours penser bilingue pour les nouvelles features
+**i18n:** Bilingue FR/EN complété — toujours penser bilingue pour les nouvelles features  
+**Offres/souscriptions:** Snapshot à la demande (frozen_* dans coach_requests), souscription à l’acceptation depuis coach_requests ; statuts offre draft / published / archived (voir Project_context.md)

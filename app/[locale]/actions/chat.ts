@@ -3,6 +3,7 @@
 import { createClient } from '@/utils/supabase/server'
 import { getTranslations } from 'next-intl/server'
 import type { Conversation, ChatMessage } from '@/types/database'
+import { getDisplayName } from '@/lib/displayName'
 
 export type ChatRoleResult =
   | { role: 'athlete'; userId: string; hasCoach: boolean }
@@ -76,11 +77,11 @@ export async function getOrCreateConversationForAthlete(): Promise<AthleteConver
 
   const { data: coachProfile } = await supabase
     .from('profiles')
-    .select('full_name, email')
+    .select('first_name, last_name, email')
     .eq('user_id', profile.coach_id)
     .single()
 
-  const coachName = coachProfile?.full_name?.trim() || coachProfile?.email || 'Coach'
+  const coachName = coachProfile ? getDisplayName(coachProfile, 'Coach') : 'Coach'
   return { conversation: conv as Conversation, coachName }
 }
 
@@ -103,12 +104,12 @@ export async function getConversationsForCoach(): Promise<ConversationWithMeta[]
   const athleteIds = [...new Set(rows.map((r) => r.athlete_id))]
   const { data: profiles } = await supabase
     .from('profiles')
-    .select('user_id, full_name, email')
+    .select('user_id, first_name, last_name, email')
     .in('user_id', athleteIds)
 
   const nameByUserId = new Map<string, string>()
   for (const p of profiles ?? []) {
-    nameByUserId.set(p.user_id, p.full_name?.trim() || p.email || 'Athlète')
+    nameByUserId.set(p.user_id, getDisplayName(p, 'Athlète'))
   }
 
   return rows.map((r) => ({

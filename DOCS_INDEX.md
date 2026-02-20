@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 16 février 2026
+**Dernière mise à jour :** 19 février 2026
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -15,9 +15,10 @@
 - **Dernière mise à jour :** 13 février 2026
 
 ### **Project_context.md** ⭐
-- **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model, stack technique
+- **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), stack technique
 - **Utiliser pour :** Comprendre le projet, les features, les rôles, l'architecture globale
-- **Taille :** 363 lignes
+- **Taille :** ~400 lignes
+- **Dernière mise à jour :** 19 février 2026 (section 4.10 Vue souscription / résiliation / En résiliation, data model subscriptions)
 
 ### **docs/DESIGN_SYSTEM.md** ⭐
 - **Contenu :** Tokens (couleurs, typo, espacements), composants (Button, Input, Badge, DashboardPageShell, Modal, etc.), guidelines UI, exemples de code
@@ -50,6 +51,49 @@
 ### **.cursor/rules/save-button-pattern.mdc**
 - **Contenu :** Règle Cursor pour pattern de bouton de sauvegarde
 - **Utiliser pour :** Référence automatique pour l'IA lors de création de boutons
+
+### **.cursor/rules/workflow-personas.mdc** ⭐
+- **Contenu :** Workflow Designer → Architecte → Développeur → Analyste ; comportement de chaque personna (questions PO, mockups, user stories, spec technique, implémentation, mise à jour doc)
+- **Utiliser pour :** Travailler en mode Designer, Architecte, Développeur ou Analyste ; l'IA adopte le personna selon la demande du PO
+- **Type :** Always-applied workspace rule
+- **Référence détaillée :** `docs/WORKFLOW_PERSONAS.md`
+
+### **docs/WORKFLOW_PERSONAS.md**
+- **Contenu :** Workflow complet en 4 personnas (Designer, Architecte, Développeur, **Analyste**), livrables, comment lancer chaque mode, **documents à maintenir à jour par l'Analyste**, allers-retours PO
+- **Utiliser pour :** Comprendre le processus, formuler les demandes (Mode Designer / Architecte / Développeur / Analyste), référence pour l'IA ; **Mode Analyste** = mise à jour doc après livraison (voir DOCS_INDEX et liste des docs dans ce fichier)
+- **Taille :** ~190 lignes
+- **Dernière mise à jour :** 19 février 2026 (ajout personna Analyste)
+
+### **docs/SUBSCRIPTION_VIEW_AND_END_DESIGN.md**
+- **Contenu :** Brief design et user stories pour la fonctionnalité « Vue et résiliation de la souscription » (athlète + coach) : règles métier (fin immédiate vs fin au cycle, archivage), écrans décrits, 8 user stories avec critères d'acceptation
+- **Utiliser pour :** Phase Architecte puis Développeur ; entrée pour spec technique et implémentation
+- **Spec technique :** `docs/SUBSCRIPTION_VIEW_AND_END_SPEC.md` (Mode Architecte)
+- **Créé le :** 18 février 2026
+
+### **docs/SUBSCRIPTION_VIEW_AND_END_SPEC.md**
+- **Contenu :** Spec technique (Mode Architecte) : analyse Designer, modèle (frozen_price_type), RLS, architecture, migrations, cas limites ; **état d'implémentation** (status cancellation_scheduled, cancellation_requested_by_user_id, 3 sections coach, cron)
+- **Utiliser pour :** Implémentation Développeur
+- **Créé le :** 18 février 2026
+- **Dernière mise à jour :** 19 février 2026
+
+### **docs/SUBSCRIPTION_CANCELLATION_SCHEDULED_DESIGN.md**
+- **Contenu :** Brief design validé PO pour le statut « En résiliation » (souscriptions mensuelles) : badge ambre, section dédiée sur la page Souscriptions coach, annulation de la résiliation ; user stories US-R1 à US-R6 ; **section Implémentation** (US-R1–R5 implémentées, règle « seul le demandeur peut annuler »)
+- **Utiliser pour :** Phase Architecte puis Développeur (extension feature résiliation)
+- **Référence :** `docs/SUBSCRIPTION_VIEW_AND_END_DESIGN.md`
+- **Créé le :** 18 février 2026
+- **Dernière mise à jour :** 19 février 2026
+
+### **docs/SUBSCRIPTION_CANCELLATION_SCHEDULED_ARCHI_ANALYSIS.md**
+- **Contenu :** Analyse Architecte du livrable Designer « En résiliation » : décisions PO, règles métier, solution UI (Option A), user stories ; implications modèle/RLS/flux/écrans ; **état d'implémentation** (cancellation_requested_by_user_id, qui peut annuler, UI)
+- **Utiliser pour :** Préparer la spec technique d’implémentation (actions, migrations, requêtes)
+- **Entrée :** `docs/SUBSCRIPTION_CANCELLATION_SCHEDULED_DESIGN.md`
+- **Créé le :** 18 février 2026
+- **Dernière mise à jour :** 19 février 2026
+
+### **docs/ARCHI_FREEZE_OFFER_I18N.md**
+- **Contenu :** Note d’architecture : freeze du titre et de la description d’offre en **FR et EN** au moment de la demande et dans les souscriptions (actuellement une seule langue est figée)
+- **Utiliser pour :** Évolution modèle (coach_requests, subscriptions) et code (createCoachRequest, respondToCoachRequest, affichage) pour figer et afficher les deux langues
+- **Créé le :** 19 février 2026
 
 ---
 
@@ -178,10 +222,12 @@
 ### Hiérarchie des sources (ordre de priorité)
 
 1. **`.cursor/rules/project-core.mdc`** → Règles globales (always-applied)
-2. **`README.md`** → Quick start et vue d'ensemble
-3. **`Project_context.md`** → Vision produit et architecture
-4. **`docs/DESIGN_SYSTEM.md`** → Design system complet
-5. **`docs/archive/REFACTORING_P1_P2_COMPLETE.md`** → Récap final refactoring (si besoin historique)
+2. **`.cursor/rules/workflow-personas.mdc`** → Comportement par mode (Designer / Architecte / Développeur / Analyste) quand le PO le précise
+3. **`README.md`** → Quick start et vue d'ensemble
+4. **`Project_context.md`** → Vision produit et architecture
+5. **`docs/DESIGN_SYSTEM.md`** → Design system complet
+6. **`docs/WORKFLOW_PERSONAS.md`** → Workflow Designer / Architecte / Développeur / Analyste (quand tu travailles en mode personna)
+7. **`docs/archive/REFACTORING_P1_P2_COMPLETE.md`** → Récap final refactoring (si besoin historique)
 
 ---
 
@@ -205,6 +251,27 @@
 **Dernier nettoyage :** 16 février 2026
 
 ### Changements récents :
+
+✅ **19 février 2026 – Mise à jour doc (Mode Analyste) – Vue souscription, résiliation, « En résiliation » :**
+- Alignement de la documentation sur l'implémentation réalisée.
+- **Project_context.md** : nouvelle section 4.10 (Subscription view, end, and cancellation scheduled), mise à jour Data Model `subscriptions` (status, cancellation_requested_by_user_id).
+- **docs/SUBSCRIPTION_VIEW_AND_END_SPEC.md** : section « État d'implémentation », schéma 2.2 (status cancellation_scheduled, colonne cancellation_requested_by_user_id).
+- **docs/SUBSCRIPTION_CANCELLATION_SCHEDULED_ARCHI_ANALYSIS.md** : section 4 « État d'implémentation », section 2.1 (migration 045 cancellation_requested_by_user_id).
+- **docs/SUBSCRIPTION_CANCELLATION_SCHEDULED_DESIGN.md** : section « Implémentation » (US-R1 à US-R5, règle seul le demandeur peut annuler).
+
+✅ **19 février 2026 – Personna Analyste (après le Développeur) :**
+- Ajout du **personna Analyste** dans le workflow : il intervient après la livraison du Développeur pour mettre à jour l'ensemble de la documentation projet.
+- **Rôle :** aligner les docs sur ce qui a été fait, faire le ménage (archiver l'obsolete dans `docs/archive/`), tenir à jour **DOCS_INDEX.md** (dates, changements récents, « Pour trouver rapidement »).
+- **Documents à maintenir à jour** (détail dans `docs/WORKFLOW_PERSONAS.md`, section 4) : DOCS_INDEX.md, README.md, Project_context.md, docs/DESIGN_SYSTEM.md, docs/I18N.md, docs/PATTERN_SAVE_BUTTON.md, .cursor/rules/project-core.mdc, docs/WORKFLOW_PERSONAS.md, DEPLOYMENT_NOTES.md, MISE_EN_PROD.md, et docs de feature (archiver si obsolètes).
+- Mise à jour **.cursor/rules/workflow-personas.mdc** (section 4 + invocation Analyste) et **docs/WORKFLOW_PERSONAS.md** (section 4, table des docs, handoffs, résumé).
+
+✅ **18 février 2026 – Workflow Personas (Designer / Architecte / Développeur) :**
+- Création de **docs/WORKFLOW_PERSONAS.md** : workflow en 3 personnas, livrables, comment lancer chaque mode (Designer, Architecte, Développeur).
+- Création de **.cursor/rules/workflow-personas.mdc** (always-applied) : l’IA adopte le comportement du personna selon la demande du PO.
+- Mise à jour **DOCS_INDEX.md** : entrées pour WORKFLOW_PERSONAS et workflow-personas.mdc, ligne « Pour trouver rapidement ».
+
+✅ **18 février 2026 – Snapshot offre et souscriptions :**
+- Mise à jour **Project_context.md** (section 4.4 Offers, section 5 Data Model) : documentation du snapshot de l’offre à la création de la demande (`coach_requests.frozen_*`), création d’une souscription à l’acceptation avec données figées copiées depuis la request (pas depuis `coach_offers`), table `subscriptions` ajoutée au modèle de données.
 
 ✅ **16 février 2026 – Documentation i18n et bilingue :**
 - Création de **docs/I18N.md** : référence unique pour l’internationalisation (FR/EN), checklist pour nouvelles features (toujours penser bilingue).
@@ -240,6 +307,7 @@
 | Vision produit, rôles | `Project_context.md` |
 | Composants UI, couleurs | `docs/DESIGN_SYSTEM.md` |
 | **i18n / bilingue / traductions / nouvelles features** | **`docs/I18N.md`** |
+| **Workflow Designer / Architecte / Développeur / Analyste** | **`docs/WORKFLOW_PERSONAS.md`** |
 | Conventions de code | `.cursor/rules/project-core.mdc` |
 | Pattern bouton sauvegarde | `docs/PATTERN_SAVE_BUTTON.md` |
 | Déploiement | `DEPLOYMENT_NOTES.md`, `MISE_EN_PROD.md` |
