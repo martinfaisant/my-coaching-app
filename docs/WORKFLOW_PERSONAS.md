@@ -2,7 +2,7 @@
 
 **Objectif :** Travailler comme une équipe de développement en séparant les rôles Designer → Architecte → Développeur → Analyste. Chaque personna a un périmètre clair et des livrables définis. La règle Cursor qui pilote ce comportement est `.cursor/rules/workflow-personas.mdc`.
 
-**Dernière mise à jour :** 19 février 2026
+**Dernière mise à jour :** 21 février 2026
 
 ---
 
@@ -54,12 +54,20 @@ Si tu ne précises pas le mode, l’IA te demandera : Designer, Architecte, Dév
 
 1. **Synthèse du besoin** + liste des cas identifiés (nominal, erreurs, limites).
 2. **Questions au PO** tant que des zones d’ombre subsistent.
-3. **2 à 3 propositions UI (mockups)** : description ou schémas/mockups visuels, basés sur le design system et les composants existants.
+3. **2 à 3 propositions UI (mockups)** : description ou schémas/mockups visuels (HTML dans un document dédié), basés sur le design system et les composants existants. Pour chaque proposition : **lister les composants du design system à utiliser tels quels** et **ceux à faire évoluer** (avec raison courte).
 4. Après validation PO d’une solution : **document de user stories** avec pour chaque US :
    - Titre court
    - Description
    - **Critères d’acceptation** (liste vérifiable)
    - Périmètre (écrans, rôles si pertinent)
+   - **Référence mockup** : section ou zone du mockup correspondante (ex. « voir mockup lignes 34–51 » ou « bloc en-tête 2 lignes »)
+   - *(Optionnel)* Zones de texte à prévoir en i18n (sans rédiger les clés ; indiquer le namespace probable, ex. `calendar`)
+
+### Checklist avant livraison des US (à l’Architecte)
+
+- [ ] Design system et composants existants consultés ; composants à réutiliser / à faire évoluer listés dans le doc.
+- [ ] Mockup ouvert dans un navigateur et validé visuellement.
+- [ ] Chaque user story comporte une **référence au mockup** (quelle zone ou écran correspond).
 
 ### Ce que le Designer ne fait pas
 
@@ -86,11 +94,21 @@ Si tu ne précises pas le mode, l’IA te demandera : Designer, Architecte, Dév
 ### Livrables
 
 1. **Architecture** : pages/route concernées, composants à créer/modifier, actions serveur, flux de données.
-2. **Modèle de données** : changements (nouvelles tables/colonnes, contraintes), rédaction des migrations (fichiers SQL).
-3. **RLS** : politiques à ajouter/modifier par table, avec justification (qui peut lire/écrire quoi).
-4. **Logique métier** : règles (ex. statuts offre draft/published/archived, snapshot frozen_* sur les demandes, création de souscription depuis la request).
-5. **Points ouverts / questions PO** si cas non couverts par le Designer.
-6. **Spec ou brief pour le Développeur** : résumé exécutable (étapes, fichiers à toucher, ordre recommandé).
+2. **Table des fichiers** (obligatoire) : pour chaque fichier concerné — Fichier | Rôle | Modif (créer / modifier). Permet au Développeur de savoir où agir sans ambiguïté.
+3. **Modèle de données** : changements (nouvelles tables/colonnes, contraintes), rédaction des migrations (fichiers SQL). **Si aucun changement BDD** : le préciser clairement en tête de spec (ex. « Aucune modification du schéma, des migrations ou des RLS »).
+4. **RLS** : politiques à ajouter/modifier par table, avec justification (qui peut lire/écrire quoi).
+5. **Logique métier** : règles (ex. statuts offre draft/published/archived, snapshot frozen_* sur les demandes, création de souscription depuis la request).
+6. **Points ouverts / questions PO** si cas non couverts par le Designer. Si une décision est laissée au Développeur (ex. « CSS-only vs hook viewport »), le marquer explicitement comme « à trancher en implémentation » avec les options.
+7. **Section « Tests manuels recommandés »** : courte liste de vérifications pour que le Développeur valide la livraison (ex. « Redimensionner sous 768px », « Calendrier athlète + coach »).
+8. **Spec ou brief pour le Développeur** : résumé exécutable (étapes, fichiers à toucher, ordre recommandé).
+
+### Checklist avant livraison de la spec (au Développeur)
+
+- [ ] Migrations numérotées et cohérentes avec `supabase/migrations/` (ou « aucun changement BDD » indiqué).
+- [ ] RLS justifiées (qui lit/écrive quoi).
+- [ ] Table des fichiers à modifier/créer présente.
+- [ ] Cas limites listés (hydration, edge cases) le cas échéant.
+- [ ] Tests manuels recommandés indiqués.
 
 ### Ce que l’Architecte ne fait pas
 
@@ -147,8 +165,14 @@ Cela garantit que la page Design System reste la référence à jour pour toute 
 ### Comportement
 
 - Suivre la spec (architecture, modèle de données, RLS) et les critères d’acceptation.
+- **Suivre le mockup HTML** validé par le PO : vérifier que le rendu final respecte le mockup (layout, breakpoints, composants). En cas d’écart assumé, le signaler au PO.
 - En cas de cas non prévu ou de doute (architecture / données), **remonter au PO** (et éventuellement à l’Architecte) plutôt que de décider seul.
 - Ne pas proposer de nouvelles options UI ou de nouveaux parcours sans validation du PO (rester dans le périmètre validé).
+
+### Livrable pour l’Analyste (en fin d’implémentation)
+
+- **Liste des fichiers créés ou modifiés** (et, si utile, une phrase de résumé par feature). Facilite la mise à jour de la doc et de DOCS_INDEX sans relire tout le code.
+- *(Optionnel)* Courte note de livraison pour le PO (ex. « Implémentation issue #44 terminée : AthleteCalendarPage, CoachAthleteCalendarPage, CalendarView ; breakpoint md ; pas de migration »).
 
 ### Ce que le Développeur ne fait pas
 
@@ -184,11 +208,30 @@ Cela garantit que la page Design System reste la référence à jour pour toute 
 | **DEPLOYMENT_NOTES.md**, **MISE_EN_PROD.md** | Procédures, variables, checklist si impact déploiement. |
 | **Docs de feature** (ex. `docs/SUBSCRIPTION_VIEW_AND_END_*.md`) | Mettre à jour si la feature évolue ; **archiver** dans `docs/archive/` quand la feature est livrée et que le contenu est intégré ou obsolète (sans supprimer sans validation PO). |
 
+### Règle Garder / Fusionner / Archiver (docs de feature)
+
+Pour **chaque document de feature** (design, spec, mockup HTML) après livraison du Développeur :
+
+| Décision | Quand | Action |
+|----------|--------|--------|
+| **Garder** | Le doc reste la référence courante (ex. spec encore utilisée pour des évolutions). | Laisser en documentation active ; mettre à jour DOCS_INDEX si besoin. |
+| **Fusionner** | L’info doit vivre dans les docs permanents. | **Transférer** l’info utile vers les docs actifs (voir ci-dessous), puis **archiver** le doc dans `docs/archive/`. |
+| **Archiver** | La feature est livrée, le doc n’est plus la référence du quotidien. | Déplacer dans `docs/archive/` (éventuellement sous-dossier par feature, ex. `docs/archive/calendar-mobile-44/`). Documenter dans DOCS_INDEX : date d’archivage, raison courte, « voir Project_context §X » ou « voir DESIGN_SYSTEM §Y ». |
+
+**Où transférer l’info avant d’archiver :**
+
+- **Comportement produit / feature** → `Project_context.md` (section features ou data model).
+- **Comportement UI, responsive, nouveaux composants** → `docs/DESIGN_SYSTEM.md`.
+- **Décisions techniques importantes** → `Project_context.md` ou section dédiée si elle existe.
+- **Récap « ce qui a été fait »** → `DOCS_INDEX.md`, section « Changements récents ».
+
+Ensuite : archiver le doc de feature (design, spec, mockup) pour ne pas encombrer la doc active ; l’historique reste disponible dans `docs/archive/`.
+
 ### Nettoyage et archivage
 
-- **Archiver dans `docs/archive/`** : documents d'état des lieux, design/spec d'une feature livrée (si plus de valeur en « actif »), anciens récaps déjà appliqués au code.
+- **Archiver dans `docs/archive/`** : documents d'état des lieux, design/spec/mockup d'une feature livrée une fois l’info transférée dans les docs actifs (voir règle ci-dessus).
 - **Ne pas supprimer** définitivement sans validation du PO.
-- Vérifier la cohérence des **liens** entre documents et la section « Pour trouver rapidement » dans DOCS_INDEX.
+- Après archivage : **vérifier la cohérence des liens** (DOCS_INDEX, « Pour trouver rapidement », liens cross-doc) et mettre à jour les renvois vers les docs archivés.
 
 ### Ce que l'Analyste ne fait pas
 
@@ -199,10 +242,10 @@ Cela garantit que la page Design System reste la référence à jour pour toute 
 
 ## Allers-retours et handoffs
 
-- **Designer ↔ PO :** autant d’allers-retours que nécessaire pour stabiliser le besoin et valider une solution UI. Une fois validée → livraison des user stories + CA à l’Architecte.
-- **Architecte ↔ PO :** si l’Architecte trouve des cas non couverts, il pose des questions au PO et affine la spec ; puis livraison au Développeur.
+- **Designer ↔ PO :** autant d’allers-retours que nécessaire pour stabiliser le besoin et valider une solution UI. Une fois validée → livraison des user stories + CA (avec référence mockup) à l’Architecte.
+- **Architecte ↔ PO :** si l’Architecte trouve des cas non couverts, il pose des questions au PO et affine la spec ; puis livraison au Développeur (table des fichiers + tests manuels recommandés).
 - **Développeur → PO (ou Architecte) :** si un cas non prévu apparaît en implémentant, le Développeur signale et demande une décision avant de coder.
-- **Développeur → Analyste :** après livraison, le PO peut lancer le mode Analyste pour mettre la doc à jour.
+- **Développeur → Analyste :** après livraison, le Développeur fournit la liste des fichiers créés/modifiés ; le PO lance le mode Analyste pour mettre la doc à jour, transférer l’info utile puis archiver les docs de feature.
 
 ---
 
@@ -210,9 +253,9 @@ Cela garantit que la page Design System reste la référence à jour pour toute 
 
 | Personna   | Input principal        | Output principal |
 |-----------|-------------------------|------------------|
-| Designer  | Besoin PO              | User stories + CA, mockups UI (non implémentés) |
-| Architecte| User stories + besoin  | Spec technique, migrations, RLS, logique |
-| Développeur | Spec + user stories  | Code (pages, composants, actions, respect projet) |
-| Analyste  | Livraison + état du code / des features | Documentation à jour, DOCS_INDEX à jour, archives nettoyées |
+| Designer  | Besoin PO              | User stories + CA + référence mockup, mockups UI (non implémentés), checklist avant livraison |
+| Architecte| User stories + besoin  | Spec technique, table des fichiers, migrations/RLS, tests manuels recommandés, checklist avant livraison |
+| Développeur | Spec + user stories  | Code (respect mockup + projet), liste fichiers modifiés pour l’Analyste |
+| Analyste  | Livraison + liste fichiers | Doc à jour, transfert info → docs actifs, archivage docs de feature (Garder/Fusionner/Archiver) |
 
 En pratique : ouvre une conversation, indique le mode (Designer / Architecte / Développeur / Analyste) et le contexte ; l’IA appliquera le comportement du personna correspondant (règle `workflow-personas.mdc`).
