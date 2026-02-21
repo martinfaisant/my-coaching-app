@@ -64,32 +64,6 @@
 - **Taille :** ~220 lignes
 - **Dernière mise à jour :** 19 février 2026 (ajout personna Analyste)
 
-### **docs/SUBSCRIPTION_VIEW_AND_END_DESIGN.md**
-- **Contenu :** Brief design et user stories pour la fonctionnalité « Vue et résiliation de la souscription » (athlète + coach) : règles métier (fin immédiate vs fin au cycle, archivage), écrans décrits, 8 user stories avec critères d'acceptation
-- **Utiliser pour :** Phase Architecte puis Développeur ; entrée pour spec technique et implémentation
-- **Spec technique :** `docs/SUBSCRIPTION_VIEW_AND_END_SPEC.md` (Mode Architecte)
-- **Créé le :** 18 février 2026
-
-### **docs/SUBSCRIPTION_VIEW_AND_END_SPEC.md**
-- **Contenu :** Spec technique (Mode Architecte) : analyse Designer, modèle (frozen_price_type), RLS, architecture, migrations, cas limites ; **état d'implémentation** (status cancellation_scheduled, cancellation_requested_by_user_id, 3 sections coach, cron)
-- **Utiliser pour :** Implémentation Développeur
-- **Créé le :** 18 février 2026
-- **Dernière mise à jour :** 19 février 2026
-
-### **docs/SUBSCRIPTION_CANCELLATION_SCHEDULED_DESIGN.md**
-- **Contenu :** Brief design validé PO pour le statut « En résiliation » (souscriptions mensuelles) : badge ambre, section dédiée sur la page Souscriptions coach, annulation de la résiliation ; user stories US-R1 à US-R6 ; **section Implémentation** (US-R1–R5 implémentées, règle « seul le demandeur peut annuler »)
-- **Utiliser pour :** Phase Architecte puis Développeur (extension feature résiliation)
-- **Référence :** `docs/SUBSCRIPTION_VIEW_AND_END_DESIGN.md`
-- **Créé le :** 18 février 2026
-- **Dernière mise à jour :** 19 février 2026
-
-### **docs/SUBSCRIPTION_CANCELLATION_SCHEDULED_ARCHI_ANALYSIS.md**
-- **Contenu :** Analyse Architecte du livrable Designer « En résiliation » : décisions PO, règles métier, solution UI (Option A), user stories ; implications modèle/RLS/flux/écrans ; **état d'implémentation** (cancellation_requested_by_user_id, qui peut annuler, UI)
-- **Utiliser pour :** Préparer la spec technique d’implémentation (actions, migrations, requêtes)
-- **Entrée :** `docs/SUBSCRIPTION_CANCELLATION_SCHEDULED_DESIGN.md`
-- **Créé le :** 18 février 2026
-- **Dernière mise à jour :** 19 février 2026
-
 ### **docs/ARCHI_FREEZE_OFFER_I18N.md**
 - **Contenu :** Note d’architecture : freeze du titre et de la description d’offre en **FR et EN** au moment de la demande et dans les souscriptions (actuellement une seule langue est figée)
 - **Utiliser pour :** Évolution modèle (coach_requests, subscriptions) et code (createCoachRequest, respondToCoachRequest, affichage) pour figer et afficher les deux langues
@@ -119,7 +93,7 @@
 > **Tous les documents d'audit, de refactoring et d'états des lieux ont été archivés dans `docs/archive/`**  
 > Ils servent de référence historique mais ne sont plus nécessaires au quotidien.
 
-### Documents archivés (28 fichiers)
+### Documents archivés (32 fichiers)
 
 **Audit & Plan initial :**
 - `AUDIT_COMPLET.md` - Audit complet du projet (13 février 2026) - 1202 lignes
@@ -162,6 +136,13 @@
 - `docs/archive/calendar-mobile-44/CALENDAR_MOBILE_ISSUE_44_SPEC.md` — Spec technique (Mode Architecte)
 - `docs/archive/calendar-mobile-44/calendar-mobile-mockup.html` — Mockup HTML non fonctionnel
 - **Raison :** Feature livrée ; comportement décrit dans **Project_context.md §4.5** et **docs/DESIGN_SYSTEM.md** (guideline §7 Calendrier responsive).
+
+**Vue souscription, résiliation, « En résiliation » (archivés 21 février 2026) :**
+- `docs/archive/subscription-view-end/SUBSCRIPTION_VIEW_AND_END_DESIGN.md` — Brief design + user stories (vue et résiliation)
+- `docs/archive/subscription-view-end/SUBSCRIPTION_VIEW_AND_END_SPEC.md` — Spec technique (Mode Architecte)
+- `docs/archive/subscription-view-end/SUBSCRIPTION_CANCELLATION_SCHEDULED_DESIGN.md` — Brief design « En résiliation » (badge ambre, annulation résiliation)
+- `docs/archive/subscription-view-end/SUBSCRIPTION_CANCELLATION_SCHEDULED_ARCHI_ANALYSIS.md` — Analyse Architecte « En résiliation »
+- **Raison :** Features livrées ; comportement décrit dans **Project_context.md §4.10** (Subscription view, end, and cancellation scheduled) et data model §5.
 
 **Migrations i18n (archivées 16 février 2026) :**
 - `I18N_IMPLEMENTATION.md` - Implémentation de base i18n (contenu consolidé dans docs/I18N.md)
@@ -263,6 +244,11 @@
 
 ### Changements récents :
 
+✅ **21 février 2026 – Vue souscription, résiliation, « En résiliation » (archivage) :**
+- **Livraison :** Fonctionnalités subscription view/end et subscription cancellation scheduled implémentées ; doc déjà alignée (Project_context.md §4.10, data model subscriptions).
+- **Archivage :** Les 4 docs de feature déplacés dans `docs/archive/subscription-view-end/` : SUBSCRIPTION_VIEW_AND_END_DESIGN.md, SUBSCRIPTION_VIEW_AND_END_SPEC.md, SUBSCRIPTION_CANCELLATION_SCHEDULED_DESIGN.md, SUBSCRIPTION_CANCELLATION_SCHEDULED_ARCHI_ANALYSIS.md.
+- **Référence courante :** Project_context.md §4.10 (Subscription view, end, and cancellation scheduled).
+
 ✅ **21 février 2026 – Clôture issue #43 (Tuile offre archivée) + Mode Analyste :**
 - **Livraison :** Alignement UI tuile offre archivée sur tuile souscription terminée ; extension **TileCard** (`leftBorderColor="stone"`, prop `badge`) ; utilisation dans les 3 écrans (OffersForm, CoachSubscriptionsContent, subscriptions/history).
 - **Mises à jour doc :** docs/DESIGN_SYSTEM.md (TileCard : stone, badge, cas d'usage listes archivées/terminées), TileCardShowcase (variante stone).
@@ -283,9 +269,7 @@
 ✅ **19 février 2026 – Mise à jour doc (Mode Analyste) – Vue souscription, résiliation, « En résiliation » :**
 - Alignement de la documentation sur l'implémentation réalisée.
 - **Project_context.md** : nouvelle section 4.10 (Subscription view, end, and cancellation scheduled), mise à jour Data Model `subscriptions` (status, cancellation_requested_by_user_id).
-- **docs/SUBSCRIPTION_VIEW_AND_END_SPEC.md** : section « État d'implémentation », schéma 2.2 (status cancellation_scheduled, colonne cancellation_requested_by_user_id).
-- **docs/SUBSCRIPTION_CANCELLATION_SCHEDULED_ARCHI_ANALYSIS.md** : section 4 « État d'implémentation », section 2.1 (migration 045 cancellation_requested_by_user_id).
-- **docs/SUBSCRIPTION_CANCELLATION_SCHEDULED_DESIGN.md** : section « Implémentation » (US-R1 à US-R5, règle seul le demandeur peut annuler).
+- Mises à jour des docs de feature (depuis archivés dans `docs/archive/subscription-view-end/`).
 
 ✅ **19 février 2026 – Personna Analyste (après le Développeur) :**
 - Ajout du **personna Analyste** dans le workflow : il intervient après la livraison du Développeur pour mettre à jour l'ensemble de la documentation projet.
@@ -338,6 +322,7 @@
 | **Workflow Designer / Architecte / Développeur / Analyste** | **`docs/WORKFLOW_PERSONAS.md`** |
 | Calendrier responsive / mobile (issue #44) | `Project_context.md` §4.5, `docs/DESIGN_SYSTEM.md` §7 |
 | Tuile archivée / offres archivées / historique souscriptions (issue #43) | `docs/DESIGN_SYSTEM.md` § TileCard (stone, badge) |
+| **Vue souscription, résiliation, « En résiliation »** | **`Project_context.md` §4.10** |
 | Conventions de code | `.cursor/rules/project-core.mdc` |
 | Pattern bouton sauvegarde | `docs/PATTERN_SAVE_BUTTON.md` |
 | Déploiement | `DEPLOYMENT_NOTES.md`, `MISE_EN_PROD.md` |
