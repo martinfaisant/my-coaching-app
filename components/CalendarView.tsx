@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useMemo, useCallback, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
 import { useLocale, useTranslations } from 'next-intl'
@@ -225,6 +225,15 @@ export function CalendarView({
   const [extraActivitiesModalOpen, setExtraActivitiesModalOpen] = useState(false)
   const [extraActivitiesList, setExtraActivitiesList] = useState<Array<{ type: 'workout'; item: Workout; dateStr: string } | { type: 'imported'; item: ImportedActivity; dateStr: string } | { type: 'goal'; item: Goal; dateStr: string }>>([])
   const [extraActivitiesModalDate, setExtraActivitiesModalDate] = useState<string | null>(null)
+
+  const [isMobileView, setIsMobileView] = useState(false)
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 767px)')
+    const handler = () => setIsMobileView(mq.matches)
+    handler()
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [])
 
   const openGoal = (goal: Goal) => {
     setSelectedGoal(goal)
@@ -598,6 +607,192 @@ export function CalendarView({
 
   return (
     <>
+      {isMobileView && weeks.length >= 2 ? (
+        <section className="mb-8 md:hidden">
+          {(() => {
+            const week = weeks[1]!
+            return (
+              <>
+                <div className="mb-4">
+                  <h2 className="text-xl font-bold text-palette-forest-dark">{week.label}</h2>
+                  <span className="text-stone-400 font-medium text-sm">— {week.rangeLabel.replace(' - ', ' au ')}</span>
+                </div>
+                <div className="flex flex-col gap-3">
+                  {week.days.map((day) => {
+                    const dayWorkouts = workoutsByDate[day.dateStr] ?? []
+                    const dayImported = importedByDate[day.dateStr] ?? []
+                    const dayGoals = goalsByDate[day.dateStr] ?? []
+                    const firstWorkout = dayWorkouts[0]
+                    const firstImported = dayImported[0]
+                    const firstGoal = dayGoals[0]
+                    const isEmpty = !firstWorkout && !firstImported && !firstGoal
+                    const showAddInCondensed = canEdit && !day.isPast && isEmpty
+                    const showAddAtBottom = canEdit && !day.isPast && !isEmpty
+                    const dayTotal = dayWorkouts.length + dayImported.length + dayGoals.length
+                    const dayExtraCount = dayTotal > 1 ? dayTotal - 1 : 0
+                    const dayFullList: Array<{ type: 'workout'; item: Workout; dateStr: string } | { type: 'imported'; item: ImportedActivity; dateStr: string } | { type: 'goal'; item: Goal; dateStr: string }> = []
+                    if (dayTotal > 0) {
+                      dayGoals.forEach((g) => dayFullList.push({ type: 'goal', item: g, dateStr: day.dateStr }))
+                      dayWorkouts.forEach((w) => dayFullList.push({ type: 'workout', item: w, dateStr: day.dateStr }))
+                      dayImported.forEach((a) => dayFullList.push({ type: 'imported', item: a, dateStr: day.dateStr }))
+                    }
+                    return (
+                      <section key={day.dateStr} className="rounded-lg border border-stone-200 overflow-hidden">
+                        <div className={`flex items-center gap-2 px-3 py-2 border-b border-stone-200 ${isEmpty ? 'bg-stone-100/50' : 'bg-white'}`}>
+                          <span className={`text-xs font-medium uppercase tracking-wider ${day.isToday ? 'text-palette-forest-dark font-semibold' : 'text-stone-500'}`}>{day.dayName}.</span>
+                          <span className={`text-sm font-semibold ${day.isToday ? 'text-palette-forest-dark font-bold' : 'text-stone-800'}`}>{day.shortDateLabel}</span>
+                          {day.isToday && (
+                            <span className="ml-auto text-[10px] font-medium text-palette-forest-dark bg-palette-forest-dark/10 px-1.5 py-0.5 rounded">
+                              {tCalendar('today')}
+                            </span>
+                          )}
+                        </div>
+                        <div
+                          onClick={showAddInCondensed ? () => openDay(day.dateStr, day.isPast) : undefined}
+                          role={showAddInCondensed ? 'button' : undefined}
+                          className={`min-h-20 p-3 flex flex-col gap-2 ${
+                            showAddInCondensed
+                              ? 'border-2 border-dashed border-stone-300 justify-center items-center cursor-pointer hover:border-palette-forest-dark hover:bg-palette-forest-dark/5 transition-all'
+                              : isEmpty
+                                ? 'bg-stone-100/50'
+                                : 'bg-white'
+                          }`}
+                        >
+                          {showAddAtBottom ? (
+                            <>
+                              <div className="min-h-0 shrink-0">
+                                {firstGoal && !firstWorkout && !firstImported && (() => {
+                                  const isPrimary = firstGoal.is_primary
+                                  const borderColor = isPrimary ? 'border-palette-amber' : 'border-palette-sage'
+                                  return (
+                                    <div
+                                      onClick={(e) => { e.stopPropagation(); openGoal(firstGoal) }}
+                                      className={`bg-white rounded border-l-4 ${borderColor} shadow-sm p-1.5 cursor-pointer training-card`}
+                                      role="button"
+                                    >
+                                      <div className="text-xs font-semibold text-stone-700 leading-tight">{firstGoal.race_name}</div>
+                                      <div className="flex items-center gap-1 text-[10px] text-stone-400 font-medium mt-1">
+                                        <span>{firstGoal.distance} km</span>
+                                      </div>
+                                    </div>
+                                  )
+                                })()}
+                                {firstWorkout && renderCompactCard(firstWorkout, day.dateStr)}
+                                {!firstWorkout && !firstGoal && firstImported && (() => {
+                                  const target = formatImportedActivityTarget(firstImported)
+                                  return (
+                                    <div
+                                      onClick={(e) => { e.stopPropagation(); setSelectedImportedActivity(firstImported) }}
+                                      className="bg-white rounded border-l-4 border-palette-strava shadow-sm p-1.5 cursor-pointer training-card w-full"
+                                      role="button"
+                                    >
+                                      <div className="inline-flex items-center gap-1 align-middle">
+                                        <img src="/strava-icon.svg" alt="" className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                                        <span className="text-[9px] font-bold uppercase text-palette-strava bg-orange-100 px-1 py-0.5 rounded leading-none">
+                                          {getImportedActivityTypeLabel(firstImported, tSports)}
+                                        </span>
+                                      </div>
+                                      <div className="text-xs font-semibold text-stone-700 mt-1 truncate">{firstImported.title}</div>
+                                      {target.primary && (
+                                        <div className="flex items-center gap-1 text-[10px] text-stone-400 font-medium">
+                                          {target.hasDistance ? <><MapIcon /><span>{target.primary}</span></> : <><ClockIcon /><span>{target.primary}</span></>}
+                                        </div>
+                                      )}
+                                    </div>
+                                  )
+                                })()}
+                              </div>
+                              {dayExtraCount > 0 && (
+                                <Button
+                                  type="button"
+                                  variant="muted"
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    setExtraActivitiesList(dayFullList)
+                                    setExtraActivitiesModalDate(day.dateStr)
+                                    setExtraActivitiesModalOpen(true)
+                                  }}
+                                  className="w-full text-[10px] py-1"
+                                >
+                                  {tCalendar(dayExtraCount === 1 ? 'moreActivities' : 'moreActivities_plural', { count: dayExtraCount })}
+                                </Button>
+                              )}
+                              <div
+                                className="shrink-0 w-full flex justify-center pt-1"
+                                onClick={(e) => { e.stopPropagation(); openDay(day.dateStr, day.isPast) }}
+                                role="button"
+                                aria-label={tWorkouts('addWorkout')}
+                              >
+                                <div className="w-6 h-6 rounded-full bg-white border border-stone-300 flex items-center justify-center text-stone-400 hover:text-white hover:bg-palette-forest-dark hover:border-palette-forest-dark transition-all cursor-pointer">
+                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+                                  </svg>
+                                </div>
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              <div className="min-h-0 shrink-0 flex flex-col gap-0.5">
+                                {firstGoal && !firstWorkout && !firstImported && (() => {
+                                  const isPrimary = firstGoal.is_primary
+                                  const borderColor = isPrimary ? 'border-palette-amber' : 'border-palette-sage'
+                                  return (
+                                    <div
+                                      onClick={(e) => { e.stopPropagation(); openGoal(firstGoal) }}
+                                      className={`bg-white rounded border-l-4 ${borderColor} shadow-sm p-1.5 cursor-pointer training-card`}
+                                      role="button"
+                                    >
+                                      <div className="text-xs font-semibold text-stone-700 leading-tight">{firstGoal.race_name}</div>
+                                      <div className="flex items-center gap-1 text-[10px] text-stone-400 font-medium mt-1">
+                                        <span>{firstGoal.distance} km</span>
+                                      </div>
+                                    </div>
+                                  )
+                                })()}
+                                {firstWorkout && renderCompactCard(firstWorkout, day.dateStr)}
+                                {!firstWorkout && !firstGoal && firstImported && (() => {
+                                  const target = formatImportedActivityTarget(firstImported)
+                                  return (
+                                    <div
+                                      onClick={(e) => { e.stopPropagation(); setSelectedImportedActivity(firstImported) }}
+                                      className="bg-white rounded border-l-4 border-palette-strava shadow-sm p-1.5 cursor-pointer training-card w-full"
+                                      role="button"
+                                    >
+                                      <div className="inline-flex items-center gap-1 align-middle">
+                                        <img src="/strava-icon.svg" alt="" className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                                        <span className="text-[9px] font-bold uppercase text-palette-strava bg-orange-100 px-1 py-0.5 rounded leading-none">
+                                          {getImportedActivityTypeLabel(firstImported, tSports)}
+                                        </span>
+                                      </div>
+                                      <div className="text-xs font-semibold text-stone-700 mt-1 truncate">{firstImported.title}</div>
+                                      {target.primary && (
+                                        <div className="flex items-center gap-1 text-[10px] text-stone-400 font-medium">
+                                          {target.hasDistance ? <><MapIcon /><span>{target.primary}</span></> : <><ClockIcon /><span>{target.primary}</span></>}
+                                        </div>
+                                      )}
+                                    </div>
+                                  )
+                                })()}
+                              </div>
+                              {showAddInCondensed && (
+                                <div className="w-8 h-8 rounded-full bg-white border border-stone-300 flex items-center justify-center text-stone-300 shadow-sm group-hover:text-white group-hover:bg-palette-forest-dark group-hover:border-palette-forest-dark transition-all mx-auto">
+                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+                                  </svg>
+                                </div>
+                              )}
+                            </>
+                          )}
+                        </div>
+                      </section>
+                    )
+                  })}
+                </div>
+              </>
+            )
+          })()}
+        </section>
+      ) : (
       <div className="mt-0 space-y-0">
         {weeks.map((week, wi) => {
           const isDetailed = wi === 1
@@ -1187,6 +1382,7 @@ export function CalendarView({
           )
         })}
       </div>
+      )}
 
       <WorkoutModal
         key={workoutModalKey}

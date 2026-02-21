@@ -1,5 +1,5 @@
 -- Statut explicite « En résiliation » (cancellation_scheduled) + cron pour passage à cancelled
--- Référence : docs/SUBSCRIPTION_CANCELLATION_SCHEDULED_DESIGN.md
+-- Référence : docs/archive/subscription-view-end/SUBSCRIPTION_CANCELLATION_SCHEDULED_DESIGN.md
 --
 -- Contrat applicatif après cette migration :
 -- - Résiliation mensuelle (mettre fin) : UPDATE subscriptions SET status = 'cancellation_scheduled', end_date = <prochain cycle> (au lieu de garder status = 'active').

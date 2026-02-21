@@ -327,6 +327,7 @@
     }
   },
   "calendar": {
+    "today": "Today",
     "currentWeek": "Current week",
     "previousWeek": "Previous week",
     "nextWeek": "Next week",

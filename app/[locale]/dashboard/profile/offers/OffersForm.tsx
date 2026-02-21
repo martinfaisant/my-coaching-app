@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useTranslations, useLocale } from 'next-intl'
 import { Button } from '@/components/Button'
 import { Modal } from '@/components/Modal'
+import { TileCard } from '@/components/TileCard'
 import { LanguagePrefixInput, LanguagePrefixTextarea } from '@/components/LanguagePrefixField'
 import { saveOffers, archiveOffer, publishOffer, type OffersFormState } from './actions'
 import type { CoachOffer, CoachOfferArchived } from '@/types/database'
@@ -692,15 +693,12 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
                     year: 'numeric',
                   })
                   return (
-                    <li
-                      key={archived.id}
-                      className="bg-stone-50 rounded-xl border border-stone-200 p-4 flex flex-wrap items-center justify-between gap-2"
-                    >
-                      <div className="min-w-0">
-                        <p className="font-medium text-stone-800 truncate">{title}</p>
-                        <p className="text-sm text-stone-500">{priceLabel}</p>
-                      </div>
-                      <p className="text-xs text-stone-400 shrink-0">{archivedDate}</p>
+                    <li key={archived.id}>
+                      <TileCard leftBorderColor="stone" badge={t('status.archived')}>
+                        <h3 className="text-sm font-semibold text-stone-800">{title}</h3>
+                        <p className="text-xs text-stone-500 mt-1">{priceLabel}</p>
+                        <p className="text-xs text-stone-500 mt-1.5">{archivedDate}</p>
+                      </TileCard>
                     </li>
                   )
                 })}

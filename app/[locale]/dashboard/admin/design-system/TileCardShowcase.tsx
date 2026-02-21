@@ -11,6 +11,7 @@ const BORDER_COLORS: { value: TileCardBorderColor; label: string; usage: string 
   { value: 'strava', label: 'strava', usage: 'Activité Strava' },
   { value: 'gold', label: 'gold', usage: 'Trail, ski de randonnée' },
   { value: 'olive', label: 'olive', usage: 'Vélo, secondaire' },
+  { value: 'stone', label: 'stone', usage: 'Archivé / terminé (offres archivées, historique souscriptions)' },
 ]
 
 export function TileCardShowcase() {

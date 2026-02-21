@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
 import { createClient } from '@/utils/supabase/server'
 import { DashboardPageShell } from '@/components/DashboardPageShell'
+import { TileCard } from '@/components/TileCard'
 import { getFrozenTitleForLocale, getFrozenDescriptionForLocale } from '@/lib/frozenOfferI18n'
 import { getDisplayName } from '@/lib/displayName'
 import { formatShortDate } from '@/lib/dateUtils'
@@ -64,35 +65,27 @@ export default async function SubscriptionHistoryPage({ params }: { params: Prom
       ) : (
         <ul className="space-y-3">
           {subscriptions.map((sub) => (
-            <li
-              key={sub.id}
-              className="rounded-lg border border-l-4 border-stone-200 border-l-stone-400 bg-white p-3 shadow-sm"
-            >
-              <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0 flex-1">
-                  <p className="font-semibold text-stone-900 text-sm">
-                    {coachNameById.get(sub.coach_id) ?? '—'}{' '}
-                    <span className="text-stone-500 font-normal">· {t('coachLabel')}</span>
+            <li key={sub.id}>
+              <TileCard leftBorderColor="stone" badge={t('terminatedBadge')}>
+                <p className="font-semibold text-stone-900 text-sm">
+                  {coachNameById.get(sub.coach_id) ?? '—'}{' '}
+                  <span className="text-stone-500 font-normal">· {t('coachLabel')}</span>
+                </p>
+                <h3 className="text-sm font-semibold text-stone-800 mt-1">
+                  {getFrozenTitleForLocale(sub, locale) || '—'}
+                </h3>
+                {getFrozenDescriptionForLocale(sub, locale) && (
+                  <p className="text-xs text-stone-600 mt-1 line-clamp-2">
+                    {getFrozenDescriptionForLocale(sub, locale)}
                   </p>
-                  <h3 className="text-sm font-semibold text-stone-800 mt-1">
-                    {getFrozenTitleForLocale(sub, locale) || '—'}
-                  </h3>
-                  {getFrozenDescriptionForLocale(sub, locale) && (
-                    <p className="text-xs text-stone-600 mt-1 line-clamp-2">
-                      {getFrozenDescriptionForLocale(sub, locale)}
-                    </p>
-                  )}
-                  <p className="text-xs text-stone-500 mt-1.5">
-                    {formatPriceType(sub, tMyCoach)} · {t('periodFromTo', {
-                      start: formatShortDate(sub.start_date, dateLocale),
-                      end: sub.end_date ? formatShortDate(sub.end_date, dateLocale) : '—',
-                    })}
-                  </p>
-                </div>
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-stone-100 text-stone-600 border border-stone-200 shrink-0">
-                  {t('terminatedBadge')}
-                </span>
-              </div>
+                )}
+                <p className="text-xs text-stone-500 mt-1.5">
+                  {formatPriceType(sub, tMyCoach)} · {t('periodFromTo', {
+                    start: formatShortDate(sub.start_date, dateLocale),
+                    end: sub.end_date ? formatShortDate(sub.end_date, dateLocale) : '—',
+                  })}
+                </p>
+              </TileCard>
             </li>
           ))}
         </ul>

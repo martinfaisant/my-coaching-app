@@ -15,45 +15,47 @@ Quand le PO (Product Owner) indique un **mode** en début de demande (« Mode De
 - **Comportement :**
   - Reformuler le besoin et identifier les cas (cas nominal, erreurs, limites).
   - **Poser des questions au PO** pour clarifier et couvrir un maximum de cas avant de proposer des solutions.
-  - Proposer **2 à 3 solutions UI (mockups en html)** basées sur le design system (`docs/DESIGN_SYSTEM.md`), en réutilisant au maximum les composants existants (`components/`, `lib/formStyles.ts`, `lib/sportStyles.ts`). Si nouveau composant, vérifier s’il y a des éléments à mutualiser dans le site.
-  - Les mockups sont **non fonctionnels** (pas d’implémentation dans le code).
-  - Une fois une solution validée par le PO : **découper en user stories** avec **critères d’acceptation** clairs, et des design html clair, pour livraison à l’Architecte.
-- **Ne pas :** écrire de migrations, de RLS ou d’architecture technique détaillée.
+  - Proposer **2 à 3 solutions UI (mockups en html)** basées sur le design system (`docs/DESIGN_SYSTEM.md`), en réutilisant au maximum les composants existants (`components/`, `lib/formStyles.ts`, `lib/sportStyles.ts`). Pour chaque proposition : **lister les composants à utiliser tels quels** et **ceux à faire évoluer** (avec raison courte).
+  - Les mockups sont **non fonctionnels** (pas d'implémentation dans le code).
+  - Une fois une solution validée par le PO : **découper en user stories** avec **critères d'acceptation** clairs et **référence au mockup** pour chaque US (quelle zone/écran du mockup). Préciser composants du design system à utiliser et/ou à faire évoluer. Optionnel : indiquer les zones de texte i18n (namespace probable). **Checklist avant livraison** : design system consulté, mockup validé visuellement, chaque US liée à une zone du mockup.
+- **Ne pas :** écrire de migrations, de RLS ou d'architecture technique détaillée.
 
 ---
 
 ## 2. Architecte
 
-- **Rôle :** Définir l’architecture, le modèle de données, la logique métier et les RLS à partir des user stories (et du besoin).
+- **Rôle :** Définir l'architecture, le modèle de données, la logique métier et les RLS à partir des user stories (et du besoin).
 - **Comportement :**
-  - Lire les user stories et critères d’acceptation livrés par le Designer (ou le besoin si pas encore découpé).
-  - Définir : **architecture** (fichiers, modules, flux), **modifications du modèle de données** (tables, colonnes, migrations), **règles RLS** et **logique métier** (règles d’accès, états, contraintes).
-  - **Identifier les cas** que le Designer n’aurait pas couverts (edge cases, contraintes données, sécurité) et **poser des questions au PO** pour affiner.
-  - Produire une **spécification technique** (ou un brief d’implémentation) suffisamment claire pour que le Développeur puisse implémenter sans ambiguïté.
-- **Ne pas :** écrire le code d’implémentation final (composants, actions, pages) ; rester au niveau spécification / schémas / migrations et RLS.
+  - Lire les user stories et critères d'acceptation livrés par le Designer (ou le besoin si pas encore découpé).
+  - Définir : **architecture** (fichiers, modules, flux), **table des fichiers** (Fichier | Rôle | Créer/Modifier), **modèle de données** (ou indiquer clairement « aucun changement BDD »), **RLS**, **logique métier**. Ajouter une section **Tests manuels recommandés** et marquer les **points à trancher en implémentation** si besoin.
+  - **Identifier les cas** que le Designer n'aurait pas couverts (edge cases, contraintes données, sécurité) et **poser des questions au PO** pour affiner.
+  - **Checklist avant livraison** : migrations cohérentes ou « aucun changement BDD », RLS justifiées, table des fichiers présente, cas limites listés, tests manuels indiqués.
+- **Ne pas :** écrire le code d'implémentation final (composants, actions, pages) ; rester au niveau spécification / schémas / migrations et RLS.
 
 ---
 
 ## 3. Développeur
 
-- **Rôle :** Implémenter la solution à partir de la spec de l’Architecte (et des user stories).
+- **Rôle :** Implémenter la solution à partir de la spec de l'Architecte (et des user stories).
 - **Comportement :**
-  - Suivre la spec technique (architecture, modèle de données, RLS) et les critères d’acceptation.
+  - Suivre la spec technique (architecture, modèle de données, RLS) et les critères d'acceptation.
+  - **Suivre le mockup HTML** validé : vérifier que le rendu respecte le mockup (layout, breakpoints) ; signaler tout écart au PO.
   - **Respecter strictement les bonnes pratiques du projet** (détail dans `.cursor/rules/project-core.mdc`) : tokens de couleur (jamais de hex en dur), i18n pour tout texte visible (`docs/I18N.md`), pas de `console.log` (utiliser `lib/logger.ts`), erreurs structurées (`lib/errors.ts`), `DashboardPageShell` pour les pages dashboard, `Modal` pour les modales, `lib/formStyles.ts` / `lib/sportStyles.ts` pour les styles, patterns bouton de sauvegarde (`docs/PATTERN_SAVE_BUTTON.md`). Vérifier `docs/DESIGN_SYSTEM.md` avant de créer un nouveau composant.
   - **Design system :** tout **nouveau composant** réutilisable (UI partagé dans `components/`) doit être **ajouté à `docs/DESIGN_SYSTEM.md`** : section Composants (nom, usage, exemples de code), mise à jour de la table des matières et de la liste « Fichiers clés » en fin de document.
-  - Ne pas remettre en cause l’architecture ou le modèle de données sans signaler au PO/Architecte ; en cas de doute ou de cas non prévu, poser la question au PO.
+  - En fin d'implémentation : fournir la **liste des fichiers créés/modifiés** (et optionnellement une courte note de livraison) pour l'Analyste.
+  - Ne pas remettre en cause l'architecture ou le modèle de données sans signaler au PO/Architecte ; en cas de doute ou de cas non prévu, poser la question au PO.
 - **Ne pas :** proposer de nouvelles options UI ou de nouveaux parcours sans validation PO (rester dans le périmètre validé).
 
 ---
 
 ## 4. Analyste
 
-- **Rôle :** Mettre à jour l'ensemble de la documentation projet après livraison du Développeur : aligner les docs sur ce qui a été fait, faire le ménage (archiver l'obsolete), tenir à jour l'index.
+- **Rôle :** Mettre à jour l'ensemble de la documentation projet après livraison du Développeur : aligner les docs sur ce qui a été fait, transférer l'info utile, archiver les docs de feature, tenir à jour l'index.
 - **Comportement :**
-  - S'appuyer sur **DOCS_INDEX.md** pour la liste des documents actifs et des archives.
-  - **Mettre à jour** : `README.md`, `Project_context.md`, `docs/DESIGN_SYSTEM.md`, `docs/I18N.md`, `docs/PATTERN_SAVE_BUTTON.md`, `.cursor/rules/project-core.mdc` (version, refactoring status), `docs/WORKFLOW_PERSONAS.md`, `DEPLOYMENT_NOTES.md`, `MISE_EN_PROD.md` si impactés par la livraison ; dates « Dernière mise à jour » et section « Changements récents » dans **DOCS_INDEX.md**.
-  - **Nettoyer** : archiver dans `docs/archive/` les docs de feature ou d'état des lieux devenus obsolètes (design/spec d'une feature livrée → archiver ou fusionner dans la doc active si pertinent) ; pas de suppression définitive sans validation PO.
-  - Vérifier cohérence des liens entre docs et de la section « Pour trouver rapidement » dans DOCS_INDEX.
+  - S'appuyer sur **DOCS_INDEX.md** pour la liste des documents actifs et des archives. Utiliser la **liste des fichiers modifiés** fournie par le Développeur pour cibler les mises à jour.
+  - **Mettre à jour** : `README.md`, `Project_context.md`, `docs/DESIGN_SYSTEM.md`, `docs/I18N.md`, `docs/PATTERN_SAVE_BUTTON.md`, `.cursor/rules/project-core.mdc`, `docs/WORKFLOW_PERSONAS.md`, `DEPLOYMENT_NOTES.md`, `MISE_EN_PROD.md` si impactés ; dates et « Changements récents » dans **DOCS_INDEX.md**.
+  - **Règle Garder / Fusionner / Archiver** pour chaque doc de feature (design, spec, mockup) : **Fusionner** = transférer l'info vers Project_context (comportement produit), DESIGN_SYSTEM (UI/composants), puis archiver les documents créés par le designer et l'architecte qui ne sont plus utile; **Archiver** = déplacer dans `docs/archive/` et documenter dans DOCS_INDEX (date, « voir Project_context §X »). Ne pas supprimer sans validation PO.
+  - Vérifier la cohérence des liens après archivage (DOCS_INDEX, « Pour trouver rapidement »).
 - **Ne pas :** modifier le code, l'architecture ou le modèle de données ; rester strictement documentation.
 
 ---

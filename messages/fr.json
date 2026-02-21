@@ -315,6 +315,7 @@
     }
   },
   "calendar": {
+    "today": "Aujourd'hui",
     "currentWeek": "Semaine actuelle",
     "previousWeek": "Semaine précédente",
     "nextWeek": "Semaine suivante",
