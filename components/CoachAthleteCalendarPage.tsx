@@ -69,8 +69,8 @@ export function CoachAthleteCalendarPage({
         hideBuiltInSelector={true}
         disableContentScroll={true}
         renderWeekSelector={({ dateRangeLabel, onNavigate, isAnimating, prevWeekLastDayLabel, nextWeekFirstDayLabel }) => (
-          <header className="h-20 flex items-center justify-between px-6 lg:px-8 shrink-0 bg-white/80 backdrop-blur-md border-b border-stone-100 z-10">
-            <div className="flex items-center gap-4">
+          <header className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between md:h-20 px-4 md:px-6 lg:px-8 py-4 shrink-0 bg-white/80 backdrop-blur-md border-b border-stone-100 z-10">
+            <div className="flex items-center gap-4 min-w-0 shrink-0">
               <Link
                 href="/dashboard"
                 className="p-2 rounded-full hover:bg-stone-100 border border-transparent hover:border-stone-200 transition-all text-stone-400 hover:text-stone-800"
@@ -79,22 +79,24 @@ export function CoachAthleteCalendarPage({
                   <path d="M19 12H5M12 19l-7-7 7-7" />
                 </svg>
               </Link>
-              <div className="flex items-center gap-3">
-                <AvatarImage src={athleteAvatarUrl} initials={initials} className="w-10 h-10 rounded-xl" />
-                <div>
-                  <h1 className="text-lg font-bold text-stone-800">{athleteName}</h1>
+              <div className="flex items-center gap-3 min-w-0">
+                <AvatarImage src={athleteAvatarUrl} initials={initials} className="w-10 h-10 rounded-xl shrink-0" />
+                <div className="min-w-0">
+                  <h1 className="text-lg font-bold text-stone-800 truncate">{athleteName}</h1>
                 </div>
               </div>
             </div>
-            <WeekSelector
-              dateRangeLabel={dateRangeLabel}
-              onNavigate={onNavigate}
-              isAnimating={isAnimating}
-              prevWeekLastDayLabel={prevWeekLastDayLabel}
-              nextWeekFirstDayLabel={nextWeekFirstDayLabel}
-              prevWeekAriaLabel={tCommon('weekPrevious')}
-              nextWeekAriaLabel={tCommon('weekNext')}
-            />
+            <div className="flex justify-center w-full md:w-auto md:flex-none">
+              <WeekSelector
+                dateRangeLabel={dateRangeLabel}
+                onNavigate={onNavigate}
+                isAnimating={isAnimating}
+                prevWeekLastDayLabel={prevWeekLastDayLabel}
+                nextWeekFirstDayLabel={nextWeekFirstDayLabel}
+                prevWeekAriaLabel={tCommon('weekPrevious')}
+                nextWeekAriaLabel={tCommon('weekNext')}
+              />
+            </div>
           </header>
         )}
         renderAfterCalendar={() => {

@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 19 février 2026
+**Dernière mise à jour :** 21 février 2026
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -59,9 +59,9 @@
 - **Référence détaillée :** `docs/WORKFLOW_PERSONAS.md`
 
 ### **docs/WORKFLOW_PERSONAS.md**
-- **Contenu :** Workflow complet en 4 personnas (Designer, Architecte, Développeur, **Analyste**), livrables, comment lancer chaque mode, **documents à maintenir à jour par l'Analyste**, allers-retours PO
-- **Utiliser pour :** Comprendre le processus, formuler les demandes (Mode Designer / Architecte / Développeur / Analyste), référence pour l'IA ; **Mode Analyste** = mise à jour doc après livraison (voir DOCS_INDEX et liste des docs dans ce fichier)
-- **Taille :** ~190 lignes
+- **Contenu :** Workflow complet en 4 personnas (Designer, Architecte, Développeur, **Analyste**), livrables, **checklists avant livraison**, règle **Garder / Fusionner / Archiver** pour docs de feature, où transférer l'info avant archivage, allers-retours PO
+- **Utiliser pour :** Comprendre le processus, formuler les demandes (Mode Designer / Architecte / Développeur / Analyste), référence pour l'IA ; **Mode Analyste** = mise à jour doc après livraison, transfert info puis archivage (voir DOCS_INDEX et liste des docs dans ce fichier)
+- **Taille :** ~220 lignes
 - **Dernière mise à jour :** 19 février 2026 (ajout personna Analyste)
 
 ### **docs/SUBSCRIPTION_VIEW_AND_END_DESIGN.md**
@@ -119,7 +119,7 @@
 > **Tous les documents d'audit, de refactoring et d'états des lieux ont été archivés dans `docs/archive/`**  
 > Ils servent de référence historique mais ne sont plus nécessaires au quotidien.
 
-### Documents archivés (25 fichiers)
+### Documents archivés (28 fichiers)
 
 **Audit & Plan initial :**
 - `AUDIT_COMPLET.md` - Audit complet du projet (13 février 2026) - 1202 lignes
@@ -151,6 +151,12 @@
 ✅ **Code refactorisé :** Tous les changements sont appliqués dans le code  
 ✅ **Score qualité atteint :** 8.3/10 (objectif atteint)  
 ✅ **Documentation à jour :** Toute l'information pertinente est dans les docs actives
+
+**Calendrier mobile issue #44 (archivés 21 février 2026) :**
+- `docs/archive/calendar-mobile-44/CALENDAR_MOBILE_ISSUE_44_DESIGN.md` — Analyse Designer (besoin, réponses PO, mockup)
+- `docs/archive/calendar-mobile-44/CALENDAR_MOBILE_ISSUE_44_SPEC.md` — Spec technique (Mode Architecte)
+- `docs/archive/calendar-mobile-44/calendar-mobile-mockup.html` — Mockup HTML non fonctionnel
+- **Raison :** Feature livrée ; comportement décrit dans **Project_context.md §4.5** et **docs/DESIGN_SYSTEM.md** (guideline §7 Calendrier responsive).
 
 **Migrations i18n (archivées 16 février 2026) :**
 - `I18N_IMPLEMENTATION.md` - Implémentation de base i18n (contenu consolidé dans docs/I18N.md)
@@ -247,10 +253,22 @@
 
 **Fréquence de mise à jour :** À chaque ajout/suppression de documentation
 
-**Dernier scan :** 16 février 2026  
-**Dernier nettoyage :** 16 février 2026
+**Dernier scan :** 21 février 2026  
+**Dernier nettoyage :** 21 février 2026
 
 ### Changements récents :
+
+✅ **21 février 2026 – Livraison issue #44 (Calendrier mobile) + Mode Analyste + archivage :**
+- **Livraison :** Calendrier responsive (breakpoint md) : en-tête 2 lignes, 1 semaine en stack sur mobile (AthleteCalendarPage, CoachAthleteCalendarPage, CalendarView), i18n `calendar.today`.
+- **Mises à jour doc :** Project_context.md §4.5 (Calendrier responsive), docs/DESIGN_SYSTEM.md (guideline §7 Calendrier responsive, date 21 fév.), docs/I18N.md (namespace calendar, date 21 fév.), .cursor/rules/project-core.mdc (Last updated 21 fév.).
+- **Archivage :** docs CALENDAR_MOBILE_ISSUE_44_DESIGN.md, CALENDAR_MOBILE_ISSUE_44_SPEC.md et calendar-mobile-mockup.html déplacés dans `docs/archive/calendar-mobile-44/`. Comportement décrit dans Project_context §4.5 et DESIGN_SYSTEM.
+
+✅ **21 février 2026 – Workflow Personas (améliorations par rôle) :**
+- **docs/WORKFLOW_PERSONAS.md** et **.cursor/rules/workflow-personas.mdc** : renforcement des livrables et checklists pour chaque personna.
+- **Designer** : référence mockup par US, liste composants à utiliser/faire évoluer, checklist avant livraison (design system, mockup validé, US liées au mockup), optionnel zones i18n.
+- **Architecte** : table des fichiers obligatoire, « aucun changement BDD » si pertinent, section Tests manuels recommandés, points à trancher en implémentation, checklist avant livraison.
+- **Développeur** : vérification conformité au mockup (signaler écarts), livrable pour l’Analyste = liste des fichiers créés/modifiés (+ optionnel note de livraison).
+- **Analyste** : règle explicite **Garder / Fusionner / Archiver** pour les docs de feature ; où transférer l’info (Project_context, DESIGN_SYSTEM) avant archivage ; cohérence des liens après archivage.
 
 ✅ **19 février 2026 – Mise à jour doc (Mode Analyste) – Vue souscription, résiliation, « En résiliation » :**
 - Alignement de la documentation sur l'implémentation réalisée.
@@ -308,6 +326,7 @@
 | Composants UI, couleurs | `docs/DESIGN_SYSTEM.md` |
 | **i18n / bilingue / traductions / nouvelles features** | **`docs/I18N.md`** |
 | **Workflow Designer / Architecte / Développeur / Analyste** | **`docs/WORKFLOW_PERSONAS.md`** |
+| Calendrier responsive / mobile (issue #44) | `Project_context.md` §4.5, `docs/DESIGN_SYSTEM.md` §7 |
 | Conventions de code | `.cursor/rules/project-core.mdc` |
 | Pattern bouton sauvegarde | `docs/PATTERN_SAVE_BUTTON.md` |
 | Déploiement | `DEPLOYMENT_NOTES.md`, `MISE_EN_PROD.md` |

@@ -46,19 +46,19 @@ export function AthleteCalendarPage({
         pathToRevalidate={pathToRevalidate}
         hideBuiltInSelector={true}
         renderWeekSelector={({ dateRangeLabel, onNavigate, isAnimating, prevWeekLastDayLabel, nextWeekFirstDayLabel }) => (
-          <header className="h-20 flex items-center justify-between px-6 lg:px-8 shrink-0 bg-white/80 backdrop-blur-md border-b border-stone-100 z-10">
-            <div>
-              <h1 className="text-xl font-bold text-stone-800">{t('calendar')}</h1>
+          <header className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between md:h-20 px-4 md:px-6 lg:px-8 py-4 shrink-0 bg-white/80 backdrop-blur-md border-b border-stone-100 z-10">
+            <h1 className="text-xl font-bold text-stone-800 shrink-0">{t('calendar')}</h1>
+            <div className="flex justify-center w-full md:w-auto md:flex-none">
+              <WeekSelector
+                dateRangeLabel={dateRangeLabel}
+                onNavigate={onNavigate}
+                isAnimating={isAnimating}
+                prevWeekLastDayLabel={prevWeekLastDayLabel}
+                nextWeekFirstDayLabel={nextWeekFirstDayLabel}
+                prevWeekAriaLabel={tCommon('weekPrevious')}
+                nextWeekAriaLabel={tCommon('weekNext')}
+              />
             </div>
-            <WeekSelector
-              dateRangeLabel={dateRangeLabel}
-              onNavigate={onNavigate}
-              isAnimating={isAnimating}
-              prevWeekLastDayLabel={prevWeekLastDayLabel}
-              nextWeekFirstDayLabel={nextWeekFirstDayLabel}
-              prevWeekAriaLabel={tCommon('weekPrevious')}
-              nextWeekAriaLabel={tCommon('weekNext')}
-            />
           </header>
         )}
       />

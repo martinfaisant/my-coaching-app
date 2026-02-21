@@ -1,7 +1,7 @@
 # 🎨 Design System
 
 **Version :** 1.2  
-**Dernière mise à jour :** 16 février 2026
+**Dernière mise à jour :** 21 février 2026
 
 ---
 
@@ -797,8 +797,9 @@ Conteneur réutilisable qui applique **le même style de tour (bordure)** que le
 
 ```typescript
 type TileCardProps = {
-  leftBorderColor: 'amber' | 'sage' | 'forest' | 'strava' | 'gold' | 'olive'
+  leftBorderColor: 'amber' | 'sage' | 'forest' | 'strava' | 'gold' | 'olive' | 'stone'
   children: React.ReactNode
+  badge?: React.ReactNode   // optionnel : badge à droite (ex. « Archivée », « Terminée »)
   className?: string
   interactive?: boolean   // true = applique training-card (hover)
   as?: 'div' | 'button'
@@ -817,6 +818,7 @@ type TileCardProps = {
 | `strava` | `palette-strava` | Activité Strava |
 | `gold` | `palette-gold` | Trail, ski de randonnée |
 | `olive` | `palette-olive` | Vélo, secondaire |
+| `stone` | `stone-400` | État archivé / terminé (offres archivées, historique souscriptions) |
 
 #### Exemples
 
@@ -841,11 +843,18 @@ type TileCardProps = {
 <TileCard leftBorderColor="sage" interactive>
   ...
 </TileCard>
+
+// Tuile archivée / terminée (badge à droite)
+<TileCard leftBorderColor="stone" badge={t('status.archived')}>
+  <h3 className="text-sm font-semibold text-stone-800">Titre</h3>
+  <p className="text-xs text-stone-500 mt-1">...</p>
+</TileCard>
 ```
 
 #### Cas d’usage
 
 - **Page Objectifs** : Afficher chaque objectif dans une TileCard avec `leftBorderColor="amber"` ou `"sage"` pour avoir le même contour que les tuiles de la modale Activités du jour.
+- **Listes archivées / terminées** : Offres archivées (page Offres coach), historique des souscriptions (coach et athlète) — utiliser `leftBorderColor="stone"` et `badge` (libellé i18n « Archivée » ou « Terminée »).
 - **Listes personnalisées** : Tout contenu qui doit reprendre le style « tuile avec bordure gauche colorée » sans utiliser le contenu prédéfini d’ActivityTile.
 
 ---
@@ -1088,7 +1097,11 @@ Toutes les icônes de sports sont définies dans `components/SportIcons.tsx` et 
 - Labels : `text-xs font-bold uppercase tracking-wider`
 - Corps de texte : `text-sm`
 
-### 7. Sports et labels
+### 7. Calendrier (responsive)
+
+Sur viewports &lt; 768px (breakpoint `md`), les pages calendrier (athlète et coach) affichent un en-tête sur deux lignes (titre puis sélecteur de semaine) et une seule semaine avec les jours empilés verticalement (7 blocs). À partir de 768px : layout desktop (3 semaines, grille 7 colonnes). Détail : `Project_context.md` §4.5.
+
+### 8. Sports et labels
 
 Toujours utiliser `lib/sportStyles.ts` pour obtenir le label d'un sport :
 
@@ -1098,7 +1111,7 @@ import { SPORT_LABELS } from '@/lib/sportStyles'
 const sportLabel = SPORT_LABELS['course'] // "Course à pied"
 ```
 
-### 8. Espacements cohérents
+### 9. Espacements cohérents
 
 - Padding cartes : `p-6`
 - Padding sections : `px-6 lg:px-8 py-8`
