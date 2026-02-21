@@ -21,10 +21,10 @@
 - **Dernière mise à jour :** 19 février 2026 (section 4.10 Vue souscription / résiliation / En résiliation, data model subscriptions)
 
 ### **docs/DESIGN_SYSTEM.md** ⭐
-- **Contenu :** Tokens (couleurs, typo, espacements), composants (Button, Input, Badge, DashboardPageShell, Modal, etc.), guidelines UI, exemples de code
+- **Contenu :** Tokens (couleurs, typo, espacements), composants (Button, Input, Badge, TileCard, DashboardPageShell, Modal, etc.), guidelines UI, exemples de code
 - **Utiliser pour :** Créer ou modifier des composants UI, choisir des couleurs, appliquer le design system
 - **Taille :** ~850 lignes
-- **Dernière mise à jour :** 13 février 2026 (noms d'icônes corrigés)
+- **Dernière mise à jour :** 21 février 2026 (TileCard : variante stone + prop badge, tuiles archivées/terminées)
 
 ### **docs/I18N.md** ⭐
 - **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces, utilisation dans composants et server actions, **checklist pour nouvelles features** (toujours penser bilingue)
@@ -152,6 +152,11 @@
 ✅ **Score qualité atteint :** 8.3/10 (objectif atteint)  
 ✅ **Documentation à jour :** Toute l'information pertinente est dans les docs actives
 
+**Issue #43 – Tuile offre archivée (archivés 21 février 2026) :**
+- `docs/archive/issue-43/ISSUE_43_ARCHIVED_OFFER_TILE_SPEC.md` — Spec technique (alignement UI tuile offre archivée / souscription archivée)
+- `docs/archive/issue-43/ARCHI_TILE_COMPONENT_ANALYSIS.md` — Analyse Architecte (extension TileCard, badge, stone)
+- **Raison :** Feature livrée ; tuiles unifiées via **TileCard** (`leftBorderColor="stone"`, `badge`). Comportement décrit dans **docs/DESIGN_SYSTEM.md** § TileCard.
+
 **Calendrier mobile issue #44 (archivés 21 février 2026) :**
 - `docs/archive/calendar-mobile-44/CALENDAR_MOBILE_ISSUE_44_DESIGN.md` — Analyse Designer (besoin, réponses PO, mockup)
 - `docs/archive/calendar-mobile-44/CALENDAR_MOBILE_ISSUE_44_SPEC.md` — Spec technique (Mode Architecte)
@@ -258,6 +263,11 @@
 
 ### Changements récents :
 
+✅ **21 février 2026 – Clôture issue #43 (Tuile offre archivée) + Mode Analyste :**
+- **Livraison :** Alignement UI tuile offre archivée sur tuile souscription terminée ; extension **TileCard** (`leftBorderColor="stone"`, prop `badge`) ; utilisation dans les 3 écrans (OffersForm, CoachSubscriptionsContent, subscriptions/history).
+- **Mises à jour doc :** docs/DESIGN_SYSTEM.md (TileCard : stone, badge, cas d'usage listes archivées/terminées), TileCardShowcase (variante stone).
+- **Archivage :** docs ISSUE_43_ARCHIVED_OFFER_TILE_SPEC.md et ARCHI_TILE_COMPONENT_ANALYSIS.md déplacés dans `docs/archive/issue-43/`. Référence courante : docs/DESIGN_SYSTEM.md § TileCard.
+
 ✅ **21 février 2026 – Livraison issue #44 (Calendrier mobile) + Mode Analyste + archivage :**
 - **Livraison :** Calendrier responsive (breakpoint md) : en-tête 2 lignes, 1 semaine en stack sur mobile (AthleteCalendarPage, CoachAthleteCalendarPage, CalendarView), i18n `calendar.today`.
 - **Mises à jour doc :** Project_context.md §4.5 (Calendrier responsive), docs/DESIGN_SYSTEM.md (guideline §7 Calendrier responsive, date 21 fév.), docs/I18N.md (namespace calendar, date 21 fév.), .cursor/rules/project-core.mdc (Last updated 21 fév.).
@@ -327,6 +337,7 @@
 | **i18n / bilingue / traductions / nouvelles features** | **`docs/I18N.md`** |
 | **Workflow Designer / Architecte / Développeur / Analyste** | **`docs/WORKFLOW_PERSONAS.md`** |
 | Calendrier responsive / mobile (issue #44) | `Project_context.md` §4.5, `docs/DESIGN_SYSTEM.md` §7 |
+| Tuile archivée / offres archivées / historique souscriptions (issue #43) | `docs/DESIGN_SYSTEM.md` § TileCard (stone, badge) |
 | Conventions de code | `.cursor/rules/project-core.mdc` |
 | Pattern bouton sauvegarde | `docs/PATTERN_SAVE_BUTTON.md` |
 | Déploiement | `DEPLOYMENT_NOTES.md`, `MISE_EN_PROD.md` |

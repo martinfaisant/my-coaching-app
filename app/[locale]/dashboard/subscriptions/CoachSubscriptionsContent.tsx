@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { CoachSubscriptionDetailModal } from '@/app/[locale]/dashboard/CoachSubscriptionDetailModal'
+import { TileCard } from '@/components/TileCard'
 import { getFrozenTitleForLocale, getFrozenDescriptionForLocale } from '@/lib/frozenOfferI18n'
 import { formatShortDate } from '@/lib/dateUtils'
 import type { CoachSubscriptionRow } from '@/app/[locale]/dashboard/CoachSubscriptionDetailModal'
@@ -165,35 +166,27 @@ export function CoachSubscriptionsContent({
         ) : (
           <ul className="space-y-3">
             {historySubscriptions.map((item) => (
-              <li
-                key={item.subscription.id}
-                className="rounded-lg border border-l-4 border-stone-200 border-l-stone-400 bg-white p-3 shadow-sm"
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <div className="min-w-0 flex-1">
-                    <p className="font-semibold text-stone-900 text-sm">
-                      {item.athlete.displayName}{' '}
-                      <span className="text-stone-500 font-normal">· {tDetail('athleteLabel')}</span>
+              <li key={item.subscription.id}>
+                <TileCard leftBorderColor="stone" badge={tHistory('terminatedBadge')}>
+                  <p className="font-semibold text-stone-900 text-sm">
+                    {item.athlete.displayName}{' '}
+                    <span className="text-stone-500 font-normal">· {tDetail('athleteLabel')}</span>
+                  </p>
+                  <h3 className="text-sm font-semibold text-stone-800 mt-1">
+                    {getFrozenTitleForLocale(item.subscription, locale) || '—'}
+                  </h3>
+                  {getFrozenDescriptionForLocale(item.subscription, locale) && (
+                    <p className="text-xs text-stone-600 mt-1 line-clamp-2">
+                      {getFrozenDescriptionForLocale(item.subscription, locale)}
                     </p>
-                    <h3 className="text-sm font-semibold text-stone-800 mt-1">
-                      {getFrozenTitleForLocale(item.subscription, locale) || '—'}
-                    </h3>
-                    {getFrozenDescriptionForLocale(item.subscription, locale) && (
-                      <p className="text-xs text-stone-600 mt-1 line-clamp-2">
-                        {getFrozenDescriptionForLocale(item.subscription, locale)}
-                      </p>
-                    )}
-                    <p className="text-xs text-stone-500 mt-1.5">
-                      {formatPriceType(item.subscription, tMyCoach)} · {tHistory('periodFromTo', {
-                        start: formatShortDate(item.subscription.start_date, dateLocale),
-                        end: item.subscription.end_date ? formatShortDate(item.subscription.end_date, dateLocale) : '—',
-                      })}
-                    </p>
-                  </div>
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-stone-100 text-stone-600 border border-stone-200 shrink-0">
-                    {tHistory('terminatedBadge')}
-                  </span>
-                </div>
+                  )}
+                  <p className="text-xs text-stone-500 mt-1.5">
+                    {formatPriceType(item.subscription, tMyCoach)} · {tHistory('periodFromTo', {
+                      start: formatShortDate(item.subscription.start_date, dateLocale),
+                      end: item.subscription.end_date ? formatShortDate(item.subscription.end_date, dateLocale) : '—',
+                    })}
+                  </p>
+                </TileCard>
               </li>
             ))}
           </ul>

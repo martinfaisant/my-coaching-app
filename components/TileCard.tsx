@@ -18,6 +18,7 @@ export type TileCardBorderColor =
   | 'strava'
   | 'gold'
   | 'olive'
+  | 'stone'
 
 const BORDER_CLASSES: Record<TileCardBorderColor, string> = {
   amber: 'border-l-palette-amber',
@@ -26,13 +27,20 @@ const BORDER_CLASSES: Record<TileCardBorderColor, string> = {
   strava: 'border-l-palette-strava',
   gold: 'border-l-palette-gold',
   olive: 'border-l-palette-olive',
+  stone: 'border-l-stone-400',
 }
 
+/** Classes du badge « archivé / terminé » (alignées sur le design system). */
+const BADGE_CLASSES =
+  'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-stone-100 text-stone-600 border border-stone-200 shrink-0'
+
 type TileCardProps = {
-  /** Couleur de la bordure gauche (alignée sur les tokens du design system). */
+  /** Couleur de la bordure gauche (alignée sur les tokens du design system). `stone` = état archivé/terminé. */
   leftBorderColor: TileCardBorderColor
   /** Contenu de la carte. */
   children: React.ReactNode
+  /** Badge optionnel affiché à droite (ex. « Archivée », « Terminée »). Si fourni, structure flex contenu + badge. */
+  badge?: React.ReactNode
   /** Classes CSS supplémentaires. */
   className?: string
   /** Si true, applique le hover type "training-card" (léger lift + ombre). */
@@ -51,6 +59,7 @@ const baseClasses =
 export function TileCard({
   leftBorderColor,
   children,
+  badge,
   className = '',
   interactive = false,
   as = 'div',
@@ -61,13 +70,23 @@ export function TileCard({
   const interactiveClass = interactive ? 'training-card cursor-pointer' : ''
   const combined = `${baseClasses} ${borderClass} ${interactiveClass} ${className}`.trim()
 
+  const content =
+    badge !== undefined ? (
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0 flex-1">{children}</div>
+        <span className={BADGE_CLASSES}>{badge}</span>
+      </div>
+    ) : (
+      children
+    )
+
   if (as === 'button') {
     return (
       <button type={type} onClick={onClick} className={combined}>
-        {children}
+        {content}
       </button>
     )
   }
 
-  return <div className={combined}>{children}</div>
+  return <div className={combined}>{content}</div>
 }
