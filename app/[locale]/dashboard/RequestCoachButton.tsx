@@ -23,6 +23,7 @@ type RequestCoachButtonProps = {
 export function RequestCoachButton({ coachId, coachName, requestStatus, requestId, initialPracticedSports = [] }: RequestCoachButtonProps) {
   const t = useTranslations('requestCoachButton')
   const tCommon = useTranslations('common')
+  const tErrors = useTranslations('errors')
   const practicedSportsOptions = usePracticedSportsOptions()
   const [open, setOpen] = useState(false)
   const [confirmCancelOpen, setConfirmCancelOpen] = useState(false)
@@ -42,15 +43,19 @@ export function RequestCoachButton({ coachId, coachName, requestStatus, requestI
     e.preventDefault()
     setError(null)
     startTransition(async () => {
-      const result = await createCoachRequest(coachId, sports, need.trim())
-      if (result.error) {
-        setError(result.error)
-        return
+      try {
+        const result = await createCoachRequest(coachId, sports, need.trim())
+        if (result.error) {
+          setError(result.error)
+          return
+        }
+        setOpen(false)
+        setSports([])
+        setNeed('')
+        router.refresh()
+      } catch {
+        setError(tErrors('somethingWentWrong'))
       }
-      setOpen(false)
-      setSports([])
-      setNeed('')
-      router.refresh()
     })
   }
 
