@@ -160,6 +160,47 @@ export async function getMyCoachRequests(): Promise<{ id: string; coach_id: stri
   return (data ?? []).map((r) => ({ id: r.id, coach_id: r.coach_id, status: r.status }))
 }
 
+/** Détail d'une demande pour affichage dans la modale (athlète). */
+export type CoachRequestDetail = {
+  id: string
+  coach_id: string
+  status: string
+  sport_practiced: string
+  coaching_need: string
+  created_at: string
+  frozen_title_fr: string | null
+  frozen_title_en: string | null
+  frozen_title: string | null
+  frozen_description_fr: string | null
+  frozen_description_en: string | null
+  frozen_description: string | null
+  frozen_price: number | null
+  frozen_price_type: string | null
+}
+
+/** Athlète : détail d'une demande envoyée (pour la modale). Retourne notFound si introuvable ou non autorisé. */
+export async function getCoachRequestDetail(
+  requestId: string
+): Promise<{ error?: string; notFound?: boolean } | CoachRequestDetail> {
+  const supabase = await createClient()
+  const result = await requireUser(supabase)
+  if ('error' in result) return { error: 'auth', notFound: false }
+
+  const { user } = result
+
+  const { data, error } = await supabase
+    .from('coach_requests')
+    .select(
+      'id, coach_id, status, sport_practiced, coaching_need, created_at, frozen_title_fr, frozen_title_en, frozen_title, frozen_description_fr, frozen_description_en, frozen_description, frozen_price, frozen_price_type'
+    )
+    .eq('id', requestId)
+    .eq('athlete_id', user.id)
+    .single()
+
+  if (error || !data) return { notFound: true }
+  return data as CoachRequestDetail
+}
+
 /** Athlète : annuler une demande en attente. */
 export async function cancelCoachRequest(requestId: string): Promise<CoachRequestResult> {
   const supabase = await createClient()

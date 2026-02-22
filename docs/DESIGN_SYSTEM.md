@@ -1041,6 +1041,9 @@ Toutes les icônes de sports sont définies dans `components/SportIcons.tsx` et 
 
 ### Autres icônes
 
+- **`components/icons/IconClose`** : fermeture (X). Utilisée dans les modales, headers.
+- **`components/icons/IconHourglass`** : sablier (en attente). Utilisée dans la modale détail demande envoyée (pill « En attente »).
+- **`components/icons/IconSend`** : envoi (avion). Utilisée dans le bouton « Demande envoyée » de la tuile coach (Trouver un coach).
 - Utiliser des SVG inline pour les icônes custom (CheckIcon, CrossIcon, CrownIcon, etc.)
 - Pour les icônes génériques, Heroicons est disponible si besoin
 

@@ -18,7 +18,7 @@
 - **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), stack technique
 - **Utiliser pour :** Comprendre le projet, les features, les rôles, l'architecture globale
 - **Taille :** ~400 lignes
-- **Dernière mise à jour :** 19 février 2026 (section 4.10 Vue souscription / résiliation / En résiliation, data model subscriptions)
+- **Dernière mise à jour :** 22 février 2026 (§4.4 voir demande envoyée)
 
 ### **docs/DESIGN_SYSTEM.md** ⭐
 - **Contenu :** Tokens (couleurs, typo, espacements), composants (Button, Input, Badge, TileCard, DashboardPageShell, Modal, etc.), guidelines UI, exemples de code
@@ -93,7 +93,7 @@
 > **Tous les documents d'audit, de refactoring et d'états des lieux ont été archivés dans `docs/archive/`**  
 > Ils servent de référence historique mais ne sont plus nécessaires au quotidien.
 
-### Documents archivés (32 fichiers)
+### Documents archivés (35 fichiers)
 
 **Audit & Plan initial :**
 - `AUDIT_COMPLET.md` - Audit complet du projet (13 février 2026) - 1202 lignes
@@ -147,6 +147,12 @@
 - `docs/archive/subscription-view-end/SUBSCRIPTION_CANCELLATION_SCHEDULED_DESIGN.md` — Brief design « En résiliation » (badge ambre, annulation résiliation)
 - `docs/archive/subscription-view-end/SUBSCRIPTION_CANCELLATION_SCHEDULED_ARCHI_ANALYSIS.md` — Analyse Architecte « En résiliation »
 - **Raison :** Features livrées ; comportement décrit dans **Project_context.md §4.10** (Subscription view, end, and cancellation scheduled) et data model §5.
+
+**Voir la demande envoyée (athlète) (archivés 22 février 2026) :**
+- `docs/archive/athlete-view-sent-request/ATHLETE_VIEW_SENT_REQUEST_DESIGN.md` — Design + user stories (tuile footer, modale détail)
+- `docs/archive/athlete-view-sent-request/ATHLETE_VIEW_SENT_REQUEST_ARCHI.md` — Spec technique (getCoachRequestDetail, AthleteSentRequestDetailModal)
+- `docs/archive/athlete-view-sent-request/athlete-view-sent-request-mockup.html` — Mockup HTML (tuile + modale)
+- **Raison :** Feature livrée ; comportement décrit dans **Project_context.md §4.4** (Flow : demande pending, « Demande envoyée > », modale détail).
 
 **Migrations i18n (archivées 16 février 2026) :**
 - `I18N_IMPLEMENTATION.md` - Implémentation de base i18n (contenu consolidé dans docs/I18N.md)
@@ -248,6 +254,11 @@
 
 ### Changements récents :
 
+✅ **22 février 2026 – Voir la demande envoyée (athlète) – Mode Analyste :**
+- **Livraison :** L’athlète peut consulter le détail d’une demande envoyée (pending) : footer tuile « Annuler la demande » + « Demande envoyée > », modale avec offre figée, sports, message, date ; annulation depuis la tuile ou la modale.
+- **Mises à jour doc :** Project_context.md §4.4 (phrase sur demande pending + modale détail), docs/I18N.md (namespaces `requestCoachButton`, `athleteSentRequest`, date 22 fév.).
+- **Archivage :** ATHLETE_VIEW_SENT_REQUEST_DESIGN.md, ATHLETE_VIEW_SENT_REQUEST_ARCHI.md, athlete-view-sent-request-mockup.html déplacés dans `docs/archive/athlete-view-sent-request/`. Référence courante : **Project_context.md §4.4**.
+
 ✅ **22 février 2026 – Correctif envoi demande coach (Mode Analyste) :**
 - **Livraison :** Correction du blocage « Envoi en cours » lors de l’envoi d’une demande à un coach (avec offre) : try/catch/finally côté client (FindCoachSection, RequestCoachButton), try/catch global + log erreur insert côté serveur (createCoachRequest).
 - **Mise à jour doc :** Project_context.md §4.4 (Flow) : une phrase sur la gestion d’erreur (message utilisateur, pas de blocage).
@@ -333,6 +344,7 @@
 | Tuile archivée / offres archivées / historique souscriptions (issue #43) | `docs/DESIGN_SYSTEM.md` § TileCard (stone, badge) |
 | **Vue souscription, résiliation, « En résiliation »** | **`Project_context.md` §4.10** |
 | Envoi demande coach / erreur ou blocage « Envoi en cours » | `Project_context.md` §4.4 (Flow) |
+| **Voir la demande envoyée (athlète) / modale détail demande** | **`Project_context.md` §4.4** (demande pending, « Demande envoyée > », modale) |
 | Conventions de code | `.cursor/rules/project-core.mdc` |
 | Pattern bouton sauvegarde | `docs/PATTERN_SAVE_BUTTON.md` |
 | Déploiement | `DEPLOYMENT_NOTES.md`, `MISE_EN_PROD.md` |
