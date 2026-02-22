@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 21 février 2026
+**Dernière mise à jour :** 22 février 2026
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -118,6 +118,10 @@
 - `BUGFIX_comment_button_success_state.md`
 - `BUGFIX_athlete_comments_v2.md`
 - `BUGFIX_athlete_comments.md`
+
+**Correctif envoi demande coach (archivé 22 février 2026) :**
+- `docs/archive/bugfix-coach-request-envoi/ARCHI_COACH_REQUEST_ENVOI_BLOQUE_ANALYSIS.md` — Analyse Architecte (blocage « Envoi en cours », try/catch client + serveur, logs insert)
+- **Raison :** Correctif livré ; comportement décrit dans **Project_context.md §4.4** (Flow, gestion d’erreur envoi demande).
 
 ### Pourquoi archivés ?
 
@@ -239,10 +243,15 @@
 
 **Fréquence de mise à jour :** À chaque ajout/suppression de documentation
 
-**Dernier scan :** 21 février 2026  
-**Dernier nettoyage :** 21 février 2026
+**Dernier scan :** 22 février 2026  
+**Dernier nettoyage :** 22 février 2026
 
 ### Changements récents :
+
+✅ **22 février 2026 – Correctif envoi demande coach (Mode Analyste) :**
+- **Livraison :** Correction du blocage « Envoi en cours » lors de l’envoi d’une demande à un coach (avec offre) : try/catch/finally côté client (FindCoachSection, RequestCoachButton), try/catch global + log erreur insert côté serveur (createCoachRequest).
+- **Mise à jour doc :** Project_context.md §4.4 (Flow) : une phrase sur la gestion d’erreur (message utilisateur, pas de blocage).
+- **Archivage :** docs/ARCHI_COACH_REQUEST_ENVOI_BLOQUE_ANALYSIS.md déplacé dans `docs/archive/bugfix-coach-request-envoi/`. Référence courante : Project_context.md §4.4.
 
 ✅ **21 février 2026 – Vue souscription, résiliation, « En résiliation » (archivage) :**
 - **Livraison :** Fonctionnalités subscription view/end et subscription cancellation scheduled implémentées ; doc déjà alignée (Project_context.md §4.10, data model subscriptions).
@@ -323,6 +332,7 @@
 | Calendrier responsive / mobile (issue #44) | `Project_context.md` §4.5, `docs/DESIGN_SYSTEM.md` §7 |
 | Tuile archivée / offres archivées / historique souscriptions (issue #43) | `docs/DESIGN_SYSTEM.md` § TileCard (stone, badge) |
 | **Vue souscription, résiliation, « En résiliation »** | **`Project_context.md` §4.10** |
+| Envoi demande coach / erreur ou blocage « Envoi en cours » | `Project_context.md` §4.4 (Flow) |
 | Conventions de code | `.cursor/rules/project-core.mdc` |
 | Pattern bouton sauvegarde | `docs/PATTERN_SAVE_BUTTON.md` |
 | Déploiement | `DEPLOYMENT_NOTES.md`, `MISE_EN_PROD.md` |
