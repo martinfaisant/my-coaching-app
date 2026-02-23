@@ -35,7 +35,7 @@ export default function LoginPage() {
                 autoComplete="email"
                 required
                 placeholder={t('emailPlaceholder')}
-                className="rounded-xl focus:ring-palette-olive"
+                className="rounded-xl"
               />
               <Input
                 id="password"
@@ -45,7 +45,7 @@ export default function LoginPage() {
                 autoComplete="current-password"
                 required
                 placeholder={t('passwordPlaceholder')}
-                className="rounded-xl focus:ring-palette-olive"
+                className="rounded-xl"
               />
               {loginState?.error && (
                 <p className="text-sm text-red-600" role="alert">
@@ -121,7 +121,7 @@ export default function LoginPage() {
                 autoComplete="email"
                 required
                 placeholder={t('emailPlaceholder')}
-                className="rounded-xl focus:ring-palette-olive"
+                className="rounded-xl"
               />
               <Input
                 id="signup-password"
@@ -132,7 +132,7 @@ export default function LoginPage() {
                 required
                 minLength={6}
                 placeholder={t('passwordPlaceholder')}
-                className="rounded-xl focus:ring-palette-olive"
+                className="rounded-xl"
               />
               {signupState?.error && (
                 <p className="text-sm text-red-600" role="alert">

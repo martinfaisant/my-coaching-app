@@ -222,7 +222,6 @@ export function CoachRatingForm({ coachId, initialRating, initialComment }: Coac
         onChange={(e) => setComment(e.target.value)}
         rows={3}
         placeholder={t('commentPlaceholder')}
-        className="focus:ring-palette-olive"
       />
     </form>
 

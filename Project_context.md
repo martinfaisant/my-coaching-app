@@ -212,6 +212,14 @@ Athletes filter coaches by:
 - 1-to-1 chat: Athlete ↔ Coach
 - One conversation per coach–athlete pair
 - Simple text messages (no attachments, no rich formatting in MVP)
+- Coach can start a conversation from the chat overlay by opening the athlete list and selecting an athlete (conversation is created if needed)
+- Coach overlay states:
+  - state 1: no open conversation → athlete list
+  - state 2a/2b: open conversations in sidebar + conversation panel
+  - state 3: "Ouvrir une discussion" view (athlete list + search)
+- Closing a conversation removes it from the coach sidebar (open conversations list is persisted while navigating inside dashboard pages)
+- Athlete list includes subscriptions with status `active` and `cancellation_scheduled`
+- Mobile chat layout uses the same project breakpoint as calendar: `< md` list/conversation navigation with back button, `>= md` desktop sidebar + panel layout
 
 ---
 

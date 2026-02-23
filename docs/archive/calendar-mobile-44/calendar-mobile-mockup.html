@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Issue #44 – Calendrier mobile (mockup)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            'palette-forest-darker': '#506648',
+            'palette-olive': '#8e9856',
+            'palette-sage': '#aaaa51',
+            'palette-gold': '#cbb44b',
+            'palette-amber': '#c9a544',
+            'palette-danger': '#c0564b',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Simuler le conteneur dashboard */
+    body { font-family: ui-sans-serif, system-ui, sans-serif; }
+    .mockup-note { font-size: 0.7rem; color: #78716c; margin-top: 1rem; }
+  </style>
+</head>
+<body class="bg-stone-100 min-h-screen p-4">
+  <!-- Conteneur type mobile (max 428px pour preview) -->
+  <div class="mx-auto max-w-[428px] min-h-[600px] flex flex-col bg-white/50 rounded-2xl overflow-hidden border border-stone-200/50 shadow-sm">
+    <!-- En-tête 2 lignes : titre puis sélecteur de semaine -->
+    <header class="flex flex-col gap-3 shrink-0 bg-white/80 backdrop-blur-md border-b border-stone-100 px-4 py-4 z-10">
+      <h1 class="text-xl font-bold text-stone-800">Calendrier</h1>
+      <div class="flex items-center justify-center w-full">
+        <div class="flex items-center gap-3 bg-stone-50 p-1.5 rounded-xl border border-stone-200 shadow-sm w-full max-w-[320px]">
+          <button type="button" class="p-1.5 min-h-10 hover:bg-white text-stone-500 hover:text-palette-forest-dark shadow-sm flex items-center gap-1.5 rounded-lg flex-1 justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="m15 18-7-7 7-7"/></svg>
+            <span class="text-xs text-stone-600 whitespace-nowrap">9 févr.</span>
+          </button>
+          <div class="px-2 text-sm font-bold text-stone-800 select-none text-center shrink-0 flex-1 min-w-0">
+            16 févr. – 22 févr.
+          </div>
+          <button type="button" class="p-1.5 min-h-10 hover:bg-white text-stone-500 hover:text-palette-forest-dark shadow-sm flex items-center gap-1.5 rounded-lg flex-1 justify-center">
+            <span class="text-xs text-stone-600 whitespace-nowrap">23 févr.</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Zone scrollable : une seule semaine, jours empilés -->
+    <div class="flex-1 overflow-y-auto px-4 py-4">
+      <!-- Titre de la semaine (optionnel, comme en desktop) -->
+      <div class="mb-4">
+        <h2 class="text-xl font-bold text-palette-forest-dark">Cette semaine</h2>
+        <span class="text-stone-400 font-medium text-sm">— 16 févr. au 22 févr.</span>
+      </div>
+
+      <!-- 7 jours empilés verticalement -->
+      <div class="flex flex-col gap-3">
+        <!-- Lundi -->
+        <section class="rounded-lg border border-stone-200 bg-stone-100/50 overflow-hidden">
+          <div class="flex items-center gap-2 px-3 py-2 border-b border-stone-200 bg-white/60">
+            <span class="text-xs font-medium uppercase tracking-wider text-stone-500">Lun.</span>
+            <span class="text-sm font-semibold text-stone-800">17</span>
+            <span class="text-xs text-stone-400">févr.</span>
+          </div>
+          <div class="p-3 min-h-20">
+            <p class="text-xs text-stone-400">Aucun entraînement</p>
+          </div>
+        </section>
+
+        <!-- Mardi -->
+        <section class="rounded-lg border border-stone-200 bg-white shadow-sm overflow-hidden">
+          <div class="flex items-center gap-2 px-3 py-2 border-b border-stone-200 bg-white">
+            <span class="text-xs font-medium uppercase tracking-wider text-stone-500">Mar.</span>
+            <span class="text-sm font-semibold text-stone-800">18</span>
+            <span class="text-xs text-stone-400">févr.</span>
+          </div>
+          <div class="p-3 space-y-2">
+            <div class="rounded border-l-4 border-palette-forest-dark bg-white p-2 shadow-sm">
+              <div class="text-xs font-semibold text-stone-700">Course — 45'</div>
+              <div class="text-[10px] text-stone-400 mt-1">Endurance fondamentale</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Mercredi -->
+        <section class="rounded-lg border border-stone-200 bg-white shadow-sm overflow-hidden">
+          <div class="flex items-center gap-2 px-3 py-2 border-b border-stone-200 bg-white">
+            <span class="text-xs font-medium uppercase tracking-wider text-palette-forest-dark font-semibold">Mer.</span>
+            <span class="text-sm font-bold text-palette-forest-dark">19</span>
+            <span class="text-xs text-stone-400">févr.</span>
+            <span class="ml-auto text-[10px] font-medium text-palette-forest-dark bg-palette-forest-dark/10 px-1.5 py-0.5 rounded">Aujourd'hui</span>
+          </div>
+          <div class="p-3 space-y-2">
+            <div class="rounded border-l-4 border-palette-olive bg-white p-2 shadow-sm">
+              <div class="text-xs font-semibold text-stone-700">Vélo — 1h00</div>
+              <div class="text-[10px] text-stone-400 mt-1">Sortie longue</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Jeudi -->
+        <section class="rounded-lg border border-stone-200 bg-stone-100/50 overflow-hidden">
+          <div class="flex items-center gap-2 px-3 py-2 border-b border-stone-200 bg-white/60">
+            <span class="text-xs font-medium uppercase tracking-wider text-stone-500">Jeu.</span>
+            <span class="text-sm font-semibold text-stone-800">20</span>
+            <span class="text-xs text-stone-400">févr.</span>
+          </div>
+          <div class="p-3 min-h-20">
+            <p class="text-xs text-stone-400">Repos ou récup</p>
+          </div>
+        </section>
+
+        <!-- Vendredi -->
+        <section class="rounded-lg border border-stone-200 bg-white shadow-sm overflow-hidden">
+          <div class="flex items-center gap-2 px-3 py-2 border-b border-stone-200 bg-white">
+            <span class="text-xs font-medium uppercase tracking-wider text-stone-500">Ven.</span>
+            <span class="text-sm font-semibold text-stone-800">21</span>
+            <span class="text-xs text-stone-400">févr.</span>
+          </div>
+          <div class="p-3 space-y-2">
+            <div class="rounded border-l-4 border-palette-forest-dark bg-white p-2 shadow-sm">
+              <div class="text-xs font-semibold text-stone-700">Course — 30'</div>
+              <div class="text-[10px] text-stone-400 mt-1">Footing léger</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Samedi -->
+        <section class="rounded-lg border border-stone-200 bg-white shadow-sm overflow-hidden">
+          <div class="flex items-center gap-2 px-3 py-2 border-b border-stone-200 bg-white">
+            <span class="text-xs font-medium uppercase tracking-wider text-stone-500">Sam.</span>
+            <span class="text-sm font-semibold text-stone-800">22</span>
+            <span class="text-xs text-stone-400">févr.</span>
+          </div>
+          <div class="p-3 space-y-2">
+            <div class="rounded border-l-4 border-palette-amber bg-white p-2 shadow-sm">
+              <div class="text-xs font-semibold text-stone-700">Objectif — Semi-marathon</div>
+              <div class="text-[10px] text-stone-400 mt-1">21,1 km</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Dimanche -->
+        <section class="rounded-lg border border-stone-200 bg-stone-100/50 overflow-hidden">
+          <div class="flex items-center gap-2 px-3 py-2 border-b border-stone-200 bg-white/60">
+            <span class="text-xs font-medium uppercase tracking-wider text-stone-500">Dim.</span>
+            <span class="text-sm font-semibold text-stone-800">23</span>
+            <span class="text-xs text-stone-400">févr.</span>
+          </div>
+          <div class="p-3 min-h-20">
+            <p class="text-xs text-stone-400">Aucun entraînement</p>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <p class="mockup-note text-center">Mockup issue #44 – Calendrier mobile. Non fonctionnel. Design system (tokens palette, rounded-xl, etc.).</p>
+</body>
+</html>

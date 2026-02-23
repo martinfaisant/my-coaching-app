@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 22 février 2026
+**Dernière mise à jour :** 22 février 2026 (chat coach livré)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -24,7 +24,7 @@
 - **Contenu :** Tokens (couleurs, typo, espacements), composants (Button, Input, Badge, TileCard, DashboardPageShell, Modal, etc.), guidelines UI, exemples de code
 - **Utiliser pour :** Créer ou modifier des composants UI, choisir des couleurs, appliquer le design system
 - **Taille :** ~850 lignes
-- **Dernière mise à jour :** 21 février 2026 (TileCard : variante stone + prop badge, tuiles archivées/terminées)
+- **Dernière mise à jour :** 22 février 2026 (breakpoint responsive projet `md` documenté : calendrier + chat)
 
 ### **docs/I18N.md** ⭐
 - **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces, utilisation dans composants et server actions, **checklist pour nouvelles features** (toujours penser bilingue)
@@ -68,6 +68,12 @@
 - **Contenu :** Note d’architecture : freeze du titre et de la description d’offre en **FR et EN** au moment de la demande et dans les souscriptions (actuellement une seule langue est figée)
 - **Utiliser pour :** Évolution modèle (coach_requests, subscriptions) et code (createCoachRequest, respondToCoachRequest, affichage) pour figer et afficher les deux langues
 - **Créé le :** 19 février 2026
+
+### **Chat – Coach peut démarrer une conversation (feature livrée)**
+- **Design :** `docs/CHAT_COACH_START_CONVERSATION_DESIGN.md` — Besoin, décisions PO, solution (états 1, 2a, 2b), user stories (US1–US8), composants à utiliser/créer, i18n
+- **Architecture :** `docs/CHAT_COACH_START_CONVERSATION_ARCHI.md` — Fichiers (Créer/Modifier), flux, données (aucune migration), RLS, actions serveur, tests manuels, points à trancher
+- **Mockup :** `docs/chat-coach-start-conversation-mockup.html` — États 1, 2a, 2b, 3, mobile (non fonctionnel)
+- **Utiliser pour :** Référence fonctionnelle (états overlay coach, vue mobile, règles d’ouverture/fermeture de conversations) et maintenance
 
 ---
 
@@ -254,6 +260,11 @@
 
 ### Changements récents :
 
+✅ **22 février 2026 – Chat coach : démarrer/ouvrir/fermer des conversations (Mode Analyste) :**
+- **Livraison :** Le coach peut ouvrir une discussion depuis l’overlay (bouton « Ouvrir une discussion »), rechercher un athlète (déclenchement sur Entrée), ouvrir une conversation existante sans doublon, et fermer une conversation (elle disparaît de la sidebar des conversations ouvertes). Persistance des conversations ouvertes/fermées dans le module.
+- **Vue mobile :** Overlay chat responsive aligné sur le breakpoint projet `md` (navigation liste ↔ conversation en mobile, sidebar + panneau en desktop).
+- **Mises à jour doc :** Project_context.md §4.6 (messaging coach + mobile + persistance), docs/DESIGN_SYSTEM.md (date + rappel breakpoint `md`), DOCS_INDEX.md (feature chat marquée livrée).
+
 ✅ **22 février 2026 – Voir la demande envoyée (athlète) – Mode Analyste :**
 - **Livraison :** L’athlète peut consulter le détail d’une demande envoyée (pending) : footer tuile « Annuler la demande » + « Demande envoyée > », modale avec offre figée, sports, message, date ; annulation depuis la tuile ou la modale.
 - **Mises à jour doc :** Project_context.md §4.4 (phrase sur demande pending + modale détail), docs/I18N.md (namespaces `requestCoachButton`, `athleteSentRequest`, date 22 fév.).
@@ -345,6 +356,7 @@
 | **Vue souscription, résiliation, « En résiliation »** | **`Project_context.md` §4.10** |
 | Envoi demande coach / erreur ou blocage « Envoi en cours » | `Project_context.md` §4.4 (Flow) |
 | **Voir la demande envoyée (athlète) / modale détail demande** | **`Project_context.md` §4.4** (demande pending, « Demande envoyée > », modale) |
+| **Chat – Coach démarrer une conversation (états overlay, sidebar, recherche)** | **`Project_context.md` §4.6** (comportement livré), + docs de feature: `docs/CHAT_COACH_START_CONVERSATION_DESIGN.md`, `docs/CHAT_COACH_START_CONVERSATION_ARCHI.md`, mockup `docs/chat-coach-start-conversation-mockup.html` |
 | Conventions de code | `.cursor/rules/project-core.mdc` |
 | Pattern bouton sauvegarde | `docs/PATTERN_SAVE_BUTTON.md` |
 | Déploiement | `DEPLOYMENT_NOTES.md`, `MISE_EN_PROD.md` |

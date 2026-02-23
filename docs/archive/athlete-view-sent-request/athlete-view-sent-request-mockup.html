@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mockup – Demande envoyée (athlète)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette': {
+              'forest-dark': '#627e59',
+              'forest-darker': '#506648',
+              'olive': '#8e9856',
+              'gold': '#cbb44b',
+              'danger': '#c0564b',
+              'danger-light': '#fdf2f1',
+            },
+          },
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-stone-100 min-h-screen p-8">
+  <div class="max-w-4xl mx-auto space-y-8">
+    <h1 class="text-2xl font-bold text-stone-900">Mockup – Voir la demande envoyée</h1>
+    <p class="text-sm text-stone-600">Tuile coach (design system) en état « demande en attente » : bouton danger Annuler la demande à gauche, « Demande envoyée &gt; » (muted) à droite.</p>
+
+    <!-- ========== TUILE COACH – structure identique à CoachTile (design system) ========== -->
+    <article class="bg-white rounded-2xl border border-stone-200 shadow-sm hover:shadow-lg hover:border-palette-forest-dark/30 transition-all flex flex-col overflow-hidden group h-full max-w-sm">
+      <div class="p-6 flex flex-col flex-grow">
+        <!-- Header: avatar + nom + note / nouveau -->
+        <div class="flex items-start justify-between mb-4">
+          <div class="flex items-center gap-3">
+            <div class="relative">
+              <div class="w-12 h-12 rounded-full bg-palette-olive text-white flex items-center justify-center text-base font-bold ring-2 ring-stone-100 group-hover:ring-palette-forest-dark/20 transition-all">MD</div>
+              <div class="absolute -bottom-1 -right-1 bg-blue-500 text-white p-0.5 rounded-full ring-2 ring-white">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+            </div>
+            <div>
+              <h3 class="font-bold text-lg leading-tight text-stone-900 group-hover:text-palette-forest-dark transition-colors">Marie Dupont</h3>
+              <div class="flex items-center gap-1 text-xs text-stone-500 mt-0.5">
+                <span class="text-amber-500 font-bold flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 fill-current mr-0.5" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                  4.8
+                </span>
+                <span>(12 avis)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Tags sports (Badge avec icônes – design system) -->
+        <div class="flex flex-wrap gap-2 mb-4">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-palette-forest-dark/10 text-palette-forest-dark border border-palette-forest-dark/20">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" class="w-4 h-4 shrink-0" fill="currentColor" aria-hidden><path d="M352.5 32C383.4 32 408.5 57.1 408.5 88C408.5 118.9 383.4 144 352.5 144C321.6 144 296.5 118.9 296.5 88C296.5 57.1 321.6 32 352.5 32zM219.6 240C216.3 240 213.4 242 212.2 245L190.2 299.9C183.6 316.3 165 324.3 148.6 317.7C132.2 311.1 124.2 292.5 130.8 276.1L152.7 221.2C163.7 193.9 190.1 176 219.6 176L316.9 176C345.4 176 371.7 191.1 386 215.7L418.8 272L480.4 272C498.1 272 512.4 286.3 512.4 304C512.4 321.7 498.1 336 480.4 336L418.8 336C396 336 375 323.9 363.5 304.2L353.5 287.1L332.8 357.5L408.2 380.1C435.9 388.4 450 419.1 438.3 445.6L381.7 573C374.5 589.2 355.6 596.4 339.5 589.2C323.4 582 316.1 563.1 323.3 547L372.5 436.2L276.6 407.4C243.9 397.6 224.6 363.7 232.9 330.6L255.6 240L219.7 240zM211.6 421C224.9 435.9 242.3 447.3 262.8 453.4L267.5 454.8L260.6 474.1C254.8 490.4 244.6 504.9 231.3 515.9L148.9 583.8C135.3 595 115.1 593.1 103.9 579.5C92.7 565.9 94.6 545.7 108.2 534.5L190.6 466.6C195.1 462.9 198.4 458.1 200.4 452.7L211.6 421z"/></svg>
+            Course
+          </span>
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-palette-gold/10 text-palette-gold border border-palette-gold/20">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg>
+            Trail
+          </span>
+        </div>
+        <!-- Bio (3 lignes) -->
+        <p class="text-sm text-stone-500 leading-relaxed line-clamp-3 mb-5 flex-1 pb-0.5">Coach running et trail, prépa objectifs. Accompagnement personnalisé pour coureurs et traileurs, du débutant au confirmé.</p>
+        <!-- Bloc offres -->
+        <div class="bg-stone-50 rounded-xl p-3 border border-stone-100 mb-2">
+          <div class="mb-3">
+            <p class="text-[10px] font-bold text-stone-400 uppercase tracking-wider">Offres disponibles</p>
+          </div>
+          <div class="space-y-2.5">
+            <div class="flex justify-between items-center">
+              <div class="flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-sm shadow-emerald-200"></span>
+                <span class="text-xs font-semibold text-stone-700">Accompagnement 6 mois</span>
+              </div>
+              <div class="text-right">
+                <span class="text-xs font-bold text-stone-900">49€</span>
+                <span class="text-[10px] text-stone-400">/mois</span>
+              </div>
+            </div>
+            <div class="flex justify-between items-center">
+              <div class="flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                <span class="text-xs font-medium text-stone-600">Séance découverte</span>
+              </div>
+              <div class="text-right">
+                <span class="text-xs font-bold text-palette-forest-dark bg-palette-forest-dark/10 px-1.5 py-0.5 rounded">Gratuit</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Footer : Annuler la demande (danger) à gauche, Demande envoyée > (muted) à droite -->
+      <div class="p-4 border-t border-stone-100 bg-stone-50 mt-auto w-full">
+        <div class="flex items-center justify-between gap-3">
+          <button type="button" class="rounded-lg min-h-10 px-4 py-2.5 text-sm font-medium text-stone-700 hover:text-palette-danger hover:bg-palette-danger-light transition-colors">
+            Annuler la demande
+          </button>
+          <button type="button" class="rounded-lg min-h-10 px-4 py-2.5 text-sm font-medium border border-stone-300 text-stone-600 hover:bg-stone-50 hover:text-stone-800 transition-colors flex items-center gap-1.5 shrink-0">
+
+            Demande envoyée
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+    </article>
+
+    <!-- Bouton pour ouvrir la modale (simulation) -->
+    <div>
+      <button type="button" id="openModal" class="rounded-lg px-4 py-2.5 text-sm font-medium bg-palette-forest-dark text-white hover:bg-palette-olive">
+        Ouvrir la modale « Détail de la demande »
+      </button>
+    </div>
+
+    <!-- ========== MODALE – Détail de la demande envoyée ========== -->
+    <div id="modalBackdrop" class="fixed inset-0 bg-stone-900/50 backdrop-blur-sm z-[90] hidden" aria-hidden="true"></div>
+    <div id="modalRoot" class="fixed inset-0 z-[100] flex items-center justify-center p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="request-detail-title">
+      <div class="relative w-full max-w-lg max-h-[90vh] overflow-hidden bg-white rounded-2xl shadow-xl border border-stone-200 flex flex-col">
+        <!-- Header : titre, envoyée à + date, statut En attente (sablier) -->
+        <div class="shrink-0 px-6 pt-5 pb-4 border-b border-stone-100">
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <h2 id="request-detail-title" class="text-xl font-bold text-stone-900">Votre demande</h2>
+              <p class="text-sm text-stone-600 mt-0.5">Envoyée à <strong class="text-stone-800">Marie Dupont</strong> · 22 février 2026</p>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-palette-amber/15 text-palette-amber border border-palette-amber/30">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0" aria-hidden><path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"/><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/></svg>
+                En attente
+              </span>
+              <button type="button" id="closeModal" class="rounded-lg min-h-9 min-w-9 p-0 text-stone-400 hover:text-stone-700 hover:bg-stone-100 flex items-center justify-center transition-colors" aria-label="Fermer">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Corps scrollable -->
+        <div class="overflow-y-auto flex-1 px-6 py-6 space-y-6">
+          <!-- Offre choisie – carte mise en avant -->
+          <div class="rounded-xl border border-stone-200 bg-gradient-to-br from-stone-50 to-white overflow-hidden shadow-sm">
+            <div class="border-l-4 border-palette-forest-dark p-4">
+              <div class="flex items-start justify-between gap-3">
+                <div class="min-w-0">
+                  <p class="text-[10px] font-bold uppercase tracking-wider text-palette-forest-dark/80 mb-1">Offre choisie</p>
+                  <p class="font-semibold text-stone-900 text-base">Accompagnement 6 mois</p>
+                  <p class="text-sm text-stone-600 mt-1.5 leading-relaxed">Plan personnalisé, suivi hebdo, prépa objectif. Idéal pour un premier marathon.</p>
+                </div>
+                <div class="shrink-0 rounded-lg bg-palette-forest-dark/10 px-3 py-1.5 text-center">
+                  <span class="text-sm font-bold text-palette-forest-dark">49€</span>
+                  <span class="text-xs text-stone-500 block">/ mois</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sports pratiqués (Badge avec icônes – design system) -->
+          <div>
+            <p class="text-[10px] font-bold uppercase tracking-wider text-stone-400 mb-1.5">Sports pratiqués</p>
+            <div class="flex flex-wrap gap-2">
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-palette-forest-dark/10 text-palette-forest-dark border border-palette-forest-dark/20">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" class="w-4 h-4 shrink-0" fill="currentColor" aria-hidden><path d="M352.5 32C383.4 32 408.5 57.1 408.5 88C408.5 118.9 383.4 144 352.5 144C321.6 144 296.5 118.9 296.5 88C296.5 57.1 321.6 32 352.5 32zM219.6 240C216.3 240 213.4 242 212.2 245L190.2 299.9C183.6 316.3 165 324.3 148.6 317.7C132.2 311.1 124.2 292.5 130.8 276.1L152.7 221.2C163.7 193.9 190.1 176 219.6 176L316.9 176C345.4 176 371.7 191.1 386 215.7L418.8 272L480.4 272C498.1 272 512.4 286.3 512.4 304C512.4 321.7 498.1 336 480.4 336L418.8 336C396 336 375 323.9 363.5 304.2L353.5 287.1L332.8 357.5L408.2 380.1C435.9 388.4 450 419.1 438.3 445.6L381.7 573C374.5 589.2 355.6 596.4 339.5 589.2C323.4 582 316.1 563.1 323.3 547L372.5 436.2L276.6 407.4C243.9 397.6 224.6 363.7 232.9 330.6L255.6 240L219.7 240zM211.6 421C224.9 435.9 242.3 447.3 262.8 453.4L267.5 454.8L260.6 474.1C254.8 490.4 244.6 504.9 231.3 515.9L148.9 583.8C135.3 595 115.1 593.1 103.9 579.5C92.7 565.9 94.6 545.7 108.2 534.5L190.6 466.6C195.1 462.9 198.4 458.1 200.4 452.7L211.6 421z"/></svg>
+                Course
+              </span>
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-palette-gold/10 text-palette-gold border border-palette-gold/20">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg>
+                Trail
+              </span>
+            </div>
+          </div>
+
+          <!-- Votre message – style citation -->
+          <div>
+            <p class="text-[10px] font-bold uppercase tracking-wider text-stone-400 mb-2">Votre message</p>
+            <blockquote class="relative rounded-xl bg-stone-50/80 border border-stone-100 pl-4 py-4 pr-4 border-l-4 border-palette-olive text-sm text-stone-700 leading-relaxed italic">
+              Je prépare le Marathon de Paris en avril et je cherche un suivi structuré sur 3–4 sorties par semaine, avec un plan adapté à mon niveau actuel (semi en 1h45).
+            </blockquote>
+          </div>
+        </div>
+
+        <!-- Footer : Annuler (gauche), Fermer (droite), même taille -->
+        <div class="shrink-0 p-4 border-t border-stone-200 bg-stone-50/80 flex gap-3">
+          <button type="button" class="flex-1 rounded-lg min-h-10 px-4 py-2.5 text-sm font-medium text-stone-700 hover:text-palette-danger hover:bg-palette-danger-light transition-colors">
+            Annuler la demande
+          </button>
+          <button type="button" id="modalCloseBtn" class="flex-1 rounded-lg min-h-10 px-4 py-2.5 text-sm font-medium border border-stone-300 text-stone-700 hover:bg-stone-100 transition-colors">
+            Fermer
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const openBtn = document.getElementById('openModal');
+    const closeBtn = document.getElementById('closeModal');
+    const backdrop = document.getElementById('modalBackdrop');
+    const modalRoot = document.getElementById('modalRoot');
+
+    function openModal() {
+      backdrop.classList.remove('hidden');
+      modalRoot.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeModal() {
+      backdrop.classList.add('hidden');
+      modalRoot.classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    openBtn.addEventListener('click', openModal);
+    closeBtn.addEventListener('click', closeModal);
+    backdrop.addEventListener('click', closeModal);
+    document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
+  </script>
+</body>
+</html>

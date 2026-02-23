@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mockup – Chat coach (overlay moderne, plusieurs états)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette': {
+              'forest-dark': '#627e59',
+              'forest-darker': '#506648',
+              'olive': '#8e9856',
+              'sage': '#aaaa51',
+              'forest-light': '#f0f4ef',
+            },
+          },
+          boxShadow: {
+            'chat': '0 4px 24px -4px rgba(0,0,0,0.08), 0 8px 32px -8px rgba(0,0,0,0.06)',
+            'chat-inner': '0 1px 2px rgba(0,0,0,0.04)',
+          },
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-stone-100 min-h-screen text-stone-800 antialiased">
+  <div class="max-w-6xl mx-auto py-8 px-4 sm:px-6 space-y-16">
+    <header class="text-center">
+      <h1 class="text-2xl font-bold text-stone-900">Chat coach – Overlay moderne</h1>
+      <p class="text-sm text-stone-500 mt-1">Plusieurs états de l’overlay (design épuré, tokens design system).</p>
+    </header>
+
+    <!-- ─── État 1 : Aucune conversation – liste d’athlètes pour démarrer ─── -->
+    <section class="space-y-3">
+      <h2 class="text-sm font-semibold uppercase tracking-wider text-stone-400">État 1 – Aucune conversation (recherche + liste)</h2>
+      <p class="text-sm text-stone-600">À l’ouverture, le coach voit directement la liste de ses athlètes pour en choisir un et démarrer une conversation. La recherche se fait en live : la liste se filtre au fur et à mesure de la saisie (pas besoin d'appuyer sur Entrée).</p>
+      <div class="flex justify-end">
+        <div class="w-full max-w-[560px] rounded-2xl bg-white shadow-chat overflow-hidden border border-stone-200/80 flex flex-col" style="min-height: 480px;">
+          <div class="flex items-center justify-between px-5 py-4 border-b border-stone-100">
+            <span class="text-base font-semibold text-stone-900">Messages</span>
+            <button type="button" class="w-9 h-9 rounded-full flex items-center justify-center text-stone-400 hover:bg-stone-100 hover:text-stone-600 transition-colors" aria-label="Fermer">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+          </div>
+          <div class="flex-1 overflow-y-auto p-4">
+            <div class="relative mb-4">
+              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 pointer-events-none"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg></span>
+              <input type="search" placeholder="Rechercher un athlète..." class="w-full rounded-xl border border-stone-200 bg-stone-50 pl-9 pr-4 py-2.5 text-sm text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-olive/40 focus:border-palette-olive transition" />
+            </div>
+            <p class="text-sm text-stone-500 mb-3">Choisir un athlète pour démarrer une conversation</p>
+            <div class="space-y-2">
+              <button type="button" class="w-full flex items-center gap-3 p-3 rounded-xl border border-stone-200 bg-stone-50/50 hover:bg-palette-forest-light hover:border-palette-olive/30 transition-all text-left group">
+                <div class="w-11 h-11 rounded-full bg-palette-olive text-white flex items-center justify-center text-sm font-semibold shrink-0 shadow-chat-inner">JD</div>
+                <div class="min-w-0 flex-1">
+                  <span class="font-medium text-stone-900 group-hover:text-palette-forest-darker">Jean Dupont</span>
+                </div>
+                <span class="text-xs font-medium text-palette-forest-dark opacity-0 group-hover:opacity-100 transition-opacity shrink-0">Démarrer</span>
+              </button>
+              <button type="button" class="w-full flex items-center gap-3 p-3 rounded-xl border border-stone-200 bg-stone-50/50 hover:bg-palette-forest-light hover:border-palette-olive/30 transition-all text-left group">
+                <div class="w-11 h-11 rounded-full bg-palette-sage text-white flex items-center justify-center text-sm font-semibold shrink-0 shadow-chat-inner">ML</div>
+                <div class="min-w-0 flex-1">
+                  <span class="font-medium text-stone-900 group-hover:text-palette-forest-darker">Marie Martin</span>
+                </div>
+                <span class="text-xs font-medium text-palette-forest-dark opacity-0 group-hover:opacity-100 transition-opacity shrink-0">Démarrer</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── État 2 : Avec conversations – sidebar étendue puis réductible (avatars seuls) ─── -->
+    <section class="space-y-4">
+      <h2 class="text-sm font-semibold uppercase tracking-wider text-stone-400">État 2 – Liste des conversations (sidebar réductible)</h2>
+      <p class="text-sm text-stone-600">La partie gauche peut être réduite : un bouton (chevron) permet de ne montrer que les avatars/initiales des athlètes. Même fonctionnement qu’une sidebar réductible. Bouton Fermer uniquement dans le header de la conversation (à droite du nom), pas dans la sidebar. Liste triée par date du dernier message (reçu ou envoyé), le plus récent en haut. Recherche : résultats sur Entrée uniquement.</p>
+
+      <!-- 2a : Sidebar étendue -->
+      <div>
+        <p class="text-xs text-stone-500 mb-2">2a – Sidebar étendue (noms visibles)</p>
+        <div class="flex justify-end">
+          <div class="w-full max-w-[560px] rounded-2xl bg-white shadow-chat overflow-hidden border border-stone-200/80 flex flex-col" style="min-height: 500px;">
+            <div class="flex items-center justify-between gap-3 px-5 py-4 border-b border-stone-100">
+              <span class="text-base font-semibold text-stone-900">Messages</span>
+              <div class="flex items-center gap-2 flex-1 max-w-[240px] justify-end">
+                <div class="relative flex-1 min-w-0">
+                  <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-stone-400 pointer-events-none">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                  </span>
+                  <input type="search" placeholder="Rechercher un athlète..." class="w-full rounded-lg border border-stone-200 bg-stone-50 pl-8 pr-3 py-2 text-sm text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-olive/40" />
+                </div>
+                <button type="button" class="w-9 h-9 rounded-full flex items-center justify-center text-stone-400 hover:bg-stone-100 hover:text-stone-600 transition-colors shrink-0" aria-label="Fermer">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="flex flex-1 min-h-0">
+              <aside class="w-40 shrink-0 border-r border-stone-100 overflow-y-auto py-2 flex flex-col items-stretch">
+                <button type="button" class="flex items-center justify-end px-2 py-1.5 text-stone-400 hover:text-stone-600 hover:bg-stone-50" aria-label="Réduire la liste">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                </button>
+                <button type="button" class="w-full flex items-center gap-2 px-3 py-2.5 rounded-lg mx-2 bg-palette-forest-light border border-palette-olive/20 text-left">
+                  <div class="w-8 h-8 rounded-full bg-palette-olive text-white flex items-center justify-center text-xs font-semibold shrink-0">JD</div>
+                  <span class="text-sm font-medium text-stone-900 truncate">Jean Dupont</span>
+                </button>
+                <button type="button" class="w-full flex items-center gap-2 px-3 py-2.5 rounded-lg mx-2 hover:bg-stone-50 text-left">
+                  <div class="w-8 h-8 rounded-full bg-stone-300 text-stone-600 flex items-center justify-center text-xs font-semibold shrink-0">ML</div>
+                  <span class="text-sm text-stone-600 truncate">Marie Martin</span>
+                </button>
+              </aside>
+              <div class="flex-1 flex flex-col min-w-0">
+                <div class="flex items-center justify-between px-4 py-3 border-b border-stone-100">
+                  <span class="text-sm font-semibold text-stone-900">Jean Dupont</span>
+                  <button type="button" class="w-8 h-8 rounded-full flex items-center justify-center text-stone-400 hover:bg-stone-100 hover:text-stone-600" aria-label="Fermer la conversation">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                  </button>
+                </div>
+                <div class="flex-1 overflow-y-auto p-4 bg-stone-50/40 space-y-4">
+                  <div class="flex justify-start">
+                    <div class="max-w-[85%] rounded-2xl rounded-tl-md px-4 py-2.5 bg-white border border-stone-200 shadow-chat-inner">
+                      <p class="text-sm text-stone-800">Salut, tu as bien récupéré la séance de ce matin ?</p>
+                      <p class="text-xs text-stone-400 mt-1">10:32</p>
+                    </div>
+                  </div>
+                  <div class="flex justify-end">
+                    <div class="max-w-[85%] rounded-2xl rounded-tr-md px-4 py-2.5 bg-palette-forest-dark text-white shadow-chat-inner">
+                      <p class="text-sm">Oui tout est bon, merci !</p>
+                      <p class="text-xs text-white/70 mt-1">10:35 · Vous</p>
+                    </div>
+                  </div>
+                  <div class="flex justify-start">
+                    <div class="max-w-[85%] rounded-2xl rounded-tl-md px-4 py-2.5 bg-white border border-stone-200 shadow-chat-inner">
+                      <p class="text-sm text-stone-800">Parfait. On enchaîne sur le bloc foncier la semaine prochaine.</p>
+                      <p class="text-xs text-stone-400 mt-1">10:36</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="p-3 border-t border-stone-100 bg-white">
+                  <form class="flex gap-2">
+                    <input type="text" placeholder="Votre message..." class="flex-1 rounded-xl border border-stone-200 bg-stone-50 px-4 py-2.5 text-sm text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-olive/40 focus:border-palette-olive transition" />
+                    <button type="submit" class="shrink-0 w-10 h-10 rounded-xl bg-palette-forest-dark text-white flex items-center justify-center hover:bg-palette-forest-darker transition-colors" aria-label="Envoyer">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2b : Sidebar réduite (avatars / initiales uniquement) -->
+      <div>
+        <p class="text-xs text-stone-500 mb-2">2b – Sidebar réduite (uniquement avatars/initiales, chevron pour rouvrir)</p>
+        <div class="flex justify-end">
+          <div class="w-full max-w-[560px] rounded-2xl bg-white shadow-chat overflow-hidden border border-stone-200/80 flex flex-col" style="min-height: 500px;">
+            <div class="flex items-center justify-between gap-3 px-5 py-4 border-b border-stone-100">
+              <span class="text-base font-semibold text-stone-900">Messages</span>
+              <div class="flex items-center gap-2 flex-1 max-w-[240px] justify-end">
+                <div class="relative flex-1 min-w-0">
+                  <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-stone-400 pointer-events-none"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg></span>
+                  <input type="search" placeholder="Rechercher un athlète..." class="w-full rounded-lg border border-stone-200 bg-stone-50 pl-8 pr-3 py-2 text-sm text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-olive/40" />
+                </div>
+                <button type="button" class="w-9 h-9 rounded-full flex items-center justify-center text-stone-400 hover:bg-stone-100 hover:text-stone-600 transition-colors shrink-0" aria-label="Fermer"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+              </div>
+            </div>
+            <div class="flex flex-1 min-h-0">
+              <aside class="w-14 shrink-0 border-r border-stone-100 overflow-y-auto py-2 flex flex-col items-center gap-1">
+                <button type="button" class="w-8 h-8 rounded-full flex items-center justify-center text-stone-400 hover:bg-stone-100 hover:text-stone-600" aria-label="Étendre la liste">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                </button>
+                <button type="button" class="w-9 h-9 rounded-full bg-palette-olive text-white flex items-center justify-center text-xs font-semibold shrink-0 ring-2 ring-palette-olive/30" title="Jean Dupont">JD</button>
+                <button type="button" class="w-9 h-9 rounded-full bg-stone-300 text-stone-600 flex items-center justify-center text-xs font-semibold shrink-0 hover:ring-2 hover:ring-stone-300" title="Marie Martin">ML</button>
+              </aside>
+              <div class="flex-1 flex flex-col min-w-0">
+                <div class="flex items-center justify-between px-4 py-3 border-b border-stone-100">
+                  <span class="text-sm font-semibold text-stone-900">Jean Dupont</span>
+                  <button type="button" class="w-8 h-8 rounded-full flex items-center justify-center text-stone-400 hover:bg-stone-100 hover:text-stone-600" aria-label="Fermer la conversation">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                  </button>
+                </div>
+                <div class="flex-1 overflow-y-auto p-4 bg-stone-50/40 space-y-4">
+                  <div class="flex justify-start">
+                    <div class="max-w-[85%] rounded-2xl rounded-tl-md px-4 py-2.5 bg-white border border-stone-200 shadow-chat-inner">
+                      <p class="text-sm text-stone-800">Salut, tu as bien récupéré la séance de ce matin ?</p>
+                      <p class="text-xs text-stone-400 mt-1">10:32</p>
+                    </div>
+                  </div>
+                  <div class="flex justify-end">
+                    <div class="max-w-[85%] rounded-2xl rounded-tr-md px-4 py-2.5 bg-palette-forest-dark text-white shadow-chat-inner">
+                      <p class="text-sm">Oui tout est bon, merci !</p>
+                      <p class="text-xs text-white/70 mt-1">10:35 · Vous</p>
+                    </div>
+                  </div>
+                  <div class="flex justify-start">
+                    <div class="max-w-[85%] rounded-2xl rounded-tl-md px-4 py-2.5 bg-white border border-stone-200 shadow-chat-inner">
+                      <p class="text-sm text-stone-800">Parfait. On enchaîne sur le bloc foncier la semaine prochaine.</p>
+                      <p class="text-xs text-stone-400 mt-1">10:36</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="p-3 border-t border-stone-100 bg-white">
+                  <form class="flex gap-2">
+                    <input type="text" placeholder="Votre message..." class="flex-1 rounded-xl border border-stone-200 bg-stone-50 px-4 py-2.5 text-sm text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-olive/40 focus:border-palette-olive transition" />
+                    <button type="submit" class="shrink-0 w-10 h-10 rounded-xl bg-palette-forest-dark text-white flex items-center justify-center hover:bg-palette-forest-darker transition-colors" aria-label="Envoyer">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── État 3 : Vue « Nouvelle conversation » (liste athlètes) ─── -->
+    <section class="space-y-3">
+      <h2 class="text-sm font-semibold uppercase tracking-wider text-stone-400">État 3 – Recherche + liste (même vue qu’état 1, avec Retour)</h2>
+      <p class="text-sm text-stone-600">Recherche par nom pour filtrer, puis choix d’un athlète (liste comme état 1).</p>
+      <div class="flex justify-end">
+        <div class="w-full max-w-[560px] rounded-2xl bg-white shadow-chat overflow-hidden border border-stone-200/80 flex flex-col" style="min-height: 420px;">
+          <div class="flex items-center justify-between px-5 py-4 border-b border-stone-100">
+            <button type="button" class="text-sm text-stone-500 hover:text-stone-700 flex items-center gap-1">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+              Retour
+            </button>
+            <span class="text-base font-semibold text-stone-900">Choisir un athlète</span>
+            <div class="w-9"></div>
+          </div>
+          <div class="flex-1 overflow-y-auto p-4">
+            <div class="relative mb-4">
+              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 pointer-events-none"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg></span>
+              <input type="search" placeholder="Rechercher un athlète..." class="w-full rounded-xl border border-stone-200 bg-stone-50 pl-9 pr-4 py-2.5 text-sm text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-olive/40" />
+            </div>
+            <div class="space-y-2">
+              <button type="button" class="w-full flex items-center gap-3 p-3 rounded-xl border border-stone-200 bg-stone-50/50 hover:bg-palette-forest-light hover:border-palette-olive/30 transition-all text-left group">
+                <div class="w-11 h-11 rounded-full bg-palette-olive text-white flex items-center justify-center text-sm font-semibold shrink-0">JD</div>
+                <div class="min-w-0 flex-1"><span class="font-medium text-stone-900">Jean Dupont</span></div>
+                <span class="text-xs font-medium text-palette-forest-dark opacity-0 group-hover:opacity-100 transition-opacity">Démarrer</span>
+              </button>
+              <button type="button" class="w-full flex items-center gap-3 p-3 rounded-xl border border-stone-200 bg-stone-50/50 hover:bg-palette-forest-light hover:border-palette-olive/30 transition-all text-left group">
+                <div class="w-11 h-11 rounded-full bg-palette-sage text-white flex items-center justify-center text-sm font-semibold shrink-0">ML</div>
+                <div class="min-w-0 flex-1"><span class="font-medium text-stone-900">Marie Martin</span></div>
+                <span class="text-xs font-medium text-palette-forest-dark opacity-0 group-hover:opacity-100 transition-opacity">Démarrer</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- Mobile -->
+    <section class="space-y-4">
+      <h2 class="text-sm font-semibold uppercase tracking-wider text-stone-400">Mobile – Proposition</h2>
+      <p class="text-sm text-stone-600">Overlay en quasi plein écran. Recherche par nom + liste des conversations → tap sur un athlète → écran conversation avec Retour.</p>
+      <div class="flex flex-wrap gap-8 justify-center">
+        <div class="flex flex-col items-center gap-2">
+          <p class="text-xs text-stone-500">Liste</p>
+          <div class="w-[320px] rounded-3xl bg-stone-200/60 p-2 shadow-lg border border-stone-300">
+            <div class="rounded-t-2xl bg-stone-100 h-6 w-full"></div>
+            <div class="bg-white rounded-b-2xl border border-t-0 border-stone-200 flex flex-col" style="min-height: 460px;">
+              <div class="flex items-center justify-between px-4 py-3 border-b border-stone-100">
+                <span class="text-sm font-semibold text-stone-900">Messages</span>
+                <button type="button" class="w-8 h-8 rounded-full flex items-center justify-center text-stone-400"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+              </div>
+              <div class="mx-4 mt-3 relative">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 pointer-events-none"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg></span>
+                <input type="search" placeholder="Rechercher un athlète..." class="w-full rounded-xl border border-stone-200 bg-stone-50 pl-9 pr-4 py-2.5 text-sm placeholder-stone-400" />
+              </div>
+              <div class="flex-1 p-3 space-y-2">
+                <button type="button" class="w-full flex items-center gap-3 p-3 rounded-xl bg-palette-forest-light border border-palette-olive/20 text-left">
+                  <div class="w-10 h-10 rounded-full bg-palette-olive text-white flex items-center justify-center text-xs font-semibold shrink-0">JD</div>
+                  <div class="min-w-0 flex-1 text-left"><span class="text-sm font-medium text-stone-900 block">Jean Dupont</span><span class="text-xs text-stone-500">Dernier message…</span></div>
+                  <svg class="w-4 h-4 text-stone-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                </button>
+                <button type="button" class="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-stone-50 text-left">
+                  <div class="w-10 h-10 rounded-full bg-stone-300 text-stone-600 flex items-center justify-center text-xs font-semibold shrink-0">ML</div>
+                  <div class="min-w-0 flex-1 text-left"><span class="text-sm font-medium text-stone-900 block">Marie Martin</span><span class="text-xs text-stone-500">—</span></div>
+                  <svg class="w-4 h-4 text-stone-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="flex flex-col items-center gap-2">
+          <p class="text-xs text-stone-500">Conversation (Retour)</p>
+          <div class="w-[320px] rounded-3xl bg-stone-200/60 p-2 shadow-lg border border-stone-300">
+            <div class="rounded-t-2xl bg-stone-100 h-6 w-full"></div>
+            <div class="bg-white rounded-b-2xl border border-t-0 border-stone-200 flex flex-col" style="min-height: 460px;">
+              <div class="flex items-center gap-2 px-3 py-3 border-b border-stone-100">
+                <button type="button" class="w-9 h-9 rounded-full flex items-center justify-center text-stone-600 hover:bg-stone-100" aria-label="Retour"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg></button>
+                <span class="text-sm font-semibold text-stone-900">Jean Dupont</span>
+              </div>
+              <div class="flex-1 overflow-y-auto p-3 bg-stone-50/50 space-y-3">
+                <div class="flex justify-start"><div class="max-w-[85%] rounded-2xl rounded-tl-md px-3 py-2 bg-white border border-stone-200 text-sm">Salut, tu as bien récupéré la séance ?</div></div>
+                <div class="flex justify-end"><div class="max-w-[85%] rounded-2xl rounded-tr-md px-3 py-2 bg-palette-forest-dark text-white text-sm">Oui tout est bon, merci !</div></div>
+              </div>
+              <div class="p-3 border-t border-stone-100 bg-white flex gap-2">
+                <input type="text" placeholder="Votre message..." class="flex-1 rounded-xl border border-stone-200 px-3 py-2.5 text-sm" />
+                <button type="button" class="w-10 h-10 rounded-xl bg-palette-forest-dark text-white flex items-center justify-center"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="text-xs text-stone-400 pt-4 border-t border-stone-200">
+      Design system : tokens palette (forest-dark, olive, sage), ombre <code>shadow-chat</code>, bordures légères. Référence : <code>docs/DESIGN_SYSTEM.md</code>, <code>docs/CHAT_COACH_START_CONVERSATION_DESIGN.md</code>.
+    </footer>
+  </div>
+</body>
+</html>
