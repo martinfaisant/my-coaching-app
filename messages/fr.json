@@ -631,6 +631,8 @@
     "filters": {
       "title": "Filtre",
       "reset": "Réinitialiser",
+      "nameSearchLabel": "Rechercher par nom ou prénom",
+      "nameSearchPlaceholder": "Ex. Martin, Dupont…",
       "coachedSport": "Sport coaché",
       "spokenLanguage": "Langue parlée"
     },

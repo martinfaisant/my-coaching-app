@@ -1,7 +1,7 @@
 # 🎨 Design System
 
 **Version :** 1.3  
-**Dernière mise à jour :** 23 février 2026 (responsive grilles Trouver mon coach + My offers)
+**Dernière mise à jour :** 23 février 2026 (filtre par nom Trouver mon coach + responsive)
 
 ---
 
@@ -1188,7 +1188,7 @@ Ce breakpoint `md` est le breakpoint de référence pour les bascules de layout 
 **Usages actuels documentés :**
 - **Calendrier (athlète + coach)** : sous `md`, en-tête sur 2 lignes + 1 semaine en stack ; à partir de `md`, layout desktop (3 semaines, grille 7 colonnes). Détail : `Project_context.md` §4.5.
 - **Chat coach (overlay)** : sous `md`, navigation mobile en 2 écrans (liste des conversations puis conversation avec bouton Retour) ; à partir de `md`, layout desktop avec sidebar + panneau conversation.
-- **Page « Trouver mon coach »** (liste des tuiles coach) : 1 colonne par défaut ; 2 colonnes à partir de `md` (768px) et en `lg` ; 3 colonnes à partir de `xl` (1280px). Fichier : `app/[locale]/dashboard/FindCoachSection.tsx`.
+- **Page « Trouver mon coach »** (liste des tuiles coach) : bloc Filtres avec recherche par nom ou prénom (temps réel), puis grille Sport coaché / Langue parlée en 2 colonnes à partir de `md` (768px) ; liste des tuiles : 1 colonne par défaut, 2 colonnes à partir de `md`, 3 colonnes à partir de `xl` (1280px). Fichier : `app/[locale]/dashboard/FindCoachSection.tsx`.
 - **Page « My offers »** (offres du coach) : 1 colonne en tout temps (toutes largeurs). Fichier : `app/[locale]/dashboard/profile/offers/OffersForm.tsx`.
 
 ### 8. Sports et labels

@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 23 février 2026 (responsive grilles + doc Analyste)
+**Dernière mise à jour :** 23 février 2026 (filtre par nom Trouver mon coach – Mode Analyste)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -146,6 +146,13 @@
 - `docs/archive/subscription-view-end/SUBSCRIPTION_CANCELLATION_SCHEDULED_ARCHI_ANALYSIS.md` — Analyse Architecte « En résiliation »
 - **Raison :** Features livrées ; comportement décrit dans **Project_context.md §4.10** (Subscription view, end, and cancellation scheduled) et data model §5.
 
+**Filtre par nom/prénom (Trouver mon coach) (archivés 23 février 2026) :**
+- `docs/archive/find-coach-name-search/PROPOSAL_FIND_COACH_NAME_SEARCH.md` — Proposition Designer (besoin, 3 solutions UI, choix PO)
+- `docs/archive/find-coach-name-search/USER_STORIES_FIND_COACH_NAME_SEARCH.md` — User stories (US 1–3, critères d’acceptation)
+- `docs/archive/find-coach-name-search/ARCHI_FIND_COACH_NAME_SEARCH.md` — Spec technique (Mode Architecte)
+- `docs/archive/find-coach-name-search/MOCKUP_FIND_COACH_NAME_SEARCH.html` — Mockups HTML (3 propositions)
+- **Raison :** Feature livrée ; comportement décrit dans **Project_context.md** (Athlete – Search coaches) et **docs/DESIGN_SYSTEM.md** §7 (bloc Filtres, breakpoint md).
+
 **Voir la demande envoyée (athlète) (archivés 22 février 2026) :**
 - `docs/archive/athlete-view-sent-request/ATHLETE_VIEW_SENT_REQUEST_DESIGN.md` — Design + user stories (tuile footer, modale détail)
 - `docs/archive/athlete-view-sent-request/ATHLETE_VIEW_SENT_REQUEST_ARCHI.md` — Spec technique (getCoachRequestDetail, AthleteSentRequestDetailModal)
@@ -258,6 +265,12 @@
 
 ### Changements récents :
 
+✅ **23 février 2026 – Filtre par nom/prénom (Trouver mon coach) – Mode Analyste :**
+- **Livraison :** Sur la page « Trouver mon coach », l’athlète peut filtrer les coachs par nom ou prénom (champ unique, temps réel, contient, insensible à la casse). Le bouton Réinitialiser vide aussi ce champ. Grille Sport coaché / Langue parlée en 2 colonnes à partir de `md` (768px).
+- **Mises à jour doc :** `Project_context.md` (Athlete : filter by name), `docs/DESIGN_SYSTEM.md` §7 (bloc Filtres + recherche nom, breakpoint md pour la grille).
+- **i18n :** Namespace `findCoach` : clés `filters.nameSearchLabel`, `filters.nameSearchPlaceholder` (FR/EN).
+- **Archivage :** Docs de feature déplacés dans `docs/archive/find-coach-name-search/`. Référence courante : **Project_context.md** (Find a coach), **docs/DESIGN_SYSTEM.md** §7.
+
 ✅ **23 février 2026 – Responsive grilles (Trouver mon coach + My offers) – Mode Analyste :**
 - **Livraison :** Grille « Trouver mon coach » : 1 col par défaut, 2 cols à partir de `md` et en `lg`, 3 cols à partir de `xl` (1280px). Page « My offers » du coach : 1 colonne en tout temps.
 - **Mises à jour doc :** `docs/DESIGN_SYSTEM.md` §7 (Breakpoint responsive) : ajout des règles d’affichage pour la liste des tuiles coach et pour la grille des offres coach.
@@ -362,6 +375,7 @@
 | **Workflow Designer / Architecte / Développeur / Analyste** | **`docs/WORKFLOW_PERSONAS.md`** |
 | Calendrier responsive / mobile (issue #44) | `Project_context.md` §4.5, `docs/DESIGN_SYSTEM.md` §7 |
 | Grilles responsive (Trouver mon coach, My offers) | `docs/DESIGN_SYSTEM.md` §7 |
+| Filtre par nom/prénom (Trouver mon coach) | `Project_context.md` (Athlete), `docs/DESIGN_SYSTEM.md` §7 |
 | Tuile archivée / offres archivées / historique souscriptions (issue #43) | `docs/DESIGN_SYSTEM.md` § TileCard (stone, badge) |
 | **Vue souscription, résiliation, « En résiliation »** | **`Project_context.md` §4.10** |
 | Envoi demande coach / erreur ou blocage « Envoi en cours » | `Project_context.md` §4.4 (Flow) |
