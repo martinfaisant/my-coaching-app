@@ -3,9 +3,9 @@ import { Sidebar } from '@/components/Sidebar'
 import { getCurrentUserWithProfile } from '@/utils/auth'
 import type { ChatRoleResult } from '@/app/[locale]/actions/chat'
 
-function getChatRoleFromProfile(profile: { role: string; coach_id: string | null }, userId: string): ChatRoleResult {
+function getChatRoleFromProfile(profile: { role: string }, userId: string): ChatRoleResult {
   if (profile.role === 'coach') return { role: 'coach', userId }
-  if (profile.role === 'athlete') return { role: 'athlete', userId, hasCoach: !!profile.coach_id }
+  if (profile.role === 'athlete') return { role: 'athlete', userId }
   return null
 }
 

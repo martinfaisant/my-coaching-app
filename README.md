@@ -98,6 +98,7 @@ Voir [docs/DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md) pour tous les détails.
 
 **Athlète**
 - Chercher un coach et envoyer une demande (avec choix d’une offre ; l’offre est figée au moment de la demande)
+- Chatter avec les coachs liés par demande (`pending`/`accepted`) ; certaines conversations peuvent être en lecture seule selon le statut
 - Consulter son calendrier d'entraînement
 - Gérer ses objectifs
 - Noter son coach
@@ -106,6 +107,7 @@ Voir [docs/DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md) pour tous les détails.
 **Coach**
 - Créer un profil professionnel et des offres (statuts : brouillon → en ligne → archivée)
 - Recevoir des demandes, accepter ou refuser ; à l’acceptation une souscription active est créée (données d’offre figées)
+- Chatter avec les athlètes dès la demande `pending` ; après fin de droit d'écriture, l'historique reste lisible (lecture seule)
 - Gérer ses athlètes
 - Créer des entraînements
 - Consulter les totaux hebdomadaires
@@ -242,6 +244,6 @@ Pour toute question sur l'architecture ou les conventions, consulter :
 
 ---
 
-**Dernière mise à jour :** 18 février 2026  
+**Dernière mise à jour :** 23 février 2026  
 **Version :** 1.0.0  
 **License :** MIT

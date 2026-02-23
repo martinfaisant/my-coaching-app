@@ -212,14 +212,19 @@ Athletes filter coaches by:
 - 1-to-1 chat: Athlete ↔ Coach
 - One conversation per coach–athlete pair
 - Simple text messages (no attachments, no rich formatting in MVP)
-- Coach can start a conversation from the chat overlay by opening the athlete list and selecting an athlete (conversation is created if needed)
-- Coach overlay states:
-  - state 1: no open conversation → athlete list
+- Chat access is request-driven: conversation can be started when a `coach_request` is `pending`, and remains available in read-only when sending is no longer allowed.
+- Conversation write access rules:
+  - `pending` request: coach and athlete can read/write.
+  - `accepted` request: read/write only while linked subscription is `active` or `cancellation_scheduled`.
+  - `declined`, cancelled/deleted request, or accepted request with cancelled subscription: conversation remains readable, sending is blocked (read-only).
+- Coach can start a conversation from the chat overlay by opening the athlete list and selecting an athlete (conversation is created if needed).
+- Athlete can also start/select a conversation from the same overlay pattern (list + sidebar + panel) when multiple coach requests exist.
+- Overlay states (coach and athlete):
+  - state 1: no open conversation → contact list
   - state 2a/2b: open conversations in sidebar + conversation panel
-  - state 3: "Ouvrir une discussion" view (athlete list + search)
-- Closing a conversation removes it from the coach sidebar (open conversations list is persisted while navigating inside dashboard pages)
-- Athlete list includes subscriptions with status `active` and `cancellation_scheduled`
-- Mobile chat layout uses the same project breakpoint as calendar: `< md` list/conversation navigation with back button, `>= md` desktop sidebar + panel layout
+  - state 3: "Ouvrir une discussion" view (contact list + search)
+- Mobile (`< md`): list/conversation navigation with back button. Desktop (`>= md`): sidebar + panel.
+- Closing a conversation removes it from the local "open conversations" list in overlay (persisted while navigating inside dashboard pages).
 
 ---
 
@@ -282,7 +287,7 @@ Athletes filter coaches by:
 | `subscriptions` | Subscription per accepted request: `athlete_id`, `coach_id`, `request_id`, same `frozen_*` copied from `coach_requests` (not from offers). `status`: `'active'` \| `'cancellation_scheduled'` \| `'cancelled'`. `cancellation_requested_by_user_id` (UUID, nullable): user who requested the scheduled cancellation; only they can cancel the cancellation. Used for billing history; unchanged if coach later changes the offer. |
 | `workouts` | Planned training sessions for an athlete |
 | `goals` | Athlete race/event objectives |
-| `conversations` | 1-to-1 coach–athlete |
+| `conversations` | 1-to-1 coach–athlete. Includes `request_id` (source `coach_requests` row) used to determine chat write access lifecycle. |
 | `chat_messages` | Messages in a conversation |
 | `coach_ratings` | Athlete rating + comment for coach |
 | `athlete_connected_services` | Strava OAuth tokens |

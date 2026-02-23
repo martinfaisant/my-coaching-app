@@ -312,7 +312,10 @@
     "you": "Vous",
     "messages": "Messages",
     "searchPlaceholder": "Rechercher un athlète",
+    "searchAthletePlaceholder": "Rechercher un athlète",
+    "searchCoachPlaceholder": "Rechercher un coach",
     "chooseAthleteToStart": "Choisir un athlète pour démarrer",
+    "chooseCoachToStart": "Choisir un coach pour démarrer",
     "start": "Démarrer",
     "noMatch": "Aucun athlète ne correspond à \"{query}\"",
     "closeConversation": "Fermer la conversation",
@@ -321,9 +324,14 @@
     "openDiscussion": "Ouvrir une discussion",
     "selectConversation": "Sélectionnez une conversation",
     "subscriptionRequired": "Une souscription active est requise pour démarrer une conversation.",
+    "writeAccessRequired": "Aucune relation active ne permet d'envoyer des messages avec ce contact.",
+    "readOnlyHint": "Cette conversation est en lecture seule.",
+    "readOnlyConversation": "Cette conversation est en lecture seule.",
     "validation": {
       "notConnected": "Non connecté.",
-      "emptyMessage": "Message vide."
+      "emptyMessage": "Message vide.",
+      "conversationUnavailable": "Conversation introuvable ou inaccessible.",
+      "readOnlyConversation": "Cette conversation est en lecture seule."
     }
   },
   "calendar": {

@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 22 février 2026 (chat coach archivé)
+**Dernière mise à jour :** 23 février 2026 (chat request-driven + lecture seule)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -18,7 +18,7 @@
 - **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), stack technique
 - **Utiliser pour :** Comprendre le projet, les features, les rôles, l'architecture globale
 - **Taille :** ~400 lignes
-- **Dernière mise à jour :** 22 février 2026 (§4.4 voir demande envoyée)
+- **Dernière mise à jour :** 23 février 2026 (§4.6 chat request-driven + read-only)
 
 ### **docs/DESIGN_SYSTEM.md** ⭐
 - **Contenu :** Tokens (couleurs, typo, espacements), composants (Button, Input, Badge, TileCard, DashboardPageShell, Modal, etc.), guidelines UI, exemples de code
@@ -258,6 +258,12 @@
 
 ### Changements récents :
 
+✅ **23 février 2026 – Chat request-driven + lecture seule (Mode Analyste) :**
+- **Livraison :** Le chat coach/athlète est autorisé dès qu'une demande est `pending`; le chat devient **lecture seule** quand l'écriture n'est plus autorisée (demande refusée/annulée ou souscription terminée après acceptation).
+- **Cycle d'accès chat :** write autorisé pour `pending`; write autorisé pour `accepted` uniquement avec souscription `active`/`cancellation_scheduled`; sinon historique lisible mais envoi bloqué.
+- **UX :** L'athlète utilise le même pattern overlay que le coach (liste + sidebar + panel), avec navigation mobile liste ↔ conversation et bouton retour.
+- **Mises à jour doc :** `Project_context.md` §4.6 (messaging) et §5 (data model `conversations.request_id`).
+
 ✅ **22 février 2026 – Chat coach : démarrer/ouvrir/fermer des conversations (Mode Analyste) :**
 - **Livraison :** Le coach peut ouvrir une discussion depuis l’overlay (bouton « Ouvrir une discussion »), rechercher un athlète (déclenchement sur Entrée), ouvrir une conversation existante sans doublon, et fermer une conversation (elle disparaît de la sidebar des conversations ouvertes). Persistance des conversations ouvertes/fermées dans le module.
 - **Vue mobile :** Overlay chat responsive aligné sur le breakpoint projet `md` (navigation liste ↔ conversation en mobile, sidebar + panneau en desktop).
@@ -355,7 +361,7 @@
 | **Vue souscription, résiliation, « En résiliation »** | **`Project_context.md` §4.10** |
 | Envoi demande coach / erreur ou blocage « Envoi en cours » | `Project_context.md` §4.4 (Flow) |
 | **Voir la demande envoyée (athlète) / modale détail demande** | **`Project_context.md` §4.4** (demande pending, « Demande envoyée > », modale) |
-| **Chat – Coach démarrer une conversation (états overlay, sidebar, recherche)** | **`Project_context.md` §4.6** (comportement livré), + archives: `docs/archive/chat-coach-start-conversation/` |
+| **Chat – Accès via requests, écriture/lecture seule, overlay coach+athlète** | **`Project_context.md` §4.6** (comportement livré), + archives: `docs/archive/chat-coach-start-conversation/` |
 | Conventions de code | `.cursor/rules/project-core.mdc` |
 | Pattern bouton sauvegarde | `docs/PATTERN_SAVE_BUTTON.md` |
 | Déploiement | `DEPLOYMENT_NOTES.md`, `MISE_EN_PROD.md` |

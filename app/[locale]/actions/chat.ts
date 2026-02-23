@@ -2,15 +2,104 @@
 
 import { createClient } from '@/utils/supabase/server'
 import { getTranslations } from 'next-intl/server'
-import type { Conversation, ChatMessage } from '@/types/database'
+import type { ChatMessage } from '@/types/database'
 import { getDisplayName } from '@/lib/displayName'
 
 export type ChatRoleResult =
-  | { role: 'athlete'; userId: string; hasCoach: boolean }
+  | { role: 'athlete'; userId: string }
   | { role: 'coach'; userId: string }
   | null
 
-/** Retourne le rôle et l'id utilisateur si l'utilisateur peut voir le chat (athlete avec coach, ou coach), sinon null. Pas de redirection. */
+type RequestStatus = 'pending' | 'accepted' | 'declined'
+
+type SubscriptionWriteStatus = 'active' | 'cancellation_scheduled'
+
+type ConversationAccess = {
+  canSend: boolean
+  requestStatus: RequestStatus | null
+  hasWritableSubscription: boolean
+}
+
+function canSendFromState(
+  requestStatus: RequestStatus | null,
+  hasWritableSubscription: boolean
+): boolean {
+  if (!requestStatus) return false
+  if (requestStatus === 'pending') return true
+  if (requestStatus === 'accepted') return hasWritableSubscription
+  return false
+}
+
+async function getAccessByRequestIds(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  requestIds: string[]
+): Promise<Map<string, ConversationAccess>> {
+  const uniqueRequestIds = [...new Set(requestIds.filter(Boolean))]
+  if (uniqueRequestIds.length === 0) return new Map()
+
+  const [{ data: requests }, { data: writableSubs }] = await Promise.all([
+    supabase.from('coach_requests').select('id, status').in('id', uniqueRequestIds),
+    supabase
+      .from('subscriptions')
+      .select('request_id')
+      .in('request_id', uniqueRequestIds)
+      .in('status', ['active', 'cancellation_scheduled'] satisfies SubscriptionWriteStatus[]),
+  ])
+
+  const writableRequestSet = new Set((writableSubs ?? []).map((s) => s.request_id))
+  const accessMap = new Map<string, ConversationAccess>()
+
+  for (const request of requests ?? []) {
+    const requestStatus = (request.status as RequestStatus | null) ?? null
+    const hasWritableSubscription = writableRequestSet.has(request.id)
+    accessMap.set(request.id, {
+      requestStatus,
+      hasWritableSubscription,
+      canSend: canSendFromState(requestStatus, hasWritableSubscription),
+    })
+  }
+
+  return accessMap
+}
+
+async function getLatestWritableRequestIdForPair(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  coachId: string,
+  athleteId: string
+): Promise<string | null> {
+  const { data: requests } = await supabase
+    .from('coach_requests')
+    .select('id, status, created_at')
+    .eq('coach_id', coachId)
+    .eq('athlete_id', athleteId)
+    .in('status', ['pending', 'accepted'])
+    .order('created_at', { ascending: false })
+
+  if (!requests?.length) return null
+
+  const acceptedIds = requests.filter((r) => r.status === 'accepted').map((r) => r.id)
+  const writableAcceptedSet = new Set<string>()
+
+  if (acceptedIds.length > 0) {
+    const { data: subs } = await supabase
+      .from('subscriptions')
+      .select('request_id')
+      .in('request_id', acceptedIds)
+      .in('status', ['active', 'cancellation_scheduled'] satisfies SubscriptionWriteStatus[])
+    for (const sub of subs ?? []) {
+      writableAcceptedSet.add(sub.request_id)
+    }
+  }
+
+  for (const request of requests) {
+    if (request.status === 'pending') return request.id
+    if (request.status === 'accepted' && writableAcceptedSet.has(request.id)) return request.id
+  }
+
+  return null
+}
+
+/** Retourne le rôle et l'id utilisateur si l'utilisateur peut voir le chat. Pas de redirection. */
 export async function getChatRole(): Promise<ChatRoleResult> {
   const supabase = await createClient()
   const {
@@ -20,33 +109,56 @@ export async function getChatRole(): Promise<ChatRoleResult> {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('role, coach_id')
+    .select('role')
     .eq('user_id', user.id)
     .single()
 
   if (profile?.role === 'coach') return { role: 'coach', userId: user.id }
-  if (profile?.role === 'athlete')
-    return { role: 'athlete', userId: user.id, hasCoach: !!profile.coach_id }
+  if (profile?.role === 'athlete') return { role: 'athlete', userId: user.id }
   return null
 }
 
 export type ConversationWithMeta = {
   id: string
+  request_id: string | null
   athlete_id: string
   athlete_name: string
   avatar_url?: string | null
   updated_at: string
+  can_send: boolean
+  is_read_only: boolean
 }
 
 export type AthleteForChat = {
   athlete_id: string
   displayName: string
   avatar_url?: string | null
+  request_id: string
   conversation_id: string | null
   updated_at: string | null
 }
 
-/** Coach : liste des athlètes avec souscription active ou en résiliation (cancellation_scheduled), pour démarrer une conversation. Tri : dernier message décroissant, puis alphabétique. */
+export type ConversationWithCoachMeta = {
+  id: string
+  request_id: string | null
+  coach_id: string
+  coach_name: string
+  avatar_url?: string | null
+  updated_at: string
+  can_send: boolean
+  is_read_only: boolean
+}
+
+export type CoachForChat = {
+  coach_id: string
+  displayName: string
+  avatar_url?: string | null
+  request_id: string
+  conversation_id: string | null
+  updated_at: string | null
+}
+
+/** Coach : liste des athlètes éligibles pour démarrer une conversation éditable. */
 export async function getAthletesForCoachForChat(): Promise<AthleteForChat[]> {
   const supabase = await createClient()
   const {
@@ -54,25 +166,53 @@ export async function getAthletesForCoachForChat(): Promise<AthleteForChat[]> {
   } = await supabase.auth.getUser()
   if (!user) return []
 
-  const { data: subs } = await supabase
-    .from('subscriptions')
-    .select('athlete_id')
+  const { data: requests } = await supabase
+    .from('coach_requests')
+    .select('id, athlete_id, status, created_at')
     .eq('coach_id', user.id)
-    .in('status', ['active', 'cancellation_scheduled'])
+    .in('status', ['pending', 'accepted'])
+    .order('created_at', { ascending: false })
 
-  if (!subs?.length) return []
+  if (!requests?.length) return []
 
-  const athleteIds = [...new Set(subs.map((s) => s.athlete_id))]
-  const { data: profiles } = await supabase
-    .from('profiles')
-    .select('user_id, first_name, last_name, email, avatar_url')
-    .in('user_id', athleteIds)
+  const acceptedIds = requests.filter((r) => r.status === 'accepted').map((r) => r.id)
+  const writableAcceptedSet = new Set<string>()
+  if (acceptedIds.length > 0) {
+    const { data: subs } = await supabase
+      .from('subscriptions')
+      .select('request_id')
+      .in('request_id', acceptedIds)
+      .in('status', ['active', 'cancellation_scheduled'] satisfies SubscriptionWriteStatus[])
+    for (const sub of subs ?? []) {
+      writableAcceptedSet.add(sub.request_id)
+    }
+  }
 
-  const { data: convs } = await supabase
-    .from('conversations')
-    .select('id, athlete_id, updated_at')
-    .eq('coach_id', user.id)
-    .in('athlete_id', athleteIds)
+  const writableByAthleteId = new Map<string, string>()
+  for (const request of requests) {
+    const isWritable =
+      request.status === 'pending' ||
+      (request.status === 'accepted' && writableAcceptedSet.has(request.id))
+    if (!isWritable) continue
+    if (!writableByAthleteId.has(request.athlete_id)) {
+      writableByAthleteId.set(request.athlete_id, request.id)
+    }
+  }
+
+  const athleteIds = [...writableByAthleteId.keys()]
+  if (athleteIds.length === 0) return []
+
+  const [{ data: profiles }, { data: convs }] = await Promise.all([
+    supabase
+      .from('profiles')
+      .select('user_id, first_name, last_name, email, avatar_url')
+      .in('user_id', athleteIds),
+    supabase
+      .from('conversations')
+      .select('id, athlete_id, updated_at')
+      .eq('coach_id', user.id)
+      .in('athlete_id', athleteIds),
+  ])
 
   const profileByUserId = new Map(
     (profiles ?? []).map((p) => [
@@ -92,6 +232,97 @@ export async function getAthletesForCoachForChat(): Promise<AthleteForChat[]> {
       athlete_id: aid,
       displayName: profile?.displayName ?? 'Athlète',
       avatar_url: profile?.avatar_url ?? null,
+      request_id: writableByAthleteId.get(aid) ?? '',
+      conversation_id: conv?.id ?? null,
+      updated_at: conv?.updated_at ?? null,
+    }
+  })
+
+  list.sort((a, b) => {
+    const aDate = a.updated_at ? new Date(a.updated_at).getTime() : 0
+    const bDate = b.updated_at ? new Date(b.updated_at).getTime() : 0
+    if (bDate !== aDate) return bDate - aDate
+    return a.displayName.localeCompare(b.displayName, undefined, { sensitivity: 'base' })
+  })
+
+  return list
+}
+
+/** Athlète : liste des coachs éligibles pour démarrer une conversation éditable. */
+export async function getCoachesForAthleteForChat(): Promise<CoachForChat[]> {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) return []
+
+  const { data: requests } = await supabase
+    .from('coach_requests')
+    .select('id, coach_id, status, created_at')
+    .eq('athlete_id', user.id)
+    .in('status', ['pending', 'accepted'])
+    .order('created_at', { ascending: false })
+
+  if (!requests?.length) return []
+
+  const acceptedIds = requests.filter((r) => r.status === 'accepted').map((r) => r.id)
+  const writableAcceptedSet = new Set<string>()
+  if (acceptedIds.length > 0) {
+    const { data: subs } = await supabase
+      .from('subscriptions')
+      .select('request_id')
+      .in('request_id', acceptedIds)
+      .in('status', ['active', 'cancellation_scheduled'] satisfies SubscriptionWriteStatus[])
+    for (const sub of subs ?? []) {
+      writableAcceptedSet.add(sub.request_id)
+    }
+  }
+
+  const writableByCoachId = new Map<string, string>()
+  for (const request of requests) {
+    const isWritable =
+      request.status === 'pending' ||
+      (request.status === 'accepted' && writableAcceptedSet.has(request.id))
+    if (!isWritable) continue
+    if (!writableByCoachId.has(request.coach_id)) {
+      writableByCoachId.set(request.coach_id, request.id)
+    }
+  }
+
+  const coachIds = [...writableByCoachId.keys()]
+  if (coachIds.length === 0) return []
+
+  const [{ data: profiles }, { data: convs }] = await Promise.all([
+    supabase
+      .from('profiles')
+      .select('user_id, first_name, last_name, email, avatar_url')
+      .in('user_id', coachIds),
+    supabase
+      .from('conversations')
+      .select('id, coach_id, updated_at')
+      .eq('athlete_id', user.id)
+      .in('coach_id', coachIds),
+  ])
+
+  const profileByUserId = new Map(
+    (profiles ?? []).map((p) => [
+      p.user_id,
+      {
+        displayName: getDisplayName(p, 'Coach'),
+        avatar_url: p.avatar_url ?? null,
+      },
+    ])
+  )
+  const convByCoachId = new Map((convs ?? []).map((c) => [c.coach_id, { id: c.id, updated_at: c.updated_at }]))
+
+  const list: CoachForChat[] = coachIds.map((cid) => {
+    const profile = profileByUserId.get(cid)
+    const conv = convByCoachId.get(cid)
+    return {
+      coach_id: cid,
+      displayName: profile?.displayName ?? 'Coach',
+      avatar_url: profile?.avatar_url ?? null,
+      request_id: writableByCoachId.get(cid) ?? '',
       conversation_id: conv?.id ?? null,
       updated_at: conv?.updated_at ?? null,
     }
@@ -111,7 +342,7 @@ export type GetOrCreateConversationForCoachResult =
   | { ok: true; conversationId: string; athleteName: string }
   | { ok: false; error: string }
 
-/** Coach : récupère ou crée la conversation avec un athlète (vérifie souscription active). */
+/** Coach : récupère ou crée la conversation avec un athlète (vérifie request writable). */
 export async function getOrCreateConversationForCoach(
   athleteId: string,
   locale: string = 'fr'
@@ -125,22 +356,15 @@ export async function getOrCreateConversationForCoach(
     return { ok: false, error: t('notConnected') }
   }
 
-  const { data: sub } = await supabase
-    .from('subscriptions')
-    .select('id')
-    .eq('coach_id', user.id)
-    .eq('athlete_id', athleteId)
-    .in('status', ['active', 'cancellation_scheduled'])
-    .maybeSingle()
-
-  if (!sub) {
+  const writableRequestId = await getLatestWritableRequestIdForPair(supabase, user.id, athleteId)
+  if (!writableRequestId) {
     const t = await getTranslations({ locale, namespace: 'chat' })
-    return { ok: false, error: t('subscriptionRequired') }
+    return { ok: false, error: t('writeAccessRequired') }
   }
 
   let { data: conv } = await supabase
     .from('conversations')
-    .select('id')
+    .select('id, request_id')
     .eq('coach_id', user.id)
     .eq('athlete_id', athleteId)
     .maybeSingle()
@@ -148,11 +372,13 @@ export async function getOrCreateConversationForCoach(
   if (!conv) {
     const { data: inserted, error } = await supabase
       .from('conversations')
-      .insert({ coach_id: user.id, athlete_id: athleteId })
+      .insert({ coach_id: user.id, athlete_id: athleteId, request_id: writableRequestId })
       .select('id')
       .single()
     if (error) return { ok: false, error: error.message }
     conv = inserted
+  } else if (conv.request_id !== writableRequestId) {
+    await supabase.from('conversations').update({ request_id: writableRequestId }).eq('id', conv.id)
   }
 
   const { data: profile } = await supabase
@@ -165,52 +391,57 @@ export async function getOrCreateConversationForCoach(
   return { ok: true, conversationId: conv.id, athleteName }
 }
 
-export type AthleteConversationResult = {
-  conversation: Conversation
-  coachName: string
-} | null
+export type GetOrCreateConversationForAthleteResult =
+  | { ok: true; conversationId: string; coachName: string }
+  | { ok: false; error: string }
 
-/** Athlète : récupère ou crée la conversation avec son coach. */
-export async function getOrCreateConversationForAthlete(): Promise<AthleteConversationResult> {
+/** Athlète : récupère ou crée la conversation avec un coach (request writable requise). */
+export async function getOrCreateConversationForAthlete(
+  coachId: string,
+  locale: string = 'fr'
+): Promise<GetOrCreateConversationForAthleteResult> {
   const supabase = await createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
-  if (!user) return null
+  if (!user) {
+    const t = await getTranslations({ locale, namespace: 'chat.validation' })
+    return { ok: false, error: t('notConnected') }
+  }
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('coach_id')
-    .eq('user_id', user.id)
-    .single()
-
-  if (!profile?.coach_id) return null
+  const writableRequestId = await getLatestWritableRequestIdForPair(supabase, coachId, user.id)
+  if (!writableRequestId) {
+    const t = await getTranslations({ locale, namespace: 'chat' })
+    return { ok: false, error: t('writeAccessRequired') }
+  }
 
   let { data: conv } = await supabase
     .from('conversations')
-    .select('*')
-    .eq('coach_id', profile.coach_id)
+    .select('id, request_id')
+    .eq('coach_id', coachId)
     .eq('athlete_id', user.id)
     .maybeSingle()
 
   if (!conv) {
     const { data: inserted, error } = await supabase
       .from('conversations')
-      .insert({ coach_id: profile.coach_id, athlete_id: user.id })
-      .select()
+      .insert({ coach_id: coachId, athlete_id: user.id, request_id: writableRequestId })
+      .select('id')
       .single()
-    if (error) return null
+    if (error) return { ok: false, error: error.message }
     conv = inserted
+  } else if (conv.request_id !== writableRequestId) {
+    await supabase.from('conversations').update({ request_id: writableRequestId }).eq('id', conv.id)
   }
 
   const { data: coachProfile } = await supabase
     .from('profiles')
     .select('first_name, last_name, email')
-    .eq('user_id', profile.coach_id)
+    .eq('user_id', coachId)
     .single()
 
   const coachName = coachProfile ? getDisplayName(coachProfile, 'Coach') : 'Coach'
-  return { conversation: conv as Conversation, coachName }
+  return { ok: true, conversationId: conv.id, coachName }
 }
 
 /** Coach : liste des conversations avec les athlètes. */
@@ -223,7 +454,7 @@ export async function getConversationsForCoach(): Promise<ConversationWithMeta[]
 
   const { data: rows } = await supabase
     .from('conversations')
-    .select('id, athlete_id, updated_at')
+    .select('id, athlete_id, updated_at, request_id')
     .eq('coach_id', user.id)
     .order('updated_at', { ascending: false })
 
@@ -235,6 +466,9 @@ export async function getConversationsForCoach(): Promise<ConversationWithMeta[]
     .select('user_id, first_name, last_name, email, avatar_url')
     .in('user_id', athleteIds)
 
+  const requestIds = rows.map((r) => r.request_id).filter((id): id is string => !!id)
+  const accessByRequestId = await getAccessByRequestIds(supabase, requestIds)
+
   const nameByUserId = new Map<string, string>()
   const avatarByUserId = new Map<string, string | null>()
   for (const p of profiles ?? []) {
@@ -244,10 +478,57 @@ export async function getConversationsForCoach(): Promise<ConversationWithMeta[]
 
   return rows.map((r) => ({
     id: r.id,
+    request_id: r.request_id ?? null,
     athlete_id: r.athlete_id,
     athlete_name: nameByUserId.get(r.athlete_id) ?? 'Athlète',
     avatar_url: avatarByUserId.get(r.athlete_id) ?? null,
     updated_at: r.updated_at,
+    can_send: r.request_id ? (accessByRequestId.get(r.request_id)?.canSend ?? false) : false,
+    is_read_only: r.request_id ? !(accessByRequestId.get(r.request_id)?.canSend ?? false) : true,
+  }))
+}
+
+/** Athlète : liste des conversations avec les coachs. */
+export async function getConversationsForAthlete(): Promise<ConversationWithCoachMeta[]> {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) return []
+
+  const { data: rows } = await supabase
+    .from('conversations')
+    .select('id, coach_id, updated_at, request_id')
+    .eq('athlete_id', user.id)
+    .order('updated_at', { ascending: false })
+
+  if (!rows?.length) return []
+
+  const coachIds = [...new Set(rows.map((r) => r.coach_id))]
+  const { data: profiles } = await supabase
+    .from('profiles')
+    .select('user_id, first_name, last_name, email, avatar_url')
+    .in('user_id', coachIds)
+
+  const requestIds = rows.map((r) => r.request_id).filter((id): id is string => !!id)
+  const accessByRequestId = await getAccessByRequestIds(supabase, requestIds)
+
+  const nameByUserId = new Map<string, string>()
+  const avatarByUserId = new Map<string, string | null>()
+  for (const p of profiles ?? []) {
+    nameByUserId.set(p.user_id, getDisplayName(p, 'Coach'))
+    avatarByUserId.set(p.user_id, p.avatar_url ?? null)
+  }
+
+  return rows.map((r) => ({
+    id: r.id,
+    request_id: r.request_id ?? null,
+    coach_id: r.coach_id,
+    coach_name: nameByUserId.get(r.coach_id) ?? 'Coach',
+    avatar_url: avatarByUserId.get(r.coach_id) ?? null,
+    updated_at: r.updated_at,
+    can_send: r.request_id ? (accessByRequestId.get(r.request_id)?.canSend ?? false) : false,
+    is_read_only: r.request_id ? !(accessByRequestId.get(r.request_id)?.canSend ?? false) : true,
   }))
 }
 
@@ -286,6 +567,21 @@ export async function sendMessage(
 
   const text = (content ?? '').trim()
   if (!text) return { error: t('emptyMessage') }
+
+  const { data: conv } = await supabase
+    .from('conversations')
+    .select('id, coach_id, athlete_id, request_id')
+    .eq('id', conversationId)
+    .or(`coach_id.eq.${user.id},athlete_id.eq.${user.id}`)
+    .maybeSingle()
+
+  if (!conv) return { error: t('conversationUnavailable') }
+
+  if (!conv.request_id) return { error: t('readOnlyConversation') }
+
+  const accessByRequest = await getAccessByRequestIds(supabase, [conv.request_id])
+  const canSend = accessByRequest.get(conv.request_id)?.canSend ?? false
+  if (!canSend) return { error: t('readOnlyConversation') }
 
   const { error } = await supabase.from('chat_messages').insert({
     conversation_id: conversationId,
