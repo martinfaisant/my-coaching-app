@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 23 février 2026 (chat request-driven + lecture seule)
+**Dernière mise à jour :** 23 février 2026 (responsive grilles + doc Analyste)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -21,10 +21,10 @@
 - **Dernière mise à jour :** 23 février 2026 (§4.6 chat request-driven + read-only)
 
 ### **docs/DESIGN_SYSTEM.md** ⭐
-- **Contenu :** Tokens (couleurs, typo, espacements), composants (Button, Input, Badge, TileCard, DashboardPageShell, Modal, etc.), guidelines UI, exemples de code
-- **Utiliser pour :** Créer ou modifier des composants UI, choisir des couleurs, appliquer le design system
+- **Contenu :** Tokens (couleurs, typo, espacements), composants (Button, Input, Badge, TileCard, DashboardPageShell, Modal, etc.), guidelines UI, exemples de code, §7 breakpoints (calendrier, chat, Trouver mon coach, My offers)
+- **Utiliser pour :** Créer ou modifier des composants UI, choisir des couleurs, appliquer le design system, règles responsive par page
 - **Taille :** ~850 lignes
-- **Dernière mise à jour :** 22 février 2026 (breakpoint responsive projet `md` documenté : calendrier + chat)
+- **Dernière mise à jour :** 23 février 2026 (responsive grilles Trouver mon coach + My offers)
 
 ### **docs/I18N.md** ⭐
 - **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces, utilisation dans composants et server actions, **checklist pour nouvelles features** (toujours penser bilingue)
@@ -258,6 +258,10 @@
 
 ### Changements récents :
 
+✅ **23 février 2026 – Responsive grilles (Trouver mon coach + My offers) – Mode Analyste :**
+- **Livraison :** Grille « Trouver mon coach » : 1 col par défaut, 2 cols à partir de `md` et en `lg`, 3 cols à partir de `xl` (1280px). Page « My offers » du coach : 1 colonne en tout temps.
+- **Mises à jour doc :** `docs/DESIGN_SYSTEM.md` §7 (Breakpoint responsive) : ajout des règles d’affichage pour la liste des tuiles coach et pour la grille des offres coach.
+
 ✅ **23 février 2026 – Chat request-driven + lecture seule (Mode Analyste) :**
 - **Livraison :** Le chat coach/athlète est autorisé dès qu'une demande est `pending`; le chat devient **lecture seule** quand l'écriture n'est plus autorisée (demande refusée/annulée ou souscription terminée après acceptation).
 - **Cycle d'accès chat :** write autorisé pour `pending`; write autorisé pour `accepted` uniquement avec souscription `active`/`cancellation_scheduled`; sinon historique lisible mais envoi bloqué.
@@ -357,6 +361,7 @@
 | **i18n / bilingue / traductions / nouvelles features** | **`docs/I18N.md`** |
 | **Workflow Designer / Architecte / Développeur / Analyste** | **`docs/WORKFLOW_PERSONAS.md`** |
 | Calendrier responsive / mobile (issue #44) | `Project_context.md` §4.5, `docs/DESIGN_SYSTEM.md` §7 |
+| Grilles responsive (Trouver mon coach, My offers) | `docs/DESIGN_SYSTEM.md` §7 |
 | Tuile archivée / offres archivées / historique souscriptions (issue #43) | `docs/DESIGN_SYSTEM.md` § TileCard (stone, badge) |
 | **Vue souscription, résiliation, « En résiliation »** | **`Project_context.md` §4.10** |
 | Envoi demande coach / erreur ou blocage « Envoi en cours » | `Project_context.md` §4.4 (Flow) |
