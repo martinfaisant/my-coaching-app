@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mockups — Recherche par nom (Trouver mon coach)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            'palette-forest-darker': '#506648',
+            'palette-olive': '#8e9856',
+            'palette-sage': '#aaaa51',
+            'palette-gold': '#cbb44b',
+            'palette-amber': '#c9a544',
+            'palette-danger': '#c0564b',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-stone-100 text-stone-900 p-6 md:p-10 space-y-16">
+  <header class="mb-8">
+    <h1 class="text-2xl font-bold text-stone-900">Trouver mon coach — Filtre par nom / prénom</h1>
+    <p class="text-sm text-stone-600 mt-1">Mockups non fonctionnels · 3 propositions</p>
+  </header>
+
+  <!-- ========== SOLUTION A ========== -->
+  <section class="space-y-4">
+    <h2 class="text-lg font-bold text-stone-800 border-b border-stone-200 pb-2">Solution A — Recherche en tête du bloc Filtres (pleine largeur)</h2>
+    <div class="bg-white rounded-2xl shadow-sm border border-stone-200 p-6">
+      <div class="flex justify-between items-end mb-6">
+        <div>
+          <h3 class="text-lg font-bold text-stone-900">Filtre</h3>
+        </div>
+        <button type="button" class="text-xs underline text-[#627e59] hover:text-[#506648] bg-transparent border-0 px-0">
+          Réinitialiser
+        </button>
+      </div>
+      <!-- Champ recherche pleine largeur -->
+      <div class="mb-6">
+        <label for="search-a" class="block text-sm font-medium text-stone-700 mb-2">Rechercher par nom ou prénom</label>
+        <input
+          id="search-a"
+          type="search"
+          placeholder="Ex. Martin, Dupont…"
+          class="w-full px-4 py-2.5 rounded-lg border border-stone-300 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-[#627e59] focus:border-transparent"
+          aria-label="Rechercher un coach par nom ou prénom"
+        />
+      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div>
+          <h4 class="text-xs font-bold uppercase tracking-wider text-stone-400 mb-3">Sport coaché</h4>
+          <div class="flex flex-wrap gap-2">
+            <span class="px-4 py-2 rounded-full border border-stone-200 bg-white text-stone-600 text-sm">Course</span>
+            <span class="px-4 py-2 rounded-full border border-[#627e59] bg-[#627e59] text-white text-sm">Vélo</span>
+            <span class="px-4 py-2 rounded-full border border-stone-200 bg-white text-stone-600 text-sm">Trail</span>
+          </div>
+        </div>
+        <div>
+          <h4 class="text-xs font-bold uppercase tracking-wider text-stone-400 mb-3">Langue parlée</h4>
+          <div class="flex flex-wrap gap-2">
+            <span class="px-4 py-2 rounded-full border border-[#627e59] bg-[#627e59] text-white text-sm">Français</span>
+            <span class="px-4 py-2 rounded-full border border-stone-200 bg-white text-stone-600 text-sm">English</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="text-xs text-stone-500">Le champ est au-dessus de la grille Sport / Langue. Réinitialiser vide aussi ce champ.</p>
+  </section>
+
+  <!-- ========== SOLUTION B ========== -->
+  <section class="space-y-4">
+    <h2 class="text-lg font-bold text-stone-800 border-b border-stone-200 pb-2">Solution B — Recherche sur la même ligne que « Filtres »</h2>
+    <div class="bg-white rounded-2xl shadow-sm border border-stone-200 p-6">
+      <div class="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-4 mb-6">
+        <h3 class="text-lg font-bold text-stone-900 shrink-0">Filtre</h3>
+        <input
+          id="search-b"
+          type="search"
+          placeholder="Nom ou prénom du coach…"
+          class="flex-1 min-w-0 w-full sm:max-w-md px-4 py-2.5 rounded-lg border border-stone-300 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-[#627e59] focus:border-transparent"
+          aria-label="Rechercher par nom ou prénom"
+        />
+        <button type="button" class="text-xs underline text-[#627e59] hover:text-[#506648] bg-transparent border-0 px-0 shrink-0 self-start sm:self-center">
+          Réinitialiser
+        </button>
+      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div>
+          <h4 class="text-xs font-bold uppercase tracking-wider text-stone-400 mb-3">Sport coaché</h4>
+          <div class="flex flex-wrap gap-2">
+            <span class="px-4 py-2 rounded-full border border-stone-200 bg-white text-stone-600 text-sm">Course</span>
+            <span class="px-4 py-2 rounded-full border border-stone-200 bg-white text-stone-600 text-sm">Vélo</span>
+          </div>
+        </div>
+        <div>
+          <h4 class="text-xs font-bold uppercase tracking-wider text-stone-400 mb-3">Langue parlée</h4>
+          <div class="flex flex-wrap gap-2">
+            <span class="px-4 py-2 rounded-full border border-stone-200 bg-white text-stone-600 text-sm">Français</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="text-xs text-stone-500">Sur desktop : titre | champ | Réinitialiser sur une ligne. Sur mobile : empilé.</p>
+  </section>
+
+  <!-- ========== SOLUTION C ========== -->
+  <section class="space-y-4">
+    <h2 class="text-lg font-bold text-stone-800 border-b border-stone-200 pb-2">Solution C — Bandeau recherche au-dessus du bloc Filtres</h2>
+    <div class="space-y-0">
+      <!-- Bandeau recherche -->
+      <div class="bg-stone-50 border border-stone-200 border-b-0 rounded-t-2xl p-4">
+        <label for="search-c" class="sr-only">Rechercher un coach par nom ou prénom</label>
+        <input
+          id="search-c"
+          type="search"
+          placeholder="Rechercher un coach par nom ou prénom…"
+          class="w-full px-4 py-2.5 rounded-lg border border-stone-300 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-[#627e59] focus:border-transparent"
+          aria-label="Rechercher un coach par nom ou prénom"
+        />
+      </div>
+      <!-- Bloc Filtres -->
+      <div class="bg-white rounded-b-2xl rounded-t-none shadow-sm border border-stone-200 p-6">
+        <div class="flex justify-between items-end mb-6">
+          <div>
+            <h3 class="text-lg font-bold text-stone-900">Filtre</h3>
+          </div>
+          <button type="button" class="text-xs underline text-[#627e59] hover:text-[#506648] bg-transparent border-0 px-0">
+            Réinitialiser
+          </button>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div>
+            <h4 class="text-xs font-bold uppercase tracking-wider text-stone-400 mb-3">Sport coaché</h4>
+            <div class="flex flex-wrap gap-2">
+              <span class="px-4 py-2 rounded-full border border-stone-200 bg-white text-stone-600 text-sm">Course</span>
+              <span class="px-4 py-2 rounded-full border border-stone-200 bg-white text-stone-600 text-sm">Vélo</span>
+            </div>
+          </div>
+          <div>
+            <h4 class="text-xs font-bold uppercase tracking-wider text-stone-400 mb-3">Langue parlée</h4>
+            <div class="flex flex-wrap gap-2">
+              <span class="px-4 py-2 rounded-full border border-stone-200 bg-white text-stone-600 text-sm">Français</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="text-xs text-stone-500">Bandeau stone-50 au-dessus du bloc blanc. Réinitialiser vide le champ du bandeau.</p>
+  </section>
+
+  <footer class="text-sm text-stone-500 pt-4 border-t border-stone-200">
+    Design system : tokens palette (forest-dark, stone), FORM_BASE_CLASSES, Input. Composants existants : Button (Réinitialiser), SportTileSelectable / boutons langue (représentés ici par des spans).
+  </footer>
+</body>
+</html>
