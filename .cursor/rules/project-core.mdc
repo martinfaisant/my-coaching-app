@@ -311,7 +311,7 @@ if ('error' in result) return result
 ---
 
 **Version:** 2.2  
-**Last updated:** 21 février 2026  
+**Last updated:** 22 février 2026  
 **Refactoring status:** 13/17 tasks completed (76%)  
 **i18n:** Bilingue FR/EN complété — toujours penser bilingue pour les nouvelles features  
 **Offres/souscriptions:** Snapshot à la demande (frozen_* dans coach_requests), souscription à l’acceptation depuis coach_requests ; statuts offre draft / published / archived (voir Project_context.md)

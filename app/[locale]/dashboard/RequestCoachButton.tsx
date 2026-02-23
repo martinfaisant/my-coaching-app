@@ -3,12 +3,13 @@
 import { useState, useTransition, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { Button } from '@/components/Button'
 import { Textarea } from '@/components/Textarea'
 import { createCoachRequest, cancelCoachRequest } from './actions'
 import { SportTileSelectable } from '@/components/SportTileSelectable'
 import { usePracticedSportsOptions } from '@/lib/hooks/useSportsOptions'
+import { AthleteSentRequestDetailModal } from './AthleteSentRequestDetailModal'
 
 type RequestCoachButtonProps = {
   coachId: string
@@ -23,9 +24,12 @@ type RequestCoachButtonProps = {
 export function RequestCoachButton({ coachId, coachName, requestStatus, requestId, initialPracticedSports = [] }: RequestCoachButtonProps) {
   const t = useTranslations('requestCoachButton')
   const tCommon = useTranslations('common')
+  const tErrors = useTranslations('errors')
+  const locale = useLocale()
   const practicedSportsOptions = usePracticedSportsOptions()
   const [open, setOpen] = useState(false)
   const [confirmCancelOpen, setConfirmCancelOpen] = useState(false)
+  const [detailModalOpen, setDetailModalOpen] = useState(false)
   const [sports, setSports] = useState<string[]>(initialPracticedSports)
   const [need, setNeed] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -42,15 +46,19 @@ export function RequestCoachButton({ coachId, coachName, requestStatus, requestI
     e.preventDefault()
     setError(null)
     startTransition(async () => {
-      const result = await createCoachRequest(coachId, sports, need.trim())
-      if (result.error) {
-        setError(result.error)
-        return
+      try {
+        const result = await createCoachRequest(coachId, sports, need.trim())
+        if (result.error) {
+          setError(result.error)
+          return
+        }
+        setOpen(false)
+        setSports([])
+        setNeed('')
+        router.refresh()
+      } catch {
+        setError(tErrors('somethingWentWrong'))
       }
-      setOpen(false)
-      setSports([])
-      setNeed('')
-      router.refresh()
     })
   }
 
@@ -112,22 +120,46 @@ export function RequestCoachButton({ coachId, coachName, requestStatus, requestI
 
   if (requestStatus === 'pending') {
     return (
-      <div className="flex flex-col items-center gap-2">
-        <span className="text-sm text-stone-600 font-medium">
-          {t('requestSent')}
-        </span>
-        {requestId && (
-          <>
+      <>
+        <div className="flex items-center justify-between gap-3">
+          <Button
+            type="button"
+            variant="danger"
+            onClick={() => { setError(null); setConfirmCancelOpen(true) }}
+            disabled={isPending}
+            className="flex-1"
+          >
+            {t('cancelRequest')}
+          </Button>
+          {requestId && (
             <Button
               type="button"
               variant="muted"
-              onClick={() => { setError(null); setConfirmCancelOpen(true) }}
+              onClick={() => setDetailModalOpen(true)}
               disabled={isPending}
-              className="underline underline-offset-2 border-0 p-0 bg-transparent hover:bg-transparent min-h-0"
+              className="flex-1 flex items-center justify-center gap-1 shrink-0"
             >
-              {t('cancelRequest')}
+              {t('requestSent')}
+              <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
             </Button>
-            {confirmCancelOpen &&
+          )}
+        </div>
+        {requestId && (
+          <AthleteSentRequestDetailModal
+            isOpen={detailModalOpen}
+            onClose={() => setDetailModalOpen(false)}
+            requestId={requestId}
+            coachName={coachName}
+            locale={locale}
+            onRequestCancel={() => {
+              setDetailModalOpen(false)
+              setConfirmCancelOpen(true)
+            }}
+          />
+        )}
+        {confirmCancelOpen &&
               typeof document !== 'undefined' &&
               createPortal(
                 <>
@@ -175,7 +207,7 @@ export function RequestCoachButton({ coachId, coachName, requestStatus, requestI
                           </Button>
                           <Button
                             type="button"
-                            variant="primary"
+                            variant="danger"
                             onClick={handleConfirmCancel}
                             disabled={isPending}
                             loading={isPending}
@@ -194,9 +226,7 @@ export function RequestCoachButton({ coachId, coachName, requestStatus, requestI
                 </>,
                 document.body
               )}
-          </>
-        )}
-      </div>
+      </>
     )
   }
 

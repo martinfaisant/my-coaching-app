@@ -682,6 +682,21 @@
     "sendRequest": "Send request",
     "closeAria": "Close"
   },
+  "athleteSentRequest": {
+    "title": "Your request",
+    "sentTo": "Sent to {name}",
+    "pending": "Pending",
+    "offerChosen": "Offer chosen",
+    "free": "Free",
+    "perMonth": "month",
+    "plan": "plan",
+    "sportsPracticed": "Sports practiced",
+    "yourMessage": "Your message",
+    "cancelRequest": "Cancel request",
+    "close": "Close",
+    "loading": "Loading…",
+    "requestNotFound": "Request not found."
+  },
   "coachRequests": {
     "accept": "Accept",
     "decline": "Decline",

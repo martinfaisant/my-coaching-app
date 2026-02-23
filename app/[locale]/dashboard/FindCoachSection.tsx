@@ -404,6 +404,7 @@ function OfferSelectButton({ isSelected, onClick }: OfferSelectButtonProps) {
 function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requestId, initialPracticedSports = [] }: CoachDetailModalProps) {
   const t = useTranslations('findCoach')
   const tCommon = useTranslations('common')
+  const tErrors = useTranslations('errors')
   const locale = useLocale()
   const router = useRouter()
   const practicedSportsOptions = usePracticedSportsOptions()
@@ -444,14 +445,19 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
     }
     setError(null)
     setIsSubmitting(true)
-    const result = await createCoachRequest(coach.user_id, sports, need.trim(), selectedOfferId, locale)
-    setIsSubmitting(false)
-    if (result.error) {
-      setError(result.error)
-      return
+    try {
+      const result = await createCoachRequest(coach.user_id, sports, need.trim(), selectedOfferId, locale)
+      if (result.error) {
+        setError(result.error)
+        return
+      }
+      router.refresh()
+      onClose()
+    } catch {
+      setError(tErrors('somethingWentWrong'))
+    } finally {
+      setIsSubmitting(false)
     }
-    router.refresh()
-    onClose()
   }
 
   useEffect(() => {

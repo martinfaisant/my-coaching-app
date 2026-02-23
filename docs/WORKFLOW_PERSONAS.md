@@ -44,6 +44,10 @@ Si tu ne précises pas le mode, l’IA te demandera : Designer, Architecte, Dév
 - Proposer **2 à 3 solutions UI** sous forme de **mockups non fonctionnels** (pas d’implémentation dans le site).
 - Une fois une solution validée par le PO : **découper en user stories** avec **critères d’acceptation** pour l’Architecte.
 
+### Style des designs
+
+Les designs et mockups doivent être **modernes, épurés et agréables à l'œil** : esthétique soignée, hiérarchie visuelle claire, pas de surcharge visuelle.
+
 ### Références obligatoires
 
 - **Design system :** `docs/DESIGN_SYSTEM.md` (tokens, composants, couleurs).

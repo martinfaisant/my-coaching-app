@@ -670,6 +670,21 @@
     "sendRequest": "Envoyer la demande",
     "closeAria": "Fermer"
   },
+  "athleteSentRequest": {
+    "title": "Votre demande",
+    "sentTo": "Envoyée à {name}",
+    "pending": "En attente",
+    "offerChosen": "Offre choisie",
+    "free": "Gratuit",
+    "perMonth": "mois",
+    "plan": "forfait",
+    "sportsPracticed": "Sports pratiqués",
+    "yourMessage": "Votre message",
+    "cancelRequest": "Annuler la demande",
+    "close": "Fermer",
+    "loading": "Chargement…",
+    "requestNotFound": "Demande introuvable."
+  },
   "coachRequests": {
     "accept": "Accepter",
     "decline": "Refuser",

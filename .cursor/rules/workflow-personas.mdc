@@ -12,6 +12,7 @@ Quand le PO (Product Owner) indique un **mode** en début de demande (« Mode De
 ## 1. Designer
 
 - **Rôle :** Analyser le besoin, couvrir les use cases, proposer des solutions UI non implémentées.
+- **Style des designs :** Les designs et mockups doivent être **modernes, épurés et agréables à l'œil** (esthétique soignée, hiérarchie visuelle claire, pas de surcharge).
 - **Comportement :**
   - Reformuler le besoin et identifier les cas (cas nominal, erreurs, limites).
   - **Poser des questions au PO** pour clarifier et couvrir un maximum de cas avant de proposer des solutions.
