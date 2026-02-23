@@ -1,7 +1,7 @@
 # 🎨 Design System
 
-**Version :** 1.2  
-**Dernière mise à jour :** 21 février 2026
+**Version :** 1.3  
+**Dernière mise à jour :** 22 février 2026
 
 ---
 
@@ -24,6 +24,8 @@
    - [TileCard](#tilecard)
    - [Modal](#modal)
    - [LanguageSwitcher](#languageswitcher)
+   - [ChatAthleteListItem](#chatathletelistitem)
+   - [ChatConversationSidebar](#chatconversationsidebar)
 4. [Icônes](#icônes)
 5. [Guidelines](#guidelines)
 6. [FAQ](#faq)
@@ -167,6 +169,8 @@ Toutes les couleurs sont définies dans `tailwind.config.ts` et `app/globals.css
 | `shadow-md` | Cartes hover légères |
 | `shadow-lg` | Cartes hover accentuées |
 | `shadow-xl` | Modales, popups |
+| `shadow-chat` | Overlay chat (coach), cartes conversation |
+| `shadow-chat-inner` | Bulles de messages, avatars dans le chat |
 | `shadow-[0_4px_6px_-1px_rgba(98,126,89,0.3)]` | Tuiles sélectionnées (vert forêt) |
 
 ---
@@ -1029,6 +1033,79 @@ import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 
 ---
 
+### ChatAthleteListItem
+
+**Fichier :** `components/ChatAthleteListItem.tsx`
+
+Ligne cliquable pour la liste d'athlètes dans l'overlay chat (état 1). Utilisé quand le coach n'a aucune conversation : affiche les athlètes avec souscription active (avatar ou initiales, nom, label optionnel « Démarrer » au hover). Réutilise `AvatarImage` et `getInitials` (`lib/stringUtils.ts`). Tokens : `palette-olive`, `palette-sage`, `palette-forest-light`, `shadow-chat-inner`.
+
+#### Props
+
+```typescript
+type ChatAthleteListItemProps = {
+  displayName: string
+  avatarUrl?: string | null
+  actionLabel?: string        // ex. "Démarrer"
+  onClick?: () => void
+  avatarVariant?: 'olive' | 'sage' | 'stone'
+  className?: string
+}
+```
+
+#### Exemple
+
+```tsx
+import { ChatAthleteListItem } from '@/components/ChatAthleteListItem'
+
+<ChatAthleteListItem
+  displayName="Jean Dupont"
+  actionLabel="Démarrer"
+  avatarVariant="olive"
+  onClick={() => openConversation(athleteId)}
+/>
+```
+
+Référence : `docs/CHAT_COACH_START_CONVERSATION_DESIGN.md`, mockup état 1.
+
+---
+
+### ChatConversationSidebar
+
+**Fichier :** `components/ChatConversationSidebar.tsx`
+
+Sidebar des conversations dans l'overlay chat (états 2a/2b). Liste verticale d'items (avatar + nom) ; bouton chevron pour réduire (avatars seuls) ou étendre. Clic sur un item pour sélectionner la conversation. **État sélectionné** : identique à la sidebar principale du site (`bg-palette-forest-dark text-white shadow-lg shadow-palette-forest-dark/20`). Pas de bouton Fermer dans les lignes. Réutilise `AvatarImage` et `getInitials`.
+
+#### Props
+
+```typescript
+type ChatConversationSidebarItem = { id: string; displayName: string; avatarUrl?: string | null }
+
+type ChatConversationSidebarProps = {
+  items: ChatConversationSidebarItem[]
+  selectedId: string | null
+  onSelectItem: (id: string) => void
+  labels?: { reduceList?: string; expandList?: string }
+  className?: string
+}
+```
+
+#### Exemple
+
+```tsx
+import { ChatConversationSidebar } from '@/components/ChatConversationSidebar'
+
+<ChatConversationSidebar
+  items={conversations}
+  selectedId={selectedId}
+  onSelectItem={setSelectedId}
+  labels={{ reduceList: 'Réduire la liste', expandList: 'Étendre la liste' }}
+/>
+```
+
+Référence : `docs/CHAT_COACH_START_CONVERSATION_DESIGN.md`, mockup états 2a et 2b.
+
+---
+
 ## Icônes
 
 ### Sports
@@ -1100,9 +1177,17 @@ Toutes les icônes de sports sont définies dans `components/SportIcons.tsx` et 
 - Labels : `text-xs font-bold uppercase tracking-wider`
 - Corps de texte : `text-sm`
 
-### 7. Calendrier (responsive)
+### 7. Breakpoint responsive projet (`md` = 768px)
 
-Sur viewports &lt; 768px (breakpoint `md`), les pages calendrier (athlète et coach) affichent un en-tête sur deux lignes (titre puis sélecteur de semaine) et une seule semaine avec les jours empilés verticalement (7 blocs). À partir de 768px : layout desktop (3 semaines, grille 7 colonnes). Détail : `Project_context.md` §4.5.
+**Règle commune à appliquer dans le projet :**
+- **Mobile** : `< 768px` (en dessous de `md`)
+- **Desktop/Tablette large** : `>= 768px` (à partir de `md`)
+
+Ce breakpoint `md` est le breakpoint de référence pour les bascules de layout structurantes.
+
+**Usages actuels documentés :**
+- **Calendrier (athlète + coach)** : sous `md`, en-tête sur 2 lignes + 1 semaine en stack ; à partir de `md`, layout desktop (3 semaines, grille 7 colonnes). Détail : `Project_context.md` §4.5.
+- **Chat coach (overlay)** : sous `md`, navigation mobile en 2 écrans (liste des conversations puis conversation avec bouton Retour) ; à partir de `md`, layout desktop avec sidebar + panneau conversation.
 
 ### 8. Sports et labels
 
@@ -1168,7 +1253,7 @@ Actuellement, utiliser un span custom :
 ### Fichiers clés
 
 - **Tokens couleurs** : `tailwind.config.ts`, `app/globals.css`
-- **Composants** : `components/Button.tsx`, `components/Input.tsx`, `components/Textarea.tsx`, `components/Badge.tsx`, `components/SportTileSelectable.tsx`, `components/ActivityTile.tsx`, `components/Modal.tsx`
+- **Composants** : `components/Button.tsx`, `components/Input.tsx`, `components/Textarea.tsx`, `components/Badge.tsx`, `components/SportTileSelectable.tsx`, `components/ActivityTile.tsx`, `components/Modal.tsx`, `components/ChatAthleteListItem.tsx`, `components/ChatConversationSidebar.tsx`
 - **Sports** : `lib/sportStyles.ts`, `lib/sportsOptions.ts`, `components/SportIcons.tsx`
 - **Design system page** : `app/dashboard/admin/design-system/page.tsx`
 

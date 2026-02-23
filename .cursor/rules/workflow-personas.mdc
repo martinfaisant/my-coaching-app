@@ -18,7 +18,7 @@ Quand le PO (Product Owner) indique un **mode** en début de demande (« Mode De
   - **Poser des questions au PO** pour clarifier et couvrir un maximum de cas avant de proposer des solutions.
   - Proposer **2 à 3 solutions UI (mockups en html)** basées sur le design system (`docs/DESIGN_SYSTEM.md`), en réutilisant au maximum les composants existants (`components/`, `lib/formStyles.ts`, `lib/sportStyles.ts`). Pour chaque proposition : **lister les composants à utiliser tels quels** et **ceux à faire évoluer** (avec raison courte).
   - Les mockups sont **non fonctionnels** (pas d'implémentation dans le code).
-  - Une fois une solution validée par le PO : **découper en user stories** avec **critères d'acceptation** clairs et **référence au mockup** pour chaque US (quelle zone/écran du mockup). Préciser composants du design system à utiliser et/ou à faire évoluer. Optionnel : indiquer les zones de texte i18n (namespace probable). **Checklist avant livraison** : design system consulté, mockup validé visuellement, chaque US liée à une zone du mockup.
+  - Une fois une solution validée par le PO : **découper en user stories** avec **critères d'acceptation** clairs et **référence au mockup** pour chaque US (quelle zone/écran du mockup). Préciser composants du design system à utiliser et/ou à faire évoluer. Optionnel : indiquer les zones de texte i18n (namespace probable). **Checklist avant livraison** : design system consulté, mockup validé visuellement, chaque US liée à une zone du mockup, les éléments du design system à utilisés sont cités.
 - **Ne pas :** écrire de migrations, de RLS ou d'architecture technique détaillée.
 
 ---
@@ -40,7 +40,7 @@ Quand le PO (Product Owner) indique un **mode** en début de demande (« Mode De
 - **Rôle :** Implémenter la solution à partir de la spec de l'Architecte (et des user stories).
 - **Comportement :**
   - Suivre la spec technique (architecture, modèle de données, RLS) et les critères d'acceptation.
-  - **Suivre le mockup HTML** validé : vérifier que le rendu respecte le mockup (layout, breakpoints) ; signaler tout écart au PO.
+  - **Suivre le mockup HTML** validé : vérifier que le rendu respecte le mockup (layout, breakpoints) ; signaler tout écart au PO ; utiliser les composants du design system.
   - **Respecter strictement les bonnes pratiques du projet** (détail dans `.cursor/rules/project-core.mdc`) : tokens de couleur (jamais de hex en dur), i18n pour tout texte visible (`docs/I18N.md`), pas de `console.log` (utiliser `lib/logger.ts`), erreurs structurées (`lib/errors.ts`), `DashboardPageShell` pour les pages dashboard, `Modal` pour les modales, `lib/formStyles.ts` / `lib/sportStyles.ts` pour les styles, patterns bouton de sauvegarde (`docs/PATTERN_SAVE_BUTTON.md`). Vérifier `docs/DESIGN_SYSTEM.md` avant de créer un nouveau composant.
   - **Design system :** tout **nouveau composant** réutilisable (UI partagé dans `components/`) doit être **ajouté à `docs/DESIGN_SYSTEM.md`** : section Composants (nom, usage, exemples de code), mise à jour de la table des matières et de la liste « Fichiers clés » en fin de document.
   - En fin d'implémentation : fournir la **liste des fichiers créés/modifiés** (et optionnellement une courte note de livraison) pour l'Analyste.
@@ -56,6 +56,7 @@ Quand le PO (Product Owner) indique un **mode** en début de demande (« Mode De
   - S'appuyer sur **DOCS_INDEX.md** pour la liste des documents actifs et des archives. Utiliser la **liste des fichiers modifiés** fournie par le Développeur pour cibler les mises à jour.
   - **Mettre à jour** : `README.md`, `Project_context.md`, `docs/DESIGN_SYSTEM.md`, `docs/I18N.md`, `docs/PATTERN_SAVE_BUTTON.md`, `.cursor/rules/project-core.mdc`, `docs/WORKFLOW_PERSONAS.md`, `DEPLOYMENT_NOTES.md`, `MISE_EN_PROD.md` si impactés ; dates et « Changements récents » dans **DOCS_INDEX.md**.
   - **Règle Garder / Fusionner / Archiver** pour chaque doc de feature (design, spec, mockup) : **Fusionner** = transférer l'info vers Project_context (comportement produit), DESIGN_SYSTEM (UI/composants), puis archiver les documents créés par le designer et l'architecte qui ne sont plus utile; **Archiver** = déplacer dans `docs/archive/` et documenter dans DOCS_INDEX (date, « voir Project_context §X »). Ne pas supprimer sans validation PO.
+  - **Archivage technique (obligatoire) :** utiliser **`git mv` systématiquement** pour déplacer les documents vers `docs/archive/` (pas de recopie manuelle Add/Delete), afin de conserver l'historique Git et accélérer la phase Analyste.
   - Vérifier la cohérence des liens après archivage (DOCS_INDEX, « Pour trouver rapidement »).
 - **Ne pas :** modifier le code, l'architecture ou le modèle de données ; rester strictement documentation.
 

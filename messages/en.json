@@ -9,6 +9,7 @@
     "deleting": "Deleting…",
     "edit": "Edit",
     "close": "Close",
+    "back": "Back",
     "retry": "Retry",
     "add": "Add",
     "search": "Search",
@@ -321,9 +322,28 @@
     "noCoachAssigned": "No coach assigned. You cannot send messages at the moment.",
     "noConversations": "No conversations with your athletes at the moment.",
     "you": "You",
+    "messages": "Messages",
+    "searchPlaceholder": "Search for an athlete",
+    "searchAthletePlaceholder": "Search for an athlete",
+    "searchCoachPlaceholder": "Search for a coach",
+    "chooseAthleteToStart": "Choose an athlete to start",
+    "chooseCoachToStart": "Choose a coach to start",
+    "start": "Start",
+    "noMatch": "No athlete matches \"{query}\"",
+    "closeConversation": "Close conversation",
+    "reduceList": "Reduce list",
+    "expandList": "Expand list",
+    "openDiscussion": "Open a conversation",
+    "selectConversation": "Select a conversation",
+    "subscriptionRequired": "An active subscription is required to start a conversation.",
+    "writeAccessRequired": "No active relationship allows sending messages with this contact.",
+    "readOnlyHint": "This conversation is read-only.",
+    "readOnlyConversation": "This conversation is read-only.",
     "validation": {
       "notConnected": "Not connected.",
-      "emptyMessage": "Empty message."
+      "emptyMessage": "Empty message.",
+      "conversationUnavailable": "Conversation not found or not accessible.",
+      "readOnlyConversation": "This conversation is read-only."
     }
   },
   "calendar": {

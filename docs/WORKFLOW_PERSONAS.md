@@ -234,6 +234,7 @@ Ensuite : archiver le doc de feature (design, spec, mockup) pour ne pas encombre
 ### Nettoyage et archivage
 
 - **Archiver dans `docs/archive/`** : documents d'état des lieux, design/spec/mockup d'une feature livrée une fois l’info transférée dans les docs actifs (voir règle ci-dessus).
+- **Méthode obligatoire :** utiliser **`git mv` systématiquement** pour les déplacements de documents (éviter la recopie manuelle type Add/Delete).
 - **Ne pas supprimer** définitivement sans validation du PO.
 - Après archivage : **vérifier la cohérence des liens** (DOCS_INDEX, « Pour trouver rapidement », liens cross-doc) et mettre à jour les renvois vers les docs archivés.
 

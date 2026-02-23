@@ -11,6 +11,7 @@ import { TileCardShowcase } from './TileCardShowcase'
 import { LanguageSwitcherShowcase } from './LanguageSwitcherShowcase'
 import { LanguagePrefixFieldShowcase } from './LanguagePrefixFieldShowcase'
 import { PersonTileShowcase } from './PersonTileShowcase'
+import { ChatShowcase } from './ChatShowcase'
 
 const PALETTE = [
   { token: 'palette-forest-dark', hex: '#627e59', description: 'Principal — boutons, liens, focus' },
@@ -194,6 +195,18 @@ export default async function DesignSystemPage() {
           </p>
           <div className="rounded-xl border border-stone-200 bg-white p-6">
             <LanguageSwitcherShowcase />
+          </div>
+        </section>
+
+        <section className="mt-12">
+          <h2 className="text-lg font-semibold text-stone-800 mb-4">
+            Composants Chat (overlay coach)
+          </h2>
+          <p className="mb-6 text-sm text-stone-600">
+            ChatAthleteListItem : ligne athlète pour la liste « Choisir un athlète pour démarrer » (état 1). ChatConversationSidebar : sidebar des conversations réductible (états 2a/2b). Référence : docs/CHAT_COACH_START_CONVERSATION_DESIGN.md, mockup.
+          </p>
+          <div className="rounded-xl border border-stone-200 bg-white p-6">
+            <ChatShowcase />
           </div>
         </section>
 

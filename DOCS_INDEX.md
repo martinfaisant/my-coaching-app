@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 22 février 2026
+**Dernière mise à jour :** 23 février 2026 (chat request-driven + lecture seule)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -18,13 +18,13 @@
 - **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), stack technique
 - **Utiliser pour :** Comprendre le projet, les features, les rôles, l'architecture globale
 - **Taille :** ~400 lignes
-- **Dernière mise à jour :** 22 février 2026 (§4.4 voir demande envoyée)
+- **Dernière mise à jour :** 23 février 2026 (§4.6 chat request-driven + read-only)
 
 ### **docs/DESIGN_SYSTEM.md** ⭐
 - **Contenu :** Tokens (couleurs, typo, espacements), composants (Button, Input, Badge, TileCard, DashboardPageShell, Modal, etc.), guidelines UI, exemples de code
 - **Utiliser pour :** Créer ou modifier des composants UI, choisir des couleurs, appliquer le design system
 - **Taille :** ~850 lignes
-- **Dernière mise à jour :** 21 février 2026 (TileCard : variante stone + prop badge, tuiles archivées/terminées)
+- **Dernière mise à jour :** 22 février 2026 (breakpoint responsive projet `md` documenté : calendrier + chat)
 
 ### **docs/I18N.md** ⭐
 - **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces, utilisation dans composants et server actions, **checklist pour nouvelles features** (toujours penser bilingue)
@@ -69,8 +69,6 @@
 - **Utiliser pour :** Évolution modèle (coach_requests, subscriptions) et code (createCoachRequest, respondToCoachRequest, affichage) pour figer et afficher les deux langues
 - **Créé le :** 19 février 2026
 
----
-
 ## 🚀 Documentation Opérationnelle
 
 ### **DEPLOYMENT_NOTES.md**
@@ -93,7 +91,7 @@
 > **Tous les documents d'audit, de refactoring et d'états des lieux ont été archivés dans `docs/archive/`**  
 > Ils servent de référence historique mais ne sont plus nécessaires au quotidien.
 
-### Documents archivés (35 fichiers)
+### Documents archivés (38 fichiers)
 
 **Audit & Plan initial :**
 - `AUDIT_COMPLET.md` - Audit complet du projet (13 février 2026) - 1202 lignes
@@ -159,6 +157,12 @@
 - `STATUT_MIGRATION_I18N.md` - Statut des pages migrées
 - `HOTFIX_I18N_PROXY.md` - Correctif proxy + i18n
 - `MIGRATION_OFFRES_COMPLETE.md`, `MIGRATION_MES_ATHLETES_COMPLETE.md`, `MIGRATION_MON_COACH_COMPLETE.md`, `MIGRATION_APPAREILS_CONNECTES_COMPLETE.md`, `MIGRATION_CHAT_COMPLETE.md`, `MIGRATION_SPORTS_I18N_COMPLETE.md` - Récaps par feature
+
+**Chat – Coach peut démarrer une conversation (archivés 22 février 2026) :**
+- `docs/archive/chat-coach-start-conversation/CHAT_COACH_START_CONVERSATION_DESIGN.md` — Design + user stories (états 1, 2a, 2b, 3, mobile)
+- `docs/archive/chat-coach-start-conversation/CHAT_COACH_START_CONVERSATION_ARCHI.md` — Spec technique (flux, actions serveur, RLS, tests)
+- `docs/archive/chat-coach-start-conversation/chat-coach-start-conversation-mockup.html` — Mockup HTML (overlay desktop/mobile)
+- **Raison :** Feature livrée ; comportement courant documenté dans **Project_context.md §4.6** et breakpoint responsive dans **docs/DESIGN_SYSTEM.md §7**.
 
 **Ces documents restent disponibles dans `docs/archive/` pour référence historique si besoin.**
 
@@ -254,6 +258,18 @@
 
 ### Changements récents :
 
+✅ **23 février 2026 – Chat request-driven + lecture seule (Mode Analyste) :**
+- **Livraison :** Le chat coach/athlète est autorisé dès qu'une demande est `pending`; le chat devient **lecture seule** quand l'écriture n'est plus autorisée (demande refusée/annulée ou souscription terminée après acceptation).
+- **Cycle d'accès chat :** write autorisé pour `pending`; write autorisé pour `accepted` uniquement avec souscription `active`/`cancellation_scheduled`; sinon historique lisible mais envoi bloqué.
+- **UX :** L'athlète utilise le même pattern overlay que le coach (liste + sidebar + panel), avec navigation mobile liste ↔ conversation et bouton retour.
+- **Mises à jour doc :** `Project_context.md` §4.6 (messaging) et §5 (data model `conversations.request_id`).
+
+✅ **22 février 2026 – Chat coach : démarrer/ouvrir/fermer des conversations (Mode Analyste) :**
+- **Livraison :** Le coach peut ouvrir une discussion depuis l’overlay (bouton « Ouvrir une discussion »), rechercher un athlète (déclenchement sur Entrée), ouvrir une conversation existante sans doublon, et fermer une conversation (elle disparaît de la sidebar des conversations ouvertes). Persistance des conversations ouvertes/fermées dans le module.
+- **Vue mobile :** Overlay chat responsive aligné sur le breakpoint projet `md` (navigation liste ↔ conversation en mobile, sidebar + panneau en desktop).
+- **Mises à jour doc :** Project_context.md §4.6 (messaging coach + mobile + persistance), docs/DESIGN_SYSTEM.md (date + rappel breakpoint `md`), DOCS_INDEX.md (feature chat marquée livrée).
+- **Archivage :** docs chat déplacés dans `docs/archive/chat-coach-start-conversation/` (design, archi, mockup). Référence courante : **Project_context.md §4.6**.
+
 ✅ **22 février 2026 – Voir la demande envoyée (athlète) – Mode Analyste :**
 - **Livraison :** L’athlète peut consulter le détail d’une demande envoyée (pending) : footer tuile « Annuler la demande » + « Demande envoyée > », modale avec offre figée, sports, message, date ; annulation depuis la tuile ou la modale.
 - **Mises à jour doc :** Project_context.md §4.4 (phrase sur demande pending + modale détail), docs/I18N.md (namespaces `requestCoachButton`, `athleteSentRequest`, date 22 fév.).
@@ -345,6 +361,7 @@
 | **Vue souscription, résiliation, « En résiliation »** | **`Project_context.md` §4.10** |
 | Envoi demande coach / erreur ou blocage « Envoi en cours » | `Project_context.md` §4.4 (Flow) |
 | **Voir la demande envoyée (athlète) / modale détail demande** | **`Project_context.md` §4.4** (demande pending, « Demande envoyée > », modale) |
+| **Chat – Accès via requests, écriture/lecture seule, overlay coach+athlète** | **`Project_context.md` §4.6** (comportement livré), + archives: `docs/archive/chat-coach-start-conversation/` |
 | Conventions de code | `.cursor/rules/project-core.mdc` |
 | Pattern bouton sauvegarde | `docs/PATTERN_SAVE_BUTTON.md` |
 | Déploiement | `DEPLOYMENT_NOTES.md`, `MISE_EN_PROD.md` |

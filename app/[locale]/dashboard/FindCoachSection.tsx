@@ -226,7 +226,7 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
           {t('noResults')}
         </p>
       ) : (
-        <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
           {filteredCoaches.map((c) => (
             <li key={c.user_id}>
               <CoachTile

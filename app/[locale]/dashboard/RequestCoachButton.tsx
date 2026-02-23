@@ -297,8 +297,6 @@ export function RequestCoachButton({ coachId, coachName, requestStatus, requestI
                     onChange={(e) => setNeed(e.target.value)}
                     required
                     rows={4}
-                    placeholder={t('coachingNeedPlaceholder')}
-                    className="focus:ring-palette-olive"
                   />
                   {error && (
                     <p className="text-sm text-red-600" role="alert">{error}</p>

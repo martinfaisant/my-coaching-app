@@ -12,6 +12,7 @@ const config: Config = {
         'palette': {
           'forest-dark': '#627e59',
           'forest-darker': '#506648',
+          'forest-light': '#f0f4ef',
           'olive': '#8e9856',
           'sage': '#aaaa51',
           'gold': '#cbb44b',
@@ -23,6 +24,10 @@ const config: Config = {
           'danger-dark': '#9e3b31',
           'danger-darker': '#7d3028',
         },
+      },
+      boxShadow: {
+        'chat': '0 4px 24px -4px rgba(0,0,0,0.08), 0 8px 32px -8px rgba(0,0,0,0.06)',
+        'chat-inner': '0 1px 2px rgba(0,0,0,0.04)',
       },
     },
   },

@@ -9,6 +9,7 @@
     "deleting": "Suppression…",
     "edit": "Modifier",
     "close": "Fermer",
+    "back": "Retour",
     "retry": "Réessayer",
     "add": "Ajouter",
     "search": "Rechercher",
@@ -309,9 +310,28 @@
     "noCoachAssigned": "Aucun coach assigné. Vous ne pouvez pas envoyer de message pour le moment.",
     "noConversations": "Aucune discussion avec vos athlètes pour le moment.",
     "you": "Vous",
+    "messages": "Messages",
+    "searchPlaceholder": "Rechercher un athlète",
+    "searchAthletePlaceholder": "Rechercher un athlète",
+    "searchCoachPlaceholder": "Rechercher un coach",
+    "chooseAthleteToStart": "Choisir un athlète pour démarrer",
+    "chooseCoachToStart": "Choisir un coach pour démarrer",
+    "start": "Démarrer",
+    "noMatch": "Aucun athlète ne correspond à \"{query}\"",
+    "closeConversation": "Fermer la conversation",
+    "reduceList": "Réduire la liste",
+    "expandList": "Étendre la liste",
+    "openDiscussion": "Ouvrir une discussion",
+    "selectConversation": "Sélectionnez une conversation",
+    "subscriptionRequired": "Une souscription active est requise pour démarrer une conversation.",
+    "writeAccessRequired": "Aucune relation active ne permet d'envoyer des messages avec ce contact.",
+    "readOnlyHint": "Cette conversation est en lecture seule.",
+    "readOnlyConversation": "Cette conversation est en lecture seule.",
     "validation": {
       "notConnected": "Non connecté.",
-      "emptyMessage": "Message vide."
+      "emptyMessage": "Message vide.",
+      "conversationUnavailable": "Conversation introuvable ou inaccessible.",
+      "readOnlyConversation": "Cette conversation est en lecture seule."
     }
   },
   "calendar": {

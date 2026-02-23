@@ -424,7 +424,7 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
             </div>
           )}
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pb-20">
+          <div className="grid grid-cols-1 gap-6 pb-20">
             {/* Cartes d'offres existantes */}
             {Array.from({ length: Math.min(offerCount, 3) }).map((_, index) => {
               const offer = sortedOffers[index] as CoachOffer | null

@@ -64,6 +64,7 @@ export type Conversation = {
   id: string
   coach_id: string
   athlete_id: string
+  request_id?: string | null
   created_at: string
   updated_at: string
 }
