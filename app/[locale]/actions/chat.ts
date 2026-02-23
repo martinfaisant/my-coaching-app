@@ -373,7 +373,7 @@ export async function getOrCreateConversationForCoach(
     const { data: inserted, error } = await supabase
       .from('conversations')
       .insert({ coach_id: user.id, athlete_id: athleteId, request_id: writableRequestId })
-      .select('id')
+      .select('id, request_id')
       .single()
     if (error) return { ok: false, error: error.message }
     conv = inserted
@@ -426,7 +426,7 @@ export async function getOrCreateConversationForAthlete(
     const { data: inserted, error } = await supabase
       .from('conversations')
       .insert({ coach_id: coachId, athlete_id: user.id, request_id: writableRequestId })
-      .select('id')
+      .select('id, request_id')
       .single()
     if (error) return { ok: false, error: error.message }
     conv = inserted

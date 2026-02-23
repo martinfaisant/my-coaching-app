@@ -295,18 +295,13 @@ function ChatOverlay({
         return
       }
 
-      const result =
-        role === 'coach'
-          ? await getOrCreateConversationForCoach(contactId, locale)
-          : await getOrCreateConversationForAthlete(contactId, locale)
-
-      if (!result.ok) {
-        setCreateError(result.error)
-        return
-      }
-
       const now = new Date().toISOString()
       if (role === 'coach') {
+        const result = await getOrCreateConversationForCoach(contactId, locale)
+        if (!result.ok) {
+          setCreateError(result.error)
+          return
+        }
         const newConv: ConversationWithMeta = {
           id: result.conversationId,
           request_id: null,
@@ -318,7 +313,15 @@ function ChatOverlay({
           is_read_only: false,
         }
         setCoachConvs((prev) => [newConv, ...prev.filter((c) => c.id !== newConv.id)])
+        setSelectedId(result.conversationId)
+        setShowOpenDiscussionView(false)
+        await loadMessages(result.conversationId)
       } else {
+        const result = await getOrCreateConversationForAthlete(contactId, locale)
+        if (!result.ok) {
+          setCreateError(result.error)
+          return
+        }
         const newConv: ConversationWithCoachMeta = {
           id: result.conversationId,
           request_id: null,
@@ -330,11 +333,10 @@ function ChatOverlay({
           is_read_only: false,
         }
         setAthleteConvs((prev) => [newConv, ...prev.filter((c) => c.id !== newConv.id)])
+        setSelectedId(result.conversationId)
+        setShowOpenDiscussionView(false)
+        await loadMessages(result.conversationId)
       }
-
-      setSelectedId(result.conversationId)
-      setShowOpenDiscussionView(false)
-      await loadMessages(result.conversationId)
     },
     [role, locale, normalizedConversations, setSelectedId, setCoachConvs, loadMessages]
   )
