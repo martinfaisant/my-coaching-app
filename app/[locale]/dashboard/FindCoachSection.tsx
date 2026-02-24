@@ -9,6 +9,7 @@ import { Textarea } from '@/components/Textarea'
 import { AvatarImage } from '@/components/AvatarImage'
 import { Badge } from '@/components/Badge'
 import { CoachTile } from '@/components/CoachTile'
+import { Input } from '@/components/Input'
 import { SportTileSelectable } from '@/components/SportTileSelectable'
 import { createCoachRequest } from './actions'
 import { LANGUAGES_OPTIONS } from '@/lib/sportsOptions'
@@ -106,12 +107,21 @@ function matchesLanguage(coach: CoachForList, selectedLanguages: string[]): bool
   return selectedLanguages.some((l) => coachLangs.includes(l))
 }
 
+function matchesName(coach: CoachForList, query: string): boolean {
+  const q = query.trim().toLowerCase()
+  if (q === '') return true
+  const first = (coach.first_name ?? '').trim().toLowerCase()
+  const last = (coach.last_name ?? '').trim().toLowerCase()
+  return first.includes(q) || last.includes(q)
+}
+
 export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}, initialPracticedSports = [], ratingsByCoach = {}, offersByCoach = {} }: FindCoachSectionProps) {
   const t = useTranslations('findCoach')
   const tCommon = useTranslations('common')
   const locale = useLocale()
   const coachedSportsOptions = useCoachedSportsOptions()
   const practicedSportsOptions = usePracticedSportsOptions()
+  const [searchName, setSearchName] = useState('')
   const [selectedSports, setSelectedSports] = useState<string[]>([])
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([])
   const [presentationModalCoach, setPresentationModalCoach] = useState<CoachForList | null>(null)
@@ -136,9 +146,12 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
 
   const filteredCoaches = useMemo(() => {
     return coaches.filter(
-      (c) => matchesSport(c, selectedSports) && matchesLanguage(c, selectedLanguages)
+      (c) =>
+        matchesName(c, searchName) &&
+        matchesSport(c, selectedSports) &&
+        matchesLanguage(c, selectedLanguages)
     )
-  }, [coaches, selectedSports, selectedLanguages])
+  }, [coaches, searchName, selectedSports, selectedLanguages])
 
   const toggleSport = (value: string) => {
     setSelectedSports((prev) =>
@@ -155,6 +168,7 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
   const languageLabel = (code: string) => LANGUAGES_OPTIONS.find((o) => o.value === code)?.label ?? code
 
   const clearFilters = () => {
+    setSearchName('')
     setSelectedSports([])
     setSelectedLanguages([])
   }
@@ -163,21 +177,31 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
     <section className="space-y-8">
       {/* Section Filtres — alignée sur le HTML */}
       <div className="bg-white rounded-2xl shadow-sm border border-stone-200 p-6 mb-10">
-        <div className="flex justify-between items-end mb-6">
+        <div className="flex justify-between items-center mb-4">
           <div>
             <h1 className="text-lg font-bold text-stone-900">{t('filters.title')}</h1>
           </div>
           <Button
             type="button"
-            variant="muted"
+            variant="secondary"
             onClick={clearFilters}
-            className="!border-0 !px-0 underline bg-transparent hover:bg-transparent text-palette-forest-dark hover:text-palette-forest-darker text-xs"
           >
             {t('filters.reset')}
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="mb-4">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-stone-400 mb-3">{t('filters.nameSearchLabel')}</h3>
+          <Input
+            type="search"
+            placeholder={t('filters.nameSearchPlaceholder')}
+            value={searchName}
+            onChange={(e) => setSearchName(e.target.value)}
+            aria-label={t('filters.nameSearchLabel')}
+          />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div>
             <h3 className="text-xs font-bold uppercase tracking-wider text-stone-400 mb-3">{t('filters.coachedSport')}</h3>
             <div className="flex flex-wrap gap-2">

@@ -51,7 +51,7 @@ Avoid:
 **Can:**
 
 - Create profile (name, avatar, practiced sports, goals)
-- Search coaches (filter by sport, language)
+- Search coaches (filter by sport, language, and by name / first name)
 - View coach profiles and offers
 - Send coaching request (with offer selection)
 - Access training calendar (workouts assigned by coach)

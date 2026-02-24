@@ -643,6 +643,8 @@
     "filters": {
       "title": "Filter",
       "reset": "Reset",
+      "nameSearchLabel": "Search by name",
+      "nameSearchPlaceholder": "e.g. Martin, Smith…",
       "coachedSport": "Coached sport",
       "spokenLanguage": "Spoken language"
     },
