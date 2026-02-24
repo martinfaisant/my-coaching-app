@@ -690,7 +690,8 @@
     },
     "validation": {
       "selectOffer": "Please select an offer.",
-      "fillRequired": "Please provide at least one practiced sport and your coaching need."
+      "fillRequired": "Please provide at least one practiced sport and your coaching need.",
+      "requireFirstNameLastName": "Please enter your first name and last name."
     }
   },
   "requestCoachButton": {
@@ -733,6 +734,7 @@
       "athletesOnly": "Athletes only.",
       "alreadyHasCoach": "You already have a coach.",
       "requireSportAndNeed": "At least one practiced sport and coaching need are required.",
+      "requireFirstNameLastName": "Please enter your first name and last name.",
       "coachNotFound": "This coach does not exist.",
       "offerNotFound": "This offer does not exist or does not belong to this coach.",
       "offerNotPublished": "This offer is not available.",

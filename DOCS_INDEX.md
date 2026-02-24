@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 23 février 2026 (filtre par nom Mes athlètes coach – Mode Analyste)
+**Dernière mise à jour :** 23 février 2026 (archivage feature nom/prénom athlète à la demande – Mode Analyste)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -17,8 +17,8 @@
 ### **Project_context.md** ⭐
 - **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), stack technique
 - **Utiliser pour :** Comprendre le projet, les features, les rôles, l'architecture globale
-- **Taille :** ~400 lignes
-- **Dernière mise à jour :** 23 février 2026 (§4 coach : filtre par nom Mes athlètes)
+- **Taille :** ~420 lignes
+- **Dernière mise à jour :** 23 février 2026 (§4.4 Flow : nom/prénom athlète obligatoires à la demande)
 
 ### **docs/DESIGN_SYSTEM.md** ⭐
 - **Contenu :** Tokens (couleurs, typo, espacements), composants (Button, Input, Badge, TileCard, DashboardPageShell, Modal, etc.), guidelines UI, exemples de code, §7 breakpoints (calendrier, chat, Trouver mon coach, My offers)
@@ -175,6 +175,11 @@
 - `docs/archive/athlete-view-sent-request/athlete-view-sent-request-mockup.html` — Mockup HTML (tuile + modale)
 - **Raison :** Feature livrée ; comportement décrit dans **Project_context.md §4.4** (Flow : demande pending, « Demande envoyée > », modale détail).
 
+**Nom et prénom athlète obligatoires à la demande (archivés 23 février 2026) :**
+- `docs/archive/request-athlete-name/DESIGN_REQUEST_ATHLETE_NAME.md` — Design (besoin, solutions A/B/C, choix B, vérification au clic « Voir le détail »)
+- `docs/archive/request-athlete-name/design-request-athlete-name/` — Mockups HTML (index, B en contexte détail coach, C étape 1/2)
+- **Raison :** Feature livrée ; comportement décrit dans **Project_context.md §4.4** (Flow : vérification au détail coach, champs Prénom/Nom si profil incomplet, mise à jour profil puis demande).
+
 **Migrations i18n (archivées 16 février 2026) :**
 - `I18N_IMPLEMENTATION.md` - Implémentation de base i18n (contenu consolidé dans docs/I18N.md)
 - `STATUT_MIGRATION_I18N.md` - Statut des pages migrées
@@ -280,6 +285,12 @@
 **Dernier nettoyage :** 23 février 2026
 
 ### Changements récents :
+
+✅ **23 février 2026 – Nom et prénom athlète obligatoires à la demande (Mode Analyste) :**
+- **Livraison :** À l’ouverture de la modale détail coach (« Voir le détail »), si le profil athlète n’a pas prénom et/ou nom, le formulaire de demande affiche les champs Prénom * et Nom * (obligatoires). Le bouton « Envoyer la demande » reste désactivé tant que offre, sports, besoin et (si affichés) prénom/nom ne sont pas renseignés. À l’envoi : mise à jour du profil puis création de la demande. Côté serveur : `createCoachRequest` accepte optionnellement firstName/lastName, met à jour `profiles` si fournis, et refuse la création si le profil n’a pas de nom.
+- **Fichiers :** `page.tsx` (passage athleteFirstName/athleteLastName), `FindCoachSection.tsx` (props, CoachDetailModal : champs nom/prénom, validation, bouton désactivé), `actions.ts` (createCoachRequest + params + update profil + vérif nom), `messages/fr.json` et `en.json` (findCoach.validation.requireFirstNameLastName, coachRequests.validation.requireFirstNameLastName).
+- **Mises à jour doc :** `Project_context.md` §4.4 (Flow : vérification au détail, champs Prénom/Nom si profil incomplet).
+- **Archivage :** `docs/DESIGN_REQUEST_ATHLETE_NAME.md` et `docs/design-request-athlete-name/` déplacés dans `docs/archive/request-athlete-name/`. Référence courante : **Project_context.md §4.4**.
 
 ✅ **23 février 2026 – Filtre par nom (Mes athlètes, coach) – Mode Analyste :**
 - **Livraison :** Sur le dashboard coach, la section « Mes athlètes » affiche un champ de recherche inline à côté du titre « Mes athlètes (X) ». Filtrage en temps réel par nom affiché (insensible à la casse et aux accents, normalisation NFD). Message « Aucun athlète ne correspond à votre recherche » si 0 résultat. Titre de page : « Tableau de bord » (sans nombre) ; effectifs à côté des titres « Mes athlètes (X) » et « Demandes en attente (X) ».

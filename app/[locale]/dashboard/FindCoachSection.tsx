@@ -93,6 +93,10 @@ type FindCoachSectionProps = {
   ratingsByCoach?: Record<string, { averageRating: number; reviewCount: number }>
   /** coach_id -> offres du coach */
   offersByCoach?: Record<string, Array<OfferForDisplay>>
+  /** Prénom de l'athlète (pour afficher les champs nom/prénom dans la modale si vide) */
+  athleteFirstName?: string
+  /** Nom de l'athlète (pour afficher les champs nom/prénom dans la modale si vide) */
+  athleteLastName?: string
 }
 
 function matchesSport(coach: CoachForList, selectedSports: string[]): boolean {
@@ -115,7 +119,7 @@ function matchesName(coach: CoachForList, query: string): boolean {
   return first.includes(q) || last.includes(q)
 }
 
-export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}, initialPracticedSports = [], ratingsByCoach = {}, offersByCoach = {} }: FindCoachSectionProps) {
+export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}, initialPracticedSports = [], ratingsByCoach = {}, offersByCoach = {}, athleteFirstName = '', athleteLastName = '' }: FindCoachSectionProps) {
   const t = useTranslations('findCoach')
   const tCommon = useTranslations('common')
   const locale = useLocale()
@@ -313,6 +317,9 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
           requestStatus={getStatus(detailModalCoach.user_id)}
           requestId={getRequestId(detailModalCoach.user_id)}
           initialPracticedSports={initialPracticedSports}
+          showNameFields={!((athleteFirstName ?? '').trim() && (athleteLastName ?? '').trim())}
+          athleteFirstName={athleteFirstName}
+          athleteLastName={athleteLastName}
         />
       )}
 
@@ -394,6 +401,10 @@ type CoachDetailModalProps = {
   requestStatus: 'pending' | 'declined' | null
   requestId?: string | null
   initialPracticedSports?: string[]
+  /** Afficher les champs Prénom/Nom (profil athlète incomplet) */
+  showNameFields?: boolean
+  athleteFirstName?: string
+  athleteLastName?: string
 }
 
 type OfferSelectButtonProps = {
@@ -425,16 +436,19 @@ function OfferSelectButton({ isSelected, onClick }: OfferSelectButtonProps) {
   )
 }
 
-function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requestId, initialPracticedSports = [] }: CoachDetailModalProps) {
+function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requestId, initialPracticedSports = [], showNameFields = false, athleteFirstName = '', athleteLastName = '' }: CoachDetailModalProps) {
   const t = useTranslations('findCoach')
   const tCommon = useTranslations('common')
   const tErrors = useTranslations('errors')
+  const tProfile = useTranslations('profile')
   const locale = useLocale()
   const router = useRouter()
   const practicedSportsOptions = usePracticedSportsOptions()
   const [selectedOfferId, setSelectedOfferId] = useState<string | null>(null)
   const [sports, setSports] = useState<string[]>(initialPracticedSports)
   const [need, setNeed] = useState('')
+  const [firstName, setFirstName] = useState(athleteFirstName)
+  const [lastName, setLastName] = useState(athleteLastName)
   const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -467,10 +481,26 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
       setError(t('validation.fillRequired'))
       return
     }
+    if (showNameFields) {
+      const first = firstName.trim()
+      const last = lastName.trim()
+      if (!first || !last) {
+        setError(t('validation.requireFirstNameLastName'))
+        return
+      }
+    }
     setError(null)
     setIsSubmitting(true)
     try {
-      const result = await createCoachRequest(coach.user_id, sports, need.trim(), selectedOfferId, locale)
+      const result = await createCoachRequest(
+        coach.user_id,
+        sports,
+        need.trim(),
+        selectedOfferId,
+        locale,
+        showNameFields ? firstName.trim() : undefined,
+        showNameFields ? lastName.trim() : undefined
+      )
       if (result.error) {
         setError(result.error)
         return
@@ -676,6 +706,24 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
                             {error}
                           </div>
                         )}
+                        {showNameFields && (
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <Input
+                              label={`${tProfile('firstName')} *`}
+                              name="first_name"
+                              value={firstName}
+                              onChange={(e) => setFirstName(e.target.value)}
+                              placeholder=""
+                            />
+                            <Input
+                              label={`${tProfile('lastName')} *`}
+                              name="last_name"
+                              value={lastName}
+                              onChange={(e) => setLastName(e.target.value)}
+                              placeholder=""
+                            />
+                          </div>
+                        )}
                         <div>
                           <label className="block text-sm font-medium text-stone-700 mb-2">
                             {t('modal.practicedSports')}
@@ -704,7 +752,13 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
                         <Button
                           type="submit"
                           variant="primary"
-                          disabled={isSubmitting}
+                          disabled={
+                            isSubmitting
+                            || !selectedOfferId
+                            || sports.length === 0
+                            || !need.trim()
+                            || (showNameFields && (!firstName.trim() || !lastName.trim()))
+                          }
                           loading={isSubmitting}
                           loadingText={t('modal.sending')}
                           className="w-full"
