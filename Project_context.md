@@ -196,6 +196,7 @@ Athletes filter coaches by:
 **Coach can:**
 
 - Create / update / delete workouts for their athletes
+- On the calendar (workout tile and day modal), see at a glance when an athlete has left a comment on a workout (comment icon in the metadata row: duration, distance, etc.)
 - See weekly totals per sport and planning status (“Planifié jusqu’au”, “En retard”)
 
 **Calendar (responsive):** On viewports &lt; 768px (breakpoint md), the athlete and coach calendar pages show a two-line header (title then week selector), the **weekly totals block** (total time volume + per-sport bars, same as the extended week on desktop), then a single week with days stacked vertically; from 768px, the desktop layout (three weeks, 7-column grid) is used. Spec archived in `docs/archive/calendar-mobile-44/`. Weekly-totals-on-mobile design archived in `docs/archive/calendar-mobile-weekly-total/`.

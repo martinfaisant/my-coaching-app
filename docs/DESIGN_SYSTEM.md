@@ -1,7 +1,7 @@
 # 🎨 Design System
 
 **Version :** 1.3  
-**Dernière mise à jour :** 23 février 2026 (filtre par nom Trouver mon coach + responsive)
+**Dernière mise à jour :** 23 février 2026 (indicateur commentaire athlète sur tuile calendrier)
 
 ---
 

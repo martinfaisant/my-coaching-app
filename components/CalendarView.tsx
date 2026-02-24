@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useCallback, useEffect } from 'react'
+import { useState, useMemo, useCallback, useEffect, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
 import { useLocale, useTranslations } from 'next-intl'
@@ -637,7 +637,7 @@ export function CalendarView({
     prevu: WeekFaitBySport,
     fait: WeekFaitBySport,
     prevWeekFait: WeekFaitBySport
-  ): JSX.Element | null {
+  ): ReactNode {
     const totalPrevuMin = prevu ? Math.round((prevu.course?.minutes ?? 0) + (prevu.velo?.minutes ?? 0) + (prevu.natation?.minutes ?? 0) + (prevu.musculation?.minutes ?? 0) + (prevu.nordic_ski?.minutes ?? 0) + (prevu.backcountry_ski?.minutes ?? 0) + (prevu.ice_skating?.minutes ?? 0)) : 0
     const totalFaitMin = fait ? Math.round((fait.course?.minutes ?? 0) + (fait.velo?.minutes ?? 0) + (fait.natation?.minutes ?? 0) + (fait.musculation?.minutes ?? 0) + (fait.nordic_ski?.minutes ?? 0) + (fait.backcountry_ski?.minutes ?? 0) + (fait.ice_skating?.minutes ?? 0)) : 0
     const prevTotalMin = prevWeekFait ? Math.round((prevWeekFait.course?.minutes ?? 0) + (prevWeekFait.velo?.minutes ?? 0) + (prevWeekFait.natation?.minutes ?? 0) + (prevWeekFait.musculation?.minutes ?? 0) + (prevWeekFait.nordic_ski?.minutes ?? 0) + (prevWeekFait.backcountry_ski?.minutes ?? 0) + (prevWeekFait.ice_skating?.minutes ?? 0)) : 0
