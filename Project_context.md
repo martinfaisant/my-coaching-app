@@ -75,7 +75,7 @@ Avoid:
 - Create professional profile (name, photo, bio, coached sports, languages, postal code)
 - Create offers (title, description, price, type: free / monthly / one-time)
 - Receive and accept/decline coaching requests
-- Manage athletes (see list, access athlete calendar)
+- Manage athletes (see list, filter by name; access athlete calendar)
 - Create workouts for athletes (date, sport, title, description, targets)
 - View athlete goals (read-only)
 - View workout weekly totals and planning status

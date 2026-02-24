@@ -130,7 +130,11 @@ const ClockIcon = () => (
 )
 const MapIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+    <path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z" />
+    <path d="m14.5 12.5 2-2" />
+    <path d="m11.5 9.5 2-2" />
+    <path d="m8.5 6.5 2-2" />
+    <path d="m17.5 15.5 2-2" />
   </svg>
 )
 const MountainIcon = () => (
@@ -504,8 +508,12 @@ export function CalendarView({
               <>
                 {hasDuration && <div className="w-px h-2.5 bg-stone-300" />}
                 <div className="flex items-center gap-1">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z" />
+                    <path d="m14.5 12.5 2-2" />
+                    <path d="m11.5 9.5 2-2" />
+                    <path d="m8.5 6.5 2-2" />
+                    <path d="m17.5 15.5 2-2" />
                   </svg>
                   <span>
                     {w.sport_type === 'natation' 
@@ -584,8 +592,12 @@ export function CalendarView({
             <>
               {hasDuration && <div className="w-px h-3 bg-stone-300" />}
               <div className="flex items-center gap-1">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-2.5 w-2.5 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-2.5 w-2.5 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z" />
+                  <path d="m14.5 12.5 2-2" />
+                  <path d="m11.5 9.5 2-2" />
+                  <path d="m8.5 6.5 2-2" />
+                  <path d="m17.5 15.5 2-2" />
                 </svg>
                 <span>
                   {w.sport_type === 'natation' 
@@ -1078,8 +1090,12 @@ export function CalendarView({
                                     </div>
                                     <div className="flex items-center gap-1 flex-wrap text-[10px] text-stone-400 font-medium mt-1">
                                       <div className="flex items-center gap-1">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                          <path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z" />
+                                          <path d="m14.5 12.5 2-2" />
+                                          <path d="m11.5 9.5 2-2" />
+                                          <path d="m8.5 6.5 2-2" />
+                                          <path d="m17.5 15.5 2-2" />
                                         </svg>
                                         <span>{firstGoal.distance} km</span>
                                       </div>
@@ -1176,8 +1192,12 @@ export function CalendarView({
                                     </div>
                                     <div className="flex items-center gap-1 flex-wrap text-[10px] text-stone-400 font-medium mt-1">
                                       <div className="flex items-center gap-1">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                          <path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z" />
+                                          <path d="m14.5 12.5 2-2" />
+                                          <path d="m11.5 9.5 2-2" />
+                                          <path d="m8.5 6.5 2-2" />
+                                          <path d="m17.5 15.5 2-2" />
                                         </svg>
                                         <span>{firstGoal.distance} km</span>
                                       </div>
@@ -1308,8 +1328,12 @@ export function CalendarView({
                                     </div>
                                     <div className="flex items-center gap-1 flex-wrap text-[10px] text-stone-400 font-medium mt-1">
                                       <div className="flex items-center gap-1">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                          <path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z" />
+                                          <path d="m14.5 12.5 2-2" />
+                                          <path d="m11.5 9.5 2-2" />
+                                          <path d="m8.5 6.5 2-2" />
+                                          <path d="m17.5 15.5 2-2" />
                                         </svg>
                                         <span>{g.distance} km</span>
                                       </div>
@@ -1553,7 +1577,11 @@ export function CalendarView({
                       <dt className="text-xs text-stone-500 uppercase tracking-wide font-bold mb-1.5">{tGoals('distance')}</dt>
                       <dd className="text-sm text-stone-900 flex items-center gap-1.5">
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                          <path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z" />
+                          <path d="m14.5 12.5 2-2" />
+                          <path d="m11.5 9.5 2-2" />
+                          <path d="m8.5 6.5 2-2" />
+                          <path d="m17.5 15.5 2-2" />
                         </svg>
                         {selectedGoal.distance} km
                       </dd>

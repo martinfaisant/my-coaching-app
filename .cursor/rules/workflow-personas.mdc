@@ -58,6 +58,7 @@ Quand le PO (Product Owner) indique un **mode** en début de demande (« Mode De
   - **Règle Garder / Fusionner / Archiver** pour chaque doc de feature (design, spec, mockup) : **Fusionner** = transférer l'info vers Project_context (comportement produit), DESIGN_SYSTEM (UI/composants), puis archiver les documents créés par le designer et l'architecte qui ne sont plus utile; **Archiver** = déplacer dans `docs/archive/` et documenter dans DOCS_INDEX (date, « voir Project_context §X »). Ne pas supprimer sans validation PO.
   - **Archivage technique (obligatoire) :** utiliser **`git mv` systématiquement** pour déplacer les documents vers `docs/archive/` (pas de recopie manuelle Add/Delete), afin de conserver l'historique Git et accélérer la phase Analyste.
   - Vérifier la cohérence des liens après archivage (DOCS_INDEX, « Pour trouver rapidement »).
+  - **Livrable réponse chat (obligatoire) :** inclure dans la réponse finale un **texte de commit** (max 10 lignes) résumant la feature et ce qui a été fait à haut niveau, pour faciliter le commit final (ex. titre court + bullet points ou paragraphe concis).
 - **Ne pas :** modifier le code, l'architecture ou le modèle de données ; rester strictement documentation.
 
 ---
