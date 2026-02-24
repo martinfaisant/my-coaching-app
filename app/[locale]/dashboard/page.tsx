@@ -6,7 +6,7 @@ import { redirect } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
 import { DashboardPageShell } from '@/components/DashboardPageShell'
 import { AvatarImage } from '@/components/AvatarImage'
-import { CoachAthleteTileWithModal } from '@/app/[locale]/dashboard/CoachAthleteTileWithModal'
+import { CoachAthletesListWithFilter } from '@/app/[locale]/dashboard/CoachAthletesListWithFilter'
 import type { CoachSubscriptionRow } from '@/app/[locale]/dashboard/CoachSubscriptionDetailModal'
 import { Badge } from '@/components/Badge'
 import { getFrozenTitleForLocale } from '@/lib/frozenOfferI18n'
@@ -247,11 +247,49 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
     }
   }
 
-  const athleteCount = current.profile.role === 'coach' ? visibleProfiles.length : 0
+  const athleteTiles =
+    current.profile.role === 'coach' && visibleProfiles.length > 0
+      ? visibleProfiles.map((p) => {
+          const displayName = getDisplayName(p, p.email ?? '')
+          const athleteHref = `/dashboard/athletes/${p.user_id}`
+          const data = coachAthleteData[p.user_id]
+          const plannedUntil = data?.plannedUntil ?? null
+          const nextGoal = data?.nextGoal ?? null
+          const isUpToDate = data?.isUpToDate ?? false
+          const practicedSports = p.practiced_sports ?? []
+          const subscription = subscriptionByAthleteId[p.user_id] ?? null
+          const subscriptionTitle = subscription ? getFrozenTitleForLocale(subscription, locale) : null
+          return {
+            displayName,
+            athlete: {
+              displayName,
+              avatarUrl: p.avatar_url ? `${p.avatar_url}?t=${p.updated_at}` : null,
+            },
+            subscription: subscription as CoachSubscriptionRow | null,
+            subscriptionTitle,
+            locale,
+            currentUserId: current.id,
+            athleteHref,
+            practicedSports,
+            nextGoal: nextGoal ? { date: formatShortDate(nextGoal.date), raceName: nextGoal.race_name } : null,
+            plannedUntil: plannedUntil ? formatShortDate(plannedUntil) : undefined,
+            isUpToDate,
+            labels: {
+              nextGoal: t('athleteCard.nextGoal'),
+              noGoal: t('athleteCard.noGoal'),
+              plannedUntil: t('athleteCard.plannedUntil'),
+              upToDate: t('athleteCard.upToDate'),
+              late: t('athleteCard.late'),
+            },
+            viewPlanningLabel: t('athleteCard.viewPlanning'),
+          }
+        })
+      : []
+
   const pageTitle = current.profile.role === 'admin'
     ? t('allMembers')
     : current.profile.role === 'coach'
-      ? t('pageTitle', { count: athleteCount })
+      ? t('dashboard')
       : t('dashboard')
 
   return (
@@ -296,7 +334,7 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
         {current.profile.role === 'coach' && pendingRequests.length > 0 && (
           <section className="mb-8">
             <h2 className="text-base font-semibold text-stone-900 mb-2">
-              {t('pendingRequests.title')}
+              {t('pendingRequests.titleWithCount', { count: pendingRequests.length })}
             </h2>
             <p className="text-sm text-stone-600 mb-4">
               {t('pendingRequests.description')}
@@ -363,56 +401,10 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
                 </p>
               </div>
             ) : (
-            <>
-              {pendingRequests.length > 0 && (
-                <>
-                  <div className="border-t border-stone-200 my-8"></div>
-                  <h2 className="text-base font-semibold text-stone-900 mb-4">
-                    {t('myAthletes')}
-                  </h2>
-                </>
-              )}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {visibleProfiles.map((p) => {
-                const displayName = getDisplayName(p, p.email ?? '')
-                const athleteHref = `/dashboard/athletes/${p.user_id}`
-                const data = coachAthleteData[p.user_id]
-                const plannedUntil = data?.plannedUntil ?? null
-                const nextGoal = data?.nextGoal ?? null
-                const isUpToDate = data?.isUpToDate ?? false
-                const practicedSports = p.practiced_sports ?? []
-                const subscription = subscriptionByAthleteId[p.user_id] ?? null
-                const subscriptionTitle = subscription ? getFrozenTitleForLocale(subscription, locale) : null
-
-                return (
-                  <CoachAthleteTileWithModal
-                    key={p.user_id}
-                    athlete={{
-                      displayName,
-                      avatarUrl: p.avatar_url ? `${p.avatar_url}?t=${p.updated_at}` : null,
-                    }}
-                    subscription={subscription}
-                    subscriptionTitle={subscriptionTitle}
-                    locale={locale}
-                    currentUserId={current.id}
-                    athleteHref={athleteHref}
-                    practicedSports={practicedSports}
-                    nextGoal={nextGoal ? { date: formatShortDate(nextGoal.date), raceName: nextGoal.race_name } : null}
-                    plannedUntil={plannedUntil ? formatShortDate(plannedUntil) : undefined}
-                    isUpToDate={isUpToDate}
-                    labels={{
-                      nextGoal: t('athleteCard.nextGoal'),
-                      noGoal: t('athleteCard.noGoal'),
-                      plannedUntil: t('athleteCard.plannedUntil'),
-                      upToDate: t('athleteCard.upToDate'),
-                      late: t('athleteCard.late'),
-                    }}
-                    viewPlanningLabel={t('athleteCard.viewPlanning')}
-                  />
-                )
-              })}
-              </div>
-            </>
+              <CoachAthletesListWithFilter
+                athletes={athleteTiles}
+                showDivider={pendingRequests.length > 0}
+              />
             )
           ) : (
             <ul className="space-y-2.5">

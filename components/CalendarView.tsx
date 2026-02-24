@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useCallback, useEffect } from 'react'
+import { useState, useMemo, useCallback, useEffect, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
 import { useLocale, useTranslations } from 'next-intl'
@@ -130,7 +130,11 @@ const ClockIcon = () => (
 )
 const MapIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+    <path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z" />
+    <path d="m14.5 12.5 2-2" />
+    <path d="m11.5 9.5 2-2" />
+    <path d="m8.5 6.5 2-2" />
+    <path d="m17.5 15.5 2-2" />
   </svg>
 )
 const MountainIcon = () => (
@@ -457,6 +461,10 @@ export function CalendarView({
     }
   }, [router, onWorkoutSaved])
 
+  const hasAthleteComment = (workout: Workout) =>
+    (workout.athlete_comment != null && String(workout.athlete_comment).trim() !== '') ||
+    (workout.athlete_comment_at != null && workout.athlete_comment_at !== '')
+
   const renderCompactCard = (w: Workout, dateStr: string) => {
     const style = SPORT_CARD_STYLES[w.sport_type]
     const target = formatWorkoutTarget(w)
@@ -465,7 +473,9 @@ export function CalendarView({
     const hasDistance = w.target_distance_km != null && w.target_distance_km > 0
     const hasPace = w.target_pace != null && w.target_pace > 0
     const paceStr = formatPace(w.target_pace, w.sport_type)
-    
+    const showCommentIcon = hasAthleteComment(w)
+    const athleteCommentLabel = tCalendar('tile.athleteCommentLabel')
+
     return (
       <div
         key={w.id}
@@ -477,15 +487,14 @@ export function CalendarView({
         role="button"
       >
         <div>
-          <div>
-            <span className={`float-left inline-flex items-center mr-1.5 ${style.badge} ${style.badgeBg} px-1 py-0.5 rounded shrink-0`}>
+          <div className="flex items-start gap-1">
+            <span className={`inline-flex items-center ${style.badge} ${style.badgeBg} px-1 py-0.5 rounded shrink-0`}>
               <SportIcon className="w-2.5 h-2.5" />
             </span>
-            <div className="text-xs font-semibold text-stone-700 leading-tight">{w.title}</div>
-            <div className="clear-both"></div>
+            <span className="text-xs font-semibold text-stone-700 leading-tight flex-1 min-w-0 truncate">{w.title}</span>
           </div>
         </div>
-        {(hasDuration || hasDistance || hasPace) && (
+        {(hasDuration || hasDistance || hasPace || showCommentIcon) && (
           <div className="flex items-center gap-1 flex-wrap text-[10px] text-stone-400 font-medium mt-1">
             {hasDuration && (
               <div className="flex items-center gap-1">
@@ -499,8 +508,12 @@ export function CalendarView({
               <>
                 {hasDuration && <div className="w-px h-2.5 bg-stone-300" />}
                 <div className="flex items-center gap-1">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z" />
+                    <path d="m14.5 12.5 2-2" />
+                    <path d="m11.5 9.5 2-2" />
+                    <path d="m8.5 6.5 2-2" />
+                    <path d="m17.5 15.5 2-2" />
                   </svg>
                   <span>
                     {w.sport_type === 'natation' 
@@ -521,6 +534,16 @@ export function CalendarView({
                 </div>
               </>
             )}
+            {showCommentIcon && (
+              <>
+                {(hasDuration || hasDistance || hasPace) && <div className="w-px h-2.5 bg-stone-300" />}
+                <div className="flex items-center gap-1" title={athleteCommentLabel} aria-label={athleteCommentLabel}>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                  </svg>
+                </div>
+              </>
+            )}
           </div>
         )}
       </div>
@@ -535,7 +558,9 @@ export function CalendarView({
     const hasDistance = w.target_distance_km != null && w.target_distance_km > 0
     const hasPace = w.target_pace != null && w.target_pace > 0
     const paceStr = formatPace(w.target_pace, w.sport_type)
-    
+    const showCommentIcon = hasAthleteComment(w)
+    const athleteCommentLabel = tCalendar('tile.athleteCommentLabel')
+
     return (
       <div
         key={w.id}
@@ -551,7 +576,7 @@ export function CalendarView({
             <SportIcon className="w-3 h-3" />
           </span>
           <h4 className="text-sm font-bold text-stone-900 leading-tight">{w.title}</h4>
-          <div className="clear-both"></div>
+          <div className="clear-both" />
         </div>
         <p className="text-xs text-stone-500 leading-snug mb-3 line-clamp-2">{w.description || '—'}</p>
         <div className="flex items-center gap-1.5 text-[10px] text-stone-500 font-medium flex-wrap">
@@ -567,8 +592,12 @@ export function CalendarView({
             <>
               {hasDuration && <div className="w-px h-3 bg-stone-300" />}
               <div className="flex items-center gap-1">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-2.5 w-2.5 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-2.5 w-2.5 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z" />
+                  <path d="m14.5 12.5 2-2" />
+                  <path d="m11.5 9.5 2-2" />
+                  <path d="m8.5 6.5 2-2" />
+                  <path d="m17.5 15.5 2-2" />
                 </svg>
                 <span>
                   {w.sport_type === 'natation' 
@@ -600,6 +629,101 @@ export function CalendarView({
               </div>
             </>
           )}
+          {showCommentIcon && (
+            <>
+              {(hasDuration || hasDistance || hasPace || target.secondary) && <div className="w-px h-3 bg-stone-300" />}
+              <div className="flex items-center gap-1" title={athleteCommentLabel} aria-label={athleteCommentLabel}>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-2.5 w-2.5 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                </svg>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  /** Bloc totaux de la semaine (volume horaire + barres par sport). Réutilisé en mode étendu desktop et en vue mobile. */
+  function renderWeeklyTotalsCard(
+    prevu: WeekFaitBySport,
+    fait: WeekFaitBySport,
+    prevWeekFait: WeekFaitBySport
+  ): ReactNode {
+    const totalPrevuMin = prevu ? Math.round((prevu.course?.minutes ?? 0) + (prevu.velo?.minutes ?? 0) + (prevu.natation?.minutes ?? 0) + (prevu.musculation?.minutes ?? 0) + (prevu.nordic_ski?.minutes ?? 0) + (prevu.backcountry_ski?.minutes ?? 0) + (prevu.ice_skating?.minutes ?? 0)) : 0
+    const totalFaitMin = fait ? Math.round((fait.course?.minutes ?? 0) + (fait.velo?.minutes ?? 0) + (fait.natation?.minutes ?? 0) + (fait.musculation?.minutes ?? 0) + (fait.nordic_ski?.minutes ?? 0) + (fait.backcountry_ski?.minutes ?? 0) + (fait.ice_skating?.minutes ?? 0)) : 0
+    const prevTotalMin = prevWeekFait ? Math.round((prevWeekFait.course?.minutes ?? 0) + (prevWeekFait.velo?.minutes ?? 0) + (prevWeekFait.natation?.minutes ?? 0) + (prevWeekFait.musculation?.minutes ?? 0) + (prevWeekFait.nordic_ski?.minutes ?? 0) + (prevWeekFait.backcountry_ski?.minutes ?? 0) + (prevWeekFait.ice_skating?.minutes ?? 0)) : 0
+    const progressPct = totalPrevuMin > 0 ? Math.round((totalFaitMin / totalPrevuMin) * 100) : 0
+    const sports = [
+      { key: 'course' as const, Icon: IconRunning, color: 'text-palette-forest-dark', bg: 'bg-palette-forest-dark', label: tCalendar('weekly.sportLabels.run'), prevuVal: prevu?.course?.distanceKm ?? 0, faitVal: fait?.course?.distanceKm ?? 0, useTime: false },
+      { key: 'velo' as const, Icon: IconBiking, color: 'text-palette-olive', bg: 'bg-palette-olive', label: tCalendar('weekly.sportLabels.cycling'), prevuVal: prevu?.velo?.distanceKm ?? 0, faitVal: fait?.velo?.distanceKm ?? 0, useTime: false },
+      { key: 'natation' as const, Icon: IconSwimming, color: 'text-sky-600', bg: 'bg-sky-500', label: tCalendar('weekly.sportLabels.swimming'), prevuVal: prevu?.natation?.distanceKm ?? 0, faitVal: fait?.natation?.distanceKm ?? 0, useTime: false },
+      { key: 'musculation' as const, Icon: IconDumbbell, color: 'text-stone-600', bg: 'bg-stone-500', label: tCalendar('weekly.sportLabels.strength'), prevuVal: prevu?.musculation?.minutes ?? 0, faitVal: fait?.musculation?.minutes ?? 0, useTime: true },
+      { key: 'nordic_ski' as const, Icon: IconNordicSki, color: 'text-palette-sage', bg: 'bg-palette-sage', label: tCalendar('weekly.sportLabels.nordicSki'), prevuVal: prevu?.nordic_ski?.distanceKm ?? 0, faitVal: fait?.nordic_ski?.distanceKm ?? 0, useTime: false },
+      { key: 'backcountry_ski' as const, Icon: IconBackcountrySki, color: 'text-palette-gold', bg: 'bg-palette-gold', label: tCalendar('weekly.sportLabels.backcountrySki'), prevuVal: prevu?.backcountry_ski?.distanceKm ?? 0, faitVal: fait?.backcountry_ski?.distanceKm ?? 0, useTime: false },
+      { key: 'ice_skating' as const, Icon: IconIceSkating, color: 'text-cyan-600', bg: 'bg-cyan-500', label: tCalendar('weekly.sportLabels.iceSkating'), prevuVal: prevu?.ice_skating?.distanceKm ?? 0, faitVal: fait?.ice_skating?.distanceKm ?? 0, useTime: false },
+    ].filter(s => s.prevuVal > 0 || s.faitVal > 0)
+    const hasAnyTotals = (totalPrevuMin > 0 || totalFaitMin > 0) || sports.length > 0
+    if (!hasAnyTotals) return null
+    return (
+      <div className="bg-white rounded-xl border border-stone-200 shadow-sm px-5 pt-3 pb-5 mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+          {(totalPrevuMin > 0 || totalFaitMin > 0) && (
+            <div className="flex flex-col">
+              <div className="flex items-center gap-2 text-xs mb-2 min-h-7">
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-palette-amber shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="12 6 12 12 16 14" />
+                </svg>
+                <span className="font-semibold text-palette-amber leading-tight">{tCalendar('weekly.totalTimeVolume')}</span>
+              </div>
+              <div className="relative w-full mt-2">
+                <div className="w-full bg-stone-100 rounded-full h-1.5 relative">
+                  {totalFaitMin > 0 && (
+                    <div className="bg-palette-amber h-1.5 rounded-full transition-all relative overflow-visible" style={{ width: totalPrevuMin > 0 ? `${Math.min(100, progressPct)}%` : '100%' }}>
+                      <span className="absolute right-0 top-0 translate-y-[-100%] text-[10px] text-palette-amber font-bold whitespace-nowrap" style={{ maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>
+                        {formatDuration(totalFaitMin)}
+                      </span>
+                    </div>
+                  )}
+                </div>
+                {totalPrevuMin > 0 && (
+                  <span className="absolute right-0 top-full mt-0.5 text-[10px] text-stone-400">
+                    {formatDuration(totalPrevuMin)} {tCalendar('weekly.planned')}
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
+          {sports.map(({ key, Icon, color, bg, label, prevuVal, faitVal, useTime }) => {
+            const barPct = prevuVal > 0 ? Math.min(100, Math.round((faitVal / prevuVal) * 100)) : (faitVal > 0 ? 100 : 0)
+            const prevuDisplay = useTime ? formatDuration(Math.round(prevuVal)) : (prevuVal > 0 ? `${Math.round(prevuVal)} km` : '—')
+            const faitDisplay = useTime ? formatDuration(Math.round(faitVal)) : (faitVal > 0 ? `${Math.round(faitVal)} km` : '0 km')
+            return (
+              <div key={key} className="flex flex-col">
+                <div className="flex items-center gap-2 text-xs mb-2 min-h-7">
+                  <Icon className={`w-4 h-4 ${color} shrink-0`} />
+                  <span className={`font-semibold ${color} leading-tight`}>{label}</span>
+                </div>
+                <div className="relative w-full mt-2">
+                  <div className="w-full bg-stone-100 rounded-full h-1.5 relative">
+                    {faitVal > 0 && (
+                      <div className={`h-full ${bg} rounded-full transition-all relative overflow-visible`} style={{ width: `${barPct}%` }}>
+                        <span className={`absolute right-0 top-0 translate-y-[-100%] text-[10px] ${color} font-bold whitespace-nowrap`} style={{ maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>
+                          {faitDisplay}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  {prevuVal > 0 && (
+                    <span className="absolute right-0 top-full mt-0.5 text-[10px] text-stone-400">
+                      {prevuDisplay} {tCalendar('weekly.planned')}
+                    </span>
+                  )}
+                </div>
+              </div>
+            )
+          })}
         </div>
       </div>
     )
@@ -617,6 +741,7 @@ export function CalendarView({
                   <h2 className="text-xl font-bold text-palette-forest-dark">{week.label}</h2>
                   <span className="text-stone-400 font-medium text-sm">— {week.rangeLabel.replace(' - ', ' au ')}</span>
                 </div>
+                {renderWeeklyTotalsCard(weekPrevuBySport[1]!, weekFaitBySport[1]!, weekFaitBySport[0]!)}
                 <div className="flex flex-col gap-3">
                   {week.days.map((day) => {
                     const dayWorkouts = workoutsByDate[day.dateStr] ?? []
@@ -892,98 +1017,7 @@ export function CalendarView({
                   )}
                 </div>
               )}
-              {isDetailed && (() => {
-                const prevu = weekPrevuBySport[1]
-                const fait = weekFaitBySport[1]
-                const prevWeekFait = weekFaitBySport[0]
-                const totalPrevuMin = prevu ? Math.round((prevu.course?.minutes ?? 0) + (prevu.velo?.minutes ?? 0) + (prevu.natation?.minutes ?? 0) + (prevu.musculation?.minutes ?? 0) + (prevu.nordic_ski?.minutes ?? 0) + (prevu.backcountry_ski?.minutes ?? 0) + (prevu.ice_skating?.minutes ?? 0)) : 0
-                const totalFaitMin = fait ? Math.round((fait.course?.minutes ?? 0) + (fait.velo?.minutes ?? 0) + (fait.natation?.minutes ?? 0) + (fait.musculation?.minutes ?? 0) + (fait.nordic_ski?.minutes ?? 0) + (fait.backcountry_ski?.minutes ?? 0) + (fait.ice_skating?.minutes ?? 0)) : 0
-                const prevTotalMin = prevWeekFait ? Math.round((prevWeekFait.course?.minutes ?? 0) + (prevWeekFait.velo?.minutes ?? 0) + (prevWeekFait.natation?.minutes ?? 0) + (prevWeekFait.musculation?.minutes ?? 0) + (prevWeekFait.nordic_ski?.minutes ?? 0) + (prevWeekFait.backcountry_ski?.minutes ?? 0) + (prevWeekFait.ice_skating?.minutes ?? 0)) : 0
-                const diffPct = prevTotalMin > 0 ? Math.round(((totalFaitMin - prevTotalMin) / prevTotalMin) * 100) : 0
-                const progressPct = totalPrevuMin > 0 ? Math.round((totalFaitMin / totalPrevuMin) * 100) : 0
-                const sports = [
-                  { key: 'course' as const, Icon: IconRunning, color: 'text-palette-forest-dark', bg: 'bg-palette-forest-dark', label: tCalendar('weekly.sportLabels.run'), prevuVal: prevu?.course?.distanceKm ?? 0, faitVal: fait?.course?.distanceKm ?? 0, useTime: false },
-                  { key: 'velo' as const, Icon: IconBiking, color: 'text-palette-olive', bg: 'bg-palette-olive', label: tCalendar('weekly.sportLabels.cycling'), prevuVal: prevu?.velo?.distanceKm ?? 0, faitVal: fait?.velo?.distanceKm ?? 0, useTime: false },
-                  { 
-                    key: 'natation' as const, 
-                    Icon: IconSwimming, 
-                    color: 'text-sky-600', 
-                    bg: 'bg-sky-500', 
-                    label: tCalendar('weekly.sportLabels.swimming'), 
-                    prevuVal: prevu?.natation?.distanceKm ?? 0, 
-                    faitVal: fait?.natation?.distanceKm ?? 0, 
-                    useTime: false 
-                  },
-                  { key: 'musculation' as const, Icon: IconDumbbell, color: 'text-stone-600', bg: 'bg-stone-500', label: tCalendar('weekly.sportLabels.strength'), prevuVal: prevu?.musculation?.minutes ?? 0, faitVal: fait?.musculation?.minutes ?? 0, useTime: true },
-                  { key: 'nordic_ski' as const, Icon: IconNordicSki, color: 'text-palette-sage', bg: 'bg-palette-sage', label: tCalendar('weekly.sportLabels.nordicSki'), prevuVal: prevu?.nordic_ski?.distanceKm ?? 0, faitVal: fait?.nordic_ski?.distanceKm ?? 0, useTime: false },
-                  { key: 'backcountry_ski' as const, Icon: IconBackcountrySki, color: 'text-palette-gold', bg: 'bg-palette-gold', label: tCalendar('weekly.sportLabels.backcountrySki'), prevuVal: prevu?.backcountry_ski?.distanceKm ?? 0, faitVal: fait?.backcountry_ski?.distanceKm ?? 0, useTime: false },
-                  { key: 'ice_skating' as const, Icon: IconIceSkating, color: 'text-cyan-600', bg: 'bg-cyan-500', label: tCalendar('weekly.sportLabels.iceSkating'), prevuVal: prevu?.ice_skating?.distanceKm ?? 0, faitVal: fait?.ice_skating?.distanceKm ?? 0, useTime: false },
-                ].filter(s => s.prevuVal > 0 || s.faitVal > 0)
-                const hasAnyTotals = (totalPrevuMin > 0 || totalFaitMin > 0) || sports.length > 0
-                if (!hasAnyTotals) return null
-                return (
-                  <div className="bg-white rounded-xl border border-stone-200 shadow-sm px-5 pt-3 pb-5 mb-6">
-                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
-                      {(totalPrevuMin > 0 || totalFaitMin > 0) && (
-                        <div className="flex flex-col">
-                          <div className="flex items-center gap-2 text-xs mb-2 min-h-7">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-palette-amber shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <circle cx="12" cy="12" r="10" />
-                              <polyline points="12 6 12 12 16 14" />
-                            </svg>
-                            <span className="font-semibold text-palette-amber leading-tight">{tCalendar('weekly.totalTimeVolume')}</span>
-                          </div>
-                          <div className="relative w-full mt-2">
-                            <div className="w-full bg-stone-100 rounded-full h-1.5 relative">
-                              {totalFaitMin > 0 && (
-                                <div className="bg-palette-amber h-1.5 rounded-full transition-all relative overflow-visible" style={{ width: totalPrevuMin > 0 ? `${Math.min(100, progressPct)}%` : '100%' }}>
-                                  <span className="absolute right-0 top-0 translate-y-[-100%] text-[10px] text-palette-amber font-bold whitespace-nowrap" style={{ maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>
-                                    {formatDuration(totalFaitMin)}
-                                  </span>
-                                </div>
-                              )}
-                            </div>
-                            {totalPrevuMin > 0 && (
-                              <span className="absolute right-0 top-full mt-0.5 text-[10px] text-stone-400">
-                                {formatDuration(totalPrevuMin)} {tCalendar('weekly.planned')}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      )}
-                      {sports.map(({ key, Icon, color, bg, label, prevuVal, faitVal, useTime }) => {
-                        const barPct = prevuVal > 0 ? Math.min(100, Math.round((faitVal / prevuVal) * 100)) : (faitVal > 0 ? 100 : 0)
-                        const prevuDisplay = useTime ? formatDuration(Math.round(prevuVal)) : (prevuVal > 0 ? `${Math.round(prevuVal)} km` : '—')
-                        const faitDisplay = useTime ? formatDuration(Math.round(faitVal)) : (faitVal > 0 ? `${Math.round(faitVal)} km` : '0 km')
-                        return (
-                              <div key={key} className="flex flex-col">
-                                <div className="flex items-center gap-2 text-xs mb-2 min-h-7">
-                                  <Icon className={`w-4 h-4 ${color} shrink-0`} />
-                                  <span className={`font-semibold ${color} leading-tight`}>{label}</span>
-                                </div>
-                                <div className="relative w-full mt-2">
-                                  <div className="w-full bg-stone-100 rounded-full h-1.5 relative">
-                                    {faitVal > 0 && (
-                                      <div className={`h-full ${bg} rounded-full transition-all relative overflow-visible`} style={{ width: `${barPct}%` }}>
-                                        <span className={`absolute right-0 top-0 translate-y-[-100%] text-[10px] ${color} font-bold whitespace-nowrap`} style={{ maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>
-                                          {faitDisplay}
-                                        </span>
-                                      </div>
-                                    )}
-                                  </div>
-                                  {prevuVal > 0 && (
-                                    <span className="absolute right-0 top-full mt-0.5 text-[10px] text-stone-400">
-                                      {prevuDisplay} {tCalendar('weekly.planned')}
-                                    </span>
-                                  )}
-                                </div>
-                              </div>
-                        )
-                      })}
-                    </div>
-                  </div>
-                )
-              })()}
+              {isDetailed && renderWeeklyTotalsCard(weekPrevuBySport[1]!, weekFaitBySport[1]!, weekFaitBySport[0]!)}
               <div className={`grid grid-cols-7 min-w-[800px] overflow-x-auto hide-scroll items-stretch ${isCondensed ? 'gap-x-2 gap-y-1' : isDetailed ? 'gap-3' : 'gap-2'}`}>
                 {isCondensed &&
                   <>
@@ -1056,8 +1090,12 @@ export function CalendarView({
                                     </div>
                                     <div className="flex items-center gap-1 flex-wrap text-[10px] text-stone-400 font-medium mt-1">
                                       <div className="flex items-center gap-1">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                          <path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z" />
+                                          <path d="m14.5 12.5 2-2" />
+                                          <path d="m11.5 9.5 2-2" />
+                                          <path d="m8.5 6.5 2-2" />
+                                          <path d="m17.5 15.5 2-2" />
                                         </svg>
                                         <span>{firstGoal.distance} km</span>
                                       </div>
@@ -1154,8 +1192,12 @@ export function CalendarView({
                                     </div>
                                     <div className="flex items-center gap-1 flex-wrap text-[10px] text-stone-400 font-medium mt-1">
                                       <div className="flex items-center gap-1">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                          <path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z" />
+                                          <path d="m14.5 12.5 2-2" />
+                                          <path d="m11.5 9.5 2-2" />
+                                          <path d="m8.5 6.5 2-2" />
+                                          <path d="m17.5 15.5 2-2" />
                                         </svg>
                                         <span>{firstGoal.distance} km</span>
                                       </div>
@@ -1286,8 +1328,12 @@ export function CalendarView({
                                     </div>
                                     <div className="flex items-center gap-1 flex-wrap text-[10px] text-stone-400 font-medium mt-1">
                                       <div className="flex items-center gap-1">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                          <path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z" />
+                                          <path d="m14.5 12.5 2-2" />
+                                          <path d="m11.5 9.5 2-2" />
+                                          <path d="m8.5 6.5 2-2" />
+                                          <path d="m17.5 15.5 2-2" />
                                         </svg>
                                         <span>{g.distance} km</span>
                                       </div>
@@ -1531,7 +1577,11 @@ export function CalendarView({
                       <dt className="text-xs text-stone-500 uppercase tracking-wide font-bold mb-1.5">{tGoals('distance')}</dt>
                       <dd className="text-sm text-stone-900 flex items-center gap-1.5">
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                          <path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z" />
+                          <path d="m14.5 12.5 2-2" />
+                          <path d="m11.5 9.5 2-2" />
+                          <path d="m8.5 6.5 2-2" />
+                          <path d="m17.5 15.5 2-2" />
                         </svg>
                         {selectedGoal.distance} km
                       </dd>

@@ -71,7 +71,12 @@ export function formatDateFr(dateInput: Date | string, includeWeekday: boolean =
  * @returns Nombre de jours (négatif si passé)
  */
 export function getDaysUntil(targetDate: string | Date): number {
-  const target = typeof targetDate === 'string' ? new Date(targetDate) : targetDate
+  const target =
+    typeof targetDate === 'string'
+      ? targetDate.includes('T')
+        ? new Date(targetDate)
+        : new Date(targetDate + 'T12:00:00')
+      : targetDate
   
   // Validation: vérifier si la date est valide
   if (isNaN(target.getTime())) {

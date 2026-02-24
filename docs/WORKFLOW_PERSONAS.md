@@ -238,6 +238,14 @@ Ensuite : archiver le doc de feature (design, spec, mockup) pour ne pas encombre
 - **Ne pas supprimer** définitivement sans validation du PO.
 - Après archivage : **vérifier la cohérence des liens** (DOCS_INDEX, « Pour trouver rapidement », liens cross-doc) et mettre à jour les renvois vers les docs archivés.
 
+### Livrable réponse chat (obligatoire)
+
+En fin de phase Analyste, **inclure dans la réponse** (dans le chat) un **texte de commit** destiné au PO / à l’équipe :
+
+- **Format :** titre court (ligne 1) + au plus 9 lignes de détail (bullets ou paragraphe concis).
+- **Contenu :** résumé de la feature et de ce qui a été fait à haut niveau (doc mise à jour, archivages, éventuellement rappel des changements produit ou technique livrés).
+- **Objectif :** faciliter la rédaction du message de commit final (copier-coller ou adapter).
+
 ### Ce que l'Analyste ne fait pas
 
 - Pas de modification du code, de l'architecture ou du modèle de données.
@@ -261,6 +269,6 @@ Ensuite : archiver le doc de feature (design, spec, mockup) pour ne pas encombre
 | Designer  | Besoin PO              | User stories + CA + référence mockup, mockups UI (non implémentés), checklist avant livraison |
 | Architecte| User stories + besoin  | Spec technique, table des fichiers, migrations/RLS, tests manuels recommandés, checklist avant livraison |
 | Développeur | Spec + user stories  | Code (respect mockup + projet), liste fichiers modifiés pour l’Analyste |
-| Analyste  | Livraison + liste fichiers | Doc à jour, transfert info → docs actifs, archivage docs de feature (Garder/Fusionner/Archiver) |
+| Analyste  | Livraison + liste fichiers | Doc à jour, transfert info → docs actifs, archivage docs de feature (Garder/Fusionner/Archiver), **texte de commit** (max 10 lignes) dans la réponse chat |
 
 En pratique : ouvre une conversation, indique le mode (Designer / Architecte / Développeur / Analyste) et le contexte ; l’IA appliquera le comportement du personna correspondant (règle `workflow-personas.mdc`).

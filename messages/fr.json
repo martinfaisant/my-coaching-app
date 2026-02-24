@@ -352,6 +352,9 @@
     },
     "previousWeekButton": "Semaine précédente",
     "nextWeekButton": "Semaine suivante",
+    "tile": {
+      "athleteCommentLabel": "Commentaire de l'athlète"
+    },
     "weekly": {
       "planned": "prévu",
       "completed": "réalisé",
@@ -596,6 +599,7 @@
     },
     "pendingRequests": {
       "title": "Demandes en attente",
+      "titleWithCount": "Demandes en attente ({count})",
       "description": "Acceptez ou refusez les demandes d'athlètes qui souhaitent vous avoir comme coach.",
       "offerChosen": "Offre choisie :",
       "free": "Gratuit",
@@ -606,6 +610,9 @@
       "description": "Les athlètes qui vous choisiront apparaitront ici. Vous pourrez l'accepter ou la refuser."
     },
     "myAthletes": "Mes athlètes",
+    "myAthletesWithCount": "Mes athlètes ({count})",
+    "nameFilterPlaceholder": "Rechercher un athlète",
+    "noMatchForSearch": "Aucun athlète ne correspond à votre recherche.",
     "athleteCard": {
       "nextGoal": "Prochain objectif",
       "noGoal": "Aucun",

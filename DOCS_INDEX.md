@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 23 février 2026 (filtre par nom Trouver mon coach – Mode Analyste)
+**Dernière mise à jour :** 23 février 2026 (filtre par nom Mes athlètes coach – Mode Analyste)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -18,13 +18,13 @@
 - **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), stack technique
 - **Utiliser pour :** Comprendre le projet, les features, les rôles, l'architecture globale
 - **Taille :** ~400 lignes
-- **Dernière mise à jour :** 23 février 2026 (§4.6 chat request-driven + read-only)
+- **Dernière mise à jour :** 23 février 2026 (§4 coach : filtre par nom Mes athlètes)
 
 ### **docs/DESIGN_SYSTEM.md** ⭐
 - **Contenu :** Tokens (couleurs, typo, espacements), composants (Button, Input, Badge, TileCard, DashboardPageShell, Modal, etc.), guidelines UI, exemples de code, §7 breakpoints (calendrier, chat, Trouver mon coach, My offers)
 - **Utiliser pour :** Créer ou modifier des composants UI, choisir des couleurs, appliquer le design system, règles responsive par page
 - **Taille :** ~850 lignes
-- **Dernière mise à jour :** 23 février 2026 (responsive grilles Trouver mon coach + My offers)
+- **Dernière mise à jour :** 23 février 2026 (filtre par nom Mes athlètes + §7 Dashboard coach)
 
 ### **docs/I18N.md** ⭐
 - **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces, utilisation dans composants et server actions, **checklist pour nouvelles features** (toujours penser bilingue)
@@ -138,6 +138,22 @@
 - `docs/archive/calendar-mobile-44/CALENDAR_MOBILE_ISSUE_44_SPEC.md` — Spec technique (Mode Architecte)
 - `docs/archive/calendar-mobile-44/calendar-mobile-mockup.html` — Mockup HTML non fonctionnel
 - **Raison :** Feature livrée ; comportement décrit dans **Project_context.md §4.5** et **docs/DESIGN_SYSTEM.md** (guideline §7 Calendrier responsive).
+
+**Total de la semaine sur mobile (calendrier) (archivés 23 février 2026) :**
+- `docs/archive/calendar-mobile-weekly-total/calendar-mobile-weekly-total.md` — Design (besoin, 3 solutions UI, choix Solution A)
+- `docs/archive/calendar-mobile-weekly-total/calendar-mobile-weekly-total-mockups.html` — Mockups HTML (A, B, C)
+- **Raison :** Feature livrée ; bloc totaux (volume horaire total + barres par sport) affiché sur mobile comme en mode étendu desktop. Comportement décrit dans **Project_context.md §4.5** et **docs/DESIGN_SYSTEM.md** §7.
+
+**Indicateur commentaire athlète sur tuile calendrier (archivés 23 février 2026) :**
+- `docs/archive/calendar-tile-comment-indicator/calendar-tile-comment-indicator-mockups.html` — Mockups HTML (3 solutions, Solution 1 retenue)
+- `docs/archive/calendar-tile-comment-indicator/calendar-tile-comment-indicator-solution1-user-stories.md` — User stories (US1–US3, critères d’acceptation)
+- **Raison :** Feature livrée ; icône commentaire en fin de ligne métadonnées sur tuile et carte détaillée. Comportement décrit dans **Project_context.md §4.5** et **docs/DESIGN_SYSTEM.md** §7.
+
+**Filtre par nom (Mes athlètes, coach) (archivés 23 février 2026) :**
+- `docs/archive/coach-athletes-filter/coach-athletes-filter-by-name.md` — Design + user stories (solution A : champ inline, accents e/é, titres avec count)
+- `docs/archive/coach-athletes-filter/coach-athletes-filter-by-name-SPEC.md` — Spec technique (CoachAthletesListWithFilter, page dashboard, i18n)
+- `docs/archive/coach-athletes-filter/coach-athletes-filter-mockup.html` — Mockup HTML (Solution A + état aucun résultat)
+- **Raison :** Feature livrée ; filtre par nom sur la section « Mes athlètes » (temps réel, insensible accents), titre page sans count, effectifs à côté des titres de section. Comportement décrit dans **Project_context.md** (§ Coach), **docs/DESIGN_SYSTEM.md** §7.
 
 **Vue souscription, résiliation, « En résiliation » (archivés 21 février 2026) :**
 - `docs/archive/subscription-view-end/SUBSCRIPTION_VIEW_AND_END_DESIGN.md` — Brief design + user stories (vue et résiliation)
@@ -260,10 +276,21 @@
 
 **Fréquence de mise à jour :** À chaque ajout/suppression de documentation
 
-**Dernier scan :** 22 février 2026  
-**Dernier nettoyage :** 22 février 2026
+**Dernier scan :** 23 février 2026  
+**Dernier nettoyage :** 23 février 2026
 
 ### Changements récents :
+
+✅ **23 février 2026 – Filtre par nom (Mes athlètes, coach) – Mode Analyste :**
+- **Livraison :** Sur le dashboard coach, la section « Mes athlètes » affiche un champ de recherche inline à côté du titre « Mes athlètes (X) ». Filtrage en temps réel par nom affiché (insensible à la casse et aux accents, normalisation NFD). Message « Aucun athlète ne correspond à votre recherche » si 0 résultat. Titre de page : « Tableau de bord » (sans nombre) ; effectifs à côté des titres « Mes athlètes (X) » et « Demandes en attente (X) ».
+- **Fichiers :** `CoachAthletesListWithFilter.tsx` (créé), `page.tsx` (titre, pending count, athleteTiles, rendu composant), `messages/fr.json` et `en.json` (nameFilterPlaceholder, noMatchForSearch, myAthletesWithCount, pendingRequests.titleWithCount).
+- **Mises à jour doc :** `Project_context.md` (Coach : filter by name), `docs/DESIGN_SYSTEM.md` §7 (Dashboard coach – Mes athlètes), `docs/I18N.md` (namespace athletes).
+- **Archivage :** Docs de feature déplacés dans `docs/archive/coach-athletes-filter/`. Référence courante : **Project_context.md** (§ Coach), **docs/DESIGN_SYSTEM.md** §7.
+
+✅ **23 février 2026 – Indicateur commentaire athlète sur tuile calendrier (Mode Analyste) :**
+- **Livraison :** Sur les tuiles entraînement du calendrier (carte compacte et carte détaillée modale jour), une icône commentaire en fin de ligne métadonnées (durée, distance, etc.) signale qu’un commentaire athlète est présent. Tooltip et aria-label : `calendar.tile.athleteCommentLabel` (FR/EN).
+- **Mises à jour doc :** `Project_context.md` §4.5 (Coach can : voir d’un coup d’œil les entraînements avec commentaire), `docs/DESIGN_SYSTEM.md` §7 (Calendrier : icône commentaire sur tuiles), `docs/I18N.md` (namespace calendar, clé tile.athleteCommentLabel).
+- **Archivage :** Docs de feature déplacés dans `docs/archive/calendar-tile-comment-indicator/` (mockups HTML, user stories solution 1). Référence courante : **Project_context.md §4.5**, **docs/DESIGN_SYSTEM.md §7**.
 
 ✅ **23 février 2026 – Filtre par nom/prénom (Trouver mon coach) – Mode Analyste :**
 - **Livraison :** Sur la page « Trouver mon coach », l’athlète peut filtrer les coachs par nom ou prénom (champ unique, temps réel, contient, insensible à la casse). Le bouton Réinitialiser vide aussi ce champ. Grille Sport coaché / Langue parlée en 2 colonnes à partir de `md` (768px).
@@ -373,9 +400,11 @@
 | Composants UI, couleurs | `docs/DESIGN_SYSTEM.md` |
 | **i18n / bilingue / traductions / nouvelles features** | **`docs/I18N.md`** |
 | **Workflow Designer / Architecte / Développeur / Analyste** | **`docs/WORKFLOW_PERSONAS.md`** |
-| Calendrier responsive / mobile (issue #44) | `Project_context.md` §4.5, `docs/DESIGN_SYSTEM.md` §7 |
+| Calendrier responsive / mobile (issue #44) / totaux de la semaine sur mobile | `Project_context.md` §4.5, `docs/DESIGN_SYSTEM.md` §7 |
+| Indicateur commentaire athlète sur tuile calendrier | `Project_context.md` §4.5, `docs/DESIGN_SYSTEM.md` §7 |
 | Grilles responsive (Trouver mon coach, My offers) | `docs/DESIGN_SYSTEM.md` §7 |
 | Filtre par nom/prénom (Trouver mon coach) | `Project_context.md` (Athlete), `docs/DESIGN_SYSTEM.md` §7 |
+| Filtre par nom (Mes athlètes, coach) | `Project_context.md` (§ Coach), `docs/DESIGN_SYSTEM.md` §7 |
 | Tuile archivée / offres archivées / historique souscriptions (issue #43) | `docs/DESIGN_SYSTEM.md` § TileCard (stone, badge) |
 | **Vue souscription, résiliation, « En résiliation »** | **`Project_context.md` §4.10** |
 | Envoi demande coach / erreur ou blocage « Envoi en cours » | `Project_context.md` §4.4 (Flow) |

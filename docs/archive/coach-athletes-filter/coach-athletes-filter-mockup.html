@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Filtre par nom – Mes athlètes (2 solutions)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette': {
+              'forest-dark': '#627e59',
+              'forest-darker': '#506648',
+              'olive': '#8e9856',
+              'sage': '#aaaa51',
+              'danger': '#c0564b',
+            },
+          },
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-stone-100 min-h-screen p-6 text-stone-900">
+  <div class="max-w-5xl mx-auto space-y-16">
+    <header class="mb-8">
+      <h1 class="text-2xl font-bold text-stone-800">Filtre par nom – Mes athlètes</h1>
+      <p class="text-sm text-stone-600 mt-1">Mockups non fonctionnels · Design system (tokens, Input)</p>
+    </header>
+
+    <!-- ========== SOLUTION A : Champ inline avec titre ========== -->
+    <section class="bg-white rounded-2xl border border-stone-200 shadow-sm p-6 lg:p-8">
+      <h2 class="text-lg font-bold text-stone-900 mb-2">Solution A – Champ inline à côté du titre</h2>
+      <p class="text-sm text-stone-600 mb-6">Le champ de recherche est sur la même ligne que « Mes athlètes » (ou en dessous sur mobile). Compact et discret.</p>
+
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+        <h3 class="text-base font-semibold text-stone-900">Mes athlètes</h3>
+        <div class="w-full sm:w-64">
+          <input
+            type="search"
+            placeholder="Rechercher un athlète"
+            aria-label="Rechercher un athlète"
+            class="w-full px-4 py-2.5 rounded-lg border border-stone-300 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-[#627e59] focus:border-transparent"
+          />
+        </div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="rounded-2xl border border-stone-200 shadow-sm p-6 bg-white hover:shadow-lg hover:border-[#627e59]/30 transition-all">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-12 h-12 rounded-full bg-stone-200 flex items-center justify-center text-stone-600 font-semibold">MD</div>
+            <div>
+              <p class="font-semibold text-stone-900">Marie Dupont</p>
+              <p class="text-xs text-stone-500">À jour · Planifié jusqu'au 15/03</p>
+            </div>
+          </div>
+          <p class="text-xs font-medium text-palette-forest-dark">Voir le planning →</p>
+        </div>
+        <div class="rounded-2xl border border-stone-200 shadow-sm p-6 bg-white hover:shadow-lg hover:border-[#627e59]/30 transition-all">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-12 h-12 rounded-full bg-stone-200 flex items-center justify-center text-stone-600 font-semibold">TM</div>
+            <div>
+              <p class="font-semibold text-stone-900">Thomas Martin</p>
+              <p class="text-xs text-stone-500">À jour · Planifié jusqu'au 22/03</p>
+            </div>
+          </div>
+          <p class="text-xs font-medium text-palette-forest-dark">Voir le planning →</p>
+        </div>
+        <div class="rounded-2xl border border-stone-200 shadow-sm p-6 bg-white hover:shadow-lg hover:border-[#627e59]/30 transition-all">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-12 h-12 rounded-full bg-stone-200 flex items-center justify-center text-stone-600 font-semibold">JB</div>
+            <div>
+              <p class="font-semibold text-stone-900">Julie Bernard</p>
+              <p class="text-xs text-stone-500">En retard · Planifié jusqu'au 01/03</p>
+            </div>
+          </div>
+          <p class="text-xs font-medium text-palette-forest-dark">Voir le planning →</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== SOLUTION B : Barre pleine largeur ========== -->
+    <section class="bg-white rounded-2xl border border-stone-200 shadow-sm p-6 lg:p-8">
+      <h2 class="text-lg font-bold text-stone-900 mb-2">Solution B – Barre de recherche au-dessus de la grille</h2>
+      <p class="text-sm text-stone-600 mb-6">Une barre dédiée pleine largeur avec label optionnel « Rechercher par nom », très visible.</p>
+
+      <h3 class="text-base font-semibold text-stone-900 mb-4">Mes athlètes</h3>
+      <div class="mb-6">
+        <label for="athlete-search" class="block text-xs font-bold uppercase tracking-wider text-stone-400 mb-2">
+          Rechercher par nom
+        </label>
+        <input
+          id="athlete-search"
+          type="search"
+          placeholder="Rechercher un athlète"
+          aria-label="Rechercher un athlète"
+          class="w-full px-4 py-2.5 rounded-lg border border-stone-300 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-[#627e59] focus:border-transparent"
+        />
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="rounded-2xl border border-stone-200 shadow-sm p-6 bg-white hover:shadow-lg hover:border-[#627e59]/30 transition-all">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-12 h-12 rounded-full bg-stone-200 flex items-center justify-center text-stone-600 font-semibold">MD</div>
+            <div>
+              <p class="font-semibold text-stone-900">Marie Dupont</p>
+              <p class="text-xs text-stone-500">À jour · Planifié jusqu'au 15/03</p>
+            </div>
+          </div>
+          <p class="text-xs font-medium text-palette-forest-dark">Voir le planning →</p>
+        </div>
+        <div class="rounded-2xl border border-stone-200 shadow-sm p-6 bg-white hover:shadow-lg hover:border-[#627e59]/30 transition-all">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-12 h-12 rounded-full bg-stone-200 flex items-center justify-center text-stone-600 font-semibold">TM</div>
+            <div>
+              <p class="font-semibold text-stone-900">Thomas Martin</p>
+              <p class="text-xs text-stone-500">À jour · Planifié jusqu'au 22/03</p>
+            </div>
+          </div>
+          <p class="text-xs font-medium text-palette-forest-dark">Voir le planning →</p>
+        </div>
+        <div class="rounded-2xl border border-stone-200 shadow-sm p-6 bg-white hover:shadow-lg hover:border-[#627e59]/30 transition-all">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-12 h-12 rounded-full bg-stone-200 flex items-center justify-center text-stone-600 font-semibold">JB</div>
+            <div>
+              <p class="font-semibold text-stone-900">Julie Bernard</p>
+              <p class="text-xs text-stone-500">En retard · Planifié jusqu'au 01/03</p>
+            </div>
+          </div>
+          <p class="text-xs font-medium text-palette-forest-dark">Voir le planning →</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- État "aucun résultat" (commun aux 2 solutions) -->
+    <section class="bg-white rounded-2xl border border-stone-200 shadow-sm p-6 lg:p-8">
+      <h2 class="text-lg font-bold text-stone-900 mb-2">État « Aucun résultat » (à intégrer dans la solution choisie)</h2>
+      <div class="rounded-xl border border-stone-200 bg-stone-50 p-6 text-center">
+        <p class="text-stone-600 font-medium">Aucun athlète ne correspond à votre recherche.</p>
+      </div>
+    </section>
+  </div>
+</body>
+</html>
