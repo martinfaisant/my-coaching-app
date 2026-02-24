@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 23 février 2026 (archivage feature nom/prénom athlète à la demande – Mode Analyste)
+**Dernière mise à jour :** 23 février 2026 (séparation pages dashboard find-coach / athletes – Mode Analyste)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -18,13 +18,13 @@
 - **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), stack technique
 - **Utiliser pour :** Comprendre le projet, les features, les rôles, l'architecture globale
 - **Taille :** ~420 lignes
-- **Dernière mise à jour :** 23 février 2026 (§4.4 Flow : nom/prénom athlète obligatoires à la demande)
+- **Dernière mise à jour :** 23 février 2026 (§4.0 Dashboard entry point, §4.4 Flow)
 
 ### **docs/DESIGN_SYSTEM.md** ⭐
 - **Contenu :** Tokens (couleurs, typo, espacements), composants (Button, Input, Badge, TileCard, DashboardPageShell, Modal, etc.), guidelines UI, exemples de code, §7 breakpoints (calendrier, chat, Trouver mon coach, My offers)
 - **Utiliser pour :** Créer ou modifier des composants UI, choisir des couleurs, appliquer le design system, règles responsive par page
 - **Taille :** ~850 lignes
-- **Dernière mise à jour :** 23 février 2026 (filtre par nom Mes athlètes + §7 Dashboard coach)
+- **Dernière mise à jour :** 23 février 2026 (pages find-coach / athletes, grille Mes athlètes 3 cols xl, §7)
 
 ### **docs/I18N.md** ⭐
 - **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces, utilisation dans composants et server actions, **checklist pour nouvelles features** (toujours penser bilingue)
@@ -91,7 +91,7 @@
 > **Tous les documents d'audit, de refactoring et d'états des lieux ont été archivés dans `docs/archive/`**  
 > Ils servent de référence historique mais ne sont plus nécessaires au quotidien.
 
-### Documents archivés (38 fichiers)
+### Documents archivés (39 fichiers)
 
 **Audit & Plan initial :**
 - `AUDIT_COMPLET.md` - Audit complet du projet (13 février 2026) - 1202 lignes
@@ -174,6 +174,10 @@
 - `docs/archive/athlete-view-sent-request/ATHLETE_VIEW_SENT_REQUEST_ARCHI.md` — Spec technique (getCoachRequestDetail, AthleteSentRequestDetailModal)
 - `docs/archive/athlete-view-sent-request/athlete-view-sent-request-mockup.html` — Mockup HTML (tuile + modale)
 - **Raison :** Feature livrée ; comportement décrit dans **Project_context.md §4.4** (Flow : demande pending, « Demande envoyée > », modale détail).
+
+**Séparation pages dashboard – find-coach / Mes athlètes (archivé 23 février 2026) :**
+- `docs/archive/dashboard-pages-separation/SPEC_ARCHI_DASHBOARD_PAGES_SEPARATION.md` — Spec architecture (redirections depuis /dashboard, pages dédiées, skeletons)
+- **Raison :** Feature livrée ; comportement décrit dans **Project_context.md §4.0** (Dashboard entry point) et **docs/DESIGN_SYSTEM.md** §7 (pages Trouver mon coach, Mes athlètes).
 
 **Nom et prénom athlète obligatoires à la demande (archivés 23 février 2026) :**
 - `docs/archive/request-athlete-name/DESIGN_REQUEST_ATHLETE_NAME.md` — Design (besoin, solutions A/B/C, choix B, vérification au clic « Voir le détail »)
@@ -282,9 +286,15 @@
 **Fréquence de mise à jour :** À chaque ajout/suppression de documentation
 
 **Dernier scan :** 23 février 2026  
-**Dernier nettoyage :** 23 février 2026
+**Dernier nettoyage :** 23 février 2026 (archivage spec dashboard pages separation)
 
 ### Changements récents :
+
+✅ **23 février 2026 – Séparation pages dashboard (find-coach / Mes athlètes) – Mode Analyste :**
+- **Livraison :** La route `/dashboard` ne fait plus que des redirections selon le rôle : athlète avec coach → calendar ; athlète sans coach → `/dashboard/find-coach` ; coach → `/dashboard/athletes` ; admin → `/admin/members`. Pages dédiées « Trouver mon coach » (`/dashboard/find-coach`) et « Mes athlètes » (`/dashboard/athletes`) avec chacune son skeleton de chargement. Sidebar : liens directs vers find-coach et athletes ; titre page Mes athlètes = « My Athletes » / « Mes Athlètes ». Grille des tuiles athlètes : 3 colonnes uniquement à partir du breakpoint `xl`.
+- **Fichiers :** `dashboard/page.tsx` (redirections), `dashboard/loading.tsx` (skeleton minimal), `dashboard/find-coach/page.tsx` + `loading.tsx`, `dashboard/athletes/page.tsx` + `loading.tsx`, `Sidebar.tsx`, `athletes/[athleteId]/page.tsx` (redirect vers athletes), `actions.ts` (revalidatePath find-coach / athletes), `CoachAthletesListWithFilter.tsx` (grille xl).
+- **Mises à jour doc :** `Project_context.md` §4.0 (Dashboard entry point), `docs/DESIGN_SYSTEM.md` §7 (pages dédiées, breakpoints, titre Mes athlètes).
+- **Archivage :** Spec déplacée dans `docs/archive/dashboard-pages-separation/`. Référence courante : **Project_context.md §4.0**, **docs/DESIGN_SYSTEM.md** §7.
 
 ✅ **23 février 2026 – Nom et prénom athlète obligatoires à la demande (Mode Analyste) :**
 - **Livraison :** À l’ouverture de la modale détail coach (« Voir le détail »), si le profil athlète n’a pas prénom et/ou nom, le formulaire de demande affiche les champs Prénom * et Nom * (obligatoires). Le bouton « Envoyer la demande » reste désactivé tant que offre, sports, besoin et (si affichés) prénom/nom ne sont pas renseignés. À l’envoi : mise à jour du profil puis création de la demande. Côté serveur : `createCoachRequest` accepte optionnellement firstName/lastName, met à jour `profiles` si fournis, et refuse la création si le profil n’a pas de nom.
@@ -413,7 +423,8 @@
 | **Workflow Designer / Architecte / Développeur / Analyste** | **`docs/WORKFLOW_PERSONAS.md`** |
 | Calendrier responsive / mobile (issue #44) / totaux de la semaine sur mobile | `Project_context.md` §4.5, `docs/DESIGN_SYSTEM.md` §7 |
 | Indicateur commentaire athlète sur tuile calendrier | `Project_context.md` §4.5, `docs/DESIGN_SYSTEM.md` §7 |
-| Grilles responsive (Trouver mon coach, My offers) | `docs/DESIGN_SYSTEM.md` §7 |
+| **Page par défaut / redirections dashboard (find-coach, Mes athlètes)** | **`Project_context.md` §4.0** |
+| Grilles responsive (Trouver mon coach, My offers, Mes athlètes) | `docs/DESIGN_SYSTEM.md` §7 |
 | Filtre par nom/prénom (Trouver mon coach) | `Project_context.md` (Athlete), `docs/DESIGN_SYSTEM.md` §7 |
 | Filtre par nom (Mes athlètes, coach) | `Project_context.md` (§ Coach), `docs/DESIGN_SYSTEM.md` §7 |
 | Tuile archivée / offres archivées / historique souscriptions (issue #43) | `docs/DESIGN_SYSTEM.md` § TileCard (stone, badge) |

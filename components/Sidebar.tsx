@@ -85,11 +85,11 @@ export function Sidebar({ profile }: SidebarProps) {
           <nav className={`px-2 lg:px-3 space-y-1.5 mt-2 shrink-0 ${isCollapsed ? 'flex flex-col items-center' : ''}`}>
             {!profile.coach_id && (
               <Link
-                href="/dashboard"
+                href="/dashboard/find-coach"
                 className={`flex items-center h-10 rounded-xl transition-all duration-300 group ${
                   isCollapsed ? 'w-10 justify-center px-0' : 'gap-2.5 px-2.5 lg:px-3'
                 } ${
-                  path === '/dashboard'
+                  path === '/dashboard/find-coach'
                     ? 'bg-palette-forest-dark text-white shadow-lg shadow-palette-forest-dark/20'
                     : 'text-stone-500 hover:bg-stone-50 hover:text-palette-forest-dark'
                 }`}
@@ -259,11 +259,11 @@ export function Sidebar({ profile }: SidebarProps) {
 
         <nav className={`px-2 lg:px-3 space-y-1.5 mt-2 shrink-0 ${isCollapsed ? 'flex flex-col items-center' : ''}`}>
           <Link
-            href="/dashboard"
+            href="/dashboard/athletes"
             className={`flex items-center h-10 rounded-xl transition-all duration-300 group ${
               isCollapsed ? 'w-10 justify-center px-0' : 'gap-2.5 px-2.5 lg:px-3'
             } ${
-              (path === '/dashboard' || path.startsWith('/dashboard/athletes'))
+              (path === '/dashboard/athletes' || path.startsWith('/dashboard/athletes/'))
                 ? 'bg-palette-forest-dark text-white shadow-lg shadow-palette-forest-dark/20'
                 : 'text-stone-500 hover:bg-stone-50 hover:text-palette-forest-dark'
             }`}

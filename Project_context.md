@@ -101,6 +101,21 @@ Avoid:
 
 ## 4. Core Features (Current State)
 
+### 4.0 Dashboard (entry point) ✅
+
+Opening `/dashboard` redirects to a **role-specific default page** (no content rendered on `/dashboard` itself):
+
+| Role | Redirect to |
+|------|-------------|
+| Athlete with coach | `/dashboard/calendar` |
+| Athlete without coach | `/dashboard/find-coach` |
+| Coach | `/dashboard/athletes` |
+| Admin | `/admin/members` |
+
+The pages **« Trouver mon coach »** and **« Mes athlètes »** are **separate routes** (`/dashboard/find-coach`, `/dashboard/athletes`), each with its own loading skeleton. Sidebar links point directly to these routes; the dashboard layout and `DashboardPageShell` are used for both.
+
+---
+
 ### 4.1 Authentication ✅
 
 - Email/password (Supabase Auth)
@@ -166,7 +181,8 @@ Athletes filter coaches by:
 
 **Flow:**
 
-- Athlete sends a **coach request** (sport practiced, coaching need, optional offer_id).
+- When the athlete opens the coach detail modal (« Voir le détail »), the app checks whether the athlete’s profile has **first name and last name**. If either is missing, the request form inside the modal displays **Prénom** and **Nom** (required, with *). The « Envoyer la demande » button stays disabled until offer, sports, coaching need and (when shown) first name and last name are filled. On submit, the profile is updated with the name if needed, then the request is created. The coach always sees the athlete’s name on pending requests (from `profiles`).
+- Athlete sends a **coach request** (sport practiced, coaching need, optional offer_id; first/last name ensured as above).
 - While the request is **pending**, the coach tile shows « Annuler la demande » (danger) and « Demande envoyée > » (muted). Clicking « Demande envoyée > » opens a modal with the request detail (frozen offer, sports, message, date); the athlete can cancel the request from the tile or from the modal (same confirmation flow).
 - If the request fails (server error or DB insert rejected), the user sees a generic error message and the submit button is no longer stuck on « Envoi en cours »; errors are logged server-side for diagnosis.
 - When an offer is chosen, the server immediately stores a **snapshot** of that offer in `coach_requests`: `offer_id`, `frozen_price`, `frozen_title`, `frozen_description`. This is the version of the offer **as seen by the athlete** at request time. If the coach later changes or archives the offer, the request row does not change.

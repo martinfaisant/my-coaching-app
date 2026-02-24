@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mockup A — Compléter votre profil</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            'palette-forest-darker': '#506648',
+            'palette-olive': '#8e9856',
+            'palette-danger': '#c0564b',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-stone-100 min-h-screen flex items-center justify-center p-4">
+  <!-- Simulated overlay (modal context) -->
+  <div class="fixed inset-0 bg-stone-900/50 backdrop-blur-sm z-[90]" aria-hidden="true"></div>
+  <div class="relative z-[100] w-full max-w-md">
+    <div class="bg-white rounded-xl shadow-xl border border-stone-100 overflow-hidden">
+      <div class="flex justify-end p-3 bg-white rounded-t-xl">
+        <button type="button" class="p-2 rounded-lg hover:bg-stone-200 transition text-stone-500" aria-label="Fermer">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+      <div class="px-8 pb-8">
+        <h2 id="modal-title" class="text-2xl font-semibold text-stone-900 text-center mb-2">
+          Complétez votre profil
+        </h2>
+        <p class="text-sm text-stone-600 text-center mb-8">
+          Pour envoyer une demande à un coach, nous avons besoin de votre prénom et de votre nom. Complétez-les dans votre profil, puis revenez ici pour envoyer votre demande.
+        </p>
+        <div class="flex justify-center">
+          <a href="#" class="inline-flex items-center rounded-lg bg-palette-forest-dark px-4 py-2.5 text-sm font-medium text-white hover:bg-palette-forest-darker transition focus:outline-none focus:ring-2 focus:ring-palette-olive focus:ring-offset-2">
+            Compléter mon profil
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="absolute bottom-4 left-1/2 -translate-x-1/2 text-xs text-stone-400">Mockup A — Profil incomplet : modale unique + CTA vers /dashboard/profile</p>
+</body>
+</html>

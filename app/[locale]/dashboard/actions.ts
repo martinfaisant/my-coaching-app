@@ -161,6 +161,7 @@ export async function createCoachRequest(
     }
 
     revalidatePath('/dashboard')
+    revalidatePath('/dashboard/find-coach')
     revalidatePath('/dashboard/profile')
     return {}
   } catch (err) {
@@ -255,6 +256,7 @@ export async function cancelCoachRequest(requestId: string): Promise<CoachReques
 
   if (error) return { error: tErrors('supabaseGeneric') }
   revalidatePath('/dashboard')
+  revalidatePath('/dashboard/find-coach')
   return {}
 }
 
@@ -391,5 +393,6 @@ export async function respondToCoachRequest(
   }
 
   revalidatePath('/dashboard')
+  revalidatePath('/dashboard/athletes')
   return {}
 }
