@@ -2,7 +2,8 @@ import type { Metadata } from 'next'
 import { createClient } from '@/utils/supabase/server'
 import { getCurrentUserWithProfile } from '@/utils/auth'
 import { redirect } from 'next/navigation'
-import { getTranslations } from 'next-intl/server'
+import { getTranslations, getLocale } from 'next-intl/server'
+import { pathWithLocale } from '@/lib/pathWithLocale'
 import { DashboardPageShell } from '@/components/DashboardPageShell'
 import { FindCoachSection } from '@/app/[locale]/dashboard/FindCoachSection'
 import { getMyCoachRequests } from '@/app/[locale]/dashboard/actions'
@@ -20,7 +21,7 @@ export default async function FindCoachPage({ params }: { params: Promise<{ loca
   const current = await getCurrentUserWithProfile()
 
   if (current.profile.role !== 'athlete' || current.profile.coach_id) {
-    redirect('/dashboard')
+    redirect(pathWithLocale(locale, '/dashboard'))
   }
 
   const supabase = await createClient()

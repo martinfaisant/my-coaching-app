@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 23 février 2026 (séparation pages dashboard find-coach / athletes – Mode Analyste)
+**Dernière mise à jour :** 24 février 2026 (sidebar : tuile Profil état sélectionné, archivage design-sidebar-profile-tile)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -18,19 +18,19 @@
 - **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), stack technique
 - **Utiliser pour :** Comprendre le projet, les features, les rôles, l'architecture globale
 - **Taille :** ~420 lignes
-- **Dernière mise à jour :** 23 février 2026 (§4.0 Dashboard entry point, §4.4 Flow)
+- **Dernière mise à jour :** 24 février 2026 (§4.0 Sidebar : tuile Profil état sélectionné sur page Profil, centrage mode replié ; §4.4 Flow, §4.6 chat)
 
 ### **docs/DESIGN_SYSTEM.md** ⭐
 - **Contenu :** Tokens (couleurs, typo, espacements), composants (Button, Input, Badge, TileCard, DashboardPageShell, Modal, etc.), guidelines UI, exemples de code, §7 breakpoints (calendrier, chat, Trouver mon coach, My offers)
 - **Utiliser pour :** Créer ou modifier des composants UI, choisir des couleurs, appliquer le design system, règles responsive par page
 - **Taille :** ~850 lignes
-- **Dernière mise à jour :** 23 février 2026 (pages find-coach / athletes, grille Mes athlètes 3 cols xl, §7)
+- **Dernière mise à jour :** 24 février 2026 (tuile demandes en attente, §7 Mes athlètes, **sidebar tuile Profil**)
 
 ### **docs/I18N.md** ⭐
 - **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces, utilisation dans composants et server actions, **checklist pour nouvelles features** (toujours penser bilingue)
 - **Utiliser pour :** Toute nouvelle feature ou texte visible, ajout de clés de traduction, dépannage i18n
 - **Taille :** ~180 lignes
-- **Dernière mise à jour :** 16 février 2026
+- **Dernière mise à jour :** 24 février 2026 (pendingRequests.chat, coachRequests confirm modals)
 
 ---
 
@@ -196,6 +196,20 @@
 - `docs/archive/chat-coach-start-conversation/chat-coach-start-conversation-mockup.html` — Mockup HTML (overlay desktop/mobile)
 - **Raison :** Feature livrée ; comportement courant documenté dans **Project_context.md §4.6** et breakpoint responsive dans **docs/DESIGN_SYSTEM.md §7**.
 
+- `docs/archive/architecture-calendar-loading-analysis.md` — Analyse Architecte (chargement calendrier athlète : flux, coûts, pistes d’amélioration : getCalendarData, refetch après save, goals par plage).
+- **Raison :** Référence pour évolution performance ; pas encore implémenté.
+
+**Tuile demandes en attente (coach) – archivés 24 février 2026 :**
+- `docs/archive/design-pending-request-tile/USER_STORIES_PENDING_REQUEST_TILE.md` — User stories (US 1–7 : tuile uniformisée, message pleine largeur, Discuter, Refuser/Accepter, responsive, modales confirmation).
+- `docs/archive/design-pending-request-tile/SPEC_ARCHI_PENDING_REQUEST_TILE.md` — Spec technique (OpenChatContext, PendingRequestTile, ChatModule, layout, i18n).
+- `docs/archive/design-pending-request-tile/MOCKUP_PENDING_REQUEST_TILE.html` — Mockup HTML (tuiles, exemple mobile, modales Refuser/Accepter).
+- **Raison :** Feature livrée ; comportement décrit dans **Project_context.md §4.4** (Flow : pending requests tile, Discuter, modales) et **docs/DESIGN_SYSTEM.md** §7 (Mes athlètes – Demandes en attente).
+
+**Tuile Profil sidebar (état sélectionné + centrage) – archivés 24 février 2026 :**
+- `docs/archive/design-sidebar-profile-tile/MOCKUP_SIDEBAR_PROFILE_TILE.html` — Mockup HTML (tuile Profil : état non sélectionné / sélectionné, sidebar repliée).
+- `docs/archive/design-sidebar-profile-tile/SPEC_SIDEBAR_PROFILE_TILE.md` — Spec technique (path === '/dashboard/profile', classes état sélectionné, tests manuels).
+- **Raison :** Feature livrée ; la tuile Profil en bas de la sidebar affiche le même état sélectionné que les autres pages lorsque l’utilisateur est sur `/dashboard/profile` ; en mode replié, seul l’avatar est affiché et centré. Comportement décrit dans **Project_context.md §4.0** et **docs/DESIGN_SYSTEM.md** §7 (Sidebar dashboard).
+
 **Ces documents restent disponibles dans `docs/archive/` pour référence historique si besoin.**
 
 ---
@@ -285,10 +299,27 @@
 
 **Fréquence de mise à jour :** À chaque ajout/suppression de documentation
 
-**Dernier scan :** 23 février 2026  
-**Dernier nettoyage :** 23 février 2026 (archivage spec dashboard pages separation)
+**Dernier scan :** 24 février 2026  
+**Dernier nettoyage :** 24 février 2026 (archivage tuile Profil sidebar)
 
 ### Changements récents :
+
+✅ **24 février 2026 – Tuile Profil sidebar (état sélectionné + centrage) – Mode Analyste :**
+- **Livraison :** Sur la page Profil (`/dashboard/profile`), la tuile Profil en bas de la sidebar (avatar + nom) affiche le même état sélectionné que les autres entrées du menu (fond vert, texte blanc, ombre neutre). Sur `/dashboard/profile/offers`, seule l’entrée « Offres » reste sélectionnée. En mode replié (desktop), seul l’avatar est rendu dans le lien Profil pour un centrage correct ; le logo « CoachApp » en haut utilise une marge conditionnelle (`ml-3` / `ml-0`) pour rester centré quand la sidebar est repliée.
+- **Fichiers :** `components/Sidebar.tsx` (isProfilePage, classes conditionnelles, rendu conditionnel texte/chevron en replié, marge logo, restauration visibilité libellés menu).
+- **Mises à jour doc :** `Project_context.md` §4.0 (sidebar profile tile selected state), `docs/DESIGN_SYSTEM.md` §7 (Sidebar dashboard : tuile Profil, logo centré).
+- **Archivage :** `docs/design-sidebar-profile-tile/` déplacé dans `docs/archive/design-sidebar-profile-tile/` (MOCKUP, SPEC). Référence courante : **Project_context.md §4.0**, **docs/DESIGN_SYSTEM.md** §7.
+
+✅ **24 février 2026 – Chat : réécriture après déclin/résiliation + RLS (Mode Analyste) :**
+- **Livraison :** Le coach (et l’athlète) peuvent à nouveau envoyer des messages dès qu’il existe une **nouvelle** demande en attente ou une **nouvelle** souscription active, même si une demande avait été déclinée ou une souscription terminée auparavant. La conversation est pilotée par la « dernière demande écrivable » pour la paire (pending ou accepted + souscription active/résiliation) : listes des conversations et envoi de message mettent à jour `conversations.request_id` si besoin. Correction RLS : ajout d’une politique **UPDATE** sur `conversations` (`conversations_update_participant`, migration 048) pour autoriser les participants à mettre à jour `request_id` vers une demande écrivable (sans quoi l’UPDATE était refusé et l’INSERT dans `chat_messages` échouait).
+- **Fichiers :** `app/[locale]/actions/chat.ts` (getConversationsForCoach, getConversationsForAthlete : calcul can_send via getLatestWritableRequestIdForPair + update request_id ; sendMessage : idem si request actuel non écrivable), `supabase/migrations/048_conversations_update_policy.sql` (créé).
+- **Mises à jour doc :** `Project_context.md` §4.6 (règle « latest writable request », réécriture possible après déclin/résiliation), §5 (conversations : politique UPDATE), `DOCS_INDEX.md` (changements récents, dates).
+
+✅ **24 février 2026 – Tuile demandes en attente (coach) – Mode Analyste :**
+- **Livraison :** Sur la page « Mes athlètes », la section « Demandes en attente » affiche chaque demande dans une tuile unifiée (style ActivityTile) : bordure gauche ambre, avatar athlète, badges sport, offre (titre + prix), message besoin pleine largeur. Actions : **Discuter** (ouvre l’overlay chat ciblé sur l’athlète), **Refuser** et **Accepter** (chacun ouvre une modale de confirmation avant d’appeler l’API). Responsive : à partir de `sm` les 3 boutons à droite ; en dessous de `sm` les boutons en bas (Discuter pleine largeur, Refuser et Accepter 50/50). Contexte **OpenChatContext** + **DashboardChatWrapper** pour l’ouverture du chat avec un athlète présélectionné.
+- **Fichiers :** `PendingRequestTile.tsx` (créé), `OpenChatContext.tsx` (créé), `DashboardChatWrapper.tsx` (créé), `athletes/page.tsx` (utilisation PendingRequestTile), `layout.tsx` (DashboardChatWrapper), `ChatModule.tsx` (openWithAthleteId, onOpenWithAthleteHandled), `actions.ts` (frozen_price_type dans getPendingCoachRequests), `messages/fr.json` et `en.json` (pendingRequests.chat, coachRequests.confirmDeclineTitle/Body, confirmAcceptTitle/Body).
+- **Mises à jour doc :** `Project_context.md` §4.4 (Flow : pending request tile, Discuter, modales), `docs/DESIGN_SYSTEM.md` §7 (Demandes en attente, PendingRequestTile), `docs/I18N.md` (athletes, coachRequests).
+- **Archivage :** Docs déplacés dans `docs/archive/design-pending-request-tile/` (USER_STORIES, SPEC_ARCHI, MOCKUP). Référence courante : **Project_context.md §4.4**, **docs/DESIGN_SYSTEM.md** §7.
 
 ✅ **23 février 2026 – Séparation pages dashboard (find-coach / Mes athlètes) – Mode Analyste :**
 - **Livraison :** La route `/dashboard` ne fait plus que des redirections selon le rôle : athlète avec coach → calendar ; athlète sans coach → `/dashboard/find-coach` ; coach → `/dashboard/athletes` ; admin → `/admin/members`. Pages dédiées « Trouver mon coach » (`/dashboard/find-coach`) et « Mes athlètes » (`/dashboard/athletes`) avec chacune son skeleton de chargement. Sidebar : liens directs vers find-coach et athletes ; titre page Mes athlètes = « My Athletes » / « Mes Athlètes ». Grille des tuiles athlètes : 3 colonnes uniquement à partir du breakpoint `xl`.
@@ -424,6 +455,8 @@
 | Calendrier responsive / mobile (issue #44) / totaux de la semaine sur mobile | `Project_context.md` §4.5, `docs/DESIGN_SYSTEM.md` §7 |
 | Indicateur commentaire athlète sur tuile calendrier | `Project_context.md` §4.5, `docs/DESIGN_SYSTEM.md` §7 |
 | **Page par défaut / redirections dashboard (find-coach, Mes athlètes)** | **`Project_context.md` §4.0** |
+| Tuile Profil sidebar (état sélectionné sur page Profil, centrage mode replié) | `Project_context.md` §4.0, `docs/DESIGN_SYSTEM.md` §7 |
+| Tuile demandes en attente (coach) / Discuter / modales Refuser-Accepter | `Project_context.md` §4.4, `docs/DESIGN_SYSTEM.md` §7 |
 | Grilles responsive (Trouver mon coach, My offers, Mes athlètes) | `docs/DESIGN_SYSTEM.md` §7 |
 | Filtre par nom/prénom (Trouver mon coach) | `Project_context.md` (Athlete), `docs/DESIGN_SYSTEM.md` §7 |
 | Filtre par nom (Mes athlètes, coach) | `Project_context.md` (§ Coach), `docs/DESIGN_SYSTEM.md` §7 |
@@ -431,7 +464,7 @@
 | **Vue souscription, résiliation, « En résiliation »** | **`Project_context.md` §4.10** |
 | Envoi demande coach / erreur ou blocage « Envoi en cours » | `Project_context.md` §4.4 (Flow) |
 | **Voir la demande envoyée (athlète) / modale détail demande** | **`Project_context.md` §4.4** (demande pending, « Demande envoyée > », modale) |
-| **Chat – Accès via requests, écriture/lecture seule, overlay coach+athlète** | **`Project_context.md` §4.6** (comportement livré), + archives: `docs/archive/chat-coach-start-conversation/` |
+| **Chat – Accès via requests, écriture/lecture seule, réécriture après nouveau pending/active** | **`Project_context.md` §4.6** (comportement livré, latest writable request, RLS conversations), + archives: `docs/archive/chat-coach-start-conversation/` |
 | Conventions de code | `.cursor/rules/project-core.mdc` |
 | Pattern bouton sauvegarde | `docs/PATTERN_SAVE_BUTTON.md` |
 | Déploiement | `DEPLOYMENT_NOTES.md`, `MISE_EN_PROD.md` |

@@ -1,7 +1,7 @@
-import { ChatModule } from '@/components/ChatModule'
 import { Sidebar } from '@/components/Sidebar'
 import { getCurrentUserWithProfile } from '@/utils/auth'
 import type { ChatRoleResult } from '@/app/[locale]/actions/chat'
+import { DashboardChatWrapper } from '@/app/[locale]/dashboard/DashboardChatWrapper'
 
 function getChatRoleFromProfile(profile: { role: string }, userId: string): ChatRoleResult {
   if (profile.role === 'coach') return { role: 'coach', userId }
@@ -20,10 +20,9 @@ export default async function DashboardLayout({
   return (
     <div className="bg-stone-100 text-stone-800 antialiased h-screen flex overflow-hidden p-3 gap-3">
       <Sidebar profile={{ ...current.profile, email: current.email }} />
-      <div className="flex-1 min-w-0">
+      <DashboardChatWrapper initialChatRole={initialChatRole}>
         {children}
-      </div>
-      <ChatModule initialChatRole={initialChatRole} />
+      </DashboardChatWrapper>
     </div>
   )
 }

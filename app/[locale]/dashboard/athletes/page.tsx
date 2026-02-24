@@ -3,21 +3,19 @@ import Link from 'next/link'
 import { createClient } from '@/utils/supabase/server'
 import { getCurrentUserWithProfile } from '@/utils/auth'
 import { redirect } from 'next/navigation'
-import { getTranslations } from 'next-intl/server'
+import { getTranslations, getLocale } from 'next-intl/server'
+import { pathWithLocale } from '@/lib/pathWithLocale'
 import { DashboardPageShell } from '@/components/DashboardPageShell'
-import { AvatarImage } from '@/components/AvatarImage'
 import { CoachAthletesListWithFilter } from '@/app/[locale]/dashboard/CoachAthletesListWithFilter'
 import type { CoachSubscriptionRow } from '@/app/[locale]/dashboard/CoachSubscriptionDetailModal'
-import { Badge } from '@/components/Badge'
 import { getFrozenTitleForLocale } from '@/lib/frozenOfferI18n'
-import { RespondToRequestButtons } from '@/app/[locale]/dashboard/RespondToRequestButtons'
+import { PendingRequestTile } from '@/app/[locale]/dashboard/PendingRequestTile'
 import {
   getPendingCoachRequests,
 } from '@/app/[locale]/dashboard/actions'
 import type { Profile } from '@/types/database'
 import { formatShortDate } from '@/lib/dateUtils'
 import { getDisplayName } from '@/lib/displayName'
-import { getInitials } from '@/lib/stringUtils'
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params
@@ -38,7 +36,7 @@ export default async function CoachAthletesPage({ params }: { params: Promise<{ 
   const current = await getCurrentUserWithProfile()
 
   if (current.profile.role !== 'coach') {
-    redirect('/dashboard')
+    redirect(pathWithLocale(locale, '/dashboard'))
   }
 
   const supabase = await createClient()
@@ -197,51 +195,9 @@ export default async function CoachAthletesPage({ params }: { params: Promise<{ 
             {t('pendingRequests.description')}
           </p>
           <ul className="space-y-3">
-            {pendingRequests.map((req) => {
-              const name = req.athlete_name || req.athlete_email || '—'
-              const sportValues = (req.sport_practiced || '')
-                .split(',')
-                .map((v) => v.trim())
-                .filter(Boolean)
-              return (
-                <li
-                  key={req.id}
-                  className="rounded-xl border border-stone-200 border-l-4 border-l-amber-400 bg-section overflow-hidden flex flex-wrap items-center justify-between gap-4 p-4"
-                >
-                  <div className="flex gap-4 min-w-0 flex-1">
-                    <AvatarImage
-                      src={req.athlete_avatar_url}
-                      initials={getInitials(name)}
-                      className="w-12 h-12 flex-shrink-0"
-                    />
-                    <div className="min-w-0">
-                      <p className="font-semibold text-stone-900">{name}</p>
-                      {req.athlete_email && name !== req.athlete_email && (
-                        <p className="text-sm text-stone-600 mt-0.5">{req.athlete_email}</p>
-                      )}
-                      <div className="flex flex-wrap gap-1.5 mt-2">
-                        {sportValues.map((v) => (
-                          <Badge key={v} sport={v as Parameters<typeof Badge>[0]['sport']} />
-                        ))}
-                      </div>
-                      {req.offer_title && (
-                        <div className="mt-2 flex items-center gap-2">
-                          <span className="text-xs font-medium text-stone-500">{t('pendingRequests.offerChosen')}</span>
-                          <span className="text-xs font-semibold text-stone-900">{req.offer_title}</span>
-                          {req.offer_price !== null && (
-                            <span className="text-xs text-stone-600">
-                              {req.offer_price_type === 'free' ? t('pendingRequests.free') : req.offer_price_type === 'monthly' ? `${req.offer_price}€${t('pendingRequests.perMonth')}` : `${req.offer_price}€`}
-                            </span>
-                          )}
-                        </div>
-                      )}
-                      <p className="text-sm text-stone-600 mt-2 italic">&quot;{req.coaching_need}&quot;</p>
-                    </div>
-                  </div>
-                  <RespondToRequestButtons requestId={req.id} />
-                </li>
-              )
-            })}
+            {pendingRequests.map((req) => (
+              <PendingRequestTile key={req.id} request={req} />
+            ))}
           </ul>
         </section>
       )}

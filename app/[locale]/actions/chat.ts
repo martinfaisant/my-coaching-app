@@ -466,9 +466,6 @@ export async function getConversationsForCoach(): Promise<ConversationWithMeta[]
     .select('user_id, first_name, last_name, email, avatar_url')
     .in('user_id', athleteIds)
 
-  const requestIds = rows.map((r) => r.request_id).filter((id): id is string => !!id)
-  const accessByRequestId = await getAccessByRequestIds(supabase, requestIds)
-
   const nameByUserId = new Map<string, string>()
   const avatarByUserId = new Map<string, string | null>()
   for (const p of profiles ?? []) {
@@ -476,16 +473,26 @@ export async function getConversationsForCoach(): Promise<ConversationWithMeta[]
     avatarByUserId.set(p.user_id, p.avatar_url ?? null)
   }
 
-  return rows.map((r) => ({
-    id: r.id,
-    request_id: r.request_id ?? null,
-    athlete_id: r.athlete_id,
-    athlete_name: nameByUserId.get(r.athlete_id) ?? 'Athlète',
-    avatar_url: avatarByUserId.get(r.athlete_id) ?? null,
-    updated_at: r.updated_at,
-    can_send: r.request_id ? (accessByRequestId.get(r.request_id)?.canSend ?? false) : false,
-    is_read_only: r.request_id ? !(accessByRequestId.get(r.request_id)?.canSend ?? false) : true,
-  }))
+  const result: ConversationWithMeta[] = []
+  for (const r of rows) {
+    const writableRequestId = await getLatestWritableRequestIdForPair(supabase, user.id, r.athlete_id)
+    const canSend = !!writableRequestId
+    if (writableRequestId && writableRequestId !== r.request_id) {
+      await supabase.from('conversations').update({ request_id: writableRequestId }).eq('id', r.id)
+    }
+    const effectiveRequestId = writableRequestId ?? r.request_id
+    result.push({
+      id: r.id,
+      request_id: effectiveRequestId ?? null,
+      athlete_id: r.athlete_id,
+      athlete_name: nameByUserId.get(r.athlete_id) ?? 'Athlète',
+      avatar_url: avatarByUserId.get(r.athlete_id) ?? null,
+      updated_at: r.updated_at,
+      can_send: canSend,
+      is_read_only: !canSend,
+    })
+  }
+  return result
 }
 
 /** Athlète : liste des conversations avec les coachs. */
@@ -510,9 +517,6 @@ export async function getConversationsForAthlete(): Promise<ConversationWithCoac
     .select('user_id, first_name, last_name, email, avatar_url')
     .in('user_id', coachIds)
 
-  const requestIds = rows.map((r) => r.request_id).filter((id): id is string => !!id)
-  const accessByRequestId = await getAccessByRequestIds(supabase, requestIds)
-
   const nameByUserId = new Map<string, string>()
   const avatarByUserId = new Map<string, string | null>()
   for (const p of profiles ?? []) {
@@ -520,16 +524,26 @@ export async function getConversationsForAthlete(): Promise<ConversationWithCoac
     avatarByUserId.set(p.user_id, p.avatar_url ?? null)
   }
 
-  return rows.map((r) => ({
-    id: r.id,
-    request_id: r.request_id ?? null,
-    coach_id: r.coach_id,
-    coach_name: nameByUserId.get(r.coach_id) ?? 'Coach',
-    avatar_url: avatarByUserId.get(r.coach_id) ?? null,
-    updated_at: r.updated_at,
-    can_send: r.request_id ? (accessByRequestId.get(r.request_id)?.canSend ?? false) : false,
-    is_read_only: r.request_id ? !(accessByRequestId.get(r.request_id)?.canSend ?? false) : true,
-  }))
+  const result: ConversationWithCoachMeta[] = []
+  for (const r of rows) {
+    const writableRequestId = await getLatestWritableRequestIdForPair(supabase, r.coach_id, user.id)
+    const canSend = !!writableRequestId
+    if (writableRequestId && writableRequestId !== r.request_id) {
+      await supabase.from('conversations').update({ request_id: writableRequestId }).eq('id', r.id)
+    }
+    const effectiveRequestId = writableRequestId ?? r.request_id
+    result.push({
+      id: r.id,
+      request_id: effectiveRequestId ?? null,
+      coach_id: r.coach_id,
+      coach_name: nameByUserId.get(r.coach_id) ?? 'Coach',
+      avatar_url: avatarByUserId.get(r.coach_id) ?? null,
+      updated_at: r.updated_at,
+      can_send: canSend,
+      is_read_only: !canSend,
+    })
+  }
+  return result
 }
 
 /** Messages d'une conversation. */
@@ -577,11 +591,20 @@ export async function sendMessage(
 
   if (!conv) return { error: t('conversationUnavailable') }
 
-  if (!conv.request_id) return { error: t('readOnlyConversation') }
+  let effectiveRequestId = conv.request_id
+  const accessByRequest = await getAccessByRequestIds(supabase, effectiveRequestId ? [effectiveRequestId] : [])
+  let canSend = effectiveRequestId ? (accessByRequest.get(effectiveRequestId)?.canSend ?? false) : false
 
-  const accessByRequest = await getAccessByRequestIds(supabase, [conv.request_id])
-  const canSend = accessByRequest.get(conv.request_id)?.canSend ?? false
-  if (!canSend) return { error: t('readOnlyConversation') }
+  if (!canSend) {
+    const writableRequestId = await getLatestWritableRequestIdForPair(supabase, conv.coach_id, conv.athlete_id)
+    if (writableRequestId) {
+      await supabase.from('conversations').update({ request_id: writableRequestId }).eq('id', conv.id)
+      effectiveRequestId = writableRequestId
+      canSend = true
+    }
+  }
+
+  if (!effectiveRequestId || !canSend) return { error: t('readOnlyConversation') }
 
   const { error } = await supabase.from('chat_messages').insert({
     conversation_id: conversationId,

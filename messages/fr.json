@@ -603,7 +603,8 @@
       "description": "Acceptez ou refusez les demandes d'athlètes qui souhaitent vous avoir comme coach.",
       "offerChosen": "Offre choisie :",
       "free": "Gratuit",
-      "perMonth": "/mois"
+      "perMonth": "/mois",
+      "chat": "Discuter"
     },
     "noAthletes": {
       "title": "Vos demandes de coaching apparaîtront sur cette page.",
@@ -718,6 +719,10 @@
   "coachRequests": {
     "accept": "Accepter",
     "decline": "Refuser",
+    "confirmDeclineTitle": "Refuser la demande ?",
+    "confirmDeclineBody": "La demande sera refusée. L'athlète pourra vous renvoyer une demande plus tard.",
+    "confirmAcceptTitle": "Accepter la demande ?",
+    "confirmAcceptBody": "L'athlète sera ajouté à vos athlètes et une souscription sera créée. Vous pourrez lui assigner des entraînements et des objectifs.",
     "validation": {
       "athletesOnly": "Réservé aux athlètes.",
       "alreadyHasCoach": "Vous avez déjà un coach.",

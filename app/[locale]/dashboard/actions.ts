@@ -285,7 +285,7 @@ export async function getPendingCoachRequests(locale: string = 'fr'): Promise<Pe
 
   const { data: rows } = await supabase
     .from('coach_requests')
-    .select('id, athlete_id, sport_practiced, coaching_need, created_at, offer_id, frozen_title, frozen_title_fr, frozen_title_en, frozen_price, frozen_description, frozen_description_fr, frozen_description_en')
+    .select('id, athlete_id, sport_practiced, coaching_need, created_at, offer_id, frozen_title, frozen_title_fr, frozen_title_en, frozen_price, frozen_price_type, frozen_description, frozen_description_fr, frozen_description_en')
     .eq('coach_id', user.id)
     .eq('status', 'pending')
     .order('created_at', { ascending: false })
@@ -318,7 +318,7 @@ export async function getPendingCoachRequests(locale: string = 'fr'): Promise<Pe
     offer_id: r.offer_id ?? null,
     offer_title: getFrozenTitleForLocale(r, locale) ?? null,
     offer_price: r.frozen_price ?? null,
-    offer_price_type: null,
+    offer_price_type: r.frozen_price_type ?? null,
     created_at: r.created_at,
   }))
 }

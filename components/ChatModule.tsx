@@ -65,9 +65,17 @@ function ContactListSkeleton() {
 
 type ChatModuleProps = {
   initialChatRole?: ChatRoleResult | null
+  /** When set, open the overlay and select/create conversation for this athlete (coach only). */
+  openWithAthleteId?: string | null
+  /** Called after preselected athlete conversation is shown. */
+  onOpenWithAthleteHandled?: () => void
 }
 
-export function ChatModule({ initialChatRole }: ChatModuleProps = {}) {
+export function ChatModule({
+  initialChatRole,
+  openWithAthleteId,
+  onOpenWithAthleteHandled,
+}: ChatModuleProps = {}) {
   const t = useTranslations('chat')
   const [chatRole, setChatRole] = useState<ChatRoleResult>(initialChatRole ?? null)
   const [open, setOpen] = useState(false)
@@ -78,6 +86,12 @@ export function ChatModule({ initialChatRole }: ChatModuleProps = {}) {
     if (initialChatRole !== undefined) return
     getChatRole().then(setChatRole)
   }, [initialChatRole])
+
+  useEffect(() => {
+    if (openWithAthleteId && chatRole?.role === 'coach') {
+      setOpen(true)
+    }
+  }, [openWithAthleteId, chatRole?.role])
 
   if (!chatRole) return null
 
@@ -117,6 +131,8 @@ export function ChatModule({ initialChatRole }: ChatModuleProps = {}) {
           setCoachConvs={setCoachConvs}
           selectedCoachConvId={selectedCoachConvId}
           setSelectedCoachConvId={setSelectedCoachConvId}
+          openWithAthleteId={openWithAthleteId ?? undefined}
+          onOpenWithAthleteHandled={onOpenWithAthleteHandled}
         />
       )}
     </>
@@ -131,6 +147,8 @@ type ChatOverlayProps = {
   setCoachConvs: React.Dispatch<React.SetStateAction<ConversationWithMeta[]>>
   selectedCoachConvId: string | null
   setSelectedCoachConvId: React.Dispatch<React.SetStateAction<string | null>>
+  openWithAthleteId?: string
+  onOpenWithAthleteHandled?: () => void
 }
 
 function ChatOverlay({
@@ -141,6 +159,8 @@ function ChatOverlay({
   setCoachConvs,
   selectedCoachConvId,
   setSelectedCoachConvId,
+  openWithAthleteId,
+  onOpenWithAthleteHandled,
 }: ChatOverlayProps) {
   const locale = useLocale()
   const localeTag = locale === 'fr' ? 'fr-FR' : 'en-US'
@@ -234,6 +254,32 @@ function ChatOverlay({
       })
       .finally(() => setLoading(false))
   }, [role, coachConvs.length, setCoachConvs, setSelectedCoachConvId])
+
+  useEffect(() => {
+    if (role !== 'coach' || !openWithAthleteId || loading || !onOpenWithAthleteHandled) return
+    const existing = coachConvs.find((c) => c.athlete_id === openWithAthleteId)
+    if (existing) {
+      setSelectedCoachConvId(existing.id)
+      onOpenWithAthleteHandled()
+      return
+    }
+    getOrCreateConversationForCoach(openWithAthleteId, locale).then((result) => {
+      if (!result.ok) return
+      const newConv: ConversationWithMeta = {
+        id: result.conversationId,
+        request_id: null,
+        athlete_id: openWithAthleteId,
+        athlete_name: result.athleteName,
+        avatar_url: null,
+        updated_at: new Date().toISOString(),
+        can_send: true,
+        is_read_only: false,
+      }
+      setCoachConvs((prev) => [newConv, ...prev.filter((c) => c.id !== newConv.id)])
+      setSelectedCoachConvId(result.conversationId)
+      onOpenWithAthleteHandled()
+    })
+  }, [role, openWithAthleteId, loading, coachConvs, locale, setCoachConvs, setSelectedCoachConvId, onOpenWithAthleteHandled])
 
   useEffect(() => {
     if (!selectedId) return

@@ -615,7 +615,8 @@
       "description": "Accept or decline requests from athletes who want you as their coach.",
       "offerChosen": "Chosen offer:",
       "free": "Free",
-      "perMonth": "/month"
+      "perMonth": "/month",
+      "chat": "Discuss"
     },
     "noAthletes": {
       "title": "Your coaching requests will appear on this page.",
@@ -730,6 +731,10 @@
   "coachRequests": {
     "accept": "Accept",
     "decline": "Decline",
+    "confirmDeclineTitle": "Decline this request?",
+    "confirmDeclineBody": "The request will be declined. The athlete will be able to send you a new request later.",
+    "confirmAcceptTitle": "Accept this request?",
+    "confirmAcceptBody": "The athlete will be added to your athletes and a subscription will be created. You will be able to assign them workouts and goals.",
     "validation": {
       "athletesOnly": "Athletes only.",
       "alreadyHasCoach": "You already have a coach.",

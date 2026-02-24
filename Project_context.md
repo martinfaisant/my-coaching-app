@@ -112,7 +112,7 @@ Opening `/dashboard` redirects to a **role-specific default page** (no content r
 | Coach | `/dashboard/athletes` |
 | Admin | `/admin/members` |
 
-The pages **« Trouver mon coach »** and **« Mes athlètes »** are **separate routes** (`/dashboard/find-coach`, `/dashboard/athletes`), each with its own loading skeleton. Sidebar links point directly to these routes; the dashboard layout and `DashboardPageShell` are used for both.
+The pages **« Trouver mon coach »** and **« Mes athlètes »** are **separate routes** (`/dashboard/find-coach`, `/dashboard/athletes`), each with its own loading skeleton. Sidebar links point directly to these routes; the dashboard layout and `DashboardPageShell` are used for both. The **profile tile** at the bottom of the sidebar (avatar + name) uses the same **selected state** as other nav items (green background, white text) when the user is on the profile page (`/dashboard/profile`); when the sidebar is collapsed (desktop), only the avatar is shown and centered.
 
 ---
 
@@ -186,7 +186,7 @@ Athletes filter coaches by:
 - While the request is **pending**, the coach tile shows « Annuler la demande » (danger) and « Demande envoyée > » (muted). Clicking « Demande envoyée > » opens a modal with the request detail (frozen offer, sports, message, date); the athlete can cancel the request from the tile or from the modal (same confirmation flow).
 - If the request fails (server error or DB insert rejected), the user sees a generic error message and the submit button is no longer stuck on « Envoi en cours »; errors are logged server-side for diagnosis.
 - When an offer is chosen, the server immediately stores a **snapshot** of that offer in `coach_requests`: `offer_id`, `frozen_price`, `frozen_title`, `frozen_description`. This is the version of the offer **as seen by the athlete** at request time. If the coach later changes or archives the offer, the request row does not change.
-- Coach accepts or declines the request.
+- Coach accepts or declines the request. On the « Mes athlètes » page, **pending requests** are shown in a unified tile per request: athlete avatar, sport badges, full coaching-need message (full width), offer line (title + price). Actions: **« Discuter »** (opens the chat overlay targeting that athlete), **« Refuser »** and **« Accepter »** (each opens a confirmation modal before calling the API). On mobile, the three buttons are at the bottom of the tile (Discuss full width, Decline and Accept side by side).
 - **On accept:** (1) `profiles.coach_id` is set (athlete linked to coach), (2) `coach_requests.status` → `accepted`, (3) a row is inserted into **`subscriptions`** with the same `frozen_*` data copied from `coach_requests` (the subscription is **not** filled from the current `coach_offers` table). Thus the active subscription between athlete and coach reflects the exact offer the athlete requested; if the coach changes the offer afterwards, existing subscriptions are unchanged.
 - No Stripe/payment yet — subscription model is structural only (billing history ready via `subscriptions.frozen_*`).
 
@@ -230,10 +230,11 @@ Athletes filter coaches by:
 - One conversation per coach–athlete pair
 - Simple text messages (no attachments, no rich formatting in MVP)
 - Chat access is request-driven: conversation can be started when a `coach_request` is `pending`, and remains available in read-only when sending is no longer allowed.
+- **Latest writable request:** When there is a **new** pending request or a **new** active (or cancellation_scheduled) subscription after a previous decline or ended subscription, the coach and athlete can write again. The app updates the conversation’s `request_id` to the latest writable request for the pair (listing and sendMessage both ensure this); RLS allows participants to update `conversations.request_id` (policy `conversations_update_participant`, migration 048).
 - Conversation write access rules:
   - `pending` request: coach and athlete can read/write.
   - `accepted` request: read/write only while linked subscription is `active` or `cancellation_scheduled`.
-  - `declined`, cancelled/deleted request, or accepted request with cancelled subscription: conversation remains readable, sending is blocked (read-only).
+  - `declined`, cancelled/deleted request, or accepted request with cancelled subscription: conversation remains readable, sending is blocked (read-only) **until** a new writable request exists for the pair.
 - Coach can start a conversation from the chat overlay by opening the athlete list and selecting an athlete (conversation is created if needed).
 - Athlete can also start/select a conversation from the same overlay pattern (list + sidebar + panel) when multiple coach requests exist.
 - Overlay states (coach and athlete):
@@ -304,7 +305,7 @@ Athletes filter coaches by:
 | `subscriptions` | Subscription per accepted request: `athlete_id`, `coach_id`, `request_id`, same `frozen_*` copied from `coach_requests` (not from offers). `status`: `'active'` \| `'cancellation_scheduled'` \| `'cancelled'`. `cancellation_requested_by_user_id` (UUID, nullable): user who requested the scheduled cancellation; only they can cancel the cancellation. Used for billing history; unchanged if coach later changes the offer. |
 | `workouts` | Planned training sessions for an athlete |
 | `goals` | Athlete race/event objectives |
-| `conversations` | 1-to-1 coach–athlete. Includes `request_id` (source `coach_requests` row) used to determine chat write access lifecycle. |
+| `conversations` | 1-to-1 coach–athlete. Includes `request_id` (source `coach_requests` row) used to determine chat write access lifecycle. Participants can update `request_id` to the latest writable request (RLS policy `conversations_update_participant`). |
 | `chat_messages` | Messages in a conversation |
 | `coach_ratings` | Athlete rating + comment for coach |
 | `athlete_connected_services` | Strava OAuth tokens |
