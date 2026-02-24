@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mockup — Tuile Profil sidebar : état sélectionné (page Profil)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            'palette-forest-darker': '#506648',
+            'palette-olive': '#8e9856',
+            'palette-sage': '#aaaa51',
+            'palette-gold': '#cbb44b',
+            'palette-amber': '#c9a544',
+            'palette-danger': '#c0564b',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-stone-100 text-stone-900 p-6 md:p-10">
+  <header class="mb-8">
+    <h1 class="text-2xl font-bold text-stone-900">Sidebar — Tuile Profil (bas de colonne)</h1>
+    <p class="text-sm text-stone-600 mt-1">État par défaut vs état sélectionné quand on est sur la page Profil (<code>/dashboard/profile</code>). Même style que les autres entrées du menu (Calendrier, Objectifs, etc.).</p>
+  </header>
+
+  <div class="flex flex-wrap gap-12 items-start">
+    <!-- Contexte : sidebar réduite à un item du menu + bloc Profil -->
+    <section class="space-y-4">
+      <h2 class="text-base font-semibold text-stone-900">Sur une autre page (ex. Calendrier)</h2>
+      <p class="text-sm text-stone-600">La tuile Profil garde le style actuel : bordure stone, fond stone-50.</p>
+      <div class="w-52 bg-white rounded-2xl shadow-sm p-3 flex flex-col gap-2">
+        <!-- Un item de menu "sélectionné" pour contexte -->
+        <div class="flex items-center h-10 rounded-xl gap-2.5 px-3 bg-palette-forest-dark text-white shadow-lg shadow-palette-forest-dark/20">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+          <span class="text-sm font-medium">Calendrier</span>
+        </div>
+        <!-- Profil : état NON sélectionné (actuel) -->
+        <a href="#" class="flex items-center h-10 rounded-xl border border-stone-100 bg-stone-50 hover:bg-white hover:shadow-md transition-all duration-300 group w-full gap-2.5 px-3">
+          <div class="w-7 h-7 rounded-full bg-palette-olive flex items-center justify-center text-white text-xs font-bold shrink-0 ring-2 ring-white" aria-hidden="true">JD</div>
+          <div class="text-left min-w-0 flex-1 overflow-hidden">
+            <p class="text-xs font-bold text-stone-800 truncate" title="Jean Dupont">Jean Dupont</p>
+          </div>
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-stone-300 group-hover:text-palette-forest-dark transition-all shrink-0 ml-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+        </a>
+      </div>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-base font-semibold text-stone-900">Sur la page Profil (<code>/dashboard/profile</code>)</h2>
+      <p class="text-sm text-stone-600">La tuile Profil utilise le même état sélectionné que les autres pages : fond forest-dark, texte blanc, ombre.</p>
+      <div class="w-52 bg-white rounded-2xl shadow-sm p-3 flex flex-col gap-2">
+        <!-- Un item de menu non sélectionné pour contexte -->
+        <div class="flex items-center h-10 rounded-xl gap-2.5 px-3 text-stone-500 hover:bg-stone-50 hover:text-palette-forest-dark">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+          <span class="text-sm font-medium">Calendrier</span>
+        </div>
+        <!-- Profil : état SÉLECTIONNÉ (nouveau) -->
+        <a href="#" class="flex items-center h-10 rounded-xl bg-palette-forest-dark text-white shadow-lg shadow-palette-forest-dark/20 transition-all duration-300 group w-full gap-2.5 px-3">
+          <div class="w-7 h-7 rounded-full bg-white/30 flex items-center justify-center text-white text-xs font-bold shrink-0 ring-2 ring-white" aria-hidden="true">JD</div>
+          <div class="text-left min-w-0 flex-1 overflow-hidden">
+            <p class="text-xs font-bold text-white truncate" title="Jean Dupont">Jean Dupont</p>
+          </div>
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-white/80 transition-all shrink-0 ml-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+        </a>
+      </div>
+    </section>
+  </div>
+
+  <!-- Variante repliée (icône seule) -->
+  <section class="mt-12 space-y-4">
+    <h2 class="text-base font-semibold text-stone-900">Sidebar repliée (icône seule)</h2>
+    <p class="text-sm text-stone-600">En mode replié, la tuile Profil affiche uniquement l'avatar ; l'état sélectionné garde le même fond et la même ombre.</p>
+    <div class="flex flex-wrap gap-8">
+      <div class="flex flex-col items-center gap-2">
+        <span class="text-xs text-stone-500">Autre page</span>
+        <div class="w-14 bg-white rounded-2xl shadow-sm p-2 flex flex-col items-center gap-2">
+          <div class="w-10 h-10 rounded-xl bg-palette-forest-dark text-white flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+          </div>
+          <a href="#" class="w-10 h-10 rounded-xl border border-stone-100 bg-stone-50 hover:bg-white hover:shadow-md flex items-center justify-center shrink-0">
+            <div class="w-7 h-7 rounded-full bg-palette-olive flex items-center justify-center text-white text-xs font-bold ring-2 ring-white">JD</div>
+          </a>
+        </div>
+      </div>
+      <div class="flex flex-col items-center gap-2">
+        <span class="text-xs text-stone-500">Page Profil</span>
+        <div class="w-14 bg-white rounded-2xl shadow-sm p-2 flex flex-col items-center gap-2">
+          <div class="w-10 h-10 rounded-xl text-stone-500 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+          </div>
+          <a href="#" class="w-10 h-10 rounded-xl bg-palette-forest-dark text-white shadow-lg shadow-palette-forest-dark/20 flex items-center justify-center shrink-0">
+            <div class="w-7 h-7 rounded-full bg-white/30 flex items-center justify-center text-white text-xs font-bold ring-2 ring-white">JD</div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="mt-10 rounded-xl border border-stone-200 bg-stone-50 p-4">
+    <h2 class="text-base font-semibold text-stone-800 mb-2">Spécification</h2>
+    <ul class="text-sm text-stone-600 list-disc list-inside space-y-1">
+      <li><strong>Condition :</strong> <code>path === '/dashboard/profile'</code> (pas <code>startsWith</code>, pour ne pas sélectionner la tuile Profil sur <code>/dashboard/profile/offers</code>).</li>
+      <li><strong>État sélectionné :</strong> mêmes classes que les autres liens du menu : <code>bg-palette-forest-dark text-white shadow-lg shadow-palette-forest-dark/20</code>. Pas de bordure en état sélectionné.</li>
+      <li><strong>Texte et chevron :</strong> en état sélectionné, nom en <code>text-white</code>, chevron en <code>text-white/80</code> (ou équivalent). Avatar : garder <code>ring-2 ring-white</code> ; fond avatar peut rester ou passer en <code>bg-white/30</code> pour cohérence.</li>
+      <li><strong>Composant :</strong> <code>components/Sidebar.tsx</code> — deux blocs à modifier (athlète et coach), même logique.</li>
+    </ul>
+    <p class="text-xs text-stone-500 mt-2">Design system : tokens <code>palette-forest-dark</code>, <code>shadow-palette-forest-dark/20</code>. Référence : <code>docs/DESIGN_SYSTEM.md</code>, liens du menu dans <code>Sidebar.tsx</code>.</p>
+  </section>
+
+  <footer class="text-sm text-stone-500 pt-6 mt-8 border-t border-stone-200">
+    Mockup non fonctionnel — pour validation visuelle. Implémentation dans <code>Sidebar.tsx</code> avec <code>usePathname()</code>.
+  </footer>
+</body>
+</html>

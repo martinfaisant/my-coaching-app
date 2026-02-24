@@ -25,7 +25,7 @@ export default async function AthleteCalendarPage({ params }: PageProps) {
     .single()
 
   if (!athleteProfile || athleteProfile.user_id === current.id || athleteProfile.coach_id !== current.id) {
-    redirect('/dashboard')
+    redirect('/dashboard/athletes')
   }
 
   const today = new Date()

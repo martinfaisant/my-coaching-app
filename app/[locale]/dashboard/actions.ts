@@ -11,20 +11,22 @@ import { getDisplayName } from '@/lib/displayName'
 export type SetCoachResult = { error?: string }
 export type CoachRequestResult = { error?: string }
 
-/** Athlète : envoyer une demande de coaching au coach. */
+/** Athlète : envoyer une demande de coaching au coach. Si firstName/lastName sont fournis, met à jour le profil puis crée la demande. */
 export async function createCoachRequest(
   coachId: string,
   sportsPracticed: string[],
   coachingNeed: string,
   offerId?: string | null,
-  locale: string = 'fr'
+  locale: string = 'fr',
+  firstName?: string,
+  lastName?: string
 ): Promise<CoachRequestResult> {
   const supabase = await createClient()
   let t: Awaited<ReturnType<typeof getTranslations>>
   let tErrors: Awaited<ReturnType<typeof getTranslations>>
   let tAuth: Awaited<ReturnType<typeof getTranslations>>
   try {
-    const result = await requireUserWithProfile(supabase, 'role, coach_id')
+    const result = await requireUserWithProfile(supabase, 'role, coach_id, first_name, last_name')
     const translations = await Promise.all([
       getTranslations({ locale, namespace: 'coachRequests.validation' }),
       getTranslations({ locale, namespace: 'errors' }),
@@ -49,6 +51,31 @@ export async function createCoachRequest(
       .single()
 
     if (!coach) return { error: t('coachNotFound') }
+
+    // Mettre à jour le profil athlète si prénom/nom fournis (profil incomplet)
+    const firstTrim = (firstName ?? '').trim()
+    const lastTrim = (lastName ?? '').trim()
+    if (firstTrim && lastTrim) {
+      const { error: updateErr } = await supabase
+        .from('profiles')
+        .update({ first_name: firstTrim, last_name: lastTrim })
+        .eq('user_id', user.id)
+      if (updateErr) {
+        logger.error('createCoachRequest profile update failed', updateErr)
+        return { error: tErrors('supabaseGeneric') }
+      }
+    }
+
+    // Vérifier que le profil a bien un nom (obligatoire pour la demande)
+    const { data: profileCheck } = await supabase
+      .from('profiles')
+      .select('first_name, last_name')
+      .eq('user_id', user.id)
+      .single()
+    const hasName = profileCheck
+      && (profileCheck.first_name ?? '').trim() !== ''
+      && (profileCheck.last_name ?? '').trim() !== ''
+    if (!hasName) return { error: t('requireFirstNameLastName') }
 
     const sportPracticedValue = sports.join(',')
 
@@ -134,6 +161,7 @@ export async function createCoachRequest(
     }
 
     revalidatePath('/dashboard')
+    revalidatePath('/dashboard/find-coach')
     revalidatePath('/dashboard/profile')
     return {}
   } catch (err) {
@@ -228,6 +256,7 @@ export async function cancelCoachRequest(requestId: string): Promise<CoachReques
 
   if (error) return { error: tErrors('supabaseGeneric') }
   revalidatePath('/dashboard')
+  revalidatePath('/dashboard/find-coach')
   return {}
 }
 
@@ -256,7 +285,7 @@ export async function getPendingCoachRequests(locale: string = 'fr'): Promise<Pe
 
   const { data: rows } = await supabase
     .from('coach_requests')
-    .select('id, athlete_id, sport_practiced, coaching_need, created_at, offer_id, frozen_title, frozen_title_fr, frozen_title_en, frozen_price, frozen_description, frozen_description_fr, frozen_description_en')
+    .select('id, athlete_id, sport_practiced, coaching_need, created_at, offer_id, frozen_title, frozen_title_fr, frozen_title_en, frozen_price, frozen_price_type, frozen_description, frozen_description_fr, frozen_description_en')
     .eq('coach_id', user.id)
     .eq('status', 'pending')
     .order('created_at', { ascending: false })
@@ -289,7 +318,7 @@ export async function getPendingCoachRequests(locale: string = 'fr'): Promise<Pe
     offer_id: r.offer_id ?? null,
     offer_title: getFrozenTitleForLocale(r, locale) ?? null,
     offer_price: r.frozen_price ?? null,
-    offer_price_type: null,
+    offer_price_type: r.frozen_price_type ?? null,
     created_at: r.created_at,
   }))
 }
@@ -364,5 +393,6 @@ export async function respondToCoachRequest(
   }
 
   revalidatePath('/dashboard')
+  revalidatePath('/dashboard/athletes')
   return {}
 }

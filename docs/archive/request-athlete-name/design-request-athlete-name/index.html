@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mockups — Nom/prénom obligatoire (demande de coaching)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-stone-100 min-h-screen p-8">
+  <div class="max-w-2xl mx-auto">
+    <h1 class="text-2xl font-bold text-stone-900 mb-2">Nom et prénom obligatoires — Demande de coaching</h1>
+    <p class="text-sm text-stone-600 mb-8">Contexte : modale détail coach (présentation + offres). Ouvrez les liens pour voir chaque écran.</p>
+
+    <section class="mb-10">
+      <h2 class="text-lg font-bold text-stone-800 mb-3">Solution B — Champs dans la modale</h2>
+      <p class="text-sm text-stone-600 mb-4">Un seul écran : présentation du coach, offres, puis formulaire avec Prénom / Nom en tête (préremplis si profil complet).</p>
+      <ul class="space-y-2">
+        <li>
+          <a href="mockup-b-coach-detail-full.html" class="inline-flex items-center gap-2 text-palette-forest-dark font-medium hover:underline">
+            Modale détail coach complète (B)
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+          </a>
+        </li>
+      </ul>
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-lg font-bold text-stone-800 mb-3">Solution C — Étape identité puis demande</h2>
+      <p class="text-sm text-stone-600 mb-4">Deux écrans dans la même modale (même header coach). Si le profil n’a pas prénom/nom : étape 1 → « Continuer » → étape 2.</p>
+      <ul class="space-y-2">
+        <li>
+          <a href="mockup-c-coach-detail-step1.html" class="inline-flex items-center gap-2 text-palette-forest-dark font-medium hover:underline">
+            Écran 1 — Comment vous appeler ?
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+          </a>
+        </li>
+        <li>
+          <a href="mockup-c-coach-detail-step2.html" class="inline-flex items-center gap-2 text-palette-forest-dark font-medium hover:underline">
+            Écran 2 — Présentation, offres, formulaire (sans Prénom/Nom)
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+          </a>
+        </li>
+      </ul>
+    </section>
+
+    <section class="border-t border-stone-200 pt-6">
+      <h2 class="text-lg font-bold text-stone-800 mb-3">Anciens mockups (hors contexte détail coach)</h2>
+      <ul class="space-y-2 text-sm">
+        <li><a href="mockup-a-redirect-profile.html" class="text-stone-500 hover:underline">A — Redirection profil (écartée)</a></li>
+        <li><a href="mockup-b-inline-fields.html" class="text-stone-500 hover:underline">B — Formulaire simple (sans détail coach)</a></li>
+        <li><a href="mockup-c-step-identity.html" class="text-stone-500 hover:underline">C — Étape identité simple (sans détail coach)</a></li>
+      </ul>
+    </section>
+  </div>
+</body>
+</html>

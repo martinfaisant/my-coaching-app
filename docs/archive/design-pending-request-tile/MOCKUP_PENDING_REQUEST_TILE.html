@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mockup — Tuile demande en attente (solution retenue C : avatar, tuiles sport, responsive)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            'palette-forest-darker': '#506648',
+            'palette-olive': '#8e9856',
+            'palette-sage': '#aaaa51',
+            'palette-gold': '#cbb44b',
+            'palette-amber': '#c9a544',
+            'palette-danger': '#c0564b',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .training-card { transition: transform 0.2s, box-shadow 0.2s; }
+    .training-card:hover { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+  </style>
+</head>
+<body class="bg-stone-100 text-stone-900 p-6 md:p-10 space-y-12">
+  <header class="mb-8">
+    <h1 class="text-2xl font-bold text-stone-900">Demandes en attente — Solution retenue (C)</h1>
+    <p class="text-sm text-stone-600 mt-1">Avatar · Tuiles sport · Message de l'athlète visible en entier · Sur petit écran les 3 boutons passent en dessous</p>
+  </header>
+
+  <!-- Section telle qu'affichée sur la page Mes athlètes -->
+  <section class="space-y-4">
+    <h2 class="text-base font-semibold text-stone-900">Demandes en attente (2)</h2>
+    <p class="text-sm text-stone-600">Acceptez ou refusez les demandes d'athlètes qui souhaitent vous avoir comme coach.</p>
+
+    <ul class="space-y-3 max-w-3xl">
+      <!-- Tuile 1 : Marie Dupont — Course, Vélo -->
+      <li class="rounded-lg border border-l-4 border-l-palette-amber border-stone-200 bg-white p-3 shadow-sm training-card">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+          <div class="flex items-center gap-3 min-w-0 flex-1">
+            <div class="w-12 h-12 rounded-full bg-palette-olive flex items-center justify-center text-white font-semibold text-sm shrink-0" aria-hidden="true">MD</div>
+            <div class="min-w-0 flex-1">
+              <div class="font-semibold text-stone-900">Marie Dupont</div>
+              <div class="text-xs text-stone-500 mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-1">
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-palette-forest-dark/10 text-palette-forest-dark border border-palette-forest-dark/20">
+                  <svg class="w-3.5 h-3.5 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                  Course
+                </span>
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-palette-olive/10 text-palette-olive border border-palette-olive/20">
+                  <svg class="w-3.5 h-3.5 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+                  Vélo
+                </span>
+                <span class="font-bold">·</span>
+                <span>Suivi Complet — 45€/mois</span>
+              </div>
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-2 shrink-0 sm:ml-auto">
+            <button type="button" class="text-sm px-4 py-2 rounded-lg border border-stone-300 text-stone-700 hover:bg-stone-100 transition-colors whitespace-nowrap hidden sm:inline-flex">Discuter</button>
+            <button type="button" class="text-sm px-4 py-2 rounded-lg text-stone-700 hover:text-palette-danger hover:bg-palette-danger-light transition-colors hidden sm:inline-flex">Refuser</button>
+            <button type="button" class="text-sm px-4 py-2.5 rounded-lg bg-palette-forest-dark text-white hover:bg-palette-forest-darker transition-colors hidden sm:inline-flex">Accepter</button>
+          </div>
+        </div>
+        <p class="text-sm text-stone-600 italic mt-2 pt-2 border-t border-stone-100 w-full whitespace-pre-wrap break-words">&quot;Préparer mon premier marathon en octobre, besoin de suivi hebdo.&quot;</p>
+        <div class="flex flex-col gap-2 mt-2 sm:hidden">
+          <button type="button" class="w-full text-sm px-4 py-2 rounded-lg border border-stone-300 text-stone-700 hover:bg-stone-100 transition-colors">Discuter</button>
+          <div class="flex gap-2">
+            <button type="button" class="flex-1 text-sm px-4 py-2 rounded-lg text-stone-700 hover:text-palette-danger hover:bg-palette-danger-light transition-colors">Refuser</button>
+            <button type="button" class="flex-1 text-sm px-4 py-2.5 rounded-lg bg-palette-forest-dark text-white hover:bg-palette-forest-darker transition-colors">Accepter</button>
+          </div>
+        </div>
+      </li>
+
+      <!-- Tuile 2 : Thomas Martin — Trail, message long complet -->
+      <li class="rounded-lg border border-l-4 border-l-palette-amber border-stone-200 bg-white p-3 shadow-sm training-card">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+          <div class="flex items-center gap-3 min-w-0 flex-1">
+            <div class="w-12 h-12 rounded-full bg-palette-sage flex items-center justify-center text-white font-semibold text-sm shrink-0" aria-hidden="true">TM</div>
+            <div class="min-w-0 flex-1">
+              <div class="font-semibold text-stone-900">thomas.martin@exemple.fr</div>
+              <div class="text-xs text-stone-500 mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-1">
+               
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-palette-gold/10 text-palette-gold border border-palette-gold/20">
+                  <svg class="w-3.5 h-3.5 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                  Trail
+                </span>
+                <span class="font-bold">·</span>
+                <span>Découverte — Gratuit</span>
+              </div>
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-2 shrink-0 sm:ml-auto">
+            <button type="button" class="text-sm px-4 py-2 rounded-lg border border-stone-300 text-stone-700 hover:bg-stone-100 transition-colors whitespace-nowrap hidden sm:inline-flex">Discuter</button>
+            <button type="button" class="text-sm px-4 py-2 rounded-lg text-stone-700 hover:text-palette-danger hover:bg-palette-danger-light transition-colors hidden sm:inline-flex">Refuser</button>
+            <button type="button" class="text-sm px-4 py-2.5 rounded-lg bg-palette-forest-dark text-white hover:bg-palette-forest-darker transition-colors hidden sm:inline-flex">Accepter</button>
+          </div>
+        </div>
+        <p class="text-sm text-stone-600 italic mt-2 pt-2 border-t border-stone-100 w-full whitespace-pre-wrap break-words">&quot;Je fais actuellement un programme d'entrainement mais je ne me sens pas capable de me préparer correctement pour le 80km que je vais faire dans 3 mois. J'ai déjà fait des course de cette distance mais je n'ai pas couru depuis 6 mois car j'étais blessé. Je veux que vous m'accompagniez. J'ai arrêté de courir mais j'ai fait pas mal de vélo et de natation pendant l'ensemble de ces mois.&quot;</p>
+        <div class="flex flex-col gap-2 mt-2 sm:hidden">
+          <button type="button" class="w-full text-sm px-4 py-2 rounded-lg border border-stone-300 text-stone-700 hover:bg-stone-100 transition-colors">Discuter</button>
+          <div class="flex gap-2">
+            <button type="button" class="flex-1 text-sm px-4 py-2 rounded-lg text-stone-700 hover:text-palette-danger hover:bg-palette-danger-light transition-colors">Refuser</button>
+            <button type="button" class="flex-1 text-sm px-4 py-2.5 rounded-lg bg-palette-forest-dark text-white hover:bg-palette-forest-darker transition-colors">Accepter</button>
+          </div>
+        </div>
+      </li>
+
+      <!-- Tuile 3 : 3 sports (Course, Vélo, Natation) -->
+      <li class="rounded-lg border border-l-4 border-l-palette-amber border-stone-200 bg-white p-3 shadow-sm training-card">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+          <div class="flex items-center gap-3 min-w-0 flex-1">
+            <div class="w-12 h-12 rounded-full bg-palette-amber flex items-center justify-center text-white font-semibold text-sm shrink-0" aria-hidden="true">JL</div>
+            <div class="min-w-0 flex-1">
+              <div class="font-semibold text-stone-900">Julie Lambert</div>
+              <div class="text-xs text-stone-500 mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-1">
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-palette-forest-dark/10 text-palette-forest-dark border border-palette-forest-dark/20">
+                  <svg class="w-3.5 h-3.5 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                  Course
+                </span>
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-palette-olive/10 text-palette-olive border border-palette-olive/20">
+                  <svg class="w-3.5 h-3.5 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+                  Vélo
+                </span>
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-sky-50 text-sky-700 border border-sky-500/30">
+                  <svg class="w-3.5 h-3.5 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                  Natation
+                </span>
+                <span class="font-bold">·</span>
+                <span>Plan Unique — 120€</span>
+              </div>
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-2 shrink-0 sm:ml-auto">
+            <button type="button" class="text-sm px-4 py-2 rounded-lg border border-stone-300 text-stone-700 hover:bg-stone-100 transition-colors whitespace-nowrap hidden sm:inline-flex">Discuter</button>
+            <button type="button" class="text-sm px-4 py-2 rounded-lg text-stone-700 hover:text-palette-danger hover:bg-palette-danger-light transition-colors hidden sm:inline-flex">Refuser</button>
+            <button type="button" class="text-sm px-4 py-2.5 rounded-lg bg-palette-forest-dark text-white hover:bg-palette-forest-darker transition-colors hidden sm:inline-flex">Accepter</button>
+          </div>
+        </div>
+        <p class="text-sm text-stone-600 italic mt-2 pt-2 border-t border-stone-100 w-full whitespace-pre-wrap break-words">&quot;Objectif triathlon S en septembre, je cherche un suivi structuré sur la partie course et natation.&quot;</p>
+        <div class="flex flex-col gap-2 mt-2 sm:hidden">
+          <button type="button" class="w-full text-sm px-4 py-2 rounded-lg border border-stone-300 text-stone-700 hover:bg-stone-100 transition-colors">Discuter</button>
+          <div class="flex gap-2">
+            <button type="button" class="flex-1 text-sm px-4 py-2 rounded-lg text-stone-700 hover:text-palette-danger hover:bg-palette-danger-light transition-colors">Refuser</button>
+            <button type="button" class="flex-1 text-sm px-4 py-2.5 rounded-lg bg-palette-forest-dark text-white hover:bg-palette-forest-darker transition-colors">Accepter</button>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <!-- Exemple petit écran -->
+  <section class="space-y-4">
+    <h2 class="text-base font-semibold text-stone-900">Exemple petit écran (~360px)</h2>
+    <p class="text-sm text-stone-600">Même tuile (Thomas Martin) : bloc description en pleine largeur, boutons tout en bas — Discuter pleine largeur (style secondaire), Refuser et Accepter sur une ligne en 50/50.</p>
+    <div class="max-w-[360px] border-2 border-dashed border-stone-400 rounded-lg p-2 bg-stone-200/50">
+      <div class="rounded-lg border border-l-4 border-l-palette-amber border-stone-200 bg-white p-3 shadow-sm flex flex-col">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="w-12 h-12 rounded-full bg-palette-sage flex items-center justify-center text-white font-semibold text-sm shrink-0" aria-hidden="true">TM</div>
+          <div class="min-w-0 flex-1">
+            <div class="font-semibold text-stone-900">thomas.martin@exemple.fr</div>
+            <div class="text-xs text-stone-500 mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-1">
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-palette-gold/10 text-palette-gold border border-palette-gold/20">
+                <svg class="w-3.5 h-3.5 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                Trail
+              </span>
+              <span class="font-bold">·</span>
+              <span>Découverte — Gratuit</span>
+            </div>
+          </div>
+        </div>
+        <p class="text-sm text-stone-600 italic mt-2 pt-2 border-t border-stone-100 w-full whitespace-pre-wrap break-words">&quot;Je fais actuellement un programme d'entrainement mais je ne me sens pas capable de me préparer correctement pour le 80km que je vais faire dans 3 mois. J'ai déjà fait des course de cette distance mais je n'ai pas couru depuis 6 mois car j'étais blessé. Je veux que vous m'accompagniez. J'ai arrêté de courir mais j'ai fait pas mal de vélo et de natation pendant l'ensemble de ces mois.&quot;</p>
+        <div class="flex flex-col gap-2 mt-2">
+          <button type="button" class="w-full text-sm px-4 py-2 rounded-lg border border-stone-300 text-stone-700 hover:bg-stone-100 transition-colors">Discuter</button>
+          <div class="flex gap-2">
+            <button type="button" class="flex-1 text-sm px-4 py-2 rounded-lg text-stone-700 hover:text-palette-danger hover:bg-palette-danger-light transition-colors">Refuser</button>
+            <button type="button" class="flex-1 text-sm px-4 py-2.5 rounded-lg bg-palette-forest-dark text-white hover:bg-palette-forest-darker transition-colors">Accepter</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modales de confirmation (Refuser / Accepter) -->
+  <section class="space-y-6">
+    <h2 class="text-base font-semibold text-stone-900">Modales de confirmation</h2>
+    <p class="text-sm text-stone-600">Au clic sur <strong>Refuser</strong> ou <strong>Accepter</strong>, une modale de confirmation s'ouvre avant d'envoyer l'action. Composant <code>Modal</code> (taille <code>sm</code>), structure header / corps / footer du design system.</p>
+
+    <div class="flex flex-wrap gap-8">
+      <!-- Modale confirmation Refuser (alignée Modal.tsx + DESIGN_SYSTEM confirmations) -->
+      <div class="relative w-full max-w-sm flex flex-col bg-white rounded-2xl shadow-xl border border-stone-100 overflow-hidden">
+        <div class="shrink-0 px-6 py-4 border-b border-stone-100 bg-stone-50/50 flex items-center justify-between gap-3">
+          <h2 class="text-lg font-bold text-stone-900">Refuser la demande ?</h2>
+        </div>
+        <div class="px-6 py-4">
+          <p class="text-sm text-stone-600">La demande de cet athlète sera refusée. Il pourra envoyer une nouvelle demande plus tard s'il le souhaite.</p>
+        </div>
+        <div class="shrink-0 px-6 py-4 border-t border-stone-100 bg-stone-50/50">
+          <div class="flex gap-3 w-full">
+            <button type="button" class="flex-1 min-h-10 px-4 py-2.5 text-sm font-medium rounded-lg border border-stone-300 text-stone-700 hover:bg-stone-50 transition-colors">Annuler</button>
+            <button type="button" class="flex-1 min-h-10 px-4 py-2.5 text-sm font-medium rounded-lg text-stone-700 hover:text-palette-danger hover:bg-palette-danger-light transition-colors">Refuser</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modale confirmation Accepter -->
+      <div class="relative w-full max-w-sm flex flex-col bg-white rounded-2xl shadow-xl border border-stone-100 overflow-hidden">
+        <div class="shrink-0 px-6 py-4 border-b border-stone-100 bg-stone-50/50 flex items-center justify-between gap-3">
+          <h2 class="text-lg font-bold text-stone-900">Accepter la demande ?</h2>
+        </div>
+        <div class="px-6 py-4">
+          <p class="text-sm text-stone-600">L'athlète sera ajouté à vos athlètes et une souscription sera créée. Vous pourrez lui assigner des entraînements et objectifs.</p>
+        </div>
+        <div class="shrink-0 px-6 py-4 border-t border-stone-100 bg-stone-50/50">
+          <div class="flex gap-3 w-full">
+            <button type="button" class="flex-1 min-h-10 px-4 py-2.5 text-sm font-medium rounded-lg border border-stone-300 text-stone-700 hover:bg-stone-50 transition-colors">Annuler</button>
+            <button type="button" class="flex-1 min-h-10 px-4 py-2.5 text-sm font-medium rounded-lg text-white bg-palette-forest-dark hover:bg-palette-forest-darker transition-colors">Accepter</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="text-xs text-stone-500">Aligné sur <code>components/Modal.tsx</code> et <code>docs/DESIGN_SYSTEM.md</code> (Modal, taille sm, header <code>px-6 py-4 border-b border-stone-100 bg-stone-50/50</code>, titre <code>text-lg font-bold</code>, corps <code>px-6 py-4</code>, footer <code>px-6 py-4 border-t border-stone-100 bg-stone-50/50</code>, boutons <code>flex gap-3 w-full</code> avec <code>Button variant="muted"</code> + <code>variant="danger"</code> ou <code>variant="primary"</code> avec <code>className="flex-1"</code>).</p>
+  </section>
+
+  <!-- Rappel responsive -->
+  <section class="rounded-xl border border-stone-200 bg-stone-50 p-4">
+    <h2 class="text-base font-semibold text-stone-800 mb-2">Comportement</h2>
+    <ul class="text-sm text-stone-600 list-disc list-inside space-y-1">
+      <li><strong>Espace au-dessus du message :</strong> <code>mt-2 pt-2</code> (réduit) entre la ligne infos et le bloc description.</li>
+      <li><strong>Bouton Discuter :</strong> libellé « Discuter » uniquement ; style secondaire (<code>Button variant="secondary"</code> : bordure stone, hover bg-stone-100).</li>
+      <li><strong>Bloc description :</strong> s'étale sur toute la largeur de la tuile, avec <code>border-t border-stone-100</code>.</li>
+      <li><strong>sm et plus :</strong> ligne 1 = avatar, nom + sports + offre, boutons à droite (Discuter, Refuser, Accepter) ; ligne 2 = message en pleine largeur.</li>
+      <li><strong>Petit écran :</strong> boutons tout en bas de la tuile : Discuter en pleine largeur, puis Refuser et Accepter sur une même ligne en 50/50.</li>
+      <li><strong>Modales de confirmation :</strong> au clic sur <strong>Refuser</strong> ou <strong>Accepter</strong>, ouvrir une modale de confirmation avant d'appeler <code>respondToCoachRequest</code>. Titre + message explicatif + boutons Annuler (ferme la modale) et Refuser / Accepter (confirme l'action).</li>
+    </ul>
+    <p class="text-xs text-stone-500 mt-2">Tuiles sport = composant <strong>Badge</strong>. Avatar = <strong>AvatarImage</strong>. Boutons = <strong>Button</strong> (secondary pour Discuter, danger pour Refuser, primary pour Accepter).</p>
+  </section>
+
+  <footer class="text-sm text-stone-500 pt-4 border-t border-stone-200">
+    Design system : <code>Badge</code> (sport), <code>AvatarImage</code>, <code>Button</code> (outline, muted, primary), <code>TileCard</code> / ActivityTile (bordure). Référence : <code>docs/DESIGN_SYSTEM.md</code>, <code>lib/sportStyles.ts</code>, <code>components/Badge.tsx</code>.
+  </footer>
+</body>
+</html>

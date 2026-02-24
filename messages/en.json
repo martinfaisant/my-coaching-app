@@ -615,7 +615,8 @@
       "description": "Accept or decline requests from athletes who want you as their coach.",
       "offerChosen": "Chosen offer:",
       "free": "Free",
-      "perMonth": "/month"
+      "perMonth": "/month",
+      "chat": "Discuss"
     },
     "noAthletes": {
       "title": "Your coaching requests will appear on this page.",
@@ -690,7 +691,8 @@
     },
     "validation": {
       "selectOffer": "Please select an offer.",
-      "fillRequired": "Please provide at least one practiced sport and your coaching need."
+      "fillRequired": "Please provide at least one practiced sport and your coaching need.",
+      "requireFirstNameLastName": "Please enter your first name and last name."
     }
   },
   "requestCoachButton": {
@@ -729,10 +731,15 @@
   "coachRequests": {
     "accept": "Accept",
     "decline": "Decline",
+    "confirmDeclineTitle": "Decline this request?",
+    "confirmDeclineBody": "The request will be declined. The athlete will be able to send you a new request later.",
+    "confirmAcceptTitle": "Accept this request?",
+    "confirmAcceptBody": "The athlete will be added to your athletes and a subscription will be created. You will be able to assign them workouts and goals.",
     "validation": {
       "athletesOnly": "Athletes only.",
       "alreadyHasCoach": "You already have a coach.",
       "requireSportAndNeed": "At least one practiced sport and coaching need are required.",
+      "requireFirstNameLastName": "Please enter your first name and last name.",
       "coachNotFound": "This coach does not exist.",
       "offerNotFound": "This offer does not exist or does not belong to this coach.",
       "offerNotPublished": "This offer is not available.",
