@@ -176,7 +176,7 @@ Athletes filter coaches by:
 | **published** | Athletes + coach | Live offer. Shown in the coach’s 3 main slots (by `display_order` 0–2) and in discovery. Athletes can choose it when sending a request. At most 3 published offers per coach. |
 | **archived** | Coach only | No longer available for new requests. Shown in a separate “Archived offers” list for the coach. Existing subscriptions linked to this offer (via snapshot) are unchanged. |
 
-- A coach can **publish** a draft once the required fields are filled (titres FR/EN, descriptions FR/EN, price, recurrence). After publication, price and type are locked; only title/description can still be edited.
+- A coach can **publish** a draft once the required fields are filled (titres FR/EN, descriptions FR/EN, price, recurrence). **After publication, price and price type are non-editable:** a DB trigger rejects any update to `price`/`price_type` when `status = 'published'`; the coach UI shows the pricing as read-only (compact line + “Non modifiable” badge). A confirmation modal before publishing states that the price will not be editable and that only typos in title/description can be fixed afterwards. When saving the form, the server omits `price` and `price_type` from the update payload for published offers.
 - A coach **archives** an offer instead of deleting it (no delete policy); new athletes cannot select it, but current subscriptions keep their frozen snapshot.
 
 **Flow:**

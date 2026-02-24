@@ -583,9 +583,10 @@
     "publish": "Publish",
     "archive": "Archive",
     "priceLockedHint": "Cannot be changed after publication",
+    "pricingLockedBadge": "Not editable",
     "publishModal": {
       "title": "Publish offer",
-      "message": "Do you confirm that everything is correct? Once the offer is published, you will not be able to change the price. You will still be able to edit the description.",
+      "message": "Do you confirm that everything is correct? Once the offer is published, the price will not be editable and you will not be able to change what is included at that price. You will only be able to fix typos in the title and description.",
       "confirm": "Publish"
     },
     "savePublishedModal": {

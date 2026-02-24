@@ -571,9 +571,10 @@
     "publish": "Publier",
     "archive": "Archiver",
     "priceLockedHint": "Non modifiable après publication",
+    "pricingLockedBadge": "Non modifiable",
     "publishModal": {
       "title": "Publier l'offre",
-      "message": "Confirmez-vous que tout est correct ? Une fois l'offre en ligne, vous ne pourrez plus modifier le prix. Vous pourrez toujours modifier la description.",
+      "message": "Confirmez-vous que tout est correct ? Une fois l'offre en ligne, le prix sera non modifiable et vous ne pourrez plus modifier ce qui est inclus à ce tarif. Vous pourrez uniquement corriger les fautes de frappe dans le titre et la description.",
       "confirm": "Publier"
     },
     "savePublishedModal": {

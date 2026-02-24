@@ -76,6 +76,9 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
   const [archiveTargetOfferId, setArchiveTargetOfferId] = useState<string | null>(null)
   const [archiveError, setArchiveError] = useState<string | null>(null)
   const [isArchiving, setIsArchiving] = useState(false)
+  const [publishConfirmModalOpen, setPublishConfirmModalOpen] = useState(false)
+  const [publishConfirmOfferId, setPublishConfirmOfferId] = useState<string | null>(null)
+  const [publishConfirmIndex, setPublishConfirmIndex] = useState<number | null>(null)
   /** IDs archivés pendant cette session : on les retire de l’affichage sans refetch (préserve les modifications non enregistrées des autres offres). */
   const initialOffersRef = useRef(offers)
   const initialFeaturedIndexRef = useRef<number | null>((() => {
@@ -126,12 +129,15 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
       const descriptionFr = (form.querySelector(`[name="offer_${i}_description_fr"]`) as HTMLTextAreaElement)?.value.trim() || ''
       const descriptionEn = (form.querySelector(`[name="offer_${i}_description_en"]`) as HTMLTextAreaElement)?.value.trim() || ''
       const price = (form.querySelector(`[name="offer_${i}_price"]`) as HTMLInputElement)?.value.trim() || ''
-      const initialAtI = initialOffersRef.current[i] as { id?: string; price_type?: string } | undefined
+      const initialAtI = initialOffersRef.current[i] as { id?: string; price_type?: string; price?: number | null; status?: string } | undefined
       const slotKey = initialAtI?.id ?? `new-${i - (initialOffersRef.current?.length ?? 0)}`
       const priceType = priceTypes[slotKey] ?? initialAtI?.price_type ?? (initialAtI ? 'one_time' : undefined)
+      const isPublished = initialAtI && ('status' in initialAtI && initialAtI.status === 'published')
+      const effectivePrice = isPublished ? (initialAtI.price != null ? String(initialAtI.price) : '') : price
+      const effectivePriceType = isPublished ? (initialAtI.price_type ?? '') : (priceType ?? '')
 
       if (titleFr || titleEn || descriptionFr || descriptionEn || price || priceType) {
-        currentOffers.push({ title_fr: titleFr, title_en: titleEn, description_fr: descriptionFr, description_en: descriptionEn, price, price_type: priceType ?? '' })
+        currentOffers.push({ title_fr: titleFr, title_en: titleEn, description_fr: descriptionFr, description_en: descriptionEn, price: effectivePrice, price_type: effectivePriceType })
       }
     }
 
@@ -461,34 +467,17 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
                       {offer?.id && (offer as { status?: string }).status === 'draft' && !publishedIdsInThisSession.has(offer.id) && (
                         <button
                           type="button"
-                          onClick={async () => {
-                            const form = formRef.current
-                            if (!form || !offer?.id) return
-                            setPublishError(null)
-                            setPublishingOfferId(offer.id)
-                            const fd = new FormData()
-                            fd.set('_locale', locale)
-                            fd.set('_publish_title_fr', (form.querySelector(`[name="offer_${index}_title_fr"]`) as HTMLInputElement)?.value?.trim() ?? '')
-                            fd.set('_publish_title_en', (form.querySelector(`[name="offer_${index}_title_en"]`) as HTMLInputElement)?.value?.trim() ?? '')
-                            fd.set('_publish_description_fr', (form.querySelector(`[name="offer_${index}_description_fr"]`) as HTMLTextAreaElement)?.value?.trim() ?? '')
-                            fd.set('_publish_description_en', (form.querySelector(`[name="offer_${index}_description_en"]`) as HTMLTextAreaElement)?.value?.trim() ?? '')
-                            fd.set('_publish_price', (form.querySelector(`[name="offer_${index}_price"]`) as HTMLInputElement)?.value?.trim() ?? '')
-                            const slotKey = offer.id ?? `new-${index - sortedOffers.length}`
-                            fd.set('_publish_price_type', (priceTypes[slotKey] ?? offer.price_type) ?? '')
-                            const result = await publishOffer(offer.id, fd, locale)
-                            setPublishingOfferId(null)
-                            if ('error' in result && result.error) {
-                              setPublishError(result.error)
-                              return
-                            }
-                            setPublishedIdsInThisSession((prev) => new Set(prev).add(offer.id))
+                          onClick={() => {
+                            setPublishConfirmOfferId(offer.id)
+                            setPublishConfirmIndex(index)
+                            setPublishConfirmModalOpen(true)
                             setPublishError(null)
                           }}
-                          disabled={!canPublishOfferAtSlot(index) || publishingOfferId === offer.id}
+                          disabled={!canPublishOfferAtSlot(index)}
                           className="px-2.5 py-1 rounded-lg text-xs font-medium bg-palette-forest-dark text-white hover:bg-palette-forest-darker disabled:opacity-50 disabled:pointer-events-none"
                           title={t('publish')}
                         >
-                          {publishingOfferId === offer.id ? tCommon('saving') : t('publish')}
+                          {t('publish')}
                         </button>
                       )}
                       {offer?.id && (
@@ -586,7 +575,38 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
 
                     <div className="w-full border-t border-stone-100 pt-4">
                       <label className="block text-sm font-medium text-stone-700 mb-2">{t('pricing')}</label>
-                      <div className="grid grid-cols-5 gap-3 items-stretch">
+                      {(() => {
+                        const isPublished = offer?.id && ((offer as { status?: string }).status === 'published' || publishedIdsInThisSession.has(offer.id))
+                        if (isPublished && offer) {
+                          const price = offer.price ?? 0
+                          const priceType = (offer as { price_type?: string }).price_type ?? 'one_time'
+                          const priceTypeLabel =
+                            priceType === 'free'
+                              ? t('priceTypes.free')
+                              : priceType === 'monthly'
+                                ? t('priceTypes.monthly')
+                                : t('priceTypes.oneTime')
+                          return (
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className="text-base font-bold text-stone-800">
+                                {priceType === 'free' ? '0' : price} €
+                              </span>
+                              <span className="text-stone-400" aria-hidden>·</span>
+                              <span className="text-sm text-stone-600">{priceTypeLabel}</span>
+                              <span
+                                className="inline-flex items-center gap-1 text-xs text-stone-500 bg-stone-100 border border-stone-200 rounded-md px-2 py-0.5"
+                                title={t('priceLockedHint')}
+                              >
+                                <svg className="w-3.5 h-3.5 text-stone-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                </svg>
+                                {t('pricingLockedBadge')}
+                              </span>
+                            </div>
+                          )
+                        }
+                        return (
+                          <div className="grid grid-cols-5 gap-3 items-stretch">
                           <div className="col-span-2 flex">
                             {(priceTypes[slotKey] ?? offer?.price_type) === 'free' ? (
                               <>
@@ -645,6 +665,8 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
                             })}
                           </div>
                         </div>
+                        )
+                      })()}
                     </div>
                   </div>
                 </div>
@@ -716,6 +738,82 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
 
         </div>
       </form>
+
+      {/* Modale de confirmation avant publication */}
+      <Modal
+        isOpen={publishConfirmModalOpen}
+        onClose={() => {
+          if (publishingOfferId) return
+          setPublishConfirmModalOpen(false)
+          setPublishConfirmOfferId(null)
+          setPublishConfirmIndex(null)
+        }}
+        title={t('publishModal.title')}
+        size="md"
+        titleId="publish-offer-title"
+        disableOverlayClose={!!publishingOfferId}
+        disableEscapeClose={!!publishingOfferId}
+        footer={
+          <div className="flex gap-3 w-full">
+            <Button
+              type="button"
+              variant="muted"
+              onClick={() => {
+                if (publishingOfferId) return
+                setPublishConfirmModalOpen(false)
+                setPublishConfirmOfferId(null)
+                setPublishConfirmIndex(null)
+              }}
+              disabled={!!publishingOfferId}
+              className="flex-1"
+            >
+              {tCommon('cancel')}
+            </Button>
+            <Button
+              type="button"
+              variant="primaryDark"
+              disabled={!!publishingOfferId}
+              loading={!!publishingOfferId}
+              loadingText={tCommon('saving')}
+              onClick={async () => {
+                const form = formRef.current
+                if (!form || publishConfirmOfferId == null || publishConfirmIndex == null) return
+                const offer = sortedOffers[publishConfirmIndex] as CoachOffer | null
+                if (!offer?.id || offer.id !== publishConfirmOfferId) return
+                setPublishingOfferId(offer.id)
+                setPublishError(null)
+                const fd = new FormData()
+                fd.set('_locale', locale)
+                fd.set('_publish_title_fr', (form.querySelector(`[name="offer_${publishConfirmIndex}_title_fr"]`) as HTMLInputElement)?.value?.trim() ?? '')
+                fd.set('_publish_title_en', (form.querySelector(`[name="offer_${publishConfirmIndex}_title_en"]`) as HTMLInputElement)?.value?.trim() ?? '')
+                fd.set('_publish_description_fr', (form.querySelector(`[name="offer_${publishConfirmIndex}_description_fr"]`) as HTMLTextAreaElement)?.value?.trim() ?? '')
+                fd.set('_publish_description_en', (form.querySelector(`[name="offer_${publishConfirmIndex}_description_en"]`) as HTMLTextAreaElement)?.value?.trim() ?? '')
+                fd.set('_publish_price', (form.querySelector(`[name="offer_${publishConfirmIndex}_price"]`) as HTMLInputElement)?.value?.trim() ?? '')
+                const slotKey = offer.id ?? `new-${publishConfirmIndex - sortedOffers.length}`
+                fd.set('_publish_price_type', (priceTypes[slotKey] ?? offer.price_type) ?? '')
+                const result = await publishOffer(offer.id, fd, locale)
+                setPublishingOfferId(null)
+                if ('error' in result && result.error) {
+                  setPublishError(result.error)
+                  return
+                }
+                setPublishedIdsInThisSession((prev) => new Set(prev).add(offer.id))
+                setPublishConfirmModalOpen(false)
+                setPublishConfirmOfferId(null)
+                setPublishConfirmIndex(null)
+                setPublishError(null)
+              }}
+              className="flex-1"
+            >
+              {t('publishModal.confirm')}
+            </Button>
+          </div>
+        }
+      >
+        <div className="px-6 py-4 space-y-3">
+          <p className="text-sm text-stone-600">{t('publishModal.message')}</p>
+        </div>
+      </Modal>
 
       <Modal
         isOpen={archiveModalOpen}

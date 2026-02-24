@@ -381,7 +381,7 @@ Pour les champs bilingues (ex. offres coach : titre et description en français 
 - **Champs titre** : conteneur en `flex`, préfixe avec `px-3 py-2.5` et `items-center`.
 - **Champs description (textarea)** : conteneur en `flex items-stretch` pour que le préfixe prenne toute la hauteur du champ ; préfixe avec `min-h-full flex items-center justify-center` pour que la couleur couvre toute la hauteur.
 - **Disposition** : EN à gauche, FR à droite (grille `grid-cols-2` pour titre et pour description).
-- **Usage** : formulaire des offres coach (`app/[locale]/dashboard/profile/offers/OffersForm.tsx`).
+- **Usage** : formulaire des offres coach (`app/[locale]/dashboard/profile/offers/OffersForm.tsx`). Pour les **offres publiées**, la zone tarification est en lecture seule : ligne compacte (prix + type) + badge « Non modifiable » (icône cadenas) ; le serveur n’envoie pas `price`/`price_type` à l’update. Une modale de confirmation avant publication rappelle que le prix sera non modifiable.
 
 ```tsx
 // Exemple : titre bilingue
