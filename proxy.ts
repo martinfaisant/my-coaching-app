@@ -10,10 +10,12 @@ export async function proxy(request: NextRequest) {
 
   // Skip i18n for API routes and auth callbacks
   const isApiRoute = pathname.startsWith('/api') || pathname.startsWith('/auth')
-  
-  // Handle i18n first (unless it's an API route)
+  // Never run i18n middleware for POST: it can return redirects and break Server Actions
+  // (client expects content-type: text/x-component, not 302/HTML).
+  const isGet = request.method === 'GET' || request.method === 'HEAD'
+
   let response: NextResponse
-  if (isApiRoute) {
+  if (isApiRoute || !isGet) {
     response = NextResponse.next({ request })
   } else {
     response = intlMiddleware(request)
@@ -63,12 +65,7 @@ export async function proxy(request: NextRequest) {
   // Protected routes (dashboard and admin)
   const isProtectedRoute = pathnameWithoutLocale.startsWith('/dashboard') || pathnameWithoutLocale.startsWith('/admin')
 
-  // Never redirect POST requests: they are typically Next.js Server Actions.
-  // Redirecting would return HTML/302 instead of the RSC payload and cause
-  // "An unexpected response was received from the server" on the client.
-  const isGet = request.method === 'GET' || request.method === 'HEAD'
-
-  // If user is not logged in and tries to access protected route
+  // If user is not logged in and tries to access protected route (GET only; never redirect POST/Server Actions)
   if (!user && isProtectedRoute && isGet) {
     const redirectUrl = request.nextUrl.clone()
     redirectUrl.pathname = locale === 'fr' ? '/login' : `/${locale}/login`
