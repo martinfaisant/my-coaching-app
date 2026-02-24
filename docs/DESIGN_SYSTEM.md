@@ -1186,7 +1186,7 @@ Toutes les icônes de sports sont définies dans `components/SportIcons.tsx` et 
 Ce breakpoint `md` est le breakpoint de référence pour les bascules de layout structurantes.
 
 **Usages actuels documentés :**
-- **Calendrier (athlète + coach)** : sous `md`, en-tête sur 2 lignes + 1 semaine en stack ; à partir de `md`, layout desktop (3 semaines, grille 7 colonnes). Détail : `Project_context.md` §4.5.
+- **Calendrier (athlète + coach)** : sous `md`, en-tête sur 2 lignes + bloc totaux de la semaine (volume horaire total + barres par sport, identique au mode étendu desktop) + 1 semaine en stack ; à partir de `md`, layout desktop (3 semaines, grille 7 colonnes). Sur les tuiles entraînement (carte compacte et carte détaillée modale jour), une icône commentaire en fin de ligne métadonnées (durée, distance, etc.) signale qu’un commentaire athlète est présent (`calendar.tile.athleteCommentLabel`). Détail : `Project_context.md` §4.5.
 - **Chat coach (overlay)** : sous `md`, navigation mobile en 2 écrans (liste des conversations puis conversation avec bouton Retour) ; à partir de `md`, layout desktop avec sidebar + panneau conversation.
 - **Page « Trouver mon coach »** (liste des tuiles coach) : bloc Filtres avec recherche par nom ou prénom (temps réel), puis grille Sport coaché / Langue parlée en 2 colonnes à partir de `md` (768px) ; liste des tuiles : 1 colonne par défaut, 2 colonnes à partir de `md`, 3 colonnes à partir de `xl` (1280px). Fichier : `app/[locale]/dashboard/FindCoachSection.tsx`.
 - **Page « My offers »** (offres du coach) : 1 colonne en tout temps (toutes largeurs). Fichier : `app/[locale]/dashboard/profile/offers/OffersForm.tsx`.

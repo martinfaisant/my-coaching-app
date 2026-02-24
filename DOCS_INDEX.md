@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 23 février 2026 (filtre par nom Trouver mon coach – Mode Analyste)
+**Dernière mise à jour :** 23 février 2026 (total de la semaine calendrier mobile – Mode Analyste)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -139,6 +139,11 @@
 - `docs/archive/calendar-mobile-44/calendar-mobile-mockup.html` — Mockup HTML non fonctionnel
 - **Raison :** Feature livrée ; comportement décrit dans **Project_context.md §4.5** et **docs/DESIGN_SYSTEM.md** (guideline §7 Calendrier responsive).
 
+**Total de la semaine sur mobile (calendrier) (archivés 23 février 2026) :**
+- `docs/archive/calendar-mobile-weekly-total/calendar-mobile-weekly-total.md` — Design (besoin, 3 solutions UI, choix Solution A)
+- `docs/archive/calendar-mobile-weekly-total/calendar-mobile-weekly-total-mockups.html` — Mockups HTML (A, B, C)
+- **Raison :** Feature livrée ; bloc totaux (volume horaire total + barres par sport) affiché sur mobile comme en mode étendu desktop. Comportement décrit dans **Project_context.md §4.5** et **docs/DESIGN_SYSTEM.md** §7.
+
 **Vue souscription, résiliation, « En résiliation » (archivés 21 février 2026) :**
 - `docs/archive/subscription-view-end/SUBSCRIPTION_VIEW_AND_END_DESIGN.md` — Brief design + user stories (vue et résiliation)
 - `docs/archive/subscription-view-end/SUBSCRIPTION_VIEW_AND_END_SPEC.md` — Spec technique (Mode Architecte)
@@ -260,8 +265,8 @@
 
 **Fréquence de mise à jour :** À chaque ajout/suppression de documentation
 
-**Dernier scan :** 22 février 2026  
-**Dernier nettoyage :** 22 février 2026
+**Dernier scan :** 23 février 2026  
+**Dernier nettoyage :** 23 février 2026
 
 ### Changements récents :
 
@@ -373,7 +378,7 @@
 | Composants UI, couleurs | `docs/DESIGN_SYSTEM.md` |
 | **i18n / bilingue / traductions / nouvelles features** | **`docs/I18N.md`** |
 | **Workflow Designer / Architecte / Développeur / Analyste** | **`docs/WORKFLOW_PERSONAS.md`** |
-| Calendrier responsive / mobile (issue #44) | `Project_context.md` §4.5, `docs/DESIGN_SYSTEM.md` §7 |
+| Calendrier responsive / mobile (issue #44) / totaux de la semaine sur mobile | `Project_context.md` §4.5, `docs/DESIGN_SYSTEM.md` §7 |
 | Grilles responsive (Trouver mon coach, My offers) | `docs/DESIGN_SYSTEM.md` §7 |
 | Filtre par nom/prénom (Trouver mon coach) | `Project_context.md` (Athlete), `docs/DESIGN_SYSTEM.md` §7 |
 | Tuile archivée / offres archivées / historique souscriptions (issue #43) | `docs/DESIGN_SYSTEM.md` § TileCard (stone, badge) |
