@@ -1,21 +1,45 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { useTranslations } from 'next-intl'
+import { redirect } from 'next/navigation'
+import { getTranslations } from 'next-intl/server'
+import { createClient } from '@/utils/supabase/server'
 import { AuthButtons } from '@/components/AuthButtons'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
-import { 
-  Calendar, 
-  MessageCircle, 
-  Target, 
-  TrendingUp, 
-  Users, 
+import { HomeEmailConfirmedTrigger } from '@/components/HomeEmailConfirmedTrigger'
+import {
+  Calendar,
+  MessageCircle,
+  Target,
+  TrendingUp,
+  Users,
   Award,
   CheckCircle2,
-  Activity
+  Activity,
 } from 'lucide-react'
 
-export default function Home() {
-  const t = useTranslations('landing')
+type HomePageProps = {
+  params: Promise<{ locale: string }>
+  searchParams: Promise<{ emailConfirmed?: string }>
+}
+
+export default async function Home({ params, searchParams }: HomePageProps) {
+  const { locale } = await params
+  const resolvedSearchParams = await searchParams
+  const emailConfirmed = resolvedSearchParams?.emailConfirmed === '1'
+
+  if (emailConfirmed) {
+    const supabase = await createClient()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+    if (user) {
+      const dashboardPath =
+        locale === 'en' ? '/en/dashboard' : '/dashboard'
+      redirect(dashboardPath)
+    }
+  }
+
+  const t = await getTranslations('landing')
   
   const FEATURES = [
     {
@@ -85,6 +109,7 @@ export default function Home() {
   ] as const
   return (
     <div className="min-h-screen bg-background">
+      <HomeEmailConfirmedTrigger showEmailConfirmedModal={emailConfirmed} />
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-stone-200 bg-background/95 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">

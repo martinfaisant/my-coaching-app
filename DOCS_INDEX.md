@@ -42,6 +42,16 @@
 - **Utiliser pour :** Récupérer le Body à coller dans Supabase pour chaque type d’email (Confirm signup, Magic Link, Reset Password, etc.).
 - **Dernière mise à jour :** 26 février 2026
 
+### **docs/auth-signup-success-US.md** (feature en design)
+- **Contenu :** User stories – Succès inscription (état succès modale), email renvoyé, compte existant → connexion avec message + email pré-rempli. Référence aux mockups et au design system.
+- **Utiliser pour :** Implémentation (Mode Développeur) avec la spec **docs/ARCHI_AUTH_SIGNUP_SUCCESS.md** ; mockups : `docs/auth-signup-success-mockup.html`, `docs/auth-login-existing-account-mockup.html`.
+- **Dernière mise à jour :** 26 février 2026
+
+### **docs/ARCHI_AUTH_SIGNUP_SUCCESS.md**
+- **Contenu :** Spec technique – Backend distingue « nouveau compte » vs « email renvoyé » (identities vide), SignupState étendu (successType, email), i18n, table des fichiers, pas de changement BDD/RLS.
+- **Utiliser pour :** Implémentation Mode Développeur (actions signup, LoginForm, page login, messages).
+- **Dernière mise à jour :** 26 février 2026
+
 ---
 
 ## 🛠️ Documentation Patterns & Conventions
@@ -326,6 +336,13 @@
 **Dernier nettoyage :** 26 février 2026 (ménage doc emails : dossier email-templates, archivage design-email-template)
 
 ### Changements récents :
+
+✅ **26 février 2026 – Spec Architecte succès inscription (backend + front) :**
+- **Contenu :** Backend distingue nouveau compte vs email renvoyé via `data.user.identities` (Supabase) ; SignupState étendu (`successType`, `email`) ; pas d’insert profil si identities vide ; i18n (accountCreatedSuccess FR, confirmationEmailResent FR/EN). Fichiers : `app/[locale]/login/actions.ts`, messages, `LoginForm`, page login. Voir **docs/ARCHI_AUTH_SIGNUP_SUCCESS.md**.
+
+✅ **26 février 2026 – Succès inscription et compte existant (Mode Designer) :**
+- **Besoin :** Après création de compte, afficher un état succès dédié dans la modale ; gérer « email renvoyé » (compte non validé) et « compte existant validé » → basculer sur connexion avec message + email pré-rempli.
+- **Livrables :** User stories `docs/auth-signup-success-US.md` (US 1–4), mockups HTML `docs/auth-signup-success-mockup.html` et `docs/auth-login-existing-account-mockup.html`. Référence DOCS_INDEX.
 
 ✅ **26 février 2026 – Ménage documentation emails (Mode Analyste) :**
 - **Livraison :** Centralisation des templates d’emails Supabase dans un même dossier **docs/email-templates/** (confirm-signup.html + README index). Guide principal reste **docs/AUTH_EMAIL_TEMPLATES.md** (sujet, i18n, variables, dépannage) avec renvoi vers le dossier. Archivage de **docs/design-email-template/** (mockups A/B/C, README design) dans **docs/archive/design-email-template/** — template B retenu, référence courante : **AUTH_EMAIL_TEMPLATES.md** et **docs/email-templates/**.

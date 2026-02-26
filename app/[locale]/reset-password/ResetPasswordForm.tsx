@@ -24,7 +24,20 @@ export function ResetPasswordForm() {
     const checkSession = async () => {
       const supabase = createClient()
 
-      // Vérifier si l'URL contient des hash fragments (token de reset)
+      // PKCE : échanger le code en query string contre une session
+      const params = new URLSearchParams(window.location.search)
+      const code = params.get('code')
+      if (code) {
+        const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
+        if (!exchangeError) {
+          // Nettoyer l'URL (le code n'est utilisable qu'une fois)
+          window.history.replaceState({}, '', window.location.pathname)
+          setIsValidSession(true)
+          return
+        }
+      }
+
+      // Vérifier si l'URL contient des hash fragments (flux implicite)
       const hash = window.location.hash
       const hasHash = hash && (hash.includes('access_token') || hash.includes('type=recovery'))
 

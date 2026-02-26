@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mockup – Connexion avec message « compte existant »</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, sans-serif; background: #fafaf9; padding: 2rem; margin: 0; }
+    .modal-content { max-width: 28rem; margin: 0 auto; background: white; border-radius: 1rem; padding: 2rem; box-shadow: 0 4px 24px rgba(0,0,0,.08); border: 2px solid #627e59; }
+    .header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 0.5rem; }
+    h2 { font-size: 1.25rem; font-weight: 600; color: #1c1917; text-align: center; flex: 1; margin: 0; }
+    .close-btn { flex: 1; display: flex; justify-content: flex-end; }
+    .close-btn button { background: none; border: none; padding: 0.375rem; cursor: pointer; color: #57534e; }
+    .info-banner { background: #f0f4ef; border: 1px solid #627e59; color: #1c1917; font-size: 0.875rem; padding: 0.75rem 1rem; border-radius: 0.5rem; margin-bottom: 1.5rem; }
+    .label { display: block; font-size: 0.875rem; font-weight: 500; color: #44403c; margin-bottom: 0.5rem; }
+    input { width: 100%; padding: 0.625rem 1rem; border: 1px solid #d6d3d1; border-radius: 0.5rem; font-size: 0.875rem; }
+    input:focus { outline: none; box-shadow: 0 0 0 2px #627e59; }
+    .field { margin-bottom: 1rem; }
+    .btn { display: block; width: 100%; padding: 0.625rem 1rem; border-radius: 0.75rem; font-size: 0.875rem; font-weight: 500; text-align: center; cursor: pointer; border: none; margin-top: 0.5rem; }
+    .btn-primary { background: #627e59; color: white; }
+    .btn-muted { background: transparent; color: #78716c; }
+    .btn-muted:hover { color: #44403c; }
+  </style>
+</head>
+<body>
+  <p style="color:#78716c; font-size:0.75rem; margin-bottom:1rem;">Design system – Vue Connexion dans la modale après tentative d’inscription avec « compte déjà existant et validé ». Message explicite + email pré-rempli.</p>
+
+  <div class="modal-content">
+    <div class="header">
+      <div style="flex:1"></div>
+      <h2>Connexion</h2>
+      <div class="close-btn"><button type="button" aria-label="Fermer">✕</button></div>
+    </div>
+    <p style="text-align:center; font-size:0.875rem; color:#78716c; margin:0 0 1rem;">Entrez vos identifiants pour accéder à votre espace</p>
+
+    <div class="info-banner" role="alert">
+      Un compte existe déjà avec cet email. Connectez-vous avec votre mot de passe.
+    </div>
+
+    <form class="space-y-5">
+      <div class="field">
+        <label class="label" for="email">Email</label>
+        <input id="email" name="email" type="email" value="marie@exemple.com" autocomplete="email" />
+      </div>
+      <div class="field">
+        <label class="label" for="password">Mot de passe</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" placeholder="••••••••" />
+      </div>
+      <button type="submit" class="btn btn-primary">Se connecter</button>
+      <button type="button" class="btn btn-muted">Mot de passe oublié</button>
+    </form>
+  </div>
+</body>
+</html>

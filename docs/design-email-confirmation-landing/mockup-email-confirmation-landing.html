@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mockup – Atterrissage après confirmation email</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            'palette-forest-darker': '#506648',
+            'palette-forest-light': '#8e9856',
+            'palette-danger': '#c0564b',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .modal-overlay { background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); }
+    .shadow-modal { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
+  </style>
+</head>
+<body class="bg-stone-50 text-stone-900 antialiased">
+  <div class="max-w-4xl mx-auto py-12 px-4">
+    <h1 class="text-2xl font-bold text-stone-900 mb-2">Mockup – Atterrissage après confirmation email</h1>
+    <p class="text-stone-600 mb-8">Trois options UI. La page d’accueil est schématisée (hero + contenu). Design system : tokens palette-forest-*, stone-*, Modal sm/md, Button, Input.</p>
+
+    <!-- ========== OPTION A ========== -->
+    <section class="mb-16">
+      <h2 class="text-lg font-bold text-stone-900 mb-4 border-b border-stone-200 pb-2">Option A – Modale « Email validé » + bloc connexion inline sous la page</h2>
+      <p class="text-sm text-stone-600 mb-4">Redirection <code class="bg-stone-200 px-1 rounded">/?emailConfirmed=1</code>. Modale sm avec message ; en dessous, carte avec formulaire de connexion.</p>
+
+      <!-- Simulated hero -->
+      <div class="rounded-t-xl border border-stone-200 border-b-0 bg-gradient-to-b from-green-50 to-white p-6">
+        <div class="h-8 w-48 bg-stone-200 rounded mb-4"></div>
+        <div class="h-6 w-64 bg-stone-100 rounded mb-2"></div>
+        <div class="h-6 w-72 bg-stone-100 rounded mb-6"></div>
+        <div class="flex gap-3">
+          <div class="h-10 w-32 bg-palette-forest-dark rounded-lg"></div>
+          <div class="h-10 w-24 border-2 border-stone-200 rounded-lg"></div>
+        </div>
+      </div>
+
+      <!-- Overlay + Modal (Option A) -->
+      <div class="relative">
+        <div class="modal-overlay fixed inset-0 z-[90]" style="left:0;right:0;top:0;bottom:0; position: fixed;"></div>
+        <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 pointer-events-none">
+          <div class="w-full max-w-[384px] bg-white rounded-2xl shadow-modal border border-stone-200 overflow-hidden pointer-events-auto">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-stone-200">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-palette-forest-dark/10 flex items-center justify-center">
+                  <svg class="w-5 h-5 text-palette-forest-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                </div>
+                <h3 class="text-lg font-semibold text-stone-900">Email validé</h3>
+              </div>
+              <button type="button" class="p-1.5 rounded-lg hover:bg-stone-100 text-stone-500" aria-label="Fermer">✕</button>
+            </div>
+            <div class="px-6 py-4">
+              <p class="text-sm text-stone-600">Vous pouvez vous connecter.</p>
+              <div class="mt-4 flex justify-end">
+                <button type="button" class="px-4 py-2.5 rounded-lg border border-stone-300 text-stone-700 hover:bg-stone-100 font-medium text-sm">Fermer</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bloc connexion "en dessous" -->
+      <div class="rounded-b-xl border border-stone-200 bg-white p-6 shadow-sm -mt-px">
+        <h3 class="text-base font-semibold text-stone-800 mb-4">Se connecter</h3>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-stone-700 mb-2">Email</label>
+            <input type="email" placeholder="vous@exemple.com" class="w-full px-4 py-2.5 rounded-lg border border-stone-300 bg-white text-stone-900 placeholder-stone-400 focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-stone-700 mb-2">Mot de passe</label>
+            <input type="password" placeholder="••••••••" class="w-full px-4 py-2.5 rounded-lg border border-stone-300 bg-white text-stone-900 placeholder-stone-400 focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent" />
+          </div>
+          <button type="button" class="w-full py-2.5 rounded-lg bg-palette-forest-dark text-white font-semibold hover:bg-palette-forest-darker">Se connecter</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== OPTION B ========== -->
+    <section class="mb-16">
+      <h2 class="text-lg font-bold text-stone-900 mb-4 border-b border-stone-200 pb-2">Option B – Modale avec message + formulaire dans la modale</h2>
+      <p class="text-sm text-stone-600 mb-4">Tout dans une modale md : message « Email validé » + champs connexion (corps + footer).</p>
+
+      <div class="relative rounded-xl border border-stone-200 bg-stone-100/50 p-8 min-h-[320px]">
+        <div class="modal-overlay rounded-xl absolute inset-0 z-[90]"></div>
+        <div class="absolute inset-0 z-[100] flex items-center justify-center p-4">
+          <div class="w-full max-w-[448px] bg-white rounded-2xl shadow-modal border border-stone-200 overflow-hidden">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-stone-200">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-palette-forest-dark/10 flex items-center justify-center">
+                  <svg class="w-5 h-5 text-palette-forest-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                </div>
+                <h3 class="text-lg font-semibold text-stone-900">Email validé</h3>
+              </div>
+              <button type="button" class="p-1.5 rounded-lg hover:bg-stone-100 text-stone-500" aria-label="Fermer">✕</button>
+            </div>
+            <div class="px-6 py-4">
+              <p class="text-sm text-stone-600 mb-6">Vous pouvez vous connecter avec vos identifiants ci-dessous.</p>
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-sm font-medium text-stone-700 mb-2">Email</label>
+                  <input type="email" placeholder="vous@exemple.com" class="w-full px-4 py-2.5 rounded-lg border border-stone-300 bg-white text-stone-900 placeholder-stone-400 focus:ring-2 focus:ring-palette-forest-dark" />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-stone-700 mb-2">Mot de passe</label>
+                  <input type="password" placeholder="••••••••" class="w-full px-4 py-2.5 rounded-lg border border-stone-300 bg-white text-stone-900 placeholder-stone-400 focus:ring-2 focus:ring-palette-forest-dark" />
+                </div>
+              </div>
+            </div>
+            <div class="px-6 py-4 border-t border-stone-200 bg-stone-50">
+              <button type="button" class="w-full py-2.5 rounded-lg bg-palette-forest-dark text-white font-semibold hover:bg-palette-forest-darker">Se connecter</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== OPTION C ========== -->
+    <section class="mb-8">
+      <h2 class="text-lg font-bold text-stone-900 mb-4 border-b border-stone-200 pb-2">Option C – Modale succès puis ouverture de la LoginModal existante</h2>
+      <p class="text-sm text-stone-600 mb-4">Première modale sm avec message + bouton « Se connecter ». Au clic → fermeture puis ouverture de la LoginModal (connexion / inscription) déjà utilisée sur la home.</p>
+
+      <div class="relative rounded-xl border border-stone-200 bg-stone-100/50 p-8 min-h-[240px]">
+        <div class="modal-overlay rounded-xl absolute inset-0 z-[90]"></div>
+        <div class="absolute inset-0 z-[100] flex items-center justify-center p-4">
+          <div class="w-full max-w-[384px] bg-white rounded-2xl shadow-modal border border-stone-200 overflow-hidden">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-stone-200">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-palette-forest-dark/10 flex items-center justify-center">
+                  <svg class="w-5 h-5 text-palette-forest-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                </div>
+                <h3 class="text-lg font-semibold text-stone-900">Email validé</h3>
+              </div>
+              <button type="button" class="p-1.5 rounded-lg hover:bg-stone-100 text-stone-500" aria-label="Fermer">✕</button>
+            </div>
+            <div class="px-6 py-6">
+              <p class="text-sm text-stone-600 mb-6">Vous pouvez vous connecter.</p>
+              <button type="button" class="w-full py-2.5 rounded-lg bg-palette-forest-dark text-white font-semibold hover:bg-palette-forest-darker">Se connecter</button>
+              <p class="text-xs text-stone-500 mt-3 text-center">→ Au clic, cette modale se ferme et la LoginModal (Connexion / Inscription) s’ouvre.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <p class="text-xs text-stone-500">Mockup statique, non fonctionnel. Référence : <code>docs/design-email-confirmation-landing/DESIGN_EMAIL_CONFIRMATION_LANDING.md</code></p>
+  </div>
+</body>
+</html>

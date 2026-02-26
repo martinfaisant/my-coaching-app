@@ -54,6 +54,10 @@
     "alreadyHaveAccount": "Vous avez déjà un compte ?",
     "noAccountYet": "Pas encore de compte ?",
     "backToLogin": "Retour à la connexion",
+    "successTitleAccountCreated": "Compte créé",
+    "successTitleEmailResent": "Email envoyé",
+    "successTitleResetLinkSent": "Lien envoyé",
+    "successCheckSpam": "Pensez à vérifier les spams si vous ne voyez pas l'email.",
     "resetInstructions": "Entrez votre email pour recevoir un lien de réinitialisation",
     "invalidOrExpiredLink": "Lien invalide ou expiré",
     "redirectingToLogin": "Redirection vers la page de connexion...",
@@ -61,6 +65,8 @@
     "newPasswordTitle": "Nouveau mot de passe",
     "newPasswordSubtitle": "Définissez votre nouveau mot de passe",
     "setNewPasswordButton": "Définir le nouveau mot de passe",
+    "emailValidatedTitle": "Email validé",
+    "emailValidatedMessage": "Vous pouvez vous connecter.",
     "errors": {
       "notAuthenticated": "Non connecté.",
       "accessDenied": "Accès refusé.",
@@ -74,8 +80,18 @@
       "passwordMinLength": "Le mot de passe doit contenir au moins 6 caractères.",
       "sessionExpired": "Session expirée. Veuillez réessayer.",
       "resetLinkSent": "Lien de réinitialisation envoyé. Vérifiez votre email.",
+      "resetLinkSentLong": "Un lien de réinitialisation a été envoyé à votre adresse email. Consultez votre boîte mail et cliquez sur le lien pour définir un nouveau mot de passe.",
+      "emailRequiredOnly": "L'adresse email est requise.",
+      "sessionExpiredReset": "Session expirée. Veuillez recommencer la réinitialisation.",
+      "passwordUpdatedSuccess": "Mot de passe mis à jour avec succès.",
       "rateLimitExceeded": "Trop de demandes d'email ont été envoyées. Veuillez patienter quelques minutes avant de réessayer.",
-      "userExists": "Un compte existe déjà avec cet email."
+      "userExists": "Un compte existe déjà avec cet email.",
+      "accountCreatedSuccess": "Compte créé. Consultez votre boîte mail pour confirmer votre adresse, puis connectez-vous.",
+      "confirmationEmailResent": "Un nouvel email de confirmation a été envoyé à {email}. Consultez votre boîte mail.",
+      "profileCreationError": "Erreur lors de la création du profil.",
+      "signupGenericError": "Une erreur s'est produite lors de la création de votre compte.",
+      "accountExistsLoginMessage": "Un compte existe déjà avec cet email. Connectez-vous avec votre mot de passe.",
+      "emailNotConfirmed": "Votre adresse email n'a pas encore été confirmée. Vous devriez avoir reçu un email de confirmation ; consultez votre boîte mail (et les spams). Si vous ne l'avez pas reçu, vous pouvez en redemander un en recommençant le processus de création de compte (réinscrivez-vous avec la même adresse)."
     }
   },
   "navigation": {

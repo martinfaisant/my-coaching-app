@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mockup – État succès inscription (modale)</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, sans-serif; background: #fafaf9; padding: 2rem; margin: 0; }
+    .modal-content { max-width: 28rem; margin: 0 auto; background: white; border-radius: 1rem; padding: 2rem; box-shadow: 0 4px 24px rgba(0,0,0,.08); border: 2px solid #627e59; }
+    .success-icon { width: 3rem; height: 3rem; margin: 0 auto 1rem; border-radius: 50%; background: #f0f4ef; color: #627e59; display: flex; align-items: center; justify-content: center; }
+    .success-icon svg { width: 1.75rem; height: 1.75rem; }
+    h2 { font-size: 1.25rem; font-weight: 600; color: #1c1917; text-align: center; margin: 0 0 0.5rem; }
+    .subtitle { font-size: 0.875rem; color: #57534e; text-align: center; margin: 0 0 1.5rem; line-height: 1.5; }
+    .btn { display: block; width: 100%; padding: 0.625rem 1rem; border-radius: 0.75rem; font-size: 0.875rem; font-weight: 500; text-align: center; cursor: pointer; border: none; }
+    .btn-primary { background: #627e59; color: white; }
+    .btn-primary:hover { background: #506648; }
+    .note { font-size: 0.75rem; color: #78716c; text-align: center; margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <p style="color:#78716c; font-size:0.75rem; margin-bottom:1rem;">Design system – Contenu de la modale après succès inscription (cas 1 : nouveau compte). Variante « email renvoyé » : même mise en page, texte différent.</p>
+
+  <div class="modal-content">
+    <div class="success-icon" aria-hidden="true">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+      </svg>
+    </div>
+    <h2>Compte créé</h2>
+    <p class="subtitle">
+      Un email de confirmation vous a été envoyé. Consultez votre boîte mail et cliquez sur le lien pour activer votre compte, puis connectez-vous.
+    </p>
+    <button type="button" class="btn btn-primary">Fermer</button>
+    <p class="note">Pensez à vérifier les spams si vous ne voyez pas l’email.</p>
+  </div>
+
+  <div style="margin-top:2rem; padding:1rem; background:#fdf2f1; border-radius:0.5rem; max-width:28rem; margin-left:auto; margin-right:auto;">
+    <strong style="color:#9e3b31;">Cas 2 – Email renvoyé (compte existant non validé)</strong>
+    <p style="font-size:0.875rem; color:#57534e; margin:0.5rem 0 0;">Même écran, titre optionnel « Email envoyé » et texte : « Un nouvel email de confirmation a été envoyé à [email]. Consultez votre boîte mail. »</p>
+  </div>
+</body>
+</html>
