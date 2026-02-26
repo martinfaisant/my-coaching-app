@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { headers } from 'next/headers'
 import { handleSignupError, handleResetPasswordError, handleLoginError } from '@/lib/authErrors'
+import { getExistingAuthUserConfirmationStatus } from '@/lib/authHelpers'
 import { getTranslations, getLocale } from 'next-intl/server'
 
 export type LoginState = {
@@ -109,9 +110,20 @@ export async function signup(
   }
 
   if (data?.user) {
-    // Compte existant non confirmé : Supabase renvoie succès avec identities vide et renvoie l'email
-    const isExistingUnconfirmed = !data.user.identities?.length
-    if (isExistingUnconfirmed) {
+    // Compte existant : Supabase renvoie succès avec identities vide. Différencier non confirmé vs déjà confirmé.
+    const isExistingUser = !data.user.identities?.length
+    if (isExistingUser) {
+      const admin = createAdminClient()
+      const status = await getExistingAuthUserConfirmationStatus(admin, email)
+      // Déjà confirmé → inviter à se connecter (ou réinitialiser le mot de passe)
+      if (status?.emailConfirmed) {
+        return {
+          error: t('userExists'),
+          userExists: true,
+          existingEmail: email,
+        }
+      }
+      // Non confirmé ou non trouvé (ex. >100 users) → message "email de confirmation renvoyé"
       return {
         success: t('confirmationEmailResent', { email }),
         successType: 'emailResent',
