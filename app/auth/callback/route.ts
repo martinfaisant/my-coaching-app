@@ -47,6 +47,7 @@ export async function GET(request: Request) {
           next?.startsWith('/') ? next : `${pathPrefix}/dashboard`,
           origin
         )
+      )
     }
   }
 
