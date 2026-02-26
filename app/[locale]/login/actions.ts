@@ -84,7 +84,10 @@ export async function signup(_prevState: SignupState, formData: FormData) {
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    options: { emailRedirectTo: redirectTo },
+    options: {
+      emailRedirectTo: redirectTo,
+      data: { locale: locale === 'en' ? 'en' : 'fr' },
+    },
   })
 
   if (error) {
