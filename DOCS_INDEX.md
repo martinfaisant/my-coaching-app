@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 26 février 2026 (ménage doc emails : templates Supabase centralisés dans docs/email-templates/, design-email-template archivé)
+**Dernière mise à jour :** 26 février 2026 (Mode Analyste : features auth-signup success et email confirmation landing livrées ; docs de feature archivées)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -40,16 +40,6 @@
 ### **docs/email-templates/** (dossier)
 - **Contenu :** Templates HTML des emails Supabase (confirm-signup.html, etc.), index dans README.md. Un seul dossier pour tous les types d’emails pour faciliter le suivi.
 - **Utiliser pour :** Récupérer le Body à coller dans Supabase pour chaque type d’email (Confirm signup, Magic Link, Reset Password, etc.).
-- **Dernière mise à jour :** 26 février 2026
-
-### **docs/auth-signup-success-US.md** (feature en design)
-- **Contenu :** User stories – Succès inscription (état succès modale), email renvoyé, compte existant → connexion avec message + email pré-rempli. Référence aux mockups et au design system.
-- **Utiliser pour :** Implémentation (Mode Développeur) avec la spec **docs/ARCHI_AUTH_SIGNUP_SUCCESS.md** ; mockups : `docs/auth-signup-success-mockup.html`, `docs/auth-login-existing-account-mockup.html`.
-- **Dernière mise à jour :** 26 février 2026
-
-### **docs/ARCHI_AUTH_SIGNUP_SUCCESS.md**
-- **Contenu :** Spec technique – Backend distingue « nouveau compte » vs « email renvoyé » (identities vide), SignupState étendu (successType, email), i18n, table des fichiers, pas de changement BDD/RLS.
-- **Utiliser pour :** Implémentation Mode Développeur (actions signup, LoginForm, page login, messages).
 - **Dernière mise à jour :** 26 février 2026
 
 ---
@@ -201,6 +191,16 @@
 - `docs/archive/design-email-template/` — Mockups HTML (A hero, B minimal, C marketing), README_DESIGN_EMAIL_TEMPLATE.md (besoin, 3 options, composants, images libres).
 - **Raison :** Template B retenu et intégré dans **docs/email-templates/confirm-signup.html** ; guide dans **docs/AUTH_EMAIL_TEMPLATES.md**. Référence courante : **docs/email-templates/** et **AUTH_EMAIL_TEMPLATES.md**.
 
+**Succès inscription et compte existant (archivés 26 février 2026) :**
+- `docs/archive/auth-signup-success/auth-signup-success-US.md` — User stories (état succès modale, email renvoyé, compte existant → connexion avec message + email pré-rempli).
+- `docs/archive/auth-signup-success/ARCHI_AUTH_SIGNUP_SUCCESS.md` — Spec technique (identities, SignupState successType/email, i18n, pas de changement BDD/RLS).
+- `docs/archive/auth-signup-success/auth-signup-success-mockup.html`, `auth-login-existing-account-mockup.html` — Mockups HTML.
+- **Raison :** Feature livrée ; comportement décrit dans **Project_context.md §4.1** (Signup success). Référence courante : **Project_context.md §4.1**.
+
+**Atterrissage après confirmation email (archivés 26 février 2026) :**
+- `docs/archive/design-email-confirmation-landing/` — DESIGN_EMAIL_CONFIRMATION_LANDING.md, USER_STORIES_EMAIL_CONFIRMATION_LANDING.md, SPEC_EMAIL_CONFIRMATION_LANDING.md, mockup-email-confirmation-landing.html (Option B : modale « Email validé » avec formulaire connexion).
+- **Raison :** Feature livrée ; callback redirige vers `/[locale]/?emailConfirmed=1`, modale EmailValidatedModal sur la page d’accueil, erreur → login?error=confirmation_failed. Comportement décrit dans **Project_context.md §4.1** (Email confirmation landing) et **docs/DESIGN_SYSTEM.md** § Modal (EmailValidatedModal, HomeEmailConfirmedTrigger).
+
 **Séparation pages dashboard – find-coach / Mes athlètes (archivé 23 février 2026) :**
 - `docs/archive/dashboard-pages-separation/SPEC_ARCHI_DASHBOARD_PAGES_SEPARATION.md` — Spec architecture (redirections depuis /dashboard, pages dédiées, skeletons)
 - **Raison :** Feature livrée ; comportement décrit dans **Project_context.md §4.0** (Dashboard entry point) et **docs/DESIGN_SYSTEM.md** §7 (pages Trouver mon coach, Mes athlètes).
@@ -333,9 +333,14 @@
 **Fréquence de mise à jour :** À chaque ajout/suppression de documentation
 
 **Dernier scan :** 26 février 2026  
-**Dernier nettoyage :** 26 février 2026 (ménage doc emails : dossier email-templates, archivage design-email-template)
+**Dernier nettoyage :** 26 février 2026 (archivage auth-signup-success et design-email-confirmation-landing)
 
 ### Changements récents :
+
+✅ **26 février 2026 – Auth signup success et email confirmation landing (Mode Analyste) :**
+- **Livraison :** (1) Succès inscription : écran succès dédié (nouveau compte / email renvoyé), compte existant validé → connexion avec message + email pré-rempli (modale et page login) ; backend via `data.user.identities`. (2) Email confirmation landing : callback → page d’accueil `?emailConfirmed=1`, modale « Email validé » avec formulaire de connexion (Option B), erreur callback → `/login?error=confirmation_failed`.
+- **Mises à jour doc :** Project_context.md §4.1 (Signup success, Email confirmation landing), docs/DESIGN_SYSTEM.md (EmailValidatedModal, HomeEmailConfirmedTrigger), docs/I18N.md (auth, auth.errors).
+- **Archivage :** docs auth-signup-success (US, ARCHI, mockups) → docs/archive/auth-signup-success/ ; docs/design-email-confirmation-landing/ → docs/archive/design-email-confirmation-landing/. Référence courante : **Project_context.md §4.1**, **docs/DESIGN_SYSTEM.md** § Modal.
 
 ✅ **26 février 2026 – Spec Architecte succès inscription (backend + front) :**
 - **Contenu :** Backend distingue nouveau compte vs email renvoyé via `data.user.identities` (Supabase) ; SignupState étendu (`successType`, `email`) ; pas d’insert profil si identities vide ; i18n (accountCreatedSuccess FR, confirmationEmailResent FR/EN). Fichiers : `app/[locale]/login/actions.ts`, messages, `LoginForm`, page login. Voir **docs/ARCHI_AUTH_SIGNUP_SUCCESS.md**.
@@ -506,6 +511,7 @@
 | Vision produit, rôles | `Project_context.md` |
 | Composants UI, couleurs | `docs/DESIGN_SYSTEM.md` |
 | **i18n / bilingue / traductions / nouvelles features** | **`docs/I18N.md`** |
+| Succès inscription / email validé (modale, landing) | `Project_context.md` §4.1, `docs/DESIGN_SYSTEM.md` § Modal |
 | **Workflow Designer / Architecte / Développeur / Analyste** | **`docs/WORKFLOW_PERSONAS.md`** |
 | Calendrier responsive / mobile (issue #44) / totaux de la semaine sur mobile | `Project_context.md` §4.5, `docs/DESIGN_SYSTEM.md` §7 |
 | Indicateur commentaire athlète sur tuile calendrier | `Project_context.md` §4.5, `docs/DESIGN_SYSTEM.md` §7 |

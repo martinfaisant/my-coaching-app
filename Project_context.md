@@ -123,6 +123,8 @@ The pages **« Trouver mon coach »** and **« Mes athlètes »** are **separate
 - Email/password (Supabase Auth)
 - Role selection at signup (athlete or coach)
 - Confirmation email (Supabase template) : bilingue FR/EN via metadata locale au signup ; en-tête avec logo et nom « My Sport Ally ». Voir `docs/AUTH_EMAIL_TEMPLATES.md`.
+- **Signup success (modale et page login)** : après création de compte, écran succès dédié sans formulaire (titre + message selon le cas) : **nouveau compte** (« Compte créé », inviter à confirmer l’email) ou **email de confirmation renvoyé** (compte existant non validé, message avec email). **Compte existant déjà validé** : bascule sur la vue Connexion dans la même modale/page avec message d’information et email pré-rempli. Backend distingue via `data.user.identities` (vide = email renvoyé) ; pas d’insert profil si email renvoyé.
+- **Email confirmation landing** : après clic sur « Confirmer mon email » dans l’email, le callback auth redirige vers la **page d’accueil** `/[locale]/?emailConfirmed=1` (locale depuis user_metadata). Si une session est déjà créée → redirection vers le dashboard. Sinon, la page d’accueil affiche une **modale « Email validé »** (Option B) avec message et formulaire de connexion (email, mot de passe, Se connecter) ; connexion réussie → fermeture modale et redirection dashboard. En cas d’erreur du callback (lien expiré ou déjà utilisé) → redirection vers `/[locale]/login?error=confirmation_failed` avec message d’erreur. Composants : `EmailValidatedModal`, `HomeEmailConfirmedTrigger` ; voir `docs/DESIGN_SYSTEM.md` § EmailValidatedModal.
 - Password reset
 - No OAuth in MVP (Strava is integration-only, not login)
 

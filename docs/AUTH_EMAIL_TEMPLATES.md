@@ -31,6 +31,8 @@ Le lien dans l’email de réinitialisation envoie l’utilisateur vers **`{Site
 - `https://monsite.com/en/reset-password`
 - En dev : `http://localhost:3000/fr/reset-password`, `http://localhost:3000/en/reset-password`
 
+**Environnements preview (Vercel) :** l’app utilise `VERCEL_URL` pour construire l’URL de redirection envoyée à Supabase, donc chaque déploiement preview envoie la bonne URL. Pour que le lien « Réinitialiser le mot de passe » redirige bien vers la page reset-password (et non vers la page d’accueil), il faut que l’URL du preview soit dans la liste **Redirect URLs**. Comme l’URL change à chaque preview (ex. `https://my-coaching-app-xxx-git-preview-....vercel.app`), tu peux soit ajouter chaque URL manuellement, soit utiliser un **wildcard** dans Supabase, par exemple : `https://*.vercel.app/fr/reset-password` et `https://*.vercel.app/en/reset-password` (si ton projet le permet).
+
 L’app gère à la fois le flux **PKCE** (`?code=...` dans l’URL) et le flux **implicite** (hash `#access_token=...&type=recovery`).
 
 ---

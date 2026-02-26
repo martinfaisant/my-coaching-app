@@ -1,7 +1,7 @@
 # 🎨 Design System
 
-**Version :** 1.3  
-**Dernière mise à jour :** 24 février 2026 (sidebar : tuile Profil état sélectionné + centrage mode replié)
+**Version :** 1.4  
+**Dernière mise à jour :** 26 février 2026 (modales auth : EmailValidatedModal, HomeEmailConfirmedTrigger)
 
 ---
 
@@ -1017,6 +1017,16 @@ const [isOpen, setIsOpen] = useState(false)
   - Footer optionnel (fixe, ne scroll pas)
 ```
 
+#### Modales auth dérivées
+
+- **EmailValidatedModal** (`components/EmailValidatedModal.tsx`) : modale affichée après confirmation d’email (landing avec `?emailConfirmed=1`). Taille `md`, titre i18n « Email validé », message « Vous pouvez vous connecter », formulaire de connexion (email, mot de passe, bouton Se connecter) dans la modale. Utilise `Modal`, `Input`, `Button`, action `login` ; fermeture par overlay/Escape. i18n : `auth.emailValidatedTitle`, `auth.emailValidatedMessage`.
+- **HomeEmailConfirmedTrigger** (`components/HomeEmailConfirmedTrigger.tsx`) : composant client rendu sur la page d’accueil ; reçoit `showEmailConfirmedModal={true}` quand l’URL contient `emailConfirmed=1` ; ouvre `EmailValidatedModal` à l’affichage. Utilisé par `app/[locale]/page.tsx`.
+
+```tsx
+// Page d'accueil : après callback confirmation email
+<HomeEmailConfirmedTrigger showEmailConfirmedModal={emailConfirmed} />
+```
+
 ---
 
 ### LanguageSwitcher
@@ -1257,7 +1267,7 @@ Actuellement, utiliser un span custom :
 ### Fichiers clés
 
 - **Tokens couleurs** : `tailwind.config.ts`, `app/globals.css`
-- **Composants** : `components/Button.tsx`, `components/Input.tsx`, `components/Textarea.tsx`, `components/Badge.tsx`, `components/SportTileSelectable.tsx`, `components/ActivityTile.tsx`, `components/Modal.tsx`, `components/ChatAthleteListItem.tsx`, `components/ChatConversationSidebar.tsx`
+- **Composants** : `components/Button.tsx`, `components/Input.tsx`, `components/Textarea.tsx`, `components/Badge.tsx`, `components/SportTileSelectable.tsx`, `components/ActivityTile.tsx`, `components/Modal.tsx`, `components/EmailValidatedModal.tsx`, `components/HomeEmailConfirmedTrigger.tsx`, `components/ChatAthleteListItem.tsx`, `components/ChatConversationSidebar.tsx`
 - **Sports** : `lib/sportStyles.ts`, `lib/sportsOptions.ts`, `components/SportIcons.tsx`
 - **Design system page** : `app/dashboard/admin/design-system/page.tsx`
 

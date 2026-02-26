@@ -30,7 +30,6 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
   const [signupRole, setSignupRole] = useState<SignupRole>('athlete')
   const [showForgotPassword, setShowForgotPassword] = useState(false)
   const [prefilledEmail, setPrefilledEmail] = useState<string>('')
-  const [existingAccountMessage, setExistingAccountMessage] = useState(false)
   const emailInputRef = useRef<HTMLInputElement>(null)
   const tErrors = useTranslations('auth.errors')
 
@@ -85,15 +84,6 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
         <p className="text-stone-400 text-sm text-center mb-8">
           {t('enterCredentials')}
         </p>
-
-        {existingAccountMessage && (
-          <div
-            className="mb-6 rounded-lg border border-palette-forest-dark bg-palette-forest-light p-4 text-sm text-stone-900"
-            role="alert"
-          >
-            {tErrors('accountExistsLoginMessage')}
-          </div>
-        )}
 
         <form action={loginAction} className="space-y-5">
           <Input
@@ -292,6 +282,7 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
           </div>
         </div>
         <Input
+          key={signupState?.existingEmail ? `signup-email-${signupState.existingEmail}` : 'signup-email'}
           id="modal-signup-email"
           label={t('email')}
           name="email"
@@ -299,6 +290,7 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
           autoComplete="email"
           required
           placeholder={t('emailPlaceholder')}
+          defaultValue={signupState?.existingEmail ?? ''}
         />
         <Input
           id="modal-signup-password"
@@ -321,7 +313,6 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
                   variant="ghost"
                   onClick={() => {
                     setPrefilledEmail(signupState.existingEmail || '')
-                    setExistingAccountMessage(true)
                     onModeChange('login')
                   }}
                   className="inline !min-h-0 !p-0 !border-0 bg-transparent hover:bg-transparent underline text-palette-forest-dark hover:!text-palette-olive"

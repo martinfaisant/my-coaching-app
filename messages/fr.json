@@ -83,7 +83,7 @@
       "resetLinkSentLong": "Un lien de réinitialisation a été envoyé à votre adresse email. Consultez votre boîte mail et cliquez sur le lien pour définir un nouveau mot de passe.",
       "emailRequiredOnly": "L'adresse email est requise.",
       "sessionExpiredReset": "Session expirée. Veuillez recommencer la réinitialisation.",
-      "passwordUpdatedSuccess": "Mot de passe mis à jour avec succès.",
+      "passwordUpdatedSuccess": "Mot de passe mis à jour avec succès. Vous allez être connecté automatiquement.",
       "rateLimitExceeded": "Trop de demandes d'email ont été envoyées. Veuillez patienter quelques minutes avant de réessayer.",
       "userExists": "Un compte existe déjà avec cet email.",
       "accountCreatedSuccess": "Compte créé. Consultez votre boîte mail pour confirmer votre adresse, puis connectez-vous.",
