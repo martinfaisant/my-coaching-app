@@ -65,7 +65,10 @@ export type SignupState = {
   existingEmail?: string
 }
 
-export async function signup(_prevState: SignupState, formData: FormData) {
+export async function signup(
+  _prevState: SignupState,
+  formData: FormData
+): Promise<SignupState> {
   const email = formData.get('email') as string
   const password = formData.get('password') as string
   const roleRaw = formData.get('role') as string
