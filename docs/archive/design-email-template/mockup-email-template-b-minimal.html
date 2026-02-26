@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>My Sport Ally — Confirmation d'email</title>
+</head>
+<body style="margin:0; padding:0; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; background-color: #fafaf9; color: #1c1917;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #fafaf9;">
+    <tr>
+      <td style="padding: 32px 16px;">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; border: 1px solid #e7e5e4; box-shadow: 0 4px 24px rgba(0,0,0,0.06); overflow: hidden;">
+          <!-- En-tête : bandeau dégradé + formes (sans image externe) -->
+          <tr>
+            <td style="padding: 40px 24px; background: linear-gradient(135deg, #506648 0%, #627e59 40%, #8e9856 100%); text-align: center; position: relative;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td style="vertical-align: middle; text-align: center;">
+                    <!-- Prévisualisation : chemin relatif. Dans Supabase → {{ .SiteURL }}/logo.png -->
+                    <img src="../../public/logo.png" alt="" width="56" height="56" style="display: inline-block; width: 56px; height: 56px; object-fit: contain; margin-bottom: 12px;" />
+                    <span style="display: block; font-size: 22px; font-weight: 700; color: #ffffff; letter-spacing: -0.02em;">My Sport Ally</span>
+                    <span style="display: block; font-size: 13px; color: rgba(255,255,255,0.85); margin-top: 4px;">Votre partenaire coaching</span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <!-- Contenu principal -->
+          <tr>
+            <td style="padding: 32px 24px;">
+              <h1 style="margin: 0 0 12px 0; font-size: 22px; font-weight: 600; color: #506648;">Confirmez votre inscription</h1>
+              <p style="margin: 0 0 24px 0; font-size: 15px; line-height: 1.6; color: #57534e;">Merci pour votre inscription. Cliquez sur le bouton ci-dessous pour confirmer votre adresse email et activer votre compte.</p>
+              <p style="margin: 0; text-align: center;">
+                <a href="{{ .ConfirmationURL }}" style="display: inline-block; padding: 14px 28px; background-color: #506648; color: #ffffff !important; text-decoration: none; font-size: 15px; font-weight: 600; border-radius: 8px;">Confirmer mon email</a>
+              </p>
+              <p style="margin: 24px 0 0 0; font-size: 13px; line-height: 1.5; color: #78716c;">Si vous n'êtes pas à l'origine de cette inscription, vous pouvez ignorer cet email.</p>
+            </td>
+          </tr>
+          <!-- Pied de page : fond neutre stone (design system) -->
+          <tr>
+            <td style="padding: 28px 24px; background-color: #f5f5f4; border-top: 1px solid #e7e5e4;">
+              <p style="margin: 0 0 16px 0; font-size: 14px; font-weight: 600; color: #506648; text-align: center;">My Sport Ally</p>
+              <p style="margin: 0 0 16px 0; font-size: 12px; color: #57534e; text-align: center; line-height: 1.5;">
+                <a href="/fr" style="color: #506648; text-decoration: none;">Accueil</a> &nbsp;·&nbsp;
+                <a href="/fr/login" style="color: #506648; text-decoration: none;">Connexion</a>
+              </p>
+              <p style="margin: 0; font-size: 11px; color: #57534e; text-align: center;">
+                © 2026 My Sport Ally. Tous droits réservés.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

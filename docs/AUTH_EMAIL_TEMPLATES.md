@@ -1,8 +1,8 @@
 # Templates email d'authentification (Supabase)
 
-**Dernière mise à jour :** 25 février 2026
+**Dernière mise à jour :** 26 février 2026
 
-Ce document décrit comment configurer les emails d’auth Supabase (confirmation d’inscription) avec un **template HTML** et le **bilinguisme FR/EN**.
+Ce document décrit comment configurer les emails d’auth Supabase (confirmation d’inscription, etc.) avec des **templates HTML** et le **bilinguisme FR/EN**. Les fichiers HTML des templates sont centralisés dans **[docs/email-templates/](email-templates/)**.
 
 ---
 
@@ -15,13 +15,13 @@ Ce document décrit comment configurer les emails d’auth Supabase (confirmatio
    - `{{ .Data.locale }}` pour accéder à la locale.
    - `{{ if eq .Data.locale "en" }}` … `{{ else }}` pour afficher du texte en anglais ou en français.
 
-3. **Où configurer** : Dashboard Supabase → **Authentication** → **Email Templates** → **Confirm signup**. Coller le **Subject** et le **Body** (HTML) ci‑dessous.
+3. **Où configurer** : Dashboard Supabase → **Authentication** → **Email Templates** → choisir le type (Confirm signup, Magic Link, Reset Password…). Coller le **Subject** et le **Body** (contenu du fichier `.html` correspondant depuis **[docs/email-templates/](email-templates/)**).
 
 Si le **sujet** de l’email ne supporte pas les conditionnelles Go dans ton projet, laisse un seul sujet (ex. français) ou duplique le template côté SMTP si tu gères l’envoi toi‑même.
 
 ---
 
-## Sujet de l’email (Subject)
+## Sujet de l’email (Subject) — Confirm signup
 
 Tu peux utiliser une condition Go pour le sujet (si ton instance Supabase le permet) :
 
@@ -35,69 +35,36 @@ Sinon, mets par défaut par exemple : `Confirmez votre inscription` ou `Confirm 
 
 ## Corps de l’email (HTML)
 
-Couleurs alignées avec le design system (forest-dark `#506648`, forest-darker, stone). À coller dans le champ **Body** du template « Confirm signup ».
+Le template HTML complet pour **Confirm signup** (variante B : en-tête dégradé, logo + nom centrés, bouton CTA centré, pied de page Accueil · Connexion) est dans **[docs/email-templates/confirm-signup.html](email-templates/confirm-signup.html)**.
 
-```html
-<!DOCTYPE html>
-<html lang='{{ if eq .Data.locale "en" }}en{{ else }}fr{{ end }}'>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{ if eq .Data.locale "en" }}Confirm your signup{{ else }}Confirmez votre inscription{{ end }}</title>
-</head>
-<body style="margin:0; padding:0; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; background-color: #fafaf9; color: #1c1917;">
-  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #fafaf9;">
-    <tr>
-      <td style="padding: 32px 16px;">
-        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width: 480px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; border: 1px solid #e7e5e4; box-shadow: 0 1px 3px rgba(0,0,0,0.06);">
-          <tr>
-            <td style="padding: 24px 24px 20px 24px; border-bottom: 1px solid #e7e5e4;">
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
-                <tr>
-                  <td style="vertical-align: middle;">
-                    <img src="{{ .SiteURL }}/logo.svg" alt="" width="40" height="40" style="display: block; width: 40px; height: 40px; object-fit: contain;" />
-                  </td>
-                  <td style="vertical-align: middle; padding-left: 12px;">
-                    <span style="font-size: 18px; font-weight: 700; color: #1c1917; letter-spacing: -0.02em;">My Sport Ally</span>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding: 32px 24px;">
-              {{ if eq .Data.locale "en" }}
-              <h1 style="margin: 0 0 8px 0; font-size: 20px; font-weight: 600; color: #506648;">Confirm your signup</h1>
-              <p style="margin: 0 0 24px 0; font-size: 15px; line-height: 1.5; color: #57534e;">Thanks for signing up. Click the button below to confirm your email and activate your account.</p>
-              <p style="margin: 0;">
-                <a href="{{ .ConfirmationURL }}" style="display: inline-block; padding: 12px 24px; background-color: #506648; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 600; border-radius: 8px;">Confirm your email</a>
-              </p>
-              <p style="margin: 24px 0 0 0; font-size: 13px; line-height: 1.5; color: #78716c;">If you didn’t create an account, you can ignore this email.</p>
-              {{ else }}
-              <h1 style="margin: 0 0 8px 0; font-size: 20px; font-weight: 600; color: #506648;">Confirmez votre inscription</h1>
-              <p style="margin: 0 0 24px 0; font-size: 15px; line-height: 1.5; color: #57534e;">Merci pour votre inscription. Cliquez sur le bouton ci-dessous pour confirmer votre adresse email et activer votre compte.</p>
-              <p style="margin: 0;">
-                <a href="{{ .ConfirmationURL }}" style="display: inline-block; padding: 12px 24px; background-color: #506648; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 600; border-radius: 8px;">Confirmer mon email</a>
-              </p>
-              <p style="margin: 24px 0 0 0; font-size: 13px; line-height: 1.5; color: #78716c;">Si vous n’êtes pas à l’origine de cette inscription, vous pouvez ignorer cet email.</p>
-              {{ end }}
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
-</body>
-</html>
-```
+**À faire :** ouvrir ce fichier, copier tout le contenu, et le coller dans le champ **Body** du template « Confirm signup » dans Supabase (Authentication → Email Templates).
 
-**Variables Supabase utilisées :**
+Tous les templates d’emails Supabase (confirm signup, magic link, reset password, etc.) sont centralisés dans le dossier **[docs/email-templates/](email-templates/)** — voir le [README du dossier](email-templates/README.md) pour l’index.
+
+**Variables Supabase utilisées (Confirm signup) :**
 
 - `{{ .ConfirmationURL }}` : lien de confirmation (obligatoire).
 - `{{ .Data.locale }}` : `"en"` ou `"fr"` selon la page d’inscription.
-- `{{ .SiteURL }}` : URL du site (Auth → URL Configuration dans le dashboard). Utilisée pour l’image du logo (`{{ .SiteURL }}/logo.svg`). Vérifier que **Site URL** pointe bien vers ton app (ex. `https://mysportally.com`) pour que le logo s’affiche dans l’email.
+- `{{ .SiteURL }}` : URL du site (Auth → URL Configuration dans le dashboard). Utilisée pour l’image du logo (`{{ .SiteURL }}/logo.png`). Vérifier que **Site URL** pointe bien vers ton app (ex. `https://mysportally.com`) pour que le logo s’affiche dans l’email.
 
 Si `locale` est absent (ancien flux), le template affiche la version française (`{{ else }}`).
+
+---
+
+## Dépannage : le logo ne s'affiche pas
+
+Deux causes fréquentes :
+
+### 1. Utiliser un PNG, pas un SVG
+
+**Beaucoup de clients email (Outlook, certains webmails) bloquent les images SVG** pour des raisons de sécurité. Le logo doit donc être en **PNG** dans les emails.
+
+- **À faire :** le fichier `public/logo.png` doit exister (ex. 80×80 ou 88×88 px).
+- Le template dans `email-templates/confirm-signup.html` utilise déjà `{{ .SiteURL }}/logo.png`. Si tu avais encore `logo.svg` dans le template Supabase, remplace par `logo.png`.
+
+### 2. Vérifier l’URL du site (Site URL)
+
+Si **Site URL** dans Supabase (Authentication → URL Configuration) pointe vers `http://localhost:3000`, les images ne chargeront pas dans les vrais emails (les clients email ne peuvent pas accéder à ton localhost). En production, définir **Site URL** sur l’URL publique de l’app (ex. `https://mysportally.com`).
 
 ---
 
@@ -106,8 +73,8 @@ Si `locale` est absent (ancien flux), le template affiche la version française 
 | Élément | Rôle |
 |--------|------|
 | **Signup** | Envoie `data: { locale: 'fr' \| 'en' }` dans `signUp` (déjà fait dans `login/actions.ts`). |
-| **Template Supabase** | Utilise `{{ if eq .Data.locale "en" }}` … `{{ else }}` pour le texte FR/EN. |
+| **Templates** | Fichiers HTML dans **docs/email-templates/** ; copier dans Supabase → Email Templates. |
 | **Subject** | Idéalement conditionnel ; sinon un seul sujet par défaut. |
 | **Design** | Couleurs design system (forest #506648, stone), bouton CTA clair, mobile-friendly. |
 
-Pour les autres emails (magic link, reset password, etc.), tu peux réutiliser la même logique avec ` .Data.locale` si la locale est disponible dans les metadata au moment de l’envoi.
+Pour les autres emails (magic link, reset password, etc.), réutiliser la même structure et `{{ .Data.locale }}` si la locale est disponible au moment de l’envoi ; ajouter les fichiers dans **docs/email-templates/** au fur et à mesure.

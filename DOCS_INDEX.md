@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 25 février 2026 (email confirmation signup : template bilingue FR/EN, en-tête logo My Sport Ally, doc AUTH_EMAIL_TEMPLATES)
+**Dernière mise à jour :** 26 février 2026 (ménage doc emails : templates Supabase centralisés dans docs/email-templates/, design-email-template archivé)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -33,9 +33,14 @@
 - **Dernière mise à jour :** 24 février 2026 (pendingRequests.chat, coachRequests confirm modals)
 
 ### **docs/AUTH_EMAIL_TEMPLATES.md**
-- **Contenu :** Template HTML pour l’email de confirmation d’inscription Supabase : **en-tête** (logo + nom My Sport Ally), **bilinguisme FR/EN** via ` .Data.locale`, sujet conditionnel, couleurs design system
-- **Utiliser pour :** Configurer le template « Confirm signup » dans le dashboard Supabase (Auth → Email Templates)
-- **Dernière mise à jour :** 25 février 2026
+- **Contenu :** Guide de configuration des emails d’auth Supabase (sujet, i18n FR/EN, variables, dépannage logo). **Les fichiers HTML des templates** (Confirm signup, puis Magic Link, Reset Password, etc.) sont dans **docs/email-templates/**.
+- **Utiliser pour :** Configurer les templates dans le dashboard Supabase (Auth → Email Templates) ; copier le contenu des fichiers depuis **docs/email-templates/**.
+- **Dernière mise à jour :** 26 février 2026
+
+### **docs/email-templates/** (dossier)
+- **Contenu :** Templates HTML des emails Supabase (confirm-signup.html, etc.), index dans README.md. Un seul dossier pour tous les types d’emails pour faciliter le suivi.
+- **Utiliser pour :** Récupérer le Body à coller dans Supabase pour chaque type d’email (Confirm signup, Magic Link, Reset Password, etc.).
+- **Dernière mise à jour :** 26 février 2026
 
 ---
 
@@ -182,6 +187,10 @@
 - `docs/archive/athlete-view-sent-request/athlete-view-sent-request-mockup.html` — Mockup HTML (tuile + modale)
 - **Raison :** Feature livrée ; comportement décrit dans **Project_context.md §4.4** (Flow : demande pending, « Demande envoyée > », modale détail).
 
+**Template email auth – design (archivé 26 février 2026) :**
+- `docs/archive/design-email-template/` — Mockups HTML (A hero, B minimal, C marketing), README_DESIGN_EMAIL_TEMPLATE.md (besoin, 3 options, composants, images libres).
+- **Raison :** Template B retenu et intégré dans **docs/email-templates/confirm-signup.html** ; guide dans **docs/AUTH_EMAIL_TEMPLATES.md**. Référence courante : **docs/email-templates/** et **AUTH_EMAIL_TEMPLATES.md**.
+
 **Séparation pages dashboard – find-coach / Mes athlètes (archivé 23 février 2026) :**
 - `docs/archive/dashboard-pages-separation/SPEC_ARCHI_DASHBOARD_PAGES_SEPARATION.md` — Spec architecture (redirections depuis /dashboard, pages dédiées, skeletons)
 - **Raison :** Feature livrée ; comportement décrit dans **Project_context.md §4.0** (Dashboard entry point) et **docs/DESIGN_SYSTEM.md** §7 (pages Trouver mon coach, Mes athlètes).
@@ -313,10 +322,14 @@
 
 **Fréquence de mise à jour :** À chaque ajout/suppression de documentation
 
-**Dernier scan :** 24 février 2026  
-**Dernier nettoyage :** 24 février 2026 (archivage tuile Profil sidebar)
+**Dernier scan :** 26 février 2026  
+**Dernier nettoyage :** 26 février 2026 (ménage doc emails : dossier email-templates, archivage design-email-template)
 
 ### Changements récents :
+
+✅ **26 février 2026 – Ménage documentation emails (Mode Analyste) :**
+- **Livraison :** Centralisation des templates d’emails Supabase dans un même dossier **docs/email-templates/** (confirm-signup.html + README index). Guide principal reste **docs/AUTH_EMAIL_TEMPLATES.md** (sujet, i18n, variables, dépannage) avec renvoi vers le dossier. Archivage de **docs/design-email-template/** (mockups A/B/C, README design) dans **docs/archive/design-email-template/** — template B retenu, référence courante : **AUTH_EMAIL_TEMPLATES.md** et **docs/email-templates/**.
+- **Fichiers :** `docs/email-templates/confirm-signup.html`, `docs/email-templates/README.md` (créés), `docs/AUTH_EMAIL_TEMPLATES.md` (refactorisé, pointe vers le dossier), `docs/archive/design-email-template/` (mockups + README déplacés).
 
 ✅ **25 février 2026 – Email de confirmation d’inscription (template Supabase) – Mode Analyste :**
 - **Livraison :** Template HTML pour l’email « Confirm signup » Supabase : en-tête avec logo ({{ .SiteURL }}/logo.svg) et nom « My Sport Ally », contenu bilingue FR/EN selon la locale de la page d’inscription. Au signup, la locale est passée dans les metadata (`options.data: { locale }`) pour que le template Go affiche le bon texte.
