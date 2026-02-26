@@ -107,27 +107,32 @@ export async function saveOffers(
     if (offer.id) {
       const existing = await supabase
         .from('coach_offers')
-        .select('id, coach_id')
+        .select('id, coach_id, status')
         .eq('id', offer.id)
         .eq('coach_id', user.id)
         .single()
 
       if (existing.error || !existing.data) return { error: t('offerNotFound') }
 
+      const isPublished = existing.data.status === 'published'
+      const updatePayload: Record<string, unknown> = {
+        title: title(offer),
+        description: description(offer),
+        title_fr: offer.title_fr || null,
+        title_en: offer.title_en || null,
+        description_fr: offer.description_fr || null,
+        description_en: offer.description_en || null,
+        display_order: offer.display_order,
+        is_featured: offer.is_featured,
+      }
+      if (!isPublished) {
+        updatePayload.price = offer.price
+        updatePayload.price_type = offer.price_type
+      }
+
       const { error: updateError } = await supabase
         .from('coach_offers')
-        .update({
-          title: title(offer),
-          description: description(offer),
-          title_fr: offer.title_fr || null,
-          title_en: offer.title_en || null,
-          description_fr: offer.description_fr || null,
-          description_en: offer.description_en || null,
-          price: offer.price,
-          price_type: offer.price_type,
-          display_order: offer.display_order,
-          is_featured: offer.is_featured,
-        })
+        .update(updatePayload)
         .eq('id', offer.id)
         .eq('coach_id', user.id)
 

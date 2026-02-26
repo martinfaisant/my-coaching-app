@@ -1,10 +1,10 @@
-# 🏃‍♂️ Coach Pro - Plateforme de Coaching Sportif
+# 🏃‍♂️ My Sport Ally - Plateforme de Coaching Sportif
 
 Application web de coaching sportif connectant athlètes et coachs professionnels.
 
 ## 📋 Description
 
-Coach Pro est une marketplace + plateforme de coaching permettant aux athlètes de :
+My Sport Ally est une marketplace + plateforme de coaching permettant aux athlètes de :
 - Trouver un coach facilement (filtres par sport, langue)
 - Suivre un programme d'entraînement structuré
 - Suivre leurs progrès et objectifs
@@ -44,7 +44,7 @@ SUPABASE_SERVICE_ROLE_KEY=votre_cle_service_role
 # Strava (optionnel - pour import d'activités)
 STRAVA_CLIENT_ID=votre_client_id
 STRAVA_CLIENT_SECRET=votre_client_secret
-NEXT_PUBLIC_APP_URL=http://localhost:3000  # ou votre domaine en production
+NEXT_PUBLIC_APP_URL=http://localhost:3000  # en production : https://mysportally.com
 ```
 
 ### Lancer en développement
@@ -133,12 +133,12 @@ Détails complets : [Project_context.md](./Project_context.md) (sections 4.4 et 
 2. Récupérer **Client ID** et **Client Secret**
 3. Configurer **Authorization Callback Domain** :
    - Local : `localhost`
-   - Production : votre domaine exact (ex: `mon-app.vercel.app`)
+   - Production : `mysportally.com` (voir [docs/DOMAIN_MYSPORTALLY_SETUP.md](./docs/DOMAIN_MYSPORTALLY_SETUP.md))
 4. Ajouter dans `.env.local` :
    ```bash
    STRAVA_CLIENT_ID=votre_client_id
    STRAVA_CLIENT_SECRET=votre_client_secret
-   NEXT_PUBLIC_APP_URL=https://votre-domaine.com
+   NEXT_PUBLIC_APP_URL=http://localhost:3000   # en production : https://mysportally.com
    ```
 
 ### Utilisation
@@ -201,10 +201,12 @@ npm run build
 
 ## 🚢 Déploiement
 
+**Production :** l’application est déployée en production sur **https://mysportally.com** (Vercel + domaine custom). Configuration détaillée : [docs/DOMAIN_MYSPORTALLY_SETUP.md](./docs/DOMAIN_MYSPORTALLY_SETUP.md).
+
 ### Vercel (recommandé)
 
 1. Connecter le repo à Vercel
-2. Configurer les variables d'environnement (voir `.env.local`)
+2. Configurer les variables d'environnement (voir `.env.local` ; en prod : `NEXT_PUBLIC_SITE_URL` et `NEXT_PUBLIC_APP_URL` = `https://mysportally.com`)
 3. Déployer automatiquement à chaque push
 
 Voir [DEPLOYMENT_NOTES.md](./DEPLOYMENT_NOTES.md) et [MISE_EN_PROD.md](./MISE_EN_PROD.md) pour plus de détails.

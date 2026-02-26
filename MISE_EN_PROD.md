@@ -1,5 +1,7 @@
 # Mise en production — Checklist
 
+**URL de production :** https://mysportally.com (domaine custom, Vercel). Voir `docs/DOMAIN_MYSPORTALLY_SETUP.md` pour la configuration.
+
 Tout fonctionne sur **preview**. Voici quoi faire pour tout mettre en **prod**.
 
 ---

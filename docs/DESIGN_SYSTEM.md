@@ -381,7 +381,7 @@ Pour les champs bilingues (ex. offres coach : titre et description en français 
 - **Champs titre** : conteneur en `flex`, préfixe avec `px-3 py-2.5` et `items-center`.
 - **Champs description (textarea)** : conteneur en `flex items-stretch` pour que le préfixe prenne toute la hauteur du champ ; préfixe avec `min-h-full flex items-center justify-center` pour que la couleur couvre toute la hauteur.
 - **Disposition** : EN à gauche, FR à droite (grille `grid-cols-2` pour titre et pour description).
-- **Usage** : formulaire des offres coach (`app/[locale]/dashboard/profile/offers/OffersForm.tsx`).
+- **Usage** : formulaire des offres coach (`app/[locale]/dashboard/profile/offers/OffersForm.tsx`). Pour les **offres publiées**, la zone tarification est en lecture seule : ligne compacte (prix + type) + badge « Non modifiable » (icône cadenas) ; le serveur n’envoie pas `price`/`price_type` à l’update. Une modale de confirmation avant publication rappelle que le prix sera non modifiable.
 
 ```tsx
 // Exemple : titre bilingue
@@ -1186,7 +1186,7 @@ Toutes les icônes de sports sont définies dans `components/SportIcons.tsx` et 
 Ce breakpoint `md` est le breakpoint de référence pour les bascules de layout structurantes.
 
 **Usages actuels documentés :**
-- **Sidebar dashboard** : la tuile Profil (avatar + nom en bas de la colonne) affiche le même état sélectionné que les autres entrées du menu (`bg-palette-forest-dark text-white shadow-md`) lorsque l'utilisateur est sur la page Profil (`/dashboard/profile`) ; en mode replié (desktop), seul l'avatar est affiché et centré. Logo « CoachApp » : marge conditionnelle (`ml-3` quand texte visible, `ml-0` quand replié) pour centrer l’icône. Fichier : `components/Sidebar.tsx`.
+- **Sidebar dashboard** : la tuile Profil (avatar + nom en bas de la colonne) affiche le même état sélectionné que les autres entrées du menu (`bg-palette-forest-dark text-white shadow-md`) lorsque l'utilisateur est sur la page Profil (`/dashboard/profile`) ; en mode replié (desktop), seul l'avatar est affiché et centré. Logo « My Sport Ally » : marge conditionnelle (`ml-3` quand texte visible, `ml-0` quand replié) pour centrer l’icône. Fichier : `components/Sidebar.tsx`.
 - **Calendrier (athlète + coach)** : sous `md`, en-tête sur 2 lignes + bloc totaux de la semaine (volume horaire total + barres par sport, identique au mode étendu desktop) + 1 semaine en stack ; à partir de `md`, layout desktop (3 semaines, grille 7 colonnes). Sur les tuiles entraînement (carte compacte et carte détaillée modale jour), une icône commentaire en fin de ligne métadonnées (durée, distance, etc.) signale qu’un commentaire athlète est présent (`calendar.tile.athleteCommentLabel`). Détail : `Project_context.md` §4.5.
 - **Chat coach (overlay)** : sous `md`, navigation mobile en 2 écrans (liste des conversations puis conversation avec bouton Retour) ; à partir de `md`, layout desktop avec sidebar + panneau conversation.
 - **Page « Trouver mon coach »** (`/dashboard/find-coach`, athlète sans coach) : page dédiée avec son propre skeleton (filtres + grille). Bloc Filtres avec recherche par nom ou prénom (temps réel), grille Sport coaché / Langue parlée en 2 colonnes à partir de `md` (768px) ; liste des tuiles : 1 colonne par défaut, 2 colonnes à partir de `md`, 3 colonnes à partir de `xl` (1280px). Fichiers : `app/[locale]/dashboard/find-coach/page.tsx`, `FindCoachSection.tsx`.

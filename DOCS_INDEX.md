@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 24 février 2026 (sidebar : tuile Profil état sélectionné, archivage design-sidebar-profile-tile)
+**Dernière mise à jour :** 24 février 2026 (domaine production https://mysportally.com documenté dans README, Project_context, MISE_EN_PROD, DEPLOYMENT_NOTES, DOMAIN_MYSPORTALLY_SETUP)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -9,16 +9,16 @@
 ## 🎯 Documentation Active (à utiliser en priorité)
 
 ### **README.md** ⭐
-- **Contenu :** Setup projet, stack technique, quick start, structure du projet
+- **Contenu :** Setup projet, stack technique, quick start, structure du projet, **URL production https://mysportally.com**
 - **Utiliser pour :** Onboarding, démarrage rapide, vue d'ensemble technique
 - **Taille :** ~200 lignes
-- **Dernière mise à jour :** 13 février 2026
+- **Dernière mise à jour :** 24 février 2026
 
 ### **Project_context.md** ⭐
-- **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), stack technique
+- **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), stack technique, **URL production https://mysportally.com**
 - **Utiliser pour :** Comprendre le projet, les features, les rôles, l'architecture globale
 - **Taille :** ~420 lignes
-- **Dernière mise à jour :** 24 février 2026 (§4.0 Sidebar : tuile Profil état sélectionné sur page Profil, centrage mode replié ; §4.4 Flow, §4.6 chat)
+- **Dernière mise à jour :** 24 février 2026
 
 ### **docs/DESIGN_SYSTEM.md** ⭐
 - **Contenu :** Tokens (couleurs, typo, espacements), composants (Button, Input, Badge, TileCard, DashboardPageShell, Modal, etc.), guidelines UI, exemples de code, §7 breakpoints (calendrier, chat, Trouver mon coach, My offers)
@@ -69,14 +69,21 @@
 - **Utiliser pour :** Évolution modèle (coach_requests, subscriptions) et code (createCoachRequest, respondToCoachRequest, affichage) pour figer et afficher les deux langues
 - **Créé le :** 19 février 2026
 
+
+### **docs/DOMAIN_MYSPORTALLY_SETUP.md**
+- **Contenu :** Configuration du domaine de production mysportally.com (https://mysportally.com) sur Vercel (DNS, variables d’environnement) et Resend (domaine, DNS, vérification, API Key)
+- **Utiliser pour :** Mise en production avec le domaine custom et envoi d’emails depuis @mysportally.com
+- **Dernière mise à jour :** 24 février 2026 (précision domaine production)
+
+
 ## 🚀 Documentation Opérationnelle
 
 ### **DEPLOYMENT_NOTES.md**
-- **Contenu :** Notes et procédures de déploiement
+- **Contenu :** Notes et procédures de déploiement, **URL production https://mysportally.com**
 - **Utiliser pour :** Déployer l'application, résoudre des problèmes de déploiement
 
 ### **MISE_EN_PROD.md**
-- **Contenu :** Checklist et étapes pour mise en production
+- **Contenu :** Checklist et étapes pour mise en production, **URL production https://mysportally.com**
 - **Utiliser pour :** Préparer une release production
 
 ### **DOCUMENTATION_UPDATE_2026-02-13.md**
@@ -212,6 +219,13 @@
 
 **Ces documents restent disponibles dans `docs/archive/` pour référence historique si besoin.**
 
+**Prix offre non modifiable après publication – archivés 24 février 2026 :**
+- `docs/archive/offers-price-frozen/spec_offers_price_frozen_when_published.md` — Spec technique (Mode Architecte : trigger BDD, saveOffers sans price/price_type si published, UI lecture seule).
+- `docs/archive/offers-price-frozen/mockup_offer_tile_price_readonly.html` — Mockups HTML (Solutions A, B, C ; Solution B retenue : ligne compacte + badge « Non modifiable »).
+- **Raison :** Feature livrée ; trigger `coach_offers_prevent_price_change_when_published`, formulaire offres : tarification en lecture seule pour offres publiées (ligne compacte + badge), modale de confirmation avant publication (message « prix non modifiable », corrections typos uniquement). Comportement décrit dans **Project_context.md §4.4** (Offers) et **docs/DESIGN_SYSTEM.md** (formulaire offres, zone tarification read-only).
+
+**Ces documents restent disponibles dans `docs/archive/` pour référence historique si besoin.**
+
 ---
 
 ## 📊 État Actuel du Projet
@@ -304,8 +318,14 @@
 
 ### Changements récents :
 
+✅ **24 février 2026 – Prix offre non modifiable après publication (Mode Analyste) :**
+- **Livraison :** Une fois une offre publiée, le prix et le type de tarification ne sont plus modifiables. Trigger BDD `coach_offers_prevent_price_change_when_published` (migration 049) rejette toute modification de `price`/`price_type` lorsque `status = 'published'`. Côté app : `saveOffers` omet `price` et `price_type` de l’update pour les offres publiées ; formulaire offres affiche la tarification en lecture seule (Solution B : ligne compacte « X € · Type » + badge « Non modifiable » avec icône cadenas). Modale de confirmation avant publication : message indiquant que le prix sera non modifiable et que seules les corrections de typos (titre/description) restent possibles.
+- **Fichiers :** `supabase/migrations/049_coach_offers_price_frozen_when_published.sql`, `app/[locale]/dashboard/profile/offers/actions.ts`, `OffersForm.tsx`, `messages/fr.json`, `messages/en.json`.
+- **Mises à jour doc :** `Project_context.md` §4.4 (Offers : price locked after publication, trigger, UI read-only, modal), `docs/DESIGN_SYSTEM.md` (formulaire offres : zone tarification read-only pour offres publiées), `docs/I18N.md` (offers : pricingLockedBadge, publishModal).
+- **Archivage :** `docs/spec_offers_price_frozen_when_published.md` et `docs/mockup_offer_tile_price_readonly.html` déplacés dans `docs/archive/offers-price-frozen/`. Référence courante : **Project_context.md §4.4**, **docs/DESIGN_SYSTEM.md**.
+
 ✅ **24 février 2026 – Tuile Profil sidebar (état sélectionné + centrage) – Mode Analyste :**
-- **Livraison :** Sur la page Profil (`/dashboard/profile`), la tuile Profil en bas de la sidebar (avatar + nom) affiche le même état sélectionné que les autres entrées du menu (fond vert, texte blanc, ombre neutre). Sur `/dashboard/profile/offers`, seule l’entrée « Offres » reste sélectionnée. En mode replié (desktop), seul l’avatar est rendu dans le lien Profil pour un centrage correct ; le logo « CoachApp » en haut utilise une marge conditionnelle (`ml-3` / `ml-0`) pour rester centré quand la sidebar est repliée.
+- **Livraison :** Sur la page Profil (`/dashboard/profile`), la tuile Profil en bas de la sidebar (avatar + nom) affiche le même état sélectionné que les autres entrées du menu (fond vert, texte blanc, ombre neutre). Sur `/dashboard/profile/offers`, seule l’entrée « Offres » reste sélectionnée. En mode replié (desktop), seul l’avatar est rendu dans le lien Profil pour un centrage correct ; le logo « My Sport Ally » en haut utilise une marge conditionnelle (`ml-3` / `ml-0`) pour rester centré quand la sidebar est repliée.
 - **Fichiers :** `components/Sidebar.tsx` (isProfilePage, classes conditionnelles, rendu conditionnel texte/chevron en replié, marge logo, restauration visibilité libellés menu).
 - **Mises à jour doc :** `Project_context.md` §4.0 (sidebar profile tile selected state), `docs/DESIGN_SYSTEM.md` §7 (Sidebar dashboard : tuile Profil, logo centré).
 - **Archivage :** `docs/design-sidebar-profile-tile/` déplacé dans `docs/archive/design-sidebar-profile-tile/` (MOCKUP, SPEC). Référence courante : **Project_context.md §4.0**, **docs/DESIGN_SYSTEM.md** §7.
@@ -457,6 +477,7 @@
 | **Page par défaut / redirections dashboard (find-coach, Mes athlètes)** | **`Project_context.md` §4.0** |
 | Tuile Profil sidebar (état sélectionné sur page Profil, centrage mode replié) | `Project_context.md` §4.0, `docs/DESIGN_SYSTEM.md` §7 |
 | Tuile demandes en attente (coach) / Discuter / modales Refuser-Accepter | `Project_context.md` §4.4, `docs/DESIGN_SYSTEM.md` §7 |
+| **Prix offre non modifiable après publication** (trigger BDD, UI read-only, modale) | **`Project_context.md` §4.4**, **`docs/DESIGN_SYSTEM.md`** (formulaire offres) |
 | Grilles responsive (Trouver mon coach, My offers, Mes athlètes) | `docs/DESIGN_SYSTEM.md` §7 |
 | Filtre par nom/prénom (Trouver mon coach) | `Project_context.md` (Athlete), `docs/DESIGN_SYSTEM.md` §7 |
 | Filtre par nom (Mes athlètes, coach) | `Project_context.md` (§ Coach), `docs/DESIGN_SYSTEM.md` §7 |
