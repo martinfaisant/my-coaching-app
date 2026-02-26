@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 24 février 2026 (archivage feature prix offre non modifiable après publication)
+**Dernière mise à jour :** 24 février 2026 (domaine production https://mysportally.com documenté dans README, Project_context, MISE_EN_PROD, DEPLOYMENT_NOTES, DOMAIN_MYSPORTALLY_SETUP)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -9,16 +9,16 @@
 ## 🎯 Documentation Active (à utiliser en priorité)
 
 ### **README.md** ⭐
-- **Contenu :** Setup projet, stack technique, quick start, structure du projet
+- **Contenu :** Setup projet, stack technique, quick start, structure du projet, **URL production https://mysportally.com**
 - **Utiliser pour :** Onboarding, démarrage rapide, vue d'ensemble technique
 - **Taille :** ~200 lignes
-- **Dernière mise à jour :** 13 février 2026
+- **Dernière mise à jour :** 24 février 2026
 
 ### **Project_context.md** ⭐
-- **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), stack technique
+- **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), stack technique, **URL production https://mysportally.com**
 - **Utiliser pour :** Comprendre le projet, les features, les rôles, l'architecture globale
 - **Taille :** ~420 lignes
-- **Dernière mise à jour :** 24 février 2026 (§4.0 Sidebar : tuile Profil état sélectionné sur page Profil, centrage mode replié ; §4.4 Flow, §4.6 chat)
+- **Dernière mise à jour :** 24 février 2026
 
 ### **docs/DESIGN_SYSTEM.md** ⭐
 - **Contenu :** Tokens (couleurs, typo, espacements), composants (Button, Input, Badge, TileCard, DashboardPageShell, Modal, etc.), guidelines UI, exemples de code, §7 breakpoints (calendrier, chat, Trouver mon coach, My offers)
@@ -69,29 +69,21 @@
 - **Utiliser pour :** Évolution modèle (coach_requests, subscriptions) et code (createCoachRequest, respondToCoachRequest, affichage) pour figer et afficher les deux langues
 - **Créé le :** 19 février 2026
 
-### **docs/brand-domain-research.md**
-- **Contenu :** Recherche marque et nom de domaine .com (≤10 caractères, EN/FR/ES) : domaines vérifiés pris, candidats à confirmer, propositions recommandées
-- **Utiliser pour :** Choix du nom de marque et du domaine pour la plateforme sport et accompagnement
-- **Créé le :** 24 février 2026
 
 ### **docs/DOMAIN_MYSPORTALLY_SETUP.md**
-- **Contenu :** Configuration du domaine mysportally.com sur Vercel (DNS, variables d’environnement) et Resend (domaine, DNS, vérification, API Key)
+- **Contenu :** Configuration du domaine de production mysportally.com (https://mysportally.com) sur Vercel (DNS, variables d’environnement) et Resend (domaine, DNS, vérification, API Key)
 - **Utiliser pour :** Mise en production avec le domaine custom et envoi d’emails depuis @mysportally.com
-- **Créé le :** 24 février 2026
+- **Dernière mise à jour :** 24 février 2026 (précision domaine production)
 
-### **docs/EMAIL_SOLUTIONS_COMPARISON.md**
-- **Contenu :** Comparatif Resend / Microsoft 365 / Google Workspace / Zoho Mail : coûts, réception (inbox vs webhook), envoi transactionnel et volume (marketing), combinaisons recommandées
-- **Utiliser pour :** Choisir une solution email @mysportally.com (envoyer + recevoir + futur marketing)
-- **Créé le :** 24 février 2026
 
 ## 🚀 Documentation Opérationnelle
 
 ### **DEPLOYMENT_NOTES.md**
-- **Contenu :** Notes et procédures de déploiement
+- **Contenu :** Notes et procédures de déploiement, **URL production https://mysportally.com**
 - **Utiliser pour :** Déployer l'application, résoudre des problèmes de déploiement
 
 ### **MISE_EN_PROD.md**
-- **Contenu :** Checklist et étapes pour mise en production
+- **Contenu :** Checklist et étapes pour mise en production, **URL production https://mysportally.com**
 - **Utiliser pour :** Préparer une release production
 
 ### **DOCUMENTATION_UPDATE_2026-02-13.md**

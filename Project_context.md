@@ -1,5 +1,7 @@
 # 🧠 PROJECT CONTEXT – Sport & Health Marketplace
 
+**Production :** application en ligne sur **https://mysportally.com** (configuration domaine, Vercel, Resend : `docs/DOMAIN_MYSPORTALLY_SETUP.md`).
+
 ## 1. Product Vision
 
 This project is a web platform that connects:

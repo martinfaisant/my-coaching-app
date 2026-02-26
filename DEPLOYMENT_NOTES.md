@@ -1,4 +1,10 @@
-# Notes de déploiement - Nouveaux sports (nordic ski, backcountry ski, patin à glace)
+# Notes de déploiement
+
+**Production :** https://mysportally.com (voir `docs/DOMAIN_MYSPORTALLY_SETUP.md` pour la configuration domaine, Vercel, Resend, Supabase).
+
+---
+
+## Nouveaux sports (nordic ski, backcountry ski, patin à glace)
 
 ## Commit créé
 Le commit suivant a été créé avec toutes les modifications :
