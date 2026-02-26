@@ -122,6 +122,7 @@ The pages **« Trouver mon coach »** and **« Mes athlètes »** are **separate
 
 - Email/password (Supabase Auth)
 - Role selection at signup (athlete or coach)
+- Confirmation email (Supabase template) : bilingue FR/EN via metadata locale au signup ; en-tête avec logo et nom « My Sport Ally ». Voir `docs/AUTH_EMAIL_TEMPLATES.md`.
 - Password reset
 - No OAuth in MVP (Strava is integration-only, not login)
 

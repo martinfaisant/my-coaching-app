@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 24 février 2026 (domaine production https://mysportally.com documenté dans README, Project_context, MISE_EN_PROD, DEPLOYMENT_NOTES, DOMAIN_MYSPORTALLY_SETUP)
+**Dernière mise à jour :** 25 février 2026 (email confirmation signup : template bilingue FR/EN, en-tête logo My Sport Ally, doc AUTH_EMAIL_TEMPLATES)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -31,6 +31,11 @@
 - **Utiliser pour :** Toute nouvelle feature ou texte visible, ajout de clés de traduction, dépannage i18n
 - **Taille :** ~180 lignes
 - **Dernière mise à jour :** 24 février 2026 (pendingRequests.chat, coachRequests confirm modals)
+
+### **docs/AUTH_EMAIL_TEMPLATES.md**
+- **Contenu :** Template HTML pour l’email de confirmation d’inscription Supabase : **en-tête** (logo + nom My Sport Ally), **bilinguisme FR/EN** via ` .Data.locale`, sujet conditionnel, couleurs design system
+- **Utiliser pour :** Configurer le template « Confirm signup » dans le dashboard Supabase (Auth → Email Templates)
+- **Dernière mise à jour :** 25 février 2026
 
 ---
 
@@ -69,11 +74,6 @@
 - **Utiliser pour :** Évolution modèle (coach_requests, subscriptions) et code (createCoachRequest, respondToCoachRequest, affichage) pour figer et afficher les deux langues
 - **Créé le :** 19 février 2026
 
-
-### **docs/DOMAIN_MYSPORTALLY_SETUP.md**
-- **Contenu :** Configuration du domaine de production mysportally.com (https://mysportally.com) sur Vercel (DNS, variables d’environnement) et Resend (domaine, DNS, vérification, API Key)
-- **Utiliser pour :** Mise en production avec le domaine custom et envoi d’emails depuis @mysportally.com
-- **Dernière mise à jour :** 24 février 2026 (précision domaine production)
 
 
 ## 🚀 Documentation Opérationnelle
@@ -317,6 +317,11 @@
 **Dernier nettoyage :** 24 février 2026 (archivage tuile Profil sidebar)
 
 ### Changements récents :
+
+✅ **25 février 2026 – Email de confirmation d’inscription (template Supabase) – Mode Analyste :**
+- **Livraison :** Template HTML pour l’email « Confirm signup » Supabase : en-tête avec logo ({{ .SiteURL }}/logo.svg) et nom « My Sport Ally », contenu bilingue FR/EN selon la locale de la page d’inscription. Au signup, la locale est passée dans les metadata (`options.data: { locale }`) pour que le template Go affiche le bon texte.
+- **Fichiers :** `app/[locale]/login/actions.ts` (data.locale au signUp), `docs/AUTH_EMAIL_TEMPLATES.md` (créé : template HTML, sujet conditionnel, variables Supabase).
+- **Mises à jour doc :** `DOCS_INDEX.md` (référence AUTH_EMAIL_TEMPLATES, changements récents), `Project_context.md` §4.1 (confirmation email), `docs/I18N.md` (emails auth bilingues), `.cursor/rules/project-core.mdc` (référence AUTH_EMAIL_TEMPLATES).
 
 ✅ **24 février 2026 – Prix offre non modifiable après publication (Mode Analyste) :**
 - **Livraison :** Une fois une offre publiée, le prix et le type de tarification ne sont plus modifiables. Trigger BDD `coach_offers_prevent_price_change_when_published` (migration 049) rejette toute modification de `price`/`price_type` lorsque `status = 'published'`. Côté app : `saveOffers` omet `price` et `price_type` de l’update pour les offres publiées ; formulaire offres affiche la tarification en lecture seule (Solution B : ligne compacte « X € · Type » + badge « Non modifiable » avec icône cadenas). Modale de confirmation avant publication : message indiquant que le prix sera non modifiable et que seules les corrections de typos (titre/description) restent possibles.

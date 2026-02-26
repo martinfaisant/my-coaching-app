@@ -28,6 +28,7 @@ alwaysApply: true
 - **Règle :** Aucun texte visible en dur dans les composants ou server actions. Utiliser `useTranslations('namespace')` / `getTranslations()` et les fichiers `messages/fr.json` et `messages/en.json`.
 - **Server actions :** Recevoir la locale (ex. `formData.get('_locale')`) et utiliser `getTranslations({ locale, namespace })` pour les messages d'erreur et de succès.
 - **Référence complète :** `docs/I18N.md` (structure, namespaces, checklist nouvelles features, dépannage).
+- **Emails auth (Supabase) :** template de confirmation signup bilingue FR/EN, en-tête logo + My Sport Ally ; `docs/AUTH_EMAIL_TEMPLATES.md`.
 
 ---
 
