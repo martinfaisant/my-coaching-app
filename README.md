@@ -1,10 +1,10 @@
-# 🏃‍♂️ Coach Pro - Plateforme de Coaching Sportif
+# 🏃‍♂️ My Sport Ally - Plateforme de Coaching Sportif
 
 Application web de coaching sportif connectant athlètes et coachs professionnels.
 
 ## 📋 Description
 
-Coach Pro est une marketplace + plateforme de coaching permettant aux athlètes de :
+My Sport Ally est une marketplace + plateforme de coaching permettant aux athlètes de :
 - Trouver un coach facilement (filtres par sport, langue)
 - Suivre un programme d'entraînement structuré
 - Suivre leurs progrès et objectifs

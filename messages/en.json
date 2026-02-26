@@ -453,7 +453,7 @@
     "preview": {
       "title": "An intuitive and comprehensive interface",
       "subtitle": "Access all your workouts, goals and exchanges from a modern dashboard",
-      "dashboardAlt": "Coach Pro application dashboard",
+      "dashboardAlt": "My Sport Ally application dashboard",
       "calendarAlt": "Training calendar",
       "stravaAlt": "Strava synchronization",
       "chatAlt": "Messaging with your coach",
@@ -520,7 +520,7 @@
     },
     "cta": {
       "title": "Ready to take it to the next level?",
-      "subtitle": "Join hundreds of athletes who progress every day with Coach Pro"
+      "subtitle": "Join hundreds of athletes who progress every day with My Sport Ally"
     },
     "footer": {
       "copyright": "All rights reserved."

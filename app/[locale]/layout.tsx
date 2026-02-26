@@ -22,16 +22,16 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   
   return {
     title: {
-      default: "Coach Pro - Coaching sportif personnalisé",
-      template: "%s | Coach Pro"
+      default: "My Sport Ally - Coaching sportif personnalisé",
+      template: "%s | My Sport Ally"
     },
     description: "Plateforme de coaching sportif : programmes d'entraînement sur mesure, suivi en temps réel, synchronisation Strava et messagerie directe avec votre coach.",
     keywords: ["coaching sportif", "entraînement", "running", "cyclisme", "triathlon", "Strava", "programme sportif"],
-    authors: [{ name: "Coach Pro" }],
+    authors: [{ name: "My Sport Ally" }],
     openGraph: {
       type: "website",
       locale: locale === 'fr' ? "fr_FR" : "en_US",
-      siteName: "Coach Pro",
+      siteName: "My Sport Ally",
     },
   };
 }

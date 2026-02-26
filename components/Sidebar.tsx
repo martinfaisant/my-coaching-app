@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { Link, usePathname } from '@/i18n/navigation'
 import { AvatarImage } from '@/components/AvatarImage'
@@ -66,21 +67,17 @@ export function Sidebar({ profile }: SidebarProps) {
           </svg>
         </Button>
         <div>
-          {/* Logo : h-20 px-6 quand ouvert, justify-center px-0 quand fermé (comme le HTML) */}
+          {/* Logo : h-20 px-6 quand ouvert, justify-center px-0 quand fermé (comme le profil) */}
           <div className={`h-20 flex items-center transition-all duration-300 overflow-hidden shrink-0 hidden lg:flex ${isCollapsed ? 'justify-center px-0' : 'px-3 lg:px-5'}`}>
-            <div className="w-8 h-8 min-w-[2rem] bg-palette-forest-dark rounded-xl flex items-center justify-center text-white shadow-lg shadow-palette-forest-dark/30 shrink-0">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-              </svg>
-            </div>
-            <span className={`text-base font-bold text-stone-800 tracking-tight transition-all duration-300 whitespace-nowrap ${showText ? 'ml-3 opacity-100 w-auto' : 'ml-0 opacity-0 w-0 overflow-hidden'}`}>CoachApp</span>
+            <Link href="/dashboard" className={`flex items-center min-w-0 ${isCollapsed ? 'w-10 justify-center px-0 gap-0' : 'gap-3'}`}>
+              <Image src="/logo.svg" alt="" width={64} height={64} className="h-7 w-auto object-contain shrink-0" aria-hidden />
+              <span className={`text-base font-bold text-stone-800 tracking-tight transition-all duration-300 whitespace-nowrap ${showText ? 'opacity-100 w-auto' : 'opacity-0 w-0 overflow-hidden'}`}>My Sport Ally</span>
+            </Link>
           </div>
           <div className={`lg:hidden flex items-center px-3 h-14 shrink-0 ${isCollapsed ? 'justify-center' : ''}`}>
-            <div className="w-8 h-8 bg-palette-forest-dark rounded-xl flex items-center justify-center text-white shadow-lg shadow-palette-forest-dark/30 shrink-0">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-              </svg>
-            </div>
+            <Link href="/dashboard" className="flex items-center">
+              <Image src="/logo.svg" alt="" width={64} height={64} className="h-7 w-auto object-contain shrink-0" aria-hidden />
+            </Link>
           </div>
 
           {/* Menu */}
@@ -256,19 +253,15 @@ export function Sidebar({ profile }: SidebarProps) {
       </Button>
       <div>
         <div className={`h-20 flex items-center transition-all duration-300 overflow-hidden shrink-0 hidden lg:flex ${isCollapsed ? 'justify-center px-0' : 'px-3 lg:px-5'}`}>
-          <div className="w-8 h-8 min-w-[2rem] bg-palette-forest-dark rounded-xl flex items-center justify-center text-white shadow-lg shadow-palette-forest-dark/30 shrink-0">
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-            </svg>
-          </div>
-          <span className={`text-base font-bold text-stone-800 tracking-tight transition-all duration-300 whitespace-nowrap ${showText ? 'ml-3 opacity-100 w-auto' : 'ml-0 opacity-0 w-0 overflow-hidden'}`}>CoachApp</span>
+          <Link href="/dashboard" className={`flex items-center min-w-0 ${isCollapsed ? 'w-10 justify-center px-0 gap-0' : 'gap-3'}`}>
+            <Image src="/logo.svg" alt="" width={64} height={64} className="h-7 w-auto object-contain shrink-0" aria-hidden />
+            <span className={`text-base font-bold text-stone-800 tracking-tight transition-all duration-300 whitespace-nowrap ${showText ? 'opacity-100 w-auto' : 'opacity-0 w-0 overflow-hidden'}`}>My Sport Ally</span>
+          </Link>
         </div>
         <div className={`lg:hidden flex items-center px-3 h-14 shrink-0 ${isCollapsed ? 'justify-center' : ''}`}>
-          <div className="w-8 h-8 bg-palette-forest-dark rounded-xl flex items-center justify-center text-white shadow-lg shadow-palette-forest-dark/30 shrink-0">
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-            </svg>
-          </div>
+          <Link href="/dashboard" className="flex items-center">
+            <Image src="/logo.svg" alt="" width={64} height={64} className="h-7 w-auto object-contain shrink-0" aria-hidden />
+          </Link>
         </div>
 
         <nav className={`px-2 lg:px-3 space-y-1.5 mt-2 shrink-0 ${isCollapsed ? 'flex flex-col items-center' : ''}`}>

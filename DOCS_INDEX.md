@@ -69,6 +69,21 @@
 - **Utiliser pour :** Évolution modèle (coach_requests, subscriptions) et code (createCoachRequest, respondToCoachRequest, affichage) pour figer et afficher les deux langues
 - **Créé le :** 19 février 2026
 
+### **docs/brand-domain-research.md**
+- **Contenu :** Recherche marque et nom de domaine .com (≤10 caractères, EN/FR/ES) : domaines vérifiés pris, candidats à confirmer, propositions recommandées
+- **Utiliser pour :** Choix du nom de marque et du domaine pour la plateforme sport et accompagnement
+- **Créé le :** 24 février 2026
+
+### **docs/DOMAIN_MYSPORTALLY_SETUP.md**
+- **Contenu :** Configuration du domaine mysportally.com sur Vercel (DNS, variables d’environnement) et Resend (domaine, DNS, vérification, API Key)
+- **Utiliser pour :** Mise en production avec le domaine custom et envoi d’emails depuis @mysportally.com
+- **Créé le :** 24 février 2026
+
+### **docs/EMAIL_SOLUTIONS_COMPARISON.md**
+- **Contenu :** Comparatif Resend / Microsoft 365 / Google Workspace / Zoho Mail : coûts, réception (inbox vs webhook), envoi transactionnel et volume (marketing), combinaisons recommandées
+- **Utiliser pour :** Choisir une solution email @mysportally.com (envoyer + recevoir + futur marketing)
+- **Créé le :** 24 février 2026
+
 ## 🚀 Documentation Opérationnelle
 
 ### **DEPLOYMENT_NOTES.md**
@@ -318,7 +333,7 @@
 - **Archivage :** `docs/spec_offers_price_frozen_when_published.md` et `docs/mockup_offer_tile_price_readonly.html` déplacés dans `docs/archive/offers-price-frozen/`. Référence courante : **Project_context.md §4.4**, **docs/DESIGN_SYSTEM.md**.
 
 ✅ **24 février 2026 – Tuile Profil sidebar (état sélectionné + centrage) – Mode Analyste :**
-- **Livraison :** Sur la page Profil (`/dashboard/profile`), la tuile Profil en bas de la sidebar (avatar + nom) affiche le même état sélectionné que les autres entrées du menu (fond vert, texte blanc, ombre neutre). Sur `/dashboard/profile/offers`, seule l’entrée « Offres » reste sélectionnée. En mode replié (desktop), seul l’avatar est rendu dans le lien Profil pour un centrage correct ; le logo « CoachApp » en haut utilise une marge conditionnelle (`ml-3` / `ml-0`) pour rester centré quand la sidebar est repliée.
+- **Livraison :** Sur la page Profil (`/dashboard/profile`), la tuile Profil en bas de la sidebar (avatar + nom) affiche le même état sélectionné que les autres entrées du menu (fond vert, texte blanc, ombre neutre). Sur `/dashboard/profile/offers`, seule l’entrée « Offres » reste sélectionnée. En mode replié (desktop), seul l’avatar est rendu dans le lien Profil pour un centrage correct ; le logo « My Sport Ally » en haut utilise une marge conditionnelle (`ml-3` / `ml-0`) pour rester centré quand la sidebar est repliée.
 - **Fichiers :** `components/Sidebar.tsx` (isProfilePage, classes conditionnelles, rendu conditionnel texte/chevron en replié, marge logo, restauration visibilité libellés menu).
 - **Mises à jour doc :** `Project_context.md` §4.0 (sidebar profile tile selected state), `docs/DESIGN_SYSTEM.md` §7 (Sidebar dashboard : tuile Profil, logo centré).
 - **Archivage :** `docs/design-sidebar-profile-tile/` déplacé dans `docs/archive/design-sidebar-profile-tile/` (MOCKUP, SPEC). Référence courante : **Project_context.md §4.0**, **docs/DESIGN_SYSTEM.md** §7.

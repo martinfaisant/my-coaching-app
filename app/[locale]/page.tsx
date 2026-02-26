@@ -11,8 +11,7 @@ import {
   Users, 
   Award,
   CheckCircle2,
-  Activity,
-  Zap
+  Activity
 } from 'lucide-react'
 
 export default function Home() {
@@ -93,8 +92,8 @@ export default function Home() {
             href="/"
             className="text-xl font-semibold text-stone-900 tracking-tight flex items-center gap-2"
           >
-            <Zap className="w-6 h-6 text-palette-forest-dark" />
-            Coach Pro
+            <Image src="/logo.svg" alt="My Sport Ally" width={80} height={80} className="h-9 w-auto object-contain" />
+            <span className="hidden sm:inline">My Sport Ally</span>
           </Link>
           <div className="flex items-center gap-4">
             <LanguageSwitcher />
@@ -357,7 +356,7 @@ export default function Home() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center text-stone-600">
             <p className="text-sm">
-              © {new Date().getFullYear()} Coach Pro. {t('footer.copyright')}
+              © {new Date().getFullYear()} My Sport Ally. {t('footer.copyright')}
             </p>
           </div>
         </div>
