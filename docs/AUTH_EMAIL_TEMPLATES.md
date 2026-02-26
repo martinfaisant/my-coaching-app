@@ -21,7 +21,23 @@ Si le **sujet** de l’email ne supporte pas les conditionnelles Go dans ton pro
 
 ---
 
+## Reset password : Redirect URLs obligatoires
+
+Le lien dans l’email de réinitialisation envoie l’utilisateur vers **`{SiteURL}/{locale}/reset-password`** (ex. `https://monsite.com/fr/reset-password` ou `/en/reset-password`). Ces URLs doivent être **autorisées** dans Supabase, sans quoi le clic affiche « lien invalide ou expiré ».
+
+**À faire :** Dashboard Supabase → **Authentication** → **URL Configuration** → **Redirect URLs**. Ajouter par exemple :
+
+- `https://monsite.com/fr/reset-password`
+- `https://monsite.com/en/reset-password`
+- En dev : `http://localhost:3000/fr/reset-password`, `http://localhost:3000/en/reset-password`
+
+L’app gère à la fois le flux **PKCE** (`?code=...` dans l’URL) et le flux **implicite** (hash `#access_token=...&type=recovery`).
+
+---
+
 ## Sujet de l’email (Subject) — Confirm signup
+
+**Il faut toujours renseigner le Subject** dans Supabase pour chaque type d’email (ne pas laisser vide). Pour Confirm signup, utiliser par exemple :
 
 Tu peux utiliser une condition Go pour le sujet (si ton instance Supabase le permet) :
 
@@ -37,13 +53,14 @@ Sinon, mets par défaut par exemple : `Confirmez votre inscription` ou `Confirm 
 
 Le template HTML complet pour **Confirm signup** (variante B : en-tête dégradé, logo + nom centrés, bouton CTA centré, pied de page Accueil · Connexion) est dans **[docs/email-templates/confirm-signup.html](email-templates/confirm-signup.html)**.
 
-**À faire :** ouvrir ce fichier, copier tout le contenu, et le coller dans le champ **Body** du template « Confirm signup » dans Supabase (Authentication → Email Templates).
+**À faire :** dans Supabase (Confirm signup), renseigner **toujours** le **Subject** (voir ci-dessus) et le **Body** (ouvrir le fichier, copier tout à partir de `<!DOCTYPE html>`, coller dans le champ Body). Le sujet est aussi rappelé en en-tête du fichier `confirm-signup.html`.
 
 Tous les templates d’emails Supabase (confirm signup, magic link, reset password, etc.) sont centralisés dans le dossier **[docs/email-templates/](email-templates/)** — voir le [README du dossier](email-templates/README.md) pour l’index.
 
 **Variables Supabase utilisées (Confirm signup) :**
 
-- `{{ .ConfirmationURL }}` : lien de confirmation (obligatoire).
+- `{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=email` : lien de confirmation **personnalisé** (le bouton pointe vers notre callback avec `token_hash` en query, pour que le serveur reçoive le token et affiche la modale « Email validé » sur la page d’accueil). Ne pas utiliser `{{ .ConfirmationURL }}` (Supabase envoie alors la session en fragment #, invisible côté serveur).
+- `{{ .TokenHash }}` : hash du token (utilisé dans l’URL ci-dessus).
 - `{{ .Data.locale }}` : `"en"` ou `"fr"` selon la page d’inscription.
 - `{{ .SiteURL }}` : URL du site (Auth → URL Configuration dans le dashboard). Utilisée pour l’image du logo (`{{ .SiteURL }}/logo.png`). Vérifier que **Site URL** pointe bien vers ton app (ex. `https://mysportally.com`) pour que le logo s’affiche dans l’email.
 
@@ -78,3 +95,11 @@ Si **Site URL** dans Supabase (Authentication → URL Configuration) pointe vers
 | **Design** | Couleurs design system (forest #506648, stone), bouton CTA clair, mobile-friendly. |
 
 Pour les autres emails (magic link, reset password, etc.), réutiliser la même structure et `{{ .Data.locale }}` si la locale est disponible au moment de l’envoi ; ajouter les fichiers dans **docs/email-templates/** au fur et à mesure.
+
+---
+
+## Durée de validité du lien (reset password, magic link)
+
+**Dans l'interface Supabase (dashboard), il n'y a pas de réglage visible** pour modifier la durée de validité des liens envoyés par email (reset password, magic link, etc.). Selon la doc Supabase, le délai par défaut est **1 heure** ; ce comportement n'est pas configurable (ou le paramètre n'est pas exposé dans l'UI).
+
+On indique donc cette durée dans le corps de l'email reset password (template **reset-password.html**) pour informer l'utilisateur. Si Supabase expose un jour un paramètre dans le dashboard, il suffira d'adapter le texte du template si besoin.

@@ -212,3 +212,41 @@ export async function requireUserWithProfile(
 
   return { user: { id: user.id, email: user.email }, profile }
 }
+
+const LIST_USERS_PAGE_SIZE = 50
+const LIST_USERS_MAX_PAGES = 100
+
+/**
+ * Récupère si un utilisateur Auth existe pour cet email et si son email est confirmé.
+ * À utiliser uniquement avec un client service role (createAdminClient()).
+ * Utilisé au signup quand Supabase renvoie succès avec identities vide (email déjà existant).
+ * Parcourt les pages de listUsers jusqu'à trouver l'email (comportement "get user by email").
+ *
+ * @param adminClient - Client Supabase avec service role
+ * @param email - Email à chercher (comparaison insensible à la casse)
+ * @returns { emailConfirmed: true } si compte existant et confirmé, { emailConfirmed: false } si existant non confirmé, null si non trouvé ou erreur
+ */
+export async function getExistingAuthUserConfirmationStatus(
+  adminClient: SupabaseClient,
+  email: string
+): Promise<{ emailConfirmed: boolean } | null> {
+  const normalized = email.trim().toLowerCase()
+  if (!normalized) return null
+  try {
+    for (let page = 1; page <= LIST_USERS_MAX_PAGES; page++) {
+      const { data, error } = await adminClient.auth.admin.listUsers({
+        page,
+        perPage: LIST_USERS_PAGE_SIZE,
+      })
+      if (error || !data?.users) return null
+      const existing = data.users.find(
+        (u) => u.email?.toLowerCase() === normalized
+      )
+      if (existing) return { emailConfirmed: !!existing.email_confirmed_at }
+      if (data.users.length < LIST_USERS_PAGE_SIZE) break
+    }
+    return null
+  } catch {
+    return null
+  }
+}

@@ -30,7 +30,9 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
   const [signupRole, setSignupRole] = useState<SignupRole>('athlete')
   const [showForgotPassword, setShowForgotPassword] = useState(false)
   const [prefilledEmail, setPrefilledEmail] = useState<string>('')
+  const [existingAccountMessage, setExistingAccountMessage] = useState(false)
   const emailInputRef = useRef<HTMLInputElement>(null)
+  const tErrors = useTranslations('auth.errors')
 
   // Pré-remplir l'email quand on bascule vers le mode login
   useEffect(() => {
@@ -84,6 +86,15 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
           {t('enterCredentials')}
         </p>
 
+        {existingAccountMessage && (
+          <div
+            className="mb-6 rounded-lg border border-palette-forest-dark bg-palette-forest-light p-4 text-sm text-stone-900"
+            role="alert"
+          >
+            {tErrors('accountExistsLoginMessage')}
+          </div>
+        )}
+
         <form action={loginAction} className="space-y-5">
           <Input
             ref={emailInputRef}
@@ -122,6 +133,78 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
             {t('forgotPassword')}
           </Button>
         </form>
+      </div>
+    )
+  }
+
+  // Écran succès inscription (nouveau compte ou email renvoyé)
+  if (mode === 'signup' && signupState?.success && signupState?.successType) {
+    const successTitle =
+      signupState.successType === 'emailResent'
+        ? t('successTitleEmailResent')
+        : t('successTitleAccountCreated')
+    return (
+      <div className="p-8">
+        <div className="flex items-center justify-between gap-3 mb-6">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
+            <div
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-palette-forest-light text-palette-forest-dark"
+              aria-hidden
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h2 id="modal-title" className="text-2xl font-semibold text-stone-900 truncate">
+              {successTitle}
+            </h2>
+          </div>
+          {onClose && (
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={onClose}
+              className="p-1.5 shrink-0 -mt-1 -mr-1"
+              aria-label={tCommon('close')}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M18 6 6 18" />
+                <path d="m6 6 12 12" />
+              </svg>
+            </Button>
+          )}
+        </div>
+        <p className="text-sm text-stone-600 mb-6" role="status">
+          {signupState.success}
+        </p>
+        {onClose && (
+          <Button type="button" variant="primary" fullWidth onClick={onClose}>
+            {tCommon('close')}
+          </Button>
+        )}
+        <p className="mt-4 text-center text-xs text-stone-500">
+          {t('successCheckSpam')}
+        </p>
       </div>
     )
   }
@@ -238,6 +321,7 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
                   variant="ghost"
                   onClick={() => {
                     setPrefilledEmail(signupState.existingEmail || '')
+                    setExistingAccountMessage(true)
                     onModeChange('login')
                   }}
                   className="inline !min-h-0 !p-0 !border-0 bg-transparent hover:bg-transparent underline text-palette-forest-dark hover:!text-palette-olive"
@@ -246,11 +330,6 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
                 </Button>
               </>
             )}
-          </p>
-        )}
-        {signupState?.success && (
-          <p className="text-sm text-palette-forest-dark" role="alert">
-            {signupState.success}
           </p>
         )}
         <Button type="submit" fullWidth>
@@ -265,6 +344,70 @@ function ForgotPasswordForm({ onBack }: { onBack: () => void }) {
   const t = useTranslations('auth')
   const tCommon = useTranslations('common')
   const [resetState, resetAction] = useActionState<ResetPasswordState, FormData>(resetPassword, {})
+
+  // Écran succès : lien de réinitialisation envoyé (même style que succès inscription)
+  if (resetState?.success) {
+    return (
+      <div className="p-8">
+        <div className="flex items-center justify-between gap-3 mb-6">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
+            <div
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-palette-forest-light text-palette-forest-dark"
+              aria-hidden
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h2 id="modal-title" className="text-2xl font-semibold text-stone-900 truncate">
+              {t('successTitleResetLinkSent')}
+            </h2>
+          </div>
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={onBack}
+            className="p-1.5 shrink-0 -mt-1 -mr-1"
+            aria-label={tCommon('close')}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M18 6 6 18" />
+              <path d="m6 6 12 12" />
+            </svg>
+          </Button>
+        </div>
+        <p className="text-sm text-stone-600 mb-6" role="status">
+          {resetState.success}
+        </p>
+        <Button type="button" variant="primary" fullWidth onClick={onBack}>
+          ← {t('backToLogin')}
+        </Button>
+        <p className="mt-4 text-center text-xs text-stone-500">
+          {t('successCheckSpam')}
+        </p>
+      </div>
+    )
+  }
 
   return (
     <div className="p-8">
@@ -313,13 +456,8 @@ function ForgotPasswordForm({ onBack }: { onBack: () => void }) {
           placeholder={t('emailPlaceholder')}
         />
         {resetState?.error && (
-          <p className="text-sm text-red-600" role="alert">
+          <p className="text-sm text-palette-danger" role="alert">
             {resetState.error}
-          </p>
-        )}
-        {resetState?.success && (
-          <p className="text-sm text-palette-forest-dark" role="alert">
-            {resetState.success}
           </p>
         )}
         <Button type="submit" fullWidth>

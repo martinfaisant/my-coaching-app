@@ -8,6 +8,7 @@ export const AUTH_ERROR_CODES = {
   RATE_LIMIT: 'rateLimitExceeded',
   USER_EXISTS: 'userExists',
   INVALID_CREDENTIALS: 'invalidCredentials',
+  EMAIL_NOT_CONFIRMED: 'emailNotConfirmed',
 } as const
 
 /**
@@ -57,6 +58,27 @@ export function handleSignupError(
   }
 
   // Erreur générique
+  return { error: error.message }
+}
+
+/**
+ * Gère les erreurs de connexion (email non confirmé, rate limit, etc.).
+ * Retourne un errorCode pour afficher un message traduit côté UI.
+ */
+export function handleLoginError(error: AuthError): { error: string; errorCode?: string } {
+  const rateLimitError = handleAuthRateLimitError(error)
+  if (rateLimitError) return rateLimitError
+
+  const msg = error.message.toLowerCase()
+  if (
+    msg.includes('email not confirmed') ||
+    msg.includes('email_not_confirmed') ||
+    msg.includes('confirm your email') ||
+    msg.includes('mail non confirmé')
+  ) {
+    return { error: error.message, errorCode: AUTH_ERROR_CODES.EMAIL_NOT_CONFIRMED }
+  }
+
   return { error: error.message }
 }
 
