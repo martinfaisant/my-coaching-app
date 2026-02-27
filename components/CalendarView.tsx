@@ -789,20 +789,42 @@ export function CalendarView({
                                 {firstGoal && !firstWorkout && !firstImported && (() => {
                                   const isPrimary = firstGoal.is_primary
                                   const borderColor = isPrimary ? 'border-palette-amber' : 'border-palette-sage'
+                                  const badgeColor = isPrimary ? 'text-palette-amber bg-palette-amber/10' : 'text-palette-sage bg-palette-sage/10'
                                   return (
                                     <div
                                       onClick={(e) => { e.stopPropagation(); openGoal(firstGoal) }}
                                       className={`bg-white rounded border-l-4 ${borderColor} shadow-sm p-1.5 cursor-pointer training-card`}
                                       role="button"
                                     >
-                                      <div className="text-xs font-semibold text-stone-700 leading-tight">{firstGoal.race_name}</div>
-                                      <div className="flex items-center gap-1 text-[10px] text-stone-400 font-medium mt-1">
-                                        <span>{firstGoal.distance} km</span>
+                                      <div>
+                                        <div>
+                                          <span className={`float-left inline-flex items-center mr-1.5 ${badgeColor} px-1 py-0.5 rounded shrink-0`}>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                              <circle cx="12" cy="12" r="10" />
+                                              <circle cx="12" cy="12" r="6" />
+                                              <circle cx="12" cy="12" r="2" />
+                                            </svg>
+                                          </span>
+                                          <div className="text-xs font-semibold text-stone-700 leading-tight">{firstGoal.race_name}</div>
+                                          <div className="clear-both" />
+                                        </div>
+                                      </div>
+                                      <div className="flex items-center gap-1 flex-wrap text-[10px] text-stone-400 font-medium mt-1">
+                                        <div className="flex items-center gap-1">
+                                          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z" />
+                                            <path d="m14.5 12.5 2-2" />
+                                            <path d="m11.5 9.5 2-2" />
+                                            <path d="m8.5 6.5 2-2" />
+                                            <path d="m17.5 15.5 2-2" />
+                                          </svg>
+                                          <span>{firstGoal.distance} km</span>
+                                        </div>
                                       </div>
                                     </div>
                                   )
                                 })()}
-                                {firstWorkout && renderCompactCard(firstWorkout, day.dateStr)}
+                                {firstWorkout && renderDetailedCard(firstWorkout, day.dateStr)}
                                 {!firstWorkout && !firstGoal && firstImported && (() => {
                                   const target = formatImportedActivityTarget(firstImported)
                                   return (
@@ -861,20 +883,42 @@ export function CalendarView({
                                 {firstGoal && !firstWorkout && !firstImported && (() => {
                                   const isPrimary = firstGoal.is_primary
                                   const borderColor = isPrimary ? 'border-palette-amber' : 'border-palette-sage'
+                                  const badgeColor = isPrimary ? 'text-palette-amber bg-palette-amber/10' : 'text-palette-sage bg-palette-sage/10'
                                   return (
                                     <div
                                       onClick={(e) => { e.stopPropagation(); openGoal(firstGoal) }}
                                       className={`bg-white rounded border-l-4 ${borderColor} shadow-sm p-1.5 cursor-pointer training-card`}
                                       role="button"
                                     >
-                                      <div className="text-xs font-semibold text-stone-700 leading-tight">{firstGoal.race_name}</div>
-                                      <div className="flex items-center gap-1 text-[10px] text-stone-400 font-medium mt-1">
-                                        <span>{firstGoal.distance} km</span>
+                                      <div>
+                                        <div>
+                                          <span className={`float-left inline-flex items-center mr-1.5 ${badgeColor} px-1 py-0.5 rounded shrink-0`}>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                              <circle cx="12" cy="12" r="10" />
+                                              <circle cx="12" cy="12" r="6" />
+                                              <circle cx="12" cy="12" r="2" />
+                                            </svg>
+                                          </span>
+                                          <div className="text-xs font-semibold text-stone-700 leading-tight">{firstGoal.race_name}</div>
+                                          <div className="clear-both" />
+                                        </div>
+                                      </div>
+                                      <div className="flex items-center gap-1 flex-wrap text-[10px] text-stone-400 font-medium mt-1">
+                                        <div className="flex items-center gap-1">
+                                          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z" />
+                                            <path d="m14.5 12.5 2-2" />
+                                            <path d="m11.5 9.5 2-2" />
+                                            <path d="m8.5 6.5 2-2" />
+                                            <path d="m17.5 15.5 2-2" />
+                                          </svg>
+                                          <span>{firstGoal.distance} km</span>
+                                        </div>
                                       </div>
                                     </div>
                                   )
                                 })()}
-                                {firstWorkout && renderCompactCard(firstWorkout, day.dateStr)}
+                                {firstWorkout && renderDetailedCard(firstWorkout, day.dateStr)}
                                 {!firstWorkout && !firstGoal && firstImported && (() => {
                                   const target = formatImportedActivityTarget(firstImported)
                                   return (
