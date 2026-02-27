@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 26 février 2026 (Mode Analyste : features auth-signup success et email confirmation landing livrées ; docs de feature archivées)
+**Dernière mise à jour :** 27 février 2026 (Mode Analyste : header public reset-password livré ; docs design-reset-password-header archivés)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -18,13 +18,13 @@
 - **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), stack technique, **URL production https://mysportally.com**
 - **Utiliser pour :** Comprendre le projet, les features, les rôles, l'architecture globale
 - **Taille :** ~420 lignes
-- **Dernière mise à jour :** 24 février 2026
+- **Dernière mise à jour :** 27 février 2026 (§4.1 Password reset + PublicHeader)
 
 ### **docs/DESIGN_SYSTEM.md** ⭐
 - **Contenu :** Tokens (couleurs, typo, espacements), composants (Button, Input, Badge, TileCard, DashboardPageShell, Modal, etc.), guidelines UI, exemples de code, §7 breakpoints (calendrier, chat, Trouver mon coach, My offers)
 - **Utiliser pour :** Créer ou modifier des composants UI, choisir des couleurs, appliquer le design system, règles responsive par page
 - **Taille :** ~850 lignes
-- **Dernière mise à jour :** 24 février 2026 (tuile demandes en attente, §7 Mes athlètes, **sidebar tuile Profil**)
+- **Dernière mise à jour :** 27 février 2026 (PublicHeader, § reset-password)
 
 ### **docs/I18N.md** ⭐
 - **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces, utilisation dans composants et server actions, **checklist pour nouvelles features** (toujours penser bilingue)
@@ -200,6 +200,10 @@
 **Atterrissage après confirmation email (archivés 26 février 2026) :**
 - `docs/archive/design-email-confirmation-landing/` — DESIGN_EMAIL_CONFIRMATION_LANDING.md, USER_STORIES_EMAIL_CONFIRMATION_LANDING.md, SPEC_EMAIL_CONFIRMATION_LANDING.md, mockup-email-confirmation-landing.html (Option B : modale « Email validé » avec formulaire connexion).
 - **Raison :** Feature livrée ; callback redirige vers `/[locale]/?emailConfirmed=1`, modale EmailValidatedModal sur la page d’accueil, erreur → login?error=confirmation_failed. Comportement décrit dans **Project_context.md §4.1** (Email confirmation landing) et **docs/DESIGN_SYSTEM.md** § Modal (EmailValidatedModal, HomeEmailConfirmedTrigger).
+
+**En-tête public page réinitialisation mot de passe (archivés 27 février 2026) :**
+- `docs/archive/design-reset-password-header/` — DESIGN_RESET_PASSWORD_HEADER.md (contexte, 2 solutions UI), reset-password-solution-1-header.html, reset-password-solution-2-context-link.html (mockups HTML).
+- **Raison :** Feature livrée ; page reset-password et page d’accueil partagent le même en-tête (composant **PublicHeader** : logo, LanguageSwitcher, AuthButtons). Comportement décrit dans **Project_context.md §4.1** (Password reset) et **docs/DESIGN_SYSTEM.md** § PublicHeader.
 
 **Séparation pages dashboard – find-coach / Mes athlètes (archivé 23 février 2026) :**
 - `docs/archive/dashboard-pages-separation/SPEC_ARCHI_DASHBOARD_PAGES_SEPARATION.md` — Spec architecture (redirections depuis /dashboard, pages dédiées, skeletons)

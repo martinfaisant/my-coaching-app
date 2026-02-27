@@ -1,11 +1,10 @@
-import Link from 'next/link'
 import Image from 'next/image'
 import { redirect } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
 import { createClient } from '@/utils/supabase/server'
 import { AuthButtons } from '@/components/AuthButtons'
-import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { HomeEmailConfirmedTrigger } from '@/components/HomeEmailConfirmedTrigger'
+import { PublicHeader } from '@/components/PublicHeader'
 import {
   Calendar,
   MessageCircle,
@@ -110,23 +109,7 @@ export default async function Home({ params, searchParams }: HomePageProps) {
   return (
     <div className="min-h-screen bg-background">
       <HomeEmailConfirmedTrigger showEmailConfirmedModal={emailConfirmed} />
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-stone-200 bg-background/95 backdrop-blur-md">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <Link
-            href="/"
-            className="text-xl font-semibold text-stone-900 tracking-tight flex items-center gap-2"
-          >
-            <Image src="/logo.svg" alt="My Sport Ally" width={80} height={80} className="h-9 w-auto object-contain" />
-            <span className="hidden sm:inline">My Sport Ally</span>
-          </Link>
-          <div className="flex items-center gap-4">
-            <LanguageSwitcher />
-            <div className="h-6 w-px bg-stone-200" aria-hidden />
-            <AuthButtons />
-          </div>
-        </div>
-      </header>
+      <PublicHeader />
 
       <main>
         {/* Hero Section */}

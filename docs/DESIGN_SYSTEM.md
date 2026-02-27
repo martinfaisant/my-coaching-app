@@ -1,7 +1,7 @@
 # 🎨 Design System
 
-**Version :** 1.4  
-**Dernière mise à jour :** 26 février 2026 (modales auth : EmailValidatedModal, HomeEmailConfirmedTrigger)
+**Version :** 1.5  
+**Dernière mise à jour :** 27 février 2026 (PublicHeader : en-tête partagé page d'accueil / reset-password)
 
 ---
 
@@ -23,6 +23,7 @@
    - [ActivityTile](#activitytile)
    - [TileCard](#tilecard)
    - [Modal](#modal)
+   - [PublicHeader](#publicheader)
    - [LanguageSwitcher](#languageswitcher)
    - [ChatAthleteListItem](#chatathletelistitem)
    - [ChatConversationSidebar](#chatconversationsidebar)
@@ -1029,6 +1030,25 @@ const [isOpen, setIsOpen] = useState(false)
 
 ---
 
+### PublicHeader
+
+**Fichier :** `components/PublicHeader.tsx`
+
+En-tête public partagé pour les pages non connectées : page d'accueil, réinitialisation mot de passe. Structure identique sur toutes ces pages : logo My Sport Ally (lien vers `/`), LanguageSwitcher, séparateur vertical, AuthButtons (Se connecter, Créer un compte). Classes : `sticky top-0 z-50 border-b border-stone-200 bg-background/95 backdrop-blur-md`, conteneur `max-w-7xl h-16`.
+
+**Usage :** Page d'accueil (`app/[locale]/page.tsx`), page reset-password (`app/[locale]/reset-password/page.tsx`). Référence design archivée : `docs/archive/design-reset-password-header/DESIGN_RESET_PASSWORD_HEADER.md`.
+
+```tsx
+import { PublicHeader } from '@/components/PublicHeader'
+
+<div className="min-h-screen flex flex-col">
+  <PublicHeader />
+  <main className="flex-1">...</main>
+</div>
+```
+
+---
+
 ### LanguageSwitcher
 
 **Fichier :** `components/LanguageSwitcher.tsx`
@@ -1267,7 +1287,7 @@ Actuellement, utiliser un span custom :
 ### Fichiers clés
 
 - **Tokens couleurs** : `tailwind.config.ts`, `app/globals.css`
-- **Composants** : `components/Button.tsx`, `components/Input.tsx`, `components/Textarea.tsx`, `components/Badge.tsx`, `components/SportTileSelectable.tsx`, `components/ActivityTile.tsx`, `components/Modal.tsx`, `components/EmailValidatedModal.tsx`, `components/HomeEmailConfirmedTrigger.tsx`, `components/ChatAthleteListItem.tsx`, `components/ChatConversationSidebar.tsx`
+- **Composants** : `components/Button.tsx`, `components/Input.tsx`, `components/Textarea.tsx`, `components/Badge.tsx`, `components/SportTileSelectable.tsx`, `components/ActivityTile.tsx`, `components/Modal.tsx`, `components/PublicHeader.tsx`, `components/EmailValidatedModal.tsx`, `components/HomeEmailConfirmedTrigger.tsx`, `components/ChatAthleteListItem.tsx`, `components/ChatConversationSidebar.tsx`
 - **Sports** : `lib/sportStyles.ts`, `lib/sportsOptions.ts`, `components/SportIcons.tsx`
 - **Design system page** : `app/dashboard/admin/design-system/page.tsx`
 
