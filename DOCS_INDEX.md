@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 27 février 2026 (Mode Analyste : header public reset-password livré ; docs design-reset-password-header archivés)
+**Dernière mise à jour :** 27 février 2026 (Mode Analyste : sélecteur de semaine calendrier livré ; docs design-week-selector-two-lines archivés)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -18,13 +18,13 @@
 - **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), stack technique, **URL production https://mysportally.com**
 - **Utiliser pour :** Comprendre le projet, les features, les rôles, l'architecture globale
 - **Taille :** ~420 lignes
-- **Dernière mise à jour :** 27 février 2026 (§4.1 Password reset + PublicHeader)
+- **Dernière mise à jour :** 27 février 2026 (§4.5 Week selector calendrier)
 
 ### **docs/DESIGN_SYSTEM.md** ⭐
 - **Contenu :** Tokens (couleurs, typo, espacements), composants (Button, Input, Badge, TileCard, DashboardPageShell, Modal, etc.), guidelines UI, exemples de code, §7 breakpoints (calendrier, chat, Trouver mon coach, My offers)
 - **Utiliser pour :** Créer ou modifier des composants UI, choisir des couleurs, appliquer le design system, règles responsive par page
 - **Taille :** ~850 lignes
-- **Dernière mise à jour :** 27 février 2026 (PublicHeader, § reset-password)
+- **Dernière mise à jour :** 27 février 2026 (WeekSelector §7, reset-password)
 
 ### **docs/I18N.md** ⭐
 - **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces, utilisation dans composants et server actions, **checklist pour nouvelles features** (toujours penser bilingue)
@@ -205,6 +205,10 @@
 - `docs/archive/design-reset-password-header/` — DESIGN_RESET_PASSWORD_HEADER.md (contexte, 2 solutions UI), reset-password-solution-1-header.html, reset-password-solution-2-context-link.html (mockups HTML).
 - **Raison :** Feature livrée ; page reset-password et page d’accueil partagent le même en-tête (composant **PublicHeader** : logo, LanguageSwitcher, AuthButtons). Comportement décrit dans **Project_context.md §4.1** (Password reset) et **docs/DESIGN_SYSTEM.md** § PublicHeader.
 
+**Sélecteur de semaine calendrier (archivés 27 février 2026) :**
+- `docs/archive/design-week-selector-two-lines/` — DESIGN_WEEK_SELECTOR_TWO_LINES.md (contexte, 2 solutions), solution-1-two-lines-compact.html, solution-2-two-lines-hierarchy.html (mockups HTML).
+- **Raison :** Feature livrée ; sélecteur de semaine responsive (deux lignes sous md, une ligne à partir de md), largeurs fixes, dates dans les boutons à partir de 400px. Comportement décrit dans **Project_context.md §4.5** (Week selector) et **docs/DESIGN_SYSTEM.md** §7 (Sélecteur de semaine).
+
 **Séparation pages dashboard – find-coach / Mes athlètes (archivé 23 février 2026) :**
 - `docs/archive/dashboard-pages-separation/SPEC_ARCHI_DASHBOARD_PAGES_SEPARATION.md` — Spec architecture (redirections depuis /dashboard, pages dédiées, skeletons)
 - **Raison :** Feature livrée ; comportement décrit dans **Project_context.md §4.0** (Dashboard entry point) et **docs/DESIGN_SYSTEM.md** §7 (pages Trouver mon coach, Mes athlètes).
@@ -340,6 +344,12 @@
 **Dernier nettoyage :** 26 février 2026 (archivage auth-signup-success et design-email-confirmation-landing)
 
 ### Changements récents :
+
+✅ **27 février 2026 – Sélecteur de semaine calendrier (Mode Analyste) :**
+- **Livraison :** Sélecteur de semaine (WeekSelector) responsive : plage de dates sur une ligne à partir de `md` (768px), sur deux lignes en dessous ; largeurs fixes (zone centrale 80px / 150px, boutons 40px / 80px) pour que la longueur ne varie pas au changement de semaine ; dates « précédente/suivante » dans les boutons affichées à partir de 400px, masquées en dessous pour tenir sur les écrans étroits.
+- **Fichiers :** `components/WeekSelector.tsx`.
+- **Mises à jour doc :** `Project_context.md` §4.5 (Week selector), `docs/DESIGN_SYSTEM.md` §7 (Sélecteur de semaine).
+- **Archivage :** `docs/design-week-selector-two-lines/` → `docs/archive/design-week-selector-two-lines/` (DESIGN_WEEK_SELECTOR_TWO_LINES.md, mockups solution 1 et 2). Référence courante : **Project_context.md §4.5**, **docs/DESIGN_SYSTEM.md** §7.
 
 ✅ **26 février 2026 – Auth signup success et email confirmation landing (Mode Analyste) :**
 - **Livraison :** (1) Succès inscription : écran succès dédié (nouveau compte / email renvoyé), compte existant validé → connexion avec message + email pré-rempli (modale et page login) ; backend via `data.user.identities`. (2) Email confirmation landing : callback → page d’accueil `?emailConfirmed=1`, modale « Email validé » avec formulaire de connexion (Option B), erreur callback → `/login?error=confirmation_failed`.

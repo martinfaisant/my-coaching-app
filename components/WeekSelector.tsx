@@ -1,6 +1,10 @@
 'use client'
 
+import { useMemo } from 'react'
 import { Button } from './Button'
+
+/** Séparateur utilisé dans dateRangeLabel (ex. "3 févr. – 9 févr."). */
+const RANGE_SEPARATOR = ' – '
 
 type WeekSelectorProps = {
   dateRangeLabel: string
@@ -25,36 +29,54 @@ export function WeekSelector({
   prevWeekAriaLabel = 'Semaine précédente',
   nextWeekAriaLabel = 'Semaine suivante',
 }: WeekSelectorProps) {
+  const { startLabel, endLabel, hasTwoParts } = useMemo(() => {
+    const parts = dateRangeLabel.split(RANGE_SEPARATOR)
+    const start = parts[0] ?? dateRangeLabel
+    const end = parts[1] ?? ''
+    return { startLabel: start, endLabel: end, hasTwoParts: end.length > 0 }
+  }, [dateRangeLabel])
+
   return (
-    <div className="flex items-center gap-3 bg-stone-50 p-1.5 rounded-xl border border-stone-200 shadow-sm">
+    <div className="flex items-center gap-2 lg:gap-3 bg-stone-50 p-1.5 rounded-xl border border-stone-200 shadow-sm min-w-0 w-fit">
       <Button
         type="button"
         variant="ghost"
         onClick={() => onNavigate(-1)}
         disabled={isAnimating}
-        className="p-1.5 min-h-10 hover:bg-white text-stone-500 hover:text-palette-forest-dark shadow-sm flex items-center gap-1.5"
+        className="p-1.5 min-h-10 w-10 min-[400px]:w-[80px] min-[400px]:justify-center hover:bg-white text-stone-500 hover:text-palette-forest-dark shadow-sm flex items-center gap-1.5 shrink-0"
         aria-label={prevWeekAriaLabel}
       >
         <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="m15 18-7-7 7-7" />
         </svg>
+        {/* Masqué en dessous de 400px pour que le sélecteur tienne sur les écrans étroits. */}
         {prevWeekLastDayLabel != null && prevWeekLastDayLabel !== '' && (
-          <span className="text-xs text-stone-600 whitespace-nowrap">{prevWeekLastDayLabel}</span>
+          <span className="text-xs text-stone-600 truncate max-w-[52px] hidden min-[400px]:inline">{prevWeekLastDayLabel}</span>
         )}
       </Button>
-      <div className="px-2 text-sm font-bold text-stone-800 select-none w-[200px] text-center shrink-0">
-        {dateRangeLabel}
+      {/* Largeur fixe pour que la longueur du sélecteur ne varie pas au changement de semaine. */}
+      <div className="w-[80px] lg:w-[150px] px-1 lg:px-2 py-0.5 flex flex-col lg:flex-row items-center justify-center text-center select-none shrink-0">
+        {/* Deux lignes en dessous de lg quand le label contient " – ". */}
+        {hasTwoParts && (
+          <>
+            <span className="lg:hidden block text-xs font-bold text-stone-800 leading-tight truncate max-w-full">{startLabel}</span>
+            <span className="lg:hidden block text-xs font-bold text-stone-800 leading-tight truncate max-w-full">{endLabel}</span>
+          </>
+        )}
+        {/* Une ligne : à partir de lg (1024px), ou en dessous si format sans séparateur. */}
+        <span className={hasTwoParts ? 'hidden lg:block text-sm font-bold text-stone-800 truncate max-w-full' : 'text-sm font-bold text-stone-800 truncate max-w-full'}>{dateRangeLabel}</span>
       </div>
       <Button
         type="button"
         variant="ghost"
         onClick={() => onNavigate(1)}
         disabled={isAnimating}
-        className="p-1.5 min-h-10 hover:bg-white text-stone-500 hover:text-palette-forest-dark shadow-sm flex items-center gap-1.5"
+        className="p-1.5 min-h-10 w-10 min-[400px]:w-[80px] min-[400px]:justify-center hover:bg-white text-stone-500 hover:text-palette-forest-dark shadow-sm flex items-center gap-1.5 shrink-0"
         aria-label={nextWeekAriaLabel}
       >
+        {/* Masqué en dessous de 400px pour que le sélecteur tienne sur les écrans étroits. */}
         {nextWeekFirstDayLabel != null && nextWeekFirstDayLabel !== '' && (
-          <span className="text-xs text-stone-600 whitespace-nowrap">{nextWeekFirstDayLabel}</span>
+          <span className="text-xs text-stone-600 truncate max-w-[52px] hidden min-[400px]:inline">{nextWeekFirstDayLabel}</span>
         )}
         <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="m9 18 6-6-6-6" />
