@@ -91,7 +91,7 @@
       "emailNotConfirmed": "Your email address has not been confirmed yet. You should have received a confirmation email—please check your inbox (and spam folder). If you didn't receive it, you can request a new one by going through the sign-up process again (sign up again with the same email address).",
       "emailRequiredOnly": "Email is required.",
       "sessionExpiredReset": "Session expired. Please start the reset process again.",
-      "passwordUpdatedSuccess": "Password updated successfully."
+      "passwordUpdatedSuccess": "Password updated successfully. You will be connected automatically."
     }
   },
   "navigation": {
@@ -140,6 +140,7 @@
     "notes": "Notes",
     "deleteConfirm": "Are you sure you want to delete this workout?",
     "form": {
+      "chooseDate": "Choose a date",
       "sportType": "Sport Type",
       "title": "Session Title",
       "titlePlaceholder": "E.g.: Long run",
@@ -167,7 +168,14 @@
       "noComment": "No comment.",
       "yourComment": "Your Comment",
       "placeholder": "Enter your comment...",
+      "placeholderForCoach": "Comments on the session for your coach",
       "ariaLabel": "Your comment"
+    },
+    "status": {
+      "ariaLabel": "Session status",
+      "planned": "Planned",
+      "completed": "Completed",
+      "not_completed": "Not completed"
     },
     "validation": {
       "allFieldsRequired": "All fields are required.",

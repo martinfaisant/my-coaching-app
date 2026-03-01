@@ -1,7 +1,7 @@
 # 🎨 Design System
 
-**Version :** 1.3  
-**Dernière mise à jour :** 24 février 2026 (sidebar : tuile Profil état sélectionné + centrage mode replié)
+**Version :** 1.5  
+**Dernière mise à jour :** 27 février 2026 (Workout status : tuiles et modales athlète/coach, totaux « fait », lib/formStyles dans modales)
 
 ---
 
@@ -23,6 +23,7 @@
    - [ActivityTile](#activitytile)
    - [TileCard](#tilecard)
    - [Modal](#modal)
+   - [PublicHeader](#publicheader)
    - [LanguageSwitcher](#languageswitcher)
    - [ChatAthleteListItem](#chatathletelistitem)
    - [ChatConversationSidebar](#chatconversationsidebar)
@@ -638,7 +639,7 @@ Design inspiré du style Strava avec bordure gauche colorée (4px) et badge en h
 {
   type: 'workout'
   sportType: SportType       // 'course', 'velo', 'natation', etc.
-  metadata?: string[]        // ["1h30", "15 km", "200m D+"]
+  metadata?: string[]        // ["1h30", "15 km", "200m D+"] — natation : distance en m (ex. "2500 m")
 }
 
 // Type: strava
@@ -910,6 +911,8 @@ type ModalProps = {
 }
 ```
 
+**Usage avancé :** La modale entraînement (`WorkoutModal`) utilise `headerRight` pour afficher le sélecteur de date (mois en toutes lettres) et le badge de statut (Planifié / Réalisé / Non réalisé) côté coach ; en lecture seule coach, seul le badge est affiché. Styles formulaires : `lib/formStyles.ts`.
+
 #### Exemples
 
 ```tsx
@@ -1015,6 +1018,35 @@ const [isOpen, setIsOpen] = useState(false)
     - Bouton fermer (X) par défaut
   - Corps scrollable (children)
   - Footer optionnel (fixe, ne scroll pas)
+```
+
+#### Modales auth dérivées
+
+- **EmailValidatedModal** (`components/EmailValidatedModal.tsx`) : modale affichée après confirmation d’email (landing avec `?emailConfirmed=1`). Taille `md`, titre i18n « Email validé », message « Vous pouvez vous connecter », formulaire de connexion (email, mot de passe, bouton Se connecter) dans la modale. Utilise `Modal`, `Input`, `Button`, action `login` ; fermeture par overlay/Escape. i18n : `auth.emailValidatedTitle`, `auth.emailValidatedMessage`.
+- **HomeEmailConfirmedTrigger** (`components/HomeEmailConfirmedTrigger.tsx`) : composant client rendu sur la page d’accueil ; reçoit `showEmailConfirmedModal={true}` quand l’URL contient `emailConfirmed=1` ; ouvre `EmailValidatedModal` à l’affichage. Utilisé par `app/[locale]/page.tsx`.
+
+```tsx
+// Page d'accueil : après callback confirmation email
+<HomeEmailConfirmedTrigger showEmailConfirmedModal={emailConfirmed} />
+```
+
+---
+
+### PublicHeader
+
+**Fichier :** `components/PublicHeader.tsx`
+
+En-tête public partagé pour les pages non connectées : page d'accueil, réinitialisation mot de passe. Structure identique sur toutes ces pages : logo My Sport Ally (lien vers `/`), LanguageSwitcher, séparateur vertical, AuthButtons (Se connecter, Créer un compte). Classes : `sticky top-0 z-50 border-b border-stone-200 bg-background/95 backdrop-blur-md`, conteneur `max-w-7xl h-16`.
+
+**Usage :** Page d'accueil (`app/[locale]/page.tsx`), page reset-password (`app/[locale]/reset-password/page.tsx`). Référence design archivée : `docs/archive/design-reset-password-header/DESIGN_RESET_PASSWORD_HEADER.md`.
+
+```tsx
+import { PublicHeader } from '@/components/PublicHeader'
+
+<div className="min-h-screen flex flex-col">
+  <PublicHeader />
+  <main className="flex-1">...</main>
+</div>
 ```
 
 ---
@@ -1187,7 +1219,8 @@ Ce breakpoint `md` est le breakpoint de référence pour les bascules de layout 
 
 **Usages actuels documentés :**
 - **Sidebar dashboard** : la tuile Profil (avatar + nom en bas de la colonne) affiche le même état sélectionné que les autres entrées du menu (`bg-palette-forest-dark text-white shadow-md`) lorsque l'utilisateur est sur la page Profil (`/dashboard/profile`) ; en mode replié (desktop), seul l'avatar est affiché et centré. Logo « My Sport Ally » : marge conditionnelle (`ml-3` quand texte visible, `ml-0` quand replié) pour centrer l’icône. Fichier : `components/Sidebar.tsx`.
-- **Calendrier (athlète + coach)** : sous `md`, en-tête sur 2 lignes + bloc totaux de la semaine (volume horaire total + barres par sport, identique au mode étendu desktop) + 1 semaine en stack ; à partir de `md`, layout desktop (3 semaines, grille 7 colonnes). Sur les tuiles entraînement (carte compacte et carte détaillée modale jour), une icône commentaire en fin de ligne métadonnées (durée, distance, etc.) signale qu’un commentaire athlète est présent (`calendar.tile.athleteCommentLabel`). Détail : `Project_context.md` §4.5.
+- **Calendrier (athlète + coach)** : sous `md`, en-tête sur 2 lignes + bloc totaux de la semaine (volume horaire total + barres par sport, identique au mode étendu desktop) + 1 semaine en stack ; à partir de `md`, layout desktop (3 semaines, grille 7 colonnes). **Natation :** totaux et métadonnées en **mètres (m)**, arrondis au mètre près ; les autres sports à distance en km. Sur les tuiles entraînement (carte compacte et carte détaillée modale jour), une icône commentaire en fin de ligne métadonnées (durée, distance, etc.) signale qu’un commentaire athlète est présent (`calendar.tile.athleteCommentLabel`). Détail : `Project_context.md` §4.5.
+- **Sélecteur de semaine (WeekSelector, calendrier)** : zone centrale à largeur fixe (80px sous `lg`, 150px à partir de `lg`) ; plage de dates sur une ligne à partir de `lg` (1024px), sur deux lignes sous `lg`. Boutons gauche/droite : largeur fixe 40px sous 400px, 80px à partir de 400px ; les dates « semaine précédente/suivante » dans les boutons sont affichées à partir de 400px et masquées en dessous pour que le sélecteur tienne sur les écrans étroits. Fichier : `components/WeekSelector.tsx`.
 - **Chat coach (overlay)** : sous `md`, navigation mobile en 2 écrans (liste des conversations puis conversation avec bouton Retour) ; à partir de `md`, layout desktop avec sidebar + panneau conversation.
 - **Page « Trouver mon coach »** (`/dashboard/find-coach`, athlète sans coach) : page dédiée avec son propre skeleton (filtres + grille). Bloc Filtres avec recherche par nom ou prénom (temps réel), grille Sport coaché / Langue parlée en 2 colonnes à partir de `md` (768px) ; liste des tuiles : 1 colonne par défaut, 2 colonnes à partir de `md`, 3 colonnes à partir de `xl` (1280px). Fichiers : `app/[locale]/dashboard/find-coach/page.tsx`, `FindCoachSection.tsx`.
 - **Page « My offers »** (offres du coach) : 1 colonne en tout temps (toutes largeurs). Fichier : `app/[locale]/dashboard/profile/offers/OffersForm.tsx`.
@@ -1257,7 +1290,7 @@ Actuellement, utiliser un span custom :
 ### Fichiers clés
 
 - **Tokens couleurs** : `tailwind.config.ts`, `app/globals.css`
-- **Composants** : `components/Button.tsx`, `components/Input.tsx`, `components/Textarea.tsx`, `components/Badge.tsx`, `components/SportTileSelectable.tsx`, `components/ActivityTile.tsx`, `components/Modal.tsx`, `components/ChatAthleteListItem.tsx`, `components/ChatConversationSidebar.tsx`
+- **Composants** : `components/Button.tsx`, `components/Input.tsx`, `components/Textarea.tsx`, `components/Badge.tsx`, `components/SportTileSelectable.tsx`, `components/ActivityTile.tsx`, `components/Modal.tsx`, `components/PublicHeader.tsx`, `components/EmailValidatedModal.tsx`, `components/HomeEmailConfirmedTrigger.tsx`, `components/ChatAthleteListItem.tsx`, `components/ChatConversationSidebar.tsx`
 - **Sports** : `lib/sportStyles.ts`, `lib/sportsOptions.ts`, `components/SportIcons.tsx`
 - **Design system page** : `app/dashboard/admin/design-system/page.tsx`
 

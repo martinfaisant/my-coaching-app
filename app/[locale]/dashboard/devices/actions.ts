@@ -3,27 +3,12 @@
 import { createClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { requireUser } from '@/lib/authHelpers'
-import type { SportType } from '@/types/database'
+import { mapStravaTypeToSportType } from '@/lib/stravaMapping'
 import { logger } from '@/lib/logger'
 import { getTranslations } from 'next-intl/server'
 
 const STRAVA_TOKEN_URL = 'https://www.strava.com/oauth/token'
 const STRAVA_ACTIVITIES_URL = 'https://www.strava.com/api/v3/athlete/activities'
-
-/** Mappe le type Strava vers notre sport_type. */
-function mapStravaTypeToSportType(stravaType: string): SportType {
-  const t = (stravaType || '').toLowerCase()
-  if (t.includes('run') || t.includes('virtualrun')) return 'course'
-  if (t.includes('ride') || t.includes('virtualride') || t.includes('ebike') || t.includes('velomobile')) return 'velo'
-  if (t.includes('swim')) return 'natation'
-  if (t.includes('yoga') || t.includes('weight') || t.includes('workout') || t.includes('crossfit')) return 'musculation'
-  // Vérifier nordic ski, backcountry ski et patin à glace
-  if (t.includes('nordic')) return 'nordic_ski'
-  if (t.includes('backcountry')) return 'backcountry_ski'
-  if (t.includes('iceskate') || t.includes('ice_skate') || t.includes('ice skate')) return 'ice_skating'
-  if (t.includes('ski') && !t.includes('alpine') && !t.includes('roller')) return 'nordic_ski'
-  return 'course'
-}
 
 /** Récupère un access_token valide (refresh si nécessaire). */
 async function getValidStravaToken(

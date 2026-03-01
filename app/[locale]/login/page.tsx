@@ -11,7 +11,6 @@ type SignupRole = 'athlete' | 'coach'
 
 function LoginPageContent() {
   const t = useTranslations('auth')
-  const tErrors = useTranslations('auth.errors')
   const searchParams = useSearchParams()
   const confirmationFailed =
     searchParams.get('error') === 'confirmation_failed'
@@ -19,12 +18,6 @@ function LoginPageContent() {
   const [loginState, loginAction] = useActionState<LoginState, FormData>(login, {})
   const [signupState, signupAction] = useActionState<SignupState, FormData>(signup, {})
   const [signupRole, setSignupRole] = useState<SignupRole>('athlete')
-
-  const showLoginExistingAccountBanner =
-    Boolean(signupState?.userExists && signupState?.existingEmail)
-  const prefilledLoginEmail = showLoginExistingAccountBanner
-    ? signupState?.existingEmail ?? ''
-    : undefined
 
   const showSignupSuccess =
     Boolean(signupState?.success && signupState?.successType)
@@ -54,18 +47,8 @@ function LoginPageContent() {
               </p>
             )}
 
-            {showLoginExistingAccountBanner && (
-              <div
-                className="mb-6 rounded-lg border border-palette-forest-dark bg-palette-forest-light p-4 text-sm text-stone-900"
-                role="alert"
-              >
-                {tErrors('accountExistsLoginMessage')}
-              </div>
-            )}
-
             <form action={loginAction} className="space-y-5">
               <Input
-                key={prefilledLoginEmail ?? 'login-email'}
                 id="email"
                 label={t('email')}
                 name="email"
@@ -74,7 +57,6 @@ function LoginPageContent() {
                 required
                 placeholder={t('emailPlaceholder')}
                 className="rounded-xl"
-                defaultValue={prefilledLoginEmail}
               />
               <Input
                 id="password"
@@ -182,6 +164,7 @@ function LoginPageContent() {
                   </div>
                 </div>
                 <Input
+                  key={signupState?.existingEmail ? `signup-email-${signupState.existingEmail}` : 'signup-email'}
                   id="signup-email"
                   label={t('emailSignup')}
                   name="email"
@@ -190,6 +173,7 @@ function LoginPageContent() {
                   required
                   placeholder={t('emailPlaceholder')}
                   className="rounded-xl"
+                  defaultValue={signupState?.existingEmail ?? ''}
                 />
                 <Input
                   id="signup-password"

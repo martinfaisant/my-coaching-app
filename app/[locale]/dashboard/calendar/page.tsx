@@ -6,6 +6,7 @@ import { getTranslations } from 'next-intl/server'
 import { AthleteCalendarPage } from '@/components/AthleteCalendarPage'
 import type { Workout, Goal, ImportedActivity, ImportedActivityWeeklyTotal, WorkoutWeeklyTotal } from '@/types/database'
 import { getWeekMonday } from '@/lib/dateUtils'
+import { getEffectiveWeeklyTotalsFait } from '@/app/[locale]/dashboard/workouts/actions'
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params
@@ -40,7 +41,7 @@ export default async function CalendarPage() {
     weekMondays.push(weekMonday.toISOString().slice(0, 10))
   }
 
-  const [workoutsResult, importedActivitiesResult, goalsResult, weeklyTotalsResult, workoutTotalsResult] = await Promise.all([
+  const [workoutsResult, importedActivitiesResult, goalsResult, workoutTotalsResult, effectiveFaitResult] = await Promise.all([
     supabase
       .from('workouts')
       .select('*')
@@ -63,25 +64,19 @@ export default async function CalendarPage() {
       .eq('athlete_id', current.id)
       .order('date', { ascending: true }),
     supabase
-      .from('imported_activity_weekly_totals')
-      .select('*')
-      .eq('athlete_id', current.id)
-      .in('week_start', weekMondays)
-      .order('week_start')
-      .order('sport_type'),
-    supabase
       .from('workout_weekly_totals')
       .select('*')
       .eq('athlete_id', current.id)
       .in('week_start', weekMondays)
       .order('week_start')
       .order('sport_type'),
+    getEffectiveWeeklyTotalsFait(current.id, weekMondays[0], weekMondays[weekMondays.length - 1]),
   ])
   const workouts = workoutsResult.data
   const importedActivities = importedActivitiesResult.data
   const goals = goalsResult.data
-  const initialWeeklyTotals = weeklyTotalsResult.data ?? []
   const initialWorkoutTotals = workoutTotalsResult.data ?? []
+  const initialWeeklyTotals = effectiveFaitResult.weeklyTotals ?? []
 
   return (
     <AthleteCalendarPage

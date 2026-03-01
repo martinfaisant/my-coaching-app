@@ -243,8 +243,8 @@ Ensuite : archiver le doc de feature (design, spec, mockup) pour ne pas encombre
 En fin de phase Analyste, **inclure dans la réponse** (dans le chat) un **texte de commit** destiné au PO / à l’équipe :
 
 - **Format :** titre court (ligne 1) + au plus 9 lignes de détail (bullets ou paragraphe concis).
-- **Contenu :** résumé de la feature et de ce qui a été fait à haut niveau (doc mise à jour, archivages, éventuellement rappel des changements produit ou technique livrés).
-- **Objectif :** faciliter la rédaction du message de commit final (copier-coller ou adapter).
+- **Contenu :** présentation des **features venant d’être archivées** (ce qui a été livré en produit / par le Développeur), pas le travail de l’Analyste (mise à jour doc, archivage). Le message doit décrire les fonctionnalités livrées pour que le commit soit lisible par l’équipe.
+- **Objectif :** faciliter la rédaction du message de commit final (copier-coller ou adapter) en décrivant ce qui a été livré.
 
 ### Ce que l'Analyste ne fait pas
 

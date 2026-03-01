@@ -6,6 +6,7 @@ import { CoachAthleteCalendarPage } from '@/components/CoachAthleteCalendarPage'
 import type { Workout, Goal, ImportedActivityWeeklyTotal, WorkoutWeeklyTotal } from '@/types/database'
 import { getWeekMonday } from '@/lib/dateUtils'
 import { getDisplayName } from '@/lib/displayName'
+import { getEffectiveWeeklyTotalsFait } from '@/app/[locale]/dashboard/workouts/actions'
 
 type PageProps = { params: Promise<{ athleteId: string }> }
 
@@ -46,7 +47,7 @@ export default async function AthleteCalendarPage({ params }: PageProps) {
     weekMondays.push(weekMonday.toISOString().slice(0, 10))
   }
 
-  const [workoutsResult, goalsResult, weeklyTotalsResult, workoutTotalsResult] = await Promise.all([
+  const [workoutsResult, goalsResult, workoutTotalsResult, effectiveFaitResult] = await Promise.all([
     supabase
       .from('workouts')
       .select('*')
@@ -61,24 +62,18 @@ export default async function AthleteCalendarPage({ params }: PageProps) {
       .eq('athlete_id', athleteId)
       .order('date', { ascending: true }),
     supabase
-      .from('imported_activity_weekly_totals')
-      .select('*')
-      .eq('athlete_id', athleteId)
-      .in('week_start', weekMondays)
-      .order('week_start')
-      .order('sport_type'),
-    supabase
       .from('workout_weekly_totals')
       .select('*')
       .eq('athlete_id', athleteId)
       .in('week_start', weekMondays)
       .order('week_start')
       .order('sport_type'),
+    getEffectiveWeeklyTotalsFait(athleteId, weekMondays[0], weekMondays[weekMondays.length - 1]),
   ])
   const workouts = workoutsResult.data
   const goals = goalsResult.data
-  const initialWeeklyTotals = weeklyTotalsResult.data ?? []
   const initialWorkoutTotals = workoutTotalsResult.data ?? []
+  const initialWeeklyTotals = effectiveFaitResult.weeklyTotals ?? []
 
   const displayName = getDisplayName(athleteProfile, athleteProfile.email)
 

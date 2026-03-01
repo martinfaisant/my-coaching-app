@@ -123,7 +123,9 @@ The pages **« Trouver mon coach »** and **« Mes athlètes »** are **separate
 - Email/password (Supabase Auth)
 - Role selection at signup (athlete or coach)
 - Confirmation email (Supabase template) : bilingue FR/EN via metadata locale au signup ; en-tête avec logo et nom « My Sport Ally ». Voir `docs/AUTH_EMAIL_TEMPLATES.md`.
-- Password reset
+- **Signup success (modale et page login)** : après création de compte, écran succès dédié sans formulaire (titre + message selon le cas) : **nouveau compte** (« Compte créé », inviter à confirmer l’email) ou **email de confirmation renvoyé** (compte existant non validé, message avec email). **Compte existant déjà validé** : bascule sur la vue Connexion dans la même modale/page avec message d’information et email pré-rempli. Backend distingue via `data.user.identities` (vide = email renvoyé) ; pas d’insert profil si email renvoyé.
+- **Email confirmation landing** : après clic sur « Confirmer mon email » dans l’email, le callback auth redirige vers la **page d’accueil** `/[locale]/?emailConfirmed=1` (locale depuis user_metadata). Si une session est déjà créée → redirection vers le dashboard. Sinon, la page d’accueil affiche une **modale « Email validé »** (Option B) avec message et formulaire de connexion (email, mot de passe, Se connecter) ; connexion réussie → fermeture modale et redirection dashboard. En cas d’erreur du callback (lien expiré ou déjà utilisé) → redirection vers `/[locale]/login?error=confirmation_failed` avec message d’erreur. Composants : `EmailValidatedModal`, `HomeEmailConfirmedTrigger` ; voir `docs/DESIGN_SYSTEM.md` § EmailValidatedModal.
+- **Password reset** : page dédiée `/[locale]/reset-password` (lien email Supabase). Elle affiche le **même en-tête public** que la page d’accueil (logo My Sport Ally, LanguageSwitcher, Se connecter / Créer un compte) via le composant partagé `PublicHeader` ; voir `docs/DESIGN_SYSTEM.md` § PublicHeader.
 - No OAuth in MVP (Strava is integration-only, not login)
 
 ---
@@ -201,6 +203,7 @@ Athletes filter coaches by:
 
 - **Workout** = one session per date
   - `athlete_id`, `date`, `sport_type`, `title`, `description`
+  - **Status:** `status` = `planned` | `completed` | `not_completed` (planifié / réalisé / non réalisé). Default at creation: `planned`. Only the athlete can change status (with comment) via `saveWorkoutStatusAndComment`.
   - Targets: `target_duration_minutes`, `target_distance_km`, `target_elevation_m`, `target_pace`
   - Athlete: `athlete_comment`, `athlete_comment_at`
 
@@ -208,17 +211,25 @@ Athletes filter coaches by:
 
 **Athlete can:**
 
-- View workouts in calendar
-- Mark session with comment
+- View workouts in calendar (tiles show status badge: Planifié / Réalisé / Non réalisé)
+- Open session modal: title = session title, date · sport, objectives + description, then status selector (3 segments) + comment; save status + comment in one action
 - See imported Strava activities alongside planned workouts
 
 **Coach can:**
 
 - Create / update / delete workouts for their athletes
-- On the calendar (workout tile and day modal), see at a glance when an athlete has left a comment on a workout (comment icon in the metadata row: duration, distance, etc.)
+- **Create & edit modal:** header with date picker (month in full letters) + status badge; body: Sport (SportTileSelectable), title, session objectives (toggle time/distance, grid, description in same block), athlete comment read-only; footer: Delete, Save. Editable only when session date is in the future and status ≠ completed.
+- **Read-only modal:** when session is in the past or status = completed: title = session title, header = status badge only, body = date · sport, objectives, description, athlete comment; no form nor buttons.
+- On the calendar (workout tile and day modal), see status and when an athlete has left a comment (comment icon in the metadata row)
 - See weekly totals per sport and planning status (“Planifié jusqu’au”, “En retard”)
 
+**Total « fait » (US6):** Weekly totals « fait » = imported Strava activities + sessions with `status = 'completed'`, **minus** the volume of completed sessions that have an imported activity **same day and same sport type** (no double-counting). Mapping: `lib/stravaMapping.ts`. Server: `getEffectiveWeeklyTotalsFait(athleteId, startDate, endDate)` used by calendar and athlete pages.
+
+**Unités d’affichage (calendrier et totaux hebdomadaires) :** Pour la **natation**, les distances sont affichées en **mètres (m)** et arrondies au mètre près (pas en km). Pour les autres sports à distance (course, vélo, ski, patin), l’unité reste le **km**.
+
 **Calendar (responsive):** On viewports &lt; 768px (breakpoint md), the athlete and coach calendar pages show a two-line header (title then week selector), the **weekly totals block** (total time volume + per-sport bars, same as the extended week on desktop), then a single week with days stacked vertically; from 768px, the desktop layout (three weeks, 7-column grid) is used. Spec archived in `docs/archive/calendar-mobile-44/`. Weekly-totals-on-mobile design archived in `docs/archive/calendar-mobile-weekly-total/`.
+
+**Week selector (WeekSelector):** The selected week is displayed in the center—one line from `lg` (1024px), two lines below `lg`—with fixed widths so the bar length does not change when changing weeks. The previous/next week dates in the left and right buttons are visible from 400px viewport width and hidden below 400px so the selector fits on narrow screens; button widths are fixed (40px below 400px, 80px from 400px). Design mockups archived in `docs/archive/design-week-selector-two-lines/`.
 
 **Not implemented:**
 
@@ -306,7 +317,7 @@ Athletes filter coaches by:
 | `coach_offers` | Coach offers (title, description, price, price_type). Status: `draft` (coach only) / `published` (3 slots, visible to athletes) / `archived` (coach only, no new requests). |
 | `coach_requests` | Athlete → Coach request (status: pending / accepted / declined). When offer is chosen: `offer_id` + snapshot `frozen_price`, `frozen_title`, `frozen_description` (offer as seen by athlete at request time). |
 | `subscriptions` | Subscription per accepted request: `athlete_id`, `coach_id`, `request_id`, same `frozen_*` copied from `coach_requests` (not from offers). `status`: `'active'` \| `'cancellation_scheduled'` \| `'cancelled'`. `cancellation_requested_by_user_id` (UUID, nullable): user who requested the scheduled cancellation; only they can cancel the cancellation. Used for billing history; unchanged if coach later changes the offer. |
-| `workouts` | Planned training sessions for an athlete |
+| `workouts` | Planned training sessions for an athlete. `status`: `planned` \| `completed` \| `not_completed` (default `planned`; only athlete can update). |
 | `goals` | Athlete race/event objectives |
 | `conversations` | 1-to-1 coach–athlete. Includes `request_id` (source `coach_requests` row) used to determine chat write access lifecycle. Participants can update `request_id` to the latest writable request (RLS policy `conversations_update_participant`). |
 | `chat_messages` | Messages in a conversation |
