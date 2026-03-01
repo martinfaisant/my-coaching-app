@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mockup – Sélecteur de semaine – Solution 1 (Deux lignes compact)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            'palette-olive': '#8e9856',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="min-h-screen bg-stone-100 text-stone-900 antialiased p-6">
+  <div class="max-w-md mx-auto space-y-8">
+    <h1 class="text-lg font-bold text-stone-800">Solution 1 – Deux lignes, même style (début → fin)</h1>
+    <p class="text-sm text-stone-600">La plage est affichée sur deux lignes centrées. Zone centrale flexible (pas de largeur fixe), hauteur identique à l’actuel.</p>
+
+    <!-- Sélecteur actuel (référence) -->
+    <section>
+      <h2 class="text-xs font-bold uppercase tracking-wider text-stone-500 mb-2">Actuel (une ligne, référence hauteur)</h2>
+      <div class="flex items-center gap-3 bg-stone-50 p-1.5 rounded-xl border border-stone-200 shadow-sm w-fit">
+        <button type="button" class="rounded-lg min-h-10 min-w-10 p-1.5 flex items-center justify-center text-stone-500 hover:text-palette-forest-dark hover:bg-white transition-colors" aria-label="Semaine précédente">
+          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="m15 18-7-7 7-7"/></svg>
+        </button>
+        <div class="px-2 text-sm font-bold text-stone-800 select-none w-[140px] text-center shrink-0">
+          3 févr. – 9 févr.
+        </div>
+        <button type="button" class="rounded-lg min-h-10 min-w-10 p-1.5 flex items-center justify-center text-stone-500 hover:text-palette-forest-dark hover:bg-white transition-colors" aria-label="Semaine suivante">
+          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- Solution 1 : deux lignes compact -->
+    <section>
+      <h2 class="text-xs font-bold uppercase tracking-wider text-stone-500 mb-2">Solution 1 – Deux lignes (mobile-friendly)</h2>
+      <div class="flex items-center gap-2 sm:gap-3 bg-stone-50 p-1.5 rounded-xl border border-stone-200 shadow-sm w-full max-w-[280px]">
+        <button type="button" class="rounded-lg min-h-10 min-w-10 p-1.5 flex items-center justify-center text-stone-500 hover:text-palette-forest-dark hover:bg-white transition-colors shrink-0" aria-label="Semaine précédente">
+          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="m15 18-7-7 7-7"/></svg>
+        </button>
+        <div class="flex-1 min-w-0 px-1 sm:px-2 py-0.5 flex flex-col items-center justify-center text-center select-none">
+          <span class="text-xs font-bold text-stone-800 leading-tight block">3 févr.</span>
+          <span class="text-xs font-bold text-stone-800 leading-tight block">9 févr.</span>
+        </div>
+        <button type="button" class="rounded-lg min-h-10 min-w-10 p-1.5 flex items-center justify-center text-stone-500 hover:text-palette-forest-dark hover:bg-white transition-colors shrink-0" aria-label="Semaine suivante">
+          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+      </div>
+      <p class="mt-2 text-xs text-stone-500">Même hauteur que l’actuel. Zone centrale en <code>flex-1 min-w-0</code> pour rétrécir sur mobile.</p>
+    </section>
+
+    <!-- Solution 1 en largeur mobile étroite -->
+    <section>
+      <h2 class="text-xs font-bold uppercase tracking-wider text-stone-500 mb-2">Solution 1 – Simulé 320px</h2>
+      <div class="w-[320px] flex items-center gap-2 bg-stone-50 p-1.5 rounded-xl border border-stone-200 shadow-sm">
+        <button type="button" class="rounded-lg min-h-10 min-w-10 p-1.5 flex items-center justify-center text-stone-500 shrink-0" aria-hidden="true">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="m15 18-7-7 7-7"/></svg>
+        </button>
+        <div class="flex-1 min-w-0 px-1 py-0.5 flex flex-col items-center justify-center text-center">
+          <span class="text-xs font-bold text-stone-800 leading-tight block">3 févr.</span>
+          <span class="text-xs font-bold text-stone-800 leading-tight block">9 févr.</span>
+        </div>
+        <button type="button" class="rounded-lg min-h-10 min-w-10 p-1.5 flex items-center justify-center text-stone-500 shrink-0" aria-hidden="true">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+      </div>
+    </section>
+  </div>
+</body>
+</html>
