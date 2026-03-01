@@ -1,7 +1,7 @@
 # 🎨 Design System
 
 **Version :** 1.5  
-**Dernière mise à jour :** 27 février 2026 (PublicHeader : en-tête partagé page d'accueil / reset-password)
+**Dernière mise à jour :** 27 février 2026 (Workout status : tuiles et modales athlète/coach, totaux « fait », lib/formStyles dans modales)
 
 ---
 
@@ -639,7 +639,7 @@ Design inspiré du style Strava avec bordure gauche colorée (4px) et badge en h
 {
   type: 'workout'
   sportType: SportType       // 'course', 'velo', 'natation', etc.
-  metadata?: string[]        // ["1h30", "15 km", "200m D+"]
+  metadata?: string[]        // ["1h30", "15 km", "200m D+"] — natation : distance en m (ex. "2500 m")
 }
 
 // Type: strava
@@ -910,6 +910,8 @@ type ModalProps = {
   children: React.ReactNode
 }
 ```
+
+**Usage avancé :** La modale entraînement (`WorkoutModal`) utilise `headerRight` pour afficher le sélecteur de date (mois en toutes lettres) et le badge de statut (Planifié / Réalisé / Non réalisé) côté coach ; en lecture seule coach, seul le badge est affiché. Styles formulaires : `lib/formStyles.ts`.
 
 #### Exemples
 
@@ -1217,7 +1219,7 @@ Ce breakpoint `md` est le breakpoint de référence pour les bascules de layout 
 
 **Usages actuels documentés :**
 - **Sidebar dashboard** : la tuile Profil (avatar + nom en bas de la colonne) affiche le même état sélectionné que les autres entrées du menu (`bg-palette-forest-dark text-white shadow-md`) lorsque l'utilisateur est sur la page Profil (`/dashboard/profile`) ; en mode replié (desktop), seul l'avatar est affiché et centré. Logo « My Sport Ally » : marge conditionnelle (`ml-3` quand texte visible, `ml-0` quand replié) pour centrer l’icône. Fichier : `components/Sidebar.tsx`.
-- **Calendrier (athlète + coach)** : sous `md`, en-tête sur 2 lignes + bloc totaux de la semaine (volume horaire total + barres par sport, identique au mode étendu desktop) + 1 semaine en stack ; à partir de `md`, layout desktop (3 semaines, grille 7 colonnes). Sur les tuiles entraînement (carte compacte et carte détaillée modale jour), une icône commentaire en fin de ligne métadonnées (durée, distance, etc.) signale qu’un commentaire athlète est présent (`calendar.tile.athleteCommentLabel`). Détail : `Project_context.md` §4.5.
+- **Calendrier (athlète + coach)** : sous `md`, en-tête sur 2 lignes + bloc totaux de la semaine (volume horaire total + barres par sport, identique au mode étendu desktop) + 1 semaine en stack ; à partir de `md`, layout desktop (3 semaines, grille 7 colonnes). **Natation :** totaux et métadonnées en **mètres (m)**, arrondis au mètre près ; les autres sports à distance en km. Sur les tuiles entraînement (carte compacte et carte détaillée modale jour), une icône commentaire en fin de ligne métadonnées (durée, distance, etc.) signale qu’un commentaire athlète est présent (`calendar.tile.athleteCommentLabel`). Détail : `Project_context.md` §4.5.
 - **Sélecteur de semaine (WeekSelector, calendrier)** : zone centrale à largeur fixe (80px sous `lg`, 150px à partir de `lg`) ; plage de dates sur une ligne à partir de `lg` (1024px), sur deux lignes sous `lg`. Boutons gauche/droite : largeur fixe 40px sous 400px, 80px à partir de 400px ; les dates « semaine précédente/suivante » dans les boutons sont affichées à partir de 400px et masquées en dessous pour que le sélecteur tienne sur les écrans étroits. Fichier : `components/WeekSelector.tsx`.
 - **Chat coach (overlay)** : sous `md`, navigation mobile en 2 écrans (liste des conversations puis conversation avec bouton Retour) ; à partir de `md`, layout desktop avec sidebar + panneau conversation.
 - **Page « Trouver mon coach »** (`/dashboard/find-coach`, athlète sans coach) : page dédiée avec son propre skeleton (filtres + grille). Bloc Filtres avec recherche par nom ou prénom (temps réel), grille Sport coaché / Langue parlée en 2 colonnes à partir de `md` (768px) ; liste des tuiles : 1 colonne par défaut, 2 colonnes à partir de `md`, 3 colonnes à partir de `xl` (1280px). Fichiers : `app/[locale]/dashboard/find-coach/page.tsx`, `FindCoachSection.tsx`.

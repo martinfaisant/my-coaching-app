@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 27 février 2026 (Mode Analyste : sélecteur de semaine calendrier livré ; docs design-week-selector-two-lines archivés)
+**Dernière mise à jour :** 1er mars 2026 (Mode Analyste : unité natation en m dans la doc)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -18,7 +18,7 @@
 - **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), stack technique, **URL production https://mysportally.com**
 - **Utiliser pour :** Comprendre le projet, les features, les rôles, l'architecture globale
 - **Taille :** ~420 lignes
-- **Dernière mise à jour :** 27 février 2026 (§4.5 Week selector calendrier)
+- **Dernière mise à jour :** 27 février 2026 (§4.5 Workouts : statut séance, modales athlète/coach, total « fait »)
 
 ### **docs/DESIGN_SYSTEM.md** ⭐
 - **Contenu :** Tokens (couleurs, typo, espacements), composants (Button, Input, Badge, TileCard, DashboardPageShell, Modal, etc.), guidelines UI, exemples de code, §7 breakpoints (calendrier, chat, Trouver mon coach, My offers)
@@ -209,6 +209,10 @@
 - `docs/archive/design-week-selector-two-lines/` — DESIGN_WEEK_SELECTOR_TWO_LINES.md (contexte, 2 solutions), solution-1-two-lines-compact.html, solution-2-two-lines-hierarchy.html (mockups HTML).
 - **Raison :** Feature livrée ; sélecteur de semaine responsive (deux lignes sous md, une ligne à partir de md), largeurs fixes, dates dans les boutons à partir de 400px. Comportement décrit dans **Project_context.md §4.5** (Week selector) et **docs/DESIGN_SYSTEM.md** §7 (Sélecteur de semaine).
 
+**Statut de réalisation des séances (workout status) (archivés 27 février 2026) :**
+- `docs/archive/design-workout-status/` — DESIGN_WORKOUT_STATUS.md, USER_STORIES_WORKOUT_STATUS.md, SPEC_WORKOUT_STATUS.md, workout-status-mockup.html.
+- **Raison :** Feature livrée ; statut planifié / réalisé / non réalisé, modales athlète (titre séance, statut + commentaire) et coach (création/édition avec date en en-tête, lecture seule si passé ou réalisé), totaux « fait » avec déduplication Strava (même jour, même type). Comportement décrit dans **Project_context.md §4.5** (Workouts, Total « fait »), **docs/DESIGN_SYSTEM.md** (Modal headerRight, WorkoutModal), **docs/I18N.md** (workouts).
+
 **Séparation pages dashboard – find-coach / Mes athlètes (archivé 23 février 2026) :**
 - `docs/archive/dashboard-pages-separation/SPEC_ARCHI_DASHBOARD_PAGES_SEPARATION.md` — Spec architecture (redirections depuis /dashboard, pages dédiées, skeletons)
 - **Raison :** Feature livrée ; comportement décrit dans **Project_context.md §4.0** (Dashboard entry point) et **docs/DESIGN_SYSTEM.md** §7 (pages Trouver mon coach, Mes athlètes).
@@ -344,6 +348,16 @@
 **Dernier nettoyage :** 26 février 2026 (archivage auth-signup-success et design-email-confirmation-landing)
 
 ### Changements récents :
+
+✅ **1er mars 2026 – Unité d’affichage natation (m au lieu de km) – Mode Analyste :**
+- **Livraison (déjà en code) :** Dans le calendrier, les totaux hebdomadaires et l’affichage des distances pour la **natation** sont en **mètres (m)**, arrondis au mètre près ; les autres sports à distance restent en km.
+- **Mises à jour doc :** `Project_context.md` §4.5 (nouveau paragraphe « Unités d’affichage »), `docs/DESIGN_SYSTEM.md` (ActivityTile metadata natation en m ; §7 Calendrier : natation en m).
+
+✅ **27 février 2026 – Statut de réalisation des séances (workout status) – Mode Analyste :**
+- **Livraison :** (1) Statut de séance : planifié (défaut), réalisé, non réalisé ; colonne `workouts.status`, migration 050. (2) Athlète : tuiles avec badge statut, modale avec titre = titre séance, date · sport, objectifs, sélecteur 3 segments + commentaire, sauvegarde en une action. (3) Coach : modale création = modale édition (date en en-tête avec mois en lettres, SportTileSelectable, objectifs + description dans même bloc) ; modale lecture seule si date passée ou statut réalisé (titre séance, badge, date · sport, objectifs, commentaire athlète). (4) Totaux « fait » : `getEffectiveWeeklyTotalsFait` = importés Strava + séances réalisées moins doublons (même jour, même type) ; `lib/stravaMapping.ts`. (5) i18n et accessibilité : clés workouts.status.*, form.chooseDate, comments.*, status.ariaLabel.
+- **Fichiers :** `components/WorkoutModal.tsx`, `components/CalendarView.tsx`, `components/CalendarViewWithNavigation.tsx`, `app/[locale]/dashboard/workouts/actions.ts`, `lib/stravaMapping.ts`, `supabase/migrations/050_workout_status.sql`, pages calendrier/athlète, messages fr/en.
+- **Mises à jour doc :** Project_context.md §4.5 (structure, Athlete/Coach, Total « fait »), §5 (workouts.status), docs/DESIGN_SYSTEM.md (Modal, WorkoutModal), docs/I18N.md (workouts).
+- **Archivage :** `docs/design-workout-status/` → `docs/archive/design-workout-status/` (DESIGN, USER_STORIES, SPEC, mockup). Référence courante : **Project_context.md §4.5**, **docs/DESIGN_SYSTEM.md**, **docs/I18N.md**.
 
 ✅ **27 février 2026 – Sélecteur de semaine calendrier (Mode Analyste) :**
 - **Livraison :** Sélecteur de semaine (WeekSelector) responsive : plage de dates sur une ligne à partir de `md` (768px), sur deux lignes en dessous ; largeurs fixes (zone centrale 80px / 150px, boutons 40px / 80px) pour que la longueur ne varie pas au changement de semaine ; dates « précédente/suivante » dans les boutons affichées à partir de 400px, masquées en dessous pour tenir sur les écrans étroits.
@@ -528,7 +542,9 @@
 | Succès inscription / email validé (modale, landing) | `Project_context.md` §4.1, `docs/DESIGN_SYSTEM.md` § Modal |
 | **Workflow Designer / Architecte / Développeur / Analyste** | **`docs/WORKFLOW_PERSONAS.md`** |
 | Calendrier responsive / mobile (issue #44) / totaux de la semaine sur mobile | `Project_context.md` §4.5, `docs/DESIGN_SYSTEM.md` §7 |
+| **Natation : unité d’affichage (m, pas km)** | **`Project_context.md` §4.5** (Unités d’affichage), **`docs/DESIGN_SYSTEM.md`** (§7 Calendrier, ActivityTile metadata) |
 | Indicateur commentaire athlète sur tuile calendrier | `Project_context.md` §4.5, `docs/DESIGN_SYSTEM.md` §7 |
+| **Statut séance (planifié / réalisé / non réalisé), modales athlète/coach, total « fait »** | **`Project_context.md` §4.5** (Workouts, Total « fait »), **`docs/DESIGN_SYSTEM.md`** (Modal, WorkoutModal) |
 | **Page par défaut / redirections dashboard (find-coach, Mes athlètes)** | **`Project_context.md` §4.0** |
 | Tuile Profil sidebar (état sélectionné sur page Profil, centrage mode replié) | `Project_context.md` §4.0, `docs/DESIGN_SYSTEM.md` §7 |
 | Tuile demandes en attente (coach) / Discuter / modales Refuser-Accepter | `Project_context.md` §4.4, `docs/DESIGN_SYSTEM.md` §7 |

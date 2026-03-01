@@ -11,7 +11,12 @@ import { Modal } from './Modal'
 import { IconRunning, IconBiking, IconSwimming, IconDumbbell, IconNordicSki, IconBackcountrySki, IconIceSkating } from './SportIcons'
 import { SPORT_ICONS, SPORT_CARD_STYLES, SPORT_TRANSLATION_KEYS } from '@/lib/sportStyles'
 import { ActivityTile } from './ActivityTile'
-import type { Workout, SportType, Goal, ImportedActivity, ImportedActivityWeeklyTotal, WorkoutWeeklyTotal } from '@/types/database'
+import type { Workout, WorkoutStatus, SportType, Goal, ImportedActivity, ImportedActivityWeeklyTotal, WorkoutWeeklyTotal } from '@/types/database'
+
+/** Distance natation en mètres (arrondi au mètre près). */
+function swimmingDistanceM(km: number): number {
+  return Math.round(km * 1000)
+}
 
 /** Formate une durée en minutes (ex. "4h00", "45'"). */
 function formatDuration(minutes: number): string {
@@ -47,7 +52,7 @@ function formatWorkoutTarget(w: Workout): { primary: string; secondary?: string;
   if (w.target_distance_km != null && w.target_distance_km > 0) {
     const primary =
       w.sport_type === 'natation'
-        ? `${Math.round(w.target_distance_km * 1000)} m`
+        ? `${swimmingDistanceM(w.target_distance_km)} m`
         : `${Number(w.target_distance_km) % 1 === 0 ? w.target_distance_km : (w.target_distance_km as number).toFixed(1)} km`
     const secondary =
       w.target_elevation_m != null && w.target_elevation_m > 0 ? `${w.target_elevation_m}m D+` : undefined
@@ -64,7 +69,7 @@ function formatWorkoutMetadata(w: Workout): string[] {
   }
   if (w.target_distance_km != null && w.target_distance_km > 0) {
     const dist = w.sport_type === 'natation'
-      ? `${Math.round(w.target_distance_km * 1000)} m`
+      ? `${swimmingDistanceM(w.target_distance_km)} m`
       : `${Number(w.target_distance_km) % 1 === 0 ? w.target_distance_km : (w.target_distance_km as number).toFixed(1)} km`
     metadata.push(dist)
   }
@@ -216,6 +221,19 @@ export function CalendarView({
   const tCalendar = useTranslations('calendar')
   const tWorkouts = useTranslations('workouts')
   const tGoals = useTranslations('goals')
+
+  /** Libellé et classes du badge statut (US2). Aligné mockup : Planifié neutre, Réalisé vert forest, Non réalisé amber ; texte en gras. */
+  const getStatusBadge = (status: WorkoutStatus) => {
+    const key = status === 'planned' ? 'status.planned' : status === 'completed' ? 'status.completed' : 'status.not_completed'
+    const label = tWorkouts(key)
+    const className =
+      status === 'completed'
+        ? 'rounded-full bg-palette-forest-dark/15 text-palette-forest-dark font-semibold'
+        : status === 'not_completed'
+          ? 'rounded-full bg-palette-amber/20 text-stone-600 font-semibold'
+          : 'rounded-full bg-stone-100 text-stone-500 font-semibold'
+    return { label, className }
+  }
   const tCommon = useTranslations('common')
   const tSports = useTranslations('sports')
   const router = useRouter()
@@ -383,9 +401,11 @@ export function CalendarView({
       }
       
       for (const total of totalsForWeek) {
+        const distKm = Number(total.total_distance_km) || 0
+        // Natation : garder les décimales pour affichage en m au mètre près ; les autres sports en km entiers
         bySport[total.sport_type] = {
           minutes: Math.round(Number(total.total_duration_minutes) || 0),
-          distanceKm: Math.round(Number(total.total_distance_km) || 0),
+          distanceKm: total.sport_type === 'natation' ? distKm : Math.round(distKm),
         }
       }
       
@@ -420,16 +440,18 @@ export function CalendarView({
         ice_skating: { minutes: 0, distanceKm: 0 },
       }
       for (const r of rows) {
+        const distKm = (r.total_distance_m ?? 0) / 1000
         bySport[r.sport_type] = {
           minutes: Math.round((r.total_moving_time_seconds ?? 0) / 60),
-          distanceKm: Math.round((r.total_distance_m ?? 0) / 1000),
+          // Natation : garder les décimales (km) pour affichage en m au mètre près ; les autres sports en km entiers
+          distanceKm: r.sport_type === 'natation' ? distKm : Math.round(distKm),
         }
       }
-      // Arrondir les totaux à l'entier
+      // Arrondir les totaux à l'entier (sauf natation.distanceKm, gardé en décimal pour affichage en m)
       return {
         course: { minutes: Math.round(bySport.course.minutes), distanceKm: Math.round(bySport.course.distanceKm) },
         velo: { minutes: Math.round(bySport.velo.minutes), distanceKm: Math.round(bySport.velo.distanceKm) },
-        natation: { minutes: Math.round(bySport.natation.minutes), distanceKm: Math.round(bySport.natation.distanceKm) },
+        natation: { minutes: Math.round(bySport.natation.minutes), distanceKm: bySport.natation.distanceKm },
         musculation: { minutes: Math.round(bySport.musculation.minutes), distanceKm: Math.round(bySport.musculation.distanceKm) },
         nordic_ski: { minutes: Math.round(bySport.nordic_ski.minutes), distanceKm: Math.round(bySport.nordic_ski.distanceKm) },
         backcountry_ski: { minutes: Math.round(bySport.backcountry_ski.minutes), distanceKm: Math.round(bySport.backcountry_ski.distanceKm) },
@@ -472,9 +494,12 @@ export function CalendarView({
     const hasDuration = w.target_duration_minutes != null && w.target_duration_minutes > 0
     const hasDistance = w.target_distance_km != null && w.target_distance_km > 0
     const hasPace = w.target_pace != null && w.target_pace > 0
+    const hasElevation = w.target_elevation_m != null && w.target_elevation_m > 0
     const paceStr = formatPace(w.target_pace, w.sport_type)
     const showCommentIcon = hasAthleteComment(w)
     const athleteCommentLabel = tCalendar('tile.athleteCommentLabel')
+    const status = (w as Workout).status ?? 'planned'
+    const statusBadge = getStatusBadge(status)
 
     return (
       <div
@@ -494,58 +519,73 @@ export function CalendarView({
             <span className="text-xs font-semibold text-stone-700 leading-tight flex-1 min-w-0 truncate">{w.title}</span>
           </div>
         </div>
-        {(hasDuration || hasDistance || hasPace || showCommentIcon) && (
-          <div className="flex items-center gap-1 flex-wrap text-[10px] text-stone-400 font-medium mt-1">
-            {hasDuration && (
+        <div className="flex items-center gap-1 flex-wrap text-[10px] text-stone-500 font-semibold mt-1">
+          {hasDuration && (
+            <div className="flex items-center gap-1">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>{formatDuration(Math.round(w.target_duration_minutes!))}</span>
+            </div>
+          )}
+          {hasDistance && (
+            <>
+              {hasDuration && <div className="w-px h-2.5 bg-stone-300" />}
               <div className="flex items-center gap-1">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z" />
+                  <path d="m14.5 12.5 2-2" />
+                  <path d="m11.5 9.5 2-2" />
+                  <path d="m8.5 6.5 2-2" />
+                  <path d="m17.5 15.5 2-2" />
                 </svg>
-                <span>{formatDuration(Math.round(w.target_duration_minutes!))}</span>
+                <span>
+                  {w.sport_type === 'natation' 
+                    ? `${Math.round(w.target_distance_km! * 1000)} m`
+                    : `${Math.round(w.target_distance_km!)} km`}
+                </span>
               </div>
-            )}
-            {hasDistance && (
-              <>
-                {hasDuration && <div className="w-px h-2.5 bg-stone-300" />}
-                <div className="flex items-center gap-1">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z" />
-                    <path d="m14.5 12.5 2-2" />
-                    <path d="m11.5 9.5 2-2" />
-                    <path d="m8.5 6.5 2-2" />
-                    <path d="m17.5 15.5 2-2" />
-                  </svg>
-                  <span>
-                    {w.sport_type === 'natation' 
-                      ? `${Math.round(w.target_distance_km! * 1000)} m`
-                      : `${Math.round(w.target_distance_km!)} km`}
-                  </span>
-                </div>
-              </>
-            )}
-            {hasPace && (
-              <>
-                {(hasDuration || hasDistance) && <div className="w-px h-2.5 bg-stone-300" />}
-                <div className="flex items-center gap-1">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                  </svg>
-                  <span>{paceStr}</span>
-                </div>
-              </>
-            )}
-            {showCommentIcon && (
-              <>
-                {(hasDuration || hasDistance || hasPace) && <div className="w-px h-2.5 bg-stone-300" />}
-                <div className="flex items-center gap-1" title={athleteCommentLabel} aria-label={athleteCommentLabel}>
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                  </svg>
-                </div>
-              </>
-            )}
-          </div>
-        )}
+            </>
+          )}
+          {hasPace && (
+            <>
+              {(hasDuration || hasDistance) && <div className="w-px h-2.5 bg-stone-300" />}
+              <div className="flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                <span>{paceStr}</span>
+              </div>
+            </>
+          )}
+          {hasElevation && (
+            <>
+              {(hasDuration || hasDistance || hasPace) && <div className="w-px h-2.5 bg-stone-300" />}
+              <div className="flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
+                <span>{w.target_elevation_m}m D+</span>
+              </div>
+            </>
+          )}
+          {showCommentIcon && (
+            <>
+              {(hasDuration || hasDistance || hasPace || hasElevation) && <div className="w-px h-2.5 bg-stone-300" />}
+              <div className="flex items-center gap-1" title={athleteCommentLabel} aria-label={athleteCommentLabel}>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                </svg>
+              </div>
+            </>
+          )}
+          {(hasDuration || hasDistance || hasPace || hasElevation || showCommentIcon) && (
+            <div className="w-px h-2.5 bg-stone-300" aria-hidden />
+          )}
+          <span className={`shrink-0 px-1.5 py-0.5 text-[10px] font-semibold ${statusBadge.className}`} aria-label={statusBadge.label}>
+            {statusBadge.label}
+          </span>
+        </div>
       </div>
     )
   }
@@ -560,6 +600,8 @@ export function CalendarView({
     const paceStr = formatPace(w.target_pace, w.sport_type)
     const showCommentIcon = hasAthleteComment(w)
     const athleteCommentLabel = tCalendar('tile.athleteCommentLabel')
+    const status = (w as Workout).status ?? 'planned'
+    const statusBadge = getStatusBadge(status)
 
     return (
       <div
@@ -579,7 +621,7 @@ export function CalendarView({
           <div className="clear-both" />
         </div>
         <p className="text-xs text-stone-500 leading-snug mb-3 line-clamp-2">{w.description || '—'}</p>
-        <div className="flex items-center gap-1.5 text-[10px] text-stone-500 font-medium flex-wrap">
+        <div className="flex items-center gap-1.5 text-[10px] text-stone-500 font-semibold flex-wrap">
           {hasDuration && (
             <div className="flex items-center gap-1">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-2.5 w-2.5 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -639,6 +681,12 @@ export function CalendarView({
               </div>
             </>
           )}
+          {(hasDuration || hasDistance || hasPace || target.secondary || showCommentIcon) && (
+            <div className="w-px h-3 bg-stone-300" aria-hidden />
+          )}
+          <span className={`shrink-0 px-1.5 py-0.5 text-[10px] font-semibold ${statusBadge.className}`} aria-label={statusBadge.label}>
+            {statusBadge.label}
+          </span>
         </div>
       </div>
     )
@@ -655,13 +703,13 @@ export function CalendarView({
     const prevTotalMin = prevWeekFait ? Math.round((prevWeekFait.course?.minutes ?? 0) + (prevWeekFait.velo?.minutes ?? 0) + (prevWeekFait.natation?.minutes ?? 0) + (prevWeekFait.musculation?.minutes ?? 0) + (prevWeekFait.nordic_ski?.minutes ?? 0) + (prevWeekFait.backcountry_ski?.minutes ?? 0) + (prevWeekFait.ice_skating?.minutes ?? 0)) : 0
     const progressPct = totalPrevuMin > 0 ? Math.round((totalFaitMin / totalPrevuMin) * 100) : 0
     const sports = [
-      { key: 'course' as const, Icon: IconRunning, color: 'text-palette-forest-dark', bg: 'bg-palette-forest-dark', label: tCalendar('weekly.sportLabels.run'), prevuVal: prevu?.course?.distanceKm ?? 0, faitVal: fait?.course?.distanceKm ?? 0, useTime: false },
-      { key: 'velo' as const, Icon: IconBiking, color: 'text-palette-olive', bg: 'bg-palette-olive', label: tCalendar('weekly.sportLabels.cycling'), prevuVal: prevu?.velo?.distanceKm ?? 0, faitVal: fait?.velo?.distanceKm ?? 0, useTime: false },
-      { key: 'natation' as const, Icon: IconSwimming, color: 'text-sky-600', bg: 'bg-sky-500', label: tCalendar('weekly.sportLabels.swimming'), prevuVal: prevu?.natation?.distanceKm ?? 0, faitVal: fait?.natation?.distanceKm ?? 0, useTime: false },
-      { key: 'musculation' as const, Icon: IconDumbbell, color: 'text-stone-600', bg: 'bg-stone-500', label: tCalendar('weekly.sportLabels.strength'), prevuVal: prevu?.musculation?.minutes ?? 0, faitVal: fait?.musculation?.minutes ?? 0, useTime: true },
-      { key: 'nordic_ski' as const, Icon: IconNordicSki, color: 'text-palette-sage', bg: 'bg-palette-sage', label: tCalendar('weekly.sportLabels.nordicSki'), prevuVal: prevu?.nordic_ski?.distanceKm ?? 0, faitVal: fait?.nordic_ski?.distanceKm ?? 0, useTime: false },
-      { key: 'backcountry_ski' as const, Icon: IconBackcountrySki, color: 'text-palette-gold', bg: 'bg-palette-gold', label: tCalendar('weekly.sportLabels.backcountrySki'), prevuVal: prevu?.backcountry_ski?.distanceKm ?? 0, faitVal: fait?.backcountry_ski?.distanceKm ?? 0, useTime: false },
-      { key: 'ice_skating' as const, Icon: IconIceSkating, color: 'text-cyan-600', bg: 'bg-cyan-500', label: tCalendar('weekly.sportLabels.iceSkating'), prevuVal: prevu?.ice_skating?.distanceKm ?? 0, faitVal: fait?.ice_skating?.distanceKm ?? 0, useTime: false },
+      { key: 'course' as const, Icon: IconRunning, color: 'text-palette-forest-dark', bg: 'bg-palette-forest-dark', label: tCalendar('weekly.sportLabels.run'), prevuVal: prevu?.course?.distanceKm ?? 0, faitVal: fait?.course?.distanceKm ?? 0, useTime: false, useMeters: false },
+      { key: 'velo' as const, Icon: IconBiking, color: 'text-palette-olive', bg: 'bg-palette-olive', label: tCalendar('weekly.sportLabels.cycling'), prevuVal: prevu?.velo?.distanceKm ?? 0, faitVal: fait?.velo?.distanceKm ?? 0, useTime: false, useMeters: false },
+      { key: 'natation' as const, Icon: IconSwimming, color: 'text-sky-600', bg: 'bg-sky-500', label: tCalendar('weekly.sportLabels.swimming'), prevuVal: prevu?.natation?.distanceKm ?? 0, faitVal: fait?.natation?.distanceKm ?? 0, useTime: false, useMeters: true },
+      { key: 'musculation' as const, Icon: IconDumbbell, color: 'text-stone-600', bg: 'bg-stone-500', label: tCalendar('weekly.sportLabels.strength'), prevuVal: prevu?.musculation?.minutes ?? 0, faitVal: fait?.musculation?.minutes ?? 0, useTime: true, useMeters: false },
+      { key: 'nordic_ski' as const, Icon: IconNordicSki, color: 'text-palette-sage', bg: 'bg-palette-sage', label: tCalendar('weekly.sportLabels.nordicSki'), prevuVal: prevu?.nordic_ski?.distanceKm ?? 0, faitVal: fait?.nordic_ski?.distanceKm ?? 0, useTime: false, useMeters: false },
+      { key: 'backcountry_ski' as const, Icon: IconBackcountrySki, color: 'text-palette-gold', bg: 'bg-palette-gold', label: tCalendar('weekly.sportLabels.backcountrySki'), prevuVal: prevu?.backcountry_ski?.distanceKm ?? 0, faitVal: fait?.backcountry_ski?.distanceKm ?? 0, useTime: false, useMeters: false },
+      { key: 'ice_skating' as const, Icon: IconIceSkating, color: 'text-cyan-600', bg: 'bg-cyan-500', label: tCalendar('weekly.sportLabels.iceSkating'), prevuVal: prevu?.ice_skating?.distanceKm ?? 0, faitVal: fait?.ice_skating?.distanceKm ?? 0, useTime: false, useMeters: false },
     ].filter(s => s.prevuVal > 0 || s.faitVal > 0)
     const hasAnyTotals = (totalPrevuMin > 0 || totalFaitMin > 0) || sports.length > 0
     if (!hasAnyTotals) return null
@@ -695,10 +743,10 @@ export function CalendarView({
               </div>
             </div>
           )}
-          {sports.map(({ key, Icon, color, bg, label, prevuVal, faitVal, useTime }) => {
+          {sports.map(({ key, Icon, color, bg, label, prevuVal, faitVal, useTime, useMeters }) => {
             const barPct = prevuVal > 0 ? Math.min(100, Math.round((faitVal / prevuVal) * 100)) : (faitVal > 0 ? 100 : 0)
-            const prevuDisplay = useTime ? formatDuration(Math.round(prevuVal)) : (prevuVal > 0 ? `${Math.round(prevuVal)} km` : '—')
-            const faitDisplay = useTime ? formatDuration(Math.round(faitVal)) : (faitVal > 0 ? `${Math.round(faitVal)} km` : '0 km')
+            const prevuDisplay = useTime ? formatDuration(Math.round(prevuVal)) : useMeters ? (prevuVal > 0 ? `${swimmingDistanceM(prevuVal)} m` : '—') : (prevuVal > 0 ? `${Math.round(prevuVal)} km` : '—')
+            const faitDisplay = useTime ? formatDuration(Math.round(faitVal)) : useMeters ? (faitVal > 0 ? `${swimmingDistanceM(faitVal)} m` : '0 m') : (faitVal > 0 ? `${Math.round(faitVal)} km` : '0 km')
             return (
               <div key={key} className="flex flex-col">
                 <div className="flex items-center gap-2 text-xs mb-2 min-h-7">
@@ -809,9 +857,9 @@ export function CalendarView({
                                           <div className="clear-both" />
                                         </div>
                                       </div>
-                                      <div className="flex items-center gap-1 flex-wrap text-[10px] text-stone-400 font-medium mt-1">
+                                      <div className="flex items-center gap-1 flex-wrap text-[10px] text-stone-500 font-semibold mt-1">
                                         <div className="flex items-center gap-1">
-                                          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                             <path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z" />
                                             <path d="m14.5 12.5 2-2" />
                                             <path d="m11.5 9.5 2-2" />
@@ -841,7 +889,7 @@ export function CalendarView({
                                       </div>
                                       <div className="text-xs font-semibold text-stone-700 mt-1 truncate">{firstImported.title}</div>
                                       {target.primary && (
-                                        <div className="flex items-center gap-1 text-[10px] text-stone-400 font-medium">
+                                        <div className="flex items-center gap-1 text-[10px] text-stone-500 font-semibold">
                                           {target.hasDistance ? <><MapIcon /><span>{target.primary}</span></> : <><ClockIcon /><span>{target.primary}</span></>}
                                         </div>
                                       )}
@@ -903,9 +951,9 @@ export function CalendarView({
                                           <div className="clear-both" />
                                         </div>
                                       </div>
-                                      <div className="flex items-center gap-1 flex-wrap text-[10px] text-stone-400 font-medium mt-1">
+                                      <div className="flex items-center gap-1 flex-wrap text-[10px] text-stone-500 font-semibold mt-1">
                                         <div className="flex items-center gap-1">
-                                          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                             <path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z" />
                                             <path d="m14.5 12.5 2-2" />
                                             <path d="m11.5 9.5 2-2" />
@@ -935,7 +983,7 @@ export function CalendarView({
                                       </div>
                                       <div className="text-xs font-semibold text-stone-700 mt-1 truncate">{firstImported.title}</div>
                                       {target.primary && (
-                                        <div className="flex items-center gap-1 text-[10px] text-stone-400 font-medium">
+                                        <div className="flex items-center gap-1 text-[10px] text-stone-500 font-semibold">
                                           {target.hasDistance ? <><MapIcon /><span>{target.primary}</span></> : <><ClockIcon /><span>{target.primary}</span></>}
                                         </div>
                                       )}
@@ -1027,7 +1075,7 @@ export function CalendarView({
                             {((prevu?.natation?.distanceKm ?? 0) > 0 || (fait?.natation?.distanceKm ?? 0) > 0 || (prevu?.natation?.minutes ?? 0) > 0 || (fait?.natation?.minutes ?? 0) > 0) ? (
                               <span className="flex items-center gap-1.5 text-sky-600" title={tCalendar('weekly.swimmingDistanceCompletedPlanned')}>
                                 <IconSwimming className="w-3.5 h-3.5" />
-                                {formatDist(fait?.natation?.distanceKm ?? 0)} km / {formatDist(prevu?.natation?.distanceKm ?? 0)} km
+                                {swimmingDistanceM(fait?.natation?.distanceKm ?? 0)} m / {swimmingDistanceM(prevu?.natation?.distanceKm ?? 0)} m
                               </span>
                             ) : null}
                             {(prevu?.musculation?.minutes ?? 0) > 0 || (fait?.musculation?.minutes ?? 0) > 0 ? (
@@ -1132,9 +1180,9 @@ export function CalendarView({
                                         <div className="clear-both"></div>
                                       </div>
                                     </div>
-                                    <div className="flex items-center gap-1 flex-wrap text-[10px] text-stone-400 font-medium mt-1">
+                                    <div className="flex items-center gap-1 flex-wrap text-[10px] text-stone-500 font-semibold mt-1">
                                       <div className="flex items-center gap-1">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                           <path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z" />
                                           <path d="m14.5 12.5 2-2" />
                                           <path d="m11.5 9.5 2-2" />
@@ -1166,7 +1214,7 @@ export function CalendarView({
                                       <div className="text-xs font-semibold text-stone-700 mt-1 truncate">{firstImported.title}</div>
                                     </div>
                                     {target.primary && (
-                                      <div className="flex items-center gap-1 text-[10px] text-stone-400 font-medium">
+                                      <div className="flex items-center gap-1 text-[10px] text-stone-500 font-semibold">
                                         {target.hasDistance ? (
                                           <><MapIcon /><span>{target.primary}</span>{target.secondary && <><span className="w-px h-2.5 bg-stone-300" /><MountainIcon /><span>{target.secondary}</span></>}</>
                                         ) : (
@@ -1234,9 +1282,9 @@ export function CalendarView({
                                         <div className="clear-both"></div>
                                       </div>
                                     </div>
-                                    <div className="flex items-center gap-1 flex-wrap text-[10px] text-stone-400 font-medium mt-1">
+                                    <div className="flex items-center gap-1 flex-wrap text-[10px] text-stone-500 font-semibold mt-1">
                                       <div className="flex items-center gap-1">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                           <path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z" />
                                           <path d="m14.5 12.5 2-2" />
                                           <path d="m11.5 9.5 2-2" />
@@ -1268,7 +1316,7 @@ export function CalendarView({
                                       <div className="text-xs font-semibold text-stone-700 mt-1 truncate">{firstImported.title}</div>
                                     </div>
                                     {target.primary && (
-                                      <div className="flex items-center gap-1 text-[10px] text-stone-400 font-medium">
+                                      <div className="flex items-center gap-1 text-[10px] text-stone-500 font-semibold">
                                         {target.hasDistance ? (
                                           <><MapIcon /><span>{target.primary}</span>{target.secondary && <><span className="w-px h-2.5 bg-stone-300" /><MountainIcon /><span>{target.secondary}</span></>}</>
                                         ) : (
@@ -1370,9 +1418,9 @@ export function CalendarView({
                                         <div className="clear-both"></div>
                                       </div>
                                     </div>
-                                    <div className="flex items-center gap-1 flex-wrap text-[10px] text-stone-400 font-medium mt-1">
+                                    <div className="flex items-center gap-1 flex-wrap text-[10px] text-stone-500 font-semibold mt-1">
                                       <div className="flex items-center gap-1">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                           <path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z" />
                                           <path d="m14.5 12.5 2-2" />
                                           <path d="m11.5 9.5 2-2" />
@@ -1408,7 +1456,7 @@ export function CalendarView({
                                       <p className="text-xs text-stone-500 leading-snug mb-3 line-clamp-2">{a.description}</p>
                                     ) : null}
                                     {target.primary && (
-                                      <div className="flex items-center gap-3 text-xs text-stone-500 font-medium flex-wrap">
+                                      <div className="flex items-center gap-3 text-xs text-stone-500 font-semibold flex-wrap">
                                         {target.hasDistance ? (
                                           <>
                                             <div className="flex items-center gap-1">
