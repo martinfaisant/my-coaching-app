@@ -140,6 +140,7 @@
     "notes": "Notes",
     "deleteConfirm": "Êtes-vous sûr de vouloir supprimer cet entraînement ?",
     "form": {
+      "chooseDate": "Choisir une date",
       "sportType": "Type de sport",
       "title": "Titre de la séance",
       "titlePlaceholder": "Ex : Sortie longue",
@@ -167,14 +168,25 @@
       "noComment": "Aucun commentaire.",
       "yourComment": "Votre commentaire",
       "placeholder": "Saisissez votre commentaire...",
+      "placeholderForCoach": "Commentaires sur la séance pour votre coach",
       "ariaLabel": "Votre commentaire"
+    },
+    "status": {
+      "ariaLabel": "Statut de la séance",
+      "planned": "Planifié",
+      "completed": "Réalisé",
+      "not_completed": "Non réalisé"
     },
     "validation": {
       "allFieldsRequired": "Tous les champs sont obligatoires.",
       "invalidSport": "Type de sport invalide.",
       "onlyCoachCanCreate": "Seul le coach peut créer un entraînement.",
+      "onlyCoachCanEdit": "Seul le coach peut modifier l'entraînement.",
       "notFound": "Entraînement introuvable.",
-      "deleteSuccess": "Entraînement supprimé avec succès."
+      "deleteSuccess": "Entraînement supprimé avec succès.",
+      "notAuthenticated": "Non connecté.",
+      "unauthorized": "Non autorisé.",
+      "commentSaveFailed": "Impossible d'enregistrer le commentaire."
     }
   },
   "goals": {

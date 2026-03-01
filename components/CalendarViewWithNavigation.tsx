@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useTransition, useCallback } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
 import { Button } from './Button'
 import { CalendarView } from './CalendarView'
-import { getWorkoutsForDateRange, getImportedActivitiesForDateRange, getImportedActivityWeeklyTotals, getWorkoutWeeklyTotals } from '@/app/[locale]/dashboard/workouts/actions'
+import { getWorkoutsForDateRange, getImportedActivitiesForDateRange, getEffectiveWeeklyTotalsFait, getWorkoutWeeklyTotals } from '@/app/[locale]/dashboard/workouts/actions'
 import type { Workout, Goal, ImportedActivity, ImportedActivityWeeklyTotal, WorkoutWeeklyTotal } from '@/types/database'
 import { getWeekMonday, toDateStr } from '@/lib/dateUtils'
 
@@ -183,14 +183,15 @@ export function CalendarViewWithNavigation({
     }
     
     const initialRange = getInitialFiveWeekRange(currentMonday)
+    const lastMondayStr = toDateStr(getWeekMondayByOffset(currentMonday, 2))
     let cancelled = false
-    
+
     const loadInitialData = async () => {
-      const [workoutsResult, importedResult, totalsResult, workoutTotalsResult] = await Promise.all([
+      const [workoutsResult, importedResult, workoutTotalsResult, totalsResult] = await Promise.all([
         getWorkoutsForDateRange(athleteId, initialRange.start, initialRange.end),
         getImportedActivitiesForDateRange(athleteId, initialRange.start, initialRange.end),
-        getImportedActivityWeeklyTotals(athleteId, initialRange.start, initialRange.end),
-        getWorkoutWeeklyTotals(athleteId, initialRange.start, initialRange.end),
+        getWorkoutWeeklyTotals(athleteId, initialRange.start, lastMondayStr),
+        getEffectiveWeeklyTotalsFait(athleteId, initialRange.start, lastMondayStr),
       ])
       
       if (cancelled) return
@@ -204,8 +205,8 @@ export function CalendarViewWithNavigation({
           setImportedActivities(importedResult.importedActivities as ImportedActivity[])
         }
         if (!totalsResult.error && totalsResult.weeklyTotals) {
-          setWeeklyTotals(totalsResult.weeklyTotals as ImportedActivityWeeklyTotal[])
-          stableWeeklyTotalsRef.current = totalsResult.weeklyTotals as ImportedActivityWeeklyTotal[]
+          setWeeklyTotals(totalsResult.weeklyTotals)
+          stableWeeklyTotalsRef.current = totalsResult.weeklyTotals
         }
         if (!workoutTotalsResult.error && workoutTotalsResult.workoutTotals) {
           setWorkoutTotals(workoutTotalsResult.workoutTotals as WorkoutWeeklyTotal[])
@@ -253,12 +254,14 @@ export function CalendarViewWithNavigation({
       
       const earliestStart = weekRanges.reduce((min, r) => r.start < min ? r.start : min, weekRanges[0].start)
       const latestEnd = weekRanges.reduce((max, r) => r.end > max ? r.end : max, weekRanges[0].end)
-      
-      const [workoutsResult, importedResult, totalsResult, workoutTotalsResult] = await Promise.all([
+      const startMonday = toDateStr(getWeekMonday(earliestStart))
+      const endMonday = toDateStr(getWeekMonday(latestEnd))
+
+      const [workoutsResult, importedResult, workoutTotalsResult, totalsResult] = await Promise.all([
         getWorkoutsForDateRange(athleteId, earliestStart, latestEnd),
         getImportedActivitiesForDateRange(athleteId, earliestStart, latestEnd),
-        getImportedActivityWeeklyTotals(athleteId, earliestStart, latestEnd),
-        getWorkoutWeeklyTotals(athleteId, earliestStart, latestEnd),
+        getWorkoutWeeklyTotals(athleteId, startMonday, endMonday),
+        getEffectiveWeeklyTotalsFait(athleteId, startMonday, endMonday),
       ])
       
       startTransition(() => {

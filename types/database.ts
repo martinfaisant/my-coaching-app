@@ -39,6 +39,9 @@ export type Goal = {
   created_at: string
 }
 
+/** Statut de réalisation d'une séance (affichage i18n : Planifié, Réalisé, Non réalisé). */
+export type WorkoutStatus = 'planned' | 'completed' | 'not_completed'
+
 export type Workout = {
   id: string
   athlete_id: string
@@ -46,6 +49,8 @@ export type Workout = {
   sport_type: SportType
   title: string
   description: string
+  /** Statut de réalisation (planifié / réalisé / non réalisé). Modifiable par l'athlète. Défaut 'planned' si absent (avant migration). */
+  status?: WorkoutStatus
   /** Objectif en minutes (temps). */
   target_duration_minutes?: number | null
   /** Objectif en km (distance). */

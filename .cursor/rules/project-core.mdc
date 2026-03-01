@@ -257,6 +257,14 @@ if ('error' in result) return result
 
 ---
 
+## Entraînements (workouts) – Statut et total « fait »
+
+- **Statut :** `workouts.status` = `planned` | `completed` | `not_completed` (défaut `planned`). Seul l’athlète peut modifier le statut (avec commentaire) via `saveWorkoutStatusAndComment`.
+- **Total « fait » :** Affichage = activités importées Strava + séances `completed`, **moins** le volume des séances réalisées qui ont une activité importée **même jour et même type** (éviter double comptage). Mapping Strava → type app : `lib/stravaMapping.ts` ; serveur : `getEffectiveWeeklyTotalsFait`.
+- **Référence :** `Project_context.md` §4.5 (Workouts, Total « fait »).
+
+---
+
 ## Performance
 
 - Minimize client-side JavaScript
@@ -312,7 +320,7 @@ if ('error' in result) return result
 ---
 
 **Version:** 2.2 
-**Last updated:** 24 février 2026
+**Last updated:** 27 février 2026
 **Refactoring status:** 13/17 tasks completed (76%)  
 **i18n:** Bilingue FR/EN complété — toujours penser bilingue pour les nouvelles features  
-**Offres/souscriptions:** Snapshot à la demande (frozen_* dans coach_requests), souscription à l’acceptation depuis coach_requests ; statuts offre draft / published / archived (voir Project_context.md)
+**Offres/souscriptions:** Snapshot à la demande (frozen_* dans coach_requests), souscription à l’acceptation depuis coach_requests ; statuts offre draft / published / archived (voir Project_context.md). **Workouts:** Statut planifié / réalisé / non réalisé ; total « fait » avec déduplication Strava (voir Project_context.md §4.5).

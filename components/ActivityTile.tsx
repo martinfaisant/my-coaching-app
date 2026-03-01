@@ -100,7 +100,7 @@ export function ActivityTile(props: ActivityTileProps) {
         <div className="min-w-0 flex-1">
           <div className="font-semibold text-stone-900 truncate">{title}</div>
           {(metadata.length > 0 || date) && (
-            <div className="text-xs text-stone-500 mt-0.5 flex items-center gap-1.5 flex-wrap">
+            <div className="text-xs text-stone-500 font-semibold mt-0.5 flex items-center gap-1.5 flex-wrap">
               {date && <span>{date}</span>}
               {date && metadata.length > 0 && <span className="text-sm font-bold">·</span>}
               {metadata.map((item, idx) => (
@@ -135,7 +135,7 @@ export function ActivityTile(props: ActivityTileProps) {
           </div>
           <div className="font-semibold text-stone-900 truncate">{title}</div>
           {(metadata.length > 0 || date) && (
-            <div className="text-xs text-stone-500 mt-0.5 flex items-center gap-1.5 flex-wrap">
+            <div className="text-xs text-stone-500 font-semibold mt-0.5 flex items-center gap-1.5 flex-wrap">
               {date && <span>{date}</span>}
               {date && metadata.length > 0 && <span className="text-sm font-bold">·</span>}
               {metadata.map((item, idx) => (
@@ -172,7 +172,7 @@ export function ActivityTile(props: ActivityTileProps) {
         </span>
         <div className="min-w-0 flex-1">
           <div className="font-semibold text-stone-900 truncate">{title}</div>
-          <div className="text-xs text-stone-500 mt-0.5 flex items-center gap-1.5 flex-wrap">
+          <div className="text-xs text-stone-500 font-semibold mt-0.5 flex items-center gap-1.5 flex-wrap">
             {date && <span>{date}</span>}
             {date && <span className="text-sm font-bold">·</span>}
             <span>{distance} km</span>
