@@ -876,6 +876,7 @@ Composant modal réutilisable avec overlay, gestion automatique Escape + body ov
 ||--------|-------------|-------|
 || `sm` | 384px | Confirmations simples, alertes |
 || `md` | 448px | Par défaut, formulaires standards |
+|| `workout` | 644px (40.25rem) | Modales entraînement (md + ~44 %) |
 || `lg` | 512px | Formulaires étendus |
 || `xl` | 576px | Contenu riche |
 || `2xl` | 672px | Large contenu |
@@ -895,10 +896,12 @@ Composant modal réutilisable avec overlay, gestion automatique Escape + body ov
 type ModalProps = {
   isOpen: boolean
   onClose: () => void
-  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | 'full'
+  size?: 'sm' | 'md' | 'workout' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | 'full'
   alignment?: 'center' | 'top' | 'right'
   title?: string
   icon?: React.ReactNode
+  iconRaw?: boolean   // true = icône rendue telle quelle (ex. tuile sport pill), sans wrapper rond
+  titleWrap?: boolean // true = titre sur plusieurs lignes sur petit écran (pas de truncate)
   headerRight?: React.ReactNode
   hideCloseButton?: boolean
   disableOverlayClose?: boolean
@@ -911,7 +914,7 @@ type ModalProps = {
 }
 ```
 
-**Usage avancé :** La modale entraînement (`WorkoutModal`) utilise `headerRight` pour afficher le sélecteur de date (mois en toutes lettres) et le badge de statut (Planifié / Réalisé / Non réalisé) côté coach ; en lecture seule coach, seul le badge est affiché. Styles formulaires : `lib/formStyles.ts`.
+**Usage avancé :** La modale entraînement (`WorkoutModal`) utilise la taille `workout` (644px), `iconRaw` et `titleWrap`. **Création et édition coach :** date à gauche (sans titre ni icône check), badge statut à droite. **Lecture seule** (athlète / coach passé) : tuile pill du sport + titre de la séance à gauche (titre peut passer sur deux lignes sur petit écran), badge statut à droite ; corps sans ligne « date · sport ». Styles formulaires : `lib/formStyles.ts`.
 
 #### Exemples
 

@@ -22,12 +22,20 @@ import { Input } from '@/components/Input'
 import { Textarea } from '@/components/Textarea'
 import { Badge } from '@/components/Badge'
 import { SportTileSelectable } from '@/components/SportTileSelectable'
-import { SPORT_ICONS, SPORT_TRANSLATION_KEYS } from '@/lib/sportStyles'
+import { SPORT_ICONS, SPORT_TRANSLATION_KEYS, SPORT_BADGE_STYLES } from '@/lib/sportStyles'
 import { formatDateFr, toDateStr } from '@/lib/dateUtils'
 import { FORM_BASE_CLASSES, FORM_LABEL_CLASSES, TEXTAREA_SPECIFIC_CLASSES } from '@/lib/formStyles'
 
 /** Sports pour entraînement (sous-ensemble du calendrier). */
 const WORKOUT_SPORT_TYPES: SportType[] = ['course', 'velo', 'natation', 'musculation']
+
+/** Bordure pill (tuile sport lecture seule en header). Aligné design B. */
+const PILL_BORDER_CLASSES: Record<string, string> = {
+  course: 'border-palette-forest-dark',
+  velo: 'border-palette-olive',
+  natation: 'border-sky-500',
+  musculation: 'border-stone-400',
+}
 
 /** Icônes objectifs (alignées tuiles calendrier, US3). */
 const ClockIcon = ({ className = 'h-4 w-4 text-stone-400' }: { className?: string }) => (
@@ -556,37 +564,9 @@ export function WorkoutModal({
     onClose()
   }, [onClose])
 
-  /** US3 / US5 : titre = titre de la séance (vue athlète ou coach lecture seule). */
-  const modalTitle = isEdit && currentWorkout && (athleteView || coachReadOnly)
-    ? currentWorkout.title
-    : isEdit
-      ? canEdit
-        ? tWorkouts('editWorkout')
-        : tWorkouts('myWorkout')
-      : tWorkouts('myWorkout')
-
-  const modalIcon = (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      className="h-5 w-5"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-    </svg>
-  )
-
-  /** En-tête modale coach : date + statut (US4) ou badge statut seul (US5 lecture seule). */
-  const coachModifiableHeaderRight = coachReadOnly && currentWorkout ? (
-    <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${getStatusBadge((currentWorkout.status ?? 'planned') as WorkoutStatus).className}`}>
-      {getStatusBadge((currentWorkout.status ?? 'planned') as WorkoutStatus).label}
-    </span>
-  ) : coachFormNewLayout ? (
-    <div className="flex items-center gap-2 flex-wrap">
+  /** Bloc date seul (création / édition coach : à gauche). */
+  const coachDateBlock =
+    coachFormNewLayout ? (
       <div className="flex items-center gap-2 border border-stone-300 rounded-lg py-1.5 px-3 bg-white focus-within:ring-2 focus-within:ring-palette-forest-dark focus-within:border-transparent transition">
         <input
           type="date"
@@ -612,19 +592,87 @@ export function WorkoutModal({
           </svg>
         </button>
       </div>
-      <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${getStatusBadge((currentWorkout?.status ?? 'planned') as WorkoutStatus).className}`}>
-        {getStatusBadge((currentWorkout?.status ?? 'planned') as WorkoutStatus).label}
+    ) : null
+
+  /** Badge statut seul (création : à droite). */
+  const coachStatusBadge = coachFormNewLayout ? (
+    <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${getStatusBadge((currentWorkout?.status ?? 'planned') as WorkoutStatus).className}`}>
+      {getStatusBadge((currentWorkout?.status ?? 'planned') as WorkoutStatus).label}
+    </span>
+  ) : null
+
+  /** Titre : séance en lecture seule ; pas de titre en création ni en édition coach (aligné sur création). */
+  const modalTitle =
+    currentWorkout && (athleteView || coachReadOnly)
+      ? currentWorkout.title
+      : coachFormNewLayout
+        ? undefined
+        : isEdit
+          ? canEdit
+            ? tWorkouts('editWorkout')
+            : tWorkouts('myWorkout')
+          : tWorkouts('myWorkout')
+
+  /** En-tête coach édition/création : date à gauche. Lecture seule : tuile pill. Sinon (athlète édition) : check. */
+  const modalIcon =
+    coachFormNewLayout
+      ? coachDateBlock
+      : (athleteView || coachReadOnly) && currentWorkout && currentWorkout.sport_type in SPORT_ICONS ? (
+      (() => {
+        const sport = currentWorkout.sport_type as keyof typeof SPORT_ICONS
+        const Icon = SPORT_ICONS[sport]
+        const styles = sport in SPORT_BADGE_STYLES ? SPORT_BADGE_STYLES[sport as keyof typeof SPORT_BADGE_STYLES] : { bg: 'bg-stone-100', text: 'text-stone-600', border: 'border-stone-300' }
+        const borderClass = PILL_BORDER_CLASSES[currentWorkout.sport_type] ?? 'border-stone-300'
+        const label = sport in SPORT_TRANSLATION_KEYS ? tSports(SPORT_TRANSLATION_KEYS[sport as keyof typeof SPORT_TRANSLATION_KEYS]) : currentWorkout.sport_type
+        return (
+          <span
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border-2 ${borderClass} ${styles.bg} ${styles.text} text-sm font-medium shrink-0 shadow-[0_4px_6px_-1px_rgba(98,126,89,0.2)]`}
+            aria-hidden
+          >
+            <Icon className="w-3.5 h-3.5 shrink-0" aria-hidden />
+            <span>{label}</span>
+          </span>
+        )
+      })()
+    ) : (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-5 w-5"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    )
+
+  /** En-tête modale coach : lecture seule = badge statut à droite ; édition/création = date à gauche (icon) + badge statut à droite. */
+  const coachModifiableHeaderRight =
+    coachReadOnly && currentWorkout ? (
+      <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${getStatusBadge((currentWorkout.status ?? 'planned') as WorkoutStatus).className}`}>
+        {getStatusBadge((currentWorkout.status ?? 'planned') as WorkoutStatus).label}
       </span>
-    </div>
-  ) : undefined
+    ) : coachFormNewLayout ? (
+      coachStatusBadge
+    ) : undefined
+
+  const isReadOnlyHeader = (athleteView || coachReadOnly) && currentWorkout
+
+  /** Coach édition/création : date à gauche (iconRaw), pas de titre. */
+  const isCoachEditableHeader = coachFormNewLayout
 
   return (
     <Modal
       isOpen={isOpen}
       onClose={handleClose}
-      size="md"
+      size="workout"
       title={modalTitle}
       icon={modalIcon}
+      iconRaw={!!isReadOnlyHeader || !!isCoachEditableHeader}
+      titleWrap={!!isReadOnlyHeader}
       headerRight={coachModifiableHeaderRight}
       titleId="workout-modal-title"
       contentClassName="px-0"
@@ -677,14 +725,10 @@ export function WorkoutModal({
         <>
           <div className="flex flex-col flex-1 min-h-0 overflow-y-auto">
             <div className="px-6 py-4 space-y-5">
-              {/* US3 : date · sport (Badge) */}
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="text-sm font-medium text-stone-600">
-                  {formatDateFr(date, true, locale === 'fr' ? 'fr-FR' : 'en-US')}
-                </span>
-                <span className="text-stone-300" aria-hidden>·</span>
-                <Badge sport={currentWorkout.sport_type} />
-              </div>
+              {/* Date seule — sport dans l'en-tête (tuile pill) */}
+              <p className="text-sm font-medium text-stone-600">
+                {formatDateFr(date, true, locale === 'fr' ? 'fr-FR' : 'en-US')}
+              </p>
               {/* Objectifs de la séance : métriques avec icônes tuiles + ligne horizontale + description (sans label "Description") */}
               <div className="bg-stone-50 p-4 rounded-xl border border-stone-100">
                 <div className="text-xs font-bold text-stone-500 uppercase tracking-wide mb-3">
@@ -1013,17 +1057,13 @@ export function WorkoutModal({
         </div>
       </form>
       ) : coachReadOnly && currentWorkout ? (
-      /* US5 : modale coach lecture seule — titre = titre séance, pas de formulaire ni boutons */
+      /* US5 : modale coach lecture seule — titre = titre séance, sport dans l'en-tête (tuile pill) */
       <div className="flex flex-col flex-1 min-h-0 overflow-y-auto">
         <div className="px-6 py-4 space-y-5">
-          {/* Date · sport (Badge) */}
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-sm font-medium text-stone-600">
-              {formatDateFr(currentWorkout.date, true, locale === 'fr' ? 'fr-FR' : 'en-US')}
-            </span>
-            <span className="text-stone-300" aria-hidden>·</span>
-            <Badge sport={currentWorkout.sport_type} />
-          </div>
+          {/* Date seule — sport dans l'en-tête */}
+          <p className="text-sm font-medium text-stone-600">
+            {formatDateFr(currentWorkout.date, true, locale === 'fr' ? 'fr-FR' : 'en-US')}
+          </p>
           {/* Objectifs de la séance : métriques avec icônes + ligne horizontale + description */}
           <div className="bg-stone-50 p-4 rounded-xl border border-stone-100">
             <div className="text-xs font-bold text-stone-500 uppercase tracking-wide mb-3">
