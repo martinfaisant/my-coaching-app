@@ -218,7 +218,7 @@ Athletes filter coaches by:
 **Coach can:**
 
 - Create / update / delete workouts for their athletes
-- **Create & edit modal:** header aligned for both flows: date picker on the left (month in full letters), status badge (Planifié / Réalisé / Non réalisé) on the right; no title nor check icon. Body: Sport (SportTileSelectable), title, session objectives (toggle time/distance, grid, description in same block), athlete comment read-only; footer: Delete, Save. Editable only when session date is in the future and status ≠ completed.
+- **Create & edit modal:** header aligned for both flows: date picker on the left (month in full letters), status badge (Planifié / Réalisé / Non réalisé) on the right; no title nor check icon. The date opens a **DatePickerPopup** (design system) as a **popover** under the field (not a second modal); month list from current month to current month + 2 years (see `docs/DESIGN_SYSTEM.md` § DatePickerPopup). Body: Sport (SportTileSelectable), title, session objectives (toggle time/distance, grid, description in same block), athlete comment read-only; footer: Delete, Save. Editable only when session date is in the future and status ≠ completed.
 - **Read-only modal:** when session is in the past or status = completed: header = sport pill (design B, icon + label) + session title (can wrap on small screen), status badge on the right; body = date only (sport in header), then objectives, description, athlete comment; no form nor buttons.
 - On the calendar (workout tile and day modal), see status and when an athlete has left a comment (comment icon in the metadata row)
 - See weekly totals per sport and planning status (“Planifié jusqu’au”, “En retard”)

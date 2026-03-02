@@ -1,7 +1,7 @@
 # 🎨 Design System
 
-**Version :** 1.6  
-**Dernière mise à jour :** 2 mars 2026 (LanguageSwitcher basé sur Dropdown ; Dropdown étendu valueDisplay, triggerPrefix, showCheckmark ; trigger compact 5.5rem, sans coche)
+**Version :** 1.7  
+**Dernière mise à jour :** 2 mars 2026 (DatePickerPopup : popover sous le champ date, liste des mois = mois actuel → mois actuel + 2 ans ; Dropdown panneau scroll max-h-64)
 
 ---
 
@@ -1161,6 +1161,7 @@ const options = [
 - Clic sur une option : `onChange(value)` puis fermeture.
 - Clic à l’extérieur : fermeture (useEffect + mousedown).
 - Accessibilité : `role="listbox"`, `aria-expanded`, `aria-selected` sur les options.
+- **Panneau d’options** : `max-h-64 overflow-y-auto` pour limiter la hauteur et permettre le scroll lorsque la liste est longue (ex. liste des mois du calendrier).
 - **hideLabel** : quand `true`, le label n’est pas rendu (usage dans le popup calendrier, en-tête).
 - **valueDisplay** : si fourni, affiché dans le trigger à la place du label de l’option (ex. code langue).
 - **triggerPrefix** : rendu avant le label dans le trigger (ex. icône Globe pour LanguageSwitcher).
@@ -1172,7 +1173,7 @@ const options = [
 
 **Fichier :** `components/DatePickerPopup.tsx`
 
-Popup calendrier pour la sélection d’une date. Conforme au design system : **Dropdown** pour le mois (avec `hideLabel`), grille de jours (semaine lundi–dimanche), date sélectionnée en `bg-palette-forest-dark text-white`, lien « Aujourd'hui » au pied (pas de bouton Effacer — date obligatoire). Référence : `docs/design-workout-modal-calendar/mockup-calendar-popup.html`, `DESIGN_CALENDAR_POPUP.md`.
+Popup calendrier pour la sélection d’une date. Conforme au design system : **Dropdown** pour le mois (avec `hideLabel`), grille de jours (semaine lundi–dimanche), date sélectionnée en `bg-palette-forest-dark text-white`, lien « Aujourd'hui » au pied (pas de bouton Effacer — date obligatoire). Référence (archives) : `docs/archive/design-workout-modal-calendar/` (mockup-calendar-popup.html, DESIGN_CALENDAR_POPUP.md).
 
 #### Props
 
@@ -1204,8 +1205,9 @@ import { DatePickerPopup } from '@/components/DatePickerPopup'
 
 #### Usage
 
-- Intégré dans **WorkoutModal** : au clic sur le champ date (coach, séance modifiable), ouverture d’une modale contenant `DatePickerPopup` au lieu du picker natif.
-- Mois : composant **Dropdown** du design system (options = mois formatés, value = `YYYY-MM`).
+- **Intégration dans WorkoutModal** : au clic sur le champ date (coach, séance modifiable), le calendrier s’ouvre en **popover** positionné sous le champ (pas une deuxième modale). Overlay transparent en z-[105], contenu en z-[110] ; fermeture par clic extérieur ou touche Escape.
+- **Liste des mois (Dropdown)** : du **mois actuel** au **mois actuel + 2 ans** (25 mois). Si l’utilisateur navigue avec les flèches hors de cette plage, le mois affiché est ajouté aux options et la liste est triée par date.
+- Mois : composant **Dropdown** du design system (options = mois formatés, value = `YYYY-MM`). Le panneau du Dropdown a `max-h-64 overflow-y-auto` pour permettre le scroll.
 
 ---
 

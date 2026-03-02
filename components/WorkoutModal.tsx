@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, useRef, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 import { useFormStatus } from 'react-dom'
 import { useActionState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -17,6 +18,7 @@ import {
 } from '@/app/[locale]/dashboard/workouts/actions'
 import type { SportType, Workout, WorkoutStatus } from '@/types/database'
 import { Modal } from '@/components/Modal'
+import { DatePickerPopup } from '@/components/DatePickerPopup'
 import { Button } from '@/components/Button'
 import { Input } from '@/components/Input'
 import { Textarea } from '@/components/Textarea'
@@ -175,7 +177,10 @@ export function WorkoutModal({
   const [deleteError, setDeleteError] = useState<string | null>(null)
   /** Date éditable (coach modifiable US4) : initialisée à date ou currentWorkout.date. */
   const [editableDate, setEditableDate] = useState(date)
-  const datePickerInputRef = useRef<HTMLInputElement>(null)
+  /** Ouverture du popup calendrier (design system) : popover sous le champ date, pas une 2e modale. */
+  const [showDatePickerPopup, setShowDatePickerPopup] = useState(false)
+  const dateTriggerRef = useRef<HTMLDivElement>(null)
+  const [datePickerAnchor, setDatePickerAnchor] = useState<DOMRect | null>(null)
 
   // Pattern standard pour le bouton "Enregistrer" du formulaire workout
   const [showWorkoutSavedFeedback, setShowWorkoutSavedFeedback] = useState(false)
@@ -564,25 +569,40 @@ export function WorkoutModal({
     onClose()
   }, [onClose])
 
-  /** Bloc date seul (création / édition coach : à gauche). */
+  const openDatePicker = useCallback(() => {
+    const rect = dateTriggerRef.current?.getBoundingClientRect()
+    if (rect) setDatePickerAnchor(rect)
+    setShowDatePickerPopup(true)
+  }, [])
+
+  const closeDatePicker = useCallback(() => {
+    setShowDatePickerPopup(false)
+    setDatePickerAnchor(null)
+  }, [])
+
+  useEffect(() => {
+    if (!showDatePickerPopup) return
+    const onEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeDatePicker()
+    }
+    document.addEventListener('keydown', onEscape)
+    return () => document.removeEventListener('keydown', onEscape)
+  }, [showDatePickerPopup, closeDatePicker])
+
+  /** Bloc date seul (création / édition coach : à gauche). Ouvre le popover calendrier sous le champ (une seule modale). */
+  const localeForPicker = locale === 'fr' ? 'fr-FR' : 'en-US'
   const coachDateBlock =
     coachFormNewLayout ? (
-      <div className="flex items-center gap-2 border border-stone-300 rounded-lg py-1.5 px-3 bg-white focus-within:ring-2 focus-within:ring-palette-forest-dark focus-within:border-transparent transition">
-        <input
-          type="date"
-          ref={datePickerInputRef}
-          id="workout-date-picker"
-          value={editableDate}
-          onChange={(e) => setEditableDate(e.target.value)}
-          className="sr-only"
-          aria-label={tWorkouts('form.chooseDate')}
-        />
+      <div
+        ref={dateTriggerRef}
+        className="flex items-center gap-2 border border-stone-300 rounded-lg py-1.5 px-3 bg-white focus-within:ring-2 focus-within:ring-palette-forest-dark focus-within:border-transparent transition"
+      >
         <span className="text-sm font-bold text-stone-900 min-w-[10rem]" aria-hidden>
-          {formatDateFr(editableDate, true, locale === 'fr' ? 'fr-FR' : 'en-US')}
+          {formatDateFr(editableDate, true, localeForPicker)}
         </span>
         <button
           type="button"
-          onClick={() => datePickerInputRef.current?.showPicker?.()}
+          onClick={openDatePicker}
           className="shrink-0 p-1 rounded text-stone-400 hover:text-palette-forest-dark hover:bg-stone-100"
           title={tWorkouts('form.chooseDate')}
           aria-label={tWorkouts('form.chooseDate')}
@@ -593,6 +613,40 @@ export function WorkoutModal({
         </button>
       </div>
     ) : null
+
+  /** Popover calendrier : positionné sous le champ date, au-dessus de la modale (z-[110]), pas une 2e modale. */
+  const datePickerPopover =
+    showDatePickerPopup && datePickerAnchor && typeof document !== 'undefined'
+      ? createPortal(
+          <>
+            <div
+              className="fixed inset-0 z-[105]"
+              aria-hidden
+              onClick={closeDatePicker}
+            />
+            <div
+              className="fixed z-[110] shadow-xl"
+              style={{
+                top: datePickerAnchor.bottom + 8,
+                left: datePickerAnchor.left,
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <DatePickerPopup
+                value={editableDate}
+                onChange={(dateStr) => {
+                  setEditableDate(dateStr)
+                  closeDatePicker()
+                }}
+                locale={localeForPicker}
+                minDate={toDateStr(new Date())}
+                monthDropdownId="workout-date-picker-month"
+              />
+            </div>
+          </>,
+          document.body
+        )
+      : null
 
   /** Badge statut seul (création : à droite). */
   const coachStatusBadge = coachFormNewLayout ? (
@@ -665,6 +719,7 @@ export function WorkoutModal({
   const isCoachEditableHeader = coachFormNewLayout
 
   return (
+    <>
     <Modal
       isOpen={isOpen}
       onClose={handleClose}
@@ -1476,5 +1531,7 @@ export function WorkoutModal({
       </form>
       )}
     </Modal>
+    {datePickerPopover}
+    </>
   )
 }

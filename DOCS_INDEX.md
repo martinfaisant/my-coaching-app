@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 2 mars 2026 (Mode Analyste : LanguageSwitcher basé sur Dropdown, clé common.changeLanguage)
+**Dernière mise à jour :** 2 mars 2026 (Mode Analyste : module calendrier — archivage docs design-workout-modal-calendar vers docs/archive/ ; voir Project_context §4.5, DESIGN_SYSTEM § DatePickerPopup)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -24,7 +24,7 @@
 - **Contenu :** Tokens (couleurs, typo, espacements), composants (Button, Input, Badge, TileCard, DashboardPageShell, Modal, etc.), guidelines UI, exemples de code, §7 breakpoints (calendrier, chat, Trouver mon coach, My offers)
 - **Utiliser pour :** Créer ou modifier des composants UI, choisir des couleurs, appliquer le design system, règles responsive par page
 - **Taille :** ~850 lignes
-- **Dernière mise à jour :** 2 mars 2026 (LanguageSwitcher basé Dropdown ; Dropdown valueDisplay, triggerPrefix, showCheckmark)
+- **Dernière mise à jour :** 2 mars 2026 (DatePickerPopup : popover, liste des mois mois actuel → +2 ans ; Dropdown panneau scroll max-h-64)
 
 ### **docs/I18N.md** ⭐
 - **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces, utilisation dans composants et server actions, **checklist pour nouvelles features** (toujours penser bilingue)
@@ -220,6 +220,10 @@
 **En-tête modale entraînement – tuile sport / date à gauche (archivés 2 mars 2026) :**
 - `docs/archive/design-workout-modal-sport-header/` — index.html, mockup-a-badge-header.html, mockup-b-pill-tile-header.html, mockup-c-icon-only-header.html (3 designs, option B retenue).
 - **Raison :** Feature livrée ; modale création/édition coach : date à gauche, statut à droite (pas de titre ni icône check) ; modale lecture seule (athlète / coach passé) : tuile pill sport + titre à gauche, statut à droite, corps sans ligne « date · sport » ; largeur modale workout 644px ; titre peut passer sur deux lignes sur petit écran. Comportement décrit dans **Project_context.md §4.5** (Coach can / Athlete can), **docs/DESIGN_SYSTEM.md** (Modal : taille workout, iconRaw, titleWrap).
+
+**Calendrier / sélecteur de date (modale entraînement modifiable) (archivés 2 mars 2026) :**
+- `docs/archive/design-workout-modal-calendar/` — DESIGN.md (placement champ date, 3 solutions A/B/C), DESIGN_CALENDAR_POPUP.md (design popup calendrier), mockup-calendar-popup.html, mockup-calendar-solutions.html.
+- **Raison :** Feature livrée ; DatePickerPopup en popover sous le champ date, liste des mois = mois actuel → +2 ans, Dropdown avec scroll. Comportement décrit dans **Project_context.md §4.5** (Create & edit modal), **docs/DESIGN_SYSTEM.md** § DatePickerPopup, § Dropdown.
 
 **Séparation pages dashboard – find-coach / Mes athlètes (archivé 23 février 2026) :**
 - `docs/archive/dashboard-pages-separation/SPEC_ARCHI_DASHBOARD_PAGES_SEPARATION.md` — Spec architecture (redirections depuis /dashboard, pages dédiées, skeletons)
@@ -563,6 +567,7 @@
 | **Natation : unité d’affichage (m, pas km)** | **`Project_context.md` §4.5** (Unités d’affichage), **`docs/DESIGN_SYSTEM.md`** (§7 Calendrier, ActivityTile metadata) |
 | Indicateur commentaire athlète sur tuile calendrier | `Project_context.md` §4.5, `docs/DESIGN_SYSTEM.md` §7 |
 | **Statut séance, modales entraînement (en-tête création/édition/lecture seule, tuile sport, date à gauche), total « fait »** | **`Project_context.md` §4.5** (Workouts), **`docs/DESIGN_SYSTEM.md`** (Modal, WorkoutModal) |
+| **Calendrier / sélecteur de date (modale entraînement modifiable)** | **`docs/DESIGN_SYSTEM.md`** § DatePickerPopup, § Dropdown ; **Project_context.md** §4.5 (Create & edit modal). Design archivé : `docs/archive/design-workout-modal-calendar/` |
 | **Page par défaut / redirections dashboard (find-coach, Mes athlètes)** | **`Project_context.md` §4.0** |
 | Tuile Profil sidebar (état sélectionné sur page Profil, centrage mode replié) | `Project_context.md` §4.0, `docs/DESIGN_SYSTEM.md` §7 |
 | Tuile demandes en attente (coach) / Discuter / modales Refuser-Accepter | `Project_context.md` §4.4, `docs/DESIGN_SYSTEM.md` §7 |
