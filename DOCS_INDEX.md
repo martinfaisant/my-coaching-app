@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 1er mars 2026 (Mode Analyste : tri Mes athlètes, SearchInput, Dropdown, archivage design-athletes-sort)
+**Dernière mise à jour :** 2 mars 2026 (Mode Analyste : LanguageSwitcher basé sur Dropdown, clé common.changeLanguage)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -24,13 +24,13 @@
 - **Contenu :** Tokens (couleurs, typo, espacements), composants (Button, Input, Badge, TileCard, DashboardPageShell, Modal, etc.), guidelines UI, exemples de code, §7 breakpoints (calendrier, chat, Trouver mon coach, My offers)
 - **Utiliser pour :** Créer ou modifier des composants UI, choisir des couleurs, appliquer le design system, règles responsive par page
 - **Taille :** ~850 lignes
-- **Dernière mise à jour :** 1er mars 2026 (SearchInput, Dropdown ; tri Mes athlètes ; Trouver mon coach SearchInput)
+- **Dernière mise à jour :** 2 mars 2026 (LanguageSwitcher basé Dropdown ; Dropdown valueDisplay, triggerPrefix, showCheckmark)
 
 ### **docs/I18N.md** ⭐
 - **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces, utilisation dans composants et server actions, **checklist pour nouvelles features** (toujours penser bilingue)
 - **Utiliser pour :** Toute nouvelle feature ou texte visible, ajout de clés de traduction, dépannage i18n
 - **Taille :** ~180 lignes
-- **Dernière mise à jour :** 24 février 2026 (pendingRequests.chat, coachRequests confirm modals)
+- **Dernière mise à jour :** 2 mars 2026 (common.changeLanguage, LanguageSwitcher aria-label)
 
 ### **docs/AUTH_EMAIL_TEMPLATES.md**
 - **Contenu :** Guide de configuration des emails d’auth Supabase (sujet, i18n FR/EN, variables, dépannage logo). **Les fichiers HTML des templates** (Confirm signup, puis Magic Link, Reset Password, etc.) sont dans **docs/email-templates/**.
@@ -356,6 +356,11 @@
 **Dernier nettoyage :** 1er mars 2026 (archivage design-athletes-sort-by-planned-until)
 
 ### Changements récents :
+
+✅ **2 mars 2026 – LanguageSwitcher basé sur Dropdown – Mode Analyste :**
+- **Livraison :** Sélecteur de langue refactoré pour utiliser le composant **Dropdown** : trigger compact (icône globe + code FR/EN + chevron, minWidth 5.5rem), menu « Français » / « English » avec option active en vert (sans coche). Dropdown étendu avec props optionnelles `valueDisplay`, `triggerPrefix`, `showCheckmark`. i18n : clé **common.changeLanguage** pour l’aria-label (FR/EN).
+- **Fichiers :** `components/LanguageSwitcher.tsx`, `components/Dropdown.tsx`, `messages/fr.json`, `messages/en.json`, `LanguageSwitcherShowcase.tsx`.
+- **Doc :** DESIGN_SYSTEM (Dropdown, LanguageSwitcher), I18N (composant + common.changeLanguage), DOCS_INDEX.
 
 ✅ **1er mars 2026 – Tri liste athlètes (nom / date planifiée) + SearchInput et Dropdown – Mode Analyste :**
 - **Livraison :** Page « Mes athlètes » : tri par nom (A–Z) ou date planifiée (sans date en premier, croissant) via menu « Trier par ». Nouveaux composants **SearchInput** (recherche, croix verte) et **Dropdown** (trigger + panneau, états sidebar). Page « Trouver mon coach » : recherche nom/prénom en SearchInput. Données : `plannedUntilRaw` pour tri.

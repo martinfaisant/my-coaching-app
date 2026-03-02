@@ -6,7 +6,7 @@ export function LanguageSwitcherShowcase() {
   return (
     <div className="space-y-4">
       <p className="text-sm text-stone-600">
-        Sélecteur de langue en dropdown : icône globe, code langue courante (FR/EN), chevron. Menu avec libellés « Français » / « English » et indicateur de sélection (coche). Utilise les tokens palette-forest-dark, stone-*. Présent dans le header de la page d&apos;accueil et dans la sidebar du dashboard.
+        Sélecteur de langue (composant Dropdown) : trigger compact (icône globe + code FR/EN + chevron), menu avec libellés « Français » / « English », option active en vert (sans coche). Présent dans le header public (page d&apos;accueil, reset-password) et sur la page profil.
       </p>
       <div className="flex items-center gap-4">
         <LanguageSwitcher />

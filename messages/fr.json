@@ -20,7 +20,8 @@
     "secondaryGoal": "Objectif secondaire",
     "paceRequiredHint": "Obligatoire pour course, vélo et natation",
     "weekPrevious": "Semaine précédente",
-    "weekNext": "Semaine suivante"
+    "weekNext": "Semaine suivante",
+    "changeLanguage": "Changer de langue"
   },
   "auth": {
     "login": "Se connecter",
