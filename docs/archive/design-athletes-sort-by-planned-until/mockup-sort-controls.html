@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mockup — Solution A : tri par Date planifiée, boîte de sélection stylisée</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            'palette-forest-darker': '#506648',
+            'palette-olive': '#8e9856',
+            'palette-sage': '#aaaa51',
+            'palette-gold': '#cbb44b',
+            'palette-amber': '#c9a544',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="min-h-screen bg-stone-200/80 py-8 px-4 antialiased">
+  <div class="max-w-5xl mx-auto space-y-12">
+    <p class="text-sm text-stone-600 text-center">
+      Mockup <strong>non fonctionnel</strong> — Solution A : tri par défaut « Date planifiée » (proche → loin). Boîte de sélection : bords arrondis + overlay vert (alignée aux autres composants).
+    </p>
+
+    <!-- ========== Solution A : Date planifiée + boîte de sélection stylisée ========== -->
+    <section class="bg-white rounded-2xl border border-stone-200 shadow-sm p-6">
+      <h2 class="text-base font-semibold text-stone-900 mb-1">Solution A — Tri par « Date planifiée »</h2>
+      <p class="text-sm text-stone-500 mb-4">Un seul critère de tri affiché. La boîte qui s'ouvre au clic : bords arrondis, bordure et fond vert léger (overlay) pour rester cohérent avec le design system.</p>
+
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+        <h3 class="text-base font-semibold text-stone-900">Mes athlètes (3)</h3>
+        <div class="flex flex-wrap items-end gap-4 w-full sm:w-auto">
+          <!-- Bloc Rechercher -->
+          <div class="w-full sm:w-48">
+            <input
+              id="search-athlete"
+              type="search"
+              placeholder="Rechercher un athlète"
+              class="w-full px-4 py-2.5 rounded-lg border border-stone-300 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition text-sm"
+              aria-label="Rechercher un athlète"
+            />
+          </div>
+          <!-- Contrôle "Date planifiée" : trigger + boîte de sélection stylisée (ouverte pour le mockup) -->
+          <div class="relative inline-block">
+            <label class="block text-sm font-medium text-stone-700 mb-1">Trier par</label>
+            <button
+              type="button"
+              class="flex items-center justify-between gap-2 w-full min-w-[200px] px-4 py-2.5 rounded-xl border-2 border-palette-forest-dark/30 bg-palette-forest-dark/5 text-stone-900 text-sm font-medium hover:bg-palette-forest-dark/10 focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:ring-offset-2 transition"
+              aria-haspopup="listbox"
+              aria-expanded="true"
+              aria-label="Tri : Date planifiée"
+            >
+              <span>Date planifiée</span>
+              <svg class="w-4 h-4 text-stone-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+              </svg>
+            </button>
+            <!-- Boîte de sélection (ouverte) : bords arrondis + overlay vert -->
+            <div
+              class="absolute right-0 left-0 z-10 mt-1 py-1 rounded-xl border-2 border-palette-forest-dark/40 bg-white shadow-lg ring-2 ring-palette-forest-dark/20 min-w-[200px]"
+              role="listbox"
+            >
+              <div
+                class="px-4 py-2.5 text-sm font-medium text-palette-forest-dark bg-palette-forest-dark/10 rounded-lg mx-1"
+                role="option"
+                aria-selected="true"
+              >
+                Date planifiée
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div class="rounded-xl border border-stone-200 bg-white p-6 shadow-sm">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-12 h-12 rounded-full bg-stone-300 flex-shrink-0"></div>
+            <div>
+              <p class="font-semibold text-stone-900">Marie Dupont</p>
+              <p class="text-xs text-stone-500">Planifié jusqu'au —</p>
+            </div>
+          </div>
+          <p class="text-sm text-stone-600 mb-2">Sans entraînement planifié (en premier)</p>
+          <button type="button" class="text-sm font-medium text-palette-forest-dark hover:underline">Voir le planning</button>
+        </div>
+        <div class="rounded-xl border border-stone-200 bg-white p-6 shadow-sm">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-12 h-12 rounded-full bg-stone-300 flex-shrink-0"></div>
+            <div>
+              <p class="font-semibold text-stone-900">Jean Martin</p>
+              <p class="text-xs text-stone-500">Planifié jusqu'au 5 mars</p>
+            </div>
+          </div>
+          <p class="text-sm text-stone-600 mb-2">Date proche (2e position)</p>
+          <button type="button" class="text-sm font-medium text-palette-forest-dark hover:underline">Voir le planning</button>
+        </div>
+        <div class="rounded-xl border border-stone-200 bg-white p-6 shadow-sm">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-12 h-12 rounded-full bg-stone-300 flex-shrink-0"></div>
+            <div>
+              <p class="font-semibold text-stone-900">Sophie Bernard</p>
+              <p class="text-xs text-stone-500">Planifié jusqu'au 20 avril</p>
+            </div>
+          </div>
+          <p class="text-sm text-stone-600 mb-2">Date éloignée (dernier)</p>
+          <button type="button" class="text-sm font-medium text-palette-forest-dark hover:underline">Voir le planning</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Détail du style de la boîte de sélection (référence implémentation) -->
+    <section class="rounded-xl border border-stone-200 bg-stone-50/80 p-6">
+      <h3 class="text-sm font-semibold text-stone-800 mb-2">Style de la boîte de sélection (référence)</h3>
+      <ul class="text-sm text-stone-600 space-y-1 list-disc list-inside">
+        <li><strong>Bords arrondis :</strong> <code class="bg-stone-200 px-1 rounded">rounded-xl</code> sur le conteneur du dropdown.</li>
+        <li><strong>Overlay vert :</strong> <code class="bg-stone-200 px-1 rounded">border-palette-forest-dark/40</code>, <code class="bg-stone-200 px-1 rounded">ring-2 ring-palette-forest-dark/20</code>, option sélectionnée avec <code class="bg-stone-200 px-1 rounded">bg-palette-forest-dark/10</code> et <code class="bg-stone-200 px-1 rounded">text-palette-forest-dark</code>.</li>
+        <li>Trigger du select : <code class="bg-stone-200 px-1 rounded">rounded-xl</code>, <code class="bg-stone-200 px-1 rounded">border-2 border-palette-forest-dark/30</code>, <code class="bg-stone-200 px-1 rounded">bg-palette-forest-dark/5</code> pour rappeler les autres composants focus (vert).</li>
+      </ul>
+    </section>
+  </div>
+</body>
+</html>
