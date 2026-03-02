@@ -64,7 +64,7 @@ className="bg-[#2c3e2e] text-white"
 - `palette-danger` - Errors, destructive actions
 
 **Component library:**
-- Use existing components: `Button`, `Input`, `Textarea`, `Badge`, `Modal`, `DashboardPageShell`
+- Use existing components: `Button`, `Input`, `SearchInput`, `Dropdown`, `Textarea`, `Badge`, `Modal`, `DashboardPageShell`
 - Use existing icons: `IconClose`, `IconRunning`, `IconBiking`, etc. from `components/SportIcons.tsx`
 - Check `docs/DESIGN_SYSTEM.md` before creating new components
 - **When adding a new reusable component:** document it in `docs/DESIGN_SYSTEM.md` (Composants section: name, usage, code example), update the table of contents and the "Fichiers clés" list at the end

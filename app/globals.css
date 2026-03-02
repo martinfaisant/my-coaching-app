@@ -64,6 +64,23 @@ input[type="number"] {
   appearance: textfield;
 }
 
+/* Croix de suppression du champ recherche : vert (palette) — SearchInput + legacy */
+.search-input-clear-green::-webkit-search-cancel-button,
+.athlete-search-clear-green::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 1rem;
+  height: 1rem;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23627e59' stroke-width='2.5' stroke-linecap='round'%3E%3Cline x1='18' y1='6' x2='6' y2='18'/%3E%3Cline x1='6' y1='6' x2='18' y2='18'/%3E%3C/svg%3E") no-repeat center;
+  background-size: contain;
+  cursor: pointer;
+  opacity: 0.8;
+}
+.search-input-clear-green::-webkit-search-cancel-button:hover,
+.athlete-search-clear-green::-webkit-search-cancel-button:hover {
+  opacity: 1;
+}
+
 /* Palette de couleurs personnalisée */
 .bg-palette-forest-dark { background-color: #627e59; }
 .bg-palette-forest-darker { background-color: #506648; }

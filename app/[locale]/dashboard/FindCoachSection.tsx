@@ -10,6 +10,7 @@ import { AvatarImage } from '@/components/AvatarImage'
 import { Badge } from '@/components/Badge'
 import { CoachTile } from '@/components/CoachTile'
 import { Input } from '@/components/Input'
+import { SearchInput } from '@/components/SearchInput'
 import { SportTileSelectable } from '@/components/SportTileSelectable'
 import { createCoachRequest } from './actions'
 import { LANGUAGES_OPTIONS } from '@/lib/sportsOptions'
@@ -196,8 +197,7 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
 
         <div className="mb-4">
           <h3 className="text-xs font-bold uppercase tracking-wider text-stone-400 mb-3">{t('filters.nameSearchLabel')}</h3>
-          <Input
-            type="search"
+          <SearchInput
             placeholder={t('filters.nameSearchPlaceholder')}
             value={searchName}
             onChange={(e) => setSearchName(e.target.value)}

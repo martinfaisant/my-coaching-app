@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 1er mars 2026 (Mode Analyste : unité natation en m dans la doc)
+**Dernière mise à jour :** 1er mars 2026 (Mode Analyste : tri Mes athlètes, SearchInput, Dropdown, archivage design-athletes-sort)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -18,13 +18,13 @@
 - **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), stack technique, **URL production https://mysportally.com**
 - **Utiliser pour :** Comprendre le projet, les features, les rôles, l'architecture globale
 - **Taille :** ~420 lignes
-- **Dernière mise à jour :** 27 février 2026 (§4.5 Workouts : statut séance, modales athlète/coach, total « fait »)
+- **Dernière mise à jour :** 1er mars 2026 (§ Coach : tri liste athlètes par nom ou date planifiée ; SearchInput, Dropdown)
 
 ### **docs/DESIGN_SYSTEM.md** ⭐
 - **Contenu :** Tokens (couleurs, typo, espacements), composants (Button, Input, Badge, TileCard, DashboardPageShell, Modal, etc.), guidelines UI, exemples de code, §7 breakpoints (calendrier, chat, Trouver mon coach, My offers)
 - **Utiliser pour :** Créer ou modifier des composants UI, choisir des couleurs, appliquer le design system, règles responsive par page
 - **Taille :** ~850 lignes
-- **Dernière mise à jour :** 27 février 2026 (WeekSelector §7, reset-password)
+- **Dernière mise à jour :** 1er mars 2026 (SearchInput, Dropdown ; tri Mes athlètes ; Trouver mon coach SearchInput)
 
 ### **docs/I18N.md** ⭐
 - **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces, utilisation dans composants et server actions, **checklist pour nouvelles features** (toujours penser bilingue)
@@ -213,6 +213,14 @@
 - `docs/archive/design-workout-status/` — DESIGN_WORKOUT_STATUS.md, USER_STORIES_WORKOUT_STATUS.md, SPEC_WORKOUT_STATUS.md, workout-status-mockup.html.
 - **Raison :** Feature livrée ; statut planifié / réalisé / non réalisé, modales athlète (titre séance, statut + commentaire) et coach (création/édition avec date en en-tête, lecture seule si passé ou réalisé), totaux « fait » avec déduplication Strava (même jour, même type). Comportement décrit dans **Project_context.md §4.5** (Workouts, Total « fait »), **docs/DESIGN_SYSTEM.md** (Modal headerRight, WorkoutModal), **docs/I18N.md** (workouts).
 
+**Tri liste athlètes par nom / date planifiée (archivés 1er mars 2026) :**
+- `docs/archive/design-athletes-sort-by-planned-until/` — DESIGN.md, mockup-sort-controls.html.
+- **Raison :** Feature livrée ; page « Mes athlètes » : tri par nom (A–Z) ou date planifiée, menu « Trier par » (Dropdown), recherche (SearchInput). Page « Trouver mon coach » utilise SearchInput. Comportement : **Project_context.md** (§ Coach), **docs/DESIGN_SYSTEM.md** (§ SearchInput, § Dropdown).
+
+**En-tête modale entraînement – tuile sport / date à gauche (archivés 2 mars 2026) :**
+- `docs/archive/design-workout-modal-sport-header/` — index.html, mockup-a-badge-header.html, mockup-b-pill-tile-header.html, mockup-c-icon-only-header.html (3 designs, option B retenue).
+- **Raison :** Feature livrée ; modale création/édition coach : date à gauche, statut à droite (pas de titre ni icône check) ; modale lecture seule (athlète / coach passé) : tuile pill sport + titre à gauche, statut à droite, corps sans ligne « date · sport » ; largeur modale workout 644px ; titre peut passer sur deux lignes sur petit écran. Comportement décrit dans **Project_context.md §4.5** (Coach can / Athlete can), **docs/DESIGN_SYSTEM.md** (Modal : taille workout, iconRaw, titleWrap).
+
 **Séparation pages dashboard – find-coach / Mes athlètes (archivé 23 février 2026) :**
 - `docs/archive/dashboard-pages-separation/SPEC_ARCHI_DASHBOARD_PAGES_SEPARATION.md` — Spec architecture (redirections depuis /dashboard, pages dédiées, skeletons)
 - **Raison :** Feature livrée ; comportement décrit dans **Project_context.md §4.0** (Dashboard entry point) et **docs/DESIGN_SYSTEM.md** §7 (pages Trouver mon coach, Mes athlètes).
@@ -344,10 +352,15 @@
 
 **Fréquence de mise à jour :** À chaque ajout/suppression de documentation
 
-**Dernier scan :** 26 février 2026  
-**Dernier nettoyage :** 26 février 2026 (archivage auth-signup-success et design-email-confirmation-landing)
+**Dernier scan :** 1er mars 2026  
+**Dernier nettoyage :** 1er mars 2026 (archivage design-athletes-sort-by-planned-until)
 
 ### Changements récents :
+
+✅ **1er mars 2026 – Tri liste athlètes (nom / date planifiée) + SearchInput et Dropdown – Mode Analyste :**
+- **Livraison :** Page « Mes athlètes » : tri par nom (A–Z) ou date planifiée (sans date en premier, croissant) via menu « Trier par ». Nouveaux composants **SearchInput** (recherche, croix verte) et **Dropdown** (trigger + panneau, états sidebar). Page « Trouver mon coach » : recherche nom/prénom en SearchInput. Données : `plannedUntilRaw` pour tri.
+- **Fichiers :** `components/SearchInput.tsx`, `components/Dropdown.tsx`, `CoachAthletesListWithFilter.tsx`, `athletes/page.tsx`, `FindCoachSection.tsx`, `globals.css`, messages FR/EN.
+- **Doc :** Project_context (§ Coach), DESIGN_SYSTEM (SearchInput, Dropdown), I18N (athletes sortBy*). **Archivage :** `docs/design-athletes-sort-by-planned-until/` → `docs/archive/design-athletes-sort-by-planned-until/`.
 
 ✅ **1er mars 2026 – Unité d’affichage natation (m au lieu de km) – Mode Analyste :**
 - **Livraison (déjà en code) :** Dans le calendrier, les totaux hebdomadaires et l’affichage des distances pour la **natation** sont en **mètres (m)**, arrondis au mètre près ; les autres sports à distance restent en km.
@@ -544,7 +557,7 @@
 | Calendrier responsive / mobile (issue #44) / totaux de la semaine sur mobile | `Project_context.md` §4.5, `docs/DESIGN_SYSTEM.md` §7 |
 | **Natation : unité d’affichage (m, pas km)** | **`Project_context.md` §4.5** (Unités d’affichage), **`docs/DESIGN_SYSTEM.md`** (§7 Calendrier, ActivityTile metadata) |
 | Indicateur commentaire athlète sur tuile calendrier | `Project_context.md` §4.5, `docs/DESIGN_SYSTEM.md` §7 |
-| **Statut séance (planifié / réalisé / non réalisé), modales athlète/coach, total « fait »** | **`Project_context.md` §4.5** (Workouts, Total « fait »), **`docs/DESIGN_SYSTEM.md`** (Modal, WorkoutModal) |
+| **Statut séance, modales entraînement (en-tête création/édition/lecture seule, tuile sport, date à gauche), total « fait »** | **`Project_context.md` §4.5** (Workouts), **`docs/DESIGN_SYSTEM.md`** (Modal, WorkoutModal) |
 | **Page par défaut / redirections dashboard (find-coach, Mes athlètes)** | **`Project_context.md` §4.0** |
 | Tuile Profil sidebar (état sélectionné sur page Profil, centrage mode replié) | `Project_context.md` §4.0, `docs/DESIGN_SYSTEM.md` §7 |
 | Tuile demandes en attente (coach) / Discuter / modales Refuser-Accepter | `Project_context.md` §4.4, `docs/DESIGN_SYSTEM.md` §7 |
@@ -552,6 +565,7 @@
 | Grilles responsive (Trouver mon coach, My offers, Mes athlètes) | `docs/DESIGN_SYSTEM.md` §7 |
 | Filtre par nom/prénom (Trouver mon coach) | `Project_context.md` (Athlete), `docs/DESIGN_SYSTEM.md` §7 |
 | Filtre par nom (Mes athlètes, coach) | `Project_context.md` (§ Coach), `docs/DESIGN_SYSTEM.md` §7 |
+| **Tri liste athlètes (nom / date planifiée), SearchInput, Dropdown** | **`Project_context.md`** (§ Coach), **`docs/DESIGN_SYSTEM.md`** (§ SearchInput, § Dropdown) |
 | Tuile archivée / offres archivées / historique souscriptions (issue #43) | `docs/DESIGN_SYSTEM.md` § TileCard (stone, badge) |
 | **Vue souscription, résiliation, « En résiliation »** | **`Project_context.md` §4.10** |
 | Envoi demande coach / erreur ou blocage « Envoi en cours » | `Project_context.md` §4.4 (Flow) |

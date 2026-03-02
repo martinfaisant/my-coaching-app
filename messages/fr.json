@@ -643,6 +643,10 @@
     "myAthletesWithCount": "Mes athlètes ({count})",
     "nameFilterPlaceholder": "Rechercher un athlète",
     "noMatchForSearch": "Aucun athlète ne correspond à votre recherche.",
+    "sortByLabel": "Trier par",
+    "sortByNameAsc": "Nom (A–Z)",
+    "sortByPlannedDate": "Date planifiée",
+    "sortByPlannedDateAria": "Tri : Date planifiée",
     "athleteCard": {
       "nextGoal": "Prochain objectif",
       "noGoal": "Aucun",

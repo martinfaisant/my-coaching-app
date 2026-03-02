@@ -154,6 +154,7 @@ export default async function CoachAthletesPage({ params }: { params: Promise<{ 
             practicedSports,
             nextGoal: nextGoal ? { date: formatShortDate(nextGoal.date), raceName: nextGoal.race_name } : null,
             plannedUntil: plannedUntil ? formatShortDate(plannedUntil) : undefined,
+            plannedUntilRaw: plannedUntil ?? null,
             isUpToDate,
             labels: {
               nextGoal: t('athleteCard.nextGoal'),
