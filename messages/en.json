@@ -20,7 +20,8 @@
     "secondaryGoal": "Secondary goal",
     "paceRequiredHint": "Required for running, cycling and swimming",
     "weekPrevious": "Previous week",
-    "weekNext": "Next week"
+    "weekNext": "Next week",
+    "changeLanguage": "Change language"
   },
   "auth": {
     "login": "Log in",
@@ -644,6 +645,10 @@
     "myAthletesWithCount": "My Athletes ({count})",
     "nameFilterPlaceholder": "Search for an athlete",
     "noMatchForSearch": "No athlete matches your search.",
+    "sortByLabel": "Sort by",
+    "sortByNameAsc": "Name (A–Z)",
+    "sortByPlannedDate": "Planned date",
+    "sortByPlannedDateAria": "Sort: Planned date",
     "athleteCard": {
       "nextGoal": "Next goal",
       "noGoal": "None",

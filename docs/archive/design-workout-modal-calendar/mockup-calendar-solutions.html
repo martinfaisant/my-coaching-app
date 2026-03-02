@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mockup — Calendrier modale entraînement modifiable (3 solutions)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            'palette-olive': '#8e9856',
+            'palette-sage': '#aaaa51',
+            'palette-gold': '#cbb44b',
+            'palette-amber': '#c9a544',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="min-h-screen bg-stone-200/80 p-6 antialiased space-y-12">
+  <div class="max-w-2xl mx-auto space-y-10">
+    <h1 class="text-xl font-bold text-stone-900">Calendrier modale entraînement modifiable — 3 solutions</h1>
+    <p class="text-sm text-stone-600">Design system : tokens (border-stone-300, rounded-lg, ring-palette-forest-dark), formStyles. Référence : <code class="bg-stone-200 px-1 rounded">lib/formStyles.ts</code>, <code class="bg-stone-200 px-1 rounded">docs/DESIGN_SYSTEM.md</code>.</p>
+
+    <!-- ========== Solution A : Champ date compact dans l'en-tête ========== -->
+    <section class="space-y-3">
+      <h2 class="text-lg font-bold text-stone-800">Solution A — Date compacte dans l'en-tête (tokens)</h2>
+      <p class="text-sm text-stone-600">Bloc date dans <code>headerRight</code> : bordure/radius/focus alignés sur les champs, texte formaté + icône calendrier. Clic → picker natif.</p>
+      <div class="bg-white rounded-2xl shadow-xl border border-stone-100 overflow-hidden max-h-[90vh] flex flex-col">
+        <header class="shrink-0 px-6 py-4 border-b border-stone-100 bg-stone-50/50 flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3 min-w-0">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-[#627e59]/10 text-palette-forest-dark border border-[#627e59]/20 shrink-0">Course</span>
+            <h2 class="text-lg font-bold text-stone-900 truncate">Sortie longue endurance</h2>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <!-- Bloc date : tokens design system (border, rounded-lg, focus-within) -->
+            <div class="flex items-center gap-2 border border-stone-300 rounded-lg py-2 px-3 bg-white focus-within:ring-2 focus-within:ring-palette-forest-dark focus-within:border-transparent transition min-w-0">
+              <span class="text-sm font-medium text-stone-900 whitespace-nowrap" aria-hidden="true">lundi 3 mars 2025</span>
+              <button type="button" class="shrink-0 p-1 rounded text-stone-400 hover:text-palette-forest-dark hover:bg-stone-100" title="Choisir la date" aria-label="Choisir la date">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </button>
+            </div>
+            <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-palette-forest-dark/15 text-palette-forest-dark">Planifié</span>
+            <button type="button" class="p-2 rounded-lg text-stone-400 hover:bg-stone-200 hover:text-stone-600 shrink-0" aria-label="Fermer">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+          </div>
+        </header>
+        <div class="flex-1 overflow-y-auto px-6 py-4">
+          <p class="text-xs text-stone-500 mb-2">Corps du formulaire (titre, objectifs, etc.) — inchangé.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== Solution B : Date dans le corps comme premier champ ========== -->
+    <section class="space-y-3">
+      <h2 class="text-lg font-bold text-stone-800">Solution B — Date dans le corps (Input design system)</h2>
+      <p class="text-sm text-stone-600">Header sans date. Premier champ du formulaire = <strong>Input</strong> avec label « Date de la séance », <code>FORM_BASE_CLASSES</code> + <code>FORM_LABEL_CLASSES</code> (comme Objectifs).</p>
+      <div class="bg-white rounded-2xl shadow-xl border border-stone-100 overflow-hidden max-h-[90vh] flex flex-col">
+        <header class="shrink-0 px-6 py-4 border-b border-stone-100 bg-stone-50/50 flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3 min-w-0">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-[#627e59]/10 text-palette-forest-dark border border-[#627e59]/20 shrink-0">Course</span>
+            <h2 class="text-lg font-bold text-stone-900 truncate">Sortie longue endurance</h2>
+          </div>
+          <div class="flex items-center gap-2 shrink-0">
+            <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-palette-forest-dark/15 text-palette-forest-dark">Planifié</span>
+            <button type="button" class="p-2 rounded-lg text-stone-400 hover:bg-stone-200 hover:text-stone-600" aria-label="Fermer">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+          </div>
+        </header>
+        <div class="flex-1 overflow-y-auto px-6 py-4 space-y-5">
+          <!-- Premier champ = Date (Input design system) -->
+          <div class="w-full">
+            <label for="workout-date-solution-b" class="block text-sm font-medium text-stone-700 mb-2">Date de la séance</label>
+            <input
+              id="workout-date-solution-b"
+              type="date"
+              value="2025-03-03"
+              class="w-full px-4 py-2.5 rounded-lg border border-stone-300 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition"
+            />
+          </div>
+          <p class="text-xs text-stone-500">Puis Titre, Objectifs, Description… (champs existants).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== Solution C : En-tête avec "mini Input" formStyles explicite ========== -->
+    <section class="space-y-3">
+      <h2 class="text-lg font-bold text-stone-800">Solution C — En-tête avec conteneur formStyles explicite</h2>
+      <p class="text-sm text-stone-600">Comme A, mais le conteneur reprend explicitement les classes d’un Input (sans w-full) : <code>rounded-lg border border-stone-300 bg-white focus-within:ring-2 focus-within:ring-palette-forest-dark focus-within:border-transparent transition</code>, padding réduit <code>px-3 py-2</code>.</p>
+      <div class="bg-white rounded-2xl shadow-xl border border-stone-100 overflow-hidden max-h-[90vh] flex flex-col">
+        <header class="shrink-0 px-6 py-4 border-b border-stone-100 bg-stone-50/50 flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3 min-w-0">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-[#8e9856]/10 text-palette-olive border border-[#8e9856]/20 shrink-0">Vélo</span>
+            <h2 class="text-lg font-bold text-stone-900 truncate">Home trainer Z2</h2>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <div class="flex items-center gap-2 rounded-lg border border-stone-300 bg-white px-3 py-2 focus-within:ring-2 focus-within:ring-palette-forest-dark focus-within:border-transparent transition min-w-0">
+              <span class="text-sm font-medium text-stone-900 whitespace-nowrap">mercredi 5 mars 2025</span>
+              <button type="button" class="shrink-0 p-1 rounded text-stone-400 hover:text-palette-forest-dark hover:bg-stone-100" title="Choisir la date" aria-label="Choisir la date">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </button>
+            </div>
+            <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-palette-forest-dark/15 text-palette-forest-dark">Planifié</span>
+            <button type="button" class="p-2 rounded-lg text-stone-400 hover:bg-stone-200 hover:text-stone-600 shrink-0" aria-label="Fermer">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+          </div>
+        </header>
+        <div class="flex-1 overflow-y-auto px-6 py-4">
+          <p class="text-xs text-stone-500">Même corps qu’en A. Différence : conteneur date = sous-ensemble strict de formStyles (même vocabulaire visuel qu’Input).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Légende tokens -->
+    <div class="rounded-xl border border-stone-200 bg-stone-50 p-4 text-sm text-stone-600">
+      <p class="font-semibold text-stone-800 mb-2">Tokens utilisés (design system)</p>
+      <ul class="list-disc list-inside space-y-1">
+        <li>Champ / conteneur : <code>border-stone-300 rounded-lg bg-white</code>, <code>focus-within:ring-2 focus-within:ring-palette-forest-dark</code></li>
+        <li>Texte date : <code>text-sm font-medium text-stone-900</code></li>
+        <li>Icône : <code>text-stone-400</code>, hover <code>text-palette-forest-dark bg-stone-100</code></li>
+        <li>Solution B : <code>FORM_BASE_CLASSES</code> (px-4 py-2.5) + <code>FORM_LABEL_CLASSES</code> (label)</li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>

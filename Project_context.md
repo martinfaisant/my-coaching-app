@@ -77,7 +77,7 @@ Avoid:
 - Create professional profile (name, photo, bio, coached sports, languages, postal code)
 - Create offers (title, description, price, type: free / monthly / one-time)
 - Receive and accept/decline coaching requests
-- Manage athletes (see list, filter by name; access athlete calendar)
+- Manage athletes (see list, filter by name, sort by name A–Z or by planned date (nearest first); access athlete calendar)
 - Create workouts for athletes (date, sport, title, description, targets)
 - View athlete goals (read-only)
 - View workout weekly totals and planning status
@@ -191,7 +191,7 @@ Athletes filter coaches by:
 - While the request is **pending**, the coach tile shows « Annuler la demande » (danger) and « Demande envoyée > » (muted). Clicking « Demande envoyée > » opens a modal with the request detail (frozen offer, sports, message, date); the athlete can cancel the request from the tile or from the modal (same confirmation flow).
 - If the request fails (server error or DB insert rejected), the user sees a generic error message and the submit button is no longer stuck on « Envoi en cours »; errors are logged server-side for diagnosis.
 - When an offer is chosen, the server immediately stores a **snapshot** of that offer in `coach_requests`: `offer_id`, `frozen_price`, `frozen_title`, `frozen_description`. This is the version of the offer **as seen by the athlete** at request time. If the coach later changes or archives the offer, the request row does not change.
-- Coach accepts or declines the request. On the « Mes athlètes » page, **pending requests** are shown in a unified tile per request: athlete avatar, sport badges, full coaching-need message (full width), offer line (title + price). Actions: **« Discuter »** (opens the chat overlay targeting that athlete), **« Refuser »** and **« Accepter »** (each opens a confirmation modal before calling the API). On mobile, the three buttons are at the bottom of the tile (Discuss full width, Decline and Accept side by side).
+- Coach accepts or declines the request. On the « Mes athlètes » page, the athlete list has a **search** field (by name) and a **sort** dropdown: **by name (A–Z)** or **by planned date** (athletes with no planned workout first, then by date ascending — furthest last). The search uses the **SearchInput** component (green clear button); the sort uses the **Dropdown** component (trigger + panel, same styling as sidebar for selected option). **Pending requests** are shown in a unified tile per request: athlete avatar, sport badges, full coaching-need message (full width), offer line (title + price). Actions: **« Discuter »** (opens the chat overlay targeting that athlete), **« Refuser »** and **« Accepter »** (each opens a confirmation modal before calling the API). On mobile, the three buttons are at the bottom of the tile (Discuss full width, Decline and Accept side by side).
 - **On accept:** (1) `profiles.coach_id` is set (athlete linked to coach), (2) `coach_requests.status` → `accepted`, (3) a row is inserted into **`subscriptions`** with the same `frozen_*` data copied from `coach_requests` (the subscription is **not** filled from the current `coach_offers` table). Thus the active subscription between athlete and coach reflects the exact offer the athlete requested; if the coach changes the offer afterwards, existing subscriptions are unchanged.
 - No Stripe/payment yet — subscription model is structural only (billing history ready via `subscriptions.frozen_*`).
 
@@ -212,14 +212,14 @@ Athletes filter coaches by:
 **Athlete can:**
 
 - View workouts in calendar (tiles show status badge: Planifié / Réalisé / Non réalisé)
-- Open session modal: title = session title, date · sport, objectives + description, then status selector (3 segments) + comment; save status + comment in one action
+- Open session modal: header = sport pill (icon + label) + session title (can wrap on small screen); body = date only, then objectives + description, then status selector (3 segments) + comment; save status + comment in one action
 - See imported Strava activities alongside planned workouts
 
 **Coach can:**
 
 - Create / update / delete workouts for their athletes
-- **Create & edit modal:** header with date picker (month in full letters) + status badge; body: Sport (SportTileSelectable), title, session objectives (toggle time/distance, grid, description in same block), athlete comment read-only; footer: Delete, Save. Editable only when session date is in the future and status ≠ completed.
-- **Read-only modal:** when session is in the past or status = completed: title = session title, header = status badge only, body = date · sport, objectives, description, athlete comment; no form nor buttons.
+- **Create & edit modal:** header aligned for both flows: date picker on the left (month in full letters), status badge (Planifié / Réalisé / Non réalisé) on the right; no title nor check icon. The date opens a **DatePickerPopup** (design system) as a **popover** under the field (not a second modal); month list from current month to current month + 2 years (see `docs/DESIGN_SYSTEM.md` § DatePickerPopup). Body: Sport (SportTileSelectable), title, session objectives (toggle time/distance, grid, description in same block), athlete comment read-only; footer: Delete, Save. Editable only when session date is in the future and status ≠ completed.
+- **Read-only modal:** when session is in the past or status = completed: header = sport pill (design B, icon + label) + session title (can wrap on small screen), status badge on the right; body = date only (sport in header), then objectives, description, athlete comment; no form nor buttons.
 - On the calendar (workout tile and day modal), see status and when an athlete has left a comment (comment icon in the metadata row)
 - See weekly totals per sport and planning status (“Planifié jusqu’au”, “En retard”)
 

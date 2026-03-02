@@ -25,7 +25,7 @@ import { IconClose } from './icons/IconClose'
  * - right: À droite de l'écran (pour chat, panels)
  */
 
-export type ModalSize = 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | 'full'
+export type ModalSize = 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | 'full' | 'workout'
 export type ModalAlignment = 'center' | 'top' | 'right'
 
 type ModalProps = {
@@ -39,6 +39,10 @@ type ModalProps = {
   title?: string
   /** Icône optionnelle dans le header (à gauche du titre) */
   icon?: React.ReactNode
+  /** Si true, l'icône est rendue telle quelle (sans wrapper rond). Pour tuile sport en lecture seule. */
+  iconRaw?: boolean
+  /** Si true, le titre peut passer sur plusieurs lignes (petit écran). Désactive truncate. */
+  titleWrap?: boolean
   /** Contenu additionnel à droite du header */
   headerRight?: React.ReactNode
   /** Masquer le bouton de fermeture (X) */
@@ -67,6 +71,8 @@ const SIZE_CLASSES: Record<ModalSize, string> = {
   '3xl': 'max-w-3xl',
   '4xl': 'max-w-4xl',
   full: 'max-w-[95vw]',
+  /** Modales entraînement : 560px + 15 % ≈ 644px */
+  workout: 'max-w-[40.25rem]',
 }
 
 const ALIGNMENT_CLASSES: Record<ModalAlignment, string> = {
@@ -82,6 +88,8 @@ export function Modal({
   alignment = 'center',
   title,
   icon,
+  iconRaw = false,
+  titleWrap = false,
   headerRight,
   hideCloseButton = false,
   disableOverlayClose = false,
@@ -147,14 +155,21 @@ export function Modal({
           {/* Header (si titre ou headerRight fournis) */}
           {(title || headerRight || !hideCloseButton) && (
             <div className="shrink-0 px-6 py-4 border-b border-stone-100 bg-stone-50/50 flex items-center justify-between gap-3">
-              <div className="flex items-center gap-3 min-w-0">
+              <div className={`flex items-center gap-3 min-w-0 ${titleWrap ? 'flex-wrap' : ''}`}>
                 {icon && (
-                  <div className="p-2 bg-palette-forest-dark/10 rounded-full text-palette-forest-dark shrink-0">
-                    {icon}
-                  </div>
+                  iconRaw ? (
+                    <span className="shrink-0">{icon}</span>
+                  ) : (
+                    <div className="p-2 bg-palette-forest-dark/10 rounded-full text-palette-forest-dark shrink-0">
+                      {icon}
+                    </div>
+                  )
                 )}
                 {title && (
-                  <h2 id={titleId} className="text-lg font-bold text-stone-900 truncate">
+                  <h2
+                    id={titleId}
+                    className={`text-lg font-bold text-stone-900 ${titleWrap ? 'break-words min-w-0' : 'truncate'}`}
+                  >
                     {title}
                   </h2>
                 )}

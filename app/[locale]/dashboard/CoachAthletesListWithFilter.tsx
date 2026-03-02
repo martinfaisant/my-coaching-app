@@ -2,7 +2,8 @@
 
 import { useState, useMemo } from 'react'
 import { useTranslations } from 'next-intl'
-import { Input } from '@/components/Input'
+import { SearchInput } from '@/components/SearchInput'
+import { Dropdown } from '@/components/Dropdown'
 import { CoachAthleteTileWithModal } from '@/app/[locale]/dashboard/CoachAthleteTileWithModal'
 import type { CoachSubscriptionRow } from '@/app/[locale]/dashboard/CoachSubscriptionDetailModal'
 import type { AthleteTileNextGoal } from '@/components/AthleteTile'
@@ -36,6 +37,8 @@ export type CoachAthleteTileItem = {
   practicedSports: string[]
   nextGoal: AthleteTileNextGoal | null
   plannedUntil?: string | null
+  /** Date brute YYYY-MM-DD pour le tri (sans date = null) */
+  plannedUntilRaw?: string | null
   isUpToDate: boolean
   labels: {
     nextGoal: string
@@ -52,29 +55,74 @@ type Props = {
   showDivider?: boolean
 }
 
+type SortMode = 'name_asc' | 'planned_until_asc'
+
+/** Tri par nom A–Z. */
+function sortByNameAsc(a: CoachAthleteTileItem, b: CoachAthleteTileItem): number {
+  return (a.displayName ?? '').localeCompare(b.displayName ?? '', undefined, { sensitivity: 'base' })
+}
+
+/** Tri par date planifiée : sans date en premier, puis croissant (proche → loin). Ordre secondaire : displayName. */
+function sortByPlannedUntilAsc(a: CoachAthleteTileItem, b: CoachAthleteTileItem): number {
+  const rawA = a.plannedUntilRaw ?? ''
+  const rawB = b.plannedUntilRaw ?? ''
+  if (rawA !== rawB) {
+    if (!rawA) return -1
+    if (!rawB) return 1
+    return rawA.localeCompare(rawB)
+  }
+  return (a.displayName ?? '').localeCompare(b.displayName ?? '')
+}
+
+const SORT_COMPARATORS: Record<SortMode, (a: CoachAthleteTileItem, b: CoachAthleteTileItem) => number> = {
+  name_asc: sortByNameAsc,
+  planned_until_asc: sortByPlannedUntilAsc,
+}
+
+const SORT_OPTIONS: { value: SortMode; labelKey: 'sortByNameAsc' | 'sortByPlannedDate' }[] = [
+  { value: 'name_asc', labelKey: 'sortByNameAsc' },
+  { value: 'planned_until_asc', labelKey: 'sortByPlannedDate' },
+]
+
 export function CoachAthletesListWithFilter({ athletes, showDivider = false }: Props) {
   const [searchQuery, setSearchQuery] = useState('')
+  const [sortMode, setSortMode] = useState<SortMode>('planned_until_asc')
   const t = useTranslations('athletes')
 
-  const filteredAthletes = useMemo(
-    () => athletes.filter((a) => displayNameMatches(a.displayName, searchQuery)),
-    [athletes, searchQuery]
-  )
+  const filteredAthletes = useMemo(() => {
+    const filtered = athletes.filter((a) => displayNameMatches(a.displayName, searchQuery))
+    return [...filtered].sort(SORT_COMPARATORS[sortMode])
+  }, [athletes, searchQuery, sortMode])
+
+  const sortDropdownOptions = SORT_OPTIONS.map((o) => ({
+    value: o.value,
+    label: t(o.labelKey),
+  }))
 
   return (
     <>
       {showDivider && <div className="border-t border-stone-200 my-8" />}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
         <h2 className="text-base font-semibold text-stone-900">
           {t('myAthletesWithCount', { count: athletes.length })}
         </h2>
-        <div className="w-full sm:w-64">
-          <Input
-            type="search"
-            placeholder={t('nameFilterPlaceholder')}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            aria-label={t('nameFilterPlaceholder')}
+        <div className="flex flex-wrap items-end gap-4 w-full sm:w-auto">
+          <div className="w-full sm:w-64 sm:min-w-[14rem]">
+            <SearchInput
+              placeholder={t('nameFilterPlaceholder')}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              aria-label={t('nameFilterPlaceholder')}
+            />
+          </div>
+          <Dropdown
+            id="athletes-sort-trigger"
+            label={t('sortByLabel')}
+            options={sortDropdownOptions}
+            value={sortMode}
+            onChange={(v) => setSortMode(v as SortMode)}
+            ariaLabel={t('sortByLabel')}
+            minWidth="200px"
           />
         </div>
       </div>

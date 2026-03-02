@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mockup — Popup calendrier (design system)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            'palette-forest-darker': '#506648',
+            'palette-olive': '#8e9856',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="min-h-screen bg-stone-200/80 p-8 antialiased flex items-start justify-center">
+  <!-- Contexte : fond + texte pour montrer que le popup flotte -->
+  <div class="absolute inset-0 p-8 pt-16">
+    <p class="text-sm text-stone-400 max-w-md">Contexte modale — Le popup calendrier s’ouvre au clic sur le champ date. Design aligné design system (vert forêt, stone, pas de bleu).</p>
+  </div>
+
+  <!-- Popup calendrier — design system -->
+  <div
+    class="relative bg-white rounded-xl border border-stone-200 shadow-xl p-4 w-[min(320px,90vw)]"
+    role="dialog"
+    aria-label="Choisir une date"
+  >
+    <!-- En-tête : mois/année = Dropdown (design system) + flèches -->
+    <div class="flex items-center justify-between gap-2 mb-3">
+      <!-- Trigger style Dropdown : même apparence que components/Dropdown.tsx (FORM_BASE_CLASSES) -->
+      <div class="relative inline-block min-w-[140px]">
+        <button
+          type="button"
+          class="flex items-center justify-between gap-2 w-full cursor-pointer px-4 py-2.5 rounded-lg border border-stone-300 bg-white text-stone-900 focus:outline-none focus:ring-2 focus:ring-palette-forest-dark transition"
+          aria-haspopup="listbox"
+          aria-expanded="false"
+          aria-label="Choisir le mois"
+        >
+          <span class="text-sm font-medium">mars 2025</span>
+          <svg class="w-4 h-4 text-stone-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        <!-- Panneau Dropdown (exemple fermé) : mêmes styles que Dropdown (listbox, options sélectionné = vert forêt) -->
+      </div>
+      <div class="flex items-center gap-0.5">
+        <button
+          type="button"
+          class="p-2 rounded-lg text-stone-500 hover:text-palette-forest-dark hover:bg-stone-100 transition"
+          aria-label="Mois précédent"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg>
+        </button>
+        <button
+          type="button"
+          class="p-2 rounded-lg text-stone-500 hover:text-palette-forest-dark hover:bg-stone-100 transition"
+          aria-label="Mois suivant"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Jours de la semaine -->
+    <div class="grid grid-cols-7 gap-1 mb-1 text-center">
+      <span class="text-xs font-medium text-stone-500 py-1">lu</span>
+      <span class="text-xs font-medium text-stone-500 py-1">ma</span>
+      <span class="text-xs font-medium text-stone-500 py-1">me</span>
+      <span class="text-xs font-medium text-stone-500 py-1">je</span>
+      <span class="text-xs font-medium text-stone-500 py-1">ve</span>
+      <span class="text-xs font-medium text-stone-500 py-1">sa</span>
+      <span class="text-xs font-medium text-stone-500 py-1">di</span>
+    </div>
+
+    <!-- Grille des dates (mars 2025 : 1 = dimanche, 3 = lundi premier jour affiché) -->
+    <div class="grid grid-cols-7 gap-1">
+      <!-- Semaine 1 : 24-28 fév (autre mois) + 1-2 mars -->
+      <button type="button" class="min-w-[2.25rem] h-9 rounded-lg text-sm text-stone-400 hover:bg-stone-100 transition">24</button>
+      <button type="button" class="min-w-[2.25rem] h-9 rounded-lg text-sm text-stone-400 hover:bg-stone-100 transition">25</button>
+      <button type="button" class="min-w-[2.25rem] h-9 rounded-lg text-sm text-stone-400 hover:bg-stone-100 transition">26</button>
+      <button type="button" class="min-w-[2.25rem] h-9 rounded-lg text-sm text-stone-400 hover:bg-stone-100 transition">27</button>
+      <button type="button" class="min-w-[2.25rem] h-9 rounded-lg text-sm text-stone-400 hover:bg-stone-100 transition">28</button>
+      <button type="button" class="min-w-[2.25rem] h-9 rounded-lg text-sm text-stone-900 hover:bg-stone-100 transition">1</button>
+      <button type="button" class="min-w-[2.25rem] h-9 rounded-lg text-sm text-stone-900 hover:bg-stone-100 transition">2</button>
+      <!-- Semaine 2 : 3 = sélectionné -->
+      <button type="button" class="min-w-[2.25rem] h-9 rounded-lg text-sm font-medium bg-palette-forest-dark text-white hover:bg-palette-forest-darker transition" aria-pressed="true">3</button>
+      <button type="button" class="min-w-[2.25rem] h-9 rounded-lg text-sm text-stone-900 hover:bg-stone-100 transition">4</button>
+      <button type="button" class="min-w-[2.25rem] h-9 rounded-lg text-sm text-stone-900 hover:bg-stone-100 transition">5</button>
+      <button type="button" class="min-w-[2.25rem] h-9 rounded-lg text-sm text-stone-900 hover:bg-stone-100 transition">6</button>
+      <button type="button" class="min-w-[2.25rem] h-9 rounded-lg text-sm text-stone-900 hover:bg-stone-100 transition">7</button>
+      <button type="button" class="min-w-[2.25rem] h-9 rounded-lg text-sm text-stone-900 hover:bg-stone-100 transition">8</button>
+      <button type="button" class="min-w-[2.25rem] h-9 rounded-lg text-sm text-stone-900 hover:bg-stone-100 transition">9</button>
+      <!-- Semaines 3-5 -->
+      <button type="button" class="min-w-[2.25rem] h-9 rounded-lg text-sm text-stone-900 hover:bg-stone-100 transition">10</button>
+      <button type="button" class="min-w-[2.25rem] h-9 rounded-lg text-sm text-stone-900 hover:bg-stone-100 transition">11</button>
+      <button type="button" class="min-w-[2.25rem] h-9 rounded-lg text-sm text-stone-900 hover:bg-stone-100 transition">12</button>
+      <button type="button" class="min-w-[2.25rem] h-9 rounded-lg text-sm text-stone-900 hover:bg-stone-100 transition">13</button>
+      <button type="button" class="min-w-[2.25rem] h-9 rounded-lg text-sm text-stone-900 hover:bg-stone-100 transition">14</button>
+      <button type="button" class="min-w-[2.25rem] h-9 rounded-lg text-sm text-stone-900 hover:bg-stone-100 transition">15</button>
+      <button type="button" class="min-w-[2.25rem] h-9 rounded-lg text-sm text-stone-900 hover:bg-stone-100 transition">16</button>
+      <button type="button" class="min-w-[2.25rem] h-9 rounded-lg text-sm text-stone-900 hover:bg-stone-100 transition">17</button>
+      <button type="button" class="min-w-[2.25rem] h-9 rounded-lg text-sm text-stone-900 hover:bg-stone-100 transition">18</button>
+      <button type="button" class="min-w-[2.25rem] h-9 rounded-lg text-sm text-stone-900 hover:bg-stone-100 transition">19</button>
+      <button type="button" class="min-w-[2.25rem] h-9 rounded-lg text-sm text-stone-900 hover:bg-stone-100 transition">20</button>
+      <button type="button" class="min-w-[2.25rem] h-9 rounded-lg text-sm text-stone-900 hover:bg-stone-100 transition">21</button>
+      <button type="button" class="min-w-[2.25rem] h-9 rounded-lg text-sm text-stone-900 hover:bg-stone-100 transition">22</button>
+      <button type="button" class="min-w-[2.25rem] h-9 rounded-lg text-sm text-stone-900 hover:bg-stone-100 transition">23</button>
+      <button type="button" class="min-w-[2.25rem] h-9 rounded-lg text-sm text-stone-900 hover:bg-stone-100 transition">24</button>
+      <button type="button" class="min-w-[2.25rem] h-9 rounded-lg text-sm text-stone-900 hover:bg-stone-100 transition">25</button>
+      <button type="button" class="min-w-[2.25rem] h-9 rounded-lg text-sm text-stone-900 hover:bg-stone-100 transition">26</button>
+      <button type="button" class="min-w-[2.25rem] h-9 rounded-lg text-sm text-stone-900 hover:bg-stone-100 transition">27</button>
+      <button type="button" class="min-w-[2.25rem] h-9 rounded-lg text-sm text-stone-900 hover:bg-stone-100 transition">28</button>
+      <button type="button" class="min-w-[2.25rem] h-9 rounded-lg text-sm text-stone-900 hover:bg-stone-100 transition">29</button>
+      <button type="button" class="min-w-[2.25rem] h-9 rounded-lg text-sm text-stone-900 hover:bg-stone-100 transition">30</button>
+      <button type="button" class="min-w-[2.25rem] h-9 rounded-lg text-sm text-stone-900 hover:bg-stone-100 transition">31</button>
+      <!-- Avril (autre mois) -->
+      <button type="button" class="min-w-[2.25rem] h-9 rounded-lg text-sm text-stone-400 hover:bg-stone-100 transition">1</button>
+      <button type="button" class="min-w-[2.25rem] h-9 rounded-lg text-sm text-stone-400 hover:bg-stone-100 transition">2</button>
+      <button type="button" class="min-w-[2.25rem] h-9 rounded-lg text-sm text-stone-400 hover:bg-stone-100 transition">3</button>
+      <button type="button" class="min-w-[2.25rem] h-9 rounded-lg text-sm text-stone-400 hover:bg-stone-100 transition">4</button>
+      <button type="button" class="min-w-[2.25rem] h-9 rounded-lg text-sm text-stone-400 hover:bg-stone-100 transition">5</button>
+      <button type="button" class="min-w-[2.25rem] h-9 rounded-lg text-sm text-stone-400 hover:bg-stone-100 transition">6</button>
+    </div>
+
+    <!-- Pied : Aujourd'hui uniquement (date obligatoire, pas de bouton Effacer) -->
+    <div class="flex justify-end mt-4 pt-3 border-t border-stone-200">
+      <button type="button" class="text-sm font-medium text-palette-forest-dark hover:text-palette-forest-darker hover:underline transition">
+        Aujourd'hui
+      </button>
+    </div>
+  </div>
+</body>
+</html>

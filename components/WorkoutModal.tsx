@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, useRef, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 import { useFormStatus } from 'react-dom'
 import { useActionState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -17,17 +18,26 @@ import {
 } from '@/app/[locale]/dashboard/workouts/actions'
 import type { SportType, Workout, WorkoutStatus } from '@/types/database'
 import { Modal } from '@/components/Modal'
+import { DatePickerPopup } from '@/components/DatePickerPopup'
 import { Button } from '@/components/Button'
 import { Input } from '@/components/Input'
 import { Textarea } from '@/components/Textarea'
 import { Badge } from '@/components/Badge'
 import { SportTileSelectable } from '@/components/SportTileSelectable'
-import { SPORT_ICONS, SPORT_TRANSLATION_KEYS } from '@/lib/sportStyles'
+import { SPORT_ICONS, SPORT_TRANSLATION_KEYS, SPORT_BADGE_STYLES } from '@/lib/sportStyles'
 import { formatDateFr, toDateStr } from '@/lib/dateUtils'
 import { FORM_BASE_CLASSES, FORM_LABEL_CLASSES, TEXTAREA_SPECIFIC_CLASSES } from '@/lib/formStyles'
 
 /** Sports pour entraînement (sous-ensemble du calendrier). */
 const WORKOUT_SPORT_TYPES: SportType[] = ['course', 'velo', 'natation', 'musculation']
+
+/** Bordure pill (tuile sport lecture seule en header). Aligné design B. */
+const PILL_BORDER_CLASSES: Record<string, string> = {
+  course: 'border-palette-forest-dark',
+  velo: 'border-palette-olive',
+  natation: 'border-sky-500',
+  musculation: 'border-stone-400',
+}
 
 /** Icônes objectifs (alignées tuiles calendrier, US3). */
 const ClockIcon = ({ className = 'h-4 w-4 text-stone-400' }: { className?: string }) => (
@@ -167,7 +177,10 @@ export function WorkoutModal({
   const [deleteError, setDeleteError] = useState<string | null>(null)
   /** Date éditable (coach modifiable US4) : initialisée à date ou currentWorkout.date. */
   const [editableDate, setEditableDate] = useState(date)
-  const datePickerInputRef = useRef<HTMLInputElement>(null)
+  /** Ouverture du popup calendrier (design system) : popover sous le champ date, pas une 2e modale. */
+  const [showDatePickerPopup, setShowDatePickerPopup] = useState(false)
+  const dateTriggerRef = useRef<HTMLDivElement>(null)
+  const [datePickerAnchor, setDatePickerAnchor] = useState<DOMRect | null>(null)
 
   // Pattern standard pour le bouton "Enregistrer" du formulaire workout
   const [showWorkoutSavedFeedback, setShowWorkoutSavedFeedback] = useState(false)
@@ -556,53 +569,40 @@ export function WorkoutModal({
     onClose()
   }, [onClose])
 
-  /** US3 / US5 : titre = titre de la séance (vue athlète ou coach lecture seule). */
-  const modalTitle = isEdit && currentWorkout && (athleteView || coachReadOnly)
-    ? currentWorkout.title
-    : isEdit
-      ? canEdit
-        ? tWorkouts('editWorkout')
-        : tWorkouts('myWorkout')
-      : tWorkouts('myWorkout')
+  const openDatePicker = useCallback(() => {
+    const rect = dateTriggerRef.current?.getBoundingClientRect()
+    if (rect) setDatePickerAnchor(rect)
+    setShowDatePickerPopup(true)
+  }, [])
 
-  const modalIcon = (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      className="h-5 w-5"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-    </svg>
-  )
+  const closeDatePicker = useCallback(() => {
+    setShowDatePickerPopup(false)
+    setDatePickerAnchor(null)
+  }, [])
 
-  /** En-tête modale coach : date + statut (US4) ou badge statut seul (US5 lecture seule). */
-  const coachModifiableHeaderRight = coachReadOnly && currentWorkout ? (
-    <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${getStatusBadge((currentWorkout.status ?? 'planned') as WorkoutStatus).className}`}>
-      {getStatusBadge((currentWorkout.status ?? 'planned') as WorkoutStatus).label}
-    </span>
-  ) : coachFormNewLayout ? (
-    <div className="flex items-center gap-2 flex-wrap">
-      <div className="flex items-center gap-2 border border-stone-300 rounded-lg py-1.5 px-3 bg-white focus-within:ring-2 focus-within:ring-palette-forest-dark focus-within:border-transparent transition">
-        <input
-          type="date"
-          ref={datePickerInputRef}
-          id="workout-date-picker"
-          value={editableDate}
-          onChange={(e) => setEditableDate(e.target.value)}
-          className="sr-only"
-          aria-label={tWorkouts('form.chooseDate')}
-        />
+  useEffect(() => {
+    if (!showDatePickerPopup) return
+    const onEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeDatePicker()
+    }
+    document.addEventListener('keydown', onEscape)
+    return () => document.removeEventListener('keydown', onEscape)
+  }, [showDatePickerPopup, closeDatePicker])
+
+  /** Bloc date seul (création / édition coach : à gauche). Ouvre le popover calendrier sous le champ (une seule modale). */
+  const localeForPicker = locale === 'fr' ? 'fr-FR' : 'en-US'
+  const coachDateBlock =
+    coachFormNewLayout ? (
+      <div
+        ref={dateTriggerRef}
+        className="flex items-center gap-2 border border-stone-300 rounded-lg py-1.5 px-3 bg-white focus-within:ring-2 focus-within:ring-palette-forest-dark focus-within:border-transparent transition"
+      >
         <span className="text-sm font-bold text-stone-900 min-w-[10rem]" aria-hidden>
-          {formatDateFr(editableDate, true, locale === 'fr' ? 'fr-FR' : 'en-US')}
+          {formatDateFr(editableDate, true, localeForPicker)}
         </span>
         <button
           type="button"
-          onClick={() => datePickerInputRef.current?.showPicker?.()}
+          onClick={openDatePicker}
           className="shrink-0 p-1 rounded text-stone-400 hover:text-palette-forest-dark hover:bg-stone-100"
           title={tWorkouts('form.chooseDate')}
           aria-label={tWorkouts('form.chooseDate')}
@@ -612,19 +612,122 @@ export function WorkoutModal({
           </svg>
         </button>
       </div>
-      <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${getStatusBadge((currentWorkout?.status ?? 'planned') as WorkoutStatus).className}`}>
-        {getStatusBadge((currentWorkout?.status ?? 'planned') as WorkoutStatus).label}
+    ) : null
+
+  /** Popover calendrier : positionné sous le champ date, au-dessus de la modale (z-[110]), pas une 2e modale. */
+  const datePickerPopover =
+    showDatePickerPopup && datePickerAnchor && typeof document !== 'undefined'
+      ? createPortal(
+          <>
+            <div
+              className="fixed inset-0 z-[105]"
+              aria-hidden
+              onClick={closeDatePicker}
+            />
+            <div
+              className="fixed z-[110] shadow-xl"
+              style={{
+                top: datePickerAnchor.bottom + 8,
+                left: datePickerAnchor.left,
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <DatePickerPopup
+                value={editableDate}
+                onChange={(dateStr) => {
+                  setEditableDate(dateStr)
+                  closeDatePicker()
+                }}
+                locale={localeForPicker}
+                minDate={toDateStr(new Date())}
+                monthDropdownId="workout-date-picker-month"
+              />
+            </div>
+          </>,
+          document.body
+        )
+      : null
+
+  /** Badge statut seul (création : à droite). */
+  const coachStatusBadge = coachFormNewLayout ? (
+    <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${getStatusBadge((currentWorkout?.status ?? 'planned') as WorkoutStatus).className}`}>
+      {getStatusBadge((currentWorkout?.status ?? 'planned') as WorkoutStatus).label}
+    </span>
+  ) : null
+
+  /** Titre : séance en lecture seule ; pas de titre en création ni en édition coach (aligné sur création). */
+  const modalTitle =
+    currentWorkout && (athleteView || coachReadOnly)
+      ? currentWorkout.title
+      : coachFormNewLayout
+        ? undefined
+        : isEdit
+          ? canEdit
+            ? tWorkouts('editWorkout')
+            : tWorkouts('myWorkout')
+          : tWorkouts('myWorkout')
+
+  /** En-tête coach édition/création : date à gauche. Lecture seule : tuile pill. Sinon (athlète édition) : check. */
+  const modalIcon =
+    coachFormNewLayout
+      ? coachDateBlock
+      : (athleteView || coachReadOnly) && currentWorkout && currentWorkout.sport_type in SPORT_ICONS ? (
+      (() => {
+        const sport = currentWorkout.sport_type as keyof typeof SPORT_ICONS
+        const Icon = SPORT_ICONS[sport]
+        const styles = sport in SPORT_BADGE_STYLES ? SPORT_BADGE_STYLES[sport as keyof typeof SPORT_BADGE_STYLES] : { bg: 'bg-stone-100', text: 'text-stone-600', border: 'border-stone-300' }
+        const borderClass = PILL_BORDER_CLASSES[currentWorkout.sport_type] ?? 'border-stone-300'
+        const label = sport in SPORT_TRANSLATION_KEYS ? tSports(SPORT_TRANSLATION_KEYS[sport as keyof typeof SPORT_TRANSLATION_KEYS]) : currentWorkout.sport_type
+        return (
+          <span
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border-2 ${borderClass} ${styles.bg} ${styles.text} text-sm font-medium shrink-0 shadow-[0_4px_6px_-1px_rgba(98,126,89,0.2)]`}
+            aria-hidden
+          >
+            <Icon className="w-3.5 h-3.5 shrink-0" aria-hidden />
+            <span>{label}</span>
+          </span>
+        )
+      })()
+    ) : (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-5 w-5"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    )
+
+  /** En-tête modale coach : lecture seule = badge statut à droite ; édition/création = date à gauche (icon) + badge statut à droite. */
+  const coachModifiableHeaderRight =
+    coachReadOnly && currentWorkout ? (
+      <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${getStatusBadge((currentWorkout.status ?? 'planned') as WorkoutStatus).className}`}>
+        {getStatusBadge((currentWorkout.status ?? 'planned') as WorkoutStatus).label}
       </span>
-    </div>
-  ) : undefined
+    ) : coachFormNewLayout ? (
+      coachStatusBadge
+    ) : undefined
+
+  const isReadOnlyHeader = (athleteView || coachReadOnly) && currentWorkout
+
+  /** Coach édition/création : date à gauche (iconRaw), pas de titre. */
+  const isCoachEditableHeader = coachFormNewLayout
 
   return (
+    <>
     <Modal
       isOpen={isOpen}
       onClose={handleClose}
-      size="md"
+      size="workout"
       title={modalTitle}
       icon={modalIcon}
+      iconRaw={!!isReadOnlyHeader || !!isCoachEditableHeader}
+      titleWrap={!!isReadOnlyHeader}
       headerRight={coachModifiableHeaderRight}
       titleId="workout-modal-title"
       contentClassName="px-0"
@@ -677,14 +780,10 @@ export function WorkoutModal({
         <>
           <div className="flex flex-col flex-1 min-h-0 overflow-y-auto">
             <div className="px-6 py-4 space-y-5">
-              {/* US3 : date · sport (Badge) */}
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="text-sm font-medium text-stone-600">
-                  {formatDateFr(date, true, locale === 'fr' ? 'fr-FR' : 'en-US')}
-                </span>
-                <span className="text-stone-300" aria-hidden>·</span>
-                <Badge sport={currentWorkout.sport_type} />
-              </div>
+              {/* Date seule — sport dans l'en-tête (tuile pill) */}
+              <p className="text-sm font-medium text-stone-600">
+                {formatDateFr(date, true, locale === 'fr' ? 'fr-FR' : 'en-US')}
+              </p>
               {/* Objectifs de la séance : métriques avec icônes tuiles + ligne horizontale + description (sans label "Description") */}
               <div className="bg-stone-50 p-4 rounded-xl border border-stone-100">
                 <div className="text-xs font-bold text-stone-500 uppercase tracking-wide mb-3">
@@ -1013,17 +1112,13 @@ export function WorkoutModal({
         </div>
       </form>
       ) : coachReadOnly && currentWorkout ? (
-      /* US5 : modale coach lecture seule — titre = titre séance, pas de formulaire ni boutons */
+      /* US5 : modale coach lecture seule — titre = titre séance, sport dans l'en-tête (tuile pill) */
       <div className="flex flex-col flex-1 min-h-0 overflow-y-auto">
         <div className="px-6 py-4 space-y-5">
-          {/* Date · sport (Badge) */}
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-sm font-medium text-stone-600">
-              {formatDateFr(currentWorkout.date, true, locale === 'fr' ? 'fr-FR' : 'en-US')}
-            </span>
-            <span className="text-stone-300" aria-hidden>·</span>
-            <Badge sport={currentWorkout.sport_type} />
-          </div>
+          {/* Date seule — sport dans l'en-tête */}
+          <p className="text-sm font-medium text-stone-600">
+            {formatDateFr(currentWorkout.date, true, locale === 'fr' ? 'fr-FR' : 'en-US')}
+          </p>
           {/* Objectifs de la séance : métriques avec icônes + ligne horizontale + description */}
           <div className="bg-stone-50 p-4 rounded-xl border border-stone-100">
             <div className="text-xs font-bold text-stone-500 uppercase tracking-wide mb-3">
@@ -1436,5 +1531,7 @@ export function WorkoutModal({
       </form>
       )}
     </Modal>
+    {datePickerPopover}
+    </>
   )
 }
