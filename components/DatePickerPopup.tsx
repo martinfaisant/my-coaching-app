@@ -262,7 +262,7 @@ export function DatePickerPopup({
       {/* Grille des dates */}
       <div className="grid grid-cols-7 gap-1">
         {cells.map((cell) => {
-          const disabled = (minDate && cell.dateStr < minDate) || (maxDate && cell.dateStr > maxDate)
+          const disabled = Boolean((minDate && cell.dateStr < minDate) || (maxDate && cell.dateStr > maxDate))
           return (
             <button
               key={cell.dateStr}
