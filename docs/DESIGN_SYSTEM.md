@@ -1,7 +1,7 @@
 # 🎨 Design System
 
-**Version :** 1.5  
-**Dernière mise à jour :** 27 février 2026 (Workout status : tuiles et modales athlète/coach, totaux « fait », lib/formStyles dans modales)
+**Version :** 1.6  
+**Dernière mise à jour :** 2 mars 2026 (LanguageSwitcher basé sur Dropdown ; Dropdown étendu valueDisplay, triggerPrefix, showCheckmark ; trigger compact 5.5rem, sans coche)
 
 ---
 
@@ -17,6 +17,7 @@
 3. [Composants](#composants)
    - [Button](#button)
    - [Input](#input)
+   - [SearchInput](#searchinput)
    - [Textarea](#textarea)
    - [Badge](#badge)
    - [SportTileSelectable](#sporttileselectable)
@@ -25,6 +26,8 @@
    - [Modal](#modal)
    - [PublicHeader](#publicheader)
    - [LanguageSwitcher](#languageswitcher)
+   - [Dropdown](#dropdown)
+   - [DatePickerPopup](#datepickerpopup)
    - [ChatAthleteListItem](#chatathletelistitem)
    - [ChatConversationSidebar](#chatconversationsidebar)
 4. [Icônes](#icônes)
@@ -396,6 +399,42 @@ Pour les champs bilingues (ex. offres coach : titre et description en français 
   <textarea name="description_fr" className="flex-1 min-w-0 py-2.5 pr-4 bg-transparent border-0 ..." />
 </div>
 ```
+
+---
+
+### SearchInput
+
+**Fichier :** `components/SearchInput.tsx`
+
+Champ de recherche (`type="search"`) avec croix de suppression stylisée en vert (palette). Réutilise `Input` et applique la classe CSS `search-input-clear-green` pour le bouton clear natif (WebKit). Même hauteur, bordure et focus que l’Input (voir `lib/formStyles.ts`).
+
+#### Props
+
+Réutilise les props de `Input` (sans `type`, fixé à `"search"`) : `placeholder`, `value`, `onChange`, `aria-label`, `className`, `disabled`, etc.
+
+```typescript
+type SearchInputProps = Omit<React.ComponentProps<typeof Input>, 'type'> & {
+  placeholder?: string
+  'aria-label'?: string
+}
+```
+
+#### Exemple
+
+```tsx
+import { SearchInput } from '@/components/SearchInput'
+
+<SearchInput
+  placeholder="Rechercher un athlète"
+  value={searchQuery}
+  onChange={(e) => setSearchQuery(e.target.value)}
+  aria-label="Rechercher un athlète"
+/>
+```
+
+#### Style de la croix
+
+La croix de suppression (bouton clear) est en vert `#627e59` (palette-forest-dark), définie dans `app/globals.css` (`.search-input-clear-green::-webkit-search-cancel-button`). Usage : listes filtrées, barre de recherche.
 
 ---
 
@@ -1058,13 +1097,115 @@ import { PublicHeader } from '@/components/PublicHeader'
 
 **Fichier :** `components/LanguageSwitcher.tsx`
 
-Dropdown de changement de langue (FR/EN) : bouton avec icône globe, code langue courante (FR/EN) et chevron ; menu déroulant avec libellés « Français » / « English » et coche sur la langue active. Utilise les tokens `palette-forest-dark`, `stone-*`, `rounded-lg` / `rounded-xl`. Affiché dans le header de la page d'accueil et dans la sidebar du dashboard. Aperçu dans la page Design System (admin).
+Sélecteur de langue (FR/EN) basé sur le composant **Dropdown** : trigger compact (icône globe + code FR/EN + chevron), menu avec libellés « Français » / « English », option active en vert (sans coche). Utilise `Dropdown` avec `valueDisplay`, `triggerPrefix` (Globe), `hideLabel` et `minWidth="5.5rem"`. Affiché dans le header public (page d'accueil, reset-password) et dans la page profil. Aperçu dans la page Design System (admin).
 
 ```tsx
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 
 <LanguageSwitcher />
 ```
+
+---
+
+### Dropdown
+
+**Fichier :** `components/Dropdown.tsx`
+
+Menu déroulant : label au-dessus, bouton trigger (même style que Input via `FORM_BASE_CLASSES`), panneau d’options avec fermeture au clic extérieur. États des options alignés sur la sidebar (ChatConversationSidebar) : **sélectionné** = fond vert `bg-palette-forest-dark` texte blanc + ombre ; **non sélectionné** = `text-stone-500` avec hover `hover:bg-stone-50 hover:text-palette-forest-dark`. Curseur pointer sur les options.
+
+#### Props
+
+```typescript
+type DropdownOption = { value: string; label: string }
+
+type DropdownProps = {
+  id: string
+  label: string
+  options: DropdownOption[]
+  value: string
+  onChange: (value: string) => void
+  ariaLabel?: string
+  minWidth?: string   // ex. "200px"
+  className?: string
+  hideLabel?: boolean  // masquer le label (ex. calendrier en-tête)
+  valueDisplay?: string   // texte dans le trigger à la place du label (ex. "FR" pour LanguageSwitcher)
+  triggerPrefix?: React.ReactNode   // contenu avant le label dans le trigger (ex. icône globe)
+  showCheckmark?: boolean   // coche sur l’option sélectionnée dans le menu
+}
+```
+
+#### Exemple
+
+```tsx
+import { Dropdown } from '@/components/Dropdown'
+
+const options = [
+  { value: 'name_asc', label: 'Nom (A–Z)' },
+  { value: 'planned_until_asc', label: 'Date planifiée' },
+]
+
+<Dropdown
+  id="sort-trigger"
+  label="Trier par"
+  options={options}
+  value={sortMode}
+  onChange={setSortMode}
+  ariaLabel="Trier par"
+  minWidth="200px"
+/>
+```
+
+#### Comportement
+
+- Clic sur le trigger : ouverture/fermeture du panneau.
+- Clic sur une option : `onChange(value)` puis fermeture.
+- Clic à l’extérieur : fermeture (useEffect + mousedown).
+- Accessibilité : `role="listbox"`, `aria-expanded`, `aria-selected` sur les options.
+- **hideLabel** : quand `true`, le label n’est pas rendu (usage dans le popup calendrier, en-tête).
+- **valueDisplay** : si fourni, affiché dans le trigger à la place du label de l’option (ex. code langue).
+- **triggerPrefix** : rendu avant le label dans le trigger (ex. icône Globe pour LanguageSwitcher).
+- **showCheckmark** : quand `true`, une coche est affichée sur l’option sélectionnée dans le menu.
+
+---
+
+### DatePickerPopup
+
+**Fichier :** `components/DatePickerPopup.tsx`
+
+Popup calendrier pour la sélection d’une date. Conforme au design system : **Dropdown** pour le mois (avec `hideLabel`), grille de jours (semaine lundi–dimanche), date sélectionnée en `bg-palette-forest-dark text-white`, lien « Aujourd'hui » au pied (pas de bouton Effacer — date obligatoire). Référence : `docs/design-workout-modal-calendar/mockup-calendar-popup.html`, `DESIGN_CALENDAR_POPUP.md`.
+
+#### Props
+
+```typescript
+type DatePickerPopupProps = {
+  value: string              // YYYY-MM-DD
+  onChange: (dateStr: string) => void
+  locale: string             // ex. 'fr-FR', 'en-US'
+  minDate?: string           // YYYY-MM-DD optionnel
+  maxDate?: string           // YYYY-MM-DD optionnel
+  monthDropdownId?: string
+  className?: string
+}
+```
+
+#### Exemple
+
+```tsx
+import { DatePickerPopup } from '@/components/DatePickerPopup'
+
+<DatePickerPopup
+  value={editableDate}
+  onChange={setEditableDate}
+  locale={locale === 'fr' ? 'fr-FR' : 'en-US'}
+  minDate={toDateStr(new Date())}
+  monthDropdownId="workout-date-picker-month"
+/>
+```
+
+#### Usage
+
+- Intégré dans **WorkoutModal** : au clic sur le champ date (coach, séance modifiable), ouverture d’une modale contenant `DatePickerPopup` au lieu du picker natif.
+- Mois : composant **Dropdown** du design system (options = mois formatés, value = `YYYY-MM`).
 
 ---
 
@@ -1293,7 +1434,7 @@ Actuellement, utiliser un span custom :
 ### Fichiers clés
 
 - **Tokens couleurs** : `tailwind.config.ts`, `app/globals.css`
-- **Composants** : `components/Button.tsx`, `components/Input.tsx`, `components/Textarea.tsx`, `components/Badge.tsx`, `components/SportTileSelectable.tsx`, `components/ActivityTile.tsx`, `components/Modal.tsx`, `components/PublicHeader.tsx`, `components/EmailValidatedModal.tsx`, `components/HomeEmailConfirmedTrigger.tsx`, `components/ChatAthleteListItem.tsx`, `components/ChatConversationSidebar.tsx`
+- **Composants** : `components/Button.tsx`, `components/Input.tsx`, `components/SearchInput.tsx`, `components/Textarea.tsx`, `components/Badge.tsx`, `components/SportTileSelectable.tsx`, `components/ActivityTile.tsx`, `components/Modal.tsx`, `components/PublicHeader.tsx`, `components/EmailValidatedModal.tsx`, `components/HomeEmailConfirmedTrigger.tsx`, `components/Dropdown.tsx`, `components/DatePickerPopup.tsx`, `components/ChatAthleteListItem.tsx`, `components/ChatConversationSidebar.tsx`
 - **Sports** : `lib/sportStyles.ts`, `lib/sportsOptions.ts`, `components/SportIcons.tsx`
 - **Design system page** : `app/dashboard/admin/design-system/page.tsx`
 
