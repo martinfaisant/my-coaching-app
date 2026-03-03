@@ -26,8 +26,8 @@ export function DashboardPageShell({
     >
       <PageHeader title={title} rightContent={rightContent} />
 
-      {/* ZONE SCROLLABLE */}
-      <div className={`flex-1 overflow-y-auto px-6 lg:px-8 py-6 ${contentClassName}`.trim()}>
+      {/* ZONE SCROLLABLE — pb-24 évite que le bouton flottant "Discuter" recouvre la dernière ligne de contenu */}
+      <div className={`flex-1 min-h-0 overflow-y-auto px-6 lg:px-8 pt-6 pb-24 ${contentClassName}`.trim()}>
         {children}
       </div>
     </main>
