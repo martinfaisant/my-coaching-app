@@ -3,10 +3,11 @@ import { createClient } from '@/utils/supabase/server'
 import { getCurrentUserWithProfile } from '@/utils/auth'
 import { redirect } from 'next/navigation'
 import { CoachAthleteCalendarPage } from '@/components/CoachAthleteCalendarPage'
-import type { Workout, Goal, ImportedActivityWeeklyTotal, WorkoutWeeklyTotal } from '@/types/database'
+import type { Workout, Goal, ImportedActivityWeeklyTotal, WorkoutWeeklyTotal, AthleteAvailabilitySlot } from '@/types/database'
 import { getWeekMonday } from '@/lib/dateUtils'
 import { getDisplayName } from '@/lib/displayName'
 import { getEffectiveWeeklyTotalsFait } from '@/app/[locale]/dashboard/workouts/actions'
+import { getAvailabilityForDateRange } from '@/app/[locale]/dashboard/availability/actions'
 
 type PageProps = { params: Promise<{ athleteId: string }> }
 
@@ -47,7 +48,7 @@ export default async function AthleteCalendarPage({ params }: PageProps) {
     weekMondays.push(weekMonday.toISOString().slice(0, 10))
   }
 
-  const [workoutsResult, goalsResult, workoutTotalsResult, effectiveFaitResult] = await Promise.all([
+  const [workoutsResult, goalsResult, workoutTotalsResult, effectiveFaitResult, initialAvailabilities] = await Promise.all([
     supabase
       .from('workouts')
       .select('*')
@@ -69,6 +70,7 @@ export default async function AthleteCalendarPage({ params }: PageProps) {
       .order('week_start')
       .order('sport_type'),
     getEffectiveWeeklyTotalsFait(athleteId, weekMondays[0], weekMondays[weekMondays.length - 1]),
+    getAvailabilityForDateRange(athleteId, startStr, endStr),
   ])
   const workouts = workoutsResult.data
   const goals = goalsResult.data
@@ -86,6 +88,7 @@ export default async function AthleteCalendarPage({ params }: PageProps) {
       initialWorkouts={(workouts ?? []) as Workout[]}
       initialWeeklyTotals={(initialWeeklyTotals ?? []) as ImportedActivityWeeklyTotal[]}
       initialWorkoutTotals={(initialWorkoutTotals ?? []) as WorkoutWeeklyTotal[]}
+      initialAvailabilities={(initialAvailabilities ?? []) as AthleteAvailabilitySlot[]}
       goals={(goals ?? []) as Goal[]}
       canEdit={true}
       pathToRevalidate={`/dashboard/athletes/${athleteId}`}

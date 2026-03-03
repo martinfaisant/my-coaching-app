@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl'
 import { CalendarViewWithNavigation } from './CalendarViewWithNavigation'
 import { WeekSelector } from './WeekSelector'
-import type { Workout, Goal, ImportedActivity, ImportedActivityWeeklyTotal, WorkoutWeeklyTotal } from '@/types/database'
+import type { Workout, Goal, ImportedActivity, ImportedActivityWeeklyTotal, WorkoutWeeklyTotal, AthleteAvailabilitySlot } from '@/types/database'
 
 type AthleteCalendarPageProps = {
   athleteId: string
@@ -12,6 +12,7 @@ type AthleteCalendarPageProps = {
   initialImportedActivities?: ImportedActivity[]
   initialWeeklyTotals?: ImportedActivityWeeklyTotal[]
   initialWorkoutTotals?: WorkoutWeeklyTotal[]
+  initialAvailabilities?: AthleteAvailabilitySlot[]
   goals?: Goal[]
   canEdit: boolean
   pathToRevalidate: string
@@ -24,6 +25,7 @@ export function AthleteCalendarPage({
   initialImportedActivities = [],
   initialWeeklyTotals = [],
   initialWorkoutTotals = [],
+  initialAvailabilities = [],
   goals = [],
   canEdit,
   pathToRevalidate,
@@ -40,6 +42,7 @@ export function AthleteCalendarPage({
         initialImportedActivities={initialImportedActivities}
         initialWeeklyTotals={initialWeeklyTotals}
         initialWorkoutTotals={initialWorkoutTotals}
+        initialAvailabilities={initialAvailabilities}
         goals={goals}
         canEdit={canEdit}
         athleteView={true}
