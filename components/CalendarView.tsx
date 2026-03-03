@@ -11,7 +11,7 @@ import { Modal } from './Modal'
 import { IconRunning, IconBiking, IconSwimming, IconDumbbell, IconNordicSki, IconBackcountrySki, IconIceSkating } from './SportIcons'
 import { SPORT_ICONS, SPORT_CARD_STYLES, SPORT_TRANSLATION_KEYS } from '@/lib/sportStyles'
 import { ActivityTile } from './ActivityTile'
-import type { Workout, WorkoutStatus, SportType, Goal, ImportedActivity, ImportedActivityWeeklyTotal, WorkoutWeeklyTotal } from '@/types/database'
+import type { Workout, WorkoutStatus, SportType, Goal, ImportedActivity, ImportedActivityWeeklyTotal, WorkoutWeeklyTotal, WorkoutTimeOfDay } from '@/types/database'
 
 /** Distance natation en mètres (arrondi au mètre près). */
 function swimmingDistanceM(km: number): number {
@@ -245,7 +245,11 @@ export function CalendarView({
   const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null)
   const [selectedImportedActivity, setSelectedImportedActivity] = useState<ImportedActivity | null>(null)
   const [extraActivitiesModalOpen, setExtraActivitiesModalOpen] = useState(false)
-  const [extraActivitiesList, setExtraActivitiesList] = useState<Array<{ type: 'workout'; item: Workout; dateStr: string } | { type: 'imported'; item: ImportedActivity; dateStr: string } | { type: 'goal'; item: Goal; dateStr: string }>>([])
+  type DayListItem =
+    | { type: 'goal'; item: Goal; dateStr: string; section: null }
+    | { type: 'workout'; item: Workout; dateStr: string; section: WorkoutTimeOfDay | null }
+    | { type: 'imported'; item: ImportedActivity; dateStr: string; section: null }
+  const [extraActivitiesList, setExtraActivitiesList] = useState<DayListItem[]>([])
   const [extraActivitiesModalDate, setExtraActivitiesModalDate] = useState<string | null>(null)
 
   const [isMobileView, setIsMobileView] = useState(false)
@@ -376,6 +380,27 @@ export function CalendarView({
     }
     return map
   }, [goals])
+
+  /** Liste du jour ordonnée par sections : premier bloc (goals, workouts sans moment, imported) puis Matin / Midi / Soir. Chaque item workout a une propriété section (null ou morning/noon/evening). */
+  function buildDayListWithSections(
+    dateStr: string,
+    dayGoals: Goal[],
+    dayWorkouts: Workout[],
+    dayImported: ImportedActivity[]
+  ): DayListItem[] {
+    const out: DayListItem[] = []
+    dayGoals.forEach((g) => out.push({ type: 'goal', item: g, dateStr, section: null }))
+    const workoutsNoMoment = dayWorkouts.filter((w) => !w.time_of_day)
+    workoutsNoMoment.forEach((w) => out.push({ type: 'workout', item: w, dateStr, section: null }))
+    dayImported.forEach((a) => out.push({ type: 'imported', item: a, dateStr, section: null }))
+    const morning = dayWorkouts.filter((w) => w.time_of_day === 'morning')
+    const noon = dayWorkouts.filter((w) => w.time_of_day === 'noon')
+    const evening = dayWorkouts.filter((w) => w.time_of_day === 'evening')
+    morning.forEach((w) => out.push({ type: 'workout', item: w, dateStr, section: 'morning' }))
+    noon.forEach((w) => out.push({ type: 'workout', item: w, dateStr, section: 'noon' }))
+    evening.forEach((w) => out.push({ type: 'workout', item: w, dateStr, section: 'evening' }))
+    return out
+  }
 
   /** Totaux prévus par semaine et par sport (depuis workout_weekly_totals précalculés). Distance en km pour course/vélo/natation, temps pour musculation. */
   const weekPrevuBySport = useMemo(() => {
@@ -516,7 +541,7 @@ export function CalendarView({
             <span className={`inline-flex items-center ${style.badge} ${style.badgeBg} px-1 py-0.5 rounded shrink-0`}>
               <SportIcon className="w-2.5 h-2.5" />
             </span>
-            <span className="text-xs font-semibold text-stone-700 leading-tight flex-1 min-w-0 truncate">{w.title}</span>
+            <span className="text-xs font-semibold text-stone-700 leading-tight flex-1 min-w-0 break-words">{w.title}</span>
           </div>
         </div>
         <div className="flex items-center gap-1 flex-wrap text-[10px] text-stone-500 font-semibold mt-1">
@@ -617,7 +642,7 @@ export function CalendarView({
           <span className={`float-left inline-flex items-center mr-2 ${style.badge} ${style.badgeBg} px-1.5 py-0.5 rounded shrink-0`}>
             <SportIcon className="w-3 h-3" />
           </span>
-          <h4 className="text-sm font-bold text-stone-900 leading-tight">{w.title}</h4>
+          <h4 className="text-sm font-bold text-stone-900 leading-tight break-words">{w.title}</h4>
           <div className="clear-both" />
         </div>
         <p className="text-xs text-stone-500 leading-snug mb-3 line-clamp-2">{w.description || '—'}</p>
@@ -795,20 +820,16 @@ export function CalendarView({
                     const dayWorkouts = workoutsByDate[day.dateStr] ?? []
                     const dayImported = importedByDate[day.dateStr] ?? []
                     const dayGoals = goalsByDate[day.dateStr] ?? []
-                    const firstWorkout = dayWorkouts[0]
-                    const firstImported = dayImported[0]
-                    const firstGoal = dayGoals[0]
+                    const dayFullList = buildDayListWithSections(day.dateStr, dayGoals, dayWorkouts, dayImported)
+                    const dayTotal = dayFullList.length
+                    const dayExtraCount = dayTotal > 1 ? dayTotal - 1 : 0
+                    const firstEntry = dayFullList[0]
+                    const firstWorkout = firstEntry?.type === 'workout' ? firstEntry.item : undefined
+                    const firstImported = firstEntry?.type === 'imported' ? firstEntry.item : undefined
+                    const firstGoal = firstEntry?.type === 'goal' ? firstEntry.item : undefined
                     const isEmpty = !firstWorkout && !firstImported && !firstGoal
                     const showAddInCondensed = canEdit && !day.isPast && isEmpty
                     const showAddAtBottom = canEdit && !day.isPast && !isEmpty
-                    const dayTotal = dayWorkouts.length + dayImported.length + dayGoals.length
-                    const dayExtraCount = dayTotal > 1 ? dayTotal - 1 : 0
-                    const dayFullList: Array<{ type: 'workout'; item: Workout; dateStr: string } | { type: 'imported'; item: ImportedActivity; dateStr: string } | { type: 'goal'; item: Goal; dateStr: string }> = []
-                    if (dayTotal > 0) {
-                      dayGoals.forEach((g) => dayFullList.push({ type: 'goal', item: g, dateStr: day.dateStr }))
-                      dayWorkouts.forEach((w) => dayFullList.push({ type: 'workout', item: w, dateStr: day.dateStr }))
-                      dayImported.forEach((a) => dayFullList.push({ type: 'imported', item: a, dateStr: day.dateStr }))
-                    }
                     return (
                       <section key={day.dateStr} className="rounded-lg border border-stone-200 overflow-hidden">
                         <div className={`flex items-center gap-2 px-3 py-2 border-b border-stone-200 ${isEmpty ? 'bg-stone-100/50' : 'bg-white'}`}>
@@ -887,7 +908,7 @@ export function CalendarView({
                                           {getImportedActivityTypeLabel(firstImported, tSports)}
                                         </span>
                                       </div>
-                                      <div className="text-xs font-semibold text-stone-700 mt-1 truncate">{firstImported.title}</div>
+                                      <div className="text-xs font-semibold text-stone-700 mt-1 break-words">{firstImported.title}</div>
                                       {target.primary && (
                                         <div className="flex items-center gap-1 text-[10px] text-stone-500 font-semibold">
                                           {target.hasDistance ? <><MapIcon /><span>{target.primary}</span></> : <><ClockIcon /><span>{target.primary}</span></>}
@@ -981,7 +1002,7 @@ export function CalendarView({
                                           {getImportedActivityTypeLabel(firstImported, tSports)}
                                         </span>
                                       </div>
-                                      <div className="text-xs font-semibold text-stone-700 mt-1 truncate">{firstImported.title}</div>
+                                      <div className="text-xs font-semibold text-stone-700 mt-1 break-words">{firstImported.title}</div>
                                       {target.primary && (
                                         <div className="flex items-center gap-1 text-[10px] text-stone-500 font-semibold">
                                           {target.hasDistance ? <><MapIcon /><span>{target.primary}</span></> : <><ClockIcon /><span>{target.primary}</span></>}
@@ -1127,20 +1148,16 @@ export function CalendarView({
                     const dayWorkouts = workoutsByDate[day.dateStr] ?? []
                     const dayImported = importedByDate[day.dateStr] ?? []
                     const dayGoals = goalsByDate[day.dateStr] ?? []
-                    const firstWorkout = dayWorkouts[0]
-                    const firstImported = dayImported[0]
-                    const firstGoal = dayGoals[0]
+                    const dayFullList = buildDayListWithSections(day.dateStr, dayGoals, dayWorkouts, dayImported)
+                    const dayTotal = dayFullList.length
+                    const dayExtraCount = dayTotal > 1 ? dayTotal - 1 : 0
+                    const firstEntry = dayFullList[0]
+                    const firstWorkout = firstEntry?.type === 'workout' ? firstEntry.item : undefined
+                    const firstImported = firstEntry?.type === 'imported' ? firstEntry.item : undefined
+                    const firstGoal = firstEntry?.type === 'goal' ? firstEntry.item : undefined
                     const isEmpty = !firstWorkout && !firstImported && !firstGoal
                     const showAddInCondensed = (wi === 0 || wi === 2) && canEdit && !day.isPast && isEmpty
                     const showAddAtBottom = (wi === 0 || wi === 2) && canEdit && !day.isPast && !isEmpty
-                    const dayTotal = dayWorkouts.length + dayImported.length + dayGoals.length
-                    const dayExtraCount = dayTotal > 1 ? dayTotal - 1 : 0
-                    const dayFullList: Array<{ type: 'workout'; item: Workout; dateStr: string } | { type: 'imported'; item: ImportedActivity; dateStr: string } | { type: 'goal'; item: Goal; dateStr: string }> = []
-                    if (dayTotal > 0) {
-                      dayGoals.forEach((goal) => dayFullList.push({ type: 'goal', item: goal, dateStr: day.dateStr }))
-                      dayWorkouts.forEach((workout) => dayFullList.push({ type: 'workout', item: workout, dateStr: day.dateStr }))
-                      dayImported.forEach((act) => dayFullList.push({ type: 'imported', item: act, dateStr: day.dateStr }))
-                    }
                     return (
                       <div
                         key={day.dateStr}
@@ -1211,7 +1228,7 @@ export function CalendarView({
                                           {getImportedActivityTypeLabel(firstImported, tSports)}
                                         </span>
                                       </div>
-                                      <div className="text-xs font-semibold text-stone-700 mt-1 truncate">{firstImported.title}</div>
+                                      <div className="text-xs font-semibold text-stone-700 mt-1 break-words">{firstImported.title}</div>
                                     </div>
                                     {target.primary && (
                                       <div className="flex items-center gap-1 text-[10px] text-stone-500 font-semibold">
@@ -1313,7 +1330,7 @@ export function CalendarView({
                                           {getImportedActivityTypeLabel(firstImported, tSports)}
                                         </span>
                                       </div>
-                                      <div className="text-xs font-semibold text-stone-700 mt-1 truncate">{firstImported.title}</div>
+                                      <div className="text-xs font-semibold text-stone-700 mt-1 break-words">{firstImported.title}</div>
                                     </div>
                                     {target.primary && (
                                       <div className="flex items-center gap-1 text-[10px] text-stone-500 font-semibold">
@@ -1362,7 +1379,8 @@ export function CalendarView({
                     const dayWorkouts = workoutsByDate[day.dateStr] ?? []
                     const dayImported = importedByDate[day.dateStr] ?? []
                     const dayGoals = goalsByDate[day.dateStr] ?? []
-                    const hasContent = dayWorkouts.length > 0 || dayGoals.length > 0 || dayImported.length > 0
+                    const dayFullList = buildDayListWithSections(day.dateStr, dayGoals, dayWorkouts, dayImported)
+                    const hasContent = dayFullList.length > 0
                     const canAddWorkout = canEdit && !day.isPast
                     return (
                       <div key={day.dateStr} className="flex flex-col gap-2 min-h-0">
@@ -1390,101 +1408,107 @@ export function CalendarView({
                           {hasContent ? (
                             <>
                               <div className="min-h-0 flex flex-col gap-3 overflow-y-auto shrink-0 pb-3">
-                              {dayGoals.map((g) => {
-                                const isPrimary = g.is_primary
-                                const borderColor = isPrimary ? 'border-palette-amber' : 'border-palette-sage'
-                                const badgeColor = isPrimary ? 'text-palette-amber bg-palette-amber/10' : 'text-palette-sage bg-palette-sage/10'
-                                
+                              {dayFullList.map((entry, idx) => {
+                                const prevSection = idx > 0 && dayFullList[idx - 1]!.type === 'workout' ? (dayFullList[idx - 1] as { type: 'workout'; section: WorkoutTimeOfDay | null }).section : null
+                                const showSectionTitle = entry.type === 'workout' && entry.section && entry.section !== prevSection
                                 return (
-                                  <div
-                                    key={g.id}
-                                    onClick={(e) => {
-                                      e.stopPropagation()
-                                      openGoal(g)
-                                    }}
-                                    className={`training-card bg-white rounded border-l-4 ${borderColor} shadow-sm p-1.5 h-full flex flex-col justify-between ${canEdit ? 'cursor-pointer' : ''}`}
-                                    role={canEdit ? 'button' : undefined}
-                                  >
-                                    <div>
-                                      <div>
-                                        <span className={`float-left inline-flex items-center mr-1.5 ${badgeColor} px-1 py-0.5 rounded shrink-0`}>
-                                          <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                            <circle cx="12" cy="12" r="10" />
-                                            <circle cx="12" cy="12" r="6" />
-                                            <circle cx="12" cy="12" r="2" />
-                                          </svg>
-                                        </span>
-                                        <div className="text-xs font-semibold text-stone-700 leading-tight">{g.race_name}</div>
-                                        <div className="clear-both"></div>
-                                      </div>
-                                    </div>
-                                    <div className="flex items-center gap-1 flex-wrap text-[10px] text-stone-500 font-semibold mt-1">
-                                      <div className="flex items-center gap-1">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                          <path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z" />
-                                          <path d="m14.5 12.5 2-2" />
-                                          <path d="m11.5 9.5 2-2" />
-                                          <path d="m8.5 6.5 2-2" />
-                                          <path d="m17.5 15.5 2-2" />
-                                        </svg>
-                                        <span>{g.distance} km</span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                )
-                              })}
-                              {dayImported.map((a) => {
-                                const target = formatImportedActivityTarget(a)
-                                return (
-                                  <div
-                                    key={a.id}
-                                    onClick={(e) => {
-                                      e.stopPropagation()
-                                      setSelectedImportedActivity(a)
-                                    }}
-                                    className="training-card bg-white p-3 rounded-lg shadow-sm border border-stone-100 border-l-4 border-l-palette-strava cursor-pointer"
-                                    role="button"
-                                  >
-                                    <div className="inline-flex items-center gap-1.5 mb-2">
-                                      <img src="/strava-icon.svg" alt="" className="h-4 w-4 shrink-0" aria-hidden />
-                                      <span className="text-[10px] font-bold uppercase text-palette-strava bg-orange-100 px-1.5 py-0.5 rounded leading-none">
-                                        {getImportedActivityTypeLabel(a, tSports)}
-                                      </span>
-                                    </div>
-                                    <h4 className="text-sm font-bold text-stone-900 leading-tight mb-2">{a.title}</h4>
-                                    {a.description ? (
-                                      <p className="text-xs text-stone-500 leading-snug mb-3 line-clamp-2">{a.description}</p>
-                                    ) : null}
-                                    {target.primary && (
-                                      <div className="flex items-center gap-3 text-xs text-stone-500 font-semibold flex-wrap">
-                                        {target.hasDistance ? (
-                                          <>
-                                            <div className="flex items-center gap-1">
-                                              <MapIcon />
-                                              <span>{target.primary}</span>
-                                            </div>
-                                            {target.secondary && (
-                                              <>
-                                                <div className="w-px h-3 bg-stone-300" />
-                                                <div className="flex items-center gap-1">
-                                                  <MountainIcon />
-                                                  <span>{target.secondary}</span>
-                                                </div>
-                                              </>
-                                            )}
-                                          </>
-                                        ) : (
-                                          <div className="flex items-center gap-1.5">
-                                            <ClockIcon />
-                                            <span>{target.primary}</span>
-                                          </div>
-                                        )}
+                                  <div key={entry.type === 'goal' ? `g-${entry.item.id}` : entry.type === 'workout' ? `w-${entry.item.id}` : `i-${entry.item.id}`} className="flex flex-col gap-1.5">
+                                    {showSectionTitle && (
+                                      <div className="text-[10px] font-semibold uppercase tracking-wider text-stone-400 px-0.5">
+                                        {entry.section === 'morning' ? tWorkouts('calendar.morning') : entry.section === 'noon' ? tWorkouts('calendar.noon') : tWorkouts('calendar.evening')}
                                       </div>
                                     )}
+                                    {entry.type === 'goal' ? (() => {
+                                      const g = entry.item
+                                      const isPrimary = g.is_primary
+                                      const borderColor = isPrimary ? 'border-palette-amber' : 'border-palette-sage'
+                                      const badgeColor = isPrimary ? 'text-palette-amber bg-palette-amber/10' : 'text-palette-sage bg-palette-sage/10'
+                                      return (
+                                        <div
+                                          onClick={(e) => { e.stopPropagation(); openGoal(g) }}
+                                          className={`training-card bg-white rounded border-l-4 ${borderColor} shadow-sm p-1.5 h-full flex flex-col justify-between ${canEdit ? 'cursor-pointer' : ''}`}
+                                          role={canEdit ? 'button' : undefined}
+                                        >
+                                          <div>
+                                            <div>
+                                              <span className={`float-left inline-flex items-center mr-1.5 ${badgeColor} px-1 py-0.5 rounded shrink-0`}>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                  <circle cx="12" cy="12" r="10" />
+                                                  <circle cx="12" cy="12" r="6" />
+                                                  <circle cx="12" cy="12" r="2" />
+                                                </svg>
+                                              </span>
+                                              <div className="text-xs font-semibold text-stone-700 leading-tight">{g.race_name}</div>
+                                              <div className="clear-both"></div>
+                                            </div>
+                                          </div>
+                                          <div className="flex items-center gap-1 flex-wrap text-[10px] text-stone-500 font-semibold mt-1">
+                                            <div className="flex items-center gap-1">
+                                              <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                <path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z" />
+                                                <path d="m14.5 12.5 2-2" />
+                                                <path d="m11.5 9.5 2-2" />
+                                                <path d="m8.5 6.5 2-2" />
+                                                <path d="m17.5 15.5 2-2" />
+                                              </svg>
+                                              <span>{g.distance} km</span>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      )
+                                    })() : entry.type === 'workout' ? (
+                                      renderDetailedCard(entry.item, day.dateStr)
+                                    ) : (() => {
+                                      const a = entry.item
+                                      const target = formatImportedActivityTarget(a)
+                                      return (
+                                        <div
+                                          onClick={(e) => { e.stopPropagation(); setSelectedImportedActivity(a) }}
+                                          className="training-card bg-white p-3 rounded-lg shadow-sm border border-stone-100 border-l-4 border-l-palette-strava cursor-pointer"
+                                          role="button"
+                                        >
+                                          <div className="inline-flex items-center gap-1.5 mb-2">
+                                            <img src="/strava-icon.svg" alt="" className="h-4 w-4 shrink-0" aria-hidden />
+                                            <span className="text-[10px] font-bold uppercase text-palette-strava bg-orange-100 px-1.5 py-0.5 rounded leading-none">
+                                              {getImportedActivityTypeLabel(a, tSports)}
+                                            </span>
+                                          </div>
+                                          <h4 className="text-sm font-bold text-stone-900 leading-tight mb-2 break-words">{a.title}</h4>
+                                          {a.description ? (
+                                            <p className="text-xs text-stone-500 leading-snug mb-3 line-clamp-2">{a.description}</p>
+                                          ) : null}
+                                          {target.primary && (
+                                            <div className="flex items-center gap-3 text-xs text-stone-500 font-semibold flex-wrap">
+                                              {target.hasDistance ? (
+                                                <>
+                                                  <div className="flex items-center gap-1">
+                                                    <MapIcon />
+                                                    <span>{target.primary}</span>
+                                                  </div>
+                                                  {target.secondary && (
+                                                    <>
+                                                      <div className="w-px h-3 bg-stone-300" />
+                                                      <div className="flex items-center gap-1">
+                                                        <MountainIcon />
+                                                        <span>{target.secondary}</span>
+                                                      </div>
+                                                    </>
+                                                  )}
+                                                </>
+                                              ) : (
+                                                <div className="flex items-center gap-1.5">
+                                                  <ClockIcon />
+                                                  <span>{target.primary}</span>
+                                                </div>
+                                              )}
+                                            </div>
+                                          )}
+                                        </div>
+                                      )
+                                    })()}
                                   </div>
                                 )
                               })}
-                              {dayWorkouts.map((w) => renderDetailedCard(w, day.dateStr))}
                               </div>
                               {canAddWorkout && (
                                 <div
@@ -1548,63 +1572,74 @@ export function CalendarView({
         contentClassName="px-6 py-4"
       >
         <div className="space-y-3">
-          {extraActivitiesList.map((entry) => {
+          {extraActivitiesList.map((entry, idx) => {
             const dateLabel = new Date(entry.dateStr + 'T12:00:00').toLocaleDateString(localeTag, { weekday: 'short', day: 'numeric', month: 'short' })
-            
-            if (entry.type === 'goal') {
-              const g = entry.item
-              return (
-                <ActivityTile
-                  key={`g-${g.id}`}
-                  type="goal"
-                  isPrimary={g.is_primary}
-                  title={g.race_name}
-                  distance={Number(g.distance)}
-                  date={dateLabel}
-                  onClick={() => {
-                    setExtraActivitiesModalOpen(false)
-                    setExtraActivitiesModalDate(null)
-                    openGoal(g)
-                  }}
-                />
-              )
-            }
-            
-            if (entry.type === 'workout') {
-              const w = entry.item
-              return (
-                <ActivityTile
-                  key={`w-${w.id}`}
-                  type="workout"
-                  sportType={w.sport_type}
-                  title={w.title}
-                  metadata={formatWorkoutMetadata(w)}
-                  date={dateLabel}
-                  onClick={() => {
-                    setExtraActivitiesModalOpen(false)
-                    setExtraActivitiesModalDate(null)
-                    openWorkout(entry.dateStr, w)
-                  }}
-                />
-              )
-            }
-            
-            // Type: imported (Strava)
-            const a = entry.item
+            const prevSection = idx > 0 && extraActivitiesList[idx - 1]!.type === 'workout' ? (extraActivitiesList[idx - 1] as { type: 'workout'; section: WorkoutTimeOfDay | null }).section : null
+            const showSectionTitle = entry.type === 'workout' && entry.section && entry.section !== prevSection
+
             return (
-              <ActivityTile
-                key={`i-${a.id}`}
-                type="strava"
-                activityLabel={getImportedActivityTypeLabel(a, tSports)}
-                title={a.title}
-                metadata={formatStravaMetadata(a)}
-                date={dateLabel}
-                onClick={() => {
-                  setExtraActivitiesModalOpen(false)
-                  setExtraActivitiesModalDate(null)
-                  setSelectedImportedActivity(a)
-                }}
-              />
+              <div key={entry.type === 'goal' ? `g-${entry.item.id}` : entry.type === 'workout' ? `w-${entry.item.id}` : `i-${entry.item.id}`} className="flex flex-col gap-1.5">
+                {showSectionTitle && (
+                  <div className="text-[10px] font-semibold uppercase tracking-wider text-stone-400 px-0.5">
+                    {entry.section === 'morning' ? tWorkouts('calendar.morning') : entry.section === 'noon' ? tWorkouts('calendar.noon') : tWorkouts('calendar.evening')}
+                  </div>
+                )}
+                {entry.type === 'goal' ? (
+                  (() => {
+                    const g = entry.item
+                    return (
+                      <ActivityTile
+                        type="goal"
+                        isPrimary={g.is_primary}
+                        title={g.race_name}
+                        distance={Number(g.distance)}
+                        date={dateLabel}
+                        onClick={() => {
+                          setExtraActivitiesModalOpen(false)
+                          setExtraActivitiesModalDate(null)
+                          openGoal(g)
+                        }}
+                      />
+                    )
+                  })()
+                ) : entry.type === 'workout' ? (
+                  (() => {
+                    const w = entry.item
+                    return (
+                      <ActivityTile
+                        type="workout"
+                        sportType={w.sport_type}
+                        title={w.title}
+                        metadata={formatWorkoutMetadata(w)}
+                        date={dateLabel}
+                        onClick={() => {
+                          setExtraActivitiesModalOpen(false)
+                          setExtraActivitiesModalDate(null)
+                          openWorkout(entry.dateStr, w)
+                        }}
+                      />
+                    )
+                  })()
+                ) : (
+                  (() => {
+                    const a = entry.item
+                    return (
+                      <ActivityTile
+                        type="strava"
+                        activityLabel={getImportedActivityTypeLabel(a, tSports)}
+                        title={a.title}
+                        metadata={formatStravaMetadata(a)}
+                        date={dateLabel}
+                        onClick={() => {
+                          setExtraActivitiesModalOpen(false)
+                          setExtraActivitiesModalDate(null)
+                          setSelectedImportedActivity(a)
+                        }}
+                      />
+                    )
+                  })()
+                )}
+              </div>
             )
           })}
         </div>
@@ -1636,7 +1671,7 @@ export function CalendarView({
                       <circle cx="12" cy="12" r="2" />
                     </svg>
                   </div>
-                  <h2 id="goal-modal-title" className="text-lg font-bold text-stone-900 truncate">
+                  <h2 id="goal-modal-title" className="text-lg font-bold text-stone-900 break-words">
                     {tCalendar('modals.goalDetails')}
                   </h2>
                 </div>
@@ -1725,7 +1760,7 @@ export function CalendarView({
                     <div className="text-[10px] font-semibold text-palette-strava uppercase tracking-wide mb-0.5">
                       {getImportedActivityTypeLabel(selectedImportedActivity, tSports)}
                     </div>
-                    <h2 id="imported-activity-modal-title" className="text-lg font-bold text-stone-900 truncate">
+                    <h2 id="imported-activity-modal-title" className="text-lg font-bold text-stone-900 break-words">
                       {tCalendar('modals.activityDetails')}
                     </h2>
                   </div>
