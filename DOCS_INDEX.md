@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 2 mars 2026 (Mode Analyste : module calendrier — archivage docs design-workout-modal-calendar vers docs/archive/ ; voir Project_context §4.5, DESIGN_SYSTEM § DatePickerPopup)
+**Dernière mise à jour :** 3 mars 2026 (Mode Analyste : résultat objectif passé — archivage docs design-goal-result ; voir Project_context §4.7, DESIGN_SYSTEM § TileCard)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -18,7 +18,7 @@
 - **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), stack technique, **URL production https://mysportally.com**
 - **Utiliser pour :** Comprendre le projet, les features, les rôles, l'architecture globale
 - **Taille :** ~420 lignes
-- **Dernière mise à jour :** 1er mars 2026 (§ Coach : tri liste athlètes par nom ou date planifiée ; SearchInput, Dropdown)
+- **Dernière mise à jour :** 3 mars 2026 (§4.7 Goals : résultat objectif passé, temps/place/note, affichage tuile, création date passée)
 
 ### **docs/DESIGN_SYSTEM.md** ⭐
 - **Contenu :** Tokens (couleurs, typo, espacements), composants (Button, Input, Badge, TileCard, DashboardPageShell, Modal, etc.), guidelines UI, exemples de code, §7 breakpoints (calendrier, chat, Trouver mon coach, My offers)
@@ -225,6 +225,18 @@
 - `docs/archive/design-workout-modal-calendar/` — DESIGN.md (placement champ date, 3 solutions A/B/C), DESIGN_CALENDAR_POPUP.md (design popup calendrier), mockup-calendar-popup.html, mockup-calendar-solutions.html.
 - **Raison :** Feature livrée ; DatePickerPopup en popover sous le champ date, liste des mois = mois actuel → +2 ans, Dropdown avec scroll. Comportement décrit dans **Project_context.md §4.5** (Create & edit modal), **docs/DESIGN_SYSTEM.md** § DatePickerPopup, § Dropdown.
 
+**Moment de la journée (Matin / Midi / Soir) – entraînements et calendrier (archivés 2 mars 2026) :**
+- `docs/archive/design-workout-time-of-day/` — DESIGN.md (besoin, cas, user stories US1–US5), SPEC_TIME_OF_DAY.md (migration, types, RLS, fichiers, logique métier), MOCKUP_FORM_TIME_OF_DAY.html, MOCKUP_CALENDAR_DAY_ORDER.html.
+- **Raison :** Feature livrée ; coach peut renseigner optionnellement le moment (segments Non précisé | Matin | Midi | Soir) ; calendrier et modale « Activités du jour » affichent la journée en sections (premier bloc sans titre, puis Matin / Midi / Soir avec titre si non vide). Comportement décrit dans **Project_context.md §4.5** (Workouts, Calendar day structure), **docs/DESIGN_SYSTEM.md** (WorkoutModal, §7 Calendrier), **docs/I18N.md** (workouts.form.timeOfDay*, calendar.morning/noon/evening).
+
+**Résultat objectif passé (goal result) (archivés 3 mars 2026) :**
+- `docs/archive/design-goal-result/` — DESIGN.md (besoin, cas, réponses PO), SPEC_GOAL_RESULT.md (migration 053, RLS, fichiers), MOCKUP_GOAL_RESULT_MODAL.html, MOCKUP_GOAL_RESULT_TILE.html.
+- **Raison :** Feature livrée ; athlète peut saisir ou modifier un résultat (temps h/min/s, place, note) pour tout objectif dont la date est passée ; modale titre = nom de la course ; affichage sur tuile « distance · temps · place » ; création d’objectif avec date passée autorisée ; coach lecture seule. Comportement décrit dans **Project_context.md §4.7** (Goals), **docs/DESIGN_SYSTEM.md** (TileCard / Page Objectifs), **docs/I18N.md** (goals.result*, goals.validation).
+
+**Disponibilités / indisponibilités athlète (archivés 2 mars 2026) :**
+- `docs/archive/design-athlete-availability/` — DESIGN.md (besoin, cas d’usage, décisions PO, style tuiles option D), SPEC_ARCHITECTURE.md (modèle, RLS, fichiers), MOCKUP_AVAILABILITY_MODAL.html, MOCKUP_CALENDAR_AVAILABILITY_TILES.html.
+- **Raison :** Feature livrée **sans récurrence** ; athlète peut créer/éditer/supprimer des créneaux disponibilité ou indisponibilité par jour (bouton « + » sur jours futurs, modale avec type, date, Début/Fin optionnels, Note) ; coach voit les tuiles en lecture seule sur le calendrier de l’athlète (modale détail). Comportement décrit dans **Project_context.md §4.5** (Athlete availability), **docs/DESIGN_SYSTEM.md** (§7 Calendrier, AvailabilityModal, AvailabilityDetailModal), **docs/I18N.md** (namespace availability).
+
 **Séparation pages dashboard – find-coach / Mes athlètes (archivé 23 février 2026) :**
 - `docs/archive/dashboard-pages-separation/SPEC_ARCHI_DASHBOARD_PAGES_SEPARATION.md` — Spec architecture (redirections depuis /dashboard, pages dédiées, skeletons)
 - **Raison :** Feature livrée ; comportement décrit dans **Project_context.md §4.0** (Dashboard entry point) et **docs/DESIGN_SYSTEM.md** §7 (pages Trouver mon coach, Mes athlètes).
@@ -356,10 +368,28 @@
 
 **Fréquence de mise à jour :** À chaque ajout/suppression de documentation
 
-**Dernier scan :** 1er mars 2026  
-**Dernier nettoyage :** 1er mars 2026 (archivage design-athletes-sort-by-planned-until)
+**Dernier scan :** 3 mars 2026  
+**Dernier nettoyage :** 3 mars 2026 (archivage design-goal-result)
 
 ### Changements récents :
+
+✅ **3 mars 2026 – Résultat objectif passé (goal result) – Mode Analyste :**
+- **Livraison :** L’athlète peut saisir ou modifier un **résultat** pour tout objectif dont la date est passée : modale (titre = nom de la course) avec Temps (3 champs h/min/s, requis), Place (optionnel), Note (optionnel, max 500 car.). Affichage sur tuile : « distance · [icône horloge] temps · place » ; boutons « Saisir le résultat » (outline) / « Modifier le résultat » (secondary). Création d’objectif avec date passée autorisée. Coach : lecture seule du résultat (sidebar calendrier, modale détail). Données : `goals.result_time_*`, `result_place`, `result_note` (migration 053) ; `lib/goalResultUtils.ts`, action `saveGoalResult`.
+- **Fichiers :** `app/[locale]/dashboard/objectifs/` (actions, GoalResultModal, ObjectifsTable), `components/CalendarView.tsx`, `components/CoachAthleteCalendarPage.tsx`, `lib/goalResultUtils.ts`, `types/database.ts`, `messages/fr.json`, `messages/en.json`, `supabase/migrations/053_goals_result.sql`.
+- **Doc :** Project_context.md §4.7 (Goals), §5 (goals), DESIGN_SYSTEM (TileCard / Page Objectifs), I18N (goals.result*, goals.validation), project-core.mdc (section Objectifs – Résultat).
+- **Archivage :** `docs/design-goal-result/` → `docs/archive/design-goal-result/` (DESIGN.md, SPEC_GOAL_RESULT.md, MOCKUP_*.html). Référence courante : **Project_context.md §4.7**, **docs/DESIGN_SYSTEM.md**, **docs/I18N.md**.
+
+✅ **2 mars 2026 – Disponibilités athlète (sans récurrence) – Mode Analyste :**
+- **Livraison :** L’athlète peut déclarer des créneaux **disponibilité** ou **indisponibilité** par jour (bouton « + » sur jours futurs) : type (Segments), date (en-tête avec DatePickerPopup), Début/Fin optionnels (Dropdown 15 min), Note. Plusieurs créneaux par jour. Clic sur une tuile → modale d’édition (Supprimer + Enregistrer). Le coach voit les tuiles en **lecture seule** sur le calendrier de l’athlète (modale détail, bouton Fermer). Ordre dans la colonne du jour : disponibilités → objectifs → entraînements → Strava. **Récurrence non implémentée** (un créneau = une date).
+- **Fichiers :** `athlete_availability_slots` (migration 052), `lib/availabilityValidation.ts`, `app/[locale]/dashboard/availability/actions.ts`, `components/AvailabilityModal.tsx`, `components/AvailabilityDetailModal.tsx`, `components/CalendarView.tsx`, pages calendrier, namespace i18n `availability`.
+- **Doc :** Project_context.md §4.5 (Athlete availability), §5 (athlete_availability_slots), DESIGN_SYSTEM (§7 Calendrier, modales + tuiles), I18N (namespace availability), project-core.mdc (section Disponibilités athlète).
+- **Archivage :** `docs/design-athlete-availability/` → `docs/archive/design-athlete-availability/` (DESIGN.md, SPEC_ARCHITECTURE.md, MOCKUP_*.html). Référence courante : **Project_context.md §4.5**, **docs/DESIGN_SYSTEM.md** §7.
+
+✅ **2 mars 2026 – Moment de la journée (Matin / Midi / Soir) – Mode Analyste :**
+- **Livraison :** Le coach peut indiquer optionnellement un moment de la journée (Non précisé | Matin | Midi | Soir) sur chaque entraînement (segment dans la modale création/édition). Colonne `workouts.time_of_day` (migration 051). Calendrier et modale « Activités du jour » : journée structurée en sections — premier bloc sans titre (objectifs, entraînements sans moment, Strava), puis sections Matin / Midi / Soir avec titre uniquement si non vides. Modale lecture seule : date + « · Matin » (ou Midi/Soir) si renseigné.
+- **Fichiers :** `types/database.ts`, `lib/workoutValidation.ts`, `app/[locale]/dashboard/workouts/actions.ts`, `components/WorkoutModal.tsx`, `components/CalendarView.tsx`, `messages/fr.json`, `messages/en.json`, `supabase/migrations/051_workout_time_of_day.sql`.
+- **Doc :** Project_context.md §4.5 (structure Workout, Create & edit modal, Read-only modal, Calendar day structure), §5 (workouts.time_of_day), DESIGN_SYSTEM (WorkoutModal, §7 Calendrier), I18N (workouts.form.timeOfDay*, calendar.morning/noon/evening).
+- **Archivage :** `docs/design-workout-time-of-day/` → `docs/archive/design-workout-time-of-day/` (DESIGN.md, SPEC_TIME_OF_DAY.md, MOCKUP_*.html). Référence courante : **Project_context.md §4.5**, **docs/DESIGN_SYSTEM.md**, **docs/I18N.md**.
 
 ✅ **2 mars 2026 – LanguageSwitcher basé sur Dropdown – Mode Analyste :**
 - **Livraison :** Sélecteur de langue refactoré pour utiliser le composant **Dropdown** : trigger compact (icône globe + code FR/EN + chevron, minWidth 5.5rem), menu « Français » / « English » avec option active en vert (sans coche). Dropdown étendu avec props optionnelles `valueDisplay`, `triggerPrefix`, `showCheckmark`. i18n : clé **common.changeLanguage** pour l’aria-label (FR/EN).
@@ -567,6 +597,9 @@
 | **Natation : unité d’affichage (m, pas km)** | **`Project_context.md` §4.5** (Unités d’affichage), **`docs/DESIGN_SYSTEM.md`** (§7 Calendrier, ActivityTile metadata) |
 | Indicateur commentaire athlète sur tuile calendrier | `Project_context.md` §4.5, `docs/DESIGN_SYSTEM.md` §7 |
 | **Statut séance, modales entraînement (en-tête création/édition/lecture seule, tuile sport, date à gauche), total « fait »** | **`Project_context.md` §4.5** (Workouts), **`docs/DESIGN_SYSTEM.md`** (Modal, WorkoutModal) |
+| **Moment de la journée (Matin / Midi / Soir), sections calendrier, modale « Activités du jour »** | **`Project_context.md` §4.5** (Calendar day structure, Workout time_of_day), **`docs/DESIGN_SYSTEM.md`** (§7 Calendrier, WorkoutModal) |
+| **Disponibilités / indisponibilités athlète (calendrier, modales, pas de récurrence)** | **`Project_context.md` §4.5** (Athlete availability), **`docs/DESIGN_SYSTEM.md`** (§7 Calendrier, AvailabilityModal, AvailabilityDetailModal) |
+| **Résultat objectif passé (saisie temps/place/note, modale, affichage tuile)** | **`Project_context.md` §4.7** (Goals), **`docs/DESIGN_SYSTEM.md`** (§ TileCard, Page Objectifs), **`lib/goalResultUtils.ts`** |
 | **Calendrier / sélecteur de date (modale entraînement modifiable)** | **`docs/DESIGN_SYSTEM.md`** § DatePickerPopup, § Dropdown ; **Project_context.md** §4.5 (Create & edit modal). Design archivé : `docs/archive/design-workout-modal-calendar/` |
 | **Page par défaut / redirections dashboard (find-coach, Mes athlètes)** | **`Project_context.md` §4.0** |
 | Tuile Profil sidebar (état sélectionné sur page Profil, centrage mode replié) | `Project_context.md` §4.0, `docs/DESIGN_SYSTEM.md` §7 |

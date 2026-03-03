@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useTranslations, useLocale } from 'next-intl'
 import { Button } from '@/components/Button'
 import { Modal } from '@/components/Modal'
+import { Segments } from '@/components/Segments'
 import { TileCard } from '@/components/TileCard'
 import { LanguagePrefixInput, LanguagePrefixTextarea } from '@/components/LanguagePrefixField'
 import { saveOffers, archiveOffer, publishOffer, type OffersFormState } from './actions'
@@ -633,36 +634,21 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
                               </div>
                             )}
                           </div>
-                          <div className="col-span-3 flex gap-1 bg-stone-100 p-1 rounded-lg border border-stone-200 items-center h-full min-h-[42px]" role="group" aria-label={t('recurrence')}>
-                            {[
-                              { value: 'monthly' as const, label: t('priceTypes.monthly') },
-                              { value: 'one_time' as const, label: t('priceTypes.oneTime') },
-                              { value: 'free' as const, label: t('priceTypes.free') },
-                            ].map((opt) => {
-                              const selected = (priceTypes[slotKey] ?? offer?.price_type ?? undefined) === opt.value
-                              return (
-                                <label key={opt.value} className="flex-1 cursor-pointer flex items-center justify-center min-h-0">
-                                  <input
-                                    type="radio"
-                                    name={`offer_${index}_price_type`}
-                                    value={opt.value}
-                                    checked={selected}
-                                    onChange={() => {
-                                      setPriceTypes(prev => ({ ...prev, [slotKey]: opt.value }))
-                                      triggerUnsavedCheck()
-                                    }}
-                                    className="sr-only"
-                                  />
-                                  <div
-                                    className={`w-full py-2 rounded-md text-sm font-medium select-none transition-all text-center flex items-center justify-center ${
-                                      selected ? 'bg-palette-forest-dark text-white border border-palette-forest-dark shadow-[0_2px_4px_-1px_rgba(98,126,89,0.25)]' : 'bg-white text-stone-600 border border-stone-200 hover:border-palette-forest-dark'
-                                    }`}
-                                  >
-                                    {opt.label}
-                                  </div>
-                                </label>
-                              )
-                            })}
+                          <div className="col-span-3 flex h-full min-h-[42px] items-center">
+                            <Segments
+                              name={`offer_${index}_price_type`}
+                              options={[
+                                { value: 'monthly', label: t('priceTypes.monthly') },
+                                { value: 'one_time', label: t('priceTypes.oneTime') },
+                                { value: 'free', label: t('priceTypes.free') },
+                              ]}
+                              value={priceTypes[slotKey] ?? offer?.price_type ?? ''}
+                              onChange={(v) => {
+                                setPriceTypes(prev => ({ ...prev, [slotKey]: v as 'monthly' | 'one_time' | 'free' }))
+                                triggerUnsavedCheck()
+                              }}
+                              ariaLabel={t('recurrence')}
+                            />
                           </div>
                         </div>
                         )

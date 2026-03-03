@@ -98,7 +98,7 @@ export function ActivityTile(props: ActivityTileProps) {
           <SportIcon className="w-4 h-4" />
         </span>
         <div className="min-w-0 flex-1">
-          <div className="font-semibold text-stone-900 truncate">{title}</div>
+          <div className="font-semibold text-stone-900 break-words">{title}</div>
           {(metadata.length > 0 || date) && (
             <div className="text-xs text-stone-500 font-semibold mt-0.5 flex items-center gap-1.5 flex-wrap">
               {date && <span>{date}</span>}
@@ -133,7 +133,7 @@ export function ActivityTile(props: ActivityTileProps) {
               {activityLabel}
             </span>
           </div>
-          <div className="font-semibold text-stone-900 truncate">{title}</div>
+          <div className="font-semibold text-stone-900 break-words">{title}</div>
           {(metadata.length > 0 || date) && (
             <div className="text-xs text-stone-500 font-semibold mt-0.5 flex items-center gap-1.5 flex-wrap">
               {date && <span>{date}</span>}
@@ -171,7 +171,7 @@ export function ActivityTile(props: ActivityTileProps) {
           </svg>
         </span>
         <div className="min-w-0 flex-1">
-          <div className="font-semibold text-stone-900 truncate">{title}</div>
+          <div className="font-semibold text-stone-900 break-words">{title}</div>
           <div className="text-xs text-stone-500 font-semibold mt-0.5 flex items-center gap-1.5 flex-wrap">
             {date && <span>{date}</span>}
             {date && <span className="text-sm font-bold">·</span>}

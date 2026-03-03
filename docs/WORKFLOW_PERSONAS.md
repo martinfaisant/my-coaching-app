@@ -53,6 +53,7 @@ Les designs et mockups doivent être **modernes, épurés et agréables à l'œi
 - **Design system :** `docs/DESIGN_SYSTEM.md` (tokens, composants, couleurs).
 - **Composants existants :** `components/`, `lib/formStyles.ts`, `lib/sportStyles.ts`.
 - Avant de créer un nouveau composant dans un mockup : vérifier s’il y a des éléments à mutualiser avec l’existant.
+ - Quand la demande concerne une **page** ou une **modale**, consulter en priorité les fichiers de la page (`app/[locale]/...`) et/ou du composant de modale (`components/...Modal.tsx`, etc.) pour **partir du design actuel** (layout, sections, composants déjà utilisés).
 
 ### Livrables
 
@@ -63,8 +64,8 @@ Les designs et mockups doivent être **modernes, épurés et agréables à l'œi
    - Titre court
    - Description
    - **Critères d’acceptation** (liste vérifiable)
-   - Périmètre (écrans, rôles si pertinent)
-   - **Référence mockup** : section ou zone du mockup correspondante (ex. « voir mockup lignes 34–51 » ou « bloc en-tête 2 lignes »)
+   - Périmètre (écrans, rôles si pertinent ; préciser « page complète » ou « modale complète » quand c’est le cas)
+   - **Référence mockup** : section ou zone du mockup correspondante (ex. « voir mockup lignes 34–51 » ou « bloc en-tête 2 lignes »). Si la US concerne une page ou une modale, la référence doit pointer vers un mockup qui montre **l’écran complet** avec la modification intégrée en contexte.
    - *(Optionnel)* Zones de texte à prévoir en i18n (sans rédiger les clés ; indiquer le namespace probable, ex. `calendar`)
 
 ### Checklist avant livraison des US (à l’Architecte)
@@ -72,6 +73,7 @@ Les designs et mockups doivent être **modernes, épurés et agréables à l'œi
 - [ ] Design system et composants existants consultés ; composants à réutiliser / à faire évoluer listés dans le doc.
 - [ ] Mockup ouvert dans un navigateur et validé visuellement.
 - [ ] Chaque user story comporte une **référence au mockup** (quelle zone ou écran correspond).
+- [ ] Pour chaque US qui concerne une **page** ou une **modale**, le mockup associé montre bien **l’écran complet** (page entière ou modale entière) avec la modification intégrée dans le contexte du design existant.
 
 ### Ce que le Designer ne fait pas
 

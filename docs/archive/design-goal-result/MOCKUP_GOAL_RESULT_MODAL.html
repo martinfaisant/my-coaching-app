@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mockup – Saisir le résultat (objectif passé)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            'palette-forest-darker': '#506648',
+            'palette-olive': '#8e9856',
+            'palette-sage': '#aaaa51',
+            'palette-amber': '#c9a544',
+            'palette-danger': '#c0564b',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .form-input { @apply w-full px-4 py-2.5 rounded-lg border border-stone-300 bg-white text-stone-900 placeholder-stone-400; }
+    .form-input:focus { outline: none; box-shadow: 0 0 0 2px #627e59; border-color: transparent; }
+    .form-textarea { @apply w-full px-4 py-2.5 rounded-lg border border-stone-300 bg-white text-stone-900 placeholder-stone-400 resize-y min-h-[100px]; }
+    .form-textarea:focus { outline: none; box-shadow: 0 0 0 2px #627e59; border-color: transparent; }
+  </style>
+</head>
+<body class="bg-stone-100 text-stone-900 min-h-screen p-6">
+
+  <div class="max-w-2xl mx-auto space-y-4 mb-8">
+    <h1 class="text-xl font-bold text-stone-800">Saisie du résultat – Modale</h1>
+    <p class="text-sm text-stone-600">Titre = nom de la course. Temps en 3 champs (heures, minutes, secondes). Place = position uniquement. Note optionnelle. L’athlète peut modifier à tout moment.</p>
+  </div>
+
+  <!-- Overlay + Modale (taille md type Modal) -->
+  <div class="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50" aria-modal="true" role="dialog">
+    <div class="bg-white rounded-2xl shadow-xl border border-stone-200 w-full max-w-md overflow-hidden" role="document">
+      <!-- Header Modal -->
+      <div class="shrink-0 px-6 py-4 border-b border-stone-100 bg-stone-50/50 flex items-center justify-between gap-3">
+        <h2 class="text-lg font-bold text-stone-900 truncate">Semi-marathon de Lyon</h2>
+        <button type="button" class="p-2 rounded-lg text-stone-500 hover:bg-stone-100 shrink-0" aria-label="Fermer">✕</button>
+      </div>
+      <!-- Corps : formulaire -->
+      <form class="px-6 py-4 space-y-5">
+        <!-- Temps (requis) : 3 champs H, min, s -->
+        <div>
+          <label class="block text-sm font-medium text-stone-700 mb-2">Temps <span class="text-palette-danger">*</span></label>
+          <div class="grid grid-cols-3 gap-3">
+            <div>
+              <label for="result_hours" class="sr-only">Heures</label>
+              <input id="result_hours" name="result_hours" type="number" min="0" max="99" placeholder="h" class="form-input text-center" />
+            </div>
+            <div>
+              <label for="result_minutes" class="sr-only">Minutes</label>
+              <input id="result_minutes" name="result_minutes" type="number" min="0" max="59" placeholder="min" class="form-input text-center" />
+            </div>
+            <div>
+              <label for="result_seconds" class="sr-only">Secondes</label>
+              <input id="result_seconds" name="result_seconds" type="number" min="0" max="59" placeholder="s" class="form-input text-center" />
+            </div>
+          </div>
+        </div>
+        <!-- Place (optionnel) -->
+        <div>
+          <label for="result_place" class="block text-sm font-medium text-stone-700 mb-2">Place <span class="text-stone-400 text-xs">(facultatif)</span></label>
+          <input id="result_place" name="result_place" type="number" min="1" placeholder="ex. 42" class="form-input" />
+        </div>
+        <!-- Note (optionnel) -->
+        <div>
+          <label for="result_note" class="block text-sm font-medium text-stone-700 mb-2">Note <span class="text-stone-400 text-xs">(facultatif)</span></label>
+          <textarea id="result_note" name="result_note" placeholder="Conditions, ressenti…" class="form-textarea" rows="3"></textarea>
+        </div>
+        <!-- Footer : boutons -->
+        <div class="flex gap-3 pt-2">
+          <button type="button" class="flex-1 px-4 py-2.5 rounded-lg border border-stone-300 bg-white text-stone-700 font-medium hover:bg-stone-50 transition">
+            Annuler
+          </button>
+          <button type="submit" class="flex-1 px-4 py-2.5 rounded-lg bg-palette-forest-dark text-white font-medium hover:bg-palette-forest-darker transition">
+            Enregistrer
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</body>
+</html>

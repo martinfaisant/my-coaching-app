@@ -6,9 +6,10 @@ import { CalendarViewWithNavigation } from './CalendarViewWithNavigation'
 import { WeekSelector } from './WeekSelector'
 import { AvatarImage } from './AvatarImage'
 import { TileCard } from './TileCard'
-import type { Workout, Goal, ImportedActivityWeeklyTotal, WorkoutWeeklyTotal } from '@/types/database'
+import type { Workout, Goal, ImportedActivityWeeklyTotal, WorkoutWeeklyTotal, AthleteAvailabilitySlot } from '@/types/database'
 import { getDaysUntil } from '@/lib/dateUtils'
 import { getInitials } from '@/lib/stringUtils'
+import { hasGoalResult, formatGoalResultTime, formatGoalResultPlaceOrdinal } from '@/lib/goalResultUtils'
 
 // Fonction pour formater la date en mois/jour
 function formatDateBlock(dateStr: string, localeTag: string): { month: string; day: string } {
@@ -28,6 +29,12 @@ const MapIcon = ({ className = "w-3.5 h-3.5" }: { className?: string }) => (
   </svg>
 )
 
+const ClockIcon = ({ className = "w-3.5 h-3.5" }: { className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+)
+
 type CoachAthleteCalendarPageProps = {
   athleteId: string
   athleteEmail: string
@@ -36,6 +43,7 @@ type CoachAthleteCalendarPageProps = {
   initialWorkouts: Workout[]
   initialWeeklyTotals?: ImportedActivityWeeklyTotal[]
   initialWorkoutTotals?: WorkoutWeeklyTotal[]
+  initialAvailabilities?: AthleteAvailabilitySlot[]
   goals?: Goal[]
   canEdit: boolean
   pathToRevalidate: string
@@ -49,6 +57,7 @@ export function CoachAthleteCalendarPage({
   initialWorkouts,
   initialWeeklyTotals = [],
   initialWorkoutTotals = [],
+  initialAvailabilities = [],
   goals = [],
   canEdit,
   pathToRevalidate,
@@ -67,6 +76,7 @@ export function CoachAthleteCalendarPage({
         initialWorkouts={initialWorkouts}
         initialWeeklyTotals={initialWeeklyTotals}
         initialWorkoutTotals={initialWorkoutTotals}
+        initialAvailabilities={initialAvailabilities}
         goals={goals}
         canEdit={canEdit}
         pathToRevalidate={pathToRevalidate}
@@ -182,9 +192,24 @@ export function CoachAthleteCalendarPage({
                                           </span>
                                         )}
                                       </div>
-                                      <div className="flex items-center gap-1 text-sm text-stone-500 font-medium">
+                                      <div className="flex items-center gap-1 text-sm text-stone-500 font-medium flex-wrap">
                                         <MapIcon className="w-3.5 h-3.5 text-stone-400 shrink-0" />
                                         <span>{goal.distance} km</span>
+                                        {isPast && hasGoalResult(goal) && (
+                                          <>
+                                            <span className="text-stone-400">·</span>
+                                            <span className="flex items-center gap-1">
+                                              <ClockIcon className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+                                              <span>{formatGoalResultTime(goal)}</span>
+                                            </span>
+                                            {goal.result_place != null && (
+                                              <>
+                                                <span className="text-stone-400">·</span>
+                                                <span>{formatGoalResultPlaceOrdinal(goal.result_place, locale)}</span>
+                                              </>
+                                            )}
+                                          </>
+                                        )}
                                       </div>
                                     </div>
                                   </div>

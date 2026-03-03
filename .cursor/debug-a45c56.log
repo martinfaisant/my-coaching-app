@@ -1,0 +1,2 @@
+{"sessionId":"a45c56","location":"CalendarViewWithNavigation.tsx:refetchAvail","message":"refetchAvailabilitiesAfterSave called","data":{},"timestamp":1772538670769,"hypothesisId":"B"}
+{"sessionId":"a45c56","location":"CalendarView.tsx:onClose","message":"onClose called","data":{"closedBySuccess":true},"timestamp":1772538670768,"hypothesisId":"A"}

@@ -86,7 +86,7 @@ export function Sidebar({ profile }: SidebarProps) {
               <Link
                 href="/dashboard/find-coach"
                 className={`flex items-center h-10 rounded-xl transition-all duration-300 group ${
-                  isCollapsed ? 'w-10 justify-center px-0' : 'gap-2.5 px-2.5 lg:px-3'
+                  isCollapsed ? 'w-10 justify-center px-0' : 'gap-2.5 px-2.5 lg:px-3 justify-center lg:justify-start'
                 } ${
                   path === '/dashboard/find-coach'
                     ? 'bg-palette-forest-dark text-white shadow-lg shadow-palette-forest-dark/20'
@@ -103,7 +103,7 @@ export function Sidebar({ profile }: SidebarProps) {
             <Link
               href="/dashboard/calendar"
               className={`flex items-center h-10 rounded-xl transition-all duration-300 group ${
-                isCollapsed ? 'w-10 justify-center px-0' : 'gap-2.5 px-2.5 lg:px-3'
+                isCollapsed ? 'w-10 justify-center px-0' : 'gap-2.5 px-2.5 lg:px-3 justify-center lg:justify-start'
               } ${
                 path === '/dashboard/calendar'
                   ? 'bg-palette-forest-dark text-white shadow-lg shadow-palette-forest-dark/20'
@@ -122,23 +122,24 @@ export function Sidebar({ profile }: SidebarProps) {
             <Link
               href="/dashboard/objectifs"
               className={`flex items-center h-10 rounded-xl transition-all duration-300 group ${
-                isCollapsed ? 'w-10 justify-center px-0' : 'gap-2.5 px-2.5 lg:px-3'
+                isCollapsed ? 'w-10 justify-center px-0' : 'gap-2.5 px-2.5 lg:px-3 justify-center lg:justify-start'
               } ${
                 path === '/dashboard/objectifs'
                   ? 'bg-palette-forest-dark text-white shadow-lg shadow-palette-forest-dark/20'
                   : 'text-stone-500 hover:bg-stone-50 hover:text-palette-forest-dark'
               }`}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 group-hover:scale-110 transition-transform shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 block shrink-0 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="10" />
-                <path d="M12 6v6l4 2" />
+                <circle cx="12" cy="12" r="6" />
+                <circle cx="12" cy="12" r="2" />
               </svg>
               <span className={`text-sm font-medium transition-all duration-300 whitespace-nowrap hidden lg:block ${showText ? 'opacity-100 w-auto' : 'opacity-0 w-0 overflow-hidden'}`}>{t('goals')}</span>
             </Link>
             <Link
               href="/dashboard/devices"
               className={`flex items-center h-10 rounded-xl transition-all duration-300 group ${
-                isCollapsed ? 'w-10 justify-center px-0' : 'gap-2.5 px-2.5 lg:px-3'
+                isCollapsed ? 'w-10 justify-center px-0' : 'gap-2.5 px-2.5 lg:px-3 justify-center lg:justify-start'
               } ${
                 path === '/dashboard/devices'
                   ? 'bg-palette-forest-dark text-white shadow-lg shadow-palette-forest-dark/20'
@@ -157,7 +158,7 @@ export function Sidebar({ profile }: SidebarProps) {
               <Link
                 href="/dashboard/coach"
                 className={`flex items-center h-10 rounded-xl transition-all duration-300 group ${
-                  isCollapsed ? 'w-10 justify-center px-0' : 'gap-2.5 px-2.5 lg:px-3'
+                  isCollapsed ? 'w-10 justify-center px-0' : 'gap-2.5 px-2.5 lg:px-3 justify-center lg:justify-start'
                 } ${
                   path === '/dashboard/coach'
                     ? 'bg-palette-forest-dark text-white shadow-lg shadow-palette-forest-dark/20'
@@ -176,7 +177,7 @@ export function Sidebar({ profile }: SidebarProps) {
             <Link
               href="/dashboard/subscriptions/history"
               className={`flex items-center min-h-10 rounded-xl transition-all duration-300 group ${
-                isCollapsed ? 'w-10 justify-center px-0 h-10' : 'gap-2.5 px-2.5 lg:px-3 py-2'
+                isCollapsed ? 'w-10 justify-center px-0 h-10' : 'gap-2.5 px-2.5 lg:px-3 py-2 justify-center lg:justify-start'
               } ${
                 path === '/dashboard/subscriptions/history'
                   ? 'bg-palette-forest-dark text-white shadow-lg shadow-palette-forest-dark/20'

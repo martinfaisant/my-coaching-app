@@ -16,7 +16,7 @@ import {
   type CommentFormState,
   type StatusCommentFormState,
 } from '@/app/[locale]/dashboard/workouts/actions'
-import type { SportType, Workout, WorkoutStatus } from '@/types/database'
+import type { SportType, Workout, WorkoutStatus, WorkoutTimeOfDay } from '@/types/database'
 import { Modal } from '@/components/Modal'
 import { DatePickerPopup } from '@/components/DatePickerPopup'
 import { Button } from '@/components/Button'
@@ -175,6 +175,8 @@ export function WorkoutModal({
   const workoutJustLoadedRef = useRef(false)
   const [deleteLoading, setDeleteLoading] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
+  /** Moment de la journée (Matin / Midi / Soir). Null = non précisé (US time-of-day). */
+  const [timeOfDaySegment, setTimeOfDaySegment] = useState<WorkoutTimeOfDay | null>(null)
   /** Date éditable (coach modifiable US4) : initialisée à date ou currentWorkout.date. */
   const [editableDate, setEditableDate] = useState(date)
   /** Ouverture du popup calendrier (design system) : popover sous le champ date, pas une 2e modale. */
@@ -197,6 +199,7 @@ export function WorkoutModal({
     targetElevationM: string
     targetPace: string
     date?: string
+    timeOfDay?: WorkoutTimeOfDay | null
   } | null>(null)
 
   const isEdit = !!currentWorkout
@@ -279,6 +282,7 @@ export function WorkoutModal({
         targetElevationM: elevationStr,
         targetPace: paceStr,
         date: currentWorkout.date,
+        timeOfDay: currentWorkout.time_of_day ?? null,
       }
       setHasUnsavedChanges(false)
       const initialComment = currentWorkout.athlete_comment ?? ''
@@ -289,6 +293,7 @@ export function WorkoutModal({
       setStatusSegment(st)
       initialStatusRef.current = st
       setEditableDate(currentWorkout.date)
+      setTimeOfDaySegment(currentWorkout.time_of_day ?? null)
     } else {
       setSportType('course')
       setTitle('')
@@ -307,6 +312,7 @@ export function WorkoutModal({
         targetElevationM: '',
         targetPace: '',
         date: date,
+        timeOfDay: null,
       }
       setHasUnsavedChanges(false)
       setCommentText('')
@@ -315,6 +321,7 @@ export function WorkoutModal({
       setStatusSegment('planned')
       initialStatusRef.current = 'planned'
       setEditableDate(date)
+      setTimeOfDaySegment(null)
     }
     if (!isOpen) {
       setDeleteError(null)
@@ -453,10 +460,11 @@ export function WorkoutModal({
       targetDistanceKm !== initial.targetDistanceKm ||
       targetElevationM !== initial.targetElevationM ||
       targetPace !== initial.targetPace ||
-      (initial.date != null && editableDate !== initial.date)
+      (initial.date != null && editableDate !== initial.date) ||
+      timeOfDaySegment !== (initial.timeOfDay ?? null)
     
     setHasUnsavedChanges(hasChanges)
-  }, [sportType, title, description, targetDurationMinutes, targetDistanceKm, targetElevationM, targetPace, editableDate])
+  }, [sportType, title, description, targetDurationMinutes, targetDistanceKm, targetElevationM, targetPace, editableDate, timeOfDaySegment])
 
   // Fermeture immédiate si erreur (pas de délai)
   useEffect(() => {
@@ -780,9 +788,10 @@ export function WorkoutModal({
         <>
           <div className="flex flex-col flex-1 min-h-0 overflow-y-auto">
             <div className="px-6 py-4 space-y-5">
-              {/* Date seule — sport dans l'en-tête (tuile pill) */}
+              {/* Date seule — sport dans l'en-tête (tuile pill) ; moment si renseigné (US4) */}
               <p className="text-sm font-medium text-stone-600">
                 {formatDateFr(date, true, locale === 'fr' ? 'fr-FR' : 'en-US')}
+                {currentWorkout.time_of_day ? ` · ${currentWorkout.time_of_day === 'morning' ? tWorkouts('form.timeOfDayMorning') : currentWorkout.time_of_day === 'noon' ? tWorkouts('form.timeOfDayNoon') : tWorkouts('form.timeOfDayEvening')}` : ''}
               </p>
               {/* Objectifs de la séance : métriques avec icônes tuiles + ligne horizontale + description (sans label "Description") */}
               <div className="bg-stone-50 p-4 rounded-xl border border-stone-100">
@@ -946,6 +955,41 @@ export function WorkoutModal({
                 required
                 placeholder={tWorkouts('form.titlePlaceholder')}
               />
+            </div>
+            {/* 2b. Moment de la journée (segments : Non précisé | Matin | Midi | Soir) */}
+            <div>
+              <label className={FORM_LABEL_CLASSES}>{tWorkouts('form.timeOfDay')}</label>
+              <div className="flex bg-stone-200 p-0.5 rounded-lg" role="group" aria-label={tWorkouts('form.timeOfDay')}>
+                <button
+                  type="button"
+                  onClick={() => setTimeOfDaySegment(null)}
+                  className={`flex-1 px-2 py-2 text-xs font-medium rounded-md transition-all ${timeOfDaySegment === null ? 'bg-palette-forest-dark text-white shadow-sm' : 'text-stone-600 hover:bg-stone-50'}`}
+                >
+                  {tWorkouts('form.timeOfDayUnspecified')}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTimeOfDaySegment('morning')}
+                  className={`flex-1 px-2 py-2 text-xs font-medium rounded-md transition-all ${timeOfDaySegment === 'morning' ? 'bg-palette-forest-dark text-white shadow-sm' : 'text-stone-600 hover:bg-stone-50'}`}
+                >
+                  {tWorkouts('form.timeOfDayMorning')}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTimeOfDaySegment('noon')}
+                  className={`flex-1 px-2 py-2 text-xs font-medium rounded-md transition-all ${timeOfDaySegment === 'noon' ? 'bg-palette-forest-dark text-white shadow-sm' : 'text-stone-600 hover:bg-stone-50'}`}
+                >
+                  {tWorkouts('form.timeOfDayNoon')}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTimeOfDaySegment('evening')}
+                  className={`flex-1 px-2 py-2 text-xs font-medium rounded-md transition-all ${timeOfDaySegment === 'evening' ? 'bg-palette-forest-dark text-white shadow-sm' : 'text-stone-600 hover:bg-stone-50'}`}
+                >
+                  {tWorkouts('form.timeOfDayEvening')}
+                </button>
+              </div>
+              <input type="hidden" name="time_of_day" value={timeOfDaySegment ?? ''} />
             </div>
             {/* 3. Objectifs de la séance : toggle, grille, hr, description (sans label) */}
             <div className="bg-stone-50 p-4 rounded-xl border border-stone-100">
@@ -1115,9 +1159,10 @@ export function WorkoutModal({
       /* US5 : modale coach lecture seule — titre = titre séance, sport dans l'en-tête (tuile pill) */
       <div className="flex flex-col flex-1 min-h-0 overflow-y-auto">
         <div className="px-6 py-4 space-y-5">
-          {/* Date seule — sport dans l'en-tête */}
+          {/* Date seule — sport dans l'en-tête ; moment si renseigné (US4) */}
           <p className="text-sm font-medium text-stone-600">
             {formatDateFr(currentWorkout.date, true, locale === 'fr' ? 'fr-FR' : 'en-US')}
+            {currentWorkout.time_of_day ? ` · ${currentWorkout.time_of_day === 'morning' ? tWorkouts('form.timeOfDayMorning') : currentWorkout.time_of_day === 'noon' ? tWorkouts('form.timeOfDayNoon') : tWorkouts('form.timeOfDayEvening')}` : ''}
           </p>
           {/* Objectifs de la séance : métriques avec icônes + ligne horizontale + description */}
           <div className="bg-stone-50 p-4 rounded-xl border border-stone-100">

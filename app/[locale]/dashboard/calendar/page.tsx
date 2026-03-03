@@ -4,9 +4,10 @@ import { getCurrentUserWithProfile } from '@/utils/auth'
 import { redirect } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
 import { AthleteCalendarPage } from '@/components/AthleteCalendarPage'
-import type { Workout, Goal, ImportedActivity, ImportedActivityWeeklyTotal, WorkoutWeeklyTotal } from '@/types/database'
+import type { Workout, Goal, ImportedActivity, ImportedActivityWeeklyTotal, WorkoutWeeklyTotal, AthleteAvailabilitySlot } from '@/types/database'
 import { getWeekMonday } from '@/lib/dateUtils'
 import { getEffectiveWeeklyTotalsFait } from '@/app/[locale]/dashboard/workouts/actions'
+import { getAvailabilityForDateRange } from '@/app/[locale]/dashboard/availability/actions'
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params
@@ -41,7 +42,7 @@ export default async function CalendarPage() {
     weekMondays.push(weekMonday.toISOString().slice(0, 10))
   }
 
-  const [workoutsResult, importedActivitiesResult, goalsResult, workoutTotalsResult, effectiveFaitResult] = await Promise.all([
+  const [workoutsResult, importedActivitiesResult, goalsResult, workoutTotalsResult, effectiveFaitResult, initialAvailabilities] = await Promise.all([
     supabase
       .from('workouts')
       .select('*')
@@ -71,6 +72,7 @@ export default async function CalendarPage() {
       .order('week_start')
       .order('sport_type'),
     getEffectiveWeeklyTotalsFait(current.id, weekMondays[0], weekMondays[weekMondays.length - 1]),
+    getAvailabilityForDateRange(current.id, startStr, endStr),
   ])
   const workouts = workoutsResult.data
   const importedActivities = importedActivitiesResult.data
@@ -86,6 +88,7 @@ export default async function CalendarPage() {
       initialImportedActivities={(importedActivities ?? []) as ImportedActivity[]}
       initialWeeklyTotals={initialWeeklyTotals as ImportedActivityWeeklyTotal[]}
       initialWorkoutTotals={(initialWorkoutTotals ?? []) as WorkoutWeeklyTotal[]}
+      initialAvailabilities={(initialAvailabilities ?? []) as AthleteAvailabilitySlot[]}
       goals={(goals ?? []) as Goal[]}
       canEdit={false}
       pathToRevalidate="/dashboard/calendar"

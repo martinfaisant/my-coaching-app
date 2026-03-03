@@ -162,7 +162,17 @@
       "pace": "Pace",
       "paceUnitRunning": "min/km",
       "paceUnitCycling": "km/h",
-      "paceUnitSwimming": "min/100m"
+      "paceUnitSwimming": "min/100m",
+      "timeOfDay": "Time of day",
+      "timeOfDayUnspecified": "Unspecified",
+      "timeOfDayMorning": "Morning",
+      "timeOfDayNoon": "Noon",
+      "timeOfDayEvening": "Evening"
+    },
+    "calendar": {
+      "morning": "Morning",
+      "noon": "Noon",
+      "evening": "Evening"
     },
     "comments": {
       "athleteComment": "Athlete Comment",
@@ -225,7 +235,63 @@
       "allFieldsRequired": "Date, race name and distance are required.",
       "goalAdded": "Goal added.",
       "goalUpdated": "Goal updated.",
-      "goalDeleted": "Goal deleted."
+      "goalDeleted": "Goal deleted.",
+      "goalNotFound": "Goal not found.",
+      "resultOnlyForPastGoal": "Result can only be entered for a past goal.",
+      "timeRequired": "Hours, minutes and seconds are required.",
+      "invalidTimeRange": "Invalid time (hours 0-99, minutes and seconds 0-59).",
+      "noteMaxLength": "Note cannot exceed {max} characters.",
+      "resultSaved": "Result saved."
+    },
+    "result": {
+      "time": "Time",
+      "hours": "Hours",
+      "minutes": "Minutes",
+      "seconds": "Seconds",
+      "unitHours": "h",
+      "unitMinutes": "min",
+      "unitSeconds": "s",
+      "placeOptional": "Place (optional)",
+      "noteOptional": "Note (optional)",
+      "notePlaceholder": "Conditions, how it felt…",
+      "addResult": "Enter result",
+      "editResult": "Edit result",
+      "noResult": "No result entered",
+      "resultSection": "Result"
+    }
+  },
+  "availability": {
+    "date": "Date",
+    "type": "Type",
+    "available": "Available",
+    "unavailable": "Unavailable",
+    "start": "Start",
+    "end": "End",
+    "note": "Note",
+    "notePlaceholder": "Free for a long run…",
+    "recurrence": "Recurrence",
+    "nonRecurring": "Non-recurring",
+    "recurring": "Recurring",
+    "frequency": "Frequency",
+    "until": "Until",
+    "week_one": "1 week",
+    "weeks_other": "{count} weeks",
+    "addLabel": "Add",
+    "modify": "Modify",
+    "delete": "Delete",
+    "confirmDelete": "Confirm deletion?",
+    "deleteConfirm": "Yes, delete",
+    "fullDay": "Full day",
+    "validation": {
+      "dateRequired": "Date is required.",
+      "invalidDate": "Invalid date.",
+      "invalidType": "Invalid type.",
+      "invalidTime": "Invalid time.",
+      "startAfterEnd": "Start time must be before end time.",
+      "invalidRecurrenceWeeks": "Invalid frequency (1 to 4 weeks).",
+      "recurrenceEndRequired": "Recurrence end date is required.",
+      "recurrenceEndBeforeStart": "End date must be after start date.",
+      "onlyAthleteCanCreate": "Only the athlete can add availability or unavailability."
     }
   },
   "profile": {

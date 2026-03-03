@@ -162,7 +162,12 @@
       "pace": "Vitesse",
       "paceUnitRunning": "min/km",
       "paceUnitCycling": "km/h",
-      "paceUnitSwimming": "min/100m"
+      "paceUnitSwimming": "min/100m",
+      "timeOfDay": "Moment de la journée",
+      "timeOfDayUnspecified": "Non précisé",
+      "timeOfDayMorning": "Matin",
+      "timeOfDayNoon": "Midi",
+      "timeOfDayEvening": "Soir"
     },
     "comments": {
       "athleteComment": "Commentaire de l'athlète",
@@ -171,6 +176,11 @@
       "placeholder": "Saisissez votre commentaire...",
       "placeholderForCoach": "Commentaires sur la séance pour votre coach",
       "ariaLabel": "Votre commentaire"
+    },
+    "calendar": {
+      "morning": "Matin",
+      "noon": "Midi",
+      "evening": "Soir"
     },
     "status": {
       "ariaLabel": "Statut de la séance",
@@ -224,7 +234,63 @@
       "allFieldsRequired": "Date, nom de la course et distance sont obligatoires.",
       "goalAdded": "Objectif ajouté.",
       "goalUpdated": "Objectif mis à jour.",
-      "goalDeleted": "Objectif supprimé."
+      "goalDeleted": "Objectif supprimé.",
+      "goalNotFound": "Objectif introuvable.",
+      "resultOnlyForPastGoal": "Le résultat ne peut être saisi que pour un objectif passé.",
+      "timeRequired": "Heures, minutes et secondes sont obligatoires.",
+      "invalidTimeRange": "Temps invalide (heures 0-99, minutes et secondes 0-59).",
+      "noteMaxLength": "La note ne peut pas dépasser {max} caractères.",
+      "resultSaved": "Résultat enregistré."
+    },
+    "result": {
+      "time": "Temps",
+      "hours": "Heures",
+      "minutes": "Minutes",
+      "seconds": "Secondes",
+      "unitHours": "h",
+      "unitMinutes": "min",
+      "unitSeconds": "s",
+      "placeOptional": "Place (facultatif)",
+      "noteOptional": "Note (facultatif)",
+      "notePlaceholder": "Conditions, ressenti…",
+      "addResult": "Saisir le résultat",
+      "editResult": "Modifier le résultat",
+      "noResult": "Aucun résultat saisi",
+      "resultSection": "Résultat"
+    }
+  },
+  "availability": {
+    "date": "Date",
+    "type": "Type",
+    "available": "Disponible",
+    "unavailable": "Indisponible",
+    "start": "Début",
+    "end": "Fin",
+    "note": "Note",
+    "notePlaceholder": "Libre pour une sortie longue…",
+    "recurrence": "Récurrence",
+    "nonRecurring": "Non récurrent",
+    "recurring": "Récurrent",
+    "frequency": "Fréquence",
+    "until": "Jusqu'au",
+    "week_one": "1 semaine",
+    "weeks_other": "{count} semaines",
+    "addLabel": "Ajouter",
+    "modify": "Modifier",
+    "delete": "Supprimer",
+    "confirmDelete": "Confirmer la suppression ?",
+    "deleteConfirm": "Oui, supprimer",
+    "fullDay": "Journée entière",
+    "validation": {
+      "dateRequired": "Date requise.",
+      "invalidDate": "Date invalide.",
+      "invalidType": "Type invalide.",
+      "invalidTime": "Heures invalides.",
+      "startAfterEnd": "L'heure de début doit être avant l'heure de fin.",
+      "invalidRecurrenceWeeks": "Fréquence invalide (1 à 4 semaines).",
+      "recurrenceEndRequired": "Date de fin de récurrence requise.",
+      "recurrenceEndBeforeStart": "La date de fin doit être après la date de début.",
+      "onlyAthleteCanCreate": "Seul l'athlète peut ajouter une disponibilité ou indisponibilité."
     }
   },
   "profile": {
