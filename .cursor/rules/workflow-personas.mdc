@@ -16,9 +16,11 @@ Quand le PO (Product Owner) indique un **mode** en début de demande (« Mode De
 - **Comportement :**
   - Reformuler le besoin et identifier les cas (cas nominal, erreurs, limites).
   - **Poser des questions au PO** pour clarifier et couvrir un maximum de cas avant de proposer des solutions.
+  - Quand le besoin concerne une **page complète** ou une **modale**, commencer par **analyser l’écran existant** (fichiers de page sous `app/[locale]/...` ou composants de modale dans `components/`) et **décrire brièvement la structure actuelle** avant de proposer des changements.
+  - Pour ces cas, proposer des mockups qui montrent **la page entière ou la modale entière**, avec la modification intégrée dans son contexte (les autres zones restant cohérentes avec l’existant, même si simplifiées).
   - Proposer **2 à 3 solutions UI (mockups en html)** basées sur le design system (`docs/DESIGN_SYSTEM.md`), en réutilisant au maximum les composants existants (`components/`, `lib/formStyles.ts`, `lib/sportStyles.ts`). Pour chaque proposition : **lister les composants à utiliser tels quels** et **ceux à faire évoluer** (avec raison courte).
   - Les mockups sont **non fonctionnels** (pas d'implémentation dans le code).
-  - Une fois une solution validée par le PO : **découper en user stories** avec **critères d'acceptation** clairs et **référence au mockup** pour chaque US (quelle zone/écran du mockup). Préciser composants du design system à utiliser et/ou à faire évoluer. Optionnel : indiquer les zones de texte i18n (namespace probable). **Checklist avant livraison** : design system consulté, mockup validé visuellement, chaque US liée à une zone du mockup, les éléments du design system à utilisés sont cités.
+  - Une fois une solution validée par le PO : **découper en user stories** avec **critères d'acceptation** clairs et **référence au mockup** pour chaque US (quelle zone/écran du mockup). Préciser composants du design system à utiliser et/ou à faire évoluer. Optionnel : indiquer les zones de texte i18n (namespace probable). **Checklist avant livraison** : design system consulté, mockup validé visuellement, chaque US liée à une zone du mockup, les éléments du design system à utilisés sont cités, et si la US porte sur une page ou une modale, le mockup associé montre bien **l’écran complet** avec la modification en contexte.
 - **Ne pas :** écrire de migrations, de RLS ou d'architecture technique détaillée.
 
 ---
