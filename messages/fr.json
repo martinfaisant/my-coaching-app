@@ -162,7 +162,12 @@
       "pace": "Vitesse",
       "paceUnitRunning": "min/km",
       "paceUnitCycling": "km/h",
-      "paceUnitSwimming": "min/100m"
+      "paceUnitSwimming": "min/100m",
+      "timeOfDay": "Moment de la journée",
+      "timeOfDayUnspecified": "Non précisé",
+      "timeOfDayMorning": "Matin",
+      "timeOfDayNoon": "Midi",
+      "timeOfDayEvening": "Soir"
     },
     "comments": {
       "athleteComment": "Commentaire de l'athlète",
@@ -171,6 +176,11 @@
       "placeholder": "Saisissez votre commentaire...",
       "placeholderForCoach": "Commentaires sur la séance pour votre coach",
       "ariaLabel": "Votre commentaire"
+    },
+    "calendar": {
+      "morning": "Matin",
+      "noon": "Midi",
+      "evening": "Soir"
     },
     "status": {
       "ariaLabel": "Statut de la séance",

@@ -162,7 +162,17 @@
       "pace": "Pace",
       "paceUnitRunning": "min/km",
       "paceUnitCycling": "km/h",
-      "paceUnitSwimming": "min/100m"
+      "paceUnitSwimming": "min/100m",
+      "timeOfDay": "Time of day",
+      "timeOfDayUnspecified": "Unspecified",
+      "timeOfDayMorning": "Morning",
+      "timeOfDayNoon": "Noon",
+      "timeOfDayEvening": "Evening"
+    },
+    "calendar": {
+      "morning": "Morning",
+      "noon": "Noon",
+      "evening": "Evening"
     },
     "comments": {
       "athleteComment": "Athlete Comment",

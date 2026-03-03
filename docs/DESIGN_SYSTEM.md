@@ -1,7 +1,7 @@
 # 🎨 Design System
 
 **Version :** 1.7  
-**Dernière mise à jour :** 2 mars 2026 (DatePickerPopup : popover sous le champ date, liste des mois = mois actuel → mois actuel + 2 ans ; Dropdown panneau scroll max-h-64)
+**Dernière mise à jour :** 2 mars 2026 (WorkoutModal : moment de la journée segments ; §7 Calendrier : structure du jour par sections Matin/Midi/Soir)
 
 ---
 
@@ -651,6 +651,11 @@ Tuile d'activité unifiée pour afficher 3 types de contenus :
 
 Design inspiré du style Strava avec bordure gauche colorée (4px) et badge en haut. La couleur s'adapte automatiquement selon le type d'activité ou de sport.
 
+#### Règles critiques (tuiles entraînement / calendrier)
+
+- **Couleur des tuiles = sport uniquement.** La bordure gauche et les couleurs de badge des tuiles d'entraînement (calendrier, modale, liste) sont **toujours** définies par le **type de sport** via `lib/sportStyles.ts` → `SPORT_CARD_STYLES` (course = forest-dark, vélo = olive, natation = sky, musculation = stone, etc.). Ne jamais utiliser une autre logique (ex. moment de la journée, statut) pour la couleur de la tuile.
+- **Icônes sport = `components/SportIcons.tsx` uniquement.** Pour afficher un sport (tuile, formulaire, badge), utiliser les composants d'icône du projet : `IconRunning`, `IconBiking`, `IconSwimming`, `IconDumbbell`, `IconNordicSki`, `IconBackcountrySki`, `IconIceSkating`, etc. — mappés dans `lib/sportStyles.ts` via `SPORT_ICONS`. **Ne pas utiliser d'emojis** (🏃, 🚴, etc.) ni d'autres icônes pour les sports.
+
 #### Types supportés
 
 | Type | Badge | Bordure | Usage |
@@ -953,7 +958,7 @@ type ModalProps = {
 }
 ```
 
-**Usage avancé :** La modale entraînement (`WorkoutModal`) utilise la taille `workout` (644px), `iconRaw` et `titleWrap`. **Création et édition coach :** date à gauche (sans titre ni icône check), badge statut à droite. **Lecture seule** (athlète / coach passé) : tuile pill du sport + titre de la séance à gauche (titre peut passer sur deux lignes sur petit écran), badge statut à droite ; corps sans ligne « date · sport ». Styles formulaires : `lib/formStyles.ts`.
+**Usage avancé :** La modale entraînement (`WorkoutModal`) utilise la taille `workout` (644px), `iconRaw` et `titleWrap`. **Création et édition coach :** date à gauche (sans titre ni icône check), badge statut à droite ; corps : Sport, titre, **Moment de la journée** (segments Non précisé | Matin | Midi | Soir, même style que Temps/Distance), objectifs, description. **Lecture seule** (athlète / coach passé) : tuile pill du sport + titre de la séance à gauche (titre peut passer sur deux lignes sur petit écran), badge statut à droite ; corps : date (+ « · Matin » etc. si moment renseigné), objectifs, description. Styles formulaires : `lib/formStyles.ts`.
 
 #### Exemples
 
@@ -1365,7 +1370,7 @@ Ce breakpoint `md` est le breakpoint de référence pour les bascules de layout 
 
 **Usages actuels documentés :**
 - **Sidebar dashboard** : la tuile Profil (avatar + nom en bas de la colonne) affiche le même état sélectionné que les autres entrées du menu (`bg-palette-forest-dark text-white shadow-md`) lorsque l'utilisateur est sur la page Profil (`/dashboard/profile`) ; en mode replié (desktop), seul l'avatar est affiché et centré. Logo « My Sport Ally » : marge conditionnelle (`ml-3` quand texte visible, `ml-0` quand replié) pour centrer l’icône. Fichier : `components/Sidebar.tsx`.
-- **Calendrier (athlète + coach)** : sous `md`, en-tête sur 2 lignes + bloc totaux de la semaine (volume horaire total + barres par sport, identique au mode étendu desktop) + 1 semaine en stack ; à partir de `md`, layout desktop (3 semaines, grille 7 colonnes). **Natation :** totaux et métadonnées en **mètres (m)**, arrondis au mètre près ; les autres sports à distance en km. Sur les tuiles entraînement (carte compacte et carte détaillée modale jour), une icône commentaire en fin de ligne métadonnées (durée, distance, etc.) signale qu’un commentaire athlète est présent (`calendar.tile.athleteCommentLabel`). Détail : `Project_context.md` §4.5.
+- **Calendrier (athlète + coach)** : sous `md`, en-tête sur 2 lignes + bloc totaux de la semaine (volume horaire total + barres par sport, identique au mode étendu desktop) + 1 semaine en stack ; à partir de `md`, layout desktop (3 semaines, grille 7 colonnes). **Structure du jour :** premier bloc sans titre (objectifs, entraînements sans moment, Strava), puis sections **Matin** / **Midi** / **Soir** (titre affiché uniquement si la section contient au moins un entraînement) ; couleurs et icônes des tuiles = sport uniquement. **Natation :** totaux et métadonnées en **mètres (m)**, arrondis au mètre près ; les autres sports à distance en km. Sur les tuiles entraînement (carte compacte et carte détaillée modale jour), une icône commentaire en fin de ligne métadonnées (durée, distance, etc.) signale qu’un commentaire athlète est présent (`calendar.tile.athleteCommentLabel`). Détail : `Project_context.md` §4.5.
 - **Sélecteur de semaine (WeekSelector, calendrier)** : zone centrale à largeur fixe (80px sous `lg`, 150px à partir de `lg`) ; plage de dates sur une ligne à partir de `lg` (1024px), sur deux lignes sous `lg`. Boutons gauche/droite : largeur fixe 40px sous 400px, 80px à partir de 400px ; les dates « semaine précédente/suivante » dans les boutons sont affichées à partir de 400px et masquées en dessous pour que le sélecteur tienne sur les écrans étroits. Fichier : `components/WeekSelector.tsx`.
 - **Chat coach (overlay)** : sous `md`, navigation mobile en 2 écrans (liste des conversations puis conversation avec bouton Retour) ; à partir de `md`, layout desktop avec sidebar + panneau conversation.
 - **Page « Trouver mon coach »** (`/dashboard/find-coach`, athlète sans coach) : page dédiée avec son propre skeleton (filtres + grille). Bloc Filtres avec recherche par nom ou prénom (temps réel), grille Sport coaché / Langue parlée en 2 colonnes à partir de `md` (768px) ; liste des tuiles : 1 colonne par défaut, 2 colonnes à partir de `md`, 3 colonnes à partir de `xl` (1280px). Fichiers : `app/[locale]/dashboard/find-coach/page.tsx`, `FindCoachSection.tsx`.

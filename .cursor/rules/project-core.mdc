@@ -69,6 +69,10 @@ className="bg-[#2c3e2e] text-white"
 - Check `docs/DESIGN_SYSTEM.md` before creating new components
 - **When adding a new reusable component:** document it in `docs/DESIGN_SYSTEM.md` (Composants section: name, usage, code example), update the table of contents and the "Fichiers clés" list at the end
 
+**Tuiles entraînement / calendrier (règles strictes):**
+- **Couleur des tuiles = sport uniquement.** Bordure et badge des tuiles d'entraînement viennent toujours de `lib/sportStyles.ts` → `SPORT_CARD_STYLES` (course = forest-dark, vélo = olive, natation = sky, musculation = stone, etc.). Ne jamais utiliser une autre logique (ex. moment de la journée, statut) pour la couleur.
+- **Icônes sport = `components/SportIcons.tsx` uniquement.** Utiliser `IconRunning`, `IconBiking`, `IconSwimming`, `IconDumbbell`, etc. (via `SPORT_ICONS`). **Pas d'emojis** (🏃, 🚴, etc.) pour les sports.
+
 **Centralized utilities:**
 - Date operations → `lib/dateUtils.ts`
 - String operations → `lib/stringUtils.ts`

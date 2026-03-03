@@ -204,6 +204,7 @@ Athletes filter coaches by:
 - **Workout** = one session per date
   - `athlete_id`, `date`, `sport_type`, `title`, `description`
   - **Status:** `status` = `planned` | `completed` | `not_completed` (planifié / réalisé / non réalisé). Default at creation: `planned`. Only the athlete can change status (with comment) via `saveWorkoutStatusAndComment`.
+  - **Moment de la journée (optionnel):** `time_of_day` = `null` | `'morning'` | `'noon'` | `'evening'` (Non précisé / Matin / Midi / Soir). Coach can set it in create/edit modal via a segment control; used to structure the calendar day view by sections.
   - Targets: `target_duration_minutes`, `target_distance_km`, `target_elevation_m`, `target_pace`
   - Athlete: `athlete_comment`, `athlete_comment_at`
 
@@ -218,8 +219,8 @@ Athletes filter coaches by:
 **Coach can:**
 
 - Create / update / delete workouts for their athletes
-- **Create & edit modal:** header aligned for both flows: date picker on the left (month in full letters), status badge (Planifié / Réalisé / Non réalisé) on the right; no title nor check icon. The date opens a **DatePickerPopup** (design system) as a **popover** under the field (not a second modal); month list from current month to current month + 2 years (see `docs/DESIGN_SYSTEM.md` § DatePickerPopup). Body: Sport (SportTileSelectable), title, session objectives (toggle time/distance, grid, description in same block), athlete comment read-only; footer: Delete, Save. Editable only when session date is in the future and status ≠ completed.
-- **Read-only modal:** when session is in the past or status = completed: header = sport pill (design B, icon + label) + session title (can wrap on small screen), status badge on the right; body = date only (sport in header), then objectives, description, athlete comment; no form nor buttons.
+- **Create & edit modal:** header aligned for both flows: date picker on the left (month in full letters), status badge (Planifié / Réalisé / Non réalisé) on the right; no title nor check icon. The date opens a **DatePickerPopup** (design system) as a **popover** under the field (not a second modal); month list from current month to current month + 2 years (see `docs/DESIGN_SYSTEM.md` § DatePickerPopup). Body: Sport (SportTileSelectable), title, **Moment de la journée** (segment control: Non précisé | Matin | Midi | Soir, optional), session objectives (toggle time/distance, grid, description in same block), athlete comment read-only; footer: Delete, Save. Editable only when session date is in the future and status ≠ completed.
+- **Read-only modal:** when session is in the past or status = completed: header = sport pill (design B, icon + label) + session title (can wrap on small screen), status badge on the right; body = date only (sport in header), with moment appended if set (e.g. « lundi 3 mars · Matin »), then objectives, description, athlete comment; no form nor buttons.
 - On the calendar (workout tile and day modal), see status and when an athlete has left a comment (comment icon in the metadata row)
 - See weekly totals per sport and planning status (“Planifié jusqu’au”, “En retard”)
 
@@ -228,6 +229,8 @@ Athletes filter coaches by:
 **Unités d’affichage (calendrier et totaux hebdomadaires) :** Pour la **natation**, les distances sont affichées en **mètres (m)** et arrondies au mètre près (pas en km). Pour les autres sports à distance (course, vélo, ski, patin), l’unité reste le **km**.
 
 **Calendar (responsive):** On viewports &lt; 768px (breakpoint md), the athlete and coach calendar pages show a two-line header (title then week selector), the **weekly totals block** (total time volume + per-sport bars, same as the extended week on desktop), then a single week with days stacked vertically; from 768px, the desktop layout (three weeks, 7-column grid) is used. Spec archived in `docs/archive/calendar-mobile-44/`. Weekly-totals-on-mobile design archived in `docs/archive/calendar-mobile-weekly-total/`.
+
+**Calendar day structure (moment de la journée):** For each day, content is ordered by **sections**. (1) **First block (no section title):** goals, workouts with no time_of_day, imported Strava activities. (2) **Morning / Noon / Evening sections:** workouts with `time_of_day` = morning, noon, or evening are grouped under a section title (Matin / Midi / Soir); empty sections are not shown. The same ordering applies in the « Activités du jour » modal. Tile colors and icons remain sport-based only (see design system).
 
 **Week selector (WeekSelector):** The selected week is displayed in the center—one line from `lg` (1024px), two lines below `lg`—with fixed widths so the bar length does not change when changing weeks. The previous/next week dates in the left and right buttons are visible from 400px viewport width and hidden below 400px so the selector fits on narrow screens; button widths are fixed (40px below 400px, 80px from 400px). Design mockups archived in `docs/archive/design-week-selector-two-lines/`.
 
@@ -317,7 +320,7 @@ Athletes filter coaches by:
 | `coach_offers` | Coach offers (title, description, price, price_type). Status: `draft` (coach only) / `published` (3 slots, visible to athletes) / `archived` (coach only, no new requests). |
 | `coach_requests` | Athlete → Coach request (status: pending / accepted / declined). When offer is chosen: `offer_id` + snapshot `frozen_price`, `frozen_title`, `frozen_description` (offer as seen by athlete at request time). |
 | `subscriptions` | Subscription per accepted request: `athlete_id`, `coach_id`, `request_id`, same `frozen_*` copied from `coach_requests` (not from offers). `status`: `'active'` \| `'cancellation_scheduled'` \| `'cancelled'`. `cancellation_requested_by_user_id` (UUID, nullable): user who requested the scheduled cancellation; only they can cancel the cancellation. Used for billing history; unchanged if coach later changes the offer. |
-| `workouts` | Planned training sessions for an athlete. `status`: `planned` \| `completed` \| `not_completed` (default `planned`; only athlete can update). |
+| `workouts` | Planned training sessions for an athlete. `status`: `planned` \| `completed` \| `not_completed` (default `planned`; only athlete can update). `time_of_day`: optional `null` \| `'morning'` \| `'noon'` \| `'evening'` for calendar day sections. |
 | `goals` | Athlete race/event objectives |
 | `conversations` | 1-to-1 coach–athlete. Includes `request_id` (source `coach_requests` row) used to determine chat write access lifecycle. Participants can update `request_id` to the latest writable request (RLS policy `conversations_update_participant`). |
 | `chat_messages` | Messages in a conversation |

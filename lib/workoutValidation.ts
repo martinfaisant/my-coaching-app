@@ -1,4 +1,6 @@
-import type { SportType } from '@/types/database'
+import type { SportType, WorkoutTimeOfDay } from '@/types/database'
+
+const VALID_TIME_OF_DAY: WorkoutTimeOfDay[] = ['morning', 'noon', 'evening']
 
 /**
  * Error codes for workout validation.
@@ -23,6 +25,7 @@ export function validateWorkoutFormData(formData: FormData):
         sportType: SportType
         title: string
         description: string
+        time_of_day: WorkoutTimeOfDay | null
         target_duration_minutes: number | null | undefined
         target_distance_km: number | null | undefined
         target_elevation_m: number | null | undefined
@@ -87,12 +90,19 @@ export function validateWorkoutFormData(formData: FormData):
     }
   }
 
+  const timeOfDayRaw = (formData.get('time_of_day') as string)?.trim() ?? ''
+  const time_of_day: WorkoutTimeOfDay | null =
+    timeOfDayRaw && VALID_TIME_OF_DAY.includes(timeOfDayRaw as WorkoutTimeOfDay)
+      ? (timeOfDayRaw as WorkoutTimeOfDay)
+      : null
+
   return {
     data: {
       date,
       sportType,
       title,
       description,
+      time_of_day,
       target_duration_minutes,
       target_distance_km,
       target_elevation_m,

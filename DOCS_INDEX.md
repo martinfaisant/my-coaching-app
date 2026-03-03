@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 2 mars 2026 (Mode Analyste : module calendrier — archivage docs design-workout-modal-calendar vers docs/archive/ ; voir Project_context §4.5, DESIGN_SYSTEM § DatePickerPopup)
+**Dernière mise à jour :** 2 mars 2026 (Mode Analyste : moment de la journée — archivage docs design-workout-time-of-day ; voir Project_context §4.5, DESIGN_SYSTEM § Modal / §7 Calendrier)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -225,6 +225,10 @@
 - `docs/archive/design-workout-modal-calendar/` — DESIGN.md (placement champ date, 3 solutions A/B/C), DESIGN_CALENDAR_POPUP.md (design popup calendrier), mockup-calendar-popup.html, mockup-calendar-solutions.html.
 - **Raison :** Feature livrée ; DatePickerPopup en popover sous le champ date, liste des mois = mois actuel → +2 ans, Dropdown avec scroll. Comportement décrit dans **Project_context.md §4.5** (Create & edit modal), **docs/DESIGN_SYSTEM.md** § DatePickerPopup, § Dropdown.
 
+**Moment de la journée (Matin / Midi / Soir) – entraînements et calendrier (archivés 2 mars 2026) :**
+- `docs/archive/design-workout-time-of-day/` — DESIGN.md (besoin, cas, user stories US1–US5), SPEC_TIME_OF_DAY.md (migration, types, RLS, fichiers, logique métier), MOCKUP_FORM_TIME_OF_DAY.html, MOCKUP_CALENDAR_DAY_ORDER.html.
+- **Raison :** Feature livrée ; coach peut renseigner optionnellement le moment (segments Non précisé | Matin | Midi | Soir) ; calendrier et modale « Activités du jour » affichent la journée en sections (premier bloc sans titre, puis Matin / Midi / Soir avec titre si non vide). Comportement décrit dans **Project_context.md §4.5** (Workouts, Calendar day structure), **docs/DESIGN_SYSTEM.md** (WorkoutModal, §7 Calendrier), **docs/I18N.md** (workouts.form.timeOfDay*, calendar.morning/noon/evening).
+
 **Séparation pages dashboard – find-coach / Mes athlètes (archivé 23 février 2026) :**
 - `docs/archive/dashboard-pages-separation/SPEC_ARCHI_DASHBOARD_PAGES_SEPARATION.md` — Spec architecture (redirections depuis /dashboard, pages dédiées, skeletons)
 - **Raison :** Feature livrée ; comportement décrit dans **Project_context.md §4.0** (Dashboard entry point) et **docs/DESIGN_SYSTEM.md** §7 (pages Trouver mon coach, Mes athlètes).
@@ -356,10 +360,16 @@
 
 **Fréquence de mise à jour :** À chaque ajout/suppression de documentation
 
-**Dernier scan :** 1er mars 2026  
-**Dernier nettoyage :** 1er mars 2026 (archivage design-athletes-sort-by-planned-until)
+**Dernier scan :** 2 mars 2026  
+**Dernier nettoyage :** 2 mars 2026 (archivage design-workout-time-of-day)
 
 ### Changements récents :
+
+✅ **2 mars 2026 – Moment de la journée (Matin / Midi / Soir) – Mode Analyste :**
+- **Livraison :** Le coach peut indiquer optionnellement un moment de la journée (Non précisé | Matin | Midi | Soir) sur chaque entraînement (segment dans la modale création/édition). Colonne `workouts.time_of_day` (migration 051). Calendrier et modale « Activités du jour » : journée structurée en sections — premier bloc sans titre (objectifs, entraînements sans moment, Strava), puis sections Matin / Midi / Soir avec titre uniquement si non vides. Modale lecture seule : date + « · Matin » (ou Midi/Soir) si renseigné.
+- **Fichiers :** `types/database.ts`, `lib/workoutValidation.ts`, `app/[locale]/dashboard/workouts/actions.ts`, `components/WorkoutModal.tsx`, `components/CalendarView.tsx`, `messages/fr.json`, `messages/en.json`, `supabase/migrations/051_workout_time_of_day.sql`.
+- **Doc :** Project_context.md §4.5 (structure Workout, Create & edit modal, Read-only modal, Calendar day structure), §5 (workouts.time_of_day), DESIGN_SYSTEM (WorkoutModal, §7 Calendrier), I18N (workouts.form.timeOfDay*, calendar.morning/noon/evening).
+- **Archivage :** `docs/design-workout-time-of-day/` → `docs/archive/design-workout-time-of-day/` (DESIGN.md, SPEC_TIME_OF_DAY.md, MOCKUP_*.html). Référence courante : **Project_context.md §4.5**, **docs/DESIGN_SYSTEM.md**, **docs/I18N.md**.
 
 ✅ **2 mars 2026 – LanguageSwitcher basé sur Dropdown – Mode Analyste :**
 - **Livraison :** Sélecteur de langue refactoré pour utiliser le composant **Dropdown** : trigger compact (icône globe + code FR/EN + chevron, minWidth 5.5rem), menu « Français » / « English » avec option active en vert (sans coche). Dropdown étendu avec props optionnelles `valueDisplay`, `triggerPrefix`, `showCheckmark`. i18n : clé **common.changeLanguage** pour l’aria-label (FR/EN).
@@ -567,6 +577,7 @@
 | **Natation : unité d’affichage (m, pas km)** | **`Project_context.md` §4.5** (Unités d’affichage), **`docs/DESIGN_SYSTEM.md`** (§7 Calendrier, ActivityTile metadata) |
 | Indicateur commentaire athlète sur tuile calendrier | `Project_context.md` §4.5, `docs/DESIGN_SYSTEM.md` §7 |
 | **Statut séance, modales entraînement (en-tête création/édition/lecture seule, tuile sport, date à gauche), total « fait »** | **`Project_context.md` §4.5** (Workouts), **`docs/DESIGN_SYSTEM.md`** (Modal, WorkoutModal) |
+| **Moment de la journée (Matin / Midi / Soir), sections calendrier, modale « Activités du jour »** | **`Project_context.md` §4.5** (Calendar day structure, Workout time_of_day), **`docs/DESIGN_SYSTEM.md`** (§7 Calendrier, WorkoutModal) |
 | **Calendrier / sélecteur de date (modale entraînement modifiable)** | **`docs/DESIGN_SYSTEM.md`** § DatePickerPopup, § Dropdown ; **Project_context.md** §4.5 (Create & edit modal). Design archivé : `docs/archive/design-workout-modal-calendar/` |
 | **Page par défaut / redirections dashboard (find-coach, Mes athlètes)** | **`Project_context.md` §4.0** |
 | Tuile Profil sidebar (état sélectionné sur page Profil, centrage mode replié) | `Project_context.md` §4.0, `docs/DESIGN_SYSTEM.md` §7 |
