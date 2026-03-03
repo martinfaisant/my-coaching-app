@@ -9,6 +9,8 @@ import { TileCard } from '@/components/TileCard'
 import { addGoal, deleteGoal, type GoalFormState } from './actions'
 import type { Goal } from '@/types/database'
 import { getDaysUntil } from '@/lib/dateUtils'
+import { hasGoalResult, formatGoalResultTime, formatGoalResultPlaceOrdinal } from '@/lib/goalResultUtils'
+import { GoalResultModal } from './GoalResultModal'
 
 
 type ObjectifsTableProps = {
@@ -50,6 +52,12 @@ const MapIcon = ({ className = "w-3.5 h-3.5" }: { className?: string }) => (
   </svg>
 )
 
+const ClockIcon = ({ className = "w-3.5 h-3.5" }: { className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+)
+
 // Fonction pour formater la date en mois/jour
 function formatDateBlock(dateStr: string, localeTag: string): { month: string; day: string } {
   const date = new Date(dateStr + 'T12:00:00')
@@ -68,6 +76,7 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
   const dateInputRef = useRef<HTMLInputElement>(null)
   const formRef = useRef<HTMLFormElement>(null)
   const [priority, setPriority] = useState<'primary' | 'secondary'>('primary')
+  const [goalForResultModal, setGoalForResultModal] = useState<Goal | null>(null)
 
   // Pattern bouton Enregistrer (PATTERN_SAVE_BUTTON.md)
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
@@ -82,21 +91,6 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
     is_primary: 'primary' as const,
   })
 
-  useEffect(() => {
-    const input = dateInputRef.current
-    if (!input) return
-    const today = new Date().toISOString().slice(0, 10)
-    const check = () => {
-      input.setCustomValidity(input.value && input.value < today ? tGoals('pastDateError') : '')
-    }
-    check()
-    input.addEventListener('change', check)
-    input.addEventListener('input', check)
-    return () => {
-      input.removeEventListener('change', check)
-      input.removeEventListener('input', check)
-    }
-  }, [])
 
   const checkUnsavedChanges = useCallback((priorityOverride?: 'primary' | 'secondary') => {
     const form = formRef.current
@@ -240,10 +234,28 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
                                 </span>
                               )}
                             </div>
-                            <div className="flex items-center gap-1 text-sm text-stone-500 font-medium">
+                            <div className="flex items-center gap-1 text-sm text-stone-500 font-medium flex-wrap">
                               <MapIcon className="w-3.5 h-3.5 text-stone-400 shrink-0" />
                               <span>{goal.distance} km</span>
+                              {isPast && hasGoalResult(goal) && (
+                                <>
+                                  <span className="text-stone-400">·</span>
+                                  <span className="flex items-center gap-1">
+                                    <ClockIcon className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+                                    <span>{formatGoalResultTime(goal)}</span>
+                                  </span>
+                                  {goal.result_place != null && (
+                                    <>
+                                      <span className="text-stone-400">·</span>
+                                      <span>{formatGoalResultPlaceOrdinal(goal.result_place, locale)}</span>
+                                    </>
+                                  )}
+                                </>
+                              )}
                             </div>
+                            {isPast && !hasGoalResult(goal) && (
+                              <p className="text-xs text-stone-400 mt-1">{tGoals('result.noResult')}</p>
+                            )}
                           </div>
                         </div>
 
@@ -253,6 +265,16 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
                             <span className="text-sm font-bold text-palette-forest-dark bg-palette-forest-dark/10 px-3 py-1 rounded-lg">
                               {tGoals('daysUntil', { days: daysUntil })}
                             </span>
+                          )}
+                          {isPast && (
+                            <Button
+                              type="button"
+                              variant={hasGoalResult(goal) ? 'secondary' : 'outline'}
+                              className="px-3 py-1.5"
+                              onClick={() => setGoalForResultModal(goal)}
+                            >
+                              {hasGoalResult(goal) ? tGoals('result.editResult') : tGoals('result.addResult')}
+                            </Button>
                           )}
                           <DeleteGoalButton goalId={goal.id} />
                         </div>
@@ -302,7 +324,6 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
                 name="date"
                 type="date"
                 required
-                min={new Date().toISOString().slice(0, 10)}
               />
               <Input
                 id="distance"
@@ -393,6 +414,14 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
           </div>
         </form>
       </div>
+
+      {goalForResultModal && (
+        <GoalResultModal
+          goal={goalForResultModal}
+          isOpen={!!goalForResultModal}
+          onClose={() => setGoalForResultModal(null)}
+        />
+      )}
     </div>
   )
 }

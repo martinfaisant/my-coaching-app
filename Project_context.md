@@ -232,6 +232,8 @@ Athletes filter coaches by:
 
 **Calendar day structure (moment de la journée):** For each day, content is ordered by **sections**. (1) **First block (no section title):** goals, workouts with no time_of_day, imported Strava activities. (2) **Morning / Noon / Evening sections:** workouts with `time_of_day` = morning, noon, or evening are grouped under a section title (Matin / Midi / Soir); empty sections are not shown. The same ordering applies in the « Activités du jour » modal. Tile colors and icons remain sport-based only (see design system).
 
+**Athlete availability (disponibilités / indisponibilités):** The athlete can declare **availability** or **unavailability** slots per day so the coach can plan workouts accordingly. **Not implemented: recurrence** — each slot is for a single date only. (1) **Athlete:** On **future** calendar days, a « + » button opens a modal to **create** a slot: type (Disponible / Indisponible via Segments), date (header, DatePickerPopup), optional start/end time (15‑min steps), optional note. Multiple slots per day are allowed. Clicking a slot opens the **edit** modal (same form, Delete + Save). (2) **Coach:** On an athlete’s calendar, availability tiles are **read-only**; clicking a tile opens a detail modal (date, type, time range or “Journée entière”, note) with a single Close button. (3) **Order in day column:** availability slots → goals → workouts → Strava. (4) **Tile style:** thin border (green for available, orange for unavailable), calendar icon, label + optional time range or note; see `docs/DESIGN_SYSTEM.md`. Data: table `athlete_availability_slots` (§5); RLS: athlete full CRUD on own rows, coach SELECT only for their athletes.
+
 **Week selector (WeekSelector):** The selected week is displayed in the center—one line from `lg` (1024px), two lines below `lg`—with fixed widths so the bar length does not change when changing weeks. The previous/next week dates in the left and right buttons are visible from 400px viewport width and hidden below 400px so the selector fits on narrow screens; button widths are fixed (40px below 400px, 80px from 400px). Design mockups archived in `docs/archive/design-week-selector-two-lines/`.
 
 **Not implemented:**
@@ -265,8 +267,11 @@ Athletes filter coaches by:
 
 ### 4.7 Goals ✅
 
-- Athlete defines race/event (date, race_name, distance, is_primary)
-- Coach has read-only access to athlete goals
+- Athlete defines race/event (date, race_name, distance, is_primary). **Création avec date passée autorisée** : l'athlète peut ajouter un objectif rétrospectif puis saisir le résultat.
+- **Résultat pour objectif passé :** Pour tout objectif dont la date est dans le passé, l'athlète peut **saisir ou modifier un résultat** via une modale (titre = nom de la course) : **Temps** (requis, 3 champs heures / minutes / secondes), **Place** (optionnel, position à l'arrivée), **Note** (optionnel, max 500 car.). Modification autorisée à tout moment. Données : `goals.result_time_hours/minutes/seconds`, `result_place`, `result_note` (migration 053).
+- **Affichage :** Sur la tuile objectif (page Objectifs et sidebar calendrier coach), si un résultat existe : même ligne que la distance, format « distance · [icône horloge] temps · place » (ex. « 10 km · 3h42 · 24e »), avec bouton « Saisir le résultat » (outline) ou « Modifier le résultat » (secondary). Calendrier : modale détail objectif et sidebar coach affichent le résultat en lecture seule (temps, place, note).
+- **Utilitaires :** `lib/goalResultUtils.ts` (hasGoalResult, formatGoalResultTime, formatGoalResultPlaceOrdinal). Action serveur : `saveGoalResult` (page objectifs).
+- Coach has read-only access to athlete goals (including result when present)
 - Displayed as “Prochain objectif” on coach dashboard
 
 ---
@@ -321,7 +326,8 @@ Athletes filter coaches by:
 | `coach_requests` | Athlete → Coach request (status: pending / accepted / declined). When offer is chosen: `offer_id` + snapshot `frozen_price`, `frozen_title`, `frozen_description` (offer as seen by athlete at request time). |
 | `subscriptions` | Subscription per accepted request: `athlete_id`, `coach_id`, `request_id`, same `frozen_*` copied from `coach_requests` (not from offers). `status`: `'active'` \| `'cancellation_scheduled'` \| `'cancelled'`. `cancellation_requested_by_user_id` (UUID, nullable): user who requested the scheduled cancellation; only they can cancel the cancellation. Used for billing history; unchanged if coach later changes the offer. |
 | `workouts` | Planned training sessions for an athlete. `status`: `planned` \| `completed` \| `not_completed` (default `planned`; only athlete can update). `time_of_day`: optional `null` \| `'morning'` \| `'noon'` \| `'evening'` for calendar day sections. |
-| `goals` | Athlete race/event objectives |
+| `athlete_availability_slots` | Athlete availability/unavailability per date. One row per slot: `athlete_id`, `date`, `type` (`available` \| `unavailable`), optional `start_time` / `end_time`, `note`. No recurrence; athlete CRUD on own rows, coach read-only for their athletes. |
+| `goals` | Athlete race/event objectives. Optional result for past goals: `result_time_hours/minutes/seconds`, `result_place`, `result_note` (migration 053). |
 | `conversations` | 1-to-1 coach–athlete. Includes `request_id` (source `coach_requests` row) used to determine chat write access lifecycle. Participants can update `request_id` to the latest writable request (RLS policy `conversations_update_participant`). |
 | `chat_messages` | Messages in a conversation |
 | `coach_ratings` | Athlete rating + comment for coach |

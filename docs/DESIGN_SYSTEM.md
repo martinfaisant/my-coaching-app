@@ -1,7 +1,7 @@
 # 🎨 Design System
 
-**Version :** 1.7  
-**Dernière mise à jour :** 2 mars 2026 (WorkoutModal : moment de la journée segments ; §7 Calendrier : structure du jour par sections Matin/Midi/Soir)
+**Version :** 1.8  
+**Dernière mise à jour :** 2 mars 2026 (disponibilités athlète : modales + tuiles calendrier ; Segments pour type Disponible/Indisponible ; pas de récurrence)
 
 ---
 
@@ -27,6 +27,7 @@
    - [PublicHeader](#publicheader)
    - [LanguageSwitcher](#languageswitcher)
    - [Dropdown](#dropdown)
+   - [Segments](#segments)
    - [DatePickerPopup](#datepickerpopup)
    - [ChatAthleteListItem](#chatathletelistitem)
    - [ChatConversationSidebar](#chatconversationsidebar)
@@ -902,7 +903,7 @@ type TileCardProps = {
 
 #### Cas d’usage
 
-- **Page Objectifs** : Afficher chaque objectif dans une TileCard avec `leftBorderColor="amber"` ou `"sage"` pour avoir le même contour que les tuiles de la modale Activités du jour.
+- **Page Objectifs** : Afficher chaque objectif dans une TileCard avec `leftBorderColor="amber"` ou `"sage"` pour avoir le même contour que les tuiles de la modale Activités du jour. Pour les objectifs passés avec résultat : afficher « distance · [icône horloge] temps · place » sur la même ligne que la distance ; boutons « Saisir le résultat » (outline) / « Modifier le résultat » (secondary). Modale résultat : `GoalResultModal` (titre = nom de la course), champs temps (h/min/s), place, note ; formatage via `lib/goalResultUtils.ts`.
 - **Listes archivées / terminées** : Offres archivées (page Offres coach), historique des souscriptions (coach et athlète) — utiliser `leftBorderColor="stone"` et `badge` (libellé i18n « Archivée » ou « Terminée »).
 - **Listes personnalisées** : Tout contenu qui doit reprendre le style « tuile avec bordure gauche colorée » sans utiliser le contenu prédéfini d’ActivityTile.
 
@@ -1174,6 +1175,57 @@ const options = [
 
 ---
 
+### Segments
+
+**Fichier :** `components/Segments.tsx`
+
+Groupe de choix exclusif par segments (style offres coach : / Mois | Unique | Gratuit). Utilisé pour le type de tarification des offres, le type disponibilité/indisponibilité et la récurrence dans la modale disponibilité. Style : conteneur `bg-stone-100` bordure `border-stone-200`, options en `flex-1` ; option sélectionnée = `bg-palette-forest-dark` texte blanc + ombre ; non sélectionnée = `bg-white` `text-stone-600` bordure `border-stone-200` avec hover.
+
+#### Props
+
+```typescript
+type SegmentOption = { value: string; label: string }
+
+type SegmentsProps = {
+  options: SegmentOption[]
+  value: string
+  onChange: (value: string) => void
+  name: string
+  ariaLabel?: string
+  size?: 'sm' | 'md'   // md = py-2 text-sm (défaut), sm = py-1.5 text-xs
+  className?: string
+}
+```
+
+#### Exemple
+
+```tsx
+import { Segments } from '@/components/Segments'
+
+<Segments
+  name="price-type"
+  options={[
+    { value: 'monthly', label: t('priceTypes.monthly') },
+    { value: 'one_time', label: t('priceTypes.oneTime') },
+    { value: 'free', label: t('priceTypes.free') },
+  ]}
+  value={priceType}
+  onChange={setPriceType}
+  ariaLabel={t('recurrence')}
+/>
+
+// Taille compacte (bloc récurrence)
+<Segments name="recurrence" options={[...]} value={...} onChange={...} size="sm" />
+```
+
+#### Comportement
+
+- Inputs radio masqués (sr-only), labels cliquables ; un seul choix possible.
+- **size="md"** (défaut) : hauteur min 42px, texte `text-sm`.
+- **size="sm"** : `py-1.5` `text-xs` pour blocs secondaires (ex. récurrence dans une modale).
+
+---
+
 ### DatePickerPopup
 
 **Fichier :** `components/DatePickerPopup.tsx`
@@ -1370,7 +1422,7 @@ Ce breakpoint `md` est le breakpoint de référence pour les bascules de layout 
 
 **Usages actuels documentés :**
 - **Sidebar dashboard** : la tuile Profil (avatar + nom en bas de la colonne) affiche le même état sélectionné que les autres entrées du menu (`bg-palette-forest-dark text-white shadow-md`) lorsque l'utilisateur est sur la page Profil (`/dashboard/profile`) ; en mode replié (desktop), seul l'avatar est affiché et centré. Logo « My Sport Ally » : marge conditionnelle (`ml-3` quand texte visible, `ml-0` quand replié) pour centrer l’icône. Fichier : `components/Sidebar.tsx`.
-- **Calendrier (athlète + coach)** : sous `md`, en-tête sur 2 lignes + bloc totaux de la semaine (volume horaire total + barres par sport, identique au mode étendu desktop) + 1 semaine en stack ; à partir de `md`, layout desktop (3 semaines, grille 7 colonnes). **Structure du jour :** premier bloc sans titre (objectifs, entraînements sans moment, Strava), puis sections **Matin** / **Midi** / **Soir** (titre affiché uniquement si la section contient au moins un entraînement) ; couleurs et icônes des tuiles = sport uniquement. **Natation :** totaux et métadonnées en **mètres (m)**, arrondis au mètre près ; les autres sports à distance en km. Sur les tuiles entraînement (carte compacte et carte détaillée modale jour), une icône commentaire en fin de ligne métadonnées (durée, distance, etc.) signale qu’un commentaire athlète est présent (`calendar.tile.athleteCommentLabel`). Détail : `Project_context.md` §4.5.
+- **Calendrier (athlète + coach)** : sous `md`, en-tête sur 2 lignes + bloc totaux de la semaine (volume horaire total + barres par sport, identique au mode étendu desktop) + 1 semaine en stack ; à partir de `md`, layout desktop (3 semaines, grille 7 colonnes). **Structure du jour :** **disponibilités athlète** (tuiles Disponible/Indisponible) → objectifs → entraînements → Strava ; puis sections **Matin** / **Midi** / **Soir** pour les entraînements avec moment ; couleurs et icônes des tuiles entraînement = sport uniquement. **Tuiles disponibilité :** bordure fine (vert / orange), icône calendrier, libellé + plage horaire ou note ; pas de récurrence. **Modales :** `AvailabilityModal` (création/édition : Segments type, date en en-tête, Début/Fin en Dropdown 15 min, Note ; athlète : bouton « + » sur jours futurs, clic tuile → édition avec Supprimer + Enregistrer) ; `AvailabilityDetailModal` (lecture seule coach : détail créneau, bouton Fermer). **Natation :** totaux et métadonnées en **mètres (m)** ; icône commentaire sur tuiles entraînement (`calendar.tile.athleteCommentLabel`). Détail : `Project_context.md` §4.5.
 - **Sélecteur de semaine (WeekSelector, calendrier)** : zone centrale à largeur fixe (80px sous `lg`, 150px à partir de `lg`) ; plage de dates sur une ligne à partir de `lg` (1024px), sur deux lignes sous `lg`. Boutons gauche/droite : largeur fixe 40px sous 400px, 80px à partir de 400px ; les dates « semaine précédente/suivante » dans les boutons sont affichées à partir de 400px et masquées en dessous pour que le sélecteur tienne sur les écrans étroits. Fichier : `components/WeekSelector.tsx`.
 - **Chat coach (overlay)** : sous `md`, navigation mobile en 2 écrans (liste des conversations puis conversation avec bouton Retour) ; à partir de `md`, layout desktop avec sidebar + panneau conversation.
 - **Page « Trouver mon coach »** (`/dashboard/find-coach`, athlète sans coach) : page dédiée avec son propre skeleton (filtres + grille). Bloc Filtres avec recherche par nom ou prénom (temps réel), grille Sport coaché / Langue parlée en 2 colonnes à partir de `md` (768px) ; liste des tuiles : 1 colonne par défaut, 2 colonnes à partir de `md`, 3 colonnes à partir de `xl` (1280px). Fichiers : `app/[locale]/dashboard/find-coach/page.tsx`, `FindCoachSection.tsx`.
@@ -1441,7 +1493,7 @@ Actuellement, utiliser un span custom :
 ### Fichiers clés
 
 - **Tokens couleurs** : `tailwind.config.ts`, `app/globals.css`
-- **Composants** : `components/Button.tsx`, `components/Input.tsx`, `components/SearchInput.tsx`, `components/Textarea.tsx`, `components/Badge.tsx`, `components/SportTileSelectable.tsx`, `components/ActivityTile.tsx`, `components/Modal.tsx`, `components/PublicHeader.tsx`, `components/EmailValidatedModal.tsx`, `components/HomeEmailConfirmedTrigger.tsx`, `components/Dropdown.tsx`, `components/DatePickerPopup.tsx`, `components/ChatAthleteListItem.tsx`, `components/ChatConversationSidebar.tsx`
+- **Composants** : `components/Button.tsx`, `components/Input.tsx`, `components/SearchInput.tsx`, `components/Textarea.tsx`, `components/Badge.tsx`, `components/SportTileSelectable.tsx`, `components/ActivityTile.tsx`, `components/Modal.tsx`, `components/PublicHeader.tsx`, `components/EmailValidatedModal.tsx`, `components/HomeEmailConfirmedTrigger.tsx`, `components/Dropdown.tsx`, `components/Segments.tsx`, `components/DatePickerPopup.tsx`, `components/AvailabilityModal.tsx`, `components/AvailabilityDetailModal.tsx`, `components/ChatAthleteListItem.tsx`, `components/ChatConversationSidebar.tsx`
 - **Sports** : `lib/sportStyles.ts`, `lib/sportsOptions.ts`, `components/SportIcons.tsx`
 - **Design system page** : `app/dashboard/admin/design-system/page.tsx`
 
