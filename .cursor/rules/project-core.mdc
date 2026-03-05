@@ -261,10 +261,11 @@ if ('error' in result) return result
 
 ---
 
-## Entraînements (workouts) – Statut et total « fait »
+## Entraînements (workouts) – Statut, retour athlète et total « fait »
 
 - **Statut :** `workouts.status` = `planned` | `completed` | `not_completed` (défaut `planned`). Seul l’athlète peut modifier le statut (avec commentaire) via `saveWorkoutStatusAndComment`.
 - **Total « fait » :** Affichage = activités importées Strava + séances `completed`, **moins** le volume des séances réalisées qui ont une activité importée **même jour et même type** (éviter double comptage). Mapping Strava → type app : `lib/stravaMapping.ts` ; serveur : `getEffectiveWeeklyTotalsFait`.
+- **Retour athlète (optionnel) :** Quand le statut = `completed`, l'athlète peut renseigner `perceived_feeling` (1–5), `perceived_intensity` (1–10), `perceived_pleasure` (1–5) ; sauvegarde avec statut et commentaire ; le coach voit le retour en lecture seule (WorkoutModal). i18n : `workouts.feedback`.
 - **Référence :** `Project_context.md` §4.5 (Workouts, Total « fait »).
 
 ---
@@ -342,4 +343,4 @@ if ('error' in result) return result
 **Last updated:** 2 mars 2026
 **Refactoring status:** 13/17 tasks completed (76%)  
 **i18n:** Bilingue FR/EN complété — toujours penser bilingue pour les nouvelles features  
-**Offres/souscriptions:** Snapshot à la demande (frozen_* dans coach_requests), souscription à l’acceptation depuis coach_requests ; statuts offre draft / published / archived (voir Project_context.md). **Workouts:** Statut planifié / réalisé / non réalisé ; total « fait » avec déduplication Strava (voir Project_context.md §4.5). **Disponibilités athlète :** créneaux par jour (table athlete_availability_slots), pas de récurrence ; athlète CRUD, coach lecture seule (voir Project_context.md §4.5).
+**Offres/souscriptions:** Snapshot à la demande (frozen_* dans coach_requests), souscription à l’acceptation depuis coach_requests ; statuts offre draft / published / archived (voir Project_context.md). **Workouts:** Statut planifié / réalisé / non réalisé ; retour athlète (ressenti, intensité, plaisir) optionnel quand réalisé ; total « fait » avec déduplication Strava (voir Project_context.md §4.5). **Disponibilités athlète :** créneaux par jour (table athlete_availability_slots), pas de récurrence ; athlète CRUD, coach lecture seule (voir Project_context.md §4.5).

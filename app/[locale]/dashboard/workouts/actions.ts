@@ -432,6 +432,19 @@ export async function saveWorkoutComment(
 
 const WORKOUT_STATUS_VALUES = ['planned', 'completed', 'not_completed'] as const
 
+function parseOptionalInt(
+  value: FormDataEntryValue | null,
+  min: number,
+  max: number
+): number | null {
+  if (value == null || value === '') return null
+  const s = String(value).trim()
+  if (s === '') return null
+  const n = Number(s)
+  if (!Number.isInteger(n) || n < min || n > max) return null
+  return n
+}
+
 export type StatusCommentFormState = CommentFormState & { workout?: Workout }
 
 /** Mise à jour statut + commentaire par l'athlète uniquement (US1). */
@@ -460,12 +473,22 @@ export async function saveWorkoutStatusAndComment(
     : 'planned'
   const comment = (formData.get('comment') as string)?.trim() ?? ''
 
+  const rawFeeling = formData.get('perceived_feeling')
+  const rawIntensity = formData.get('perceived_intensity')
+  const rawPleasure = formData.get('perceived_pleasure')
+  const perceivedFeeling = parseOptionalInt(rawFeeling, 1, 5)
+  const perceivedIntensity = parseOptionalInt(rawIntensity, 1, 10)
+  const perceivedPleasure = parseOptionalInt(rawPleasure, 1, 5)
+
   const { data, error } = await supabase
     .from('workouts')
     .update({
       status,
       athlete_comment: comment || null,
       athlete_comment_at: comment ? new Date().toISOString() : null,
+      perceived_feeling: perceivedFeeling ?? null,
+      perceived_intensity: perceivedIntensity ?? null,
+      perceived_pleasure: perceivedPleasure ?? null,
     })
     .eq('id', workoutId)
     .eq('athlete_id', athleteId)

@@ -188,6 +188,27 @@
       "completed": "Réalisé",
       "not_completed": "Non réalisé"
     },
+    "feedback": {
+      "sectionTitle": "Retour athlète",
+      "feelingLabel": "Comment vous êtes-vous senti ?",
+      "intensityLabel": "Intensité de l'effort ressenti :",
+      "pleasureLabel": "Plaisir pris pendant la séance :",
+      "feelingScale": {
+        "1": "Très mal",
+        "2": "Mal",
+        "3": "Neutre",
+        "4": "Bien",
+        "5": "Très bien"
+      },
+      "pleasureScale": {
+        "1": "Aucun plaisir",
+        "2": "Un peu",
+        "3": "Moyen",
+        "4": "Agréable",
+        "5": "Très agréable"
+      },
+      "notSet": "Non renseigné"
+    },
     "validation": {
       "allFieldsRequired": "Tous les champs sont obligatoires.",
       "invalidSport": "Type de sport invalide.",

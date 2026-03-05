@@ -52,13 +52,13 @@ Table `workouts` : `status`, `athlete_comment`, `athlete_comment_at`. Pas de cha
 ## 4. Questions au PO (à trancher avant implémentation)
 
 1. **Visibilité des champs**  
-   Les 3 nouveaux champs (ressenti, intensité, plaisir) doivent-ils s’afficher **uniquement lorsque le statut est « Réalisé »**, ou aussi lorsque l’athlète choisit « Non réalisé » ?
+   Les 3 nouveaux champs (ressenti, intensité, plaisir) doivent-ils s’afficher **uniquement lorsque le statut est « Réalisé »**, ou aussi lorsque l’athlète choisit « Non réalisé » ? On les masque quand c'Est non réalisé 
 
 2. **Obligation de saisie**  
-   Pour une séance marquée « Réalisé », ces champs sont-ils **tous optionnels** ou certains **obligatoires** ?
+   Pour une séance marquée « Réalisé », ces champs sont-ils **tous optionnels** ou certains **obligatoires** ? C'est optionnel
 
 3. **Affichage côté coach**  
-   Le coach doit-il voir **ressenti, intensité et plaisir** en lecture seule dans la modale ? (recommandé : oui.)
+   Le coach doit-il voir **ressenti, intensité et plaisir** en lecture seule dans la modale ? (recommandé : oui.) Oui en lecture seule en reprenant les logo 
 
 ---
 

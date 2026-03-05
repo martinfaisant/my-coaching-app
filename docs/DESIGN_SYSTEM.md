@@ -1,7 +1,7 @@
 # 🎨 Design System
 
-**Version :** 1.8  
-**Dernière mise à jour :** 2 mars 2026 (disponibilités athlète : modales + tuiles calendrier ; Segments pour type Disponible/Indisponible ; pas de récurrence)
+**Version :** 1.9  
+**Dernière mise à jour :** 3 mars 2026 (WorkoutModal : retour athlète — ressenti, intensité, plaisir ; échelles 1–5 Lucide + 1–10 segments)
 
 ---
 
@@ -959,7 +959,7 @@ type ModalProps = {
 }
 ```
 
-**Usage avancé :** La modale entraînement (`WorkoutModal`) utilise la taille `workout` (644px), `iconRaw` et `titleWrap`. **Création et édition coach :** date à gauche (sans titre ni icône check), badge statut à droite ; corps : Sport, titre, **Moment de la journée** (segments Non précisé | Matin | Midi | Soir, même style que Temps/Distance), objectifs, description. **Lecture seule** (athlète / coach passé) : tuile pill du sport + titre de la séance à gauche (titre peut passer sur deux lignes sur petit écran), badge statut à droite ; corps : date (+ « · Matin » etc. si moment renseigné), objectifs, description. Styles formulaires : `lib/formStyles.ts`.
+**Usage avancé :** La modale entraînement (`WorkoutModal`) utilise la taille `workout` (644px), `iconRaw` et `titleWrap`. **Création et édition coach :** date à gauche (sans titre ni icône check), badge statut à droite ; corps : Sport, titre, **Moment de la journée** (segments Non précisé | Matin | Midi | Soir, même style que Temps/Distance), objectifs, description. **Retour athlète (statut = Réalisé) :** section « Retour athlète » avec trois échelles optionnelles : ressenti (1–5, icônes Lucide Angry/Frown/Meh/Smile/Laugh + libellés), intensité effort (1–10 segments), plaisir (1–5, mêmes icônes + libellés) ; même largeur totale par ligne (`flex w-full`, `flex-1 min-w-0` sur chaque choix). **Lecture seule** (athlète / coach passé) : tuile pill du sport + titre de la séance à gauche (titre peut passer sur deux lignes sur petit écran), badge statut à droite ; corps : date (+ « · Matin » etc. si moment renseigné), objectifs, description ; si feedback renseigné, section Retour athlète (icônes + libellés ou X/10). Styles formulaires : `lib/formStyles.ts`.
 
 #### Exemples
 
