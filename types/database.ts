@@ -74,6 +74,12 @@ export type Workout = {
   target_pace?: number | null
   athlete_comment?: string | null
   athlete_comment_at?: string | null
+  /** Ressenti athlète 1–5 (optionnel). */
+  perceived_feeling?: number | null
+  /** Intensité effort perçu 1–10 (optionnel). */
+  perceived_intensity?: number | null
+  /** Plaisir pris 1–5 (optionnel). */
+  perceived_pleasure?: number | null
   created_at: string
   updated_at: string
 }

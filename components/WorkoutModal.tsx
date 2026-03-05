@@ -24,9 +24,14 @@ import { Input } from '@/components/Input'
 import { Textarea } from '@/components/Textarea'
 import { Badge } from '@/components/Badge'
 import { SportTileSelectable } from '@/components/SportTileSelectable'
+import { Angry, Frown, Meh, Smile, Laugh } from 'lucide-react'
 import { SPORT_ICONS, SPORT_TRANSLATION_KEYS, SPORT_BADGE_STYLES } from '@/lib/sportStyles'
 import { formatDateFr, toDateStr } from '@/lib/dateUtils'
 import { FORM_BASE_CLASSES, FORM_LABEL_CLASSES, TEXTAREA_SPECIFIC_CLASSES } from '@/lib/formStyles'
+
+const FEELING_ICONS = [Angry, Frown, Meh, Smile, Laugh] as const
+const FEELING_VALUES = [1, 2, 3, 4, 5] as const
+const INTENSITY_VALUES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] as const
 
 /** Sports pour entraînement (sous-ensemble du calendrier). */
 const WORKOUT_SPORT_TYPES: SportType[] = ['course', 'velo', 'natation', 'musculation']
@@ -171,6 +176,13 @@ export function WorkoutModal({
   /** Statut sélectionné (vue athlète, US3). */
   const [statusSegment, setStatusSegment] = useState<WorkoutStatus>('planned')
   const initialStatusRef = useRef<WorkoutStatus>('planned')
+  /** Retour athlète (workout feedback). */
+  const [perceivedFeeling, setPerceivedFeeling] = useState<number | null>(null)
+  const [perceivedIntensity, setPerceivedIntensity] = useState<number | null>(null)
+  const [perceivedPleasure, setPerceivedPleasure] = useState<number | null>(null)
+  const initialFeelingRef = useRef<number | null>(null)
+  const initialIntensityRef = useRef<number | null>(null)
+  const initialPleasureRef = useRef<number | null>(null)
   const previousCommentPendingRef = useRef(false)
   const workoutJustLoadedRef = useRef(false)
   const [deleteLoading, setDeleteLoading] = useState(false)
@@ -294,6 +306,15 @@ export function WorkoutModal({
       initialStatusRef.current = st
       setEditableDate(currentWorkout.date)
       setTimeOfDaySegment(currentWorkout.time_of_day ?? null)
+      const feeling = currentWorkout.perceived_feeling != null && currentWorkout.perceived_feeling >= 1 && currentWorkout.perceived_feeling <= 5 ? currentWorkout.perceived_feeling : null
+      const intensity = currentWorkout.perceived_intensity != null && currentWorkout.perceived_intensity >= 1 && currentWorkout.perceived_intensity <= 10 ? currentWorkout.perceived_intensity : null
+      const pleasure = currentWorkout.perceived_pleasure != null && currentWorkout.perceived_pleasure >= 1 && currentWorkout.perceived_pleasure <= 5 ? currentWorkout.perceived_pleasure : null
+      setPerceivedFeeling(feeling)
+      setPerceivedIntensity(intensity)
+      setPerceivedPleasure(pleasure)
+      initialFeelingRef.current = feeling
+      initialIntensityRef.current = intensity
+      initialPleasureRef.current = pleasure
     } else {
       setSportType('course')
       setTitle('')
@@ -322,6 +343,12 @@ export function WorkoutModal({
       initialStatusRef.current = 'planned'
       setEditableDate(date)
       setTimeOfDaySegment(null)
+      setPerceivedFeeling(null)
+      setPerceivedIntensity(null)
+      setPerceivedPleasure(null)
+      initialFeelingRef.current = null
+      initialIntensityRef.current = null
+      initialPleasureRef.current = null
     }
     if (!isOpen) {
       setDeleteError(null)
@@ -528,6 +555,16 @@ export function WorkoutModal({
         initialStatusRef.current = (result.workout.status ?? 'planned') as WorkoutStatus
         setStatusSegment(initialStatusRef.current)
         setHasCommentChanged(false)
+        const w = result.workout
+        const f = w.perceived_feeling != null && w.perceived_feeling >= 1 && w.perceived_feeling <= 5 ? w.perceived_feeling : null
+        const i = w.perceived_intensity != null && w.perceived_intensity >= 1 && w.perceived_intensity <= 10 ? w.perceived_intensity : null
+        const p = w.perceived_pleasure != null && w.perceived_pleasure >= 1 && w.perceived_pleasure <= 5 ? w.perceived_pleasure : null
+        setPerceivedFeeling(f)
+        setPerceivedIntensity(i)
+        setPerceivedPleasure(p)
+        initialFeelingRef.current = f
+        initialIntensityRef.current = i
+        initialPleasureRef.current = p
         router.refresh()
       }
       return result
@@ -861,12 +898,15 @@ export function WorkoutModal({
               </div>
             </div>
           </div>
-          {/* Section retour : statut 3 segments + commentaire (sans titres), US3 */}
+          {/* Section retour : statut + feedback (ressenti, intensité, plaisir) + commentaire */}
           <form
             action={statusCommentAction}
             className="px-6 py-4 border-t border-stone-100 space-y-4"
           >
             <input type="hidden" name="status" value={statusSegment} />
+            <input type="hidden" name="perceived_feeling" value={perceivedFeeling ?? ''} />
+            <input type="hidden" name="perceived_intensity" value={perceivedIntensity ?? ''} />
+            <input type="hidden" name="perceived_pleasure" value={perceivedPleasure ?? ''} />
             <div className="flex bg-stone-200 p-0.5 rounded-lg" role="group" aria-label={tWorkouts('status.ariaLabel')}>
               {(['planned', 'completed', 'not_completed'] as const).map((value) => (
                 <button
@@ -883,6 +923,83 @@ export function WorkoutModal({
                 </button>
               ))}
             </div>
+            {statusSegment === 'completed' && (
+              <>
+                <div>
+                  <label className="block text-sm font-medium text-stone-700 mb-2">{tWorkouts('feedback.feelingLabel')}</label>
+                  <div className="flex w-full gap-2" role="group" aria-label={tWorkouts('feedback.feelingLabel')}>
+                    {FEELING_VALUES.map((value, idx) => {
+                      const Icon = FEELING_ICONS[idx]
+                      const selected = perceivedFeeling === value
+                      return (
+                        <button
+                          key={value}
+                          type="button"
+                          onClick={() => setPerceivedFeeling(value)}
+                          title={tWorkouts(`feedback.feelingScale.${value}` as 'feedback.feelingScale.1')}
+                          aria-pressed={selected}
+                          className={`flex-1 min-w-0 flex flex-col items-center justify-center gap-1.5 p-2 rounded-xl border-2 transition shrink-0 ${
+                            selected ? 'border-palette-forest-dark bg-palette-forest-dark/10' : 'border-stone-200 bg-white hover:bg-stone-50'
+                          }`}
+                        >
+                          <Icon className={`h-7 w-7 shrink-0 ${selected ? 'text-palette-forest-dark' : 'text-stone-500'}`} strokeWidth={2} aria-hidden />
+                          <span className={`text-xs font-medium text-center leading-tight line-clamp-2 ${selected ? 'text-palette-forest-dark' : 'text-stone-600'}`}>
+                            {tWorkouts(`feedback.feelingScale.${value}` as 'feedback.feelingScale.1')}
+                          </span>
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-stone-700 mb-2">{tWorkouts('feedback.intensityLabel')}</label>
+                  <div className="flex w-full gap-2" role="group" aria-label={tWorkouts('feedback.intensityLabel')}>
+                    {INTENSITY_VALUES.map((value) => {
+                      const selected = perceivedIntensity === value
+                      return (
+                        <button
+                          key={value}
+                          type="button"
+                          onClick={() => setPerceivedIntensity(value)}
+                          aria-pressed={selected}
+                          className={`flex-1 min-w-0 flex items-center justify-center h-10 rounded-lg text-xs font-semibold border transition ${
+                            selected ? 'border-palette-forest-dark bg-palette-forest-dark text-white' : 'border-stone-200 bg-white text-stone-500 hover:bg-stone-50'
+                          }`}
+                        >
+                          {value}
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-stone-700 mb-2">{tWorkouts('feedback.pleasureLabel')}</label>
+                  <div className="flex w-full gap-2" role="group" aria-label={tWorkouts('feedback.pleasureLabel')}>
+                    {FEELING_VALUES.map((value, idx) => {
+                      const Icon = FEELING_ICONS[idx]
+                      const selected = perceivedPleasure === value
+                      return (
+                        <button
+                          key={value}
+                          type="button"
+                          onClick={() => setPerceivedPleasure(value)}
+                          title={tWorkouts(`feedback.pleasureScale.${value}` as 'feedback.pleasureScale.1')}
+                          aria-pressed={selected}
+                          className={`flex-1 min-w-0 flex flex-col items-center justify-center gap-1.5 p-2 rounded-xl border-2 transition shrink-0 ${
+                            selected ? 'border-palette-forest-dark bg-palette-forest-dark/10' : 'border-stone-200 bg-white hover:bg-stone-50'
+                          }`}
+                        >
+                          <Icon className={`h-7 w-7 shrink-0 ${selected ? 'text-palette-forest-dark' : 'text-stone-500'}`} strokeWidth={2} aria-hidden />
+                          <span className={`text-xs font-medium text-center leading-tight line-clamp-2 ${selected ? 'text-palette-forest-dark' : 'text-stone-600'}`}>
+                            {tWorkouts(`feedback.pleasureScale.${value}` as 'feedback.pleasureScale.1')}
+                          </span>
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+              </>
+            )}
             <Textarea
               name="comment"
               value={commentText}
@@ -904,7 +1021,11 @@ export function WorkoutModal({
               type="submit"
               variant="primaryDark"
               disabled={
-                (statusSegment === initialStatusRef.current && commentText.trim() === initialCommentRef.current.trim()) ||
+                (statusSegment === initialStatusRef.current &&
+                  commentText.trim() === initialCommentRef.current.trim() &&
+                  perceivedFeeling === initialFeelingRef.current &&
+                  perceivedIntensity === initialIntensityRef.current &&
+                  perceivedPleasure === initialPleasureRef.current) ||
                 statusCommentPending
               }
               loading={statusCommentPending}
@@ -1230,6 +1351,47 @@ export function WorkoutModal({
               </>
             ) : null}
           </div>
+          {/* Retour athlète (ressenti, intensité, plaisir) — lecture seule coach */}
+          {(currentWorkout.perceived_feeling != null || currentWorkout.perceived_intensity != null || currentWorkout.perceived_pleasure != null) && (
+            <div className="border-t border-stone-200 pt-4 space-y-3">
+              <h3 className="text-base font-semibold text-stone-800">{tWorkouts('feedback.sectionTitle')}</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
+                <div className="flex items-center gap-2">
+                  {currentWorkout.perceived_feeling != null && currentWorkout.perceived_feeling >= 1 && currentWorkout.perceived_feeling <= 5 ? (
+                    <>
+                      {(() => {
+                        const Icon = FEELING_ICONS[currentWorkout.perceived_feeling - 1]
+                        return <Icon className="h-5 w-5 text-stone-600 shrink-0" strokeWidth={2} aria-hidden />
+                      })()}
+                      <span className="text-stone-700">{tWorkouts(`feedback.feelingScale.${currentWorkout.perceived_feeling}` as 'feedback.feelingScale.1')}</span>
+                    </>
+                  ) : (
+                    <span className="text-stone-500">{tWorkouts('feedback.notSet')}</span>
+                  )}
+                </div>
+                <div className="flex items-center gap-2">
+                  {currentWorkout.perceived_intensity != null && currentWorkout.perceived_intensity >= 1 && currentWorkout.perceived_intensity <= 10 ? (
+                    <span className="text-stone-700">{tWorkouts('feedback.intensityLabel')} {currentWorkout.perceived_intensity}/10</span>
+                  ) : (
+                    <span className="text-stone-500">{tWorkouts('feedback.notSet')}</span>
+                  )}
+                </div>
+                <div className="flex items-center gap-2">
+                  {currentWorkout.perceived_pleasure != null && currentWorkout.perceived_pleasure >= 1 && currentWorkout.perceived_pleasure <= 5 ? (
+                    <>
+                      {(() => {
+                        const Icon = FEELING_ICONS[currentWorkout.perceived_pleasure - 1]
+                        return <Icon className="h-5 w-5 text-stone-600 shrink-0" strokeWidth={2} aria-hidden />
+                      })()}
+                      <span className="text-stone-700">{tWorkouts(`feedback.pleasureScale.${currentWorkout.perceived_pleasure}` as 'feedback.pleasureScale.1')}</span>
+                    </>
+                  ) : (
+                    <span className="text-stone-500">{tWorkouts('feedback.notSet')}</span>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
           {/* Commentaire de l'athlète */}
           <div className="border-t border-stone-200 pt-4">
             <div className="flex items-center gap-3 mb-2">

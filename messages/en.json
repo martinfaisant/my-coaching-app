@@ -188,6 +188,27 @@
       "completed": "Completed",
       "not_completed": "Not completed"
     },
+    "feedback": {
+      "sectionTitle": "Athlete feedback",
+      "feelingLabel": "How did you feel?",
+      "intensityLabel": "Perceived effort intensity:",
+      "pleasureLabel": "Enjoyment during the session:",
+      "feelingScale": {
+        "1": "Very bad",
+        "2": "Bad",
+        "3": "Neutral",
+        "4": "Good",
+        "5": "Very good"
+      },
+      "pleasureScale": {
+        "1": "No enjoyment",
+        "2": "A little",
+        "3": "Moderate",
+        "4": "Pleasant",
+        "5": "Very pleasant"
+      },
+      "notSet": "Not set"
+    },
     "validation": {
       "allFieldsRequired": "All fields are required.",
       "invalidSport": "Invalid sport type.",

@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 3 mars 2026 (Mode Analyste : résultat objectif passé — archivage docs design-goal-result ; voir Project_context §4.7, DESIGN_SYSTEM § TileCard)
+**Dernière mise à jour :** 3 mars 2026 (Mode Analyste : workout feedback — archivage docs design-workout-feedback ; voir Project_context §4.5, DESIGN_SYSTEM § Modal)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -229,6 +229,10 @@
 - `docs/archive/design-workout-time-of-day/` — DESIGN.md (besoin, cas, user stories US1–US5), SPEC_TIME_OF_DAY.md (migration, types, RLS, fichiers, logique métier), MOCKUP_FORM_TIME_OF_DAY.html, MOCKUP_CALENDAR_DAY_ORDER.html.
 - **Raison :** Feature livrée ; coach peut renseigner optionnellement le moment (segments Non précisé | Matin | Midi | Soir) ; calendrier et modale « Activités du jour » affichent la journée en sections (premier bloc sans titre, puis Matin / Midi / Soir avec titre si non vide). Comportement décrit dans **Project_context.md §4.5** (Workouts, Calendar day structure), **docs/DESIGN_SYSTEM.md** (WorkoutModal, §7 Calendrier), **docs/I18N.md** (workouts.form.timeOfDay*, calendar.morning/noon/evening).
 
+**Retour athlète après séance (workout feedback) (archivés 3 mars 2026) :**
+- `docs/archive/design-workout-feedback/` — DESIGN.md (besoin, échelles 1–5 / 1–10, Lucide, harmonisation visuelle), SPEC_ARCHITECTURE.md (migration 054, champs perceived_*), MOCKUP_WORKOUT_FEEDBACK_MODAL_A.html, MOCKUP_WORKOUT_FEEDBACK_MODAL_B.html.
+- **Raison :** Feature livrée ; athlète peut renseigner optionnellement (quand statut = Réalisé) : Comment vous êtes-vous senti ? (1–5), Intensité effort (1–10), Plaisir (1–5) ; icônes Lucide + libellés ; sauvegarde avec statut et commentaire ; coach voit le retour en lecture seule. Comportement décrit dans **Project_context.md §4.5** (Workouts), **docs/DESIGN_SYSTEM.md** (Modal / WorkoutModal), **docs/I18N.md** (workouts.feedback).
+
 **Résultat objectif passé (goal result) (archivés 3 mars 2026) :**
 - `docs/archive/design-goal-result/` — DESIGN.md (besoin, cas, réponses PO), SPEC_GOAL_RESULT.md (migration 053, RLS, fichiers), MOCKUP_GOAL_RESULT_MODAL.html, MOCKUP_GOAL_RESULT_TILE.html.
 - **Raison :** Feature livrée ; athlète peut saisir ou modifier un résultat (temps h/min/s, place, note) pour tout objectif dont la date est passée ; modale titre = nom de la course ; affichage sur tuile « distance · temps · place » ; création d’objectif avec date passée autorisée ; coach lecture seule. Comportement décrit dans **Project_context.md §4.7** (Goals), **docs/DESIGN_SYSTEM.md** (TileCard / Page Objectifs), **docs/I18N.md** (goals.result*, goals.validation).
@@ -369,9 +373,15 @@
 **Fréquence de mise à jour :** À chaque ajout/suppression de documentation
 
 **Dernier scan :** 3 mars 2026  
-**Dernier nettoyage :** 3 mars 2026 (archivage design-goal-result)
+**Dernier nettoyage :** 3 mars 2026 (archivage design-workout-feedback)
 
 ### Changements récents :
+
+✅ **3 mars 2026 – Retour athlète après séance (workout feedback) – Mode Analyste :**
+- **Livraison :** L’athlète peut renseigner optionnellement, lorsque le statut de la séance est **Réalisé**, trois retours : **Comment vous êtes-vous senti ?** (échelle 1–5 avec icônes Lucide + libellés), **Intensité de l’effort ressenti :** (1–10 segments), **Plaisir pris pendant la séance :** (1–5, mêmes icônes + libellés). Sauvegarde avec statut et commentaire en une action. Le coach voit le « Retour athlète » en lecture seule dans la modale (icônes + libellés ou X/10). Données : `workouts.perceived_feeling`, `perceived_intensity`, `perceived_pleasure` (migration 054).
+- **Fichiers :** `types/database.ts`, `app/[locale]/dashboard/workouts/actions.ts` (saveWorkoutStatusAndComment), `components/WorkoutModal.tsx`, `messages/fr.json`, `messages/en.json`, `supabase/migrations/054_workout_feedback.sql`.
+- **Doc :** Project_context.md §4.5 (Workouts, structure + Athlete/Coach), §5 (workouts), DESIGN_SYSTEM (Modal / WorkoutModal – Retour athlète), I18N (workouts.feedback).
+- **Archivage :** `docs/design-workout-feedback/` → `docs/archive/design-workout-feedback/` (DESIGN.md, SPEC_ARCHITECTURE.md, MOCKUP_*.html). Référence courante : **Project_context.md §4.5**, **docs/DESIGN_SYSTEM.md**, **docs/I18N.md**.
 
 ✅ **3 mars 2026 – Résultat objectif passé (goal result) – Mode Analyste :**
 - **Livraison :** L’athlète peut saisir ou modifier un **résultat** pour tout objectif dont la date est passée : modale (titre = nom de la course) avec Temps (3 champs h/min/s, requis), Place (optionnel), Note (optionnel, max 500 car.). Affichage sur tuile : « distance · [icône horloge] temps · place » ; boutons « Saisir le résultat » (outline) / « Modifier le résultat » (secondary). Création d’objectif avec date passée autorisée. Coach : lecture seule du résultat (sidebar calendrier, modale détail). Données : `goals.result_time_*`, `result_place`, `result_note` (migration 053) ; `lib/goalResultUtils.ts`, action `saveGoalResult`.
@@ -596,7 +606,7 @@
 | Calendrier responsive / mobile (issue #44) / totaux de la semaine sur mobile | `Project_context.md` §4.5, `docs/DESIGN_SYSTEM.md` §7 |
 | **Natation : unité d’affichage (m, pas km)** | **`Project_context.md` §4.5** (Unités d’affichage), **`docs/DESIGN_SYSTEM.md`** (§7 Calendrier, ActivityTile metadata) |
 | Indicateur commentaire athlète sur tuile calendrier | `Project_context.md` §4.5, `docs/DESIGN_SYSTEM.md` §7 |
-| **Statut séance, modales entraînement (en-tête création/édition/lecture seule, tuile sport, date à gauche), total « fait »** | **`Project_context.md` §4.5** (Workouts), **`docs/DESIGN_SYSTEM.md`** (Modal, WorkoutModal) |
+| **Statut séance, modales entraînement (en-tête création/édition/lecture seule, tuile sport, date à gauche), total « fait », retour athlète (ressenti, intensité, plaisir)** | **`Project_context.md` §4.5** (Workouts), **`docs/DESIGN_SYSTEM.md`** (Modal, WorkoutModal) |
 | **Moment de la journée (Matin / Midi / Soir), sections calendrier, modale « Activités du jour »** | **`Project_context.md` §4.5** (Calendar day structure, Workout time_of_day), **`docs/DESIGN_SYSTEM.md`** (§7 Calendrier, WorkoutModal) |
 | **Disponibilités / indisponibilités athlète (calendrier, modales, pas de récurrence)** | **`Project_context.md` §4.5** (Athlete availability), **`docs/DESIGN_SYSTEM.md`** (§7 Calendrier, AvailabilityModal, AvailabilityDetailModal) |
 | **Résultat objectif passé (saisie temps/place/note, modale, affichage tuile)** | **`Project_context.md` §4.7** (Goals), **`docs/DESIGN_SYSTEM.md`** (§ TileCard, Page Objectifs), **`lib/goalResultUtils.ts`** |
