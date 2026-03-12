@@ -28,9 +28,9 @@ export function PublicHeader() {
           <span className="hidden sm:inline">My Sport Ally</span>
         </Link>
         <div className="flex items-center gap-4">
-          <LanguageSwitcher />
-          <div className="h-6 w-px bg-stone-200" aria-hidden />
           <AuthButtons />
+          <div className="h-6 w-px bg-stone-200" aria-hidden />
+          <LanguageSwitcher />
         </div>
       </div>
     </header>

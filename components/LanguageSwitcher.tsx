@@ -43,6 +43,7 @@ export function LanguageSwitcher() {
       triggerPrefix={<Globe className="w-4 h-4 shrink-0 text-stone-500" aria-hidden />}
       minWidth="5.5rem"
       className="min-w-0"
+      triggerClassName="text-sm font-medium !text-stone-700"
     />
   )
 }
