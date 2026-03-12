@@ -1,6 +1,6 @@
 # Templates email d'authentification (Supabase)
 
-**Dernière mise à jour :** 26 février 2026
+**Dernière mise à jour :** 12 mars 2026
 
 Ce document décrit comment configurer les emails d’auth Supabase (confirmation d’inscription, etc.) avec des **templates HTML** et le **bilinguisme FR/EN**. Les fichiers HTML des templates sont centralisés dans **[docs/email-templates/](email-templates/)**.
 
@@ -34,6 +34,17 @@ Le lien dans l’email de réinitialisation envoie l’utilisateur vers **`{Site
 **Environnements preview (Vercel) :** l’app envoie à Supabase l’**origine réelle de la requête** (host + proto depuis les headers), donc l’URL de redirection est toujours celle sur laquelle l’utilisateur est (y compris chaque déploiement preview). Pour que le lien « Réinitialiser le mot de passe » redirige bien vers la page reset-password (et non vers la page d’accueil), il faut que cette URL soit autorisée dans **Redirect URLs**. Comme l’URL preview change à chaque déploiement (ex. `https://my-coaching-app-xxx-git-preview-....vercel.app`), il est recommandé d’ajouter un **wildcard** dans Supabase : `https://*.vercel.app/fr/reset-password` et `https://*.vercel.app/en/reset-password`. Sinon, ajouter manuellement chaque URL de preview utilisée.
 
 L’app gère à la fois le flux **PKCE** (`?code=...` dans l’URL) et le flux **implicite** (hash `#access_token=...&type=recovery`).
+
+### Resend (SMTP) : désactiver le click tracking pour les emails d’auth
+
+Si les emails Supabase sont envoyés via **Resend** et que le « click tracking » est activé, Resend réécrit **toutes** les URLs dans le corps de l’email. Le lien de reset password contient un paramètre `redirect_to=https://monsite.com/fr/reset-password` ; Resend peut remplacer cette sous-chaîne par son propre lien de tracking, ce qui corrompt la redirection : après clic, l’utilisateur arrive sur la page d’accueil au lieu de la page « Nouveau mot de passe ».
+
+**À faire en production :**
+
+1. **Désactiver le click tracking** pour les emails d’authentification Supabase (Reset Password, Confirm signup, Magic Link, etc.), dans le dashboard Resend (paramètres du domaine ou de l’API), **ou**
+2. Exclure ces emails du tracking si Resend propose une option par type d’email.
+
+**Parade côté app :** si l’utilisateur arrive sur la page d’accueil avec `?code=...` (redirection erronée), l’app le redirige automatiquement vers `/{locale}/reset-password?code=...` pour qu’il puisse tout de même saisir son nouveau mot de passe.
 
 ---
 
