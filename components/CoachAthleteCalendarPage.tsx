@@ -135,7 +135,7 @@ export function CoachAthleteCalendarPage({
 
           return (
             <div className="pb-6 border-t border-stone-100">
-              <section className="mt-6 px-6 lg:px-8">
+              <section className="mt-6">
                 <div className="mb-6 flex items-center gap-3">
                   <div className="p-2 bg-palette-forest-dark/10 rounded-full text-palette-forest-dark">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
