@@ -18,13 +18,24 @@ import {
 
 type HomePageProps = {
   params: Promise<{ locale: string }>
-  searchParams: Promise<{ emailConfirmed?: string }>
+  searchParams: Promise<{ emailConfirmed?: string; code?: string }>
 }
 
 export default async function Home({ params, searchParams }: HomePageProps) {
   const { locale } = await params
   const resolvedSearchParams = await searchParams
   const emailConfirmed = resolvedSearchParams?.emailConfirmed === '1'
+  const code = resolvedSearchParams?.code
+
+  // Parade : si l'utilisateur arrive sur l'accueil avec ?code= (ex. redirect_to erroné
+  // à cause du click tracking Resend), le renvoyer vers la page reset-password.
+  if (code && !emailConfirmed) {
+    const resetPath =
+      locale === 'en'
+        ? `/en/reset-password?code=${encodeURIComponent(code)}`
+        : `/reset-password?code=${encodeURIComponent(code)}`
+    redirect(resetPath)
+  }
 
   if (emailConfirmed) {
     const supabase = await createClient()
