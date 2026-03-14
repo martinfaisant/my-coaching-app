@@ -7,11 +7,14 @@ import { logger } from '@/lib/logger'
 import { getTranslations, getLocale } from 'next-intl/server'
 import { getFrozenTitleForLocale } from '@/lib/frozenOfferI18n'
 import { getDisplayName } from '@/lib/displayName'
+import { getWeeklyVolumeUnit } from '@/lib/sportStyles'
 
 export type SetCoachResult = { error?: string }
 export type CoachRequestResult = { error?: string }
 
-/** Athlète : envoyer une demande de coaching au coach. Si firstName/lastName sont fournis, met à jour le profil puis crée la demande. */
+const DISPLAY_SPORTS_ORDER = ['course', 'velo', 'natation', 'musculation', 'trail', 'triathlon'] as const
+
+/** Athlète : envoyer une demande de coaching au coach. Met à jour le profil (nom, sports, objectifs/volume) puis crée la demande. */
 export async function createCoachRequest(
   coachId: string,
   sportsPracticed: string[],
@@ -19,7 +22,9 @@ export async function createCoachRequest(
   offerId?: string | null,
   locale: string = 'fr',
   firstName?: string,
-  lastName?: string
+  lastName?: string,
+  weeklyTargetHours?: number | null,
+  weeklyVolumeBySport?: Record<string, number> | null
 ): Promise<CoachRequestResult> {
   const supabase = await createClient()
   let t: Awaited<ReturnType<typeof getTranslations>>
@@ -43,6 +48,41 @@ export async function createCoachRequest(
     const need = (coachingNeed ?? '').trim()
     if (sports.length === 0 || !need) return { error: t('requireSportAndNeed') }
 
+    // Objectifs et volume : champs obligatoires
+    const hours =
+      weeklyTargetHours != null && !Number.isNaN(Number(weeklyTargetHours))
+        ? Number(weeklyTargetHours)
+        : null
+    if (hours === null || hours < 0 || hours > 168) {
+      return { error: t('requireWeeklyTargetAndVolume') }
+    }
+    const roundedHours = Math.round(hours * 100) / 100
+
+    const expandedForVolume = sports.flatMap((s) =>
+      s === 'triathlon' ? ['course', 'velo', 'natation'] : [s]
+    )
+    const volumeDisplayList = DISPLAY_SPORTS_ORDER.filter((s) => expandedForVolume.includes(s))
+    const volumeBySport: Record<string, number> = {}
+    const rawVolume = weeklyVolumeBySport ?? {}
+    for (const sport of volumeDisplayList) {
+      const val = rawVolume[sport]
+      if (val == null || Number.isNaN(Number(val)) || Number(val) < 0) {
+        return { error: t('requireWeeklyTargetAndVolume') }
+      }
+      const num = Math.round(Number(val) * 100) / 100
+      const unit = getWeeklyVolumeUnit(sport)
+      const max = unit === 'km' ? 5000 : unit === 'm' ? 1000000 : 168
+      if (num > max) return { error: t('weeklyVolumeInvalid') }
+      volumeBySport[sport] = num
+    }
+    if (sports.includes('trail')) {
+      const elev = rawVolume['course_elevation_m']
+      if (elev == null || Number.isNaN(Number(elev)) || Number(elev) < 0 || Number(elev) > 50000) {
+        return { error: t('requireWeeklyTargetAndVolume') }
+      }
+      volumeBySport.course_elevation_m = Math.round(Number(elev) * 100) / 100
+    }
+
     const { data: coach } = await supabase
       .from('profiles')
       .select('user_id')
@@ -52,18 +92,31 @@ export async function createCoachRequest(
 
     if (!coach) return { error: t('coachNotFound') }
 
-    // Mettre à jour le profil athlète si prénom/nom fournis (profil incomplet)
     const firstTrim = (firstName ?? '').trim()
     const lastTrim = (lastName ?? '').trim()
-    if (firstTrim && lastTrim) {
-      const { error: updateErr } = await supabase
-        .from('profiles')
-        .update({ first_name: firstTrim, last_name: lastTrim })
-        .eq('user_id', user.id)
-      if (updateErr) {
-        logger.error('createCoachRequest profile update failed', updateErr)
-        return { error: tErrors('supabaseGeneric') }
-      }
+
+    // Mise à jour profil : nom (si fourni), practiced_sports, weekly_target_hours, weekly_volume_by_sport
+    const profileUpdate: {
+      first_name?: string
+      last_name?: string
+      practiced_sports: string[]
+      weekly_target_hours: number
+      weekly_volume_by_sport: Record<string, number>
+    } = {
+      practiced_sports: sports,
+      weekly_target_hours: roundedHours,
+      weekly_volume_by_sport: volumeBySport,
+    }
+    if (firstTrim) profileUpdate.first_name = firstTrim
+    if (lastTrim) profileUpdate.last_name = lastTrim
+
+    const { error: updateErr } = await supabase
+      .from('profiles')
+      .update(profileUpdate)
+      .eq('user_id', user.id)
+    if (updateErr) {
+      logger.error('createCoachRequest profile update failed', updateErr)
+      return { error: tErrors('supabaseGeneric') }
     }
 
     // Vérifier que le profil a bien un nom (obligatoire pour la demande)
@@ -147,17 +200,6 @@ export async function createCoachRequest(
     if (error) {
       logger.error('createCoachRequest insert failed', error, { coachId, offerId: offerId ?? null })
       return { error: tErrors('supabaseGeneric') }
-    }
-
-    // Mettre à jour le profil athlète avec les sports choisis (aligné avec "Sports pratiqués")
-    const { error: updateError } = await supabase
-      .from('profiles')
-      .update({ practiced_sports: sports })
-      .eq('user_id', user.id)
-
-    if (updateError) {
-      // Ne pas faire échouer la demande si la mise à jour du profil échoue
-      logger.error('Mise à jour practiced_sports', updateError)
     }
 
     revalidatePath('/dashboard')
@@ -273,6 +315,8 @@ export type PendingRequestWithAthlete = {
   offer_price: number | null
   offer_price_type: string | null
   created_at: string
+  athlete_weekly_target_hours: number | null
+  athlete_weekly_volume_by_sport: Record<string, number> | null
 }
 
 /** Coach : demandes en attente. locale utilisé pour le titre de l'offre (FR/EN). */
@@ -295,16 +339,25 @@ export async function getPendingCoachRequests(locale: string = 'fr'): Promise<Pe
   const athleteIds = [...new Set(rows.map((r) => r.athlete_id))]
   const { data: profiles } = await supabase
     .from('profiles')
-    .select('user_id, first_name, last_name, email, avatar_url')
+    .select('user_id, first_name, last_name, email, avatar_url, weekly_target_hours, weekly_volume_by_sport')
     .in('user_id', athleteIds)
 
   const nameByUserId = new Map<string, string>()
   const emailByUserId = new Map<string, string>()
   const avatarByUserId = new Map<string, string | null>()
+  const weeklyTargetByUserId = new Map<string, number | null>()
+  const weeklyVolumeByUserId = new Map<string, Record<string, number> | null>()
   for (const p of profiles ?? []) {
     nameByUserId.set(p.user_id, getDisplayName(p, p.email))
     emailByUserId.set(p.user_id, p.email)
     avatarByUserId.set(p.user_id, p.avatar_url ?? null)
+    weeklyTargetByUserId.set(p.user_id, p.weekly_target_hours ?? null)
+    weeklyVolumeByUserId.set(
+      p.user_id,
+      p.weekly_volume_by_sport && typeof p.weekly_volume_by_sport === 'object'
+        ? (p.weekly_volume_by_sport as Record<string, number>)
+        : null
+    )
   }
 
   return rows.map((r) => ({
@@ -320,6 +373,8 @@ export async function getPendingCoachRequests(locale: string = 'fr'): Promise<Pe
     offer_price: r.frozen_price ?? null,
     offer_price_type: r.frozen_price_type ?? null,
     created_at: r.created_at,
+    athlete_weekly_target_hours: weeklyTargetByUserId.get(r.athlete_id) ?? null,
+    athlete_weekly_volume_by_sport: weeklyVolumeByUserId.get(r.athlete_id) ?? null,
   }))
 }
 

@@ -10,6 +10,7 @@ import { IconClose } from '@/components/icons/IconClose'
 import { getCoachRequestDetail, type CoachRequestDetail } from './actions'
 import { getFrozenTitleForLocale, getFrozenDescriptionForLocale } from '@/lib/frozenOfferI18n'
 import { formatDateFr } from '@/lib/dateUtils'
+import { getWeeklyVolumeUnit } from '@/lib/sportStyles'
 import type { SportType } from '@/lib/sportStyles'
 
 type AthleteSentRequestDetailModalProps = {
@@ -20,6 +21,10 @@ type AthleteSentRequestDetailModalProps = {
   locale: string
   /** Appelé quand l'utilisateur clique sur « Annuler la demande » (ouvrir la confirmation d'annulation). */
   onRequestCancel: () => void
+  /** Temps à allouer/sem. (profil athlète, affiché en lecture seule si renseigné) */
+  athleteWeeklyTargetHours?: number | null
+  /** Volumes par sport (profil athlète, affichés en lecture seule si renseignés) */
+  athleteWeeklyVolumeBySport?: Record<string, number> | null
 }
 
 const KNOWN_SPORT_TYPES: SportType[] = [
@@ -43,6 +48,16 @@ function parseSports(sportPracticed: string): string[] {
     .filter(Boolean)
 }
 
+const DISPLAY_ORDER = ['course', 'course_elevation_m', 'velo', 'natation', 'musculation', 'trail', 'triathlon'] as const
+const sportLabelKey: Record<string, string> = {
+  course: 'course',
+  velo: 'velo',
+  natation: 'natation',
+  musculation: 'muscu',
+  trail: 'trail',
+  triathlon: 'triathlon',
+}
+
 export function AthleteSentRequestDetailModal({
   isOpen,
   onClose,
@@ -50,9 +65,13 @@ export function AthleteSentRequestDetailModal({
   coachName,
   locale,
   onRequestCancel,
+  athleteWeeklyTargetHours,
+  athleteWeeklyVolumeBySport,
 }: AthleteSentRequestDetailModalProps) {
   const t = useTranslations('athleteSentRequest')
   const tCommon = useTranslations('common')
+  const tProfile = useTranslations('profile')
+  const tSports = useTranslations('sports')
   const [detail, setDetail] = useState<CoachRequestDetail | null>(null)
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
@@ -234,6 +253,52 @@ export function AthleteSentRequestDetailModal({
                     {detail.coaching_need || '—'}
                   </div>
                 </div>
+
+                {/* Objectifs et volume (lecture seule, si au moins une valeur renseignée) */}
+                {(athleteWeeklyTargetHours != null ||
+                  (athleteWeeklyVolumeBySport &&
+                    Object.keys(athleteWeeklyVolumeBySport).length > 0)) && (
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-stone-400 mb-2">
+                      {tProfile('weeklyTargetSectionTitle')}
+                    </p>
+                    <div className="rounded-lg border border-stone-200 bg-stone-50 p-4 text-sm text-stone-700 space-y-1">
+                      {athleteWeeklyTargetHours != null && (
+                        <p>
+                          {athleteWeeklyTargetHours} {tProfile('suffixHoursPerWeek')}
+                        </p>
+                      )}
+                      {athleteWeeklyVolumeBySport &&
+                        typeof athleteWeeklyVolumeBySport === 'object' &&
+                        DISPLAY_ORDER.map((sport) => {
+                          const v = athleteWeeklyVolumeBySport[sport]
+                          if (v == null) return null
+                          if (sport === 'course_elevation_m') {
+                            return (
+                              <p key={sport}>
+                                {v} {tProfile('suffixDPlusPerWeek')}
+                              </p>
+                            )
+                          }
+                          const unit = getWeeklyVolumeUnit(sport)
+                          const suffix =
+                            unit === 'km'
+                              ? tProfile('suffixKmPerWeek')
+                              : unit === 'm'
+                                ? tProfile('suffixMPerWeek')
+                                : tProfile('suffixHoursPerWeek')
+                          const label = sportLabelKey[sport]
+                            ? tSports(sportLabelKey[sport] as 'course')
+                            : sport
+                          return (
+                            <p key={sport}>
+                              {label} {v} {suffix}
+                            </p>
+                          )
+                        })}
+                    </div>
+                  </div>
+                )}
               </>
             )}
           </div>

@@ -143,7 +143,7 @@ console.error('Something went wrong', error)
 ## Component Patterns
 
 ### Dashboard Pages
-**Always use `DashboardPageShell`** instead of raw `<main>` tags:
+**Always use `DashboardPageShell`** instead of raw `<main>` tags (pas de titre en tête de page ; le shell fournit uniquement la card et la zone scrollable) :
 
 ```typescript
 // ✅ GOOD
@@ -151,7 +151,7 @@ import { DashboardPageShell } from '@/components/DashboardPageShell'
 
 export default function MyPage() {
   return (
-    <DashboardPageShell title="Mon Titre" rightContent={<Button>Action</Button>}>
+    <DashboardPageShell>
       {/* contenu */}
     </DashboardPageShell>
   )
@@ -161,7 +161,6 @@ export default function MyPage() {
 export default function MyPage() {
   return (
     <main className="flex-1 flex flex-col h-full...">
-      <PageHeader title="Mon Titre" />
       <div className="flex-1 overflow-y-auto...">
         {/* contenu */}
       </div>
@@ -253,7 +252,7 @@ if ('error' in result) return result
 - **published** : visibles aux athlètes, au plus 3 par coach (display_order 0–2) ; prix/type figés après publication.
 - **archived** : liste « Offres archivées » côté coach ; plus de nouvelles demandes ; pas de suppression (archivage uniquement).
 
-**Demande (coach_requests) :** Quand l’athlète envoie une demande avec une offre, copier immédiatement dans `coach_requests` : `offer_id`, `frozen_price`, `frozen_title`, `frozen_description` (snapshot = offre telle que vue par l’athlète). Ne jamais mettre à jour ces champs après coup si l’offre change.
+**Demande (coach_requests) :** Le formulaire de demande inclut **objectifs et volume** (temps à allouer/semaine + volumes par sport, même logique que Mon profil) ; obligatoires. À l’envoi : mise à jour du **profil** athlète (`weekly_target_hours`, `weekly_volume_by_sport`, `practiced_sports`) puis insert dans `coach_requests` avec `offer_id`, `frozen_price`, `frozen_title`, `frozen_description` (snapshot). Le coach voit objectifs/volume dans la tuile demande en attente (2 colonnes : Message | Objectifs et volume, lecture depuis le profil).
 
 **Acceptation :** À l’acceptation, créer une ligne dans `subscriptions` en copiant les champs `frozen_*` depuis `coach_requests` uniquement. Ne pas lire `coach_offers` pour remplir la souscription. Ainsi, les souscriptions actives restent inchangées si le coach modifie ou archive l’offre.
 
