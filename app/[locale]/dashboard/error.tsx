@@ -20,7 +20,7 @@ export default function DashboardError({
   }, [error])
 
   return (
-    <main className="flex-1 flex flex-col h-full min-w-0 bg-white/50 rounded-2xl overflow-hidden relative border border-stone-200/50">
+    <div className="flex-1 flex flex-col min-h-0 px-6 lg:px-8 pt-6 pb-24">
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="max-w-md w-full text-center">
           <div className="inline-flex w-16 h-16 rounded-full bg-palette-danger/10 items-center justify-center mb-6">
@@ -60,6 +60,6 @@ export default function DashboardError({
           </div>
         </div>
       </div>
-    </main>
+    </div>
   )
 }

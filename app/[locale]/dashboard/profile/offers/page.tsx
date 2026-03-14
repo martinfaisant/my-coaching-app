@@ -1,7 +1,7 @@
 import { getCurrentUserWithProfile } from '@/utils/auth'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
-import { PageHeader } from '@/components/PageHeader'
+import { DashboardPageShell } from '@/components/DashboardPageShell'
 import { OffersForm } from './OffersForm'
 
 export default async function OffersPage() {
@@ -30,8 +30,8 @@ export default async function OffersPage() {
     )
 
   return (
-    <main className="flex-1 flex flex-col h-full min-w-0 bg-white/50 rounded-2xl overflow-hidden relative border border-stone-200/50">
+    <DashboardPageShell>
       <OffersForm offers={offers} archivedOffers={archivedOffers} />
-    </main>
+    </DashboardPageShell>
   )
 }

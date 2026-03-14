@@ -108,7 +108,9 @@
     "dashboard": "Dashboard",
     "subscriptionHistory": "Subscription history",
     "openMenu": "Open menu",
-    "collapseMenu": "Collapse menu"
+    "collapseMenu": "Collapse menu",
+    "designSystem": "Design System",
+    "members": "Member management"
   },
   "sports": {
     "course": "Running",
@@ -536,6 +538,8 @@
   },
   "admin": {
     "members": {
+      "title": "Member management",
+      "description": "List of all members and role modification.",
       "validation": {
         "missingData": "Missing data.",
         "invalidRole": "Invalid role.",
@@ -731,7 +735,10 @@
       "offerChosen": "Chosen offer:",
       "free": "Free",
       "perMonth": "/month",
-      "chat": "Discuss"
+      "chat": "Discuss",
+      "athleteMessageLabel": "Athlete's message",
+      "objectivesAndVolumeLabel": "Objectives and volume (athlete)",
+      "notSpecified": "Not specified"
     },
     "noAthletes": {
       "title": "Your coaching requests will appear on this page.",
@@ -865,7 +872,10 @@
       "requestNotFound": "Request not found.",
       "requestCannotBeCancelled": "This request can no longer be cancelled.",
       "accepted": "Request accepted.",
-      "declined": "Request declined."
+      "declined": "Request declined.",
+      "requireWeeklyTargetAndVolume": "Time to allocate per week and volumes per sport are required.",
+      "weeklyTargetInvalid": "Time to allocate must be a number between 0 and 168 h.",
+      "weeklyVolumeInvalid": "Please check volumes per sport (number ≥ 0, within allowed limit)."
     }
   },
   "myCoach": {

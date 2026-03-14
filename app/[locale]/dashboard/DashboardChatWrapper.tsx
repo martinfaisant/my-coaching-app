@@ -18,7 +18,7 @@ export function DashboardChatWrapper({ children, initialChatRole }: DashboardCha
 
   return (
     <OpenChatContextProvider openChatWithAthlete={openChatWithAthlete}>
-      <div className="flex-1 min-w-0">
+      <div className="flex-1 min-w-0 min-h-0 overflow-y-auto">
         {children}
       </div>
       <ChatModule

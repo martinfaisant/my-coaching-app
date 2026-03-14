@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import { getCurrentUserWithProfile } from '@/utils/auth'
 import { getTranslations } from 'next-intl/server'
 import { DashboardPageShell } from '@/components/DashboardPageShell'
-import { LogoutButton } from '@/components/LogoutButton'
 import { ProfileForm } from './ProfileForm'
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -16,14 +15,12 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export const dynamic = 'force-dynamic'
 
 export default async function ProfilePage({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale } = await params
-  const t = await getTranslations({ locale, namespace: 'profile' })
   const current = await getCurrentUserWithProfile()
   const isAthlete = current.profile.role === 'athlete'
   const isCoach = current.profile.role === 'coach'
 
   return (
-    <DashboardPageShell title={t('title')} rightContent={<LogoutButton />}>
+    <DashboardPageShell>
       {isCoach ? (
         <ProfileForm
           email={current.email}

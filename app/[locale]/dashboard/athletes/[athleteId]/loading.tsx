@@ -1,23 +1,8 @@
 export default function AthleteCalendarLoading() {
   return (
-    <main className="flex-1 flex flex-col h-full min-w-0 bg-white/50 rounded-2xl overflow-hidden relative border border-stone-200/50 animate-pulse">
-      {/* Skeleton PageHeader */}
-      <div className="shrink-0 px-6 lg:px-8 h-20 flex items-center justify-between border-b border-stone-100 bg-stone-50/50">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-stone-200" />
-          <div className="h-6 w-48 bg-stone-200 rounded" />
-        </div>
-        <div className="flex gap-2">
-          <div className="h-9 w-9 bg-stone-200 rounded-lg" />
-          <div className="h-9 w-32 bg-stone-200 rounded-lg" />
-          <div className="h-9 w-9 bg-stone-200 rounded-lg" />
-        </div>
-      </div>
-      
-      {/* Skeleton content */}
-      <div className="flex-1 overflow-y-auto px-6 lg:px-8 py-6 space-y-6">
-        {/* Grille calendrier (3 semaines, 7 jours) */}
-        <div className="rounded-xl border border-stone-200 bg-white overflow-hidden">
+    <div className="px-6 lg:px-8 pt-6 pb-24 space-y-6 animate-pulse">
+      {/* Grille calendrier (3 semaines, 7 jours) */}
+      <div className="rounded-xl border border-stone-200 bg-white overflow-hidden">
           <div className="grid grid-cols-7 border-b border-stone-200 bg-stone-50">
             {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map((day, i) => (
               <div key={i} className="p-2 text-center">
@@ -69,7 +54,6 @@ export default function AthleteCalendarLoading() {
             </div>
           </div>
         </div>
-      </div>
-    </main>
+    </div>
   )
 }

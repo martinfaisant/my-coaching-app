@@ -27,7 +27,7 @@ export default async function DevicesPage({ params }: { params: Promise<{ locale
   const connection = result.connection ?? null
 
   return (
-    <DashboardPageShell title={t('title')}>
+    <DashboardPageShell>
       <StravaDevicesSection
         userId={current.id}
         connected={connected}

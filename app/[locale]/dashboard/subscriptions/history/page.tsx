@@ -59,7 +59,7 @@ export default async function SubscriptionHistoryPage({ params }: { params: Prom
   }
 
   return (
-    <DashboardPageShell title={t('title')}>
+    <DashboardPageShell>
       {!subscriptions?.length ? (
         <p className="text-sm text-stone-500">{t('noSubscriptions')}</p>
       ) : (
