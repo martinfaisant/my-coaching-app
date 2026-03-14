@@ -81,4 +81,15 @@ Combinaison possible : **A ou B pour desktop**, **C pour mobile**.
 
 ---
 
-Une fois une solution validée (A, B et/ou C), je peux découper en **user stories** avec critères d’acceptation et référence au mockup.
+## 8. Compléments — Réponses PO et mockup page Calendrier
+
+**Choix du PO :**
+- **Mobile :** menu **hamburger** (drawer avec liste des liens).
+- **Profil sur mobile :** le **profil va dans le hamburger menu** (avatar + nom + lien Profil + Déconnexion dans le drawer).
+- **Logo :** **logo à gauche** sur tous les breakpoints ; **hamburger à droite** sur mobile.
+- **Titres de page :** **garder les icônes dans les titres** (ex. icône calendrier à côté de « Calendrier »).
+
+**Mockup de référence :** **`MOCKUP_CALENDAR_PAGE.html`** — exemples de la **page Calendrier** sur **mobile (375px), tablette (768px) et ordinateur** avec top bar (logo à gauche, hamburger à droite sur mobile ; logo à gauche, nav au centre, profil à droite sur tablette/desktop), titre de page avec icône calendrier, sélecteur de semaine, grille et tuiles entraînement. Un bloc montre aussi le **contenu du drawer mobile** (liens + Profil + Déconnexion).
+
+Une fois une solution validée (A, B et/ou C), **Découpage :** **`USER_STORIES_TOP_MENU.md`** (8 US).  
+**Spec technique :** **`SPEC_ARCHITECTE_TOP_MENU.md`** (architecture, table des fichiers, menu dynamique centralisé, pas de BDD/RLS, tests manuels, points à trancher). avec critères d’acceptation et référence au mockup.
