@@ -184,3 +184,35 @@ export const SPORT_BADGE_STYLES: Record<
     border: 'border-palette-amber/20',
   },
 }
+
+/** Unité pour le volume hebdo (profil athlète) : km, m ou h selon le sport. */
+export type WeeklyVolumeUnit = 'km' | 'm' | 'h'
+
+/** Sport pratiqué (valeurs du formulaire profil athlète). */
+export type PracticedSportKey =
+  | 'course'
+  | 'velo'
+  | 'natation'
+  | 'musculation'
+  | 'trail'
+  | 'triathlon'
+
+/**
+ * Retourne l'unité de volume hebdomadaire pour un sport pratiqué.
+ * Utilisé pour l'affichage du suffixe (km/sem., m/sem., h/sem.) et la validation.
+ */
+export function getWeeklyVolumeUnit(sport: string): WeeklyVolumeUnit {
+  switch (sport) {
+    case 'course':
+    case 'trail':
+    case 'velo':
+      return 'km'
+    case 'natation':
+      return 'm'
+    case 'musculation':
+    case 'triathlon':
+      return 'h'
+    default:
+      return 'km'
+  }
+}

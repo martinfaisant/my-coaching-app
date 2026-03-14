@@ -356,8 +356,17 @@
     "saveAndLeave": "Save and leave",
     "unsavedChangesAlert": "You have unsaved changes. Do you really want to leave this page?",
     "deletionNotPossible": "Deletion not possible.",
+    "weeklyTargetSectionTitle": "Goals and volume per sport",
+    "weeklyTargetLabel": "Time to allocate / week",
+    "noPracticedSportsMessage": "Select practiced sports above to set your goals.",
+    "suffixHoursPerWeek": "h/week",
+    "suffixKmPerWeek": "km/week",
+    "suffixMPerWeek": "m/week",
+    "suffixDPlusPerWeek": "D+/week",
     "validation": {
       "saved": "Information saved.",
+      "weeklyTargetInvalid": "Time to allocate must be a positive number (max 168 h).",
+      "weeklyVolumeInvalid": "Volume must be a positive number.",
       "cannotDelete": "Deletion not possible. You must first terminate your contract with your athletes.",
       "deletionFailed": "Deletion impossible.",
       "deletionError": "Error during deletion."

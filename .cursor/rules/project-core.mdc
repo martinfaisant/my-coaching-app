@@ -277,6 +277,12 @@ if ('error' in result) return result
 
 ---
 
+## Profil athlète – Objectifs et volume par sport
+
+- **Section « Objectifs et volume par sport »** (page Mon profil, athlète uniquement) : temps à allouer/semaine (global, en h), volume actuel par sport/semaine (km, m ou h selon sport). Données : `profiles.weekly_target_hours`, `profiles.weekly_volume_by_sport` (JSONB). **Triathlon** → affichage de 3 tuiles (Course, Vélo, Natation) ; **Trail** → pas de tuile dédiée, champ **D+/sem.** ajouté dans la tuile Course. Tuiles dynamiques (SportTileSelectable en mode contrôlé). Référence : `Project_context.md` §4.2.1.
+
+---
+
 ## Disponibilités athlète (availability)
 
 - **Table :** `athlete_availability_slots` (un créneau = une date ; **pas de récurrence** en produit). Athlète : CRUD sur ses créneaux ; coach : lecture seule sur les créneaux de ses athlètes.
@@ -340,7 +346,7 @@ if ('error' in result) return result
 ---
 
 **Version:** 2.3 
-**Last updated:** 2 mars 2026
+**Last updated:** 14 mars 2026
 **Refactoring status:** 13/17 tasks completed (76%)  
 **i18n:** Bilingue FR/EN complété — toujours penser bilingue pour les nouvelles features  
-**Offres/souscriptions:** Snapshot à la demande (frozen_* dans coach_requests), souscription à l’acceptation depuis coach_requests ; statuts offre draft / published / archived (voir Project_context.md). **Workouts:** Statut planifié / réalisé / non réalisé ; retour athlète (ressenti, intensité, plaisir) optionnel quand réalisé ; total « fait » avec déduplication Strava (voir Project_context.md §4.5). **Disponibilités athlète :** créneaux par jour (table athlete_availability_slots), pas de récurrence ; athlète CRUD, coach lecture seule (voir Project_context.md §4.5).
+**Offres/souscriptions:** Snapshot à la demande (frozen_* dans coach_requests), souscription à l’acceptation depuis coach_requests ; statuts offre draft / published / archived (voir Project_context.md). **Workouts:** Statut planifié / réalisé / non réalisé ; retour athlète (ressenti, intensité, plaisir) optionnel quand réalisé ; total « fait » avec déduplication Strava (voir Project_context.md §4.5). **Profil athlète – Objectifs et volume :** weekly_target_hours, weekly_volume_by_sport ; triathlon → 3 tuiles, trail → D+ dans tuile Course (voir Project_context.md §4.2.1). **Disponibilités athlète :** créneaux par jour (table athlete_availability_slots), pas de récurrence ; athlète CRUD, coach lecture seule (voir Project_context.md §4.5).

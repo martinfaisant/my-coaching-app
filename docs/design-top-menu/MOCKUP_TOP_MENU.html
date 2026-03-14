@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Menu en haut — Propositions Designer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        colors: {
+          'palette-forest-dark': '#627e59',
+          'palette-forest-darker': '#506648',
+          'palette-olive': '#8e9856',
+          'palette-sage': '#aaaa51',
+          'palette-danger': '#c0564b',
+        }
+      }}
+    }
+  </script>
+</head>
+<body class="bg-stone-100 text-stone-800 antialiased min-h-screen">
+  <div class="max-w-5xl mx-auto py-8 px-4 space-y-16">
+    <h1 class="text-2xl font-bold text-stone-900">Menu dashboard en haut — 3 propositions</h1>
+    <p class="text-sm text-stone-600">Mockups non fonctionnels. Tokens design system (palette-forest-dark, stone, etc.).</p>
+
+    <!-- ========== SOLUTION A : Barre unique, liens visibles ========== -->
+    <section class="space-y-4">
+      <h2 class="text-lg font-bold text-stone-900">Solution A — Barre unique, tous les liens visibles</h2>
+      <p class="text-sm text-stone-600">Logo à gauche, liens au centre, profil + avatar à droite. Idéal desktop large.</p>
+      <div class="rounded-2xl border border-stone-200 bg-white shadow-sm overflow-hidden">
+        <!-- Barre du haut (mockup) -->
+        <header class="h-14 flex items-center justify-between gap-4 px-4 lg:px-6 border-b border-stone-200/50 bg-white shrink-0">
+          <a href="#" class="flex items-center gap-2 shrink-0">
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect fill='%23627e59' width='64' height='64' rx='8'/%3E%3Ctext x='32' y='40' text-anchor='middle' fill='white' font-size='24' font-family='sans-serif'%3EMSA%3C/text%3E%3C/svg%3E" alt="" class="h-7 w-auto" />
+            <span class="text-base font-bold text-stone-800 hidden sm:inline">My Sport Ally</span>
+          </a>
+          <nav class="flex items-center gap-1 flex-1 justify-center min-w-0 overflow-x-auto">
+            <a href="#" class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-stone-500 hover:bg-stone-50 hover:text-palette-forest-dark whitespace-nowrap">Calendrier</a>
+            <a href="#" class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium bg-palette-forest-dark text-white shadow-lg shadow-palette-forest-dark/20 whitespace-nowrap">Objectifs</a>
+            <a href="#" class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-stone-500 hover:bg-stone-50 hover:text-palette-forest-dark whitespace-nowrap">Appareils</a>
+            <a href="#" class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-stone-500 hover:bg-stone-50 hover:text-palette-forest-dark whitespace-nowrap">Mon coach</a>
+            <a href="#" class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-stone-500 hover:bg-stone-50 hover:text-palette-forest-dark whitespace-nowrap">Historique abo</a>
+          </nav>
+          <div class="flex items-center gap-2 shrink-0">
+            <a href="#" class="flex items-center gap-2 px-2 py-1.5 rounded-xl border border-stone-100 bg-stone-50 hover:bg-white text-xs font-bold text-stone-800">
+              <span class="w-7 h-7 rounded-full bg-palette-olive flex items-center justify-center text-white text-xs">JD</span>
+              <span class="hidden md:inline max-w-[80px] truncate">Jean Dupont</span>
+            </a>
+          </div>
+        </header>
+        <!-- Zone contenu (réduite) -->
+        <div class="p-6 border-t border-stone-100">
+          <h3 class="text-xl font-bold text-stone-900 mb-2">Objectifs</h3>
+          <p class="text-sm text-stone-500">Contenu de la page (DashboardPageShell). Zone scrollable en dessous.</p>
+        </div>
+      </div>
+      <p class="text-xs text-stone-500"><strong>Composants :</strong> Nouveau composant <code>DashboardTopBar</code> (ou <code>TopNav</code>) avec logo, nav, bloc profil. Réutiliser <code>AvatarImage</code>, <code>Button</code> (ghost pour déconnexion si ajoutée dans le bloc profil). <code>DashboardPageShell</code> inchangé.</p>
+    </section>
+
+    <!-- ========== SOLUTION B : Profil en dropdown ========== -->
+    <section class="space-y-4">
+      <h2 class="text-lg font-bold text-stone-900">Solution B — Profil en menu déroulant</h2>
+      <p class="text-sm text-stone-600">Logo + liens principaux toujours visibles ; à droite un bouton « Profil » (avatar) ouvre un dropdown : Profil, Historique abo (athlète), Déconnexion. Gain de place.</p>
+      <div class="rounded-2xl border border-stone-200 bg-white shadow-sm overflow-hidden">
+        <header class="h-14 flex items-center justify-between gap-4 px-4 lg:px-6 border-b border-stone-200/50 bg-white shrink-0">
+          <a href="#" class="flex items-center gap-2 shrink-0">
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect fill='%23627e59' width='64' height='64' rx='8'/%3E%3Ctext x='32' y='40' text-anchor='middle' fill='white' font-size='24' font-family='sans-serif'%3EMSA%3C/text%3E%3C/svg%3E" alt="" class="h-7 w-auto" />
+            <span class="text-base font-bold text-stone-800 hidden sm:inline">My Sport Ally</span>
+          </a>
+          <nav class="flex items-center gap-1 flex-1 justify-center min-w-0">
+            <a href="#" class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-stone-500 hover:bg-stone-50 whitespace-nowrap">Calendrier</a>
+            <a href="#" class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium bg-palette-forest-dark text-white whitespace-nowrap">Objectifs</a>
+            <a href="#" class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-stone-500 hover:bg-stone-50 whitespace-nowrap">Appareils</a>
+            <a href="#" class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-stone-500 hover:bg-stone-50 whitespace-nowrap">Mon coach</a>
+          </nav>
+          <div class="relative shrink-0">
+            <button type="button" class="flex items-center gap-2 px-2 py-1.5 rounded-xl border border-stone-200 bg-white hover:bg-stone-50">
+              <span class="w-8 h-8 rounded-full bg-palette-olive flex items-center justify-center text-white text-sm">JD</span>
+              <svg class="w-4 h-4 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+            </button>
+            <div class="absolute right-0 top-full mt-1 w-48 py-1 bg-white rounded-xl border border-stone-200 shadow-lg hidden (mock: menu ouvert)">
+              <a href="#" class="block px-4 py-2 text-sm text-stone-700 hover:bg-stone-50">Profil</a>
+              <a href="#" class="block px-4 py-2 text-sm text-stone-700 hover:bg-stone-50">Historique abonnements</a>
+              <hr class="my-1 border-stone-200" />
+              <a href="#" class="block px-4 py-2 text-sm text-palette-danger hover:bg-red-50">Déconnexion</a>
+            </div>
+          </div>
+        </header>
+        <div class="p-6 border-t border-stone-100">
+          <h3 class="text-xl font-bold text-stone-900 mb-2">Objectifs</h3>
+          <p class="text-sm text-stone-500">Même zone contenu. Dropdown profil libère de la place pour les liens nav.</p>
+        </div>
+      </div>
+      <p class="text-xs text-stone-500"><strong>Composants :</strong> <code>DashboardTopBar</code> + <code>Dropdown</code> (design system) pour le menu profil, ou composant dédié <code>ProfileMenu</code>. Réutiliser <code>AvatarImage</code>, styles dropdown alignés sur DESIGN_SYSTEM (sélection = vert).</p>
+    </section>
+
+    <!-- ========== SOLUTION C : Mobile — Hamburger + drawer ========== -->
+    <section class="space-y-4">
+      <h2 class="text-lg font-bold text-stone-900">Solution C — Mobile : hamburger + drawer</h2>
+      <p class="text-sm text-stone-600">Sur petit écran : barre avec logo, 1–2 liens prioritaires (ex. Calendrier) + icône hamburger. Clic ouvrant un drawer (gauche ou plein écran) avec tous les liens + profil, comme la sidebar actuelle en liste.</p>
+      <div class="rounded-2xl border border-stone-200 bg-white shadow-sm overflow-hidden max-w-sm mx-auto">
+        <header class="h-14 flex items-center justify-between gap-2 px-4 border-b border-stone-200/50 bg-white">
+          <a href="#" class="flex items-center gap-2 shrink-0">
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect fill='%23627e59' width='64' height='64' rx='8'/%3E%3Ctext x='32' y='40' text-anchor='middle' fill='white' font-size='24' font-family='sans-serif'%3EMSA%3C/text%3E%3C/svg%3E" alt="" class="h-6 w-auto" />
+          </a>
+          <a href="#" class="px-3 py-2 rounded-xl text-sm font-medium bg-palette-forest-dark text-white">Calendrier</a>
+          <button type="button" class="p-2 rounded-lg text-stone-500 hover:bg-stone-100" aria-label="Menu">
+            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
+          </button>
+        </header>
+        <div class="p-4 border-t border-stone-100">
+          <p class="text-xs text-stone-500">Drawer (non affiché ici) : liste verticale des liens + profil en bas, même style que la sidebar actuelle (liens avec icône + libellé, état actif vert).</p>
+        </div>
+      </div>
+      <p class="text-xs text-stone-500"><strong>Composants :</strong> Sur mobile, <code>DashboardTopBar</code> affiche logo + 1 lien prioritaire (optionnel) + bouton hamburger. Nouveau composant <code>Drawer</code> ou réutilisation d’un panneau coulissant (design system à étendre si absent) ; contenu du drawer = même liste de liens que la sidebar actuelle (réutiliser la logique des liens par rôle).</p>
+    </section>
+
+    <!-- Récap composants -->
+    <section class="rounded-2xl border border-stone-200 bg-stone-50 p-6">
+      <h2 class="text-lg font-bold text-stone-900 mb-3">Récapitulatif — Composants à utiliser / faire évoluer</h2>
+      <ul class="text-sm text-stone-700 space-y-2 list-disc list-inside">
+        <li><strong>À créer :</strong> <code>DashboardTopBar</code> (ou <code>TopNav</code>) : barre fixe en haut avec logo, navigation, zone profil (lien profil + option dropdown ou déconnexion).</li>
+        <li><strong>À réutiliser tels quels :</strong> <code>AvatarImage</code>, <code>Button</code>, <code>PageHeader</code> (dans DashboardPageShell), tokens (palette-forest-dark, stone, rounded-xl, shadow-sm).</li>
+        <li><strong>À faire évoluer :</strong> <code>dashboard/layout.tsx</code> — remplacer <code>Sidebar</code> par <code>DashboardTopBar</code> et adapter le layout (flex-col au lieu de flex row ; barre en haut puis zone contenu en flex-1). <code>Sidebar</code> : soit retiré, soit réutilisé comme contenu du drawer mobile (Solution C).</li>
+        <li><strong>Optionnel :</strong> Composant <code>Drawer</code> si absent du design system (mobile). <code>Dropdown</code> pour menu profil (Solution B).</li>
+      </ul>
+    </section>
+  </div>
+</body>
+</html>

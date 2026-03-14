@@ -22,6 +22,9 @@ type SportTileSelectableProps =
       /** Mode formulaire : nom du champ et checked par défaut */
       name: string
       defaultChecked?: boolean
+      /** En mode contrôlé : état coché et callback au changement (pour mise à jour dynamique des tuiles volume). */
+      checked?: boolean
+      onChange?: (checked: boolean) => void
       disabled?: boolean
     }
   | {
@@ -43,19 +46,23 @@ export function SportTileSelectable(props: SportTileSelectableProps) {
   const label = getSportLabel(sportKey)
 
   if ('name' in props) {
-    const { name, defaultChecked } = props
+    const { name, defaultChecked, checked, onChange } = props
+    const isControlled = checked !== undefined && onChange !== undefined
+    const selected = isControlled ? checked : defaultChecked
     return (
       <label className="cursor-pointer">
         <input
           type="checkbox"
           name={name}
           value={value}
-          defaultChecked={defaultChecked}
+          {...(isControlled
+            ? { checked, onChange: (e) => onChange(e.target.checked) }
+            : { defaultChecked })}
           disabled={disabled}
           className="hidden chip-checkbox"
         />
         <div
-          className={`${BASE_CLASSES} ${UNSELECTED_CLASSES} ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`}
+          className={`${BASE_CLASSES} ${selected ? SELECTED_CLASSES : UNSELECTED_CLASSES} ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`}
         >
           <Icon className="w-3.5 h-3.5 shrink-0" aria-hidden />
           <span>{label}</span>
