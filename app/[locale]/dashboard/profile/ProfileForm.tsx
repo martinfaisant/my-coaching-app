@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useLayoutEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useLayoutEffect, useRef, useCallback, useMemo } from 'react'
 import { useActionState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useLocale, useTranslations } from 'next-intl'
@@ -19,6 +19,11 @@ import { logger } from '@/lib/logger'
 
 import { LANGUAGES_OPTIONS } from '@/lib/sportsOptions'
 import { useCoachedSportsOptions, usePracticedSportsOptions } from '@/lib/hooks/useSportsOptions'
+import { SPORT_ICONS, SPORT_CARD_STYLES, SPORT_TRANSLATION_KEYS, getWeeklyVolumeUnit } from '@/lib/sportStyles'
+import type { SportType } from '@/lib/sportStyles'
+
+/** Ordre stable pour afficher les sports dans la section volume (triathlon → course, vélo, natation). */
+const DISPLAY_SPORTS_ORDER = ['course', 'velo', 'natation', 'musculation', 'trail', 'triathlon'] as const
 
 type ProfileFormProps = {
   email: string
@@ -38,6 +43,10 @@ type ProfileFormProps = {
   /** Présentation du coach en anglais. */
   presentationEn?: string
   postalCode: string
+  /** Temps à allouer par semaine (heures), athlète uniquement. */
+  weeklyTargetHours?: number | null
+  /** Volume par sport (km, m ou h), athlète uniquement. */
+  weeklyVolumeBySport?: Record<string, number> | null
 }
 
 export function ProfileForm({
@@ -54,10 +63,13 @@ export function ProfileForm({
   presentationEn = '',
   postalCode,
   preferredLocale: preferredLocaleProp = null,
+  weeklyTargetHours = null,
+  weeklyVolumeBySport = null,
 }: ProfileFormProps) {
   const locale = useLocale()
   const effectiveInitialLocale = preferredLocaleProp === 'fr' || preferredLocaleProp === 'en' ? preferredLocaleProp : (locale === 'en' ? 'en' : 'fr')
   const tProfile = useTranslations('profile')
+  const tSports = useTranslations('sports')
   const tCommon = useTranslations('common')
   const router = useRouter()
   const coachedSportsOptions = useCoachedSportsOptions()
@@ -81,6 +93,27 @@ export function ProfileForm({
   const [presentationFrLength, setPresentationFrLength] = useState((presentationFr || '').length)
   const [presentationEnLength, setPresentationEnLength] = useState((presentationEn || '').length)
 
+  /** Sports pratiqués sélectionnés (état local pour mise à jour dynamique des tuiles volume). */
+  const [selectedPracticedSports, setSelectedPracticedSports] = useState<string[]>(() => [...practicedSports].sort())
+  useEffect(() => {
+    setSelectedPracticedSports((prev) => {
+      const next = [...practicedSports].sort()
+      return JSON.stringify(prev) === JSON.stringify(next) ? prev : next
+    })
+  }, [practicedSports])
+
+  /** Liste des sports pour la section volume : triathlon → course, vélo, natation ; trail n’a pas de tuile dédiée (champ D+ dans la tuile Course). */
+  const displaySportsForVolume = useMemo(() => {
+    const expanded = selectedPracticedSports.flatMap((s) =>
+      s === 'triathlon' ? ['course', 'velo', 'natation'] : [s]
+    )
+    const withoutTrail = expanded.filter((s) => s !== 'trail')
+    if (selectedPracticedSports.includes('trail') && !withoutTrail.includes('course')) {
+      withoutTrail.push('course')
+    }
+    return DISPLAY_SPORTS_ORDER.filter((s) => withoutTrail.includes(s))
+  }, [selectedPracticedSports])
+
   // Valeurs initiales pour détecter les modifications
   const initialValuesRef = useRef({
     firstName,
@@ -94,6 +127,8 @@ export function ProfileForm({
     presentation: presentation || '',
     presentationFr: presentationFr || '',
     presentationEn: presentationEn || '',
+    weeklyTargetHours: weeklyTargetHours ?? '',
+    weeklyVolumeBySport: JSON.stringify(weeklyVolumeBySport ?? {}),
   })
 
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
@@ -138,6 +173,34 @@ export function ProfileForm({
         .map((cb) => cb.value)
         .sort()
       if (JSON.stringify(currentPracticedSports) !== JSON.stringify(initialValuesRef.current.practicedSports)) return true
+
+      const currentWeeklyTarget = (form.querySelector('[name="weekly_target_hours"]') as HTMLInputElement)?.value.trim() ?? ''
+      if (currentWeeklyTarget !== String(initialValuesRef.current.weeklyTargetHours)) return true
+
+      const expandedForVolume = currentPracticedSports.flatMap((s) =>
+        s === 'triathlon' ? ['course', 'velo', 'natation'] : [s]
+      )
+      const volumeDisplayList = DISPLAY_SPORTS_ORDER.filter((s) => expandedForVolume.includes(s))
+      const currentVolume: Record<string, number> = {}
+      volumeDisplayList.forEach((sport) => {
+        const el = form.querySelector(`[name="weekly_volume_${sport}"]`) as HTMLInputElement
+        const v = el?.value.trim() ?? ''
+        if (v !== '') {
+          const parsed = parseFloat(v.replace(',', '.'))
+          if (!Number.isNaN(parsed)) currentVolume[sport] = parsed
+        }
+      })
+      const initialVolume = JSON.parse(initialValuesRef.current.weeklyVolumeBySport) as Record<string, number>
+      if (currentPracticedSports.includes('trail')) {
+        const el = form.querySelector('[name="weekly_volume_course_elevation_m"]') as HTMLInputElement
+        const v = el?.value.trim() ?? ''
+        const parsed = v !== '' ? parseFloat(v.replace(',', '.')) : NaN
+        const currentElevation = !Number.isNaN(parsed) ? parsed : undefined
+        if (String(currentElevation ?? '') !== String(initialVolume.course_elevation_m ?? '')) return true
+      }
+      for (const sport of volumeDisplayList) {
+        if (String(currentVolume[sport] ?? '') !== String(initialVolume[sport] ?? '')) return true
+      }
     }
 
     return false
@@ -222,7 +285,30 @@ export function ProfileForm({
           .sort()
         const currentPresentationFr = (form.querySelector('[name="presentation_fr"]') as HTMLTextAreaElement)?.value.trim() || ''
         const currentPresentationEn = (form.querySelector('[name="presentation_en"]') as HTMLTextAreaElement)?.value.trim() || ''
+        const currentWeeklyTarget = (form.querySelector('[name="weekly_target_hours"]') as HTMLInputElement)?.value.trim() ?? ''
+        const expandedForVolume = currentPracticedSports.flatMap((s) =>
+          s === 'triathlon' ? ['course', 'velo', 'natation'] : [s]
+        )
+        const volumeDisplayList = DISPLAY_SPORTS_ORDER.filter((s) => expandedForVolume.includes(s))
+        const currentVolume: Record<string, number> = {}
+        volumeDisplayList.forEach((sport) => {
+          const el = form.querySelector(`[name="weekly_volume_${sport}"]`) as HTMLInputElement
+          const v = el?.value.trim() ?? ''
+          if (v !== '') {
+            const parsed = parseFloat(v.replace(',', '.'))
+            if (!Number.isNaN(parsed)) currentVolume[sport] = parsed
+          }
+        })
+        if (currentPracticedSports.includes('trail')) {
+          const el = form.querySelector('[name="weekly_volume_course_elevation_m"]') as HTMLInputElement
+          const v = el?.value.trim() ?? ''
+          if (v !== '') {
+            const parsed = parseFloat(v.replace(',', '.'))
+            if (!Number.isNaN(parsed)) currentVolume.course_elevation_m = parsed
+          }
+        }
         initialValuesRef.current = {
+          ...initialValuesRef.current,
           firstName: currentFirstName,
           lastName: currentLastName,
           avatarUrl: avatarUrlState,
@@ -234,6 +320,8 @@ export function ProfileForm({
           presentation: initialValuesRef.current.presentation,
           presentationFr: currentPresentationFr,
           presentationEn: currentPresentationEn,
+          weeklyTargetHours: currentWeeklyTarget,
+          weeklyVolumeBySport: JSON.stringify(currentVolume),
         }
         setHasUnsavedChanges(false)
       }
@@ -469,7 +557,7 @@ export function ProfileForm({
           </div>
 
           {/* Grille Informations Personnelles */}
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-5">
             {/* Prénom */}
             <div className="md:col-span-6">
               <Input
@@ -524,10 +612,10 @@ export function ProfileForm({
             </div>
           </div>
 
-          <hr className="border-stone-100 my-8" />
+          <hr className="border-stone-100 my-5" />
 
           {/* Section Sports : coach = sports coachés, athlète = sports pratiqués */}
-          <div className="mb-8">
+          <div className="mb-5">
             {isCoach ? (
               <>
                 <h2 className="text-sm font-bold text-stone-900 uppercase tracking-wide mb-3">{tProfile('coachedSports')}</h2>
@@ -551,7 +639,14 @@ export function ProfileForm({
                       key={opt.value}
                       value={opt.value}
                       name="practiced_sports"
-                      defaultChecked={practicedSports.includes(opt.value)}
+                      checked={selectedPracticedSports.includes(opt.value)}
+                      onChange={(checked) => {
+                        setSelectedPracticedSports((prev) =>
+                          checked
+                            ? [...prev, opt.value].sort()
+                            : prev.filter((s) => s !== opt.value)
+                        )
+                      }}
                     />
                   ))}
                 </div>
@@ -559,9 +654,104 @@ export function ProfileForm({
             )}
           </div>
 
+          {/* Section Objectifs et volume (athlète uniquement) */}
+          {!isCoach && (
+            <>
+              <hr className="border-stone-100 my-5" />
+              <div className="mb-5">
+                <h2 className="text-sm font-bold text-stone-900 uppercase tracking-wide mb-3">
+                  {tProfile('weeklyTargetSectionTitle')}
+                </h2>
+                {selectedPracticedSports.length === 0 ? (
+                  <p className="text-sm text-stone-500">{tProfile('noPracticedSportsMessage')}</p>
+                ) : (
+                  <>
+                    <div className="flex flex-wrap items-center justify-between gap-3 py-2.5 px-3 rounded-xl bg-stone-50 border border-stone-100 mb-4">
+                      <span className="text-sm font-medium text-stone-700 shrink-0">
+                        {tProfile('weeklyTargetLabel')}
+                      </span>
+                      <div className="relative w-28 shrink-0">
+                        <input
+                          type="text"
+                          name="weekly_target_hours"
+                          inputMode="decimal"
+                          defaultValue={weeklyTargetHours != null ? String(weeklyTargetHours) : ''}
+                          placeholder="10"
+                          className="w-full pl-3 pr-11 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition"
+                        />
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 text-sm pointer-events-none">
+                          {tProfile('suffixHoursPerWeek')}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      {displaySportsForVolume.map((sport) => {
+                        const sportKey = sport as SportType
+                        const Icon = SPORT_ICONS[sportKey] ?? SPORT_ICONS.course
+                        const styles = SPORT_CARD_STYLES[sportKey] ?? SPORT_CARD_STYLES.course
+                        const unit = getWeeklyVolumeUnit(sport)
+                        const suffixKey = unit === 'km' ? 'suffixKmPerWeek' : unit === 'm' ? 'suffixMPerWeek' : 'suffixHoursPerWeek'
+                        const value = weeklyVolumeBySport?.[sport]
+                        const defaultValue = value != null ? String(value) : ''
+                        const showCourseElevation = sport === 'course' && selectedPracticedSports.includes('trail')
+                        const elevationValue = weeklyVolumeBySport?.course_elevation_m
+                        const elevationDefault = elevationValue != null ? String(elevationValue) : ''
+                        return (
+                          <div
+                            key={sport}
+                            className={`rounded-xl border-l-4 border border-stone-200 p-3 flex flex-wrap items-center justify-between gap-3 ${styles.badgeBg} ${styles.borderLeft}`}
+                          >
+                            <div className="flex items-center gap-2 min-w-0 shrink-0">
+                              <span className={styles.badge}>
+                                <Icon className="w-4 h-4" />
+                              </span>
+                              <span className="text-sm font-semibold text-stone-800">
+                                {tSports(SPORT_TRANSLATION_KEYS[sportKey])}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-3 shrink-0 ml-auto min-w-0">
+                              <div className="relative w-28 shrink-0">
+                                <input
+                                  type="text"
+                                  name={`weekly_volume_${sport}`}
+                                  inputMode="decimal"
+                                  defaultValue={defaultValue}
+                                  placeholder={unit === 'm' ? '2500' : unit === 'h' ? '2,5' : '42'}
+                                  className="w-full pl-3 pr-12 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition"
+                                />
+                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 text-xs pointer-events-none whitespace-nowrap">
+                                  {tProfile(suffixKey)}
+                                </span>
+                              </div>
+                              {showCourseElevation && (
+                                <div className="relative w-28 shrink-0">
+                                  <input
+                                    type="text"
+                                    name="weekly_volume_course_elevation_m"
+                                    inputMode="decimal"
+                                    defaultValue={elevationDefault}
+                                    placeholder="500"
+                                    className="w-full pl-3 pr-14 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition"
+                                  />
+                                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 text-xs pointer-events-none whitespace-nowrap">
+                                    {tProfile('suffixDPlusPerWeek')}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </>
+                )}
+              </div>
+            </>
+          )}
+
           {/* Section Langues (coach uniquement) */}
           {isCoach && (
-          <div className="mb-8">
+          <div className="mb-5">
             <h2 className="text-sm font-bold text-stone-900 uppercase tracking-wide mb-3">{tProfile('spokenLanguages')}</h2>
             <div className="flex flex-wrap gap-2">
               {LANGUAGES_OPTIONS.map((opt) => (
@@ -583,12 +773,12 @@ export function ProfileForm({
           )}
 
           {isCoach && (
-          <hr className="border-stone-100 my-8" />
+          <hr className="border-stone-100 my-5" />
           )}
 
           {/* Bio (coach uniquement) — EN à gauche, FR à droite (composant LanguagePrefixField) */}
           {isCoach && (
-          <div className="mb-8">
+          <div className="mb-5">
             <h2 className="text-sm font-bold text-stone-900 uppercase tracking-wide mb-3">{tProfile('presentation')}</h2>
             <p className="text-xs text-stone-400 mb-2">{tProfile('presentationSubtitle')}</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">

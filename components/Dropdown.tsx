@@ -39,6 +39,8 @@ export type DropdownProps = {
   triggerPrefix?: React.ReactNode
   /** Afficher une coche sur l'option sélectionnée dans le menu */
   showCheckmark?: boolean
+  /** Classes additionnelles sur le bouton trigger (ex. text-sm font-medium text-stone-700 pour aligner sur un bouton secondaire) */
+  triggerClassName?: string
 }
 
 const OPTION_SELECTED =
@@ -59,6 +61,7 @@ export function Dropdown({
   valueDisplay,
   triggerPrefix,
   showCheckmark = false,
+  triggerClassName = '',
 }: DropdownProps) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
@@ -91,7 +94,7 @@ export function Dropdown({
       <button
         id={id}
         type="button"
-        className={`flex items-center justify-between gap-2 w-full cursor-pointer ${FORM_BASE_CLASSES}`}
+        className={`flex items-center justify-between gap-2 w-full cursor-pointer ${FORM_BASE_CLASSES} ${triggerClassName}`.trim()}
         style={{ minWidth }}
         aria-haspopup="listbox"
         aria-expanded={open}

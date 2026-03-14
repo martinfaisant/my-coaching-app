@@ -25,6 +25,10 @@ export type Profile = {
   practiced_sports?: string[] | null
   /** Langue d'affichage préférée (fr/en). Utilisée sur tout le site quand l'utilisateur est connecté. */
   preferred_locale?: string | null
+  /** Temps à allouer par semaine (global), en heures (athlète). */
+  weekly_target_hours?: number | null
+  /** Volume actuel par sport et par semaine : clés = sport (course, velo, …), valeurs = nombre (km, m ou h). */
+  weekly_volume_by_sport?: Record<string, number> | null
 }
 
 export type SportType = 'course' | 'musculation' | 'natation' | 'velo' | 'nordic_ski' | 'backcountry_ski' | 'ice_skating'

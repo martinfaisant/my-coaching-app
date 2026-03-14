@@ -53,6 +53,8 @@ export default async function ProfilePage({ params }: { params: Promise<{ locale
           preferredLocale={current.profile.preferred_locale ?? undefined}
           presentation={current.profile.presentation ?? ''}
           postalCode={current.profile.postal_code ?? ''}
+          weeklyTargetHours={current.profile.weekly_target_hours ?? undefined}
+          weeklyVolumeBySport={current.profile.weekly_volume_by_sport ?? undefined}
         />
       )}
     </DashboardPageShell>

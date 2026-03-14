@@ -149,6 +149,24 @@ The pages **« Trouver mon coach »** and **« Mes athlètes »** are **separate
 
 ---
 
+### 4.2.1 Athlete profile (Mon profil) ✅
+
+On the **Mon profil** page (`/dashboard/profile`), the athlete can edit:
+
+- Name, avatar, postal code
+- **Sports pratiqués** (practiced sports): course, vélo, natation, musculation, trail, triathlon (tiles, multi-select)
+
+**Objectifs et volume par sport** (section visible only when the athlete has at least one practiced sport):
+
+- **Temps à allouer / semaine** : one global value in **hours** (e.g. 10 h/sem.), saved in `profiles.weekly_target_hours`.
+- **Volume actuel par sport et par semaine** : one value per sport (manual entry), units: **km** (course, vélo), **m** (natation), **h** (musculation, triathlon). Stored in `profiles.weekly_volume_by_sport` (JSONB: keys = sport, values = number).
+- **Triathlon** : when selected, the volume section shows **three tiles** (Course, Vélo, Natation) instead of one “Triathlon” tile; volumes are stored under `course`, `velo`, `natation`.
+- **Trail** : no separate volume tile; when trail is selected, the **Course** tile gains an extra field **D+/sem.** (elevation gain per week in m), stored in `weekly_volume_by_sport.course_elevation_m`.
+- Tiles and fields update **dynamically** when the athlete selects or deselects practiced sports (controlled checkboxes). Save uses the existing « Enregistrer » button; validation (positive values, caps) is server-side.
+- **Coach visibility** of these fields is planned separately (not in current scope).
+
+---
+
 ### 4.3 Search & Discovery ✅
 
 Athletes filter coaches by:
@@ -322,7 +340,7 @@ Athletes filter coaches by:
 
 | Entity | Purpose |
 |--------|---------|
-| `profiles` | User profile, role, coach_id, coached_sports, languages, presentation, avatar, postal_code |
+| `profiles` | User profile, role, coach_id, coached_sports, languages, presentation, avatar, postal_code. **Athlete:** `practiced_sports`, `weekly_target_hours` (h), `weekly_volume_by_sport` (JSONB: sport → volume; keys e.g. course, velo, natation, musculation, `course_elevation_m` for trail D+). |
 | `coach_offers` | Coach offers (title, description, price, price_type). Status: `draft` (coach only) / `published` (3 slots, visible to athletes) / `archived` (coach only, no new requests). |
 | `coach_requests` | Athlete → Coach request (status: pending / accepted / declined). When offer is chosen: `offer_id` + snapshot `frozen_price`, `frozen_title`, `frozen_description` (offer as seen by athlete at request time). |
 | `subscriptions` | Subscription per accepted request: `athlete_id`, `coach_id`, `request_id`, same `frozen_*` copied from `coach_requests` (not from offers). `status`: `'active'` \| `'cancellation_scheduled'` \| `'cancelled'`. `cancellation_requested_by_user_id` (UUID, nullable): user who requested the scheduled cancellation; only they can cancel the cancellation. Used for billing history; unchanged if coach later changes the offer. |

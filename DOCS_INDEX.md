@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 3 mars 2026 (Mode Analyste : workout feedback — archivage docs design-workout-feedback ; voir Project_context §4.5, DESIGN_SYSTEM § Modal)
+**Dernière mise à jour :** 14 mars 2026 (Mode Analyste : objectifs et volume par sport — archivage docs design-athlete-weekly-targets ; voir Project_context §4.2.1, DESIGN_SYSTEM § SportTileSelectable)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -229,6 +229,12 @@
 - `docs/archive/design-workout-time-of-day/` — DESIGN.md (besoin, cas, user stories US1–US5), SPEC_TIME_OF_DAY.md (migration, types, RLS, fichiers, logique métier), MOCKUP_FORM_TIME_OF_DAY.html, MOCKUP_CALENDAR_DAY_ORDER.html.
 - **Raison :** Feature livrée ; coach peut renseigner optionnellement le moment (segments Non précisé | Matin | Midi | Soir) ; calendrier et modale « Activités du jour » affichent la journée en sections (premier bloc sans titre, puis Matin / Midi / Soir avec titre si non vide). Comportement décrit dans **Project_context.md §4.5** (Workouts, Calendar day structure), **docs/DESIGN_SYSTEM.md** (WorkoutModal, §7 Calendrier), **docs/I18N.md** (workouts.form.timeOfDay*, calendar.morning/noon/evening).
 
+**Objectifs et volume par sport (profil athlète) (archivés 14 mars 2026) :**
+- `docs/archive/design-athlete-weekly-targets/DESIGN_ATHLETE_WEEKLY_TARGETS.md` — Design (besoin, cas, solutions D/E/F, choix E, pattern suffixe).
+- `docs/archive/design-athlete-weekly-targets/SPEC_ATHLETE_WEEKLY_TARGETS.md` — Spec technique (migration 055, RLS, fichiers, triathlon/trail).
+- `docs/archive/design-athlete-weekly-targets/MOCKUP_ATHLETE_WEEKLY_TARGETS.html` — Mockup page profil avec section Objectifs et volume (Solution E).
+- **Raison :** Feature livrée ; section « Objectifs et volume par sport » sur Mon profil (athlète) : temps à allouer/semaine (h), volume par sport (km/m/h), triathlon → 3 tuiles (Course, Vélo, Natation), trail → champ D+/sem. dans tuile Course, tuiles dynamiques. Comportement décrit dans **Project_context.md §4.2.1**, **docs/DESIGN_SYSTEM.md** (SportTileSelectable mode contrôlé), **docs/I18N.md** (profile.*).
+
 **Retour athlète après séance (workout feedback) (archivés 3 mars 2026) :**
 - `docs/archive/design-workout-feedback/` — DESIGN.md (besoin, échelles 1–5 / 1–10, Lucide, harmonisation visuelle), SPEC_ARCHITECTURE.md (migration 054, champs perceived_*), MOCKUP_WORKOUT_FEEDBACK_MODAL_A.html, MOCKUP_WORKOUT_FEEDBACK_MODAL_B.html.
 - **Raison :** Feature livrée ; athlète peut renseigner optionnellement (quand statut = Réalisé) : Comment vous êtes-vous senti ? (1–5), Intensité effort (1–10), Plaisir (1–5) ; icônes Lucide + libellés ; sauvegarde avec statut et commentaire ; coach voit le retour en lecture seule. Comportement décrit dans **Project_context.md §4.5** (Workouts), **docs/DESIGN_SYSTEM.md** (Modal / WorkoutModal), **docs/I18N.md** (workouts.feedback).
@@ -376,6 +382,12 @@
 **Dernier nettoyage :** 3 mars 2026 (archivage design-workout-feedback)
 
 ### Changements récents :
+
+✅ **14 mars 2026 – Objectifs et volume par sport (profil athlète) – Mode Analyste :**
+- **Livraison :** Sur la page **Mon profil** (athlète), nouvelle section **« Objectifs et volume par sport »** après Sports pratiqués : (1) **Temps à allouer / semaine** (une valeur globale en h, suffixe h/sem. / h/week) ; (2) **Volume actuel par sport** : une tuile par sport avec icône + nom + champ (km/sem., m/sem. ou h/sem. selon sport). **Triathlon** sélectionné → affichage de 3 tuiles (Course, Vélo, Natation) ; **Trail** sélectionné → pas de tuile dédiée, champ **D+/sem.** ajouté sur la même ligne que le volume dans la tuile Course. Tuiles mises à jour dynamiquement à la sélection/désélection des sports (SportTileSelectable en mode contrôlé). Données : `profiles.weekly_target_hours`, `profiles.weekly_volume_by_sport` (migration 055), clé `course_elevation_m` pour le D+ trail.
+- **Fichiers :** `supabase/migrations/055_profiles_weekly_target_and_volume.sql`, `app/[locale]/dashboard/profile/page.tsx`, `ProfileForm.tsx`, `actions.ts`, `lib/sportStyles.ts` (getWeeklyVolumeUnit), `components/SportTileSelectable.tsx` (checked + onChange), `types/database.ts`, `messages/fr.json`, `messages/en.json`.
+- **Doc :** Project_context.md §4.2.1 (Athlete profile), §5 (profiles), DESIGN_SYSTEM (SportTileSelectable, version 1.10), I18N (profile.*), project-core.mdc (Profil athlète – Objectifs et volume).
+- **Archivage :** `docs/design-athlete-weekly-targets/` → `docs/archive/design-athlete-weekly-targets/` (DESIGN_ATHLETE_WEEKLY_TARGETS.md, SPEC_ATHLETE_WEEKLY_TARGETS.md, MOCKUP_ATHLETE_WEEKLY_TARGETS.html). Référence courante : **Project_context.md §4.2.1**, **docs/DESIGN_SYSTEM.md**, **docs/I18N.md**.
 
 ✅ **3 mars 2026 – Retour athlète après séance (workout feedback) – Mode Analyste :**
 - **Livraison :** L’athlète peut renseigner optionnellement, lorsque le statut de la séance est **Réalisé**, trois retours : **Comment vous êtes-vous senti ?** (échelle 1–5 avec icônes Lucide + libellés), **Intensité de l’effort ressenti :** (1–10 segments), **Plaisir pris pendant la séance :** (1–5, mêmes icônes + libellés). Sauvegarde avec statut et commentaire en une action. Le coach voit le « Retour athlète » en lecture seule dans la modale (icônes + libellés ou X/10). Données : `workouts.perceived_feeling`, `perceived_intensity`, `perceived_pleasure` (migration 054).
@@ -608,6 +620,7 @@
 | Indicateur commentaire athlète sur tuile calendrier | `Project_context.md` §4.5, `docs/DESIGN_SYSTEM.md` §7 |
 | **Statut séance, modales entraînement (en-tête création/édition/lecture seule, tuile sport, date à gauche), total « fait », retour athlète (ressenti, intensité, plaisir)** | **`Project_context.md` §4.5** (Workouts), **`docs/DESIGN_SYSTEM.md`** (Modal, WorkoutModal) |
 | **Moment de la journée (Matin / Midi / Soir), sections calendrier, modale « Activités du jour »** | **`Project_context.md` §4.5** (Calendar day structure, Workout time_of_day), **`docs/DESIGN_SYSTEM.md`** (§7 Calendrier, WorkoutModal) |
+| **Objectifs et volume par sport (profil athlète : temps à allouer, volume par sport, triathlon → 3 tuiles, trail → D+)** | **`Project_context.md` §4.2.1** (Athlete profile), **`docs/DESIGN_SYSTEM.md`** (§ SportTileSelectable), **`docs/I18N.md`** (profile.*) |
 | **Disponibilités / indisponibilités athlète (calendrier, modales, pas de récurrence)** | **`Project_context.md` §4.5** (Athlete availability), **`docs/DESIGN_SYSTEM.md`** (§7 Calendrier, AvailabilityModal, AvailabilityDetailModal) |
 | **Résultat objectif passé (saisie temps/place/note, modale, affichage tuile)** | **`Project_context.md` §4.7** (Goals), **`docs/DESIGN_SYSTEM.md`** (§ TileCard, Page Objectifs), **`lib/goalResultUtils.ts`** |
 | **Calendrier / sélecteur de date (modale entraînement modifiable)** | **`docs/DESIGN_SYSTEM.md`** § DatePickerPopup, § Dropdown ; **Project_context.md** §4.5 (Create & edit modal). Design archivé : `docs/archive/design-workout-modal-calendar/` |

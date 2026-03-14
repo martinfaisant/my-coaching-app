@@ -1,7 +1,7 @@
 # 🎨 Design System
 
-**Version :** 1.9  
-**Dernière mise à jour :** 3 mars 2026 (WorkoutModal : retour athlète — ressenti, intensité, plaisir ; échelles 1–5 Lucide + 1–10 segments)
+**Version :** 1.10  
+**Dernière mise à jour :** 14 mars 2026 (Profil athlète : section Objectifs et volume par sport — temps à allouer, volume par sport, triathlon → 3 tuiles, trail → D+ dans tuile Course ; SportTileSelectable mode contrôlé)
 
 ---
 
@@ -559,7 +559,7 @@ Tous les sports ont une icône SVG dédiée (définie dans `components/SportIcon
 
 **Fichier :** `components/SportTileSelectable.tsx`
 
-Tuile sélectionnable pour sports (profil coach, filtres, demandes). Supporte deux modes : formulaire (uncontrolled) et état React (controlled).
+Tuile sélectionnable pour sports (profil coach, profil athlète, filtres, demandes). Supporte trois usages : formulaire non contrôlé (`name` + `defaultChecked`), formulaire contrôlé (`name` + `checked` + `onChange` pour mise à jour dynamique, ex. section Objectifs et volume du profil athlète), et mode bouton contrôlé (`selected` + `onChange` sans `name`).
 
 #### États visuels
 
@@ -572,14 +572,16 @@ Tuile sélectionnable pour sports (profil coach, filtres, demandes). Supporte de
 
 ```typescript
 type SportTileSelectableProps =
-  // Mode formulaire (uncontrolled)
+  // Mode formulaire (uncontrolled ou controlled avec name)
   | {
       value: string
       name: string
       defaultChecked?: boolean
+      checked?: boolean
+      onChange?: (checked: boolean) => void
       disabled?: boolean
     }
-  // Mode contrôlé (React state)
+  // Mode bouton contrôlé (sans name)
   | {
       value: string
       selected: boolean
@@ -1346,6 +1348,8 @@ Référence : `docs/CHAT_COACH_START_CONVERSATION_DESIGN.md`, mockup états 2a e
 ### Sports
 
 Toutes les icônes de sports sont définies dans `components/SportIcons.tsx` et utilisent `currentColor` pour être colorables via CSS.
+
+**Règle obligatoire :** Pour tout affichage de sport (profil, calendrier, formulaires, listes, rapports, mockups de design), **toujours utiliser les icônes du site** — `components/SportIcons.tsx`, via le mapping `SPORT_ICONS` dans `lib/sportStyles.ts`. Ne jamais utiliser d’emojis (🏃, 🚴, etc.) ni d’icônes externes pour représenter un sport.
 
 **Centralisation :** Les associations sport → icône sont dans `lib/sportStyles.ts` (`SPORT_ICONS`).
 

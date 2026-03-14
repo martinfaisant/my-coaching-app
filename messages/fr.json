@@ -355,8 +355,17 @@
     "saveAndLeave": "Enregistrer et quitter",
     "unsavedChangesAlert": "Vous avez des modifications non enregistrées. Voulez-vous vraiment quitter cette page ?",
     "deletionNotPossible": "La suppression n'est pas possible.",
+    "weeklyTargetSectionTitle": "Objectifs et volume par sport",
+    "weeklyTargetLabel": "Temps à allouer / semaine",
+    "noPracticedSportsMessage": "Sélectionnez des sports pratiqués ci-dessus pour définir vos objectifs.",
+    "suffixHoursPerWeek": "h/sem.",
+    "suffixKmPerWeek": "km/sem.",
+    "suffixMPerWeek": "m/sem.",
+    "suffixDPlusPerWeek": "D+/sem.",
     "validation": {
       "saved": "Informations enregistrées.",
+      "weeklyTargetInvalid": "Le temps à allouer doit être un nombre positif (max 168 h).",
+      "weeklyVolumeInvalid": "Le volume doit être un nombre positif.",
       "cannotDelete": "La suppression n'est pas possible. Vous devez d'abord mettre un terme à votre contrat avec vos athlètes.",
       "deletionFailed": "Suppression impossible.",
       "deletionError": "Erreur lors de la suppression."
