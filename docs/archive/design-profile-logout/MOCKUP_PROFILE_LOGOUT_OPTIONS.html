@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profil – Emplacements bouton Déconnexion (options)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette': {
+              'forest-dark': '#627e59',
+              'forest-darker': '#506648',
+              'danger': '#c0564b',
+              'danger-light': '#fdf2f1',
+            },
+          },
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-stone-100 min-h-screen p-6 text-stone-900">
+  <div class="max-w-3xl mx-auto space-y-12">
+    <h1 class="text-2xl font-bold text-stone-900">Page Profil – Où placer le bouton Déconnexion ?</h1>
+    <p class="text-sm text-stone-600">Contexte : la page affiche la card formulaire (Mes informations, Sports, etc.) puis en bas une zone avec « Supprimer mon compte ». La déconnexion n'existe aujourd'hui que dans le menu mobile (drawer).</p>
+
+    <!-- Option A : Section Session + Danger zone -->
+    <section class="bg-white rounded-2xl shadow-xl border border-stone-100 overflow-hidden p-6">
+      <h2 class="text-lg font-bold text-stone-900 mb-1">Option A – Section « Session » au-dessus de Supprimer</h2>
+      <p class="text-xs text-stone-500 mb-4">Nouvelle section « Session » avec Déconnexion, puis le bloc Supprimer inchangé. Hiérarchie claire : quitter la session vs supprimer le compte.</p>
+      <div class="mt-8 pt-6 border-t border-stone-200">
+        <p class="text-xs font-bold uppercase tracking-wider text-stone-400 mb-2">Session</p>
+        <p class="text-sm text-stone-600 mb-3">Vous êtes connecté avec <strong>jean@exemple.fr</strong>.</p>
+        <button type="button" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm bg-palette-danger text-white hover:bg-palette-danger/90 transition-colors">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" x2="9" y1="12" y2="12" /></svg>
+          Déconnexion
+        </button>
+      </div>
+      <div class="mt-8 pt-6 border-t border-stone-100 flex flex-col items-center">
+        <p class="text-xs font-bold uppercase tracking-wider text-stone-400 mb-2">Zone dangereuse</p>
+        <button type="button" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm bg-palette-danger text-white hover:bg-palette-danger/90">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+          Supprimer mon compte
+        </button>
+      </div>
+    </section>
+
+    <!-- Option B : Un seul bloc Compte avec les deux boutons -->
+    <section class="bg-white rounded-2xl shadow-xl border border-stone-100 overflow-hidden p-6">
+      <h2 class="text-lg font-bold text-stone-900 mb-1">Option B – Un seul bloc « Compte » (Déconnexion + Supprimer)</h2>
+      <p class="text-xs text-stone-500 mb-4">Un seul bloc en bas : titre « Compte », puis Déconnexion (bouton danger) et Supprimer mon compte (bouton danger). Les deux actions liées au compte au même endroit.</p>
+      <div class="mt-8 pt-6 border-t border-stone-200 flex flex-col items-center gap-4">
+        <p class="text-xs font-bold uppercase tracking-wider text-stone-400">Compte</p>
+        <div class="flex flex-col sm:flex-row gap-3 w-full max-w-sm justify-center">
+          <button type="button" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm bg-palette-danger text-white hover:bg-palette-danger/90">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" x2="9" y1="12" y2="12" /></svg>
+            Déconnexion
+          </button>
+          <button type="button" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm border border-palette-danger text-palette-danger hover:bg-palette-danger-light">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+            Supprimer mon compte
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Option C : Déconnexion en tête de formulaire (à côté d'Enregistrer) -->
+    <section class="bg-white rounded-2xl shadow-xl border border-stone-100 overflow-hidden p-6">
+      <h2 class="text-lg font-bold text-stone-900 mb-1">Option C – Déconnexion à côté du bouton Enregistrer</h2>
+      <p class="text-xs text-stone-500 mb-4">Dans la ligne « Mes informations », ajouter un second bouton « Déconnexion » (variant outline ou danger) à droite. Visible sans scroller.</p>
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <h3 class="text-2xl font-bold text-stone-900">Mes informations</h3>
+        <div class="flex items-center gap-2">
+          <button type="button" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm bg-stone-800 text-white hover:bg-stone-700">
+            Enregistrer
+          </button>
+          <button type="button" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm border-2 border-palette-danger text-palette-danger hover:bg-palette-danger-light">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" x2="9" y1="12" y2="12" /></svg>
+            Déconnexion
+          </button>
+        </div>
+      </div>
+      <p class="text-xs text-stone-500 mt-4">Le bloc « Supprimer mon compte » reste en bas de la page comme aujourd'hui.</p>
+    </section>
+
+    <p class="text-sm text-stone-500">Composant à réutiliser : <code class="bg-stone-200 px-1 rounded">LogoutButton</code> (variant danger, i18n <code>auth.logout</code> / <code>auth.loggingOut</code>). Aucun nouveau composant à créer.</p>
+  </div>
+</body>
+</html>
