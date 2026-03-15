@@ -89,7 +89,7 @@ export default async function MonCoachPage({ params }: { params: Promise<{ local
 
   if (!coach) {
     return (
-      <DashboardPageShell title={t('title')}>
+      <DashboardPageShell>
         <p className="mt-1 text-sm text-stone-600">{t('notFound')}</p>
       </DashboardPageShell>
     )
@@ -118,7 +118,7 @@ export default async function MonCoachPage({ params }: { params: Promise<{ local
       : null
 
   return (
-    <DashboardPageShell title={t('title')}>
+    <DashboardPageShell>
         {/* Carte principale avec bannière et avatar */}
         <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-stone-100">
           {/* BANNIÈRE BRANDÉE : Dégradé Forest Dark -> Olive */}

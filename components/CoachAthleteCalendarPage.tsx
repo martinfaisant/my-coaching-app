@@ -69,8 +69,7 @@ export function CoachAthleteCalendarPage({
   const tCommon = useTranslations('common')
 
   return (
-    <main className="flex-1 flex flex-col h-full min-w-0 bg-white/50 rounded-2xl overflow-hidden relative border border-stone-200/50">
-      <CalendarViewWithNavigation
+    <CalendarViewWithNavigation
         athleteId={athleteId}
         athleteEmail={athleteEmail}
         initialWorkouts={initialWorkouts}
@@ -234,6 +233,5 @@ export function CoachAthleteCalendarPage({
           )
         }}
       />
-    </main>
   )
 }

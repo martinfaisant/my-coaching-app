@@ -16,9 +16,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   }
 }
 
-export default async function ObjectifsPage({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale } = await params
-  const t = await getTranslations({ locale, namespace: 'goals' })
+export default async function ObjectifsPage() {
   const current = await getCurrentUserWithProfile()
 
   if (current.profile.role !== 'athlete') {
@@ -35,10 +33,10 @@ export default async function ObjectifsPage({ params }: { params: Promise<{ loca
   const goalsList = (goals ?? []) as Goal[]
 
   return (
-    <DashboardPageShell
-      title={t('title')}
-      rightContent={<NextGoalHeader goals={goalsList} />}
-    >
+    <DashboardPageShell>
+      <div className="mb-4">
+        <NextGoalHeader goals={goalsList} />
+      </div>
       <ObjectifsTable goals={goalsList} />
     </DashboardPageShell>
   )

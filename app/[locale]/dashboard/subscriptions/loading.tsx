@@ -1,12 +1,6 @@
 export default function CoachSubscriptionsLoading() {
   return (
-    <main className="flex-1 flex flex-col h-full min-w-0 bg-white/50 rounded-2xl overflow-hidden relative border border-stone-200/50 animate-pulse">
-      {/* Skeleton PageHeader (aligné DashboardPageShell) */}
-      <header className="flex items-center justify-between gap-4 px-6 lg:px-8 py-4 border-b border-stone-200/50 bg-white/80 shrink-0">
-        <div className="h-7 w-48 bg-stone-200 rounded" />
-      </header>
-
-      <div className="flex-1 overflow-y-auto px-6 lg:px-8 py-6 space-y-10">
+    <div className="px-6 lg:px-8 pt-6 pb-24 space-y-10 animate-pulse">
         {/* Section Actives */}
         <section>
           <div className="h-6 w-32 bg-stone-200 rounded mb-4" />
@@ -66,7 +60,6 @@ export default function CoachSubscriptionsLoading() {
             ))}
           </ul>
         </section>
-      </div>
-    </main>
+    </div>
   )
 }

@@ -14,6 +14,8 @@ import { SearchInput } from '@/components/SearchInput'
 import { SportTileSelectable } from '@/components/SportTileSelectable'
 import { createCoachRequest } from './actions'
 import { LANGUAGES_OPTIONS } from '@/lib/sportsOptions'
+import { getWeeklyVolumeUnit, SPORT_ICONS, SPORT_CARD_STYLES, SPORT_TRANSLATION_KEYS } from '@/lib/sportStyles'
+import type { SportType } from '@/lib/sportStyles'
 import { useCoachedSportsOptions, usePracticedSportsOptions } from '@/lib/hooks/useSportsOptions'
 import { useRouter } from 'next/navigation'
 import { getInitials } from '@/lib/stringUtils'
@@ -98,6 +100,10 @@ type FindCoachSectionProps = {
   athleteFirstName?: string
   /** Nom de l'athlète (pour afficher les champs nom/prénom dans la modale si vide) */
   athleteLastName?: string
+  /** Temps à allouer/semaine (profil athlète, pour préremplir le formulaire de demande) */
+  initialWeeklyTargetHours?: number | null
+  /** Volumes par sport (profil athlète, pour préremplir le formulaire de demande) */
+  initialWeeklyVolumeBySport?: Record<string, number> | null
 }
 
 function matchesSport(coach: CoachForList, selectedSports: string[]): boolean {
@@ -120,7 +126,7 @@ function matchesName(coach: CoachForList, query: string): boolean {
   return first.includes(q) || last.includes(q)
 }
 
-export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}, initialPracticedSports = [], ratingsByCoach = {}, offersByCoach = {}, athleteFirstName = '', athleteLastName = '' }: FindCoachSectionProps) {
+export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}, initialPracticedSports = [], ratingsByCoach = {}, offersByCoach = {}, athleteFirstName = '', athleteLastName = '', initialWeeklyTargetHours, initialWeeklyVolumeBySport }: FindCoachSectionProps) {
   const t = useTranslations('findCoach')
   const tCommon = useTranslations('common')
   const locale = useLocale()
@@ -279,6 +285,8 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
                       requestStatus={getStatus(c.user_id)}
                       requestId={getRequestId(c.user_id)}
                       initialPracticedSports={initialPracticedSports}
+                      athleteWeeklyTargetHours={initialWeeklyTargetHours}
+                      athleteWeeklyVolumeBySport={initialWeeklyVolumeBySport}
                     />
                   ) : (
                     <Button
@@ -317,6 +325,8 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
           requestStatus={getStatus(detailModalCoach.user_id)}
           requestId={getRequestId(detailModalCoach.user_id)}
           initialPracticedSports={initialPracticedSports}
+          initialWeeklyTargetHours={initialWeeklyTargetHours}
+          initialWeeklyVolumeBySport={initialWeeklyVolumeBySport}
           showNameFields={!((athleteFirstName ?? '').trim() && (athleteLastName ?? '').trim())}
           athleteFirstName={athleteFirstName}
           athleteLastName={athleteLastName}
@@ -393,6 +403,8 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
   )
 }
 
+const DISPLAY_SPORTS_ORDER = ['course', 'velo', 'natation', 'musculation', 'trail', 'triathlon'] as const
+
 type CoachDetailModalProps = {
   coach: CoachForList
   offers: Array<OfferForDisplay>
@@ -401,6 +413,8 @@ type CoachDetailModalProps = {
   requestStatus: 'pending' | 'declined' | null
   requestId?: string | null
   initialPracticedSports?: string[]
+  initialWeeklyTargetHours?: number | null
+  initialWeeklyVolumeBySport?: Record<string, number> | null
   /** Afficher les champs Prénom/Nom (profil athlète incomplet) */
   showNameFields?: boolean
   athleteFirstName?: string
@@ -436,11 +450,13 @@ function OfferSelectButton({ isSelected, onClick }: OfferSelectButtonProps) {
   )
 }
 
-function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requestId, initialPracticedSports = [], showNameFields = false, athleteFirstName = '', athleteLastName = '' }: CoachDetailModalProps) {
+function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requestId, initialPracticedSports = [], initialWeeklyTargetHours, initialWeeklyVolumeBySport, showNameFields = false, athleteFirstName = '', athleteLastName = '' }: CoachDetailModalProps) {
   const t = useTranslations('findCoach')
   const tCommon = useTranslations('common')
   const tErrors = useTranslations('errors')
   const tProfile = useTranslations('profile')
+  const tSports = useTranslations('sports')
+  const tCoachReq = useTranslations('coachRequests.validation')
   const locale = useLocale()
   const router = useRouter()
   const practicedSportsOptions = usePracticedSportsOptions()
@@ -449,8 +465,45 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
   const [need, setNeed] = useState('')
   const [firstName, setFirstName] = useState(athleteFirstName)
   const [lastName, setLastName] = useState(athleteLastName)
+  const [weeklyTargetHoursInput, setWeeklyTargetHoursInput] = useState(
+    initialWeeklyTargetHours != null ? String(initialWeeklyTargetHours) : ''
+  )
+  const [weeklyVolumeInputs, setWeeklyVolumeInputs] = useState<Record<string, string>>(() => {
+    const init: Record<string, string> = {}
+    const expanded = (initialPracticedSports ?? []).flatMap((s) =>
+      s === 'triathlon' ? ['course', 'velo', 'natation'] : [s]
+    )
+    const list = DISPLAY_SPORTS_ORDER.filter((s) => expanded.includes(s))
+    for (const sport of list) {
+      const v = initialWeeklyVolumeBySport?.[sport]
+      init[sport] = v != null ? String(v) : ''
+    }
+    if ((initialPracticedSports ?? []).includes('trail')) {
+      const v = initialWeeklyVolumeBySport?.course_elevation_m
+      init.course_elevation_m = v != null ? String(v) : ''
+    }
+    return init
+  })
   const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const expandedForVolume = sports.flatMap((s) => (s === 'triathlon' ? ['course', 'velo', 'natation'] : [s]))
+  const displaySportsForVolume = DISPLAY_SPORTS_ORDER.filter((s) => expandedForVolume.includes(s))
+
+  useEffect(() => {
+    setWeeklyVolumeInputs((prev) => {
+      const next = { ...prev }
+      for (const sport of displaySportsForVolume) {
+        if (!(sport in next)) next[sport] = ''
+      }
+      if (sports.includes('trail') && !('course_elevation_m' in next)) next.course_elevation_m = ''
+      return next
+    })
+  }, [sports.join(',')])
+
+  const setVolumeInput = (key: string, value: string) => {
+    setWeeklyVolumeInputs((prev) => ({ ...prev, [key]: value }))
+  }
 
   const sortedOffers = [...offers].sort((a, b) => {
     if (a.is_featured && !b.is_featured) return -1
@@ -489,6 +542,31 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
         return
       }
     }
+    const hoursRaw = weeklyTargetHoursInput.trim().replace(',', '.')
+    const hoursNum = hoursRaw === '' ? NaN : parseFloat(hoursRaw)
+    if (Number.isNaN(hoursNum) || hoursNum < 0 || hoursNum > 168) {
+      setError(tCoachReq('requireWeeklyTargetAndVolume'))
+      return
+    }
+    const volumeBySport: Record<string, number> = {}
+    for (const sport of displaySportsForVolume) {
+      const raw = (weeklyVolumeInputs[sport] ?? '').trim().replace(',', '.')
+      const val = raw === '' ? NaN : parseFloat(raw)
+      if (Number.isNaN(val) || val < 0) {
+        setError(tCoachReq('requireWeeklyTargetAndVolume'))
+        return
+      }
+      volumeBySport[sport] = Math.round(val * 100) / 100
+    }
+    if (sports.includes('trail')) {
+      const raw = (weeklyVolumeInputs.course_elevation_m ?? '').trim().replace(',', '.')
+      const val = raw === '' ? NaN : parseFloat(raw)
+      if (Number.isNaN(val) || val < 0 || val > 50000) {
+        setError(tCoachReq('requireWeeklyTargetAndVolume'))
+        return
+      }
+      volumeBySport.course_elevation_m = Math.round(val * 100) / 100
+    }
     setError(null)
     setIsSubmitting(true)
     try {
@@ -499,7 +577,9 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
         selectedOfferId,
         locale,
         showNameFields ? firstName.trim() : undefined,
-        showNameFields ? lastName.trim() : undefined
+        showNameFields ? lastName.trim() : undefined,
+        Math.round(hoursNum * 100) / 100,
+        volumeBySport
       )
       if (result.error) {
         setError(result.error)
@@ -513,6 +593,28 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
       setIsSubmitting(false)
     }
   }
+
+  const weeklyTargetValid =
+    (() => {
+      const raw = weeklyTargetHoursInput.trim().replace(',', '.')
+      if (raw === '') return false
+      const n = parseFloat(raw)
+      return !Number.isNaN(n) && n >= 0 && n <= 168
+    })()
+  const volumesComplete =
+    displaySportsForVolume.every((s) => {
+      const raw = (weeklyVolumeInputs[s] ?? '').trim().replace(',', '.')
+      if (raw === '') return false
+      const n = parseFloat(raw)
+      return !Number.isNaN(n) && n >= 0
+    }) &&
+    (!sports.includes('trail') ||
+      (() => {
+        const raw = (weeklyVolumeInputs.course_elevation_m ?? '').trim().replace(',', '.')
+        if (raw === '') return false
+        const n = parseFloat(raw)
+        return !Number.isNaN(n) && n >= 0 && n <= 50000
+      })())
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -739,6 +841,94 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
                             ))}
                           </div>
                         </div>
+
+                        {/* Section Objectifs et volume par sport */}
+                        <div>
+                          <h4 className="text-sm font-bold text-stone-900 uppercase tracking-wide mb-3">
+                            {tProfile('weeklyTargetSectionTitle')}
+                          </h4>
+                          {sports.length === 0 ? (
+                            <p className="text-sm text-stone-500">{tProfile('noPracticedSportsMessage')}</p>
+                          ) : (
+                            <>
+                              <div className="flex flex-wrap items-center justify-between gap-3 py-2.5 px-3 rounded-xl bg-stone-50 border border-stone-100 mb-4">
+                                <span className="text-sm font-medium text-stone-700 shrink-0">
+                                  {tProfile('weeklyTargetLabel')}
+                                </span>
+                                <div className="relative w-28 shrink-0">
+                                  <input
+                                    type="text"
+                                    inputMode="decimal"
+                                    value={weeklyTargetHoursInput}
+                                    onChange={(e) => setWeeklyTargetHoursInput(e.target.value)}
+                                    placeholder="10"
+                                    className="w-full pl-3 pr-11 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition"
+                                  />
+                                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 text-sm pointer-events-none">
+                                    {tProfile('suffixHoursPerWeek')}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="grid grid-cols-2 gap-3">
+                                {displaySportsForVolume.map((sport) => {
+                                  const sportKey = sport as SportType
+                                  const Icon = SPORT_ICONS[sportKey] ?? SPORT_ICONS.course
+                                  const styles = SPORT_CARD_STYLES[sportKey] ?? SPORT_CARD_STYLES.course
+                                  const unit = getWeeklyVolumeUnit(sport)
+                                  const suffixKey =
+                                    unit === 'km' ? 'suffixKmPerWeek' : unit === 'm' ? 'suffixMPerWeek' : 'suffixHoursPerWeek'
+                                  const showCourseElevation = sport === 'course' && sports.includes('trail')
+                                  return (
+                                    <div
+                                      key={sport}
+                                      className={`rounded-xl border-l-4 border border-stone-200 p-3 flex flex-wrap items-center justify-between gap-3 ${styles.badgeBg} ${styles.borderLeft}`}
+                                    >
+                                      <div className="flex items-center gap-2 min-w-0 shrink-0">
+                                        <span className={styles.badge}>
+                                          <Icon className="w-4 h-4" />
+                                        </span>
+                                        <span className="text-sm font-semibold text-stone-800">
+                                          {tSports(SPORT_TRANSLATION_KEYS[sportKey])}
+                                        </span>
+                                      </div>
+                                      <div className="flex flex-wrap items-center gap-3 ml-auto min-w-0 w-full sm:w-auto justify-end">
+                                        <div className="relative w-28 shrink-0">
+                                          <input
+                                            type="text"
+                                            inputMode="decimal"
+                                            value={weeklyVolumeInputs[sport] ?? ''}
+                                            onChange={(e) => setVolumeInput(sport, e.target.value)}
+                                            placeholder={unit === 'm' ? '2500' : unit === 'h' ? '2,5' : '42'}
+                                            className="w-full pl-3 pr-12 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition"
+                                          />
+                                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 text-xs pointer-events-none whitespace-nowrap">
+                                            {tProfile(suffixKey)}
+                                          </span>
+                                        </div>
+                                        {showCourseElevation && (
+                                          <div className="relative w-28 shrink-0">
+                                            <input
+                                              type="text"
+                                              inputMode="decimal"
+                                              value={weeklyVolumeInputs.course_elevation_m ?? ''}
+                                              onChange={(e) => setVolumeInput('course_elevation_m', e.target.value)}
+                                              placeholder="500"
+                                              className="w-full pl-3 pr-14 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition"
+                                            />
+                                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 text-xs pointer-events-none whitespace-nowrap">
+                                              {tProfile('suffixDPlusPerWeek')}
+                                            </span>
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+                                  )
+                                })}
+                              </div>
+                            </>
+                          )}
+                        </div>
+
                         <Textarea
                           id="coaching_need"
                           label={t('modal.coachingNeed')}
@@ -758,6 +948,8 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
                             || sports.length === 0
                             || !need.trim()
                             || (showNameFields && (!firstName.trim() || !lastName.trim()))
+                            || !weeklyTargetValid
+                            || !volumesComplete
                           }
                           loading={isSubmitting}
                           loadingText={t('modal.sending')}

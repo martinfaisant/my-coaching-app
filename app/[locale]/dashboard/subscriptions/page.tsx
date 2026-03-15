@@ -88,7 +88,7 @@ export default async function CoachSubscriptionsPage({ params }: { params: Promi
   })
 
   return (
-    <DashboardPageShell title={t('title')}>
+    <DashboardPageShell>
       <CoachSubscriptionsContent
         activeSubscriptions={activeSubscriptions}
         cancellationScheduledSubscriptions={cancellationScheduledSubscriptions}

@@ -169,7 +169,7 @@ export default async function CoachAthletesPage({ params }: { params: Promise<{ 
       : []
 
   return (
-    <DashboardPageShell title={tNav('athletes')}>
+    <DashboardPageShell>
       {!isCoachProfileComplete && (
         <div className="rounded-xl border border-palette-olive/40 bg-section p-6 mb-8">
           <p className="text-stone-800 font-medium mb-1">

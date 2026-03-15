@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 14 mars 2026 (Mode Analyste : objectifs et volume par sport — archivage docs design-athlete-weekly-targets ; voir Project_context §4.2.1, DESIGN_SYSTEM § SportTileSelectable)
+**Dernière mise à jour :** 14 mars 2026 (Mode Analyste : top bar, pages sans titre/conteneur, admin membres sous dashboard, nav admin sans Mes athlètes — archivage design-top-menu ; voir Project_context §4.0, §3 Admin)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -229,11 +229,29 @@
 - `docs/archive/design-workout-time-of-day/` — DESIGN.md (besoin, cas, user stories US1–US5), SPEC_TIME_OF_DAY.md (migration, types, RLS, fichiers, logique métier), MOCKUP_FORM_TIME_OF_DAY.html, MOCKUP_CALENDAR_DAY_ORDER.html.
 - **Raison :** Feature livrée ; coach peut renseigner optionnellement le moment (segments Non précisé | Matin | Midi | Soir) ; calendrier et modale « Activités du jour » affichent la journée en sections (premier bloc sans titre, puis Matin / Midi / Soir avec titre si non vide). Comportement décrit dans **Project_context.md §4.5** (Workouts, Calendar day structure), **docs/DESIGN_SYSTEM.md** (WorkoutModal, §7 Calendrier), **docs/I18N.md** (workouts.form.timeOfDay*, calendar.morning/noon/evening).
 
+**Bouton Déconnexion page Profil (archivés 14 mars 2026) :**
+- `docs/archive/design-profile-logout/MOCKUP_PROFILE_LOGOUT_OPTIONS.html` — Mockup Designer (3 options de placement : Session au-dessus de Supprimer, bloc Compte, à côté d’Enregistrer).
+- **Raison :** Feature livrée ; bouton **Déconnexion** (LogoutButton, variant danger) sur la page Profil en bas du formulaire, au-dessus d’un séparateur horizontal et du bouton « Supprimer mon compte ». Comportement décrit dans **Project_context.md §4.2.1** (Profile page), **docs/DESIGN_SYSTEM.md** (§ Button / LogoutButton).
+
 **Objectifs et volume par sport (profil athlète) (archivés 14 mars 2026) :**
 - `docs/archive/design-athlete-weekly-targets/DESIGN_ATHLETE_WEEKLY_TARGETS.md` — Design (besoin, cas, solutions D/E/F, choix E, pattern suffixe).
 - `docs/archive/design-athlete-weekly-targets/SPEC_ATHLETE_WEEKLY_TARGETS.md` — Spec technique (migration 055, RLS, fichiers, triathlon/trail).
 - `docs/archive/design-athlete-weekly-targets/MOCKUP_ATHLETE_WEEKLY_TARGETS.html` — Mockup page profil avec section Objectifs et volume (Solution E).
 - **Raison :** Feature livrée ; section « Objectifs et volume par sport » sur Mon profil (athlète) : temps à allouer/semaine (h), volume par sport (km/m/h), triathlon → 3 tuiles (Course, Vélo, Natation), trail → champ D+/sem. dans tuile Course, tuiles dynamiques. Comportement décrit dans **Project_context.md §4.2.1**, **docs/DESIGN_SYSTEM.md** (SportTileSelectable mode contrôlé), **docs/I18N.md** (profile.*).
+
+**Objectifs et volume dans la demande de coach (archivés 14 mars 2026) :**
+- `docs/archive/design-request-weekly-volume/DESIGN_REQUEST_WEEKLY_VOLUME.md` — Design (besoin, cas, réponses PO, options UI).
+- `docs/archive/design-request-weekly-volume/SPEC_REQUEST_WEEKLY_VOLUME.md` — Spec technique (pas de changement BDD, createCoachRequest + update profil, getPendingCoachRequests étendu, PendingRequestTile layout).
+- `docs/archive/design-request-weekly-volume/USER_STORIES_REQUEST_WEEKLY_VOLUME.md` — User stories (US 1–7, critères d’acceptation).
+- `docs/archive/design-request-weekly-volume/MOCKUP_REQUEST_FORM.html`, `MOCKUP_COACH_VIEW_REQUEST.html`, `MOCKUP_PAGE_ATHLETES_TILES_COMPLETES.html`, `MOCKUP_PAGE_ATHLETES_AVEC_MODALE.html`, `EXEMPLES_DEUX_CONTEXTES_FORMULAIRE.html` — Mockups HTML.
+- **Raison :** Feature livrée ; formulaire de demande (CoachDetailModal) avec section Objectifs et volume (obligatoire) ; mise à jour profil à l’envoi ; tuile demande en attente (coach) : en-tête nom · offre, corps 2 colonnes (Message | Objectifs et volume) ; modale « Demande envoyée » (athlète) affiche objectifs/volume en lecture seule si renseignés. Comportement décrit dans **Project_context.md §4.4**, §4.2.1, **docs/DESIGN_SYSTEM.md** §7 (PendingRequestTile), **docs/I18N.md** (coachRequests.validation, athletes.pendingRequests).
+
+**Menu dashboard en haut (top bar) – archivés 14 mars 2026 :**
+- `docs/archive/design-top-menu/DESIGN_TOP_MENU.md` — Design (3 propositions A/B/C, choix top bar + hamburger mobile).
+- `docs/archive/design-top-menu/SPEC_ARCHITECTE_TOP_MENU.md` — Spec technique (layout, dashboardNavConfig, DashboardTopBar, Drawer).
+- `docs/archive/design-top-menu/USER_STORIES_TOP_MENU.md` — User stories (US 1–8).
+- `docs/archive/design-top-menu/MOCKUP_TOP_MENU.html`, `MOCKUP_CALENDAR_PAGE.html` — Mockups HTML (mobile, tablette, desktop, drawer).
+- **Raison :** Feature livrée ; sidebar remplacée par une barre en haut (logo, nav centrée tablette/desktop, profil à droite) ; mobile : titre de page au centre, hamburger à droite, drawer à droite avec liens + profil + déconnexion ; pages sans titre ni conteneur carte (DashboardPageShell = padding uniquement) ; admin : Gestion des membres sous `/dashboard/admin/members` (même design), nav admin = Gestion des membres + Design System uniquement (pas « Mes athlètes »). Comportement décrit dans **Project_context.md §4.0**, §3 Admin.
 
 **Retour athlète après séance (workout feedback) (archivés 3 mars 2026) :**
 - `docs/archive/design-workout-feedback/` — DESIGN.md (besoin, échelles 1–5 / 1–10, Lucide, harmonisation visuelle), SPEC_ARCHITECTURE.md (migration 054, champs perceived_*), MOCKUP_WORKOUT_FEEDBACK_MODAL_A.html, MOCKUP_WORKOUT_FEEDBACK_MODAL_B.html.
@@ -382,6 +400,18 @@
 **Dernier nettoyage :** 3 mars 2026 (archivage design-workout-feedback)
 
 ### Changements récents :
+
+✅ **14 mars 2026 – Bouton Déconnexion page Profil – Mode Analyste :**
+- **Livraison :** Sur la page **Mon profil** (`/dashboard/profile`), en bas du formulaire : bouton **Déconnexion** (LogoutButton, variant danger) au-dessus d’un séparateur horizontal et du bouton « Supprimer mon compte ». Même disposition pour athlète et coach. Le drawer (menu mobile) conserve aussi le bouton Déconnexion.
+- **Fichiers :** `app/[locale]/dashboard/profile/ProfileForm.tsx` (import LogoutButton, zone danger : LogoutButton puis hr puis Supprimer).
+- **Doc :** Project_context.md §4.2.1 (Profile page : Déconnexion + séparateur + Supprimer), DESIGN_SYSTEM (Button / LogoutButton).
+- **Archivage :** `docs/design-profile-logout/MOCKUP_PROFILE_LOGOUT_OPTIONS.html` → `docs/archive/design-profile-logout/`. Référence courante : **Project_context.md §4.2.1**, **docs/DESIGN_SYSTEM.md** § Button.
+
+✅ **14 mars 2026 – Objectifs et volume dans la demande de coach – Mode Analyste :**
+- **Livraison :** Dans la **demande de coach**, l’athlète saisit **temps à allouer/semaine** et **volumes par sport** (même section que Mon profil : triathlon → 3 tuiles, trail → D+ dans tuile Course) ; champs **obligatoires**. À l’envoi : mise à jour du **profil** (weekly_target_hours, weekly_volume_by_sport, practiced_sports) puis création de la demande. Le **coach** voit ces infos dans la tuile demande en attente (« Mes athlètes ») : en-tête **nom · offre** (offre en police plus petite), corps en **2 colonnes** — Message de l’athlète | Objectifs et volume (athlète) — avec lignes « Sport : valeur unité », D+ dans le bloc Course, « Non renseigné » si vide. Modale « Demande envoyée » (athlète) : section Objectifs et volume en lecture seule si renseignée.
+- **Fichiers :** `app/[locale]/dashboard/actions.ts` (createCoachRequest + params + validation + update profil ; getPendingCoachRequests + athlete_weekly_target_hours/volume_by_sport), `FindCoachSection.tsx`, `CoachDetailModal` (section Objectifs et volume), `PendingRequestTile.tsx` (layout 2 colonnes), `find-coach/page.tsx`, `RequestCoachButton.tsx`, `AthleteSentRequestDetailModal.tsx`, `messages/fr.json`, `messages/en.json`.
+- **Doc :** Project_context.md §4.4 (Flow, tuile pending), §4.2.1 (demande : objectifs/volume), DESIGN_SYSTEM §7 (PendingRequestTile), I18N (coachRequests.validation, athletes.pendingRequests), project-core.mdc (Demande objectifs/volume).
+- **Archivage :** `docs/design-request-weekly-volume/` → `docs/archive/design-request-weekly-volume/` (DESIGN, SPEC, USER_STORIES, MOCKUP_*.html, EXEMPLES_*.html). Référence courante : **Project_context.md §4.4**, **docs/DESIGN_SYSTEM.md** §7, **docs/I18N.md**.
 
 ✅ **14 mars 2026 – Objectifs et volume par sport (profil athlète) – Mode Analyste :**
 - **Livraison :** Sur la page **Mon profil** (athlète), nouvelle section **« Objectifs et volume par sport »** après Sports pratiqués : (1) **Temps à allouer / semaine** (une valeur globale en h, suffixe h/sem. / h/week) ; (2) **Volume actuel par sport** : une tuile par sport avec icône + nom + champ (km/sem., m/sem. ou h/sem. selon sport). **Triathlon** sélectionné → affichage de 3 tuiles (Course, Vélo, Natation) ; **Trail** sélectionné → pas de tuile dédiée, champ **D+/sem.** ajouté sur la même ligne que le volume dans la tuile Course. Tuiles mises à jour dynamiquement à la sélection/désélection des sports (SportTileSelectable en mode contrôlé). Données : `profiles.weekly_target_hours`, `profiles.weekly_volume_by_sport` (migration 055), clé `course_elevation_m` pour le D+ trail.
@@ -620,13 +650,14 @@
 | Indicateur commentaire athlète sur tuile calendrier | `Project_context.md` §4.5, `docs/DESIGN_SYSTEM.md` §7 |
 | **Statut séance, modales entraînement (en-tête création/édition/lecture seule, tuile sport, date à gauche), total « fait », retour athlète (ressenti, intensité, plaisir)** | **`Project_context.md` §4.5** (Workouts), **`docs/DESIGN_SYSTEM.md`** (Modal, WorkoutModal) |
 | **Moment de la journée (Matin / Midi / Soir), sections calendrier, modale « Activités du jour »** | **`Project_context.md` §4.5** (Calendar day structure, Workout time_of_day), **`docs/DESIGN_SYSTEM.md`** (§7 Calendrier, WorkoutModal) |
+| **Bouton Déconnexion (page Profil)** | **`Project_context.md` §4.2.1** (Profile page), **`docs/DESIGN_SYSTEM.md`** (§ Button / LogoutButton) |
 | **Objectifs et volume par sport (profil athlète : temps à allouer, volume par sport, triathlon → 3 tuiles, trail → D+)** | **`Project_context.md` §4.2.1** (Athlete profile), **`docs/DESIGN_SYSTEM.md`** (§ SportTileSelectable), **`docs/I18N.md`** (profile.*) |
 | **Disponibilités / indisponibilités athlète (calendrier, modales, pas de récurrence)** | **`Project_context.md` §4.5** (Athlete availability), **`docs/DESIGN_SYSTEM.md`** (§7 Calendrier, AvailabilityModal, AvailabilityDetailModal) |
 | **Résultat objectif passé (saisie temps/place/note, modale, affichage tuile)** | **`Project_context.md` §4.7** (Goals), **`docs/DESIGN_SYSTEM.md`** (§ TileCard, Page Objectifs), **`lib/goalResultUtils.ts`** |
 | **Calendrier / sélecteur de date (modale entraînement modifiable)** | **`docs/DESIGN_SYSTEM.md`** § DatePickerPopup, § Dropdown ; **Project_context.md** §4.5 (Create & edit modal). Design archivé : `docs/archive/design-workout-modal-calendar/` |
 | **Page par défaut / redirections dashboard (find-coach, Mes athlètes)** | **`Project_context.md` §4.0** |
 | Tuile Profil sidebar (état sélectionné sur page Profil, centrage mode replié) | `Project_context.md` §4.0, `docs/DESIGN_SYSTEM.md` §7 |
-| Tuile demandes en attente (coach) / Discuter / modales Refuser-Accepter | `Project_context.md` §4.4, `docs/DESIGN_SYSTEM.md` §7 |
+| Tuile demandes en attente (coach) / Message | Objectifs et volume / Discuter / Refuser-Accepter | `Project_context.md` §4.4, `docs/DESIGN_SYSTEM.md` §7 (PendingRequestTile) |
 | **Prix offre non modifiable après publication** (trigger BDD, UI read-only, modale) | **`Project_context.md` §4.4**, **`docs/DESIGN_SYSTEM.md`** (formulaire offres) |
 | Grilles responsive (Trouver mon coach, My offers, Mes athlètes) | `docs/DESIGN_SYSTEM.md` §7 |
 | Filtre par nom/prénom (Trouver mon coach) | `Project_context.md` (Athlete), `docs/DESIGN_SYSTEM.md` §7 |

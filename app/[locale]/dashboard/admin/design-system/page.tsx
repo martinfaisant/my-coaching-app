@@ -30,20 +30,15 @@ export default async function DesignSystemPage() {
   await requireRole(['admin'])
 
   return (
-    <DashboardPageShell
-      title="Design System"
-      rightContent={
-        <Link
-          href="/admin/members"
-          className="text-sm font-medium text-stone-500 hover:text-palette-forest-dark"
-        >
-          Membres
-        </Link>
-      }
-      contentClassName="py-8"
-    >
-        <p className="mb-8 text-stone-600">
-          Référence des tokens et composants. Priorité : utiliser ces tokens plutôt que des couleurs hex en dur.
+    <DashboardPageShell contentClassName="py-8">
+        <p className="mb-8 flex flex-wrap items-center justify-between gap-4 text-stone-600">
+          <span>Référence des tokens et composants. Priorité : utiliser ces tokens plutôt que des couleurs hex en dur.</span>
+          <Link
+            href="/dashboard/admin/members"
+            className="shrink-0 text-sm font-medium text-stone-500 hover:text-palette-forest-dark"
+          >
+            Membres
+          </Link>
         </p>
 
         <section>

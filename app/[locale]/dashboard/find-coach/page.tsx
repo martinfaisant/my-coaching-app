@@ -105,7 +105,7 @@ export default async function FindCoachPage({ params }: { params: Promise<{ loca
   const tFindCoach = await getTranslations({ locale, namespace: 'findCoach' })
 
   return (
-    <DashboardPageShell title={tFindCoach('pageTitle')}>
+    <DashboardPageShell>
       {(coachesForList.length === 0) ? (
         <p className="text-sm text-stone-600">
           {tFindCoach('noCoaches')}
@@ -116,6 +116,8 @@ export default async function FindCoachPage({ params }: { params: Promise<{ loca
           statusByCoach={statusByCoach}
           requestIdByCoach={requestIdByCoach}
           initialPracticedSports={current.profile.practiced_sports ?? []}
+          initialWeeklyTargetHours={current.profile.weekly_target_hours ?? undefined}
+          initialWeeklyVolumeBySport={current.profile.weekly_volume_by_sport ?? undefined}
           ratingsByCoach={ratingsByCoach}
           offersByCoach={offersByCoach}
           athleteFirstName={current.profile.first_name ?? ''}

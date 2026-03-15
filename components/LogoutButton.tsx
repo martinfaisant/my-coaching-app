@@ -5,7 +5,12 @@ import { useTranslations, useLocale } from 'next-intl'
 import { createClient } from '@/utils/supabase/client'
 import { Button } from '@/components/Button'
 
-export function LogoutButton() {
+type LogoutButtonProps = {
+  className?: string
+}
+
+export function LogoutButton(props?: LogoutButtonProps) {
+  const { className } = props ?? {}
   const t = useTranslations('auth')
   const locale = useLocale()
   const [isLoggingOut, setIsLoggingOut] = useState(false)
@@ -33,7 +38,7 @@ export function LogoutButton() {
       disabled={isLoggingOut}
       loading={isLoggingOut}
       loadingText={t('loggingOut')}
-      className="flex items-center gap-2.5 px-3 lg:px-4"
+      className={className ?? 'flex items-center gap-2.5 px-3 lg:px-4'}
     >
       <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />

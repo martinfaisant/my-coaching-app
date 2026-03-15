@@ -19,9 +19,13 @@ type RequestCoachButtonProps = {
   requestId?: string | null
   /** Sports déjà renseignés dans le profil (préremplissent le formulaire à l'ouverture) */
   initialPracticedSports?: string[]
+  /** Temps à allouer/sem. (profil athlète, pour affichage dans la modale « Demande envoyée ») */
+  athleteWeeklyTargetHours?: number | null
+  /** Volumes par sport (profil athlète, pour affichage dans la modale « Demande envoyée ») */
+  athleteWeeklyVolumeBySport?: Record<string, number> | null
 }
 
-export function RequestCoachButton({ coachId, coachName, requestStatus, requestId, initialPracticedSports = [] }: RequestCoachButtonProps) {
+export function RequestCoachButton({ coachId, coachName, requestStatus, requestId, initialPracticedSports = [], athleteWeeklyTargetHours, athleteWeeklyVolumeBySport }: RequestCoachButtonProps) {
   const t = useTranslations('requestCoachButton')
   const tCommon = useTranslations('common')
   const tErrors = useTranslations('errors')
@@ -157,6 +161,8 @@ export function RequestCoachButton({ coachId, coachName, requestStatus, requestI
               setDetailModalOpen(false)
               setConfirmCancelOpen(true)
             }}
+            athleteWeeklyTargetHours={athleteWeeklyTargetHours}
+            athleteWeeklyVolumeBySport={athleteWeeklyVolumeBySport}
           />
         )}
         {confirmCancelOpen &&

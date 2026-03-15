@@ -9,6 +9,7 @@ import { Input } from '@/components/Input'
 import { Textarea } from '@/components/Textarea'
 import { LanguagePrefixTextarea } from '@/components/LanguagePrefixField'
 import { Modal } from '@/components/Modal'
+import { LogoutButton } from '@/components/LogoutButton'
 import { SportTileSelectable } from '@/components/SportTileSelectable'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { createClient } from '@/utils/supabase/client'
@@ -709,7 +710,7 @@ export function ProfileForm({
                                 {tSports(SPORT_TRANSLATION_KEYS[sportKey])}
                               </span>
                             </div>
-                            <div className="flex items-center gap-3 shrink-0 ml-auto min-w-0">
+                            <div className="flex flex-wrap items-center gap-3 ml-auto min-w-0 w-full sm:w-auto justify-end">
                               <div className="relative w-28 shrink-0">
                                 <input
                                   type="text"
@@ -818,34 +819,38 @@ export function ProfileForm({
 
           {/* Danger Zone */}
           <div className="mt-16 pt-6 border-t border-stone-100 flex flex-col items-center">
-            <Button
-              type="button"
-              variant="danger"
-              onClick={async () => {
-                setDeleteBlockReason(null)
-                setDeleteError(null)
-                setIsCheckingDelete(true)
-                try {
-                  const result = await checkCanDeleteAccount(locale)
-                  if (!result.canDelete) {
-                    setDeleteBlockReason(result.error ?? tProfile('deletionNotPossible'))
-                    return
+            <div className="w-full max-w-md flex flex-col items-center gap-4">
+              <LogoutButton />
+              <hr className="w-full border-t border-stone-200" aria-hidden />
+              <Button
+                type="button"
+                variant="danger"
+                onClick={async () => {
+                  setDeleteBlockReason(null)
+                  setDeleteError(null)
+                  setIsCheckingDelete(true)
+                  try {
+                    const result = await checkCanDeleteAccount(locale)
+                    if (!result.canDelete) {
+                      setDeleteBlockReason(result.error ?? tProfile('deletionNotPossible'))
+                      return
+                    }
+                    setDeleteModalOpen(true)
+                  } finally {
+                    setIsCheckingDelete(false)
                   }
-                  setDeleteModalOpen(true)
-                } finally {
-                  setIsCheckingDelete(false)
-                }
-              }}
-              disabled={isCheckingDelete}
-              loading={isCheckingDelete}
-              loadingText={tProfile('checking')}
-              className="flex items-center gap-2"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
-              {tProfile('deleteAccount')}
-            </Button>
+                }}
+                disabled={isCheckingDelete}
+                loading={isCheckingDelete}
+                loadingText={tProfile('checking')}
+                className="flex items-center gap-2"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+                {tProfile('deleteAccount')}
+              </Button>
+            </div>
             <div className="min-h-[2.5rem] mt-2 text-center w-full max-w-md">
               {deleteBlockReason && (
                 <p className="text-sm text-red-600" role="alert">

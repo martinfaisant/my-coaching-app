@@ -29,7 +29,7 @@ export default async function DashboardPage() {
   }
 
   if (current.profile.role === 'admin') {
-    redirect('/admin/members')
+    redirect('/dashboard/admin/members')
   }
 
   redirect('/dashboard/calendar')

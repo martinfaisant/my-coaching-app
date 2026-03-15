@@ -91,7 +91,7 @@ Avoid:
 **Can (current):**
 
 - View all members
-- Manage members and roles (athlete, coach, admin) via `/admin/members`
+- Manage members and roles (athlete, coach, admin) via `/dashboard/admin/members`
 
 **Future:**
 
@@ -112,9 +112,9 @@ Opening `/dashboard` redirects to a **role-specific default page** (no content r
 | Athlete with coach | `/dashboard/calendar` |
 | Athlete without coach | `/dashboard/find-coach` |
 | Coach | `/dashboard/athletes` |
-| Admin | `/admin/members` |
+| Admin | `/dashboard/admin/members` |
 
-The pages **« Trouver mon coach »** and **« Mes athlètes »** are **separate routes** (`/dashboard/find-coach`, `/dashboard/athletes`), each with its own loading skeleton. Sidebar links point directly to these routes; the dashboard layout and `DashboardPageShell` are used for both. The **profile tile** at the bottom of the sidebar (avatar + name) uses the same **selected state** as other nav items (green background, white text) when the user is on the profile page (`/dashboard/profile`); when the sidebar is collapsed (desktop), only the avatar is shown and centered.
+The dashboard uses a **top bar** (logo My Sport Ally left, nav links center on tablet/desktop, profile right). **Mobile:** page title centered, hamburger right; tap opens a **drawer from the right** with nav links, profile block and logout. **Coach** nav: Mes athlètes, Mon offre, Souscriptions. **Admin** nav: Gestion des membres, Design System only (no « Mes athlètes »). The pages **« Trouver mon coach »** and **« Mes athlètes »** are separate routes (`/dashboard/find-coach`, `/dashboard/athletes`), each with its own loading skeleton. The dashboard layout and `DashboardPageShell` (padding only, no in-page title nor card container) are used for all pages. **Profile** is a link in the top bar (avatar + name); it uses the same selected state (green background, white text) when the user is on `/dashboard/profile`.
 
 ---
 
@@ -163,7 +163,9 @@ On the **Mon profil** page (`/dashboard/profile`), the athlete can edit:
 - **Triathlon** : when selected, the volume section shows **three tiles** (Course, Vélo, Natation) instead of one “Triathlon” tile; volumes are stored under `course`, `velo`, `natation`.
 - **Trail** : no separate volume tile; when trail is selected, the **Course** tile gains an extra field **D+/sem.** (elevation gain per week in m), stored in `weekly_volume_by_sport.course_elevation_m`.
 - Tiles and fields update **dynamically** when the athlete selects or deselects practiced sports (controlled checkboxes). Save uses the existing « Enregistrer » button; validation (positive values, caps) is server-side.
-- **Coach visibility** of these fields is planned separately (not in current scope).
+- **Demande de coach :** When sending a coach request, the athlete must also fill **Objectifs et volume** (same section as on Mon profil: temps à allouer/semaine + volumes par sport, triathlon → 3 tuiles, trail → D+ in Course tile). These values are **saved to the athlete’s profile** on submit (before creating the request). The **coach** sees them in the pending request tile on « Mes athlètes »: two columns — **Message de l’athlète** | **Objectifs et volume (athlète)** (temps + volumes by sport, from profile; if empty: « Non renseigné »). The athlete can also see their objectifs/volume in read-only in the « Demande envoyée » modal when opening it from the find-coach page.
+
+**Profile page (athlete and coach):** At the bottom of the form, a **Déconnexion** (Logout) button (danger variant) is displayed above a horizontal separator and the **Supprimer mon compte** (Delete account) button. The drawer menu (mobile) also offers Logout.
 
 ---
 
@@ -204,12 +206,12 @@ Athletes filter coaches by:
 
 **Flow:**
 
-- When the athlete opens the coach detail modal (« Voir le détail »), the app checks whether the athlete’s profile has **first name and last name**. If either is missing, the request form inside the modal displays **Prénom** and **Nom** (required, with *). The « Envoyer la demande » button stays disabled until offer, sports, coaching need and (when shown) first name and last name are filled. On submit, the profile is updated with the name if needed, then the request is created. The coach always sees the athlete’s name on pending requests (from `profiles`).
-- Athlete sends a **coach request** (sport practiced, coaching need, optional offer_id; first/last name ensured as above).
+- When the athlete opens the coach detail modal (« Voir le détail »), the request form includes **Sports pratiqués**, **Objectifs et volume par sport** (temps à allouer/semaine + volumes par sport, same logic as Mon profil: triathlon → 3 tiles, trail → D+ in Course), and **Besoin de coaching**. All are mandatory. The app checks whether the athlete’s profile has **first name and last name**; if either is missing, **Prénom** and **Nom** are also shown (required). The « Envoyer la demande » button stays disabled until offer, sports, coaching need, objectifs/volume and (when shown) first name and last name are filled. On submit, the profile is updated (name if needed, **weekly_target_hours**, **weekly_volume_by_sport**, practiced_sports), then the request is created. The coach always sees the athlete’s name on pending requests (from `profiles`).
+- Athlete sends a **coach request** (sport practiced, coaching need, optional offer_id; first/last name if needed; **weekly_target_hours** and **weekly_volume_by_sport** saved to profile).
 - While the request is **pending**, the coach tile shows « Annuler la demande » (danger) and « Demande envoyée > » (muted). Clicking « Demande envoyée > » opens a modal with the request detail (frozen offer, sports, message, date); the athlete can cancel the request from the tile or from the modal (same confirmation flow).
 - If the request fails (server error or DB insert rejected), the user sees a generic error message and the submit button is no longer stuck on « Envoi en cours »; errors are logged server-side for diagnosis.
 - When an offer is chosen, the server immediately stores a **snapshot** of that offer in `coach_requests`: `offer_id`, `frozen_price`, `frozen_title`, `frozen_description`. This is the version of the offer **as seen by the athlete** at request time. If the coach later changes or archives the offer, the request row does not change.
-- Coach accepts or declines the request. On the « Mes athlètes » page, the athlete list has a **search** field (by name) and a **sort** dropdown: **by name (A–Z)** or **by planned date** (athletes with no planned workout first, then by date ascending — furthest last). The search uses the **SearchInput** component (green clear button); the sort uses the **Dropdown** component (trigger + panel, same styling as sidebar for selected option). **Pending requests** are shown in a unified tile per request: athlete avatar, sport badges, full coaching-need message (full width), offer line (title + price). Actions: **« Discuter »** (opens the chat overlay targeting that athlete), **« Refuser »** and **« Accepter »** (each opens a confirmation modal before calling the API). On mobile, the three buttons are at the bottom of the tile (Discuss full width, Decline and Accept side by side).
+- Coach accepts or declines the request. On the « Mes athlètes » page, the athlete list has a **search** field (by name) and a **sort** dropdown: **by name (A–Z)** or **by planned date** (athletes with no planned workout first, then by date ascending — furthest last). The search uses the **SearchInput** component (green clear button); the sort uses the **Dropdown** component (trigger + panel, same styling as top bar nav for selected option). **Pending requests** are shown in a unified tile per request: header with avatar, **name · offer** (offer in smaller font), sport badges, then actions **« Discuter »**, **« Refuser »**, **« Accepter »**. The tile body has **two columns**: **Message de l’athlète** (coaching_need) and **Objectifs et volume (athlète)** (from the athlete’s profile: weekly_target_hours + weekly_volume_by_sport, displayed as “Sport : value unit” lines with sport-colored left border and icon; D+ in the same block as Course; if empty: « Non renseigné »). Actions: **« Discuter »** (opens the chat overlay targeting that athlete), **« Refuser »** and **« Accepter »** (each opens a confirmation modal before calling the API). On mobile, the three buttons are at the bottom of the tile (Discuss full width, Decline and Accept side by side).
 - **On accept:** (1) `profiles.coach_id` is set (athlete linked to coach), (2) `coach_requests.status` → `accepted`, (3) a row is inserted into **`subscriptions`** with the same `frozen_*` data copied from `coach_requests` (the subscription is **not** filled from the current `coach_offers` table). Thus the active subscription between athlete and coach reflects the exact offer the athlete requested; if the coach changes the offer afterwards, existing subscriptions are unchanged.
 - No Stripe/payment yet — subscription model is structural only (billing history ready via `subscriptions.frozen_*`).
 
@@ -319,7 +321,7 @@ Athletes filter coaches by:
 - Bloc « Ma souscription » shows frozen offer (title, description, price/type, dates).
 - Button « Mettre fin » opens confirmation modal. For **monthly** subscriptions, ending schedules the subscription end at next cycle → status becomes « En résiliation » (amber badge), line « Fin prévue le {date} » (same line as « A débuté le »).
 - Button « Annuler la résiliation » is shown **only to the person who requested the cancellation** (stored in `cancellation_requested_by_user_id`). The other party sees nothing in that slot.
-- Sidebar: « Historique des souscriptions » → `/dashboard/subscriptions/history` (past subscriptions, read-only).
+- Top bar / drawer: « Historique des souscriptions » → `/dashboard/subscriptions/history` (past subscriptions, read-only).
 
 **Coach:**
 

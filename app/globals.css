@@ -121,9 +121,11 @@ input[type="number"] {
 .ring-palette-strava { --tw-ring-color: #FC4C02; }
 .ring-palette-danger { --tw-ring-color: #c0564b; }
 
-/* Calendrier: scrollbar masquée, line-clamp, carte entraînement */
-.hide-scroll::-webkit-scrollbar { display: none; }
-.hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+/* Calendrier / Top bar nav: scrollbar masquée, zone restant scrollable */
+.hide-scroll::-webkit-scrollbar,
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.hide-scroll,
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;

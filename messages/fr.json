@@ -108,7 +108,9 @@
     "dashboard": "Tableau de bord",
     "subscriptionHistory": "Historique des souscriptions",
     "openMenu": "Ouvrir le menu",
-    "collapseMenu": "Réduire le menu"
+    "collapseMenu": "Réduire le menu",
+    "designSystem": "Design System",
+    "members": "Gestion des membres"
   },
   "sports": {
     "course": "Course",
@@ -535,6 +537,8 @@
   },
   "admin": {
     "members": {
+      "title": "Gestion des membres",
+      "description": "Liste de tous les membres et modification des rôles.",
       "validation": {
         "missingData": "Données manquantes.",
         "invalidRole": "Rôle invalide.",
@@ -730,7 +734,10 @@
       "offerChosen": "Offre choisie :",
       "free": "Gratuit",
       "perMonth": "/mois",
-      "chat": "Discuter"
+      "chat": "Discuter",
+      "athleteMessageLabel": "Message de l'athlète",
+      "objectivesAndVolumeLabel": "Objectifs et volume (athlète)",
+      "notSpecified": "Non renseigné"
     },
     "noAthletes": {
       "title": "Vos demandes de coaching apparaîtront sur cette page.",
@@ -864,7 +871,10 @@
       "requestNotFound": "Demande introuvable.",
       "requestCannotBeCancelled": "Cette demande ne peut plus être annulée.",
       "accepted": "Demande acceptée.",
-      "declined": "Demande refusée."
+      "declined": "Demande refusée.",
+      "requireWeeklyTargetAndVolume": "Le temps à allouer par semaine et les volumes par sport sont obligatoires.",
+      "weeklyTargetInvalid": "Le temps à allouer doit être un nombre entre 0 et 168 h.",
+      "weeklyVolumeInvalid": "Vérifiez les volumes par sport (nombre ≥ 0, dans la limite autorisée)."
     }
   },
   "myCoach": {

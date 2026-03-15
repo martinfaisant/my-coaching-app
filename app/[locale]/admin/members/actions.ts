@@ -44,6 +44,7 @@ export async function updateMemberRole(
   }
 
   revalidatePath('/admin/members')
+  revalidatePath('/dashboard/admin/members')
   revalidatePath('/dashboard')
   return { success: t('roleUpdated') }
 }
