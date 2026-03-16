@@ -227,7 +227,7 @@ export default async function MonCoachPage({ params }: { params: Promise<{ local
                     {getFrozenTitleForLocale(activeSubscription, locale) || t('subscription.inProgress')}
                   </h3>
                   {isCancellationScheduled ? (
-                    <span className="inline-flex shrink-0 px-2.5 py-0.5 rounded-full text-xs font-medium bg-palette-amber/10 text-palette-amber border border-palette-amber/20">
+                    <span className="inline-flex shrink-0 px-2.5 py-0.5 rounded-full text-xs font-medium bg-white text-palette-amber border border-palette-amber">
                       {t('subscription.cancellationScheduledBadge')}
                     </span>
                   ) : (

@@ -9,7 +9,7 @@ import { TileCard } from './TileCard'
 import type { Workout, Goal, ImportedActivityWeeklyTotal, WorkoutWeeklyTotal, AthleteAvailabilitySlot } from '@/types/database'
 import { getDaysUntil } from '@/lib/dateUtils'
 import { getInitials } from '@/lib/stringUtils'
-import { hasGoalResult, formatGoalResultTime, formatGoalResultPlaceOrdinal } from '@/lib/goalResultUtils'
+import { hasGoalResult, formatGoalResultTime, formatGoalResultPlaceOrdinal, hasTargetTime, formatTargetTime } from '@/lib/goalResultUtils'
 
 // Fonction pour formater la date en mois/jour
 function formatDateBlock(dateStr: string, localeTag: string): { month: string; day: string } {
@@ -161,11 +161,13 @@ export function CoachAthleteCalendarPage({
                             const daysUntil = getDaysUntil(goal.date)
                             const dateBlock = formatDateBlock(goal.date, localeTag)
                             const isPrimary = goal.is_primary
+                            const isResult = goal.date <= today
 
                             return (
                               <TileCard
                                 key={goal.id}
-                                leftBorderColor={isPrimary ? 'amber' : 'sage'}
+                                leftBorderColor={isResult ? 'stone' : isPrimary ? 'amber' : 'sage'}
+                                borderLeftOnly={isResult}
                                 className={isPast ? 'opacity-75' : ''}
                               >
                                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -182,11 +184,11 @@ export function CoachAthleteCalendarPage({
                                           {goal.race_name}
                                         </h3>
                                         {isPrimary ? (
-                                          <span className="bg-palette-amber/10 text-palette-amber text-[10px] font-bold px-2 py-0.5 rounded-full border border-palette-amber shrink-0">
+                                          <span className="bg-white text-palette-amber text-[10px] font-bold px-2 py-0.5 rounded-full border border-palette-amber shrink-0">
                                             {t('priority.primary')}
                                           </span>
                                         ) : (
-                                          <span className="bg-palette-sage/10 text-palette-sage text-[10px] font-bold px-2 py-0.5 rounded-full border border-palette-sage shrink-0">
+                                          <span className="bg-white text-palette-sage text-[10px] font-bold px-2 py-0.5 rounded-full border border-palette-sage shrink-0">
                                             {t('priority.secondary')}
                                           </span>
                                         )}
@@ -194,19 +196,32 @@ export function CoachAthleteCalendarPage({
                                       <div className="flex items-center gap-1 text-sm text-stone-500 font-medium flex-wrap">
                                         <MapIcon className="w-3.5 h-3.5 text-stone-400 shrink-0" />
                                         <span>{goal.distance} km</span>
-                                        {isPast && hasGoalResult(goal) && (
+                                        {hasTargetTime(goal) && (
+                                          <>
+                                            <span className="text-stone-400">·</span>
+                                            <span className="flex items-center gap-1">
+                                              <ClockIcon className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+                                              {isPast && hasGoalResult(goal) ? (
+                                                <span>{t('targetTimeLabel')} {formatTargetTime(goal)} · {t('achieved')} {formatGoalResultTime(goal)}</span>
+                                              ) : (
+                                                <span>{t('targetTimeLabel')} : {formatTargetTime(goal)}</span>
+                                              )}
+                                            </span>
+                                          </>
+                                        )}
+                                        {!hasTargetTime(goal) && isPast && hasGoalResult(goal) && (
                                           <>
                                             <span className="text-stone-400">·</span>
                                             <span className="flex items-center gap-1">
                                               <ClockIcon className="w-3.5 h-3.5 text-stone-400 shrink-0" />
                                               <span>{formatGoalResultTime(goal)}</span>
                                             </span>
-                                            {goal.result_place != null && (
-                                              <>
-                                                <span className="text-stone-400">·</span>
-                                                <span>{formatGoalResultPlaceOrdinal(goal.result_place, locale)}</span>
-                                              </>
-                                            )}
+                                          </>
+                                        )}
+                                        {hasGoalResult(goal) && goal.result_place != null && (
+                                          <>
+                                            <span className="text-stone-400">·</span>
+                                            <span>{formatGoalResultPlaceOrdinal(goal.result_place, locale)}</span>
                                           </>
                                         )}
                                       </div>

@@ -123,65 +123,65 @@ export const SPORT_CARD_STYLES: Record<
   },
 }
 
-/** Styles badge par sport (alignés calendrier). */
+/** Styles badge par sport (alignés calendrier). Fond blanc, texte et contour colorés. */
 export const SPORT_BADGE_STYLES: Record<
   SportType,
   { bg: string; text: string; border: string }
 > = {
   course: {
-    bg: 'bg-palette-forest-dark/10',
+    bg: 'bg-white',
     text: 'text-palette-forest-dark',
-    border: 'border-palette-forest-dark/20',
+    border: 'border-palette-forest-dark',
   },
   course_route: {
-    bg: 'bg-palette-forest-dark/10',
+    bg: 'bg-white',
     text: 'text-palette-forest-dark',
-    border: 'border-palette-forest-dark/20',
+    border: 'border-palette-forest-dark',
   },
   velo: {
-    bg: 'bg-palette-olive/10',
+    bg: 'bg-white',
     text: 'text-palette-olive',
-    border: 'border-palette-olive/20',
+    border: 'border-palette-olive',
   },
   natation: {
-    bg: 'bg-sky-50',
+    bg: 'bg-white',
     text: 'text-sky-700',
-    border: 'border-sky-500/30',
+    border: 'border-sky-500',
   },
   musculation: {
-    bg: 'bg-stone-100',
+    bg: 'bg-white',
     text: 'text-stone-600',
     border: 'border-stone-300',
   },
   nordic_ski: {
-    bg: 'bg-palette-sage/10',
+    bg: 'bg-white',
     text: 'text-palette-sage',
-    border: 'border-palette-sage/20',
+    border: 'border-palette-sage',
   },
   backcountry_ski: {
-    bg: 'bg-palette-gold/10',
+    bg: 'bg-white',
     text: 'text-palette-gold',
-    border: 'border-palette-gold/20',
+    border: 'border-palette-gold',
   },
   ice_skating: {
-    bg: 'bg-cyan-50',
+    bg: 'bg-white',
     text: 'text-cyan-700',
-    border: 'border-cyan-600/30',
+    border: 'border-cyan-600',
   },
   trail: {
-    bg: 'bg-palette-gold/10',
+    bg: 'bg-white',
     text: 'text-palette-gold',
-    border: 'border-palette-gold/20',
+    border: 'border-palette-gold',
   },
   randonnee: {
-    bg: 'bg-palette-sage/10',
+    bg: 'bg-white',
     text: 'text-palette-sage',
-    border: 'border-palette-sage/20',
+    border: 'border-palette-sage',
   },
   triathlon: {
-    bg: 'bg-palette-amber/10',
+    bg: 'bg-white',
     text: 'text-palette-amber',
-    border: 'border-palette-amber/20',
+    border: 'border-palette-amber',
   },
 }
 

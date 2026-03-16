@@ -35,8 +35,10 @@ const BADGE_CLASSES =
   'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-stone-100 text-stone-600 border border-stone-200 shrink-0'
 
 type TileCardProps = {
-  /** Couleur de la bordure gauche (alignée sur les tokens du design system). `stone` = état archivé/terminé. */
+  /** Couleur de la bordure gauche (alignée sur les tokens du design system). `stone` = état archivé/terminé ou résultat objectif. */
   leftBorderColor: TileCardBorderColor
+  /** Si true, seule la bande gauche est affichée (pas de contour). Utilisé pour les tuiles « résultat » (objectif passé avec résultat). */
+  borderLeftOnly?: boolean
   /** Contenu de la carte. */
   children: React.ReactNode
   /** Badge optionnel affiché à droite (ex. « Archivée », « Terminée »). Si fourni, structure flex contenu + badge. */
@@ -53,11 +55,14 @@ type TileCardProps = {
   type?: 'button' | 'submit'
 }
 
-const baseClasses =
+const baseClassesWithBorder =
   'rounded-lg border border-l-4 border-stone-200 bg-white p-3 shadow-sm text-left w-full'
+const baseClassesLeftOnly =
+  'rounded-lg border-0 border-l-4 bg-white p-3 shadow-sm text-left w-full'
 
 export function TileCard({
   leftBorderColor,
+  borderLeftOnly = false,
   children,
   badge,
   className = '',
@@ -67,6 +72,7 @@ export function TileCard({
   type = 'button',
 }: TileCardProps) {
   const borderClass = BORDER_CLASSES[leftBorderColor]
+  const baseClasses = borderLeftOnly ? baseClassesLeftOnly : baseClassesWithBorder
   const interactiveClass = interactive ? 'training-card cursor-pointer' : ''
   const combined = `${baseClasses} ${borderClass} ${interactiveClass} ${className}`.trim()
 

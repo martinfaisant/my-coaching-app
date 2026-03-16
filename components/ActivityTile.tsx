@@ -34,6 +34,8 @@ type GoalTileProps = ActivityTileBaseProps & {
   distance: number
   /** Si true, objectif principal (badge amber), sinon secondaire (badge sage) */
   isPrimary: boolean
+  /** Si true, affiche la bande grise (résultat) sans contour */
+  isResult?: boolean
 }
 
 export type ActivityTileProps = WorkoutTileProps | StravaActivityTileProps | GoalTileProps
@@ -153,15 +155,16 @@ export function ActivityTile(props: ActivityTileProps) {
 
   // Rendu objectif de course
   if (props.type === 'goal') {
-    const { distance, isPrimary } = props
-    const borderColor = isPrimary ? 'border-l-palette-amber' : 'border-l-palette-sage'
-    const badgeColor = isPrimary ? 'text-palette-amber bg-palette-amber/10' : 'text-palette-sage bg-palette-sage/10'
+    const { distance, isPrimary, isResult } = props
+    const borderColor = isResult ? 'border-l-stone-400' : (isPrimary ? 'border-l-palette-amber' : 'border-l-palette-sage')
+    const badgeColor = isPrimary ? 'text-palette-amber bg-white' : 'text-palette-sage bg-white'
+    const borderClasses = isResult ? 'border-0 border-l-4' : 'border border-l-4 border-stone-200'
 
     return (
       <button
         type="button"
         onClick={onClick}
-        className={`w-full text-left rounded-lg border border-l-4 ${borderColor} border-stone-200 bg-white p-3 shadow-sm training-card flex items-center gap-3 ${className}`}
+        className={`w-full text-left rounded-lg ${borderClasses} ${borderColor} bg-white p-3 shadow-sm training-card flex items-center gap-3 ${className}`}
       >
         <span className={`shrink-0 inline-flex items-center justify-center ${badgeColor} px-2 py-1 rounded`}>
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

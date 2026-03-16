@@ -16,38 +16,42 @@ const BADGE_STYLES = {
     'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-palette-forest-dark/10 text-palette-forest-dark border border-palette-forest-dark/20',
   /** Course à pied — forest */
   'sport-course':
-    'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-palette-forest-dark/10 text-palette-forest-dark border border-palette-forest-dark/20',
+    'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-white text-palette-forest-dark border border-palette-forest-dark',
   /** Vélo — olive */
   'sport-velo':
-    'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-palette-olive/10 text-palette-olive border border-palette-olive/20',
+    'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-white text-palette-olive border border-palette-olive',
   /** Natation — sky (aligné calendrier) */
   'sport-natation':
-    'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-sky-50 text-sky-700 border border-sky-500/30',
+    'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-white text-sky-700 border border-sky-500',
   /** Trail — gold (icône montagne) */
   'sport-trail':
-    'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-palette-gold/10 text-palette-gold border border-palette-gold/20',
+    'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-white text-palette-gold border border-palette-gold',
   /** Randonnée — sage */
   'sport-randonnee':
-    'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-palette-sage/10 text-palette-sage border border-palette-sage/20',
+    'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-white text-palette-sage border border-palette-sage',
   /** Triathlon — amber */
   'sport-triathlon':
-    'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-palette-amber/10 text-palette-amber border border-palette-amber/20',
+    'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-white text-palette-amber border border-palette-amber',
   /** Musculation — stone */
   'sport-musculation':
-    'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-stone-100 text-stone-600 border border-stone-300',
+    'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-white text-stone-600 border border-stone-300',
   /** Ski de fond — sage */
   'sport-nordic_ski':
-    'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-palette-sage/10 text-palette-sage border border-palette-sage/20',
+    'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-white text-palette-sage border border-palette-sage',
   /** Ski de randonnée — gold */
   'sport-backcountry_ski':
-    'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-palette-gold/10 text-palette-gold border border-palette-gold/20',
+    'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-white text-palette-gold border border-palette-gold',
   /** Patin à glace — cyan */
   'sport-ice_skating':
-    'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-cyan-50 text-cyan-700 border border-cyan-600/30',
+    'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-white text-cyan-700 border border-cyan-600',
   success:
     'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-palette-forest-dark/10 text-palette-forest-dark border border-palette-forest-dark/20',
+  /** Objectif principal (orange, fond blanc) */
   warning:
-    'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-palette-amber/10 text-palette-amber border border-palette-amber/20',
+    'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-white text-palette-amber border border-palette-amber',
+  /** Objectif secondaire (vert/sage, fond blanc) */
+  goalSecondary:
+    'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-white text-palette-sage border border-palette-sage',
 } as const
 
 export type BadgeVariant = keyof typeof BADGE_STYLES
