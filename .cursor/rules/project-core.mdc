@@ -269,10 +269,12 @@ if ('error' in result) return result
 
 ---
 
-## Objectifs (goals) – Résultat
+## Objectifs (goals) – Objectif de temps et résultat
 
-- **Résultat objectif passé :** L'athlète peut saisir ou modifier un résultat (temps h/min/s, place optionnelle, note optionnelle) pour tout objectif dont la date est passée. Modale titre = nom de la course ; affichage sur tuile : « distance · temps · place ». Coach : lecture seule. Création d'objectif avec date passée autorisée.
-- **Référence :** `Project_context.md` §4.7 (Goals), `lib/goalResultUtils.ts`, action `saveGoalResult`.
+- **Objectif de temps (facultatif) :** À la création et à l’édition, l’athlète peut renseigner un temps cible (3 champs h/min/s ; si un champ renseigné, les trois requis). Affichage tuile : « Objectif : X » ou (passé avec résultat) « Objectif X · Réalisé Y ». Coach : lecture seule.
+- **Édition objectif :** Bouton « Modifier » sur chaque tuile → **GoalEditModal** (nom, date, distance, priorité, objectif de temps). Le résultat (temps réalisé, place, note) reste dans **GoalResultModal** / `saveGoalResult`.
+- **Résultat objectif passé :** L'athlète peut saisir ou modifier un résultat (temps h/min/s avec unités, place, note) pour tout objectif dont la date est passée. Affichage tuile : « distance · temps · place » ou « Objectif X · Réalisé Y » si objectif de temps présent.
+- **Référence :** `Project_context.md` §4.7 (Goals), `lib/goalResultUtils.ts` (hasTargetTime, formatTargetTime, hasGoalResult, formatGoalResultTime), actions `addGoal`, `updateGoal`, `saveGoalResult`.
 
 ---
 

@@ -289,11 +289,13 @@ Athletes filter coaches by:
 ### 4.7 Goals ✅
 
 - Athlete defines race/event (date, race_name, distance, is_primary). **Création avec date passée autorisée** : l'athlète peut ajouter un objectif rétrospectif puis saisir le résultat.
-- **Résultat pour objectif passé :** Pour tout objectif dont la date est dans le passé, l'athlète peut **saisir ou modifier un résultat** via une modale (titre = nom de la course) : **Temps** (requis, 3 champs heures / minutes / secondes), **Place** (optionnel, position à l'arrivée), **Note** (optionnel, max 500 car.). Modification autorisée à tout moment. Données : `goals.result_time_hours/minutes/seconds`, `result_place`, `result_note` (migration 053).
-- **Affichage :** Sur la tuile objectif (page Objectifs et sidebar calendrier coach), si un résultat existe : même ligne que la distance, format « distance · [icône horloge] temps · place » (ex. « 10 km · 3h42 · 24e »), avec bouton « Saisir le résultat » (outline) ou « Modifier le résultat » (secondary). Calendrier : modale détail objectif et sidebar coach affichent le résultat en lecture seule (temps, place, note).
-- **Utilitaires :** `lib/goalResultUtils.ts` (hasGoalResult, formatGoalResultTime, formatGoalResultPlaceOrdinal). Action serveur : `saveGoalResult` (page objectifs).
-- Coach has read-only access to athlete goals (including result when present)
-- Displayed as “Prochain objectif” on coach dashboard
+- **Objectif de temps (facultatif) :** À la création et à l’édition, l’athlète peut renseigner un **objectif de temps** (3 champs h/min/s, même format que le résultat ; si un champ est renseigné, les trois sont requis). Données : `goals.target_time_hours/minutes/seconds` (migration 056). Affichage sur les tuiles : « Objectif : 3h30 » si présent ; pour un objectif **passé** avec résultat : « Objectif 3h30 · Réalisé 3h45 » (et place si présente). Modale détail objectif (calendrier) : ligne « Objectif de temps » si présent. Visible par l’athlète et le coach (lecture seule pour le coach).
+- **Édition d’objectif :** L’athlète peut **modifier** un objectif existant (nom, date, distance, priorité, objectif de temps) via le bouton « Modifier » sur chaque tuile, ouvrant la modale **GoalEditModal**. Le résultat (temps réalisé, place, note) reste géré séparément par **GoalResultModal** / `saveGoalResult`.
+- **Résultat pour objectif passé :** Pour tout objectif dont la date est dans le passé, l'athlète peut **saisir ou modifier un résultat** via une modale (titre = nom de la course) : **Temps** (requis, 3 champs heures / minutes / secondes avec unités h/min/s), **Place** (optionnel), **Note** (optionnel, max 500 car.). Données : `goals.result_time_hours/minutes/seconds`, `result_place`, `result_note` (migration 053).
+- **Affichage :** Sur la tuile objectif (page Objectifs, sidebar calendrier coach, modale détail calendrier) : distance ; si objectif de temps : « Objectif : X » ou « Objectif X · Réalisé Y » (passé avec résultat) ; si résultat sans objectif de temps : « distance · temps · place ». Boutons : « Modifier » (édition objectif), « Saisir le résultat » / « Modifier le résultat » (passé), Supprimer.
+- **Utilitaires :** `lib/goalResultUtils.ts` (hasGoalResult, formatGoalResultTime, formatGoalResultPlaceOrdinal, **hasTargetTime**, **formatTargetTime**). Actions : `addGoal` (avec objectif de temps optionnel), **`updateGoal`** (édition), `saveGoalResult` (résultat).
+- Coach has read-only access to athlete goals (including target time and result when present).
+- Displayed as “Prochain objectif” on coach dashboard.
 
 ---
 
@@ -348,7 +350,7 @@ Athletes filter coaches by:
 | `subscriptions` | Subscription per accepted request: `athlete_id`, `coach_id`, `request_id`, same `frozen_*` copied from `coach_requests` (not from offers). `status`: `'active'` \| `'cancellation_scheduled'` \| `'cancelled'`. `cancellation_requested_by_user_id` (UUID, nullable): user who requested the scheduled cancellation; only they can cancel the cancellation. Used for billing history; unchanged if coach later changes the offer. |
 | `workouts` | Planned training sessions for an athlete. `status`: `planned` \| `completed` \| `not_completed` (default `planned`; only athlete can update). `time_of_day`: optional `null` \| `'morning'` \| `'noon'` \| `'evening'` for calendar day sections. Optional athlete feedback: `perceived_feeling` (1–5), `perceived_intensity` (1–10), `perceived_pleasure` (1–5); migration 054. |
 | `athlete_availability_slots` | Athlete availability/unavailability per date. One row per slot: `athlete_id`, `date`, `type` (`available` \| `unavailable`), optional `start_time` / `end_time`, `note`. No recurrence; athlete CRUD on own rows, coach read-only for their athletes. |
-| `goals` | Athlete race/event objectives. Optional result for past goals: `result_time_hours/minutes/seconds`, `result_place`, `result_note` (migration 053). |
+| `goals` | Athlete race/event objectives. Optional **target time** (migration 056): `target_time_hours/minutes/seconds`. Optional result for past goals (migration 053): `result_time_hours/minutes/seconds`, `result_place`, `result_note`. |
 | `conversations` | 1-to-1 coach–athlete. Includes `request_id` (source `coach_requests` row) used to determine chat write access lifecycle. Participants can update `request_id` to the latest writable request (RLS policy `conversations_update_participant`). |
 | `chat_messages` | Messages in a conversation |
 | `coach_ratings` | Athlete rating + comment for coach |

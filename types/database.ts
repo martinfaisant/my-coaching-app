@@ -49,6 +49,10 @@ export type Goal = {
   result_place?: number | null
   /** Note libre (max 500 car.). */
   result_note?: string | null
+  /** Objectif de temps (temps cible). Les trois requis pour « avoir un objectif de temps ». */
+  target_time_hours?: number | null
+  target_time_minutes?: number | null
+  target_time_seconds?: number | null
 }
 
 /** Statut de réalisation d'une séance (affichage i18n : Planifié, Réalisé, Non réalisé). */

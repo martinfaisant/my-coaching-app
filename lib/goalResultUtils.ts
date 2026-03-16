@@ -46,4 +46,30 @@ export function formatGoalResultPlaceOrdinal(place: number, locale: string): str
   }
 }
 
+/**
+ * Indique si l'objectif a un objectif de temps (les trois champs target_time sont renseignés).
+ */
+export function hasTargetTime(goal: Goal): boolean {
+  return (
+    goal.target_time_hours != null &&
+    goal.target_time_minutes != null &&
+    goal.target_time_seconds != null
+  )
+}
+
+/**
+ * Formate l'objectif de temps pour l'affichage (ex. "3h30", "1h05min30s").
+ */
+export function formatTargetTime(goal: Goal): string {
+  if (!hasTargetTime(goal)) return ''
+  const h = goal.target_time_hours ?? 0
+  const m = goal.target_time_minutes ?? 0
+  const s = goal.target_time_seconds ?? 0
+  const parts: string[] = []
+  if (h > 0) parts.push(`${h}h`)
+  if (m > 0) parts.push(s > 0 ? `${String(m).padStart(2, '0')}min` : `${m}`)
+  if (s > 0) parts.push(`${String(s).padStart(2, '0')}s`)
+  return parts.join('')
+}
+
 export { MAX_NOTE_LENGTH }
