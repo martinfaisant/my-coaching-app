@@ -700,7 +700,7 @@ export function ProfileForm({
                         return (
                           <div
                             key={sport}
-                            className={`rounded-xl border-l-4 border border-stone-200 p-3 flex flex-wrap items-center justify-between gap-3 ${styles.badgeBg} ${styles.borderLeft}`}
+                            className={`rounded-xl border-l-4 border border-stone-200 bg-white p-3 flex flex-wrap items-center justify-between gap-3 ${styles.borderLeft}`}
                           >
                             <div className="flex items-center gap-2 min-w-0 shrink-0">
                               <span className={styles.badge}>
