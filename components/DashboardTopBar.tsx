@@ -90,6 +90,7 @@ export function DashboardTopBar({ profile }: DashboardTopBarProps) {
           <DashboardNavLinks
             items={navItems}
             variant="inline"
+            centerOnDesktop
             className="flex-1 min-w-0"
           />
           <Link

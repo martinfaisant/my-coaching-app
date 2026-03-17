@@ -232,7 +232,7 @@ export function PendingRequestTile({ request, goals = [] }: PendingRequestTilePr
                     </svg>
                   </span>
                   <span className="text-sm font-medium text-stone-800">
-                    {request.athlete_weekly_target_hours} {tProfile('suffixHoursPerWeek')}
+                    {t('pendingRequests.weeklyTargetLabel')} {request.athlete_weekly_target_hours} {tProfile('suffixHoursPerWeek')}
                   </span>
                 </div>
               )}

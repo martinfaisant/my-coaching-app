@@ -1,5 +1,6 @@
 'use client'
 
+import { useRef, useState, useLayoutEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { Link, usePathname } from '@/i18n/navigation'
 import type { NavItem } from '@/lib/dashboardNavConfig'
@@ -23,6 +24,20 @@ export function DashboardNavLinks({
 }: DashboardNavLinksProps) {
   const t = useTranslations('navigation')
   const pathname = usePathname()
+  const navRef = useRef<HTMLElement>(null)
+  const [hasOverflow, setHasOverflow] = useState(false)
+
+  useLayoutEffect(() => {
+    if (variant !== 'inline' || !centerOnDesktop || !navRef.current) return
+    const el = navRef.current
+    const check = () => {
+      setHasOverflow(el.scrollWidth > el.clientWidth)
+    }
+    check()
+    const ro = new ResizeObserver(check)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [variant, centerOnDesktop, items.length, pathname])
 
   const linkBase =
     'flex items-center rounded-xl transition-all duration-300 group shrink-0 ' +
@@ -55,9 +70,11 @@ export function DashboardNavLinks({
   )
 
   if (variant === 'inline') {
+    const centered = centerOnDesktop && !hasOverflow
     return (
       <nav
-        className={`scrollbar-hide flex items-center gap-1 min-w-0 flex-1 overflow-x-auto overflow-y-hidden py-1 ${centerOnDesktop ? 'justify-center' : ''} ${className}`.trim()}
+        ref={navRef}
+        className={`scrollbar-hide flex items-center gap-1 min-w-0 flex-1 overflow-x-auto overflow-y-hidden py-1 ${centered ? 'justify-center' : ''} ${className}`.trim()}
       >
         {navContent}
       </nav>
