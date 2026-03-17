@@ -125,10 +125,10 @@ export function BadgeShowcase() {
             </div>
           </div>
           <div>
-            <p className="text-xs text-stone-500 mb-2">Objectifs (Principal / Secondaire)</p>
+            <p className="text-xs text-stone-500 mb-2">Objectifs (Principal / Secondaire) — fond blanc, texte et contour colorés</p>
             <div className="flex flex-wrap gap-2">
               <Badge variant="warning">Principal</Badge>
-              <Badge variant="sport-natation">Secondaire</Badge>
+              <Badge variant="goalSecondary">Secondaire</Badge>
             </div>
           </div>
         </div>

@@ -20,6 +20,18 @@ import { useCoachedSportsOptions, usePracticedSportsOptions } from '@/lib/hooks/
 import { useRouter } from 'next/navigation'
 import { getInitials } from '@/lib/stringUtils'
 import { getDisplayName } from '@/lib/displayName'
+import type { Goal } from '@/types/database'
+import { TileCard } from '@/components/TileCard'
+import { GoalResultModal } from '@/app/[locale]/dashboard/objectifs/GoalResultModal'
+import { RequestGoalAddModal } from '@/app/[locale]/dashboard/RequestGoalAddModal'
+import { RequestGoalsListModal } from '@/app/[locale]/dashboard/RequestGoalsListModal'
+import {
+  hasGoalResult,
+  hasTargetTime,
+  formatTargetTime,
+  formatGoalResultTime,
+  formatGoalResultPlaceOrdinal,
+} from '@/lib/goalResultUtils'
 
 function getInitialsForCoach(displayName: string | null, email: string): string {
   const name = (displayName ?? '').trim()
@@ -104,6 +116,8 @@ type FindCoachSectionProps = {
   initialWeeklyTargetHours?: number | null
   /** Volumes par sport (profil athlète, pour préremplir le formulaire de demande) */
   initialWeeklyVolumeBySport?: Record<string, number> | null
+  /** Objectifs de l'athlète (pour la section objectifs/résultats dans la modale de demande) */
+  initialGoals?: Goal[]
 }
 
 function matchesSport(coach: CoachForList, selectedSports: string[]): boolean {
@@ -126,7 +140,7 @@ function matchesName(coach: CoachForList, query: string): boolean {
   return first.includes(q) || last.includes(q)
 }
 
-export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}, initialPracticedSports = [], ratingsByCoach = {}, offersByCoach = {}, athleteFirstName = '', athleteLastName = '', initialWeeklyTargetHours, initialWeeklyVolumeBySport }: FindCoachSectionProps) {
+export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}, initialPracticedSports = [], ratingsByCoach = {}, offersByCoach = {}, athleteFirstName = '', athleteLastName = '', initialWeeklyTargetHours, initialWeeklyVolumeBySport, initialGoals = [] }: FindCoachSectionProps) {
   const t = useTranslations('findCoach')
   const tCommon = useTranslations('common')
   const locale = useLocale()
@@ -287,6 +301,7 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
                       initialPracticedSports={initialPracticedSports}
                       athleteWeeklyTargetHours={initialWeeklyTargetHours}
                       athleteWeeklyVolumeBySport={initialWeeklyVolumeBySport}
+                      initialGoals={initialGoals}
                     />
                   ) : (
                     <Button
@@ -330,6 +345,7 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
           showNameFields={!((athleteFirstName ?? '').trim() && (athleteLastName ?? '').trim())}
           athleteFirstName={athleteFirstName}
           athleteLastName={athleteLastName}
+          initialGoals={initialGoals}
         />
       )}
 
@@ -403,7 +419,8 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
   )
 }
 
-const DISPLAY_SPORTS_ORDER = ['course', 'velo', 'natation', 'musculation', 'trail', 'triathlon'] as const
+// Volume hebdo : pas de tuile "trail" (comme Mon profil). Trail => tuile course + champ D+/sem.
+const DISPLAY_SPORTS_ORDER = ['course', 'velo', 'natation', 'musculation', 'triathlon'] as const
 
 type CoachDetailModalProps = {
   coach: CoachForList
@@ -419,6 +436,8 @@ type CoachDetailModalProps = {
   showNameFields?: boolean
   athleteFirstName?: string
   athleteLastName?: string
+  /** Objectifs de l'athlète (section objectifs/résultats dans le formulaire de demande) */
+  initialGoals?: Goal[]
 }
 
 type OfferSelectButtonProps = {
@@ -450,17 +469,45 @@ function OfferSelectButton({ isSelected, onClick }: OfferSelectButtonProps) {
   )
 }
 
-function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requestId, initialPracticedSports = [], initialWeeklyTargetHours, initialWeeklyVolumeBySport, showNameFields = false, athleteFirstName = '', athleteLastName = '' }: CoachDetailModalProps) {
+function formatGoalDateBlock(dateStr: string, localeTag: string): { month: string; day: string } {
+  const date = new Date(dateStr + 'T12:00:00')
+  const month = date.toLocaleDateString(localeTag, { month: 'short' })
+  const day = date.getDate().toString()
+  return { month: month.charAt(0).toUpperCase() + month.slice(1), day }
+}
+
+const MapIconSmall = ({ className = 'w-3.5 h-3.5' }: { className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z" />
+    <path d="m14.5 12.5 2-2" />
+    <path d="m11.5 9.5 2-2" />
+    <path d="m8.5 6.5 2-2" />
+    <path d="m17.5 15.5 2-2" />
+  </svg>
+)
+
+const ClockIconSmall = ({ className = 'w-3.5 h-3.5' }: { className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+)
+
+function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requestId, initialPracticedSports = [], initialWeeklyTargetHours, initialWeeklyVolumeBySport, showNameFields = false, athleteFirstName = '', athleteLastName = '', initialGoals = [] }: CoachDetailModalProps) {
   const t = useTranslations('findCoach')
+  const tGoals = useTranslations('goals')
   const tCommon = useTranslations('common')
   const tErrors = useTranslations('errors')
   const tProfile = useTranslations('profile')
   const tSports = useTranslations('sports')
   const tCoachReq = useTranslations('coachRequests.validation')
   const locale = useLocale()
+  const localeTag = locale === 'fr' ? 'fr-FR' : 'en-US'
   const router = useRouter()
   const practicedSportsOptions = usePracticedSportsOptions()
   const [selectedOfferId, setSelectedOfferId] = useState<string | null>(null)
+  const [addGoalModalOpen, setAddGoalModalOpen] = useState(false)
+  const [seeMoreGoalsModalOpen, setSeeMoreGoalsModalOpen] = useState(false)
+  const [goalForResultModal, setGoalForResultModal] = useState<Goal | null>(null)
   const [sports, setSports] = useState<string[]>(initialPracticedSports)
   const [need, setNeed] = useState('')
   const [firstName, setFirstName] = useState(athleteFirstName)
@@ -471,7 +518,7 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
   const [weeklyVolumeInputs, setWeeklyVolumeInputs] = useState<Record<string, string>>(() => {
     const init: Record<string, string> = {}
     const expanded = (initialPracticedSports ?? []).flatMap((s) =>
-      s === 'triathlon' ? ['course', 'velo', 'natation'] : [s]
+      s === 'triathlon' ? ['course', 'velo', 'natation'] : s === 'trail' ? ['course'] : [s]
     )
     const list = DISPLAY_SPORTS_ORDER.filter((s) => expanded.includes(s))
     for (const sport of list) {
@@ -487,7 +534,7 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
   const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const expandedForVolume = sports.flatMap((s) => (s === 'triathlon' ? ['course', 'velo', 'natation'] : [s]))
+  const expandedForVolume = sports.flatMap((s) => (s === 'triathlon' ? ['course', 'velo', 'natation'] : s === 'trail' ? ['course'] : [s]))
   const displaySportsForVolume = DISPLAY_SPORTS_ORDER.filter((s) => expandedForVolume.includes(s))
 
   useEffect(() => {
@@ -929,6 +976,132 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
                           )}
                         </div>
 
+                        {/* Section Objectifs de course / résultats passés */}
+                        <div>
+                          <div className="flex items-center justify-between gap-3 mb-3">
+                            <h4 className="text-sm font-bold text-stone-900 uppercase tracking-wide">
+                              {t('requestGoals.sectionTitle')}
+                            </h4>
+                            {initialGoals.length > 0 && (
+                              <Button
+                                type="button"
+                                variant="outline"
+                                className="shrink-0 text-xs px-2 py-1"
+                                onClick={() => setAddGoalModalOpen(true)}
+                              >
+                                {t('requestGoals.addButton')}
+                              </Button>
+                            )}
+                          </div>
+                          {initialGoals.length === 0 ? (
+                            <div className="rounded-xl border border-dashed border-stone-200 bg-stone-50/50 p-6 text-center">
+                              <p className="text-sm text-stone-500 mb-3">{t('requestGoals.emptyMessage')}</p>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => setAddGoalModalOpen(true)}
+                              >
+                                {t('requestGoals.addButtonLong')}
+                              </Button>
+                            </div>
+                          ) : (
+                            <div className="space-y-3">
+                              {initialGoals.slice(0, 5).map((goal) => {
+                                const today = new Date().toISOString().slice(0, 10)
+                                const isPast = goal.date <= today
+                                const isPrimary = goal.is_primary
+                                const isResult = isPast
+                                const dateBlock = formatGoalDateBlock(goal.date, localeTag)
+                                return (
+                                  <TileCard
+                                    key={goal.id}
+                                    leftBorderColor={isResult ? 'stone' : isPrimary ? 'amber' : 'sage'}
+                                    borderLeftOnly={isResult}
+                                    className={isPast ? 'opacity-75' : ''}
+                                  >
+                                    <div className="flex gap-4 items-start min-w-0 justify-between">
+                                      <div className={`flex flex-col items-center justify-center bg-stone-50 border border-stone-200 rounded-xl w-12 h-12 shrink-0 ${isPast ? 'opacity-75' : ''}`}>
+                                        <span className="text-[10px] font-bold text-stone-400 uppercase">{dateBlock.month}</span>
+                                        <span className="text-lg font-bold text-stone-800">{dateBlock.day}</span>
+                                      </div>
+                                      <div className="min-w-0 flex-1">
+                                        <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+                                          <h4 className={`text-sm font-bold truncate ${isPast ? 'text-stone-700' : 'text-stone-900'}`}>
+                                            {goal.race_name}
+                                          </h4>
+                                          {isPrimary ? (
+                                            <span className="bg-white text-palette-amber text-[10px] font-bold px-2 py-0.5 rounded-full border border-palette-amber shrink-0">
+                                              {tGoals('priority.primary')}
+                                            </span>
+                                          ) : (
+                                            <span className="bg-white text-palette-sage text-[10px] font-bold px-2 py-0.5 rounded-full border border-palette-sage shrink-0">
+                                              {tGoals('priority.secondary')}
+                                            </span>
+                                          )}
+                                        </div>
+                                        <div className="flex items-center gap-1 text-xs text-stone-500 font-medium flex-wrap">
+                                          <MapIconSmall className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+                                          <span>{goal.distance} km</span>
+                                          {hasTargetTime(goal) && (
+                                            <>
+                                              <span className="text-stone-400">·</span>
+                                              <span className="flex items-center gap-1">
+                                                <ClockIconSmall className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+                                                {isPast && hasGoalResult(goal) ? (
+                                                  <span>{tGoals('targetTimeLabel')} {formatTargetTime(goal)} · {tGoals('achieved')} {formatGoalResultTime(goal)}</span>
+                                                ) : (
+                                                  <span>{tGoals('targetTimeLabel')} : {formatTargetTime(goal)}</span>
+                                                )}
+                                              </span>
+                                            </>
+                                          )}
+                                          {!hasTargetTime(goal) && isPast && hasGoalResult(goal) && (
+                                            <>
+                                              <span className="text-stone-400">·</span>
+                                              <span className="flex items-center gap-1">
+                                                <ClockIconSmall className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+                                                <span>{formatGoalResultTime(goal)}</span>
+                                              </span>
+                                            </>
+                                          )}
+                                          {hasGoalResult(goal) && goal.result_place != null && (
+                                            <>
+                                              <span className="text-stone-400">·</span>
+                                              <span>{formatGoalResultPlaceOrdinal(goal.result_place, locale)}</span>
+                                            </>
+                                          )}
+                                        </div>
+                                      </div>
+                                      {isPast && (
+                                        <div className="shrink-0">
+                                          <Button
+                                            type="button"
+                                            variant="outline"
+                                            className="text-xs px-2 py-1"
+                                            onClick={() => setGoalForResultModal(goal)}
+                                          >
+                                            {t('requestGoals.editResult')}
+                                          </Button>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </TileCard>
+                                )
+                              })}
+                              {initialGoals.length > 5 && (
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  className="w-full"
+                                  onClick={() => setSeeMoreGoalsModalOpen(true)}
+                                >
+                                  {t('requestGoals.seeMore', { count: initialGoals.length })}
+                                </Button>
+                              )}
+                            </div>
+                          )}
+                        </div>
+
                         <Textarea
                           id="coaching_need"
                           label={t('modal.coachingNeed')}
@@ -969,6 +1142,26 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
           </div>
         </div>
       </div>
+
+      <RequestGoalAddModal
+        isOpen={addGoalModalOpen}
+        onClose={() => setAddGoalModalOpen(false)}
+      />
+      <RequestGoalsListModal
+        isOpen={seeMoreGoalsModalOpen}
+        onClose={() => setSeeMoreGoalsModalOpen(false)}
+        goals={initialGoals}
+        title={t('requestGoals.seeMoreModalTitle')}
+        layer={1}
+      />
+      {goalForResultModal && (
+        <GoalResultModal
+          goal={goalForResultModal}
+          isOpen={!!goalForResultModal}
+          onClose={() => setGoalForResultModal(null)}
+          layer={1}
+        />
+      )}
     </>,
     document.body
   )

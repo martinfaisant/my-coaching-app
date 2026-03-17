@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tuiles objectif avec objectif de temps + modale détail</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            'palette-amber': '#c9a544',
+            'palette-sage': '#aaaa51',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-stone-50 p-8 text-stone-900">
+  <div class="max-w-2xl mx-auto space-y-8">
+    <p class="text-sm text-stone-500">
+      <strong>Contexte :</strong> Affichage des tuiles objectif (page Objectifs, liste coach, calendrier) avec objectif de temps.
+      Trois cas : futur avec cible ; passé avec cible + résultat ; passé avec cible sans résultat. Puis modale détail objectif.
+    </p>
+
+    <section>
+      <h3 class="text-sm font-bold text-stone-400 uppercase tracking-wide mb-4">Tuiles objectif</h3>
+      <div class="space-y-4">
+        <!-- 1. Objectif futur avec temps cible -->
+        <div class="bg-white rounded-2xl border border-stone-200 border-l-4 border-l-amber-500 p-4 shadow-sm">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div class="flex gap-4 items-center min-w-0">
+              <div class="flex flex-col items-center justify-center bg-stone-50 border border-stone-200 rounded-xl w-14 h-14 shrink-0">
+                <span class="text-[10px] font-bold text-stone-400 uppercase">Avr.</span>
+                <span class="text-xl font-bold text-stone-800">06</span>
+              </div>
+              <div class="min-w-0">
+                <div class="flex items-center gap-2 mb-0.5">
+                  <h3 class="text-base font-bold text-stone-900">Marathon de Paris</h3>
+                  <span class="bg-amber-100 text-amber-700 text-[10px] font-bold px-2 py-0.5 rounded-full border border-amber-200">Principal</span>
+                </div>
+                <div class="flex items-center gap-1 text-sm text-stone-500 font-medium flex-wrap">
+                  <span>42 km</span>
+                  <span class="text-stone-400">·</span>
+                  <span class="flex items-center gap-1">
+                    <svg class="w-3.5 h-3.5 text-stone-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Objectif : 3h30
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+              <span class="text-sm font-bold text-palette-forest-dark bg-palette-forest-dark/10 px-3 py-1 rounded-lg">J-21</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Objectif passé avec cible + résultat -->
+        <div class="bg-white rounded-2xl border border-stone-200 border-l-4 border-l-sage-500 p-4 shadow-sm opacity-90">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div class="flex gap-4 items-center min-w-0">
+              <div class="flex flex-col items-center justify-center bg-stone-50 border border-stone-200 rounded-xl w-14 h-14 shrink-0 opacity-75">
+                <span class="text-[10px] font-bold text-stone-400 uppercase">Jan.</span>
+                <span class="text-xl font-bold text-stone-800">12</span>
+              </div>
+              <div class="min-w-0">
+                <div class="flex items-center gap-2 mb-0.5">
+                  <h3 class="text-base font-bold text-stone-700">Semi de Lyon</h3>
+                  <span class="bg-stone-100 text-stone-600 text-[10px] font-bold px-2 py-0.5 rounded-full border border-stone-200">Secondaire</span>
+                </div>
+                <div class="flex items-center gap-1 text-sm text-stone-500 font-medium flex-wrap">
+                  <span>21 km</span>
+                  <span class="text-stone-400">·</span>
+                  <span>Objectif 1h45</span>
+                  <span class="text-stone-400">·</span>
+                  <span>Réalisé 1h42</span>
+                  <span class="text-stone-400">·</span>
+                  <span>24e</span>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+              <button type="button" class="text-sm px-3 py-1.5 rounded-lg border border-stone-300 text-stone-600 hover:bg-stone-100">Modifier le résultat</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Objectif passé avec cible, sans résultat -->
+        <div class="bg-white rounded-2xl border border-stone-200 border-l-4 border-l-amber-500 p-4 shadow-sm opacity-75">
+          <div class="flex gap-4 items-center min-w-0">
+            <div class="flex flex-col items-center justify-center bg-stone-50 border border-stone-200 rounded-xl w-14 h-14 shrink-0">
+              <span class="text-[10px] font-bold text-stone-400 uppercase">Fév.</span>
+              <span class="text-xl font-bold text-stone-800">02</span>
+            </div>
+            <div class="min-w-0">
+              <div class="flex items-center gap-2 mb-0.5">
+                <h3 class="text-base font-bold text-stone-700">10 km Ville</h3>
+                <span class="bg-amber-100 text-amber-700 text-[10px] font-bold px-2 py-0.5 rounded-full border border-amber-200">Principal</span>
+              </div>
+              <div class="flex items-center gap-1 text-sm text-stone-500 font-medium flex-wrap">
+                <span>10 km</span>
+                <span class="text-stone-400">·</span>
+                <span>Objectif : 45min</span>
+              </div>
+              <p class="text-xs text-stone-400 mt-1">Pas de résultat saisi</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Modale détail objectif (extrait) -->
+    <section>
+      <h3 class="text-sm font-bold text-stone-400 uppercase tracking-wide mb-4">Modale détail objectif (calendrier)</h3>
+      <div class="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden max-w-md">
+        <div class="px-6 py-4 border-b border-stone-100 bg-stone-50/50 flex items-center justify-between">
+          <h2 class="text-lg font-bold text-stone-900">Détail de l'objectif</h2>
+        </div>
+        <div class="px-6 py-4">
+          <dl class="space-y-4">
+            <div>
+              <dt class="text-xs text-stone-500 uppercase tracking-wide font-bold mb-1.5">Date</dt>
+              <dd class="text-sm text-stone-900">dimanche 6 avril 2025</dd>
+            </div>
+            <div>
+              <dt class="text-xs text-stone-500 uppercase tracking-wide font-bold mb-1.5">Nom de la course</dt>
+              <dd class="text-sm text-stone-900">Marathon de Paris</dd>
+            </div>
+            <div>
+              <dt class="text-xs text-stone-500 uppercase tracking-wide font-bold mb-1.5">Distance</dt>
+              <dd class="text-sm text-stone-900">42 km</dd>
+            </div>
+            <div>
+              <dt class="text-xs text-stone-500 uppercase tracking-wide font-bold mb-1.5">Type</dt>
+              <dd class="text-sm text-stone-900">
+                <span class="bg-amber-100 text-amber-700 text-[10px] font-bold px-2 py-0.5 rounded-full border border-amber-200">Principal</span>
+              </dd>
+            </div>
+            <!-- Nouvelle ligne : Objectif de temps -->
+            <div>
+              <dt class="text-xs text-stone-500 uppercase tracking-wide font-bold mb-1.5">Objectif de temps</dt>
+              <dd class="text-sm text-stone-900 font-medium text-palette-forest-dark">3h30</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    <p class="text-xs text-stone-500">
+      <strong>Composants :</strong> TileCard (ObjectifsTable, CoachAthleteCalendarPage), même ligne « distance · Objectif : X » ou « Objectif X · Réalisé Y · place ». Modale détail (CalendarView) : ajout d’une ligne « Objectif de temps » si présent. i18n : goals.targetTime, goals.targetTimeLabel, goals.achieved (Réalisé).
+    </p>
+  </div>
+</body>
+</html>

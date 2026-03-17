@@ -106,7 +106,7 @@ export function CoachSubscriptionDetailModal({
             {getFrozenTitleForLocale(subscription, locale) || '—'}
           </h3>
           {scheduled ? (
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-palette-amber/10 text-palette-amber border border-palette-amber/20 shrink-0">
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-white text-palette-amber border border-palette-amber shrink-0">
               {tMyCoach('subscription.cancellationScheduledBadge')}
             </span>
           ) : (

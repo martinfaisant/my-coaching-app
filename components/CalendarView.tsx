@@ -14,7 +14,7 @@ import { IconRunning, IconBiking, IconSwimming, IconDumbbell, IconNordicSki, Ico
 import { SPORT_ICONS, SPORT_CARD_STYLES, SPORT_TRANSLATION_KEYS } from '@/lib/sportStyles'
 import { ActivityTile } from './ActivityTile'
 import type { Workout, WorkoutStatus, SportType, Goal, ImportedActivity, ImportedActivityWeeklyTotal, WorkoutWeeklyTotal, WorkoutTimeOfDay, AthleteAvailabilitySlot } from '@/types/database'
-import { hasGoalResult, formatGoalResultTime, formatGoalResultPlaceOrdinal } from '@/lib/goalResultUtils'
+import { hasGoalResult, formatGoalResultTime, formatGoalResultPlaceOrdinal, hasTargetTime, formatTargetTime } from '@/lib/goalResultUtils'
 
 /** Distance natation en mètres (arrondi au mètre près). */
 function swimmingDistanceM(km: number): number {
@@ -299,6 +299,8 @@ export function CalendarView({
     setSelectedGoal(goal)
     setGoalModalOpen(true)
   }
+
+  const todayStr = toDateStr(new Date())
 
   const { startMonday, weeks } = useMemo(() => {
     const today = new Date()
@@ -981,8 +983,9 @@ export function CalendarView({
                                         {entry.type === 'availability' ? renderAvailabilityTile(entry.item, day.dateStr, true, openAvailabilityDetail) : entry.type === 'goal' ? (() => {
                                           const g = entry.item
                                           const isPrimary = g.is_primary
-                                          const borderColor = isPrimary ? 'border-palette-amber' : 'border-palette-sage'
-                                          const badgeColor = isPrimary ? 'text-palette-amber bg-palette-amber/10' : 'text-palette-sage bg-palette-sage/10'
+                                          const isResult = g.date <= todayStr
+                                          const borderColor = isResult ? 'border-stone-400' : (isPrimary ? 'border-palette-amber' : 'border-palette-sage')
+                                          const badgeColor = isPrimary ? 'text-palette-amber bg-white' : 'text-palette-sage bg-white'
                                           return (
                                             <div onClick={(e) => { e.stopPropagation(); openGoal(g) }} className={`bg-white rounded border-l-4 ${borderColor} shadow-sm p-1.5 cursor-pointer training-card`} role="button">
                                               <div>
@@ -1027,8 +1030,9 @@ export function CalendarView({
                                 {firstAvailability && renderAvailabilityTile(firstAvailability, day.dateStr, true, openAvailabilityDetail)}
                                 {firstGoal && !firstWorkout && !firstImported && !firstAvailability && (() => {
                                   const isPrimary = firstGoal.is_primary
-                                  const borderColor = isPrimary ? 'border-palette-amber' : 'border-palette-sage'
-                                  const badgeColor = isPrimary ? 'text-palette-amber bg-palette-amber/10' : 'text-palette-sage bg-palette-sage/10'
+                                  const isResult = firstGoal.date <= todayStr
+                                  const borderColor = isResult ? 'border-stone-400' : (isPrimary ? 'border-palette-amber' : 'border-palette-sage')
+                                  const badgeColor = isPrimary ? 'text-palette-amber bg-white' : 'text-palette-sage bg-white'
                                   return (
                                     <div
                                       onClick={(e) => { e.stopPropagation(); openGoal(firstGoal) }}
@@ -1123,8 +1127,9 @@ export function CalendarView({
                                 {firstAvailability && renderAvailabilityTile(firstAvailability, day.dateStr, true, openAvailabilityDetail)}
                                 {firstGoal && !firstWorkout && !firstImported && !firstAvailability && (() => {
                                   const isPrimary = firstGoal.is_primary
-                                  const borderColor = isPrimary ? 'border-palette-amber' : 'border-palette-sage'
-                                  const badgeColor = isPrimary ? 'text-palette-amber bg-palette-amber/10' : 'text-palette-sage bg-palette-sage/10'
+                                  const isResult = firstGoal.date <= todayStr
+                                  const borderColor = isResult ? 'border-stone-400' : (isPrimary ? 'border-palette-amber' : 'border-palette-sage')
+                                  const badgeColor = isPrimary ? 'text-palette-amber bg-white' : 'text-palette-sage bg-white'
                                   return (
                                     <div
                                       onClick={(e) => { e.stopPropagation(); openGoal(firstGoal) }}
@@ -1360,7 +1365,7 @@ export function CalendarView({
                                         const g = entry.item
                                         const isPrimary = g.is_primary
                                         const borderColor = isPrimary ? 'border-palette-amber' : 'border-palette-sage'
-                                        const badgeColor = isPrimary ? 'text-palette-amber bg-palette-amber/10' : 'text-palette-sage bg-palette-sage/10'
+                                        const badgeColor = isPrimary ? 'text-palette-amber bg-white' : 'text-palette-sage bg-white'
                                         return <div onClick={(e) => { e.stopPropagation(); openGoal(g) }} className={`bg-white rounded border-l-4 ${borderColor} shadow-sm p-1.5 cursor-pointer training-card`} role="button"><div><span className={`float-left inline-flex mr-1.5 ${badgeColor} px-1 py-0.5 rounded shrink-0`}><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" /></svg></span><div className="text-xs font-semibold text-stone-700 leading-tight">{g.race_name}</div><div className="clear-both" /></div><div className="flex items-center gap-1 text-[10px] text-stone-500 font-semibold mt-1"><svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z" /><path d="m14.5 12.5 2-2" /><path d="m11.5 9.5 2-2" /><path d="m8.5 6.5 2-2" /><path d="m17.5 15.5 2-2" /></svg><span>{g.distance} km</span></div></div>
                                       })() : entry.type === 'workout' ? renderCompactCard(entry.item, day.dateStr) : (() => {
                                         const a = entry.item
@@ -1376,8 +1381,9 @@ export function CalendarView({
                               {firstAvailability && renderAvailabilityTile(firstAvailability, day.dateStr, true, openAvailabilityDetail)}
                               {firstGoal && !firstWorkout && !firstImported && !firstAvailability && (() => {
                                 const isPrimary = firstGoal.is_primary
-                                const borderColor = isPrimary ? 'border-palette-amber' : 'border-palette-sage'
-                                const badgeColor = isPrimary ? 'text-palette-amber bg-palette-amber/10' : 'text-palette-sage bg-palette-sage/10'
+                                const isResult = firstGoal.date <= todayStr
+                                const borderColor = isResult ? 'border-stone-400' : (isPrimary ? 'border-palette-amber' : 'border-palette-sage')
+                                const badgeColor = isPrimary ? 'text-palette-amber bg-white' : 'text-palette-sage bg-white'
                                 return (
                                   <div
                                     onClick={(e) => { e.stopPropagation(); openGoal(firstGoal) }}
@@ -1480,8 +1486,9 @@ export function CalendarView({
                               {firstAvailability && renderAvailabilityTile(firstAvailability, day.dateStr, true, openAvailabilityDetail)}
                               {firstGoal && !firstWorkout && !firstImported && !firstAvailability && (() => {
                                 const isPrimary = firstGoal.is_primary
-                                const borderColor = isPrimary ? 'border-palette-amber' : 'border-palette-sage'
-                                const badgeColor = isPrimary ? 'text-palette-amber bg-palette-amber/10' : 'text-palette-sage bg-palette-sage/10'
+                                const isResult = firstGoal.date <= todayStr
+                                const borderColor = isResult ? 'border-stone-400' : (isPrimary ? 'border-palette-amber' : 'border-palette-sage')
+                                const badgeColor = isPrimary ? 'text-palette-amber bg-white' : 'text-palette-sage bg-white'
                                 return (
                                   <div
                                     onClick={(e) => { e.stopPropagation(); openGoal(firstGoal) }}
@@ -1625,8 +1632,9 @@ export function CalendarView({
                                     {entry.type === 'availability' ? renderAvailabilityTile(entry.item, day.dateStr, true, openAvailabilityDetail) : entry.type === 'goal' ? (() => {
                                       const g = entry.item
                                       const isPrimary = g.is_primary
-                                      const borderColor = isPrimary ? 'border-palette-amber' : 'border-palette-sage'
-                                      const badgeColor = isPrimary ? 'text-palette-amber bg-palette-amber/10' : 'text-palette-sage bg-palette-sage/10'
+                                      const isResult = g.date <= todayStr
+                                      const borderColor = isResult ? 'border-stone-400' : (isPrimary ? 'border-palette-amber' : 'border-palette-sage')
+                                      const badgeColor = isPrimary ? 'text-palette-amber bg-white' : 'text-palette-sage bg-white'
                                       return (
                                         <div
                                           onClick={(e) => { e.stopPropagation(); openGoal(g) }}
@@ -1844,6 +1852,7 @@ export function CalendarView({
                       <ActivityTile
                         type="goal"
                         isPrimary={g.is_primary}
+                        isResult={g.date <= todayStr}
                         title={g.race_name}
                         distance={Number(g.distance)}
                         date={dateLabel}
@@ -1916,7 +1925,7 @@ export function CalendarView({
               <div className="shrink-0 px-6 py-4 border-b border-stone-100 bg-stone-50/50 flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3 min-w-0">
                   <div className={`p-2 rounded-full ${
-                    selectedGoal.is_primary ? 'bg-palette-amber/10 text-palette-amber' : 'bg-palette-sage/10 text-palette-sage'
+                    selectedGoal.is_primary ? 'bg-white text-palette-amber' : 'bg-white text-palette-sage'
                   }`}>
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <circle cx="12" cy="12" r="10" />
@@ -1970,16 +1979,22 @@ export function CalendarView({
                       <dt className="text-xs text-stone-500 uppercase tracking-wide font-bold mb-1.5">{tGoals('goalType')}</dt>
                       <dd className="text-sm text-stone-900 flex items-center gap-2">
                         {selectedGoal.is_primary ? (
-                          <span className="bg-palette-amber/10 text-palette-amber text-[10px] font-bold px-2 py-0.5 rounded-full border border-palette-amber">
+                          <span className="bg-white text-palette-amber text-[10px] font-bold px-2 py-0.5 rounded-full border border-palette-amber">
                             Principal
                           </span>
                         ) : (
-                          <span className="bg-palette-sage/10 text-palette-sage text-[10px] font-bold px-2 py-0.5 rounded-full border border-palette-sage">
+                          <span className="bg-white text-palette-sage text-[10px] font-bold px-2 py-0.5 rounded-full border border-palette-sage">
                             Secondaire
                           </span>
                         )}
                       </dd>
                     </div>
+                    {hasTargetTime(selectedGoal) && (
+                      <div>
+                        <dt className="text-xs text-stone-500 uppercase tracking-wide font-bold mb-1.5">{tGoals('targetTimeSection')}</dt>
+                        <dd className="text-sm text-stone-900 font-medium text-palette-forest-dark">{formatTargetTime(selectedGoal)}</dd>
+                      </div>
+                    )}
                     {hasGoalResult(selectedGoal) && (
                       <>
                         <div>

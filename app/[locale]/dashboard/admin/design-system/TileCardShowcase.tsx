@@ -11,7 +11,7 @@ const BORDER_COLORS: { value: TileCardBorderColor; label: string; usage: string 
   { value: 'strava', label: 'strava', usage: 'Activité Strava' },
   { value: 'gold', label: 'gold', usage: 'Trail, ski de randonnée' },
   { value: 'olive', label: 'olive', usage: 'Vélo, secondaire' },
-  { value: 'stone', label: 'stone', usage: 'Archivé / terminé (offres archivées, historique souscriptions)' },
+  { value: 'stone', label: 'stone', usage: 'Résultat objectif (bande grise + borderLeftOnly) ; archivé / terminé' },
 ]
 
 export function TileCardShowcase() {
@@ -127,7 +127,7 @@ export function TileCardShowcase() {
                 <div className="min-w-0">
                   <div className="flex items-center gap-2 mb-0.5">
                     <h3 className="text-base font-bold text-stone-900 truncate">Marathon de Paris</h3>
-                    <span className="bg-palette-amber/10 text-palette-amber text-[10px] font-bold px-2 py-0.5 rounded-full border border-palette-amber shrink-0">
+                    <span className="bg-white text-palette-amber text-[10px] font-bold px-2 py-0.5 rounded-full border border-palette-amber shrink-0">
                       Principal
                     </span>
                   </div>
@@ -167,7 +167,7 @@ export function TileCardShowcase() {
                 <div className="min-w-0">
                   <div className="flex items-center gap-2 mb-0.5">
                     <h3 className="text-base font-bold text-stone-900 truncate">Semi-marathon de Lyon</h3>
-                    <span className="bg-palette-sage/10 text-palette-sage text-[10px] font-bold px-2 py-0.5 rounded-full border border-palette-sage shrink-0">
+                    <span className="bg-white text-palette-sage text-[10px] font-bold px-2 py-0.5 rounded-full border border-palette-sage shrink-0">
                       Secondaire
                     </span>
                   </div>
@@ -196,6 +196,35 @@ export function TileCardShowcase() {
           {clickedId === 'delete-2' && (
             <p className="text-xs text-green-600 font-medium">✓ Clic sur Supprimer</p>
           )}
+
+          <TileCard leftBorderColor="stone" borderLeftOnly>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <div className="flex gap-4 items-center min-w-0">
+                <div className="flex flex-col items-center justify-center bg-stone-50 border border-stone-200 rounded-xl w-14 h-14 shrink-0 opacity-90">
+                  <span className="text-[10px] font-bold text-stone-400 uppercase">Jan.</span>
+                  <span className="text-xl font-bold text-stone-800">12</span>
+                </div>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <h3 className="text-base font-bold text-stone-700 truncate">Semi de Lyon</h3>
+                    <span className="bg-white text-palette-amber text-[10px] font-bold px-2 py-0.5 rounded-full border border-palette-amber shrink-0">
+                      Principal
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1 text-sm text-stone-500 font-medium flex-wrap">
+                    <MapIcon className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+                    <span>21 km · 1h42 · 24e</span>
+                  </div>
+                </div>
+              </div>
+              <Button type="button" variant="outline" className="px-3 py-1.5 shrink-0">
+                Modifier le résultat
+              </Button>
+            </div>
+          </TileCard>
+          <p className="text-xs text-stone-500">
+            Tuile <strong>résultat</strong> : <code>leftBorderColor=&quot;stone&quot;</code> + <code>borderLeftOnly</code> (bande grise à gauche uniquement).
+          </p>
         </div>
       </div>
     </div>

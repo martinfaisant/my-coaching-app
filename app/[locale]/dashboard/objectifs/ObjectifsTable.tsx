@@ -1,16 +1,19 @@
 'use client'
 
 import { useActionState, useRef, useEffect, useState, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
 import { useLocale, useTranslations } from 'next-intl'
 import { Button } from '@/components/Button'
 import { Input } from '@/components/Input'
 import { TileCard } from '@/components/TileCard'
+import { DatePickerPopup } from '@/components/DatePickerPopup'
 import { addGoal, deleteGoal, type GoalFormState } from './actions'
 import type { Goal } from '@/types/database'
-import { getDaysUntil } from '@/lib/dateUtils'
-import { hasGoalResult, formatGoalResultTime, formatGoalResultPlaceOrdinal } from '@/lib/goalResultUtils'
+import { getDaysUntil, formatDateFr, toDateStr } from '@/lib/dateUtils'
+import { hasGoalResult, formatGoalResultTime, formatGoalResultPlaceOrdinal, hasTargetTime, formatTargetTime } from '@/lib/goalResultUtils'
 import { GoalResultModal } from './GoalResultModal'
+import { GoalEditModal } from './GoalEditModal'
 
 
 type ObjectifsTableProps = {
@@ -73,10 +76,15 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
   const tCommon = useTranslations('common')
   const router = useRouter()
   const [state, action] = useActionState<GoalFormState, FormData>(addGoal, {})
-  const dateInputRef = useRef<HTMLInputElement>(null)
   const formRef = useRef<HTMLFormElement>(null)
+  const dateTriggerRef = useRef<HTMLDivElement>(null)
+  const datePickerPopupRef = useRef<HTMLDivElement>(null)
+  const [addFormDate, setAddFormDate] = useState('')
+  const [showDatePickerPopup, setShowDatePickerPopup] = useState(false)
+  const [datePickerAnchor, setDatePickerAnchor] = useState<DOMRect | null>(null)
   const [priority, setPriority] = useState<'primary' | 'secondary'>('primary')
   const [goalForResultModal, setGoalForResultModal] = useState<Goal | null>(null)
+  const [goalForEditModal, setGoalForEditModal] = useState<Goal | null>(null)
 
   // Pattern bouton Enregistrer (PATTERN_SAVE_BUTTON.md)
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
@@ -89,6 +97,9 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
     date: '',
     distance: '',
     is_primary: 'primary' as const,
+    target_time_hours: '',
+    target_time_minutes: '',
+    target_time_seconds: '',
   })
 
 
@@ -98,16 +109,67 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
     const raceName = (form.querySelector('[name="race_name"]') as HTMLInputElement)?.value.trim() || ''
     const date = (form.querySelector('[name="date"]') as HTMLInputElement)?.value.trim() || ''
     const distance = (form.querySelector('[name="distance"]') as HTMLInputElement)?.value.trim() || ''
-    // Bouton actif uniquement quand les 3 champs requis sont remplis
     if (!raceName || !date || !distance) return false
     const currentPriority = priorityOverride ?? priority
+    const th = (form.querySelector('[name="target_time_hours"]') as HTMLInputElement)?.value ?? ''
+    const tm = (form.querySelector('[name="target_time_minutes"]') as HTMLInputElement)?.value ?? ''
+    const ts = (form.querySelector('[name="target_time_seconds"]') as HTMLInputElement)?.value ?? ''
     const initial = initialValuesRef.current
     if (raceName !== initial.race_name) return true
     if (date !== initial.date) return true
     if (distance !== initial.distance) return true
     if (currentPriority !== initial.is_primary) return true
+    if (th !== initial.target_time_hours || tm !== initial.target_time_minutes || ts !== initial.target_time_seconds) return true
     return false
   }, [priority])
+
+  const closeDatePicker = useCallback(() => {
+    setShowDatePickerPopup(false)
+    setDatePickerAnchor(null)
+  }, [])
+
+  const openDatePicker = useCallback(() => {
+    const rect = dateTriggerRef.current?.getBoundingClientRect()
+    if (rect) setDatePickerAnchor(rect)
+    setShowDatePickerPopup(true)
+  }, [])
+
+  useEffect(() => {
+    if (!showDatePickerPopup) return
+
+    const onPointerDown = (e: PointerEvent) => {
+      const target = e.target as Node | null
+      if (!target) return
+      const inPopup = datePickerPopupRef.current?.contains(target)
+      const inTrigger = dateTriggerRef.current?.contains(target)
+      if (!inPopup && !inTrigger) closeDatePicker()
+    }
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeDatePicker()
+    }
+
+    const onRepositionOrClose = () => {
+      // Si l'utilisateur scroll/resize, on évite un popover "perdu" en le refermant.
+      closeDatePicker()
+    }
+
+    document.addEventListener('pointerdown', onPointerDown, true)
+    document.addEventListener('keydown', onKeyDown)
+    window.addEventListener('resize', onRepositionOrClose)
+    window.addEventListener('scroll', onRepositionOrClose, true)
+
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown, true)
+      document.removeEventListener('keydown', onKeyDown)
+      window.removeEventListener('resize', onRepositionOrClose)
+      window.removeEventListener('scroll', onRepositionOrClose, true)
+    }
+  }, [showDatePickerPopup, closeDatePicker])
+
+  useEffect(() => {
+    setHasUnsavedChanges(checkUnsavedChanges())
+  }, [addFormDate, checkUnsavedChanges])
 
   useEffect(() => {
     const form = formRef.current
@@ -138,7 +200,8 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
       if (formRef.current) {
         formRef.current.reset()
         setPriority('primary')
-        initialValuesRef.current = { race_name: '', date: '', distance: '', is_primary: 'primary' }
+        setAddFormDate('')
+        initialValuesRef.current = { race_name: '', date: '', distance: '', is_primary: 'primary', target_time_hours: '', target_time_minutes: '', target_time_seconds: '' }
         setHasUnsavedChanges(false)
       }
       return () => clearTimeout(t)
@@ -204,11 +267,13 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
                   const daysUntil = getDaysUntil(goal.date)
                   const dateBlock = formatDateBlock(goal.date, localeTag)
                   const isPrimary = goal.is_primary
+                  const isResult = goal.date <= today
 
                   return (
                     <TileCard
                       key={goal.id}
-                      leftBorderColor={isPrimary ? 'amber' : 'sage'}
+                      leftBorderColor={isResult ? 'stone' : isPrimary ? 'amber' : 'sage'}
+                      borderLeftOnly={isResult}
                       className={isPast ? 'opacity-75' : ''}
                     >
                       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -225,11 +290,11 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
                                 {goal.race_name}
                               </h3>
                               {isPrimary ? (
-                                <span className="bg-palette-amber/10 text-palette-amber text-[10px] font-bold px-2 py-0.5 rounded-full border border-palette-amber shrink-0">
+                                <span className="bg-white text-palette-amber text-[10px] font-bold px-2 py-0.5 rounded-full border border-palette-amber shrink-0">
                                   {tGoals('priority.primary')}
                                 </span>
                               ) : (
-                                <span className="bg-palette-sage/10 text-palette-sage text-[10px] font-bold px-2 py-0.5 rounded-full border border-palette-sage shrink-0">
+                                <span className="bg-white text-palette-sage text-[10px] font-bold px-2 py-0.5 rounded-full border border-palette-sage shrink-0">
                                   {tGoals('priority.secondary')}
                                 </span>
                               )}
@@ -237,19 +302,32 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
                             <div className="flex items-center gap-1 text-sm text-stone-500 font-medium flex-wrap">
                               <MapIcon className="w-3.5 h-3.5 text-stone-400 shrink-0" />
                               <span>{goal.distance} km</span>
-                              {isPast && hasGoalResult(goal) && (
+                              {hasTargetTime(goal) && (
+                                <>
+                                  <span className="text-stone-400">·</span>
+                                  <span className="flex items-center gap-1">
+                                    <ClockIcon className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+                                    {isPast && hasGoalResult(goal) ? (
+                                      <span>{tGoals('targetTimeLabel')} {formatTargetTime(goal)} · {tGoals('achieved')} {formatGoalResultTime(goal)}</span>
+                                    ) : (
+                                      <span>{tGoals('targetTimeLabel')} : {formatTargetTime(goal)}</span>
+                                    )}
+                                  </span>
+                                </>
+                              )}
+                              {!hasTargetTime(goal) && isPast && hasGoalResult(goal) && (
                                 <>
                                   <span className="text-stone-400">·</span>
                                   <span className="flex items-center gap-1">
                                     <ClockIcon className="w-3.5 h-3.5 text-stone-400 shrink-0" />
                                     <span>{formatGoalResultTime(goal)}</span>
                                   </span>
-                                  {goal.result_place != null && (
-                                    <>
-                                      <span className="text-stone-400">·</span>
-                                      <span>{formatGoalResultPlaceOrdinal(goal.result_place, locale)}</span>
-                                    </>
-                                  )}
+                                </>
+                              )}
+                              {hasGoalResult(goal) && goal.result_place != null && (
+                                <>
+                                  <span className="text-stone-400">·</span>
+                                  <span>{formatGoalResultPlaceOrdinal(goal.result_place, locale)}</span>
                                 </>
                               )}
                             </div>
@@ -266,6 +344,14 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
                               {tGoals('daysUntil', { days: daysUntil })}
                             </span>
                           )}
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className="px-3 py-1.5"
+                            onClick={() => setGoalForEditModal(goal)}
+                          >
+                            {tGoals('editGoal')}
+                          </Button>
                           {isPast && (
                             <Button
                               type="button"
@@ -317,14 +403,36 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
             />
 
             <div className="grid grid-cols-2 gap-4">
-              <Input
-                ref={dateInputRef}
-                id="date"
-                label={tGoals('date')}
-                name="date"
-                type="date"
-                required
-              />
+              <div>
+                <label htmlFor="objectif-date-trigger" className="block text-xs font-bold text-stone-500 uppercase tracking-wide mb-1.5 ml-1">
+                  {tGoals('date')} *
+                </label>
+                <input type="hidden" name="date" value={addFormDate} required readOnly aria-hidden />
+                <div
+                  ref={dateTriggerRef}
+                  id="objectif-date-trigger"
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => {
+                    openDatePicker()
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      openDatePicker()
+                    }
+                  }}
+                  className="flex items-center gap-2 w-full border border-stone-300 rounded-lg py-3 px-3 bg-white focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition text-left"
+                  aria-label={tGoals('date')}
+                >
+                  <span className={`text-sm flex-1 ${addFormDate ? 'font-medium text-stone-900' : 'text-stone-400'}`}>
+                    {addFormDate ? formatDateFr(addFormDate, true, localeTag) : tGoals('date')}
+                  </span>
+                  <svg className="w-5 h-5 text-stone-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+              </div>
               <Input
                 id="distance"
                 label={tGoals('distance')}
@@ -354,9 +462,9 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
                     }}
                     className="hidden peer"
                   />
-                  <div className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border text-[10px] font-bold transition-all ${
+                  <div className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg border text-[10px] font-bold transition-all ${
                     priority === 'primary' 
-                      ? 'bg-palette-amber/10 text-palette-amber border-palette-amber' 
+                      ? 'bg-white text-palette-amber border-palette-amber' 
                       : 'bg-white text-stone-400 border-stone-200 hover:border-stone-300'
                   }`}>
                     <span>{tGoals('priority.primary')}</span>
@@ -375,14 +483,67 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
                     }}
                     className="hidden peer"
                   />
-                  <div className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border text-[10px] font-bold transition-all ${
+                  <div className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg border text-[10px] font-bold transition-all ${
                     priority === 'secondary' 
-                      ? 'bg-palette-sage/10 text-palette-sage border-palette-sage' 
+                      ? 'bg-white text-palette-sage border-palette-sage' 
                       : 'bg-white text-stone-400 border-stone-200 hover:border-stone-300'
                   }`}>
                     <span>{tGoals('priority.secondary')}</span>
                   </div>
                 </label>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="block text-xs font-bold text-stone-500 uppercase tracking-wide ml-1">
+                {tGoals('targetTimeOptional')}
+              </label>
+              <div className="grid grid-cols-3 gap-2">
+                <div className="relative">
+                  <Input
+                    id="target_time_hours"
+                    name="target_time_hours"
+                    type="number"
+                    min={0}
+                    max={99}
+                    placeholder=""
+                    className="text-center pr-9"
+                    aria-label={tGoals('result.hours')}
+                  />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-stone-500 pointer-events-none">
+                    {tGoals('result.unitHours')}
+                  </span>
+                </div>
+                <div className="relative">
+                  <Input
+                    id="target_time_minutes"
+                    name="target_time_minutes"
+                    type="number"
+                    min={0}
+                    max={59}
+                    placeholder=""
+                    className="text-center pr-10"
+                    aria-label={tGoals('result.minutes')}
+                  />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-stone-500 pointer-events-none">
+                    {tGoals('result.unitMinutes')}
+                  </span>
+                </div>
+                <div className="relative">
+                  <Input
+                    id="target_time_seconds"
+                    name="target_time_seconds"
+                    type="number"
+                    min={0}
+                    max={59}
+                    placeholder=""
+                    className="text-center pr-8"
+                    aria-label={tGoals('result.seconds')}
+                  />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-stone-500 pointer-events-none">
+                    {tGoals('result.unitSeconds')}
+                  </span>
+                </div>
               </div>
             </div>
 
@@ -422,6 +583,48 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
           onClose={() => setGoalForResultModal(null)}
         />
       )}
+      {goalForEditModal && (
+        <GoalEditModal
+          goal={goalForEditModal}
+          isOpen={!!goalForEditModal}
+          onClose={() => setGoalForEditModal(null)}
+        />
+      )}
+
+      {showDatePickerPopup && datePickerAnchor && typeof document !== 'undefined' &&
+        createPortal(
+          <>
+            <div
+              className="fixed z-[110] shadow-xl"
+              ref={datePickerPopupRef}
+              style={(() => {
+                const POPUP_W = 320
+                const POPUP_H = 360
+                const M = 8
+                const vw = typeof window !== 'undefined' ? window.innerWidth : 1200
+                const vh = typeof window !== 'undefined' ? window.innerHeight : 800
+                const left = Math.max(M, Math.min(datePickerAnchor.left, vw - POPUP_W - M))
+                const preferBottomTop = datePickerAnchor.bottom + M
+                const fitsBelow = preferBottomTop + POPUP_H <= vh - M
+                const top = fitsBelow
+                  ? preferBottomTop
+                  : Math.max(M, datePickerAnchor.top - M - POPUP_H)
+                return { top, left, maxHeight: `calc(100vh - ${M * 2}px)` }
+              })()}
+            >
+              <DatePickerPopup
+                value={addFormDate || toDateStr(new Date())}
+                onChange={(dateStr) => {
+                  setAddFormDate(dateStr)
+                  closeDatePicker()
+                }}
+                locale={localeTag}
+                monthDropdownId="objectif-form-date-picker-month"
+              />
+            </div>
+          </>,
+          document.body
+        )}
     </div>
   )
 }

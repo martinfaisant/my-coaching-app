@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modale — Voir plus (liste complète)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            'palette-amber': '#c9a544',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-stone-50 p-8 text-stone-900">
+  <div class="max-w-lg mx-auto">
+    <p class="text-sm text-stone-500 mb-6">
+      <strong>Modale « Voir plus »</strong> : liste complète des objectifs/résultats de l’athlète en lecture seule (côté demande athlète) ou liste complète par catégorie Objectifs / Résultats (côté coach). Style compact, zone scroll si beaucoup d’éléments.
+    </p>
+
+    <!-- Simulation modale (contexte athlète : tous objectifs + résultats mélangés par proximité du jour) -->
+    <div class="rounded-2xl border border-stone-200 bg-white shadow-xl overflow-hidden flex flex-col max-h-[70vh]">
+      <div class="p-4 border-b border-stone-100 flex items-center justify-between shrink-0">
+        <h3 class="text-lg font-bold text-stone-900">Tous mes objectifs et résultats</h3>
+        <button type="button" class="p-2 rounded-full hover:bg-stone-100 text-stone-500" aria-label="Fermer">✕</button>
+      </div>
+      <div class="p-4 overflow-y-auto flex-1 space-y-2">
+        <div class="flex flex-wrap items-center gap-2 py-2 px-3 rounded-lg bg-stone-50 border border-stone-100 text-sm">
+          <span class="text-stone-400 shrink-0 w-10">15/03</span>
+          <span class="font-medium text-stone-800">Marathon de Paris</span>
+          <span class="text-stone-500">42 km · Objectif 3h30</span>
+          <span class="bg-amber-100 text-amber-700 text-[10px] font-bold px-2 py-0.5 rounded-full ml-auto">Principal</span>
+        </div>
+        <div class="flex flex-wrap items-center gap-2 py-2 px-3 rounded-lg bg-stone-50 border border-stone-100 text-sm">
+          <span class="text-stone-400 shrink-0 w-10">12/01</span>
+          <span class="font-medium text-stone-700">Semi de Lyon</span>
+          <span class="text-stone-500">21 km · Objectif 1h45 · Réalisé 1h42 · 24e</span>
+        </div>
+        <div class="flex flex-wrap items-center gap-2 py-2 px-3 rounded-lg bg-stone-50 border border-stone-100 text-sm">
+          <span class="text-stone-400 shrink-0 w-10">05/10</span>
+          <span class="font-medium text-stone-800">10 km Ville</span>
+          <span class="text-stone-500">10 km</span>
+          <span class="bg-stone-100 text-stone-600 text-[10px] font-bold px-2 py-0.5 rounded-full ml-auto">Secondaire</span>
+        </div>
+        <div class="flex flex-wrap items-center gap-2 py-2 px-3 rounded-lg bg-stone-50 border border-stone-100 text-sm opacity-90">
+          <span class="text-stone-400 shrink-0 w-10">20/09</span>
+          <span class="font-medium text-stone-700">Trail des Alpes</span>
+          <span class="text-stone-500">45 km · 5h12</span>
+        </div>
+        <div class="flex flex-wrap items-center gap-2 py-2 px-3 rounded-lg bg-stone-50 border border-stone-100 text-sm">
+          <span class="text-stone-400 shrink-0 w-10">01/06</span>
+          <span class="font-medium text-stone-800">Semi Nantes</span>
+          <span class="text-stone-500">21 km</span>
+          <span class="bg-amber-100 text-amber-700 text-[10px] font-bold px-2 py-0.5 rounded-full ml-auto">Principal</span>
+        </div>
+        <div class="flex flex-wrap items-center gap-2 py-2 px-3 rounded-lg bg-stone-50 border border-stone-100 text-sm opacity-90">
+          <span class="text-stone-400 shrink-0 w-10">15/04</span>
+          <span class="font-medium text-stone-700">10 km Printemps</span>
+          <span class="text-stone-500">10 km · 52min</span>
+        </div>
+      </div>
+      <div class="p-4 border-t border-stone-100 shrink-0">
+        <button type="button" class="w-full px-4 py-2.5 rounded-lg border border-stone-300 text-stone-600 text-sm">Fermer</button>
+      </div>
+    </div>
+
+    <p class="text-xs text-stone-500 mt-4">
+      <strong>Côté coach :</strong> deux modales possibles (ou une modale avec deux onglets/sections) — « Voir plus » Objectifs et « Voir plus » Résultats, chacune listant tous les objectifs à venir ou tous les résultats passés de l’athlète. Lecture seule uniquement.
+    </p>
+  </div>
+</body>
+</html>

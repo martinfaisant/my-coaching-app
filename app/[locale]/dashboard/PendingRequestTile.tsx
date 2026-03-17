@@ -7,16 +7,51 @@ import { Button } from '@/components/Button'
 import { Badge } from '@/components/Badge'
 import { AvatarImage } from '@/components/AvatarImage'
 import { Modal } from '@/components/Modal'
+import { TileCard } from '@/components/TileCard'
 import { useOpenChat } from '@/contexts/OpenChatContext'
 import { getInitials } from '@/lib/stringUtils'
 import { getWeeklyVolumeUnit, SPORT_ICONS, SPORT_CARD_STYLES } from '@/lib/sportStyles'
 import type { SportType } from '@/lib/sportStyles'
 import { respondToCoachRequest } from '@/app/[locale]/dashboard/actions'
 import type { PendingRequestWithAthlete } from '@/app/[locale]/dashboard/actions'
+import type { Goal } from '@/types/database'
+import { RequestGoalsListModal } from '@/app/[locale]/dashboard/RequestGoalsListModal'
+import {
+  hasGoalResult,
+  hasTargetTime,
+  formatTargetTime,
+  formatGoalResultTime,
+  formatGoalResultPlaceOrdinal,
+} from '@/lib/goalResultUtils'
 
 type PendingRequestTileProps = {
   request: PendingRequestWithAthlete
+  /** Objectifs de l'athlète (triés date desc), pour les blocs Objectifs / Résultats */
+  goals?: Goal[]
 }
+
+function formatGoalDateBlock(dateStr: string, localeTag: string): { month: string; day: string } {
+  const date = new Date(dateStr + 'T12:00:00')
+  const month = date.toLocaleDateString(localeTag, { month: 'short' })
+  const day = date.getDate().toString()
+  return { month: month.charAt(0).toUpperCase() + month.slice(1), day }
+}
+
+const MapIconSmall = ({ className = 'w-3.5 h-3.5' }: { className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z" />
+    <path d="m14.5 12.5 2-2" />
+    <path d="m11.5 9.5 2-2" />
+    <path d="m8.5 6.5 2-2" />
+    <path d="m17.5 15.5 2-2" />
+  </svg>
+)
+
+const ClockIconSmall = ({ className = 'w-3.5 h-3.5' }: { className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+)
 
 function formatOfferPrice(
   request: PendingRequestWithAthlete,
@@ -31,15 +66,22 @@ function formatOfferPrice(
   return `${request.offer_price}€`
 }
 
-export function PendingRequestTile({ request }: PendingRequestTileProps) {
+export function PendingRequestTile({ request, goals = [] }: PendingRequestTileProps) {
   const [isPending, startTransition] = useTransition()
   const [confirmModal, setConfirmModal] = useState<'decline' | 'accept' | null>(null)
+  const [seeMoreModal, setSeeMoreModal] = useState<'objectifs' | 'resultats' | null>(null)
   const router = useRouter()
   const locale = useLocale()
+  const localeTag = locale === 'fr' ? 'fr-FR' : 'en-US'
   const t = useTranslations('athletes')
   const tCoach = useTranslations('coachRequests')
+  const tGoals = useTranslations('goals')
   const tCommon = useTranslations('common')
   const { openChatWithAthlete } = useOpenChat()
+
+  const today = new Date().toISOString().slice(0, 10)
+  const upcomingGoals = goals.filter((g) => g.date > today).sort((a, b) => b.date.localeCompare(a.date))
+  const pastGoals = goals.filter((g) => g.date <= today).sort((a, b) => b.date.localeCompare(a.date))
 
   const name = request.athlete_name || request.athlete_email || '—'
   const sportValues = (request.sport_practiced || '')
@@ -221,6 +263,143 @@ export function PendingRequestTile({ request }: PendingRequestTileProps) {
         </div>
       </div>
 
+      {/* Blocs Objectifs (à venir) et Résultats (passés) */}
+      {(upcomingGoals.length > 0 || pastGoals.length > 0) && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 pt-4 border-t border-stone-100">
+          <div className="rounded-xl border border-stone-200 bg-stone-50/50 p-4">
+            <div className="text-xs font-bold uppercase tracking-wider text-stone-500 mb-3">
+              {t('pendingRequests.goalsUpcoming')}
+            </div>
+            {upcomingGoals.length === 0 ? (
+              <p className="text-sm text-stone-500 italic">{t('pendingRequests.noGoalsUpcoming')}</p>
+            ) : (
+              <div className="space-y-2">
+                {upcomingGoals.slice(0, 5).map((goal) => {
+                  const isPrimary = goal.is_primary
+                  const dateBlock = formatGoalDateBlock(goal.date, localeTag)
+                  return (
+                    <TileCard key={goal.id} leftBorderColor={isPrimary ? 'amber' : 'sage'} className="py-2">
+                      <div className="flex gap-2 items-start min-w-0">
+                        <div className="flex flex-col items-center justify-center bg-stone-50 border border-stone-200 rounded-lg w-10 h-10 shrink-0">
+                          <span className="text-[9px] font-bold text-stone-400 uppercase">{dateBlock.month}</span>
+                          <span className="text-sm font-bold text-stone-800">{dateBlock.day}</span>
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <span className="text-sm font-bold text-stone-900 truncate">{goal.race_name}</span>
+                            {isPrimary ? (
+                              <span className="bg-white text-palette-amber text-[9px] font-bold px-1.5 py-0.5 rounded-full border border-palette-amber shrink-0">
+                                {tGoals('priority.primary')}
+                              </span>
+                            ) : (
+                              <span className="bg-white text-palette-sage text-[9px] font-bold px-1.5 py-0.5 rounded-full border border-palette-sage shrink-0">
+                                {tGoals('priority.secondary')}
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-1 text-xs text-stone-500 flex-wrap mt-0.5">
+                            <MapIconSmall className="w-3 h-3 text-stone-400 shrink-0" />
+                            <span>{goal.distance} km</span>
+                            {hasTargetTime(goal) && (
+                              <>
+                                <span className="text-stone-400">·</span>
+                                <ClockIconSmall className="w-3 h-3 text-stone-400 shrink-0" />
+                                <span>{formatTargetTime(goal)}</span>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </TileCard>
+                  )
+                })}
+                {upcomingGoals.length > 5 && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full text-sm"
+                    onClick={() => setSeeMoreModal('objectifs')}
+                  >
+                    {t('pendingRequests.seeMore', { count: upcomingGoals.length })}
+                  </Button>
+                )}
+              </div>
+            )}
+          </div>
+          <div className="rounded-xl border border-stone-200 bg-stone-50/50 p-4">
+            <div className="text-xs font-bold uppercase tracking-wider text-stone-500 mb-3">
+              {t('pendingRequests.goalsResults')}
+            </div>
+            {pastGoals.length === 0 ? (
+              <p className="text-sm text-stone-500 italic">{t('pendingRequests.noGoalsResults')}</p>
+            ) : (
+              <div className="space-y-2">
+                {pastGoals.slice(0, 5).map((goal) => {
+                  const isPrimary = goal.is_primary
+                  const dateBlock = formatGoalDateBlock(goal.date, localeTag)
+                  return (
+                    <TileCard key={goal.id} leftBorderColor="stone" borderLeftOnly className="py-2 opacity-90">
+                      <div className="flex gap-2 items-start min-w-0">
+                        <div className="flex flex-col items-center justify-center bg-stone-50 border border-stone-200 rounded-lg w-10 h-10 shrink-0">
+                          <span className="text-[9px] font-bold text-stone-400 uppercase">{dateBlock.month}</span>
+                          <span className="text-sm font-bold text-stone-800">{dateBlock.day}</span>
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <span className="text-sm font-bold text-stone-700 truncate">{goal.race_name}</span>
+                            {isPrimary ? (
+                              <span className="bg-white text-palette-amber text-[9px] font-bold px-1.5 py-0.5 rounded-full border border-palette-amber shrink-0">
+                                {tGoals('priority.primary')}
+                              </span>
+                            ) : (
+                              <span className="bg-white text-palette-sage text-[9px] font-bold px-1.5 py-0.5 rounded-full border border-palette-sage shrink-0">
+                                {tGoals('priority.secondary')}
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-1 text-xs text-stone-500 flex-wrap mt-0.5">
+                            <MapIconSmall className="w-3 h-3 text-stone-400 shrink-0" />
+                            <span>{goal.distance} km</span>
+                            {hasTargetTime(goal) && (
+                              <>
+                                <span className="text-stone-400">·</span>
+                                <span>{formatTargetTime(goal)}</span>
+                              </>
+                            )}
+                            {hasGoalResult(goal) && (
+                              <>
+                                <span className="text-stone-400">·</span>
+                                <span>{formatGoalResultTime(goal)}</span>
+                              </>
+                            )}
+                            {hasGoalResult(goal) && goal.result_place != null && (
+                              <>
+                                <span className="text-stone-400">·</span>
+                                <span>{formatGoalResultPlaceOrdinal(goal.result_place, locale)}</span>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </TileCard>
+                  )
+                })}
+                {pastGoals.length > 5 && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full text-sm"
+                    onClick={() => setSeeMoreModal('resultats')}
+                  >
+                    {t('pendingRequests.seeMore', { count: pastGoals.length })}
+                  </Button>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-col gap-2 mt-4 sm:hidden">
         <Button
           type="button"
@@ -315,6 +494,23 @@ export function PendingRequestTile({ request }: PendingRequestTileProps) {
           <p className="text-sm text-stone-600">{tCoach('confirmAcceptBody')}</p>
         </div>
       </Modal>
+
+      {seeMoreModal === 'objectifs' && (
+        <RequestGoalsListModal
+          isOpen={true}
+          onClose={() => setSeeMoreModal(null)}
+          goals={upcomingGoals}
+          title={t('pendingRequests.goalsUpcoming')}
+        />
+      )}
+      {seeMoreModal === 'resultats' && (
+        <RequestGoalsListModal
+          isOpen={true}
+          onClose={() => setSeeMoreModal(null)}
+          goals={pastGoals}
+          title={t('pendingRequests.goalsResults')}
+        />
+      )}
     </li>
   )
 }

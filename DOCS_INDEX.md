@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 14 mars 2026 (Mode Analyste : top bar, pages sans titre/conteneur, admin membres sous dashboard, nav admin sans Mes athlètes — archivage design-top-menu ; voir Project_context §4.0, §3 Admin)
+**Dernière mise à jour :** 17 mars 2026 (Mode Analyste : feature request goals + correctifs modale/datepicker/menu/trail/validation ; voir Changements récents, archive design-request-goals)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -18,13 +18,13 @@
 - **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), stack technique, **URL production https://mysportally.com**
 - **Utiliser pour :** Comprendre le projet, les features, les rôles, l'architecture globale
 - **Taille :** ~420 lignes
-- **Dernière mise à jour :** 3 mars 2026 (§4.7 Goals : résultat objectif passé, temps/place/note, affichage tuile, création date passée)
+- **Dernière mise à jour :** 17 mars 2026 (§4.4 Objectifs de course / résultats passés dans la demande ; trail = D+ dans Course uniquement, bande grise dès date ≤ aujourd’hui, badges fond blanc)
 
 ### **docs/DESIGN_SYSTEM.md** ⭐
 - **Contenu :** Tokens (couleurs, typo, espacements), composants (Button, Input, Badge, TileCard, DashboardPageShell, Modal, etc.), guidelines UI, exemples de code, §7 breakpoints (calendrier, chat, Trouver mon coach, My offers)
 - **Utiliser pour :** Créer ou modifier des composants UI, choisir des couleurs, appliquer le design system, règles responsive par page
 - **Taille :** ~850 lignes
-- **Dernière mise à jour :** 2 mars 2026 (DatePickerPopup : popover, liste des mois mois actuel → +2 ans ; Dropdown panneau scroll max-h-64)
+- **Dernière mise à jour :** 17 mars 2026 (Modal : prop layer pour modale sur modale ; DatePickerPopup dans modale : positionnement dynamique)
 
 ### **docs/I18N.md** ⭐
 - **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces, utilisation dans composants et server actions, **checklist pour nouvelles features** (toujours penser bilingue)
@@ -261,6 +261,18 @@
 - `docs/archive/design-goal-result/` — DESIGN.md (besoin, cas, réponses PO), SPEC_GOAL_RESULT.md (migration 053, RLS, fichiers), MOCKUP_GOAL_RESULT_MODAL.html, MOCKUP_GOAL_RESULT_TILE.html.
 - **Raison :** Feature livrée ; athlète peut saisir ou modifier un résultat (temps h/min/s, place, note) pour tout objectif dont la date est passée ; modale titre = nom de la course ; affichage sur tuile « distance · temps · place » ; création d’objectif avec date passée autorisée ; coach lecture seule. Comportement décrit dans **Project_context.md §4.7** (Goals), **docs/DESIGN_SYSTEM.md** (TileCard / Page Objectifs), **docs/I18N.md** (goals.result*, goals.validation).
 
+**Objectif de temps facultatif + édition objectif (archivés 16 mars 2026) :**
+- `docs/archive/design-goal-target-time/` — DESIGN_GOAL_TARGET_TIME.md, SPEC_GOAL_TARGET_TIME.md, MOCKUP_GOAL_TARGET_TIME_FORM_A.html, MOCKUP_GOAL_TARGET_TIME_FORM_B.html, MOCKUP_GOAL_TARGET_TIME_TILES.html.
+- **Raison :** Feature livrée ; à la création et à l'édition, objectif de temps (3 champs h/min/s, facultatif ; si un renseigné, les trois requis). Bouton « Modifier » → GoalEditModal. Affichage tuile : « Objectif : X » ou « Objectif X · Réalisé Y ». Migration 056, addGoal/updateGoal, hasTargetTime/formatTargetTime. Comportement : **Project_context.md §4.7**, **docs/DESIGN_SYSTEM.md**, **docs/I18N.md** (goals.targetTime*, editGoal, achieved).
+
+**Objectifs et résultats dans la demande de coaching (request goals) – archivés 17 mars 2026 :**
+- `docs/archive/design-request-goals/` — DESIGN_REQUEST_GOALS.md, SPEC_REQUEST_GOALS.md, MOCKUP_REQUEST_GOALS_*.html.
+- **Raison :** Feature livrée ; section « Objectifs de course / résultats passés » dans la demande (liste, Ajouter, Modifier le résultat, Voir plus) ; RLS 057. Comportement : **Project_context.md §4.4**, **docs/DESIGN_SYSTEM.md** (§ Modal layer).
+
+**Différenciation visuelle objectif vs résultat (archivés 16 mars 2026) :**
+- `docs/archive/design-objectif-vs-resultat/` — DESIGN_OBJECTIF_VS_RESULTAT.md, MOCKUP_OBJECTIF_RESULTAT_PROP_A.html, MOCKUP_OBJECTIF_RESULTAT_PROP_B.html, MOCKUP_OBJECTIF_RESULTAT_PROP_C.html, MOCKUP_OBJECTIF_RESULTAT_BANDE_GRISE.html.
+- **Raison :** Feature livrée ; dès que **date de l’événement ≤ date du jour**, tuile affichée en style **résultat** (bande gauche grise uniquement, pas de contour). Objectifs à venir : bande colorée (ambre/sage). Badges Principal/Secondaire et badges sport : **fond blanc**, texte et contour colorés. Sélecteur priorité (formulaires ajout/édition objectif) : option sélectionnée fond blanc, **rounded-lg**. TileCard : prop `borderLeftOnly`, variante stone pour résultats. Comportement : **Project_context.md §4.7**, **docs/DESIGN_SYSTEM.md** (§ Badge, § TileCard).
+
 **Disponibilités / indisponibilités athlète (archivés 2 mars 2026) :**
 - `docs/archive/design-athlete-availability/` — DESIGN.md (besoin, cas d’usage, décisions PO, style tuiles option D), SPEC_ARCHITECTURE.md (modèle, RLS, fichiers), MOCKUP_AVAILABILITY_MODAL.html, MOCKUP_CALENDAR_AVAILABILITY_TILES.html.
 - **Raison :** Feature livrée **sans récurrence** ; athlète peut créer/éditer/supprimer des créneaux disponibilité ou indisponibilité par jour (bouton « + » sur jours futurs, modale avec type, date, Début/Fin optionnels, Note) ; coach voit les tuiles en lecture seule sur le calendrier de l’athlète (modale détail). Comportement décrit dans **Project_context.md §4.5** (Athlete availability), **docs/DESIGN_SYSTEM.md** (§7 Calendrier, AvailabilityModal, AvailabilityDetailModal), **docs/I18N.md** (namespace availability).
@@ -396,10 +408,28 @@
 
 **Fréquence de mise à jour :** À chaque ajout/suppression de documentation
 
-**Dernier scan :** 3 mars 2026  
-**Dernier nettoyage :** 3 mars 2026 (archivage design-workout-feedback)
+**Dernier scan :** 17 mars 2026  
+**Dernier nettoyage :** 17 mars 2026 (archivage design-request-goals)
 
 ### Changements récents :
+
+✅ **17 mars 2026 – Request goals (objectifs/résultats dans la demande) + correctifs – Mode Analyste :**
+- **Livraison :** (1) **Objectifs de course / résultats passés dans la demande** : section optionnelle entre Objectifs et volume et Besoin de coaching ; liste des goals (max 5, tri date décroissante), bouton Ajouter (RequestGoalAddModal avec addGoal, résultat si date passée), « Modifier le résultat » (GoalResultModal), « Voir plus » (RequestGoalsListModal) ; coach voit blocs Objectifs / Résultats dans la tuile demande en attente (RLS 057). (2) **Correctifs** : modale sur modale (prop `layer` sur Modal), DatePickerPopup dans modales (positionnement dynamique, pas d’overlay bloquant), menu sidebar scrollable, **trail** dans le formulaire demande = pas de tuile dédiée (D+ uniquement dans Course, aligné profil + validation serveur), garde contre loop refresh après ajout objectif, boutons Ajouter / Modifier le résultat même hauteur.
+- **Fichiers :** `components/Modal.tsx`, `FindCoachSection.tsx`, `RequestGoalAddModal.tsx`, `RequestGoalsListModal.tsx`, `GoalResultModal.tsx`, `ObjectifsTable.tsx`, `PendingRequestTile.tsx`, `Sidebar.tsx`, `DashboardTopBar.tsx`, `DashboardChatWrapper.tsx`, `app/[locale]/dashboard/actions.ts`, `supabase/migrations/057_goals_select_coach_pending.sql`, messages FR/EN.
+- **Doc :** Project_context.md §4.4 (Objectifs de course dans la demande, trail = D+ Course), DESIGN_SYSTEM (Modal layer, DatePickerPopup dans modale), project-core.mdc (Demande – objectifs de course, trail).
+- **Archivage :** `docs/design-request-goals/` → `docs/archive/design-request-goals/` (DESIGN_REQUEST_GOALS.md, SPEC_REQUEST_GOALS.md, MOCKUP_*.html). Référence courante : **Project_context.md §4.4**, **docs/DESIGN_SYSTEM.md**.
+
+✅ **16 mars 2026 – Différenciation visuelle objectif vs résultat – Mode Analyste :**
+- **Livraison :** Dès que la **date de l’événement ≤ date du jour**, la tuile objectif est affichée en **style résultat** : bande gauche **grise** uniquement (pas de contour), au lieu de la bande colorée (ambre = principal, sage = secondaire). **Badges** Principal / Secondaire et **badges sport** : fond **blanc**, texte et contour colorés (amber / sage / couleur sport). **Sélecteur priorité** dans les formulaires d’ajout/édition d’objectif : option sélectionnée avec fond blanc, arrondi **rounded-lg** (aligné sur les champs de saisie). **TileCard** : prop `borderLeftOnly`, variante stone pour les tuiles résultat (page Objectifs, calendrier athlète/coach).
+- **Fichiers :** `components/TileCard.tsx`, `components/Badge.tsx`, `lib/sportStyles.ts`, `ObjectifsTable.tsx`, `GoalEditModal.tsx`, `CoachAthleteCalendarPage.tsx`, `CalendarView.tsx`, `ActivityTile.tsx`, vue admin (BadgeShowcase, TileCardShowcase).
+- **Doc :** Project_context.md §4.7 (Différenciation visuelle objectif / résultat), DESIGN_SYSTEM (§ Badge fond blanc, goalSecondary, § TileCard borderLeftOnly).
+- **Archivage :** `docs/design-request-goals/DESIGN_OBJECTIF_VS_RESULTAT.md`, `MOCKUP_OBJECTIF_RESULTAT_*.html` → `docs/archive/design-objectif-vs-resultat/`. Référence courante : **Project_context.md §4.7**, **docs/DESIGN_SYSTEM.md**.
+
+✅ **16 mars 2026 – Objectif de temps facultatif + édition objectif – Mode Analyste :**
+- **Livraison :** À la création et à l’édition d’un objectif, l’athlète peut renseigner un **objectif de temps** facultatif (3 champs h/min/s avec unités ; si un champ renseigné, les trois sont requis). Bouton **« Modifier »** sur chaque tuile ouvre **GoalEditModal** (nom, date, distance, priorité, objectif de temps). Affichage sur les tuiles (page Objectifs, calendrier, vue coach) : « Objectif : 3h30 » si présent ; pour un objectif **passé** avec résultat : « Objectif 3h30 · Réalisé 3h45 » (et place si présente). Modale détail objectif (calendrier) : ligne « Objectif de temps » si présent. Données : `goals.target_time_hours/minutes/seconds` (migration 056). Utilitaires : `hasTargetTime`, `formatTargetTime` dans `lib/goalResultUtils.ts`. Actions : `addGoal` (objectif de temps optionnel), `updateGoal` (édition).
+- **Fichiers :** `supabase/migrations/056_goals_target_time.sql`, `types/database.ts`, `lib/goalResultUtils.ts`, `app/[locale]/dashboard/objectifs/actions.ts` (addGoal, updateGoal), `GoalEditModal.tsx`, `ObjectifsTable.tsx`, `CalendarView.tsx`, `CoachAthleteCalendarPage.tsx`, `messages/fr.json`, `messages/en.json`.
+- **Doc :** Project_context.md §4.7 (Goals : objectif de temps, édition, affichage), §5 (goals target_time_*), DESIGN_SYSTEM (§ TileCard / Page Objectifs, GoalEditModal), I18N (goals.targetTime*, editGoal, achieved), project-core.mdc (Objectifs – objectif de temps et édition).
+- **Archivage :** `docs/design-request-goals/DESIGN_GOAL_TARGET_TIME.md`, `SPEC_GOAL_TARGET_TIME.md`, `MOCKUP_GOAL_TARGET_TIME_*.html` → `docs/archive/design-goal-target-time/`. Référence courante : **Project_context.md §4.7**, **docs/DESIGN_SYSTEM.md**, **docs/I18N.md**.
 
 ✅ **14 mars 2026 – Bouton Déconnexion page Profil – Mode Analyste :**
 - **Livraison :** Sur la page **Mon profil** (`/dashboard/profile`), en bas du formulaire : bouton **Déconnexion** (LogoutButton, variant danger) au-dessus d’un séparateur horizontal et du bouton « Supprimer mon compte ». Même disposition pour athlète et coach. Le drawer (menu mobile) conserve aussi le bouton Déconnexion.
@@ -654,10 +684,12 @@
 | **Objectifs et volume par sport (profil athlète : temps à allouer, volume par sport, triathlon → 3 tuiles, trail → D+)** | **`Project_context.md` §4.2.1** (Athlete profile), **`docs/DESIGN_SYSTEM.md`** (§ SportTileSelectable), **`docs/I18N.md`** (profile.*) |
 | **Disponibilités / indisponibilités athlète (calendrier, modales, pas de récurrence)** | **`Project_context.md` §4.5** (Athlete availability), **`docs/DESIGN_SYSTEM.md`** (§7 Calendrier, AvailabilityModal, AvailabilityDetailModal) |
 | **Résultat objectif passé (saisie temps/place/note, modale, affichage tuile)** | **`Project_context.md` §4.7** (Goals), **`docs/DESIGN_SYSTEM.md`** (§ TileCard, Page Objectifs), **`lib/goalResultUtils.ts`** |
+| **Objectif de temps facultatif + édition objectif (Modifier, GoalEditModal, affichage Objectif / Réalisé)** | **`Project_context.md` §4.7** (Goals), **`docs/DESIGN_SYSTEM.md`** (§ TileCard, Page Objectifs, GoalEditModal), **`lib/goalResultUtils.ts`** (hasTargetTime, formatTargetTime) |
 | **Calendrier / sélecteur de date (modale entraînement modifiable)** | **`docs/DESIGN_SYSTEM.md`** § DatePickerPopup, § Dropdown ; **Project_context.md** §4.5 (Create & edit modal). Design archivé : `docs/archive/design-workout-modal-calendar/` |
 | **Page par défaut / redirections dashboard (find-coach, Mes athlètes)** | **`Project_context.md` §4.0** |
 | Tuile Profil sidebar (état sélectionné sur page Profil, centrage mode replié) | `Project_context.md` §4.0, `docs/DESIGN_SYSTEM.md` §7 |
 | Tuile demandes en attente (coach) / Message | Objectifs et volume / Discuter / Refuser-Accepter | `Project_context.md` §4.4, `docs/DESIGN_SYSTEM.md` §7 (PendingRequestTile) |
+| **Objectifs de course / résultats passés dans la demande** (Ajouter, Modifier résultat, Voir plus) | `Project_context.md` §4.4 (Objectifs de course dans la demande), Modal layer | `docs/DESIGN_SYSTEM.md` § Modal |
 | **Prix offre non modifiable après publication** (trigger BDD, UI read-only, modale) | **`Project_context.md` §4.4**, **`docs/DESIGN_SYSTEM.md`** (formulaire offres) |
 | Grilles responsive (Trouver mon coach, My offers, Mes athlètes) | `docs/DESIGN_SYSTEM.md` §7 |
 | Filtre par nom/prénom (Trouver mon coach) | `Project_context.md` (Athlete), `docs/DESIGN_SYSTEM.md` §7 |

@@ -13,7 +13,7 @@ import { PendingRequestTile } from '@/app/[locale]/dashboard/PendingRequestTile'
 import {
   getPendingCoachRequests,
 } from '@/app/[locale]/dashboard/actions'
-import type { Profile } from '@/types/database'
+import type { Profile, Goal } from '@/types/database'
 import { formatShortDate } from '@/lib/dateUtils'
 import { getDisplayName } from '@/lib/displayName'
 
@@ -54,6 +54,21 @@ export default async function CoachAthletesPage({ params }: { params: Promise<{ 
   const pendingRequests = pendingResult
   const visibleProfiles = (athletesResult.data ?? []) as Profile[]
   const coachAthleteIds = visibleProfiles.map((p) => p.user_id)
+
+  const pendingAthleteIds = [...new Set(pendingRequests.map((r) => r.athlete_id))]
+  let goalsByAthleteId: Record<string, Goal[]> = {}
+  if (pendingAthleteIds.length > 0) {
+    const goalsResult = await supabase
+      .from('goals')
+      .select('*')
+      .in('athlete_id', pendingAthleteIds)
+      .order('date', { ascending: false })
+    const allGoals = (goalsResult.data ?? []) as Goal[]
+    for (const g of allGoals) {
+      if (!goalsByAthleteId[g.athlete_id]) goalsByAthleteId[g.athlete_id] = []
+      goalsByAthleteId[g.athlete_id].push(g)
+    }
+  }
 
   const isCoachProfileComplete =
     ([(current.profile.first_name ?? '').trim(), (current.profile.last_name ?? '').trim()].filter(Boolean).join(' ').trim() !== '') &&
@@ -197,7 +212,11 @@ export default async function CoachAthletesPage({ params }: { params: Promise<{ 
           </p>
           <ul className="space-y-3">
             {pendingRequests.map((req) => (
-              <PendingRequestTile key={req.id} request={req} />
+              <PendingRequestTile
+                key={req.id}
+                request={req}
+                goals={goalsByAthleteId[req.athlete_id] ?? []}
+              />
             ))}
           </ul>
         </section>

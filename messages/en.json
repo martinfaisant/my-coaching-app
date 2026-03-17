@@ -228,8 +228,13 @@
     "title": "My Goals",
     "athleteGoalsTitle": "Athlete's goals",
     "addGoal": "Add goal",
-    "editGoal": "Edit goal",
+    "editGoal": "Edit",
+    "editGoalTitle": "Edit goal",
     "goalTitle": "Goal title",
+    "targetTimeOptional": "Target time (optional)",
+    "targetTimeLabel": "Target",
+    "achieved": "Achieved",
+    "targetTimeSection": "Target time",
     "targetDate": "Target date",
     "status": "Status",
     "completed": "Completed",
@@ -263,6 +268,7 @@
       "resultOnlyForPastGoal": "Result can only be entered for a past goal.",
       "timeRequired": "Hours, minutes and seconds are required.",
       "invalidTimeRange": "Invalid time (hours 0-99, minutes and seconds 0-59).",
+      "targetTimeAllRequired": "If you set a target time, hours, minutes and seconds are required.",
       "noteMaxLength": "Note cannot exceed {max} characters.",
       "resultSaved": "Result saved."
     },
@@ -738,7 +744,12 @@
       "chat": "Discuss",
       "athleteMessageLabel": "Athlete's message",
       "objectivesAndVolumeLabel": "Objectives and volume (athlete)",
-      "notSpecified": "Not specified"
+      "notSpecified": "Not specified",
+      "goalsUpcoming": "Goals",
+      "goalsResults": "Results",
+      "noGoalsUpcoming": "No goals",
+      "noGoalsResults": "No results",
+      "seeMore": "See more ({count})"
     },
     "noAthletes": {
       "title": "Your coaching requests will appear on this page.",
@@ -819,6 +830,15 @@
       "selectOffer": "Please select an offer.",
       "fillRequired": "Please provide at least one practiced sport and your coaching need.",
       "requireFirstNameLastName": "Please enter your first name and last name."
+    },
+    "requestGoals": {
+      "sectionTitle": "Race goals / past results",
+      "emptyMessage": "No goals or results yet.",
+      "addButtonLong": "Add a goal or past result",
+      "addButton": "Add",
+      "seeMore": "See more ({count})",
+      "seeMoreModalTitle": "All goals and results",
+      "editResult": "Edit result"
     }
   },
   "requestCoachButton": {
