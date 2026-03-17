@@ -14,7 +14,7 @@ export function hasGoalResult(goal: Goal): boolean {
 }
 
 /**
- * Formate le temps du résultat pour l'affichage (ex. "3h42", "1h05min30s").
+ * Formate le temps du résultat pour l'affichage (ex. "3h42", "55min", "1h05min30s").
  */
 export function formatGoalResultTime(goal: Goal): string {
   if (!hasGoalResult(goal)) return ''
@@ -23,7 +23,7 @@ export function formatGoalResultTime(goal: Goal): string {
   const s = goal.result_time_seconds ?? 0
   const parts: string[] = []
   if (h > 0) parts.push(`${h}h`)
-  if (m > 0) parts.push(s > 0 ? `${String(m).padStart(2, '0')}min` : `${m}`)
+  if (m > 0) parts.push(s > 0 ? `${String(m).padStart(2, '0')}min` : `${m}min`)
   if (s > 0) parts.push(`${String(s).padStart(2, '0')}s`)
   return parts.join('')
 }
@@ -58,7 +58,7 @@ export function hasTargetTime(goal: Goal): boolean {
 }
 
 /**
- * Formate l'objectif de temps pour l'affichage (ex. "3h30", "1h05min30s").
+ * Formate l'objectif de temps pour l'affichage (ex. "3h30", "55min", "1h05min30s").
  */
 export function formatTargetTime(goal: Goal): string {
   if (!hasTargetTime(goal)) return ''
@@ -67,7 +67,7 @@ export function formatTargetTime(goal: Goal): string {
   const s = goal.target_time_seconds ?? 0
   const parts: string[] = []
   if (h > 0) parts.push(`${h}h`)
-  if (m > 0) parts.push(s > 0 ? `${String(m).padStart(2, '0')}min` : `${m}`)
+  if (m > 0) parts.push(s > 0 ? `${String(m).padStart(2, '0')}min` : `${m}min`)
   if (s > 0) parts.push(`${String(s).padStart(2, '0')}s`)
   return parts.join('')
 }

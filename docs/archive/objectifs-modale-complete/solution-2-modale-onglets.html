@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mockup – Solution 2 : Modale avec onglets (Objectif | Résultat)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            'palette-forest-darker': '#506648',
+            'palette-sage': '#aaaa51',
+            'palette-amber': '#c9a544',
+            'palette-danger': '#c0564b',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .form-input { @apply w-full px-4 py-2.5 rounded-lg border border-stone-300 bg-white text-stone-900 placeholder-stone-400; }
+    .form-input:focus { outline: none; box-shadow: 0 0 0 2px #627e59; border-color: transparent; }
+    .form-textarea { @apply w-full px-4 py-2.5 rounded-lg border border-stone-300 bg-white text-stone-900 placeholder-stone-400 resize-y min-h-[80px]; }
+    .form-textarea:focus { outline: none; box-shadow: 0 0 0 2px #627e59; border-color: transparent; }
+  </style>
+</head>
+<body class="bg-stone-100 text-stone-900 min-h-screen p-6">
+
+  <div class="max-w-2xl mx-auto space-y-4 mb-8">
+    <h1 class="text-xl font-bold text-stone-800">Solution 2 – Modale avec onglets</h1>
+    <p class="text-sm text-stone-600">Un seul bouton « Modifier » sur la tuile. La modale propose deux onglets : Objectif et Résultat (Résultat désactivé ou masqué si objectif futur). Un bouton Enregistrer en bas.</p>
+  </div>
+
+  <!-- Overlay + Modale -->
+  <div class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50" aria-modal="true" role="dialog">
+    <div class="bg-white rounded-2xl shadow-xl border border-stone-200 w-full max-w-xl overflow-hidden flex flex-col max-h-[90vh]" role="document">
+      <!-- Header -->
+      <div class="shrink-0 px-6 py-4 border-b border-stone-200 flex items-center justify-between gap-3">
+        <h2 class="text-lg font-bold text-stone-900">Modifier l'objectif</h2>
+        <button type="button" class="p-2 rounded-lg text-stone-500 hover:bg-stone-100 shrink-0" aria-label="Fermer">✕</button>
+      </div>
+      <!-- Onglets (style Segments) -->
+      <div class="shrink-0 px-6 pt-4">
+        <div class="flex gap-2 p-1 bg-stone-100 rounded-lg">
+          <button type="button" class="flex-1 px-3 py-2 rounded-md text-sm font-medium bg-white text-stone-900 shadow-sm border border-stone-200">Objectif</button>
+          <button type="button" class="flex-1 px-3 py-2 rounded-md text-sm font-medium text-stone-600 hover:bg-stone-50">Résultat</button>
+        </div>
+      </div>
+      <!-- Body scrollable : contenu onglet Objectif -->
+      <div class="overflow-y-auto px-6 py-4 space-y-5">
+        <div>
+          <label for="race_name" class="block text-xs font-bold text-stone-500 uppercase tracking-wide mb-1.5 ml-1">Nom de la course *</label>
+          <input id="race_name" name="race_name" type="text" placeholder="Ex: Marathon de..." class="form-input" value="Semi-marathon de Lyon" />
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label for="date" class="block text-xs font-bold text-stone-500 uppercase tracking-wide mb-1.5 ml-1">Date de la course *</label>
+            <input id="date" name="date" type="date" class="form-input" value="2025-03-15" />
+          </div>
+          <div>
+            <label for="distance" class="block text-xs font-bold text-stone-500 uppercase tracking-wide mb-1.5 ml-1">Distance (km) *</label>
+            <input id="distance" name="distance" type="number" min="0" step="0.1" placeholder="42" class="form-input" value="21.1" />
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-stone-500 uppercase mb-2 ml-1">Priorité</label>
+          <div class="grid grid-cols-2 gap-2">
+            <label class="cursor-pointer">
+              <input type="radio" name="is_primary" value="primary" checked class="hidden peer" />
+              <div class="flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg border text-[10px] font-bold bg-white text-amber-600 border-amber-400">Principal</div>
+            </label>
+            <label class="cursor-pointer">
+              <input type="radio" name="is_primary" value="secondary" class="hidden peer" />
+              <div class="flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg border text-[10px] font-bold bg-white text-stone-400 border-stone-200">Secondaire</div>
+            </label>
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-stone-500 uppercase tracking-wide ml-1">Objectif de temps (facultatif)</label>
+          <div class="grid grid-cols-3 gap-2 mt-2">
+            <div class="relative">
+              <input name="target_time_hours" type="number" min="0" max="99" class="form-input text-center pr-9" />
+              <span class="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-stone-500 pointer-events-none">h</span>
+            </div>
+            <div class="relative">
+              <input name="target_time_minutes" type="number" min="0" max="59" class="form-input text-center pr-10" />
+              <span class="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-stone-500 pointer-events-none">min</span>
+            </div>
+            <div class="relative">
+              <input name="target_time_seconds" type="number" min="0" max="59" class="form-input text-center pr-8" />
+              <span class="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-stone-500 pointer-events-none">s</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Footer -->
+      <div class="shrink-0 border-t border-stone-200 px-6 py-4 flex gap-3 bg-white">
+        <button type="button" class="flex-1 px-4 py-2.5 rounded-lg border border-stone-300 bg-white text-stone-700 font-medium hover:bg-stone-50 transition">Annuler</button>
+        <button type="submit" class="flex-1 px-4 py-2.5 rounded-lg bg-palette-forest-dark text-white font-medium hover:bg-palette-forest-darker transition">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

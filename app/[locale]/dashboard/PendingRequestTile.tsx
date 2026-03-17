@@ -239,7 +239,7 @@ export function PendingRequestTile({ request, goals = [] }: PendingRequestTilePr
               {volumeEntries.map(({ key, sportLabel, value, suffix, style, elevationValue }) => (
                 <div
                   key={key}
-                  className={`flex items-center gap-2 py-1.5 pl-2.5 pr-2.5 rounded-lg border-l-4 ${style.borderLeft} ${style.badgeBg} border border-stone-100`}
+                  className={`flex items-center gap-2 py-1.5 pl-2.5 pr-2.5 rounded-lg border-l-4 ${style.borderLeft} bg-white border border-stone-100`}
                 >
                   <span className={`shrink-0 ${style.badge}`} aria-hidden>
                     {(() => {

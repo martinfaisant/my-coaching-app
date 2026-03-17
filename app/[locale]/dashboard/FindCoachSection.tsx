@@ -22,7 +22,7 @@ import { getInitials } from '@/lib/stringUtils'
 import { getDisplayName } from '@/lib/displayName'
 import type { Goal } from '@/types/database'
 import { TileCard } from '@/components/TileCard'
-import { GoalResultModal } from '@/app/[locale]/dashboard/objectifs/GoalResultModal'
+import { GoalFullModal } from '@/app/[locale]/dashboard/objectifs/GoalFullModal'
 import { RequestGoalAddModal } from '@/app/[locale]/dashboard/RequestGoalAddModal'
 import { RequestGoalsListModal } from '@/app/[locale]/dashboard/RequestGoalsListModal'
 import {
@@ -507,7 +507,8 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
   const [selectedOfferId, setSelectedOfferId] = useState<string | null>(null)
   const [addGoalModalOpen, setAddGoalModalOpen] = useState(false)
   const [seeMoreGoalsModalOpen, setSeeMoreGoalsModalOpen] = useState(false)
-  const [goalForResultModal, setGoalForResultModal] = useState<Goal | null>(null)
+  const [goalForFullModal, setGoalForFullModal] = useState<Goal | null>(null)
+  const [fullModalInitialTab, setFullModalInitialTab] = useState<'objective' | 'result'>('objective')
   const [sports, setSports] = useState<string[]>(initialPracticedSports)
   const [need, setNeed] = useState('')
   const [firstName, setFirstName] = useState(athleteFirstName)
@@ -928,7 +929,7 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
                                   return (
                                     <div
                                       key={sport}
-                                      className={`rounded-xl border-l-4 border border-stone-200 p-3 flex flex-wrap items-center justify-between gap-3 ${styles.badgeBg} ${styles.borderLeft}`}
+                                      className={`rounded-xl border-l-4 border border-stone-200 bg-white p-3 flex flex-wrap items-center justify-between gap-3 ${styles.borderLeft}`}
                                     >
                                       <div className="flex items-center gap-2 min-w-0 shrink-0">
                                         <span className={styles.badge}>
@@ -1011,22 +1012,23 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
                                 const isPast = goal.date <= today
                                 const isPrimary = goal.is_primary
                                 const isResult = isPast
+                                const isPastOrToday = goal.date <= today
+                                const hasResult = hasGoalResult(goal)
                                 const dateBlock = formatGoalDateBlock(goal.date, localeTag)
                                 return (
                                   <TileCard
                                     key={goal.id}
                                     leftBorderColor={isResult ? 'stone' : isPrimary ? 'amber' : 'sage'}
                                     borderLeftOnly={isResult}
-                                    className={isPast ? 'opacity-75' : ''}
                                   >
                                     <div className="flex gap-4 items-start min-w-0 justify-between">
-                                      <div className={`flex flex-col items-center justify-center bg-stone-50 border border-stone-200 rounded-xl w-12 h-12 shrink-0 ${isPast ? 'opacity-75' : ''}`}>
+                                      <div className="flex flex-col items-center justify-center bg-stone-50 border border-stone-200 rounded-xl w-12 h-12 shrink-0">
                                         <span className="text-[10px] font-bold text-stone-400 uppercase">{dateBlock.month}</span>
                                         <span className="text-lg font-bold text-stone-800">{dateBlock.day}</span>
                                       </div>
                                       <div className="min-w-0 flex-1">
                                         <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-                                          <h4 className={`text-sm font-bold truncate ${isPast ? 'text-stone-700' : 'text-stone-900'}`}>
+                                          <h4 className="text-sm font-bold truncate text-stone-900">
                                             {goal.race_name}
                                           </h4>
                                           {isPrimary ? (
@@ -1072,18 +1074,23 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
                                           )}
                                         </div>
                                       </div>
-                                      {isPast && (
-                                        <div className="shrink-0">
-                                          <Button
-                                            type="button"
-                                            variant="outline"
-                                            className="text-xs px-2 py-1"
-                                            onClick={() => setGoalForResultModal(goal)}
-                                          >
-                                            {t('requestGoals.editResult')}
-                                          </Button>
-                                        </div>
-                                      )}
+                                      <div className="shrink-0">
+                                        <Button
+                                          type="button"
+                                          variant="muted"
+                                          className="text-xs px-2 py-1"
+                                          onClick={() => {
+                                            setGoalForFullModal(goal)
+                                            setFullModalInitialTab(isPastOrToday ? 'result' : 'objective')
+                                          }}
+                                        >
+                                          {!isPastOrToday
+                                            ? tGoals('editGoal')
+                                            : hasResult
+                                              ? tGoals('editGoal')
+                                              : tGoals('result.addResult')}
+                                        </Button>
+                                      </div>
                                     </div>
                                   </TileCard>
                                 )
@@ -1154,11 +1161,12 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
         title={t('requestGoals.seeMoreModalTitle')}
         layer={1}
       />
-      {goalForResultModal && (
-        <GoalResultModal
-          goal={goalForResultModal}
-          isOpen={!!goalForResultModal}
-          onClose={() => setGoalForResultModal(null)}
+      {goalForFullModal && (
+        <GoalFullModal
+          goal={goalForFullModal}
+          isOpen={!!goalForFullModal}
+          onClose={() => setGoalForFullModal(null)}
+          initialTab={fullModalInitialTab}
           layer={1}
         />
       )}

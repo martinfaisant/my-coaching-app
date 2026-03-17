@@ -21,12 +21,10 @@ function parseTargetTime(
   const sStr = (formData.get('target_time_seconds') as string)?.trim() ?? ''
   const anySet = hStr !== '' || mStr !== '' || sStr !== ''
   if (!anySet) return null
-  if (hStr === '' || mStr === '' || sStr === '') {
-    return { error: t('targetTimeAllRequired') }
-  }
-  const hours = parseInt(hStr, 10)
-  const minutes = parseInt(mStr, 10)
-  const seconds = parseInt(sStr, 10)
+  // Si au moins un champ est renseigné, les champs vides sont traités comme 0 (ex. 55 min seul → 0h 55min 0s)
+  const hours = hStr === '' ? 0 : parseInt(hStr, 10)
+  const minutes = mStr === '' ? 0 : parseInt(mStr, 10)
+  const seconds = sStr === '' ? 0 : parseInt(sStr, 10)
   if (Number.isNaN(hours) || hours < 0 || hours > 99) return { error: t('invalidTimeRange') }
   if (Number.isNaN(minutes) || minutes < 0 || minutes > 59) return { error: t('invalidTimeRange') }
   if (Number.isNaN(seconds) || seconds < 0 || seconds > 59) return { error: t('invalidTimeRange') }
@@ -239,7 +237,7 @@ export async function saveGoalResult(
   }
 
   const today = new Date().toISOString().slice(0, 10)
-  if (goal.date >= today) {
+  if (goal.date > today) {
     return { error: t('resultOnlyForPastGoal') }
   }
 
@@ -290,4 +288,149 @@ export async function saveGoalResult(
   revalidatePath('/dashboard/calendar')
   revalidatePath('/dashboard/find-coach')
   return { success: t('resultSaved') }
+}
+
+export async function saveGoalFull(
+  _prevState: GoalFormState,
+  formData: FormData
+): Promise<GoalFormState> {
+  const locale =
+    ((formData.get('locale') as string) || (formData.get('_locale') as string) || 'fr') as string
+  const t = await getTranslations({ locale, namespace: 'goals.validation' })
+
+  const supabase = await createClient()
+  const result = await requireRole(supabase, 'athlete')
+  if ('error' in result) return { error: result.error }
+
+  const { user } = result
+
+  const goalId = (formData.get('goal_id') as string)?.trim()
+  if (!goalId) return { error: t('goalNotFound') }
+
+  const { data: goal } = await supabase
+    .from('goals')
+    .select(
+      'id, athlete_id, date, result_time_hours, result_time_minutes, result_time_seconds, result_place, result_note'
+    )
+    .eq('id', goalId)
+    .eq('athlete_id', user.id)
+    .single()
+
+  if (!goal) return { error: t('goalNotFound') }
+
+  const date = (formData.get('date') as string)?.trim()
+  const raceName = (formData.get('race_name') as string)?.trim()
+  const distance = (formData.get('distance') as string)?.trim()
+  const isPrimary = formData.get('is_primary') === 'primary'
+
+  if (!date || !raceName || !distance) {
+    return { error: t('allFieldsRequired') }
+  }
+
+  const targetTime = parseTargetTime(formData, t)
+  if (targetTime && 'error' in targetTime) return { error: targetTime.error }
+
+  type GoalUpdatePayload = {
+    date: string
+    race_name: string
+    distance: string
+    is_primary: boolean
+    target_time_hours: number | null
+    target_time_minutes: number | null
+    target_time_seconds: number | null
+    result_time_hours?: number | null
+    result_time_minutes?: number | null
+    result_time_seconds?: number | null
+    result_place?: number | null
+    result_note?: string | null
+  }
+
+  const updatePayload: GoalUpdatePayload = {
+    date,
+    race_name: raceName,
+    distance,
+    is_primary: isPrimary,
+    target_time_hours: targetTime ? targetTime.hours : null,
+    target_time_minutes: targetTime ? targetTime.minutes : null,
+    target_time_seconds: targetTime ? targetTime.seconds : null,
+  }
+
+  const today = new Date().toISOString().slice(0, 10)
+  const canHaveResult = date <= today
+
+  if (canHaveResult) {
+    const hoursStr = (formData.get('result_time_hours') as string)?.trim() ?? ''
+    const minutesStr = (formData.get('result_time_minutes') as string)?.trim() ?? ''
+    const secondsStr = (formData.get('result_time_seconds') as string)?.trim() ?? ''
+    const placeStr = (formData.get('result_place') as string)?.trim()
+    const note = (formData.get('result_note') as string)?.trim() ?? ''
+
+    const anySet = hoursStr !== '' || minutesStr !== '' || secondsStr !== ''
+
+    if (anySet) {
+      if (hoursStr === '' || minutesStr === '' || secondsStr === '') {
+        return { error: t('timeRequired') }
+      }
+
+      const hours = parseInt(hoursStr, 10)
+      const minutes = parseInt(minutesStr, 10)
+      const seconds = parseInt(secondsStr, 10)
+
+      if (
+        Number.isNaN(hours) ||
+        hours < 0 ||
+        hours > 99 ||
+        Number.isNaN(minutes) ||
+        minutes < 0 ||
+        minutes > 59 ||
+        Number.isNaN(seconds) ||
+        seconds < 0 ||
+        seconds > 59
+      ) {
+        return { error: t('invalidTimeRange') }
+      }
+
+      if (note.length > RESULT_NOTE_MAX_LENGTH) {
+        return { error: t('noteMaxLength', { max: RESULT_NOTE_MAX_LENGTH }) }
+      }
+
+      const resultPlace =
+        placeStr == null || placeStr === '' ? null : Math.max(1, parseInt(placeStr, 10))
+
+      updatePayload.result_time_hours = hours
+      updatePayload.result_time_minutes = minutes
+      updatePayload.result_time_seconds = seconds
+      updatePayload.result_place = resultPlace
+      updatePayload.result_note = note || null
+    } else {
+      // Aucun temps renseigné dans le formulaire : conserver le résultat existant tel quel
+      updatePayload.result_time_hours = goal.result_time_hours ?? null
+      updatePayload.result_time_minutes = goal.result_time_minutes ?? null
+      updatePayload.result_time_seconds = goal.result_time_seconds ?? null
+      updatePayload.result_place =
+        goal.result_place == null ? null : Math.max(1, Number(goal.result_place))
+      updatePayload.result_note = goal.result_note ?? null
+    }
+  } else {
+    // Date future : on efface le résultat éventuel
+    updatePayload.result_time_hours = null
+    updatePayload.result_time_minutes = null
+    updatePayload.result_time_seconds = null
+    updatePayload.result_place = null
+    updatePayload.result_note = null
+  }
+
+  const { error } = await supabase
+    .from('goals')
+    .update(updatePayload)
+    .eq('id', goalId)
+    .eq('athlete_id', user.id)
+
+  if (error) return { error: error.message }
+
+  revalidatePath('/dashboard/objectifs')
+  revalidatePath('/dashboard/calendar')
+  revalidatePath('/dashboard/find-coach')
+
+  return { success: t('goalUpdated') }
 }

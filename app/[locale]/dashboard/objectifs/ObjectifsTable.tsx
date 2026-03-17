@@ -12,8 +12,7 @@ import { addGoal, deleteGoal, type GoalFormState } from './actions'
 import type { Goal } from '@/types/database'
 import { getDaysUntil, formatDateFr, toDateStr } from '@/lib/dateUtils'
 import { hasGoalResult, formatGoalResultTime, formatGoalResultPlaceOrdinal, hasTargetTime, formatTargetTime } from '@/lib/goalResultUtils'
-import { GoalResultModal } from './GoalResultModal'
-import { GoalEditModal } from './GoalEditModal'
+import { GoalFullModal } from './GoalFullModal'
 
 
 type ObjectifsTableProps = {
@@ -83,8 +82,8 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
   const [showDatePickerPopup, setShowDatePickerPopup] = useState(false)
   const [datePickerAnchor, setDatePickerAnchor] = useState<DOMRect | null>(null)
   const [priority, setPriority] = useState<'primary' | 'secondary'>('primary')
-  const [goalForResultModal, setGoalForResultModal] = useState<Goal | null>(null)
-  const [goalForEditModal, setGoalForEditModal] = useState<Goal | null>(null)
+  const [goalForFullModal, setGoalForFullModal] = useState<Goal | null>(null)
+  const [fullModalInitialTab, setFullModalInitialTab] = useState<'objective' | 'result'>('objective')
 
   // Pattern bouton Enregistrer (PATTERN_SAVE_BUTTON.md)
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
@@ -149,21 +148,14 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
       if (e.key === 'Escape') closeDatePicker()
     }
 
-    const onRepositionOrClose = () => {
-      // Si l'utilisateur scroll/resize, on évite un popover "perdu" en le refermant.
-      closeDatePicker()
-    }
-
     document.addEventListener('pointerdown', onPointerDown, true)
     document.addEventListener('keydown', onKeyDown)
-    window.addEventListener('resize', onRepositionOrClose)
-    window.addEventListener('scroll', onRepositionOrClose, true)
+    window.addEventListener('resize', closeDatePicker)
 
     return () => {
       document.removeEventListener('pointerdown', onPointerDown, true)
       document.removeEventListener('keydown', onKeyDown)
-      window.removeEventListener('resize', onRepositionOrClose)
-      window.removeEventListener('scroll', onRepositionOrClose, true)
+      window.removeEventListener('resize', closeDatePicker)
     }
   }, [showDatePickerPopup, closeDatePicker])
 
@@ -241,8 +233,8 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
     goalsBySeason.get(year)!.push(goal)
   })
   
-  // Trier les saisons par ordre chronologique
-  const seasons = Array.from(goalsBySeason.keys()).sort((a, b) => a - b)
+  // Trier les saisons de la plus loin dans le futur à la plus ancienne
+  const seasons = Array.from(goalsBySeason.keys()).sort((a, b) => b - a)
 
   // Trouver le prochain objectif pour le widget du header
   const nextGoal = futureGoals.length > 0 ? futureGoals[0] : null
@@ -268,25 +260,26 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
                   const dateBlock = formatDateBlock(goal.date, localeTag)
                   const isPrimary = goal.is_primary
                   const isResult = goal.date <= today
+                  const isPastOrToday = goal.date <= today
+                  const hasResult = hasGoalResult(goal)
 
                   return (
                     <TileCard
                       key={goal.id}
                       leftBorderColor={isResult ? 'stone' : isPrimary ? 'amber' : 'sage'}
                       borderLeftOnly={isResult}
-                      className={isPast ? 'opacity-75' : ''}
                     >
                       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                         <div className="flex gap-4 items-center min-w-0">
                           {/* Date Block */}
-                          <div className={`flex flex-col items-center justify-center bg-stone-50 border border-stone-200 rounded-xl w-14 h-14 shrink-0 ${isPast ? 'opacity-75' : ''}`}>
+                          <div className="flex flex-col items-center justify-center bg-stone-50 border border-stone-200 rounded-xl w-14 h-14 shrink-0">
                             <span className="text-[10px] font-bold text-stone-400 uppercase">{dateBlock.month}</span>
                             <span className="text-xl font-bold text-stone-800">{dateBlock.day}</span>
                           </div>
 
                           <div className="min-w-0">
                             <div className="flex items-center gap-2 mb-0.5">
-                              <h3 className={`text-base font-bold truncate ${isPast ? 'text-stone-700' : 'text-stone-900'}`}>
+                              <h3 className="text-base font-bold truncate text-stone-900">
                                 {goal.race_name}
                               </h3>
                               {isPrimary ? (
@@ -330,10 +323,15 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
                                   <span>{formatGoalResultPlaceOrdinal(goal.result_place, locale)}</span>
                                 </>
                               )}
+                              {isPast && !hasGoalResult(goal) && (
+                                <>
+                                  <span className="text-stone-400">·</span>
+                                  <span className="text-xs text-stone-400">
+                                    {tGoals('result.noResult')}
+                                  </span>
+                                </>
+                              )}
                             </div>
-                            {isPast && !hasGoalResult(goal) && (
-                              <p className="text-xs text-stone-400 mt-1">{tGoals('result.noResult')}</p>
-                            )}
                           </div>
                         </div>
 
@@ -346,22 +344,23 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
                           )}
                           <Button
                             type="button"
-                            variant="outline"
+                            variant="muted"
                             className="px-3 py-1.5"
-                            onClick={() => setGoalForEditModal(goal)}
+                            onClick={() => {
+                              setGoalForFullModal(goal)
+                              if (isPastOrToday) {
+                                setFullModalInitialTab('result')
+                              } else {
+                                setFullModalInitialTab('objective')
+                              }
+                            }}
                           >
-                            {tGoals('editGoal')}
+                            {!isPastOrToday
+                              ? tGoals('editGoal')
+                              : hasResult
+                                ? tGoals('editGoal')
+                                : tGoals('result.addResult')}
                           </Button>
-                          {isPast && (
-                            <Button
-                              type="button"
-                              variant={hasGoalResult(goal) ? 'secondary' : 'outline'}
-                              className="px-3 py-1.5"
-                              onClick={() => setGoalForResultModal(goal)}
-                            >
-                              {hasGoalResult(goal) ? tGoals('result.editResult') : tGoals('result.addResult')}
-                            </Button>
-                          )}
                           <DeleteGoalButton goalId={goal.id} />
                         </div>
                       </div>
@@ -576,18 +575,12 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
         </form>
       </div>
 
-      {goalForResultModal && (
-        <GoalResultModal
-          goal={goalForResultModal}
-          isOpen={!!goalForResultModal}
-          onClose={() => setGoalForResultModal(null)}
-        />
-      )}
-      {goalForEditModal && (
-        <GoalEditModal
-          goal={goalForEditModal}
-          isOpen={!!goalForEditModal}
-          onClose={() => setGoalForEditModal(null)}
+      {goalForFullModal && (
+        <GoalFullModal
+          goal={goalForFullModal}
+          isOpen={!!goalForFullModal}
+          onClose={() => setGoalForFullModal(null)}
+          initialTab={fullModalInitialTab}
         />
       )}
 

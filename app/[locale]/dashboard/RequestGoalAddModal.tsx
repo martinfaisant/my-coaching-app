@@ -66,21 +66,14 @@ export function RequestGoalAddModal({ isOpen, onClose }: RequestGoalAddModalProp
       if (e.key === 'Escape') closeDatePicker()
     }
 
-    const onRepositionOrClose = () => {
-      // Dans une modale scrollable, l'ancre bouge : on ferme plutôt que d'afficher le popover au mauvais endroit.
-      closeDatePicker()
-    }
-
     document.addEventListener('pointerdown', onPointerDown, true)
     document.addEventListener('keydown', onKeyDown)
-    window.addEventListener('resize', onRepositionOrClose)
-    window.addEventListener('scroll', onRepositionOrClose, true)
+    window.addEventListener('resize', closeDatePicker)
 
     return () => {
       document.removeEventListener('pointerdown', onPointerDown, true)
       document.removeEventListener('keydown', onKeyDown)
-      window.removeEventListener('resize', onRepositionOrClose)
-      window.removeEventListener('scroll', onRepositionOrClose, true)
+      window.removeEventListener('resize', closeDatePicker)
     }
   }, [showDatePickerPopup, closeDatePicker])
 
@@ -136,14 +129,19 @@ export function RequestGoalAddModal({ isOpen, onClose }: RequestGoalAddModalProp
       >
         <input type="hidden" name="locale" value={locale} />
 
-        <Input
-          id="request-goal-race_name"
-          label={tGoals('raceName')}
-          name="race_name"
-          type="text"
-          required
-          placeholder={tGoals('raceNamePlaceholder')}
-        />
+        <div>
+          <label htmlFor="request-goal-race_name" className="block text-xs font-bold text-stone-500 uppercase tracking-wide mb-1.5 ml-1">
+            {tGoals('raceName')} *
+          </label>
+          <input
+            id="request-goal-race_name"
+            name="race_name"
+            type="text"
+            required
+            placeholder={tGoals('raceNamePlaceholder')}
+            className="w-full border border-stone-300 rounded-lg py-3 px-3 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition"
+          />
+        </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
@@ -169,16 +167,21 @@ export function RequestGoalAddModal({ isOpen, onClose }: RequestGoalAddModalProp
               </svg>
             </div>
           </div>
-          <Input
-            id="request-goal-distance"
-            label={tGoals('distance')}
-            name="distance"
-            type="number"
-            required
-            min={0}
-            step="0.1"
-            placeholder="42"
-          />
+          <div>
+            <label htmlFor="request-goal-distance" className="block text-xs font-bold text-stone-500 uppercase tracking-wide mb-1.5 ml-1">
+              {tGoals('distance')} *
+            </label>
+            <input
+              id="request-goal-distance"
+              name="distance"
+              type="number"
+              required
+              min={0}
+              step="0.1"
+              placeholder="42"
+              className="w-full border border-stone-300 rounded-lg py-3 px-3 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition"
+            />
+          </div>
         </div>
 
         <div>

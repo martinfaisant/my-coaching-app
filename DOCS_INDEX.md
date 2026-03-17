@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 17 mars 2026 (Mode Analyste : feature request goals + correctifs modale/datepicker/menu/trail/validation ; voir Changements récents, archive design-request-goals)
+**Dernière mise à jour :** 17 mars 2026 (Mode Analyste : fusion boutons objectifs GoalFullModal + archivage mockups objectifs-modale-complete ; voir Changements récents)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -273,6 +273,10 @@
 - `docs/archive/design-objectif-vs-resultat/` — DESIGN_OBJECTIF_VS_RESULTAT.md, MOCKUP_OBJECTIF_RESULTAT_PROP_A.html, MOCKUP_OBJECTIF_RESULTAT_PROP_B.html, MOCKUP_OBJECTIF_RESULTAT_PROP_C.html, MOCKUP_OBJECTIF_RESULTAT_BANDE_GRISE.html.
 - **Raison :** Feature livrée ; dès que **date de l’événement ≤ date du jour**, tuile affichée en style **résultat** (bande gauche grise uniquement, pas de contour). Objectifs à venir : bande colorée (ambre/sage). Badges Principal/Secondaire et badges sport : **fond blanc**, texte et contour colorés. Sélecteur priorité (formulaires ajout/édition objectif) : option sélectionnée fond blanc, **rounded-lg**. TileCard : prop `borderLeftOnly`, variante stone pour résultats. Comportement : **Project_context.md §4.7**, **docs/DESIGN_SYSTEM.md** (§ Badge, § TileCard).
 
+**Modale objectif complète (fusion Modifier + résultat) – archivés 17 mars 2026 :**
+- `docs/archive/objectifs-modale-complete/` — index.html, solution-1-modale-complete-sections.html, solution-2-modale-onglets.html (mockups Designer).
+- **Raison :** Feature livrée ; **un seul bouton** par objectif (Modifier / Ajouter un résultat) ouvre **GoalFullModal** (onglets Objectif | Résultat, sauvegarde combinée `saveGoalFull`). Page Objectifs et section objectifs dans la demande de coaching alignées. Comportement : **Project_context.md §4.7**, **docs/DESIGN_SYSTEM.md** (§ TileCard / Page Objectifs).
+
 **Disponibilités / indisponibilités athlète (archivés 2 mars 2026) :**
 - `docs/archive/design-athlete-availability/` — DESIGN.md (besoin, cas d’usage, décisions PO, style tuiles option D), SPEC_ARCHITECTURE.md (modèle, RLS, fichiers), MOCKUP_AVAILABILITY_MODAL.html, MOCKUP_CALENDAR_AVAILABILITY_TILES.html.
 - **Raison :** Feature livrée **sans récurrence** ; athlète peut créer/éditer/supprimer des créneaux disponibilité ou indisponibilité par jour (bouton « + » sur jours futurs, modale avec type, date, Début/Fin optionnels, Note) ; coach voit les tuiles en lecture seule sur le calendrier de l’athlète (modale détail). Comportement décrit dans **Project_context.md §4.5** (Athlete availability), **docs/DESIGN_SYSTEM.md** (§7 Calendrier, AvailabilityModal, AvailabilityDetailModal), **docs/I18N.md** (namespace availability).
@@ -409,9 +413,15 @@
 **Fréquence de mise à jour :** À chaque ajout/suppression de documentation
 
 **Dernier scan :** 17 mars 2026  
-**Dernier nettoyage :** 17 mars 2026 (archivage design-request-goals)
+**Dernier nettoyage :** 17 mars 2026 (archivage objectifs-modale-complete)
 
 ### Changements récents :
+
+✅ **17 mars 2026 – Fusion boutons objectifs (GoalFullModal) + correctifs – Mode Analyste :**
+- **Livraison :** (1) **Modale objectif fusionnée** : un seul bouton par objectif (libellé « Modifier » ou « Ajouter un résultat » selon date et présence de résultat), ouverture de **GoalFullModal** (onglets Objectif | Résultat ; si date > aujourd'hui : onglet Objectif seul ; si date ≤ aujourd'hui : ouverture sur Résultat). Une sauvegarde **saveGoalFull** enregistre objectif + résultat. Page Objectifs : saisons triées du plus loin dans le futur en haut ; pas d'opacité sur les tuiles passées ; « Aucun résultat saisi » sur la même ligne que la distance ; bouton muted. (2) **Demande de coaching** : section objectifs alignée (même bouton unique, GoalFullModal avec layer=1) ; tuiles volume en fond blanc comme Mon profil ; RequestGoalAddModal : Nom de la course et Distance en label + input natif (comme Date), DatePicker sans fermeture au scroll. (3) **Divers** : objectif de temps (champs vides = 0) ; affichage « 55min » quand une seule composante ; saveGoalResult autorisé si date ≤ aujourd'hui (jour J inclus).
+- **Fichiers :** `GoalFullModal.tsx`, `ObjectifsTable.tsx`, `FindCoachSection.tsx`, `RequestGoalAddModal.tsx`, `actions.ts` (objectifs), `lib/goalResultUtils.ts`.
+- **Doc :** Project_context.md §4.7 (modale fusionnée, affichage, saisons, pas d'opacité), §4.4 (objectifs demande : GoalFullModal), DESIGN_SYSTEM (§ TileCard / Page Objectifs), project-core.mdc (Objectifs – GoalFullModal, Demande – bouton unique).
+- **Archivage :** `docs/mockups/objectifs-modale-complete/` → `docs/archive/objectifs-modale-complete/` (index.html, solution-1-*, solution-2-*). Référence courante : **Project_context.md §4.7**, **docs/DESIGN_SYSTEM.md**.
 
 ✅ **17 mars 2026 – Request goals (objectifs/résultats dans la demande) + correctifs – Mode Analyste :**
 - **Livraison :** (1) **Objectifs de course / résultats passés dans la demande** : section optionnelle entre Objectifs et volume et Besoin de coaching ; liste des goals (max 5, tri date décroissante), bouton Ajouter (RequestGoalAddModal avec addGoal, résultat si date passée), « Modifier le résultat » (GoalResultModal), « Voir plus » (RequestGoalsListModal) ; coach voit blocs Objectifs / Résultats dans la tuile demande en attente (RLS 057). (2) **Correctifs** : modale sur modale (prop `layer` sur Modal), DatePickerPopup dans modales (positionnement dynamique, pas d’overlay bloquant), menu sidebar scrollable, **trail** dans le formulaire demande = pas de tuile dédiée (D+ uniquement dans Course, aligné profil + validation serveur), garde contre loop refresh après ajout objectif, boutons Ajouter / Modifier le résultat même hauteur.
