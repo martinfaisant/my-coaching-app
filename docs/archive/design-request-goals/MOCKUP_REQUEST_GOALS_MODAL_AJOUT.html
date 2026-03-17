@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modale — Ajouter un objectif ou résultat passé</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            'palette-forest-darker': '#506648',
+            'palette-sage': '#aaaa51',
+            'palette-danger': '#c0564b',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-stone-50 p-8 text-stone-900">
+  <div class="max-w-md mx-auto">
+    <p class="text-sm text-stone-500 mb-6">
+      <strong>Modale</strong> ouverte par le bouton « Ajouter un objectif ou résultat passé ». Formulaire : objectif (nom, date, distance, priorité), <strong>objectif de temps (facultatif)</strong> h/min/s, + si date passée, bloc Résultat (temps, place, note).
+    </p>
+
+    <!-- Simulation modale -->
+    <div class="rounded-2xl border border-stone-200 bg-white shadow-xl overflow-hidden">
+      <div class="p-4 border-b border-stone-100 flex items-center justify-between">
+        <h3 class="text-lg font-bold text-stone-900">Ajouter un objectif ou résultat passé</h3>
+        <button type="button" class="p-2 rounded-full hover:bg-stone-100 text-stone-500" aria-label="Fermer">✕</button>
+      </div>
+      <div class="p-6 space-y-5">
+        <div>
+          <label class="block text-sm font-medium text-stone-700 mb-2">Nom de la course *</label>
+          <input type="text" placeholder="Ex. Marathon de Paris" class="w-full px-3 py-2.5 rounded-lg border border-stone-300 bg-white text-sm" />
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-sm font-medium text-stone-700 mb-2">Date *</label>
+            <input type="date" value="2025-01-12" class="w-full px-3 py-2.5 rounded-lg border border-stone-300 bg-white text-sm" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-stone-700 mb-2">Distance (km) *</label>
+            <input type="text" placeholder="42" class="w-full px-3 py-2.5 rounded-lg border border-stone-300 bg-white text-sm" />
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-stone-500 uppercase mb-2">Priorité</label>
+          <div class="flex gap-2">
+            <label class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-stone-200 bg-white text-[10px] font-bold text-stone-400 cursor-pointer">
+              <input type="radio" name="priority" /> Principal
+            </label>
+            <label class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-palette-sage bg-palette-sage/10 text-[10px] font-bold text-palette-sage cursor-pointer">
+              <input type="radio" name="priority" checked /> Secondaire
+            </label>
+          </div>
+        </div>
+
+        <!-- Objectif de temps (facultatif) -->
+        <div>
+          <label class="block text-sm font-medium text-stone-700 mb-2">Objectif de temps (facultatif)</label>
+          <div class="grid grid-cols-3 gap-2">
+            <div class="relative">
+              <input type="number" min="0" max="99" placeholder="0" class="w-full px-3 py-2 rounded-lg border border-stone-300 bg-white text-sm text-center pr-8" />
+              <span class="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-stone-400">h</span>
+            </div>
+            <div class="relative">
+              <input type="number" min="0" max="59" placeholder="0" class="w-full px-3 py-2 rounded-lg border border-stone-300 bg-white text-sm text-center pr-9" />
+              <span class="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-stone-400">min</span>
+            </div>
+            <div class="relative">
+              <input type="number" min="0" max="59" placeholder="0" class="w-full px-3 py-2 rounded-lg border border-stone-300 bg-white text-sm text-center pr-8" />
+              <span class="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-stone-400">s</span>
+            </div>
+          </div>
+          <p class="text-xs text-stone-400 mt-1">Si vous renseignez un champ, les trois sont requis.</p>
+        </div>
+
+        <!-- Bloc Résultat (visible car date passée) -->
+        <div class="pt-4 border-t border-stone-200">
+          <p class="text-xs font-bold text-stone-500 uppercase tracking-wide mb-2">Résultat (date passée)</p>
+          <div class="space-y-3">
+            <div>
+              <label class="block text-xs font-medium text-stone-600 mb-1">Temps *</label>
+              <div class="grid grid-cols-3 gap-2">
+                <div class="relative">
+                  <input type="number" min="0" max="99" value="1" class="w-full px-3 py-2 rounded-lg border border-stone-300 bg-white text-sm text-center pr-8" />
+                  <span class="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-stone-400">h</span>
+                </div>
+                <div class="relative">
+                  <input type="number" min="0" max="59" value="42" class="w-full px-3 py-2 rounded-lg border border-stone-300 bg-white text-sm text-center pr-9" />
+                  <span class="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-stone-400">min</span>
+                </div>
+                <div class="relative">
+                  <input type="number" min="0" max="59" value="0" class="w-full px-3 py-2 rounded-lg border border-stone-300 bg-white text-sm text-center pr-8" />
+                  <span class="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-stone-400">s</span>
+                </div>
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-stone-600 mb-1">Place (optionnel)</label>
+              <input type="number" min="1" placeholder="24" class="w-full px-3 py-2 rounded-lg border border-stone-300 bg-white text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-stone-600 mb-1">Note (optionnel)</label>
+              <textarea rows="2" placeholder="Conditions, ressenti..." class="w-full px-3 py-2 rounded-lg border border-stone-300 bg-white text-sm resize-y"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="p-4 border-t border-stone-100 flex gap-3 justify-end">
+        <button type="button" class="px-4 py-2.5 rounded-lg border border-stone-300 text-stone-600 text-sm">Annuler</button>
+        <button type="button" class="px-4 py-2.5 rounded-lg bg-palette-forest-dark text-white text-sm font-medium">Ajouter</button>
+      </div>
+    </div>
+
+    <p class="text-xs text-stone-500 mt-4">
+      Si la date est <strong>future</strong>, le bloc « Résultat (date passée) » est masqué. <strong>Objectif de temps</strong> : optionnel, même règle que page Objectifs (si un champ renseigné, les trois requis). Réutiliser composant <code>Modal</code>, <code>hasTargetTime</code> / <code>formatTargetTime</code> (goalResultUtils), champs et validation type page Objectifs / GoalResultModal.
+    </p>
+  </div>
+</body>
+</html>

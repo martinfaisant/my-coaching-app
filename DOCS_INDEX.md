@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 16 mars 2026 (Mode Analyste : objectif vs résultat, bande grise, badges fond blanc ; voir Project_context §4.7, archive design-objectif-vs-resultat)
+**Dernière mise à jour :** 17 mars 2026 (Mode Analyste : feature request goals + correctifs modale/datepicker/menu/trail/validation ; voir Changements récents, archive design-request-goals)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -18,13 +18,13 @@
 - **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), stack technique, **URL production https://mysportally.com**
 - **Utiliser pour :** Comprendre le projet, les features, les rôles, l'architecture globale
 - **Taille :** ~420 lignes
-- **Dernière mise à jour :** 16 mars 2026 (§4.7 Goals : objectif de temps, édition, affichage Objectif/Réalisé ; différenciation visuelle objectif vs résultat, bande grise dès date ≤ aujourd’hui, badges fond blanc)
+- **Dernière mise à jour :** 17 mars 2026 (§4.4 Objectifs de course / résultats passés dans la demande ; trail = D+ dans Course uniquement, bande grise dès date ≤ aujourd’hui, badges fond blanc)
 
 ### **docs/DESIGN_SYSTEM.md** ⭐
 - **Contenu :** Tokens (couleurs, typo, espacements), composants (Button, Input, Badge, TileCard, DashboardPageShell, Modal, etc.), guidelines UI, exemples de code, §7 breakpoints (calendrier, chat, Trouver mon coach, My offers)
 - **Utiliser pour :** Créer ou modifier des composants UI, choisir des couleurs, appliquer le design system, règles responsive par page
 - **Taille :** ~850 lignes
-- **Dernière mise à jour :** 16 mars 2026 (Objectif vs résultat : TileCard borderLeftOnly, Badge fond blanc / goalSecondary, sélecteur priorité rounded-lg)
+- **Dernière mise à jour :** 17 mars 2026 (Modal : prop layer pour modale sur modale ; DatePickerPopup dans modale : positionnement dynamique)
 
 ### **docs/I18N.md** ⭐
 - **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces, utilisation dans composants et server actions, **checklist pour nouvelles features** (toujours penser bilingue)
@@ -265,6 +265,10 @@
 - `docs/archive/design-goal-target-time/` — DESIGN_GOAL_TARGET_TIME.md, SPEC_GOAL_TARGET_TIME.md, MOCKUP_GOAL_TARGET_TIME_FORM_A.html, MOCKUP_GOAL_TARGET_TIME_FORM_B.html, MOCKUP_GOAL_TARGET_TIME_TILES.html.
 - **Raison :** Feature livrée ; à la création et à l'édition, objectif de temps (3 champs h/min/s, facultatif ; si un renseigné, les trois requis). Bouton « Modifier » → GoalEditModal. Affichage tuile : « Objectif : X » ou « Objectif X · Réalisé Y ». Migration 056, addGoal/updateGoal, hasTargetTime/formatTargetTime. Comportement : **Project_context.md §4.7**, **docs/DESIGN_SYSTEM.md**, **docs/I18N.md** (goals.targetTime*, editGoal, achieved).
 
+**Objectifs et résultats dans la demande de coaching (request goals) – archivés 17 mars 2026 :**
+- `docs/archive/design-request-goals/` — DESIGN_REQUEST_GOALS.md, SPEC_REQUEST_GOALS.md, MOCKUP_REQUEST_GOALS_*.html.
+- **Raison :** Feature livrée ; section « Objectifs de course / résultats passés » dans la demande (liste, Ajouter, Modifier le résultat, Voir plus) ; RLS 057. Comportement : **Project_context.md §4.4**, **docs/DESIGN_SYSTEM.md** (§ Modal layer).
+
 **Différenciation visuelle objectif vs résultat (archivés 16 mars 2026) :**
 - `docs/archive/design-objectif-vs-resultat/` — DESIGN_OBJECTIF_VS_RESULTAT.md, MOCKUP_OBJECTIF_RESULTAT_PROP_A.html, MOCKUP_OBJECTIF_RESULTAT_PROP_B.html, MOCKUP_OBJECTIF_RESULTAT_PROP_C.html, MOCKUP_OBJECTIF_RESULTAT_BANDE_GRISE.html.
 - **Raison :** Feature livrée ; dès que **date de l’événement ≤ date du jour**, tuile affichée en style **résultat** (bande gauche grise uniquement, pas de contour). Objectifs à venir : bande colorée (ambre/sage). Badges Principal/Secondaire et badges sport : **fond blanc**, texte et contour colorés. Sélecteur priorité (formulaires ajout/édition objectif) : option sélectionnée fond blanc, **rounded-lg**. TileCard : prop `borderLeftOnly`, variante stone pour résultats. Comportement : **Project_context.md §4.7**, **docs/DESIGN_SYSTEM.md** (§ Badge, § TileCard).
@@ -404,10 +408,16 @@
 
 **Fréquence de mise à jour :** À chaque ajout/suppression de documentation
 
-**Dernier scan :** 16 mars 2026  
-**Dernier nettoyage :** 16 mars 2026 (archivage design-objectif-vs-resultat)
+**Dernier scan :** 17 mars 2026  
+**Dernier nettoyage :** 17 mars 2026 (archivage design-request-goals)
 
 ### Changements récents :
+
+✅ **17 mars 2026 – Request goals (objectifs/résultats dans la demande) + correctifs – Mode Analyste :**
+- **Livraison :** (1) **Objectifs de course / résultats passés dans la demande** : section optionnelle entre Objectifs et volume et Besoin de coaching ; liste des goals (max 5, tri date décroissante), bouton Ajouter (RequestGoalAddModal avec addGoal, résultat si date passée), « Modifier le résultat » (GoalResultModal), « Voir plus » (RequestGoalsListModal) ; coach voit blocs Objectifs / Résultats dans la tuile demande en attente (RLS 057). (2) **Correctifs** : modale sur modale (prop `layer` sur Modal), DatePickerPopup dans modales (positionnement dynamique, pas d’overlay bloquant), menu sidebar scrollable, **trail** dans le formulaire demande = pas de tuile dédiée (D+ uniquement dans Course, aligné profil + validation serveur), garde contre loop refresh après ajout objectif, boutons Ajouter / Modifier le résultat même hauteur.
+- **Fichiers :** `components/Modal.tsx`, `FindCoachSection.tsx`, `RequestGoalAddModal.tsx`, `RequestGoalsListModal.tsx`, `GoalResultModal.tsx`, `ObjectifsTable.tsx`, `PendingRequestTile.tsx`, `Sidebar.tsx`, `DashboardTopBar.tsx`, `DashboardChatWrapper.tsx`, `app/[locale]/dashboard/actions.ts`, `supabase/migrations/057_goals_select_coach_pending.sql`, messages FR/EN.
+- **Doc :** Project_context.md §4.4 (Objectifs de course dans la demande, trail = D+ Course), DESIGN_SYSTEM (Modal layer, DatePickerPopup dans modale), project-core.mdc (Demande – objectifs de course, trail).
+- **Archivage :** `docs/design-request-goals/` → `docs/archive/design-request-goals/` (DESIGN_REQUEST_GOALS.md, SPEC_REQUEST_GOALS.md, MOCKUP_*.html). Référence courante : **Project_context.md §4.4**, **docs/DESIGN_SYSTEM.md**.
 
 ✅ **16 mars 2026 – Différenciation visuelle objectif vs résultat – Mode Analyste :**
 - **Livraison :** Dès que la **date de l’événement ≤ date du jour**, la tuile objectif est affichée en **style résultat** : bande gauche **grise** uniquement (pas de contour), au lieu de la bande colorée (ambre = principal, sage = secondaire). **Badges** Principal / Secondaire et **badges sport** : fond **blanc**, texte et contour colorés (amber / sage / couleur sport). **Sélecteur priorité** dans les formulaires d’ajout/édition d’objectif : option sélectionnée avec fond blanc, arrondi **rounded-lg** (aligné sur les champs de saisie). **TileCard** : prop `borderLeftOnly`, variante stone pour les tuiles résultat (page Objectifs, calendrier athlète/coach).
@@ -679,6 +689,7 @@
 | **Page par défaut / redirections dashboard (find-coach, Mes athlètes)** | **`Project_context.md` §4.0** |
 | Tuile Profil sidebar (état sélectionné sur page Profil, centrage mode replié) | `Project_context.md` §4.0, `docs/DESIGN_SYSTEM.md` §7 |
 | Tuile demandes en attente (coach) / Message | Objectifs et volume / Discuter / Refuser-Accepter | `Project_context.md` §4.4, `docs/DESIGN_SYSTEM.md` §7 (PendingRequestTile) |
+| **Objectifs de course / résultats passés dans la demande** (Ajouter, Modifier résultat, Voir plus) | `Project_context.md` §4.4 (Objectifs de course dans la demande), Modal layer | `docs/DESIGN_SYSTEM.md` § Modal |
 | **Prix offre non modifiable après publication** (trigger BDD, UI read-only, modale) | **`Project_context.md` §4.4**, **`docs/DESIGN_SYSTEM.md`** (formulaire offres) |
 | Grilles responsive (Trouver mon coach, My offers, Mes athlètes) | `docs/DESIGN_SYSTEM.md` §7 |
 | Filtre par nom/prénom (Trouver mon coach) | `Project_context.md` (Athlete), `docs/DESIGN_SYSTEM.md` §7 |

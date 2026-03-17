@@ -2,11 +2,12 @@ import type { Metadata } from 'next'
 import { createClient } from '@/utils/supabase/server'
 import { getCurrentUserWithProfile } from '@/utils/auth'
 import { redirect } from 'next/navigation'
-import { getTranslations, getLocale } from 'next-intl/server'
+import { getTranslations } from 'next-intl/server'
 import { pathWithLocale } from '@/lib/pathWithLocale'
 import { DashboardPageShell } from '@/components/DashboardPageShell'
 import { FindCoachSection } from '@/app/[locale]/dashboard/FindCoachSection'
 import { getMyCoachRequests } from '@/app/[locale]/dashboard/actions'
+import type { Goal } from '@/types/database'
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params
@@ -26,7 +27,7 @@ export default async function FindCoachPage({ params }: { params: Promise<{ loca
 
   const supabase = await createClient()
 
-  const [coachesResult, myRequests, ratingStats, offersResult] = await Promise.all([
+  const [coachesResult, myRequests, ratingStats, offersResult, goalsResult] = await Promise.all([
     supabase
       .from('profiles')
       .select('user_id, email, first_name, last_name, coached_sports, languages, presentation_fr, presentation_en, avatar_url')
@@ -40,7 +41,13 @@ export default async function FindCoachPage({ params }: { params: Promise<{ loca
       .eq('status', 'published')
       .order('display_order')
       .range(0, 999),
+    supabase
+      .from('goals')
+      .select('*')
+      .eq('athlete_id', current.id)
+      .order('date', { ascending: false }),
   ])
+  const initialGoals = (goalsResult.data ?? []) as Goal[]
   const coaches = coachesResult.data
   const allOffers = offersResult.data ?? []
 
@@ -122,6 +129,7 @@ export default async function FindCoachPage({ params }: { params: Promise<{ loca
           offersByCoach={offersByCoach}
           athleteFirstName={current.profile.first_name ?? ''}
           athleteLastName={current.profile.last_name ?? ''}
+          initialGoals={initialGoals}
         />
       )}
     </DashboardPageShell>

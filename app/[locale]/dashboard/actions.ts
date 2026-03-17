@@ -12,7 +12,8 @@ import { getWeeklyVolumeUnit } from '@/lib/sportStyles'
 export type SetCoachResult = { error?: string }
 export type CoachRequestResult = { error?: string }
 
-const DISPLAY_SPORTS_ORDER = ['course', 'velo', 'natation', 'musculation', 'trail', 'triathlon'] as const
+// Volume hebdo : pas de tuile "trail" (comme Mon profil). Trail => tuile course + champ D+/sem.
+const DISPLAY_SPORTS_ORDER = ['course', 'velo', 'natation', 'musculation', 'triathlon'] as const
 
 /** Athlète : envoyer une demande de coaching au coach. Met à jour le profil (nom, sports, objectifs/volume) puis crée la demande. */
 export async function createCoachRequest(
@@ -59,7 +60,7 @@ export async function createCoachRequest(
     const roundedHours = Math.round(hours * 100) / 100
 
     const expandedForVolume = sports.flatMap((s) =>
-      s === 'triathlon' ? ['course', 'velo', 'natation'] : [s]
+      s === 'triathlon' ? ['course', 'velo', 'natation'] : s === 'trail' ? ['course'] : [s]
     )
     const volumeDisplayList = DISPLAY_SPORTS_ORDER.filter((s) => expandedForVolume.includes(s))
     const volumeBySport: Record<string, number> = {}

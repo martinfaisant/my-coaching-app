@@ -1,7 +1,7 @@
 # 🎨 Design System
 
-**Version :** 1.11  
-**Dernière mise à jour :** 14 mars 2026 (Dashboard : top bar à la place de la sidebar, Drawer mobile à droite, pages sans titre ni conteneur ; admin : Gestion des membres sous dashboard, nav sans Mes athlètes ; §7 Top bar dashboard, DashboardPageShell)
+**Version :** 1.13  
+**Dernière mise à jour :** 17 mars 2026 (Modal : prop `layer` pour modale sur modale ; DatePickerPopup dans modale : positionnement dynamique sans overlay. Précédent : Objectif vs résultat : bande grise dès date ≤ aujourd’hui, TileCard borderLeftOnly, badges fond blanc Principal/Secondaire/sport, sélecteur priorité rounded-lg ; § Badge, § TileCard)
 
 ---
 
@@ -854,6 +854,19 @@ type TileCardProps = {
   leftBorderColor: 'amber' | 'sage' | 'forest' | 'strava' | 'gold' | 'olive' | 'stone'
   children: React.ReactNode
   badge?: React.ReactNode   // optionnel : badge à droite (ex. « Archivée », « Terminée »)
+- Par défaut : `border border-l-4 border-stone-200` — bordure générale grise + bordure gauche colorée 4px
+- Si `borderLeftOnly={true}` : `border-0 border-l-4` — **uniquement la bande gauche** (pas de contour). Utilisé pour les **tuiles résultat** (objectif passé avec résultat).
+- `bg-white p-3 shadow-sm` — Fond, padding, ombre légère
+- Optionnel : classe `.training-card` pour le hover (léger lift + ombre)
+
+#### Props
+
+```typescript
+type TileCardProps = {
+  leftBorderColor: 'amber' | 'sage' | 'forest' | 'strava' | 'gold' | 'olive' | 'stone'
+  borderLeftOnly?: boolean   // true = bande gauche uniquement (tuiles résultat objectif)
+  children: React.ReactNode
+  badge?: React.ReactNode   // optionnel : badge à droite (ex. « Archivée », « Terminée »)
   className?: string
   interactive?: boolean   // true = applique training-card (hover)
   as?: 'div' | 'button'
@@ -872,19 +885,7 @@ type TileCardProps = {
 | `strava` | `palette-strava` | Activité Strava |
 | `gold` | `palette-gold` | Trail, ski de randonnée |
 | `olive` | `palette-olive` | Vélo, secondaire |
-| `stone` | `stone-400` | État archivé / terminé (offres archivées, historique souscriptions) |
-
-#### Exemples
-
-```tsx
-// Carte statique (ex. objectif sur la page Objectifs)
-<TileCard leftBorderColor="amber">
-  <div className="flex items-center gap-3">
-    <div className="...">...</div>
-    <div>
-      <h3 className="font-semibold text-stone-900">Marathon de Paris</h3>
-      <p className="text-sm text-stone-500">42 km</p>
-    </div>
+| `stone` | `stone-400` | Résultat objectif (bande grise, avec `borderLeftOnly`) ; archivé / terminé (offres, souscriptions) |
   </div>
 </TileCard>
 
@@ -907,7 +908,7 @@ type TileCardProps = {
 
 #### Cas d’usage
 
-- **Page Objectifs** : Afficher chaque objectif dans une TileCard avec `leftBorderColor="amber"` ou `"sage"` pour avoir le même contour que les tuiles de la modale Activités du jour. Pour les objectifs passés avec résultat : afficher « distance · [icône horloge] temps · place » sur la même ligne que la distance ; boutons « Saisir le résultat » (outline) / « Modifier le résultat » (secondary). Modale résultat : `GoalResultModal` (titre = nom de la course), champs temps (h/min/s), place, note ; formatage via `lib/goalResultUtils.ts`.
+- **Page Objectifs** : Afficher chaque objectif dans une TileCard avec `leftBorderColor="amber"` ou `"sage"`. Ligne sous la distance : si **objectif de temps** présent → « Objectif : X » ou (objectif passé avec résultat) « Objectif X · Réalisé Y » ; si résultat seul → « distance · temps · place ». Boutons : **« Modifier »** (ouvre `GoalResultModal` → **GoalEditModal** : nom, date, distance, priorité, objectif de temps h/min/s avec unités comme GoalResultModal), « Saisir le résultat » / « Modifier le résultat » (passé), Supprimer. Formulaire d’ajout : champs objectif de temps (facultatif) avec unités h, min, s en suffixe (même style que GoalResultModal). Modale résultat : `GoalResultModal`. Utilitaires : `lib/goalResultUtils.ts` (hasGoalResult, formatGoalResultTime, hasTargetTime, formatTargetTime).
 - **Listes archivées / terminées** : Offres archivées (page Offres coach), historique des souscriptions (coach et athlète) — utiliser `leftBorderColor="stone"` et `badge` (libellé i18n « Archivée » ou « Terminée »).
 - **Listes personnalisées** : Tout contenu qui doit reprendre le style « tuile avec bordure gauche colorée » sans utiliser le contenu prédéfini d’ActivityTile.
 
@@ -915,11 +916,16 @@ type TileCardProps = {
 
 ### Modal
 
-**Fichier :** `components/Modal.tsx`
 
-Composant modal réutilisable avec overlay, gestion automatique Escape + body overflow, portail DOM.
+// Tuile résultat (objectif passé avec résultat) — bande grise à gauche uniquement
+<TileCard leftBorderColor="stone" borderLeftOnly>
+  <div>... 21 km · 1h42 · 24e ...</div>
+</TileCard>
+```
 
-#### Variantes de taille
+#### Cas d’usage
+
+- **Page Objectifs** : Objectifs dont la **date > aujourd’hui** → `leftBorderColor="amber"` ou `"sage"`. Dès que **date de l’événement ≤ aujourd’hui** (jour J inclus) → `leftBorderColor="stone"` et **`borderLeftOnly`** (bande grise à gauche uniquement). Ligne sous le nom : « distance km · temps · place » sur une seule ligne. Boutons : Modifier (GoalEditModal), Saisir/Modifier le résultat (passé), Supprimer. **À conserver** : ne pas réintroduire de contour complet pour les objectifs passés ; la bande grise seule signale « événement passé / résultat ». Voir **Project_context.md §4.7** et archive `docs/archive/design-objectif-vs-resultat/`.
 
 || Taille | Largeur max | Usage |
 ||--------|-------------|-------|
@@ -945,6 +951,8 @@ Composant modal réutilisable avec overlay, gestion automatique Escape + body ov
 type ModalProps = {
   isOpen: boolean
   onClose: () => void
+  /** Niveau d'empilement pour modale sur modale (0 = défaut, 1 = au-dessus d'une autre modale) */
+  layer?: number
   size?: 'sm' | 'md' | 'workout' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | 'full'
   alignment?: 'center' | 'top' | 'right'
   title?: string
@@ -1057,7 +1065,7 @@ const [isOpen, setIsOpen] = useState(false)
 - **Body overflow** : Gestion automatique du `overflow: hidden` sur body
 - **Portal** : Rendu dans `document.body` avec `createPortal`
 - **Accessibilité** : `role="dialog"`, `aria-modal="true"`, `aria-labelledby`
-- **Z-index** : Overlay `z-[90]`, contenu `z-[100]`
+- **Z-index** : Overlay et contenu ont un z-index de base (90 / 100) ; prop **`layer`** (ex. `layer={1}`) augmente le z-index pour les modales ouvertes **au-dessus d’une autre** (demande de coaching → Ajouter objectif, Voir plus, Modifier le résultat), évitant masquage et scroll de la modale sous-jacente.
 
 #### Structure
 
@@ -1267,6 +1275,7 @@ import { DatePickerPopup } from '@/components/DatePickerPopup'
 #### Usage
 
 - **Intégration dans WorkoutModal** : au clic sur le champ date (coach, séance modifiable), le calendrier s’ouvre en **popover** positionné sous le champ (pas une deuxième modale). Overlay transparent en z-[105], contenu en z-[110] ; fermeture par clic extérieur ou touche Escape.
+- **Dans une modale (ex. Ajouter objectif)** : ne pas utiliser d’overlay pleine page (pour garder le scroll de la modale). Rendre le popup en `createPortal` avec positionnement **dynamique** (clamp dans le viewport, flip au-dessus du champ si pas de place en dessous) ; fermeture au clic extérieur, Escape, scroll ou resize. Référence : `RequestGoalAddModal`, `ObjectifsTable`.
 - **Liste des mois (Dropdown)** : du **mois actuel** au **mois actuel + 2 ans** (25 mois). Si l’utilisateur navigue avec les flèches hors de cette plage, le mois affiché est ajouté aux options et la liste est triée par date.
 - Mois : composant **Dropdown** du design system (options = mois formatés, value = `YYYY-MM`). Le panneau du Dropdown a `max-h-64 overflow-y-auto` pour permettre le scroll.
 

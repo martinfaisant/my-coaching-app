@@ -44,7 +44,7 @@ export function Sidebar({ profile }: SidebarProps) {
 
   if (profile.role === 'athlete') {
     return (
-      <aside className={`${isCollapsed ? 'w-14' : 'w-14 lg:w-52'} bg-white rounded-2xl shadow-sm flex flex-col justify-between shrink-0 relative transition-all duration-300 ease-in-out z-30`}>
+      <aside className={`${isCollapsed ? 'w-14' : 'w-14 lg:w-52'} bg-white rounded-2xl shadow-sm flex flex-col justify-between shrink-0 relative transition-all duration-300 ease-in-out z-30 min-h-0 overflow-hidden`}>
         {/* Bouton toggle : absolute -right-3 top-14 */}
         <Button
           type="button"
@@ -66,7 +66,7 @@ export function Sidebar({ profile }: SidebarProps) {
             <polyline points="15 18 9 12 15 6" />
           </svg>
         </Button>
-        <div>
+        <div className="flex-1 min-h-0 overflow-y-auto">
           {/* Logo : h-20 px-6 quand ouvert, justify-center px-0 quand fermé (comme le profil) */}
           <div className={`h-20 flex items-center transition-all duration-300 overflow-hidden shrink-0 hidden lg:flex ${isCollapsed ? 'justify-center px-0' : 'px-3 lg:px-5'}`}>
             <Link href="/dashboard" className={`flex items-center min-w-0 ${isCollapsed ? 'w-10 justify-center px-0 gap-0' : 'gap-3'}`}>
@@ -81,7 +81,7 @@ export function Sidebar({ profile }: SidebarProps) {
           </div>
 
           {/* Menu */}
-          <nav className={`px-2 lg:px-3 space-y-1.5 mt-2 shrink-0 ${isCollapsed ? 'flex flex-col items-center' : ''}`}>
+          <nav className={`px-2 lg:px-3 space-y-1.5 mt-2 pb-3 ${isCollapsed ? 'flex flex-col items-center' : ''}`}>
             {!profile.coach_id && (
               <Link
                 href="/dashboard/find-coach"
@@ -231,7 +231,7 @@ export function Sidebar({ profile }: SidebarProps) {
 
   // Coach sidebar
   return (
-    <aside className={`${isCollapsed ? 'w-14' : 'w-14 lg:w-52'} bg-white rounded-2xl shadow-sm flex flex-col justify-between shrink-0 relative transition-all duration-300 ease-in-out z-30`}>
+    <aside className={`${isCollapsed ? 'w-14' : 'w-14 lg:w-52'} bg-white rounded-2xl shadow-sm flex flex-col justify-between shrink-0 relative transition-all duration-300 ease-in-out z-30 min-h-0 overflow-hidden`}>
       <Button
         type="button"
         variant="ghost"
@@ -252,7 +252,7 @@ export function Sidebar({ profile }: SidebarProps) {
             <polyline points="15 18 9 12 15 6" />
           </svg>
       </Button>
-      <div>
+      <div className="flex-1 min-h-0 overflow-y-auto">
         <div className={`h-20 flex items-center transition-all duration-300 overflow-hidden shrink-0 hidden lg:flex ${isCollapsed ? 'justify-center px-0' : 'px-3 lg:px-5'}`}>
           <Link href="/dashboard" className={`flex items-center min-w-0 ${isCollapsed ? 'w-10 justify-center px-0 gap-0' : 'gap-3'}`}>
             <Image src="/logo.svg" alt="" width={64} height={64} className="h-7 w-auto object-contain shrink-0" aria-hidden />
@@ -265,7 +265,7 @@ export function Sidebar({ profile }: SidebarProps) {
           </Link>
         </div>
 
-        <nav className={`px-2 lg:px-3 space-y-1.5 mt-2 shrink-0 ${isCollapsed ? 'flex flex-col items-center' : ''}`}>
+        <nav className={`px-2 lg:px-3 space-y-1.5 mt-2 pb-3 ${isCollapsed ? 'flex flex-col items-center' : ''}`}>
           <Link
             href="/dashboard/athletes"
             className={`flex items-center h-10 rounded-xl transition-all duration-300 group ${

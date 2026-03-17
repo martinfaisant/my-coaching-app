@@ -743,7 +743,12 @@
       "chat": "Discuter",
       "athleteMessageLabel": "Message de l'athlète",
       "objectivesAndVolumeLabel": "Objectifs et volume (athlète)",
-      "notSpecified": "Non renseigné"
+      "notSpecified": "Non renseigné",
+      "goalsUpcoming": "Objectifs",
+      "goalsResults": "Résultats",
+      "noGoalsUpcoming": "Aucun objectif",
+      "noGoalsResults": "Aucun résultat",
+      "seeMore": "Voir plus ({count})"
     },
     "noAthletes": {
       "title": "Vos demandes de coaching apparaîtront sur cette page.",
@@ -824,6 +829,15 @@
       "selectOffer": "Veuillez sélectionner une offre.",
       "fillRequired": "Veuillez renseigner au moins un sport pratiqué et votre besoin de coaching.",
       "requireFirstNameLastName": "Veuillez renseigner votre prénom et votre nom."
+    },
+    "requestGoals": {
+      "sectionTitle": "Objectifs de course / résultats passés",
+      "emptyMessage": "Aucun objectif ou résultat pour l'instant.",
+      "addButtonLong": "Ajouter un objectif ou résultat passé",
+      "addButton": "Ajouter",
+      "seeMore": "Voir plus ({count})",
+      "seeMoreModalTitle": "Tous les objectifs et résultats",
+      "editResult": "Modifier le résultat"
     }
   },
   "requestCoachButton": {

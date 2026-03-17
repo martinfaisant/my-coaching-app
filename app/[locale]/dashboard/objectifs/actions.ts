@@ -10,6 +10,8 @@ export type GoalFormState = {
   success?: string
 }
 
+const RESULT_NOTE_MAX_LENGTH = 500
+
 function parseTargetTime(
   formData: FormData,
   t: (key: string) => string
@@ -78,11 +80,44 @@ export async function addGoal(
     insertPayload.target_time_seconds = targetTime.seconds
   }
 
+  const today = new Date().toISOString().slice(0, 10)
+  if (date < today) {
+    const hoursStr = (formData.get('result_time_hours') as string)?.trim() ?? ''
+    const minutesStr = (formData.get('result_time_minutes') as string)?.trim() ?? ''
+    const secondsStr = (formData.get('result_time_seconds') as string)?.trim() ?? ''
+    const placeStr = (formData.get('result_place') as string)?.trim()
+    const note = (formData.get('result_note') as string)?.trim() ?? ''
+    const hasAnyResult = hoursStr !== '' || minutesStr !== '' || secondsStr !== ''
+    if (hasAnyResult) {
+      if (hoursStr === '' || minutesStr === '' || secondsStr === '') {
+        return { error: t('timeRequired') }
+      }
+      const hours = parseInt(hoursStr, 10)
+      const minutes = parseInt(minutesStr, 10)
+      const seconds = parseInt(secondsStr, 10)
+      if (Number.isNaN(hours) || hours < 0 || hours > 99 || Number.isNaN(minutes) || minutes < 0 || minutes > 59 || Number.isNaN(seconds) || seconds < 0 || seconds > 59) {
+        return { error: t('invalidTimeRange') }
+      }
+      if (note.length > RESULT_NOTE_MAX_LENGTH) {
+        return { error: t('noteMaxLength', { max: RESULT_NOTE_MAX_LENGTH }) }
+      }
+      const resultPlace = placeStr === '' ? null : Math.max(1, parseInt(placeStr, 10))
+      Object.assign(insertPayload, {
+        result_time_hours: hours,
+        result_time_minutes: minutes,
+        result_time_seconds: seconds,
+        result_place: resultPlace,
+        result_note: note || null,
+      })
+    }
+  }
+
   const { error } = await supabase.from('goals').insert(insertPayload)
 
   if (error) return { error: error.message }
   revalidatePath('/dashboard/objectifs')
   revalidatePath('/dashboard/calendar')
+  revalidatePath('/dashboard/find-coach')
   return { success: t('goalAdded') }
 }
 
@@ -174,8 +209,6 @@ export async function deleteGoal(goalId: string, locale?: string): Promise<GoalF
   return { success: t('goalDeleted') }
 }
 
-const RESULT_NOTE_MAX_LENGTH = 500
-
 export async function saveGoalResult(
   _prevState: GoalFormState,
   formData: FormData
@@ -255,5 +288,6 @@ export async function saveGoalResult(
   if (updateError) return { error: updateError.message }
   revalidatePath('/dashboard/objectifs')
   revalidatePath('/dashboard/calendar')
+  revalidatePath('/dashboard/find-coach')
   return { success: t('resultSaved') }
 }

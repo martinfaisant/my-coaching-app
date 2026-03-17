@@ -23,14 +23,24 @@ import { IconClose } from './icons/IconClose'
  * - center: Centré verticalement et horizontalement (par défaut)
  * - top: En haut de l'écran
  * - right: À droite de l'écran (pour chat, panels)
+ *
+ * Modale sur modale :
+ * - layer (défaut 0) : niveau d'empilement. layer=1 pour une modale ouverte au-dessus d'une autre
+ *   (overlay et contenu passent au-dessus avec z-index 190/200).
  */
 
 export type ModalSize = 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | 'full' | 'workout'
 export type ModalAlignment = 'center' | 'top' | 'right'
 
+const Z_OVERLAY_BASE = 90
+const Z_CONTAINER_BASE = 100
+const Z_LAYER_STEP = 100
+
 type ModalProps = {
   isOpen: boolean
   onClose: () => void
+  /** Niveau d'empilement pour modale sur modale (0 = défaut, 1 = au-dessus d'une autre modale) */
+  layer?: number
   /** Taille de la modale (défaut: md) */
   size?: ModalSize
   /** Alignement de la modale (défaut: center) */
@@ -84,6 +94,7 @@ const ALIGNMENT_CLASSES: Record<ModalAlignment, string> = {
 export function Modal({
   isOpen,
   onClose,
+  layer = 0,
   size = 'md',
   alignment = 'center',
   title,
@@ -101,6 +112,8 @@ export function Modal({
   children,
 }: ModalProps) {
   const t = useTranslations('common')
+  const zOverlay = Z_OVERLAY_BASE + layer * Z_LAYER_STEP
+  const zContainer = Z_CONTAINER_BASE + layer * Z_LAYER_STEP
   
   // Gestion Escape + overflow body
   useEffect(() => {
@@ -136,14 +149,16 @@ export function Modal({
     <>
       {/* Overlay */}
       <div
-        className="fixed inset-0 bg-stone-900/50 backdrop-blur-sm z-[90]"
+        className="fixed inset-0 bg-stone-900/50 backdrop-blur-sm"
+        style={{ zIndex: zOverlay }}
         onClick={handleOverlayClick}
         aria-hidden="true"
       />
 
       {/* Container */}
       <div
-        className={`fixed inset-0 z-[100] flex p-4 ${alignmentClass}`}
+        className={`fixed inset-0 flex p-4 ${alignmentClass}`}
+        style={{ zIndex: zContainer }}
         role="dialog"
         aria-modal="true"
         aria-labelledby={title ? titleId : undefined}

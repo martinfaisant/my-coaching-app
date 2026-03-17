@@ -14,9 +14,11 @@ type GoalResultModalProps = {
   goal: Goal
   isOpen: boolean
   onClose: () => void
+  /** Niveau d'empilement (layer=1 quand ouverte au-dessus d'une autre modale, ex. détail coach). */
+  layer?: number
 }
 
-export function GoalResultModal({ goal, isOpen, onClose }: GoalResultModalProps) {
+export function GoalResultModal({ goal, isOpen, onClose, layer = 0 }: GoalResultModalProps) {
   const locale = useLocale()
   const tGoals = useTranslations('goals')
   const tCommon = useTranslations('common')
@@ -123,6 +125,7 @@ export function GoalResultModal({ goal, isOpen, onClose }: GoalResultModalProps)
     <Modal
       isOpen={isOpen}
       onClose={onClose}
+      layer={layer}
       size="md"
       title={goal.race_name}
       titleWrap
