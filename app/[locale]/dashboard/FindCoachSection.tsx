@@ -25,6 +25,7 @@ import { TileCard } from '@/components/TileCard'
 import { GoalFullModal } from '@/app/[locale]/dashboard/objectifs/GoalFullModal'
 import { RequestGoalAddModal } from '@/app/[locale]/dashboard/RequestGoalAddModal'
 import { RequestGoalsListModal } from '@/app/[locale]/dashboard/RequestGoalsListModal'
+import { formatGoalDateBlock } from '@/lib/dateUtils'
 import {
   hasGoalResult,
   hasTargetTime,
@@ -112,7 +113,9 @@ type FindCoachSectionProps = {
   athleteFirstName?: string
   /** Nom de l'athlète (pour afficher les champs nom/prénom dans la modale si vide) */
   athleteLastName?: string
-  /** Temps à allouer/semaine (profil athlète, pour préremplir le formulaire de demande) */
+  /** Volume actuel (heures/sem., profil athlète, pour préremplir le formulaire de demande) */
+  initialWeeklyCurrentHours?: number | null
+  /** Volume maximum (heures/sem., profil athlète, pour préremplir le formulaire de demande) */
   initialWeeklyTargetHours?: number | null
   /** Volumes par sport (profil athlète, pour préremplir le formulaire de demande) */
   initialWeeklyVolumeBySport?: Record<string, number> | null
@@ -140,7 +143,7 @@ function matchesName(coach: CoachForList, query: string): boolean {
   return first.includes(q) || last.includes(q)
 }
 
-export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}, initialPracticedSports = [], ratingsByCoach = {}, offersByCoach = {}, athleteFirstName = '', athleteLastName = '', initialWeeklyTargetHours, initialWeeklyVolumeBySport, initialGoals = [] }: FindCoachSectionProps) {
+export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}, initialPracticedSports = [], ratingsByCoach = {}, offersByCoach = {}, athleteFirstName = '', athleteLastName = '', initialWeeklyCurrentHours, initialWeeklyTargetHours, initialWeeklyVolumeBySport, initialGoals = [] }: FindCoachSectionProps) {
   const t = useTranslations('findCoach')
   const tCommon = useTranslations('common')
   const locale = useLocale()
@@ -299,6 +302,7 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
                       requestStatus={getStatus(c.user_id)}
                       requestId={getRequestId(c.user_id)}
                       initialPracticedSports={initialPracticedSports}
+                      athleteWeeklyCurrentHours={initialWeeklyCurrentHours}
                       athleteWeeklyTargetHours={initialWeeklyTargetHours}
                       athleteWeeklyVolumeBySport={initialWeeklyVolumeBySport}
                       initialGoals={initialGoals}
@@ -340,6 +344,7 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
           requestStatus={getStatus(detailModalCoach.user_id)}
           requestId={getRequestId(detailModalCoach.user_id)}
           initialPracticedSports={initialPracticedSports}
+          initialWeeklyCurrentHours={initialWeeklyCurrentHours}
           initialWeeklyTargetHours={initialWeeklyTargetHours}
           initialWeeklyVolumeBySport={initialWeeklyVolumeBySport}
           showNameFields={!((athleteFirstName ?? '').trim() && (athleteLastName ?? '').trim())}
@@ -430,6 +435,7 @@ type CoachDetailModalProps = {
   requestStatus: 'pending' | 'declined' | null
   requestId?: string | null
   initialPracticedSports?: string[]
+  initialWeeklyCurrentHours?: number | null
   initialWeeklyTargetHours?: number | null
   initialWeeklyVolumeBySport?: Record<string, number> | null
   /** Afficher les champs Prénom/Nom (profil athlète incomplet) */
@@ -469,13 +475,6 @@ function OfferSelectButton({ isSelected, onClick }: OfferSelectButtonProps) {
   )
 }
 
-function formatGoalDateBlock(dateStr: string, localeTag: string): { month: string; day: string } {
-  const date = new Date(dateStr + 'T12:00:00')
-  const month = date.toLocaleDateString(localeTag, { month: 'short' })
-  const day = date.getDate().toString()
-  return { month: month.charAt(0).toUpperCase() + month.slice(1), day }
-}
-
 const MapIconSmall = ({ className = 'w-3.5 h-3.5' }: { className?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z" />
@@ -492,7 +491,7 @@ const ClockIconSmall = ({ className = 'w-3.5 h-3.5' }: { className?: string }) =
   </svg>
 )
 
-function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requestId, initialPracticedSports = [], initialWeeklyTargetHours, initialWeeklyVolumeBySport, showNameFields = false, athleteFirstName = '', athleteLastName = '', initialGoals = [] }: CoachDetailModalProps) {
+function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requestId, initialPracticedSports = [], initialWeeklyCurrentHours, initialWeeklyTargetHours, initialWeeklyVolumeBySport, showNameFields = false, athleteFirstName = '', athleteLastName = '', initialGoals = [] }: CoachDetailModalProps) {
   const t = useTranslations('findCoach')
   const tGoals = useTranslations('goals')
   const tCommon = useTranslations('common')
@@ -513,6 +512,9 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
   const [need, setNeed] = useState('')
   const [firstName, setFirstName] = useState(athleteFirstName)
   const [lastName, setLastName] = useState(athleteLastName)
+  const [weeklyCurrentHoursInput, setWeeklyCurrentHoursInput] = useState(
+    initialWeeklyCurrentHours != null ? String(initialWeeklyCurrentHours) : ''
+  )
   const [weeklyTargetHoursInput, setWeeklyTargetHoursInput] = useState(
     initialWeeklyTargetHours != null ? String(initialWeeklyTargetHours) : ''
   )
@@ -590,6 +592,12 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
         return
       }
     }
+    const currentHoursRaw = weeklyCurrentHoursInput.trim().replace(',', '.')
+    const currentHoursNum = currentHoursRaw === '' ? NaN : parseFloat(currentHoursRaw)
+    if (Number.isNaN(currentHoursNum) || currentHoursNum < 0 || currentHoursNum > 168) {
+      setError(tCoachReq('requireWeeklyTargetAndVolume'))
+      return
+    }
     const hoursRaw = weeklyTargetHoursInput.trim().replace(',', '.')
     const hoursNum = hoursRaw === '' ? NaN : parseFloat(hoursRaw)
     if (Number.isNaN(hoursNum) || hoursNum < 0 || hoursNum > 168) {
@@ -626,6 +634,7 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
         locale,
         showNameFields ? firstName.trim() : undefined,
         showNameFields ? lastName.trim() : undefined,
+        Math.round(currentHoursNum * 100) / 100,
         Math.round(hoursNum * 100) / 100,
         volumeBySport
       )
@@ -642,6 +651,13 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
     }
   }
 
+  const weeklyCurrentValid =
+    (() => {
+      const raw = weeklyCurrentHoursInput.trim().replace(',', '.')
+      if (raw === '') return false
+      const n = parseFloat(raw)
+      return !Number.isNaN(n) && n >= 0 && n <= 168
+    })()
   const weeklyTargetValid =
     (() => {
       const raw = weeklyTargetHoursInput.trim().replace(',', '.')
@@ -890,31 +906,51 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
                           </div>
                         </div>
 
-                        {/* Section Objectifs et volume par sport */}
+                        {/* Section Volumes hebdomadaires */}
                         <div>
                           <h4 className="text-sm font-bold text-stone-900 uppercase tracking-wide mb-3">
-                            {tProfile('weeklyTargetSectionTitle')}
+                            {tProfile('weeklyVolumesSectionTitle')}
                           </h4>
                           {sports.length === 0 ? (
                             <p className="text-sm text-stone-500">{tProfile('noPracticedSportsMessage')}</p>
                           ) : (
                             <>
-                              <div className="flex flex-wrap items-center justify-between gap-3 py-2.5 px-3 rounded-xl bg-stone-50 border border-stone-100 mb-4">
-                                <span className="text-sm font-medium text-stone-700 shrink-0">
-                                  {tProfile('weeklyTargetLabel')}
-                                </span>
-                                <div className="relative w-28 shrink-0">
-                                  <input
-                                    type="text"
-                                    inputMode="decimal"
-                                    value={weeklyTargetHoursInput}
-                                    onChange={(e) => setWeeklyTargetHoursInput(e.target.value)}
-                                    placeholder="10"
-                                    className="w-full pl-3 pr-11 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition"
-                                  />
-                                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 text-sm pointer-events-none">
-                                    {tProfile('suffixHoursPerWeek')}
+                              <div className="grid grid-cols-2 gap-3 mb-4">
+                                <div className="flex flex-wrap items-center justify-between gap-3 py-2.5 px-3 rounded-xl bg-stone-50 border border-stone-100">
+                                  <span className="text-sm font-medium text-stone-700 shrink-0">
+                                    {tProfile('weeklyCurrentHoursLabel')}
                                   </span>
+                                  <div className="relative w-[6.5rem] shrink-0">
+                                    <input
+                                      type="text"
+                                      inputMode="decimal"
+                                      value={weeklyCurrentHoursInput}
+                                      onChange={(e) => setWeeklyCurrentHoursInput(e.target.value)}
+                                      placeholder="6"
+                                      className="w-full pl-3 pr-10 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition"
+                                    />
+                                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 text-sm pointer-events-none">
+                                      {tProfile('suffixHoursPerWeek')}
+                                    </span>
+                                  </div>
+                                </div>
+                                <div className="flex flex-wrap items-center justify-between gap-3 py-2.5 px-3 rounded-xl bg-stone-50 border border-stone-100">
+                                  <span className="text-sm font-medium text-stone-700 shrink-0">
+                                    {tProfile('weeklyMaxHoursLabel')}
+                                  </span>
+                                  <div className="relative w-[6.5rem] shrink-0">
+                                    <input
+                                      type="text"
+                                      inputMode="decimal"
+                                      value={weeklyTargetHoursInput}
+                                      onChange={(e) => setWeeklyTargetHoursInput(e.target.value)}
+                                      placeholder="10"
+                                      className="w-full pl-3 pr-10 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition"
+                                    />
+                                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 text-sm pointer-events-none">
+                                      {tProfile('suffixHoursPerWeek')}
+                                    </span>
+                                  </div>
                                 </div>
                               </div>
                               <div className="grid grid-cols-2 gap-3">
@@ -940,28 +976,28 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
                                         </span>
                                       </div>
                                       <div className="flex flex-wrap items-center gap-3 ml-auto min-w-0 w-full sm:w-auto justify-end">
-                                        <div className="relative w-28 shrink-0">
+                                        <div className="relative w-[6.5rem] shrink-0">
                                           <input
                                             type="text"
                                             inputMode="decimal"
                                             value={weeklyVolumeInputs[sport] ?? ''}
                                             onChange={(e) => setVolumeInput(sport, e.target.value)}
                                             placeholder={unit === 'm' ? '2500' : unit === 'h' ? '2,5' : '42'}
-                                            className="w-full pl-3 pr-12 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition"
+                                            className="w-full pl-3 pr-11 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition"
                                           />
                                           <span className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 text-xs pointer-events-none whitespace-nowrap">
                                             {tProfile(suffixKey)}
                                           </span>
                                         </div>
                                         {showCourseElevation && (
-                                          <div className="relative w-28 shrink-0">
+                                          <div className="relative w-[6.5rem] shrink-0">
                                             <input
                                               type="text"
                                               inputMode="decimal"
                                               value={weeklyVolumeInputs.course_elevation_m ?? ''}
                                               onChange={(e) => setVolumeInput('course_elevation_m', e.target.value)}
                                               placeholder="500"
-                                              className="w-full pl-3 pr-14 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition"
+                                              className="w-full pl-3 pr-12 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition"
                                             />
                                             <span className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 text-xs pointer-events-none whitespace-nowrap">
                                               {tProfile('suffixDPlusPerWeek')}
@@ -1023,7 +1059,7 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
                                   >
                                     <div className="flex gap-4 items-start min-w-0 justify-between">
                                       <div className="flex flex-col items-center justify-center bg-stone-50 border border-stone-200 rounded-xl w-12 h-12 shrink-0">
-                                        <span className="text-[10px] font-bold text-stone-400 uppercase">{dateBlock.month}</span>
+                                        <span className="text-[10px] font-bold text-stone-400 uppercase">{dateBlock.monthYear}</span>
                                         <span className="text-lg font-bold text-stone-800">{dateBlock.day}</span>
                                       </div>
                                       <div className="min-w-0 flex-1">
@@ -1128,6 +1164,7 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
                             || sports.length === 0
                             || !need.trim()
                             || (showNameFields && (!firstName.trim() || !lastName.trim()))
+                            || !weeklyCurrentValid
                             || !weeklyTargetValid
                             || !volumesComplete
                           }

@@ -123,6 +123,7 @@ export default async function FindCoachPage({ params }: { params: Promise<{ loca
           statusByCoach={statusByCoach}
           requestIdByCoach={requestIdByCoach}
           initialPracticedSports={current.profile.practiced_sports ?? []}
+          initialWeeklyCurrentHours={current.profile.weekly_current_hours ?? undefined}
           initialWeeklyTargetHours={current.profile.weekly_target_hours ?? undefined}
           initialWeeklyVolumeBySport={current.profile.weekly_volume_by_sport ?? undefined}
           ratingsByCoach={ratingsByCoach}

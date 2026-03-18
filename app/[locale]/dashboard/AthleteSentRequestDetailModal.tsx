@@ -10,8 +10,8 @@ import { IconClose } from '@/components/icons/IconClose'
 import { TileCard } from '@/components/TileCard'
 import { getCoachRequestDetail, type CoachRequestDetail } from './actions'
 import { getFrozenTitleForLocale, getFrozenDescriptionForLocale } from '@/lib/frozenOfferI18n'
-import { formatDateFr } from '@/lib/dateUtils'
-import { getWeeklyVolumeUnit } from '@/lib/sportStyles'
+import { formatDateFr, formatGoalDateBlock } from '@/lib/dateUtils'
+import { getWeeklyVolumeUnit, SPORT_ICONS, SPORT_CARD_STYLES } from '@/lib/sportStyles'
 import type { SportType } from '@/lib/sportStyles'
 import type { Goal } from '@/types/database'
 import { RequestGoalsListModal } from '@/app/[locale]/dashboard/RequestGoalsListModal'
@@ -31,9 +31,11 @@ type AthleteSentRequestDetailModalProps = {
   locale: string
   /** Appelé quand l'utilisateur clique sur « Annuler la demande » (ouvrir la confirmation d'annulation). */
   onRequestCancel: () => void
-  /** Temps à allouer/sem. (profil athlète, affiché en lecture seule si renseigné) */
+  /** Volume actuel (profil athlète, affiché en lecture seule) */
+  athleteWeeklyCurrentHours?: number | null
+  /** Volume maximum (profil athlète, affiché en lecture seule) */
   athleteWeeklyTargetHours?: number | null
-  /** Volumes par sport (profil athlète, affichés en lecture seule si renseignés) */
+  /** Volumes par sport (profil athlète, affichés en lecture seule) */
   athleteWeeklyVolumeBySport?: Record<string, number> | null
   /** Objectifs de l'athlète (section objectifs/résultats en lecture seule) */
   initialGoals?: Goal[]
@@ -60,7 +62,7 @@ function parseSports(sportPracticed: string): string[] {
     .filter(Boolean)
 }
 
-const DISPLAY_ORDER = ['course', 'course_elevation_m', 'velo', 'natation', 'musculation', 'trail', 'triathlon'] as const
+const DISPLAY_ORDER_VOLUME = ['course', 'course_elevation_m', 'velo', 'natation', 'musculation', 'trail', 'triathlon'] as const
 const sportLabelKey: Record<string, string> = {
   course: 'course',
   velo: 'velo',
@@ -68,13 +70,6 @@ const sportLabelKey: Record<string, string> = {
   musculation: 'muscu',
   trail: 'trail',
   triathlon: 'triathlon',
-}
-
-function formatGoalDateBlock(dateStr: string, localeTag: string): { month: string; day: string } {
-  const date = new Date(dateStr + 'T12:00:00')
-  const month = date.toLocaleDateString(localeTag, { month: 'short' })
-  const day = date.getDate().toString()
-  return { month: month.charAt(0).toUpperCase() + month.slice(1), day }
 }
 
 const MapIconSmall = ({ className = 'w-3.5 h-3.5' }: { className?: string }) => (
@@ -100,11 +95,13 @@ export function AthleteSentRequestDetailModal({
   coachName,
   locale,
   onRequestCancel,
+  athleteWeeklyCurrentHours,
   athleteWeeklyTargetHours,
   athleteWeeklyVolumeBySport,
   initialGoals = [],
 }: AthleteSentRequestDetailModalProps) {
   const t = useTranslations('athleteSentRequest')
+  const tAthletes = useTranslations('athletes')
   const tFindCoach = useTranslations('findCoach')
   const tGoals = useTranslations('goals')
   const tCommon = useTranslations('common')
@@ -295,51 +292,95 @@ export function AthleteSentRequestDetailModal({
                   </div>
                 </div>
 
-                {/* Objectifs et volume (lecture seule, si au moins une valeur renseignée) */}
-                {(athleteWeeklyTargetHours != null ||
-                  (athleteWeeklyVolumeBySport &&
-                    Object.keys(athleteWeeklyVolumeBySport).length > 0)) && (
-                  <div>
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-stone-400 mb-2">
-                      {tProfile('weeklyTargetSectionTitle')}
-                    </p>
-                    <div className="rounded-lg border border-stone-200 bg-stone-50 p-4 text-sm text-stone-700 space-y-1">
-                      {athleteWeeklyTargetHours != null && (
-                        <p>
-                          {athleteWeeklyTargetHours} {tProfile('suffixHoursPerWeek')}
-                        </p>
+                {/* Objectifs et volume (même design que vue coach – données du profil) */}
+                {(() => {
+                  const hasVolume =
+                    athleteWeeklyCurrentHours != null ||
+                    athleteWeeklyTargetHours != null ||
+                    (athleteWeeklyVolumeBySport &&
+                      Object.keys(athleteWeeklyVolumeBySport).length > 0)
+                  const vol = athleteWeeklyVolumeBySport
+                  const volumeEntries: {
+                    key: string
+                    sportLabel: string
+                    value: number
+                    suffix: string
+                    style: { borderLeft: string; badge: string; badgeBg: string }
+                    elevationValue?: number
+                  }[] = []
+                  if (vol && typeof vol === 'object') {
+                    for (const sport of DISPLAY_ORDER_VOLUME) {
+                      if (sport === 'course_elevation_m') continue
+                      const v = vol[sport]
+                      if (v == null) continue
+                      const unit = getWeeklyVolumeUnit(sport)
+                      const suffix =
+                        unit === 'km' ? tProfile('suffixKmPerWeek') : unit === 'm' ? tProfile('suffixMPerWeek') : tProfile('suffixHoursPerWeek')
+                      const sportLabel = sportLabelKey[sport] ? tSports(sportLabelKey[sport] as 'course') : sport
+                      const sportKey = sport as SportType
+                      const style = SPORT_CARD_STYLES[sportKey] ?? SPORT_CARD_STYLES.course
+                      const elevationValue = sport === 'course' ? vol['course_elevation_m'] ?? undefined : undefined
+                      volumeEntries.push({ key: sport, sportLabel, value: v, suffix, style, elevationValue })
+                    }
+                  }
+                  return (
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-stone-400 mb-2">
+                        {tAthletes('pendingRequests.objectivesAndVolumeLabel')}
+                      </p>
+                      <div className="rounded-xl border border-stone-200 bg-stone-50/50 p-4">
+                      {!hasVolume ? (
+                        <p className="text-sm text-stone-500 italic">{tAthletes('pendingRequests.notSpecified')}</p>
+                      ) : (
+                        <div className="space-y-2.5">
+                          {athleteWeeklyCurrentHours != null && (
+                            <div className="flex items-center gap-2 py-1.5 px-2.5 rounded-lg bg-white border border-stone-100">
+                              <span className="text-stone-400 shrink-0" aria-hidden>
+                                <ClockIconSmall />
+                              </span>
+                              <span className="text-sm font-medium text-stone-800">
+                                {tAthletes('pendingRequests.weeklyCurrentHoursLabel')} {athleteWeeklyCurrentHours} {tProfile('suffixHoursPerWeek')}
+                              </span>
+                            </div>
+                          )}
+                          {athleteWeeklyTargetHours != null && (
+                            <div className="flex items-center gap-2 py-1.5 px-2.5 rounded-lg bg-white border border-stone-100">
+                              <span className="text-stone-400 shrink-0" aria-hidden>
+                                <ClockIconSmall />
+                              </span>
+                              <span className="text-sm font-medium text-stone-800">
+                                {tAthletes('pendingRequests.weeklyMaxHoursLabel')} {athleteWeeklyTargetHours} {tProfile('suffixHoursPerWeek')}
+                              </span>
+                            </div>
+                          )}
+                          {volumeEntries.map(({ key, sportLabel, value, suffix, style, elevationValue }) => (
+                            <div
+                              key={key}
+                              className={`flex items-center gap-2 py-1.5 pl-2.5 pr-2.5 rounded-lg border-l-4 ${style.borderLeft} bg-white border border-stone-100`}
+                            >
+                              <span className={`shrink-0 ${style.badge}`} aria-hidden>
+                                {(() => {
+                                  const Icon = SPORT_ICONS[key as SportType] ?? SPORT_ICONS.course
+                                  return <Icon className="w-4 h-4" />
+                                })()}
+                              </span>
+                              <span className="text-sm font-medium text-stone-800">
+                                {sportLabel} : {value} {suffix}
+                                {elevationValue != null && (
+                                  <>
+                                    <span className="text-stone-400 mx-1">·</span>
+                                    <span>{elevationValue} {tProfile('suffixDPlusPerWeek')}</span>
+                                  </>
+                                )}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
                       )}
-                      {athleteWeeklyVolumeBySport &&
-                        typeof athleteWeeklyVolumeBySport === 'object' &&
-                        DISPLAY_ORDER.map((sport) => {
-                          const v = athleteWeeklyVolumeBySport[sport]
-                          if (v == null) return null
-                          if (sport === 'course_elevation_m') {
-                            return (
-                              <p key={sport}>
-                                {v} {tProfile('suffixDPlusPerWeek')}
-                              </p>
-                            )
-                          }
-                          const unit = getWeeklyVolumeUnit(sport)
-                          const suffix =
-                            unit === 'km'
-                              ? tProfile('suffixKmPerWeek')
-                              : unit === 'm'
-                                ? tProfile('suffixMPerWeek')
-                                : tProfile('suffixHoursPerWeek')
-                          const label = sportLabelKey[sport]
-                            ? tSports(sportLabelKey[sport] as 'course')
-                            : sport
-                          return (
-                            <p key={sport}>
-                              {label} {v} {suffix}
-                            </p>
-                          )
-                        })}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )
+                })()}
 
                 {/* Section Objectifs de course / résultats passés (lecture seule) */}
                 {initialGoals.length > 0 && (
@@ -362,7 +403,7 @@ export function AthleteSentRequestDetailModal({
                           >
                             <div className="flex gap-2 items-start min-w-0">
                               <div className={`flex flex-col items-center justify-center bg-stone-50 border border-stone-200 rounded-lg w-10 h-10 shrink-0 ${isPast ? 'opacity-75' : ''}`}>
-                                <span className="text-[9px] font-bold text-stone-400 uppercase">{dateBlock.month}</span>
+                                <span className="text-[9px] font-bold text-stone-400 uppercase">{dateBlock.monthYear}</span>
                                 <span className="text-sm font-bold text-stone-800">{dateBlock.day}</span>
                               </div>
                               <div className="min-w-0 flex-1">

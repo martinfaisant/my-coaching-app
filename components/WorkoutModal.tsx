@@ -27,7 +27,7 @@ import { SportTileSelectable } from '@/components/SportTileSelectable'
 import { Angry, Frown, Meh, Smile, Laugh } from 'lucide-react'
 import { SPORT_ICONS, SPORT_TRANSLATION_KEYS, SPORT_BADGE_STYLES } from '@/lib/sportStyles'
 import { formatDateFr, toDateStr } from '@/lib/dateUtils'
-import { FORM_BASE_CLASSES, FORM_LABEL_CLASSES, TEXTAREA_SPECIFIC_CLASSES } from '@/lib/formStyles'
+import { FORM_BASE_CLASSES, FORM_LABEL_CLASSES, FORM_INPUT_HEIGHT, FORM_INPUT_TEXT_SIZE, TEXTAREA_SPECIFIC_CLASSES } from '@/lib/formStyles'
 
 const FEELING_ICONS = [Angry, Frown, Meh, Smile, Laugh] as const
 const FEELING_VALUES = [1, 2, 3, 4, 5] as const
@@ -640,7 +640,7 @@ export function WorkoutModal({
     coachFormNewLayout ? (
       <div
         ref={dateTriggerRef}
-        className="flex items-center gap-2 border border-stone-300 rounded-lg py-1.5 px-3 bg-white focus-within:ring-2 focus-within:ring-palette-forest-dark focus-within:border-transparent transition"
+        className={`flex items-center gap-2 border border-stone-300 rounded-lg py-2.5 px-4 bg-white focus-within:ring-2 focus-within:ring-palette-forest-dark focus-within:border-transparent transition ${FORM_INPUT_TEXT_SIZE} ${FORM_INPUT_HEIGHT}`}
       >
         <span className="text-sm font-bold text-stone-900 min-w-[10rem]" aria-hidden>
           {formatDateFr(editableDate, true, localeForPicker)}

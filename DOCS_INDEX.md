@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 17 mars 2026 (Mode Analyste : fusion boutons objectifs GoalFullModal + archivage mockups objectifs-modale-complete ; voir Changements récents)
+**Dernière mise à jour :** 17 mars 2026 (Mode Analyste : bloc date objectif avec année ; voir Changements récents)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -18,19 +18,19 @@
 - **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), stack technique, **URL production https://mysportally.com**
 - **Utiliser pour :** Comprendre le projet, les features, les rôles, l'architecture globale
 - **Taille :** ~420 lignes
-- **Dernière mise à jour :** 17 mars 2026 (§4.4 Objectifs de course / résultats passés dans la demande ; trail = D+ dans Course uniquement, bande grise dès date ≤ aujourd’hui, badges fond blanc)
+- **Dernière mise à jour :** 17 mars 2026 (§4.2.1 Volumes hebdomadaires : Volume actuel + Volume maximum, 2 colonnes, weekly_current_hours ; §4.4 demande sans snapshot volumes, coach lit profil)
 
 ### **docs/DESIGN_SYSTEM.md** ⭐
 - **Contenu :** Tokens (couleurs, typo, espacements), composants (Button, Input, Badge, TileCard, DashboardPageShell, Modal, etc.), guidelines UI, exemples de code, §7 breakpoints (calendrier, chat, Trouver mon coach, My offers)
 - **Utiliser pour :** Créer ou modifier des composants UI, choisir des couleurs, appliquer le design system, règles responsive par page
 - **Taille :** ~850 lignes
-- **Dernière mise à jour :** 17 mars 2026 (Modal : prop layer pour modale sur modale ; DatePickerPopup dans modale : positionnement dynamique)
+- **Dernière mise à jour :** 17 mars 2026 (Bloc date objectif avec année § TileCard ; formatGoalDateBlock lib/dateUtils)
 
 ### **docs/I18N.md** ⭐
 - **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces, utilisation dans composants et server actions, **checklist pour nouvelles features** (toujours penser bilingue)
 - **Utiliser pour :** Toute nouvelle feature ou texte visible, ajout de clés de traduction, dépannage i18n
 - **Taille :** ~180 lignes
-- **Dernière mise à jour :** 2 mars 2026 (common.changeLanguage, LanguageSwitcher aria-label)
+- **Dernière mise à jour :** 17 mars 2026 (profile : Volumes hebdomadaires ; athletes.pendingRequests)
 
 ### **docs/AUTH_EMAIL_TEMPLATES.md**
 - **Contenu :** Guide de configuration des emails d’auth Supabase (sujet, i18n FR/EN, variables, dépannage logo). **Les fichiers HTML des templates** (Confirm signup, puis Magic Link, Reset Password, etc.) sont dans **docs/email-templates/**.
@@ -225,6 +225,10 @@
 - `docs/archive/design-workout-modal-calendar/` — DESIGN.md (placement champ date, 3 solutions A/B/C), DESIGN_CALENDAR_POPUP.md (design popup calendrier), mockup-calendar-popup.html, mockup-calendar-solutions.html.
 - **Raison :** Feature livrée ; DatePickerPopup en popover sous le champ date, liste des mois = mois actuel → +2 ans, Dropdown avec scroll. Comportement décrit dans **Project_context.md §4.5** (Create & edit modal), **docs/DESIGN_SYSTEM.md** § DatePickerPopup, § Dropdown.
 
+**Date picker compact (archivés 17 mars 2026) :**
+- `docs/archive/design-date-picker-compact/` — DESIGN_DATE_PICKER_COMPACT.md, SPEC_DATE_PICKER_COMPACT.md, MOCKUP_DATE_PICKER_SOLUTION_A.html, MOCKUP_DATE_PICKER_SOLUTION_B.html.
+- **Raison :** Feature livrée ; DatePickerPopup avec deux Dropdown (Mois, Année), plage −4/+4 ans, style compact partout. Comportement décrit dans **docs/DESIGN_SYSTEM.md** § DatePickerPopup.
+
 **Moment de la journée (Matin / Midi / Soir) – entraînements et calendrier (archivés 2 mars 2026) :**
 - `docs/archive/design-workout-time-of-day/` — DESIGN.md (besoin, cas, user stories US1–US5), SPEC_TIME_OF_DAY.md (migration, types, RLS, fichiers, logique métier), MOCKUP_FORM_TIME_OF_DAY.html, MOCKUP_CALENDAR_DAY_ORDER.html.
 - **Raison :** Feature livrée ; coach peut renseigner optionnellement le moment (segments Non précisé | Matin | Midi | Soir) ; calendrier et modale « Activités du jour » affichent la journée en sections (premier bloc sans titre, puis Matin / Midi / Soir avec titre si non vide). Comportement décrit dans **Project_context.md §4.5** (Workouts, Calendar day structure), **docs/DESIGN_SYSTEM.md** (WorkoutModal, §7 Calendrier), **docs/I18N.md** (workouts.form.timeOfDay*, calendar.morning/noon/evening).
@@ -276,6 +280,18 @@
 **Modale objectif complète (fusion Modifier + résultat) – archivés 17 mars 2026 :**
 - `docs/archive/objectifs-modale-complete/` — index.html, solution-1-modale-complete-sections.html, solution-2-modale-onglets.html (mockups Designer).
 - **Raison :** Feature livrée ; **un seul bouton** par objectif (Modifier / Ajouter un résultat) ouvre **GoalFullModal** (onglets Objectif | Résultat, sauvegarde combinée `saveGoalFull`). Page Objectifs et section objectifs dans la demande de coaching alignées. Comportement : **Project_context.md §4.7**, **docs/DESIGN_SYSTEM.md** (§ TileCard / Page Objectifs).
+
+**Bloc date objectif avec année (solution D) – archivés 17 mars 2026 :**
+- `docs/archive/design-goal-date-year/` — goal-date-year-mockups.html (3 solutions + solution D : Mar. 26 ligne 1, jour ligne 2).
+- **Raison :** Feature livrée ; bloc date des tuiles objectif affiche mois + année (ex. « Mar. 26 ») puis jour ; `formatGoalDateBlock` dans `lib/dateUtils.ts`. Comportement : **Project_context.md §4.7**, **docs/DESIGN_SYSTEM.md** (§ TileCard – bloc date).
+
+**Affichage mobile Mon profil (marges, grille volume, champs) – archivés 17 mars 2026 :**
+- `docs/archive/design-mobile-volume-tiles/` — DESIGN_MOBILE_VOLUME_TILES.md (analyse Designer, 3 solutions), MOCKUP_MOBILE_VOLUME_SOLUTION_A.html, MOCKUP_MOBILE_VOLUME_SOLUTION_B.html.
+- **Raison :** Correctif livré ; marges latérales réduites sur mobile (wrapper -mx-3 + contentClassName shell), grille tuiles volume responsive (grid-cols-1 sm:grid-cols-2), largeur champs 6.5rem et padding droit suffixe réduit. Comportement : **Project_context.md §4.2.1** (Mon profil — mobile layout), **docs/DESIGN_SYSTEM.md** §7 (Page Mon profil).
+
+**Volumes hebdomadaires (Volume actuel + Volume maximum, 2 colonnes) – archivés 17 mars 2026 :**
+- `docs/archive/design-weekly-volume-two-columns/` — DESIGN_WEEKLY_VOLUME_TWO_COLUMNS.md, SPEC_WEEKLY_VOLUME_TWO_COLUMNS.md, USER_STORIES_WEEKLY_VOLUME_TWO_COLUMNS.md, MOCKUP_WEEKLY_VOLUME_TWO_COLUMNS.html.
+- **Raison :** Feature livrée ; section « Volumes hebdomadaires » sur Mon profil et dans la demande : Volume actuel (weekly_current_hours) + Volume maximum (weekly_target_hours) en 2 colonnes, puis volumes par sport ; pas de snapshot sur coach_requests (coach lit le profil). Comportement : **Project_context.md §4.2.1**, §4.4.
 
 **Disponibilités / indisponibilités athlète (archivés 2 mars 2026) :**
 - `docs/archive/design-athlete-availability/` — DESIGN.md (besoin, cas d’usage, décisions PO, style tuiles option D), SPEC_ARCHITECTURE.md (modèle, RLS, fichiers), MOCKUP_AVAILABILITY_MODAL.html, MOCKUP_CALENDAR_AVAILABILITY_TILES.html.
@@ -413,9 +429,33 @@
 **Fréquence de mise à jour :** À chaque ajout/suppression de documentation
 
 **Dernier scan :** 17 mars 2026  
-**Dernier nettoyage :** 17 mars 2026 (archivage objectifs-modale-complete)
+**Dernier nettoyage :** 17 mars 2026 (archivage design-date-picker-compact, design-weekly-volume-two-columns, design-mobile-volume-tiles)
 
 ### Changements récents :
+
+✅ **17 mars 2026 – Bloc date objectif avec année (solution D) – Mode Analyste :**
+- **Livraison :** Dans les tuiles objectif (page Objectifs, calendrier coach/athlète, modales liste objectifs, demande en attente, détail demande envoyée), le **bloc date** affiche désormais **mois + année** sur la première ligne (ex. « Mar. 26 ») et le **jour** en dessous. Une seule fonction centralisée : **`formatGoalDateBlock`** dans `lib/dateUtils.ts` (retourne `monthYear`, `day`). Pas de nouveau texte i18n (locale déjà utilisée pour le format de date).
+- **Fichiers :** `lib/dateUtils.ts` (formatGoalDateBlock), `ObjectifsTable.tsx`, `CoachAthleteCalendarPage.tsx`, `RequestGoalsListModal.tsx`, `PendingRequestTile.tsx`, `AthleteSentRequestDetailModal.tsx`, `FindCoachSection.tsx`.
+- **Doc :** Project_context.md §4.7 (Affichage – bloc date), DESIGN_SYSTEM (§ TileCard / Page Objectifs – bloc date, formatGoalDateBlock), project-core.mdc (Objectifs – affichage tuile, bloc date).
+- **Archivage :** `docs/design/goal-date-year-mockups.html` → `docs/archive/design-goal-date-year/goal-date-year-mockups.html` (mockups 3 solutions + solution D retenue). Référence courante : **Project_context.md §4.7**, **docs/DESIGN_SYSTEM.md** § TileCard.
+
+✅ **17 mars 2026 – Date picker compact + cohérence typo champs input + modale Ajouter un objectif (demande) – Mode Analyste :**
+- **Livraison :** (1) **Date picker (DatePickerPopup)** : design **compact** partout — deux **Dropdown** (Mois, Année), plage années **−4 / +4**, cellules `h-8` + `text-xs`, options/trigger dropdown en `text-xs` ; affichage de la date dans le trigger **sans jour de la semaine** (`formatDateFr(..., false)`) ; trigger avec **FORM_INPUT_HEIGHT** (puis **FORM_INPUT_TEXT_SIZE** pour alignement typo). Utilisé dans : modale entraînement (`WorkoutModal`), disponibilités (`AvailabilityModal`), objectifs (page, `GoalEditModal`, `GoalFullModal`, `ObjectifsTable`), demande de coaching (`RequestGoalAddModal`). i18n : `calendar.chooseMonth`, `chooseYear`, `prevMonth`, `nextMonth`, `today`. (2) **Taille de police des champs input** : `FORM_INPUT_TEXT_SIZE` = `text-sm` dans `lib/formStyles.ts`, intégré dans `FORM_BASE_CLASSES` ; tous les champs (Input, Textarea, Dropdown, triggers date picker, ChatModule) utilisent cette taille pour cohérence avec la date affichée (ex. « 13 mars 2026 »). (3) **Modale « Ajouter un objectif ou résultat passé »** (`RequestGoalAddModal`) : champs **Nom de la course** et **Distance** passés du raw `<input>` au composant **Input**.
+- **Fichiers :** `components/DatePickerPopup.tsx`, `lib/formStyles.ts`, `components/Input.tsx`, `components/Textarea.tsx`, `components/WorkoutModal.tsx`, `components/AvailabilityModal.tsx`, `components/ChatModule.tsx`, `app/[locale]/dashboard/RequestGoalAddModal.tsx`, `app/[locale]/dashboard/objectifs/GoalEditModal.tsx`, `app/[locale]/dashboard/objectifs/GoalFullModal.tsx`, `app/[locale]/dashboard/objectifs/ObjectifsTable.tsx`, messages FR/EN (calendar.*).
+- **Doc :** DESIGN_SYSTEM (§ DatePickerPopup, § Input, formStyles, FORM_INPUT_TEXT_SIZE).
+- **Archivage :** `docs/design-date-picker-compact/` → `docs/archive/design-date-picker-compact/` (DESIGN, SPEC, MOCKUP_*). Référence courante : **docs/DESIGN_SYSTEM.md** § DatePickerPopup.
+
+✅ **17 mars 2026 – Volumes hebdomadaires (Volume actuel + Volume maximum, 2 colonnes) – Mode Analyste :**
+- **Livraison :** (1) **Mon profil** : section renommée en **« Volumes hebdomadaires »** ; **Volume actuel** (h/sem.) et **Volume maximum** (h/sem.) en disposition **2 colonnes** (même grille que les tuiles volume par sport) ; champs obligatoires, validation 0–168 h (pas de règle actuel ≤ max). Données : `profiles.weekly_current_hours` (migration 058), `weekly_target_hours`. (2) **Demande de coach** : même section (2 colonnes + volumes par sport) ; à l’envoi mise à jour du profil (weekly_current_hours, weekly_target_hours, weekly_volume_by_sport) ; **pas de snapshot** sur coach_requests — le coach voit toujours les volumes depuis le **profil** athlète. (3) **Tuile demande en attente** (coach) et **modale Demande envoyée** (athlète) : affichage « Volume actuel » / « Volume maximum » puis volumes par sport (même design ; titre « Volumes hebdomadaires » en dehors du bloc dans la modale athlète).
+- **Fichiers :** `supabase/migrations/058_profiles_weekly_current_hours.sql`, `types/database.ts`, `ProfileForm.tsx`, `profile/actions.ts`, `FindCoachSection.tsx`, `dashboard/actions.ts`, `PendingRequestTile.tsx`, `AthleteSentRequestDetailModal.tsx`, `RequestCoachButton.tsx`, `find-coach/page.tsx`, messages FR/EN.
+- **Doc :** Project_context.md §4.2.1 (Volumes hebdomadaires), §4.4 (demande, tuile, pas de snapshot), §5 (profiles.weekly_current_hours), project-core.mdc (Profil athlète – Volumes hebdomadaires, Demande).
+- **Archivage :** `docs/design-weekly-volume-two-columns/` → `docs/archive/design-weekly-volume-two-columns/` (DESIGN, SPEC, USER_STORIES, MOCKUP). Référence courante : **Project_context.md §4.2.1**, §4.4.
+
+✅ **17 mars 2026 – Correctif affichage mobile Mon profil – Mode Analyste :**
+- **Livraison :** (1) **Marges latérales** : sur la page Mon profil, réduction des marges sur mobile (wrapper `-mx-3` + `DashboardPageShell` `contentClassName` `!px-2 sm:!px-6 lg:!px-8`) pour limiter le blanc à gauche/droite du bloc formulaire. (2) **Grille tuiles volume** : section « Objectifs et volume par sport » en grille responsive `grid-cols-1 sm:grid-cols-2` (ProfileForm et FindCoachSection) pour éviter le dépassement horizontal sur petit écran. (3) **Champs saisie** : largeur `w-[6.5rem]` et padding droit réduit (pr-10 / pr-11 / pr-12) pour les inputs avec suffixe (h/sem., km/sem., D+/sem.).
+- **Fichiers :** `app/[locale]/dashboard/profile/page.tsx`, `ProfileForm.tsx`, `FindCoachSection.tsx`.
+- **Doc :** Project_context.md §4.2.1 (Mon profil — mobile layout), DESIGN_SYSTEM §7 (Page Mon profil), version 1.14.
+- **Archivage :** `docs/design-mobile-volume-tiles/` → `docs/archive/design-mobile-volume-tiles/` (DESIGN_MOBILE_VOLUME_TILES.md, MOCKUP_*_SOLUTION_A/B.html). Référence courante : **Project_context.md §4.2.1**, **docs/DESIGN_SYSTEM.md** §7.
 
 ✅ **17 mars 2026 – Fusion boutons objectifs (GoalFullModal) + correctifs – Mode Analyste :**
 - **Livraison :** (1) **Modale objectif fusionnée** : un seul bouton par objectif (libellé « Modifier » ou « Ajouter un résultat » selon date et présence de résultat), ouverture de **GoalFullModal** (onglets Objectif | Résultat ; si date > aujourd'hui : onglet Objectif seul ; si date ≤ aujourd'hui : ouverture sur Résultat). Une sauvegarde **saveGoalFull** enregistre objectif + résultat. Page Objectifs : saisons triées du plus loin dans le futur en haut ; pas d'opacité sur les tuiles passées ; « Aucun résultat saisi » sur la même ligne que la distance ; bouton muted. (2) **Demande de coaching** : section objectifs alignée (même bouton unique, GoalFullModal avec layer=1) ; tuiles volume en fond blanc comme Mon profil ; RequestGoalAddModal : Nom de la course et Distance en label + input natif (comme Date), DatePicker sans fermeture au scroll. (3) **Divers** : objectif de temps (champs vides = 0) ; affichage « 55min » quand une seule composante ; saveGoalResult autorisé si date ≤ aujourd'hui (jour J inclus).
@@ -691,14 +731,16 @@
 | **Statut séance, modales entraînement (en-tête création/édition/lecture seule, tuile sport, date à gauche), total « fait », retour athlète (ressenti, intensité, plaisir)** | **`Project_context.md` §4.5** (Workouts), **`docs/DESIGN_SYSTEM.md`** (Modal, WorkoutModal) |
 | **Moment de la journée (Matin / Midi / Soir), sections calendrier, modale « Activités du jour »** | **`Project_context.md` §4.5** (Calendar day structure, Workout time_of_day), **`docs/DESIGN_SYSTEM.md`** (§7 Calendrier, WorkoutModal) |
 | **Bouton Déconnexion (page Profil)** | **`Project_context.md` §4.2.1** (Profile page), **`docs/DESIGN_SYSTEM.md`** (§ Button / LogoutButton) |
-| **Objectifs et volume par sport (profil athlète : temps à allouer, volume par sport, triathlon → 3 tuiles, trail → D+)** | **`Project_context.md` §4.2.1** (Athlete profile), **`docs/DESIGN_SYSTEM.md`** (§ SportTileSelectable), **`docs/I18N.md`** (profile.*) |
+| **Volumes hebdomadaires (Volume actuel + Volume maximum, 2 colonnes ; volume par sport ; triathlon → 3 tuiles, trail → D+)** | **`Project_context.md` §4.2.1** (Athlete profile), **`docs/DESIGN_SYSTEM.md`** (§ SportTileSelectable), **`docs/I18N.md`** (profile.*) |
+| **Mon profil mobile (marges réduites, grille volume responsive, champs 6.5rem)** | **`Project_context.md` §4.2.1** (Mon profil — mobile layout), **`docs/DESIGN_SYSTEM.md`** §7 (Page Mon profil) |
 | **Disponibilités / indisponibilités athlète (calendrier, modales, pas de récurrence)** | **`Project_context.md` §4.5** (Athlete availability), **`docs/DESIGN_SYSTEM.md`** (§7 Calendrier, AvailabilityModal, AvailabilityDetailModal) |
+| **Bloc date objectif (mois + année, ex. Mar. 26, puis jour)** | **`Project_context.md` §4.7**, **`docs/DESIGN_SYSTEM.md`** (§ TileCard), **`lib/dateUtils.ts`** (formatGoalDateBlock) |
 | **Résultat objectif passé (saisie temps/place/note, modale, affichage tuile)** | **`Project_context.md` §4.7** (Goals), **`docs/DESIGN_SYSTEM.md`** (§ TileCard, Page Objectifs), **`lib/goalResultUtils.ts`** |
 | **Objectif de temps facultatif + édition objectif (Modifier, GoalEditModal, affichage Objectif / Réalisé)** | **`Project_context.md` §4.7** (Goals), **`docs/DESIGN_SYSTEM.md`** (§ TileCard, Page Objectifs, GoalEditModal), **`lib/goalResultUtils.ts`** (hasTargetTime, formatTargetTime) |
 | **Calendrier / sélecteur de date (modale entraînement modifiable)** | **`docs/DESIGN_SYSTEM.md`** § DatePickerPopup, § Dropdown ; **Project_context.md** §4.5 (Create & edit modal). Design archivé : `docs/archive/design-workout-modal-calendar/` |
 | **Page par défaut / redirections dashboard (find-coach, Mes athlètes)** | **`Project_context.md` §4.0** |
 | Tuile Profil sidebar (état sélectionné sur page Profil, centrage mode replié) | `Project_context.md` §4.0, `docs/DESIGN_SYSTEM.md` §7 |
-| Tuile demandes en attente (coach) / Message | Objectifs et volume / Discuter / Refuser-Accepter | `Project_context.md` §4.4, `docs/DESIGN_SYSTEM.md` §7 (PendingRequestTile) |
+| Tuile demandes en attente (coach) / Message | Volumes hebdomadaires (profil) / Discuter / Refuser-Accepter | `Project_context.md` §4.4, `docs/DESIGN_SYSTEM.md` §7 (PendingRequestTile) |
 | **Objectifs de course / résultats passés dans la demande** (Ajouter, Modifier résultat, Voir plus) | `Project_context.md` §4.4 (Objectifs de course dans la demande), Modal layer | `docs/DESIGN_SYSTEM.md` § Modal |
 | **Prix offre non modifiable après publication** (trigger BDD, UI read-only, modale) | **`Project_context.md` §4.4**, **`docs/DESIGN_SYSTEM.md`** (formulaire offres) |
 | Grilles responsive (Trouver mon coach, My offers, Mes athlètes) | `docs/DESIGN_SYSTEM.md` §7 |

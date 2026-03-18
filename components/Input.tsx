@@ -6,7 +6,8 @@ import {
   FORM_DISABLED_READONLY_CLASSES,
   FORM_ERROR_CLASSES,
   FORM_LABEL_CLASSES,
-  FORM_ERROR_MESSAGE_CLASSES
+  FORM_ERROR_MESSAGE_CLASSES,
+  FORM_INPUT_HEIGHT,
 } from '@/lib/formStyles'
 
 export type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
@@ -32,7 +33,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         <input
           ref={ref}
           id={inputId}
-          className={`${FORM_BASE_CLASSES} ${FORM_DISABLED_READONLY_CLASSES} ${error ? FORM_ERROR_CLASSES : ''} ${className}`.trim()}
+          className={`${FORM_BASE_CLASSES} ${FORM_INPUT_HEIGHT} ${FORM_DISABLED_READONLY_CLASSES} ${error ? FORM_ERROR_CLASSES : ''} ${className}`.trim()}
           aria-invalid={!!error}
           aria-describedby={error ? `${inputId}-error` : undefined}
           {...props}

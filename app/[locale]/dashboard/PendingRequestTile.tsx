@@ -23,18 +23,12 @@ import {
   formatGoalResultTime,
   formatGoalResultPlaceOrdinal,
 } from '@/lib/goalResultUtils'
+import { formatGoalDateBlock } from '@/lib/dateUtils'
 
 type PendingRequestTileProps = {
   request: PendingRequestWithAthlete
   /** Objectifs de l'athlète (triés date desc), pour les blocs Objectifs / Résultats */
   goals?: Goal[]
-}
-
-function formatGoalDateBlock(dateStr: string, localeTag: string): { month: string; day: string } {
-  const date = new Date(dateStr + 'T12:00:00')
-  const month = date.toLocaleDateString(localeTag, { month: 'short' })
-  const day = date.getDate().toString()
-  return { month: month.charAt(0).toUpperCase() + month.slice(1), day }
 }
 
 const MapIconSmall = ({ className = 'w-3.5 h-3.5' }: { className?: string }) => (
@@ -106,6 +100,7 @@ export function PendingRequestTile({ request, goals = [] }: PendingRequestTilePr
     : null
 
   const hasVolume =
+    request.athlete_weekly_current_hours != null ||
     request.athlete_weekly_target_hours != null ||
     (request.athlete_weekly_volume_by_sport &&
       Object.keys(request.athlete_weekly_volume_by_sport).length > 0)
@@ -224,15 +219,23 @@ export function PendingRequestTile({ request, goals = [] }: PendingRequestTilePr
             <p className="text-sm text-stone-500 italic">{t('pendingRequests.notSpecified')}</p>
           ) : (
             <div className="space-y-2.5">
+              {request.athlete_weekly_current_hours != null && (
+                <div className="flex items-center gap-2 py-1.5 px-2.5 rounded-lg bg-white border border-stone-100">
+                  <span className="text-stone-400 shrink-0" aria-hidden>
+                    <ClockIconSmall />
+                  </span>
+                  <span className="text-sm font-medium text-stone-800">
+                    {t('pendingRequests.weeklyCurrentHoursLabel')} {request.athlete_weekly_current_hours} {tProfile('suffixHoursPerWeek')}
+                  </span>
+                </div>
+              )}
               {request.athlete_weekly_target_hours != null && (
                 <div className="flex items-center gap-2 py-1.5 px-2.5 rounded-lg bg-white border border-stone-100">
                   <span className="text-stone-400 shrink-0" aria-hidden>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
+                    <ClockIconSmall />
                   </span>
                   <span className="text-sm font-medium text-stone-800">
-                    {request.athlete_weekly_target_hours} {tProfile('suffixHoursPerWeek')}
+                    {t('pendingRequests.weeklyMaxHoursLabel')} {request.athlete_weekly_target_hours} {tProfile('suffixHoursPerWeek')}
                   </span>
                 </div>
               )}
@@ -281,7 +284,7 @@ export function PendingRequestTile({ request, goals = [] }: PendingRequestTilePr
                     <TileCard key={goal.id} leftBorderColor={isPrimary ? 'amber' : 'sage'} className="py-2">
                       <div className="flex gap-2 items-start min-w-0">
                         <div className="flex flex-col items-center justify-center bg-stone-50 border border-stone-200 rounded-lg w-10 h-10 shrink-0">
-                          <span className="text-[9px] font-bold text-stone-400 uppercase">{dateBlock.month}</span>
+                          <span className="text-[9px] font-bold text-stone-400 uppercase">{dateBlock.monthYear}</span>
                           <span className="text-sm font-bold text-stone-800">{dateBlock.day}</span>
                         </div>
                         <div className="min-w-0 flex-1">
@@ -341,7 +344,7 @@ export function PendingRequestTile({ request, goals = [] }: PendingRequestTilePr
                     <TileCard key={goal.id} leftBorderColor="stone" borderLeftOnly className="py-2 opacity-90">
                       <div className="flex gap-2 items-start min-w-0">
                         <div className="flex flex-col items-center justify-center bg-stone-50 border border-stone-200 rounded-lg w-10 h-10 shrink-0">
-                          <span className="text-[9px] font-bold text-stone-400 uppercase">{dateBlock.month}</span>
+                          <span className="text-[9px] font-bold text-stone-400 uppercase">{dateBlock.monthYear}</span>
                           <span className="text-sm font-bold text-stone-800">{dateBlock.day}</span>
                         </div>
                         <div className="min-w-0 flex-1">

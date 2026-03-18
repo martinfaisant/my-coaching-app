@@ -1,7 +1,7 @@
 # 🎨 Design System
 
-**Version :** 1.13  
-**Dernière mise à jour :** 17 mars 2026 (Modal : prop `layer` pour modale sur modale ; DatePickerPopup dans modale : positionnement dynamique sans overlay. Précédent : Objectif vs résultat : bande grise dès date ≤ aujourd’hui, TileCard borderLeftOnly, badges fond blanc Principal/Secondaire/sport, sélecteur priorité rounded-lg ; § Badge, § TileCard)
+**Version :** 1.16  
+**Dernière mise à jour :** 17 mars 2026 (Bloc date objectif : mois + année ligne 1, jour ligne 2, formatGoalDateBlock dans lib/dateUtils. Précédent : Date picker compact, FORM_INPUT_TEXT_SIZE, RequestGoalAddModal.)
 
 ---
 
@@ -315,7 +315,7 @@ useEffect(() => {
 
 **Fichier :** `components/Input.tsx`
 
-Champ de saisie unifié avec support label, erreur, disabled, readOnly.
+Champ de saisie unifié avec support label, erreur, disabled, readOnly. **Styles :** `lib/formStyles.ts` — `FORM_BASE_CLASSES` (inclut `FORM_INPUT_TEXT_SIZE` = `text-sm` pour alignement avec la date affichée dans le date picker, ex. « 13 mars 2026 »), `FORM_INPUT_HEIGHT`, `FORM_DISABLED_READONLY_CLASSES`, `FORM_ERROR_CLASSES`. Les triggers du date picker et tout champ utilisant ces classes partagent la même taille de police.
 
 #### Props
 
@@ -908,7 +908,7 @@ type TileCardProps = {
 
 #### Cas d’usage
 
-- **Page Objectifs** : Afficher chaque objectif dans une TileCard avec `leftBorderColor="amber"` ou `"sage"` (passé : `stone` + `borderLeftOnly`). Ligne sous la distance : si **objectif de temps** présent → « Objectif : X » ou (passé avec résultat) « Objectif X · Réalisé Y » ; si résultat seul → « distance · temps · place » ; si passé sans résultat → « Aucun résultat saisi » sur la même ligne. **Un seul bouton** d’action par tuile (libellé « Modifier » ou « Ajouter un résultat » selon date et présence de résultat), style **muted**, ouvrant **GoalFullModal** (onglets Objectif | Résultat, sauvegarde combinée `saveGoalFull`). Si date > aujourd’hui : onglet Objectif seul ; si date ≤ aujourd’hui : deux onglets, ouverture sur Résultat. Pas d’opacité sur les tuiles passées. Saisons triées de la plus loin dans le futur en haut. Formulaire d’ajout : champs objectif de temps (facultatif), unités h/min/s ; champs vides = 0. Utilitaires : `lib/goalResultUtils.ts` (hasGoalResult, formatGoalResultTime, hasTargetTime, formatTargetTime ; affichage unité « min » même pour une seule composante).
+- **Page Objectifs** : Afficher chaque objectif dans une TileCard avec `leftBorderColor="amber"` ou `"sage"` (passé : `stone` + `borderLeftOnly`). **Bloc date** à gauche : première ligne = mois + année (ex. « Mar. 26 »), deuxième ligne = jour ; utiliser **`formatGoalDateBlock`** (`lib/dateUtils.ts`, retourne `monthYear`, `day`). Même bloc sur les tuiles objectif partout (calendrier, modales liste objectifs, demande en attente, détail demande envoyée). Ligne sous la distance : si **objectif de temps** présent → « Objectif : X » ou (passé avec résultat) « Objectif X · Réalisé Y » ; si résultat seul → « distance · temps · place » ; si passé sans résultat → « Aucun résultat saisi » sur la même ligne. **Un seul bouton** d’action par tuile (libellé « Modifier » ou « Ajouter un résultat » selon date et présence de résultat), style **muted**, ouvrant **GoalFullModal** (onglets Objectif | Résultat, sauvegarde combinée `saveGoalFull`). Si date > aujourd’hui : onglet Objectif seul ; si date ≤ aujourd’hui : deux onglets, ouverture sur Résultat. Pas d’opacité sur les tuiles passées. Saisons triées de la plus loin dans le futur en haut. Formulaire d’ajout : champs objectif de temps (facultatif), unités h/min/s ; champs vides = 0. Utilitaires : `lib/goalResultUtils.ts` (hasGoalResult, formatGoalResultTime, hasTargetTime, formatTargetTime ; affichage unité « min » même pour une seule composante), `lib/dateUtils.ts` (formatGoalDateBlock).
 - **Listes archivées / terminées** : Offres archivées (page Offres coach), historique des souscriptions (coach et athlète) — utiliser `leftBorderColor="stone"` et `badge` (libellé i18n « Archivée » ou « Terminée »).
 - **Listes personnalisées** : Tout contenu qui doit reprendre le style « tuile avec bordure gauche colorée » sans utiliser le contenu prédéfini d’ActivityTile.
 
@@ -1242,7 +1242,7 @@ import { Segments } from '@/components/Segments'
 
 **Fichier :** `components/DatePickerPopup.tsx`
 
-Popup calendrier pour la sélection d’une date. Conforme au design system : **Dropdown** pour le mois (avec `hideLabel`), grille de jours (semaine lundi–dimanche), date sélectionnée en `bg-palette-forest-dark text-white`, lien « Aujourd'hui » au pied (pas de bouton Effacer — date obligatoire). Référence (archives) : `docs/archive/design-workout-modal-calendar/` (mockup-calendar-popup.html, DESIGN_CALENDAR_POPUP.md).
+Popup calendrier pour la sélection d’une date. **Deux Dropdown** (Mois, Année) + deux boutons flèche réduits, grille de jours (semaine lundi–dimanche), date sélectionnée en `bg-palette-forest-dark text-white`, lien « Aujourd'hui » au pied (pas de bouton Effacer — date obligatoire). Style **compact** : padding `p-3`, largeur `min(280px, 90vw)`, cellules `h-8` / `min-w-[2rem]` / `text-xs`, dropdowns avec `triggerClassName="py-2 px-3 text-xs"` et `optionClassName="text-xs py-2 px-3"`, pied `mt-3 pt-2`. Plage années : **−4 / +4** par rapport à l'année courante. **Utilisé partout** : modale entraînement (WorkoutModal), disponibilités (AvailabilityModal), objectifs (page, GoalEditModal, GoalFullModal, ObjectifsTable), demande de coaching (RequestGoalAddModal). Trigger du champ date : même hauteur que les champs (`FORM_INPUT_HEIGHT`) et même taille de police (`FORM_INPUT_TEXT_SIZE` = text-sm) ; affichage de la date **sans jour de la semaine** (`formatDateFr(..., false)`). i18n : `calendar.chooseMonth`, `chooseYear`, `prevMonth`, `nextMonth`, `today`. Design archivé : `docs/archive/design-date-picker-compact/` (DESIGN_DATE_PICKER_COMPACT.md, SPEC, MOCKUP_*).
 
 #### Props
 
@@ -1254,6 +1254,7 @@ type DatePickerPopupProps = {
   minDate?: string           // YYYY-MM-DD optionnel
   maxDate?: string           // YYYY-MM-DD optionnel
   monthDropdownId?: string
+  yearDropdownId?: string    // défaut : ${monthDropdownId}-year
   className?: string
 }
 ```
@@ -1276,9 +1277,7 @@ import { DatePickerPopup } from '@/components/DatePickerPopup'
 
 - **Intégration dans WorkoutModal** : au clic sur le champ date (coach, séance modifiable), le calendrier s’ouvre en **popover** positionné sous le champ (pas une deuxième modale). Overlay transparent en z-[105], contenu en z-[110] ; fermeture par clic extérieur ou touche Escape.
 - **Dans une modale (ex. Ajouter objectif)** : ne pas utiliser d’overlay pleine page (pour garder le scroll de la modale). Rendre le popup en `createPortal` avec positionnement **dynamique** (clamp dans le viewport, flip au-dessus du champ si pas de place en dessous) ; fermeture au clic extérieur, Escape, scroll ou resize. Référence : `RequestGoalAddModal`, `ObjectifsTable`.
-- **Liste des mois (Dropdown)** : du **mois actuel** au **mois actuel + 2 ans** (25 mois). Si l’utilisateur navigue avec les flèches hors de cette plage, le mois affiché est ajouté aux options et la liste est triée par date.
-- Mois : composant **Dropdown** du design system (options = mois formatés, value = `YYYY-MM`). Le panneau du Dropdown a `max-h-64 overflow-y-auto` pour permettre le scroll.
-
+- **Dropdown Mois** : 12 mois (libellés selon `locale`), filtrés par `minDate`/`maxDate`. Value = `"01"`..`"12"`. **Dropdown Année** : années courante − 4 à + 4 (9 ans), filtrées par min/max ; si la vue est hors plage (flèches), l'année affichée est ajoutée aux options. **Flèches** : style réduit (`p-1.5`, icône `w-4 h-4`). i18n : `chooseMonth`, `chooseYear`, `prevMonth`, `nextMonth`, `today`.l’
 ---
 
 ### ChatAthleteListItem
@@ -1437,6 +1436,7 @@ Ce breakpoint `md` est le breakpoint de référence pour les bascules de layout 
 
 **Usages actuels documentés :**
 - **Top bar dashboard** : barre en haut (`DashboardTopBar`) — logo My Sport Ally à gauche, liens de navigation au centre (tablette/desktop, centrés), bloc Profil (avatar + nom) à droite. **Mobile :** titre de la page au centre, bouton hamburger à droite ; clic ouvre un **Drawer** à droite avec liste des liens, bloc Profil et Déconnexion. **Admin** : nav = Gestion des membres + Design System uniquement (pas « Mes athlètes »). Fichiers : `components/DashboardTopBar.tsx`, `components/DashboardNavLinks.tsx`, `components/Drawer.tsx`, `lib/dashboardNavConfig.ts`. **Pages dashboard** : `DashboardPageShell` fournit uniquement le padding de contenu — pas de titre en tête de page ni conteneur carte. Fichier : `components/DashboardPageShell.tsx`.
+- **Page « Mon profil »** (`/dashboard/profile`) : sur **mobile**, marges latérales réduites (wrapper `-mx-3` + `contentClassName` `!px-2 sm:!px-6 lg:!px-8` sur le shell) ; section Objectifs et volume : grille **responsive** `grid-cols-1 sm:grid-cols-2` (1 colonne en dessous de `sm`, 2 colonnes à partir de `sm`) pour éviter le dépassement horizontal ; champs temps à allouer et volumes par sport : largeur `w-[6.5rem]`, padding droit réduit (pr-10 / pr-11 / pr-12) pour le suffixe. Même disposition et tailles de champs dans le formulaire de demande (Objectifs et volume). Fichiers : `app/[locale]/dashboard/profile/page.tsx`, `ProfileForm.tsx`, `FindCoachSection.tsx`.
 - **Calendrier (athlète + coach)** : sous `md`, en-tête sur 2 lignes + bloc totaux de la semaine (volume horaire total + barres par sport, identique au mode étendu desktop) + 1 semaine en stack ; à partir de `md`, layout desktop (3 semaines, grille 7 colonnes). **Structure du jour :** **disponibilités athlète** (tuiles Disponible/Indisponible) → objectifs → entraînements → Strava ; puis sections **Matin** / **Midi** / **Soir** pour les entraînements avec moment ; couleurs et icônes des tuiles entraînement = sport uniquement. **Tuiles disponibilité :** bordure fine (vert / orange), icône calendrier, libellé + plage horaire ou note ; pas de récurrence. **Modales :** `AvailabilityModal` (création/édition : Segments type, date en en-tête, Début/Fin en Dropdown 15 min, Note ; athlète : bouton « + » sur jours futurs, clic tuile → édition avec Supprimer + Enregistrer) ; `AvailabilityDetailModal` (lecture seule coach : détail créneau, bouton Fermer). **Natation :** totaux et métadonnées en **mètres (m)** ; icône commentaire sur tuiles entraînement (`calendar.tile.athleteCommentLabel`). Détail : `Project_context.md` §4.5.
 - **Sélecteur de semaine (WeekSelector, calendrier)** : zone centrale à largeur fixe (80px sous `lg`, 150px à partir de `lg`) ; plage de dates sur une ligne à partir de `lg` (1024px), sur deux lignes sous `lg`. Boutons gauche/droite : largeur fixe 40px sous 400px, 80px à partir de 400px ; les dates « semaine précédente/suivante » dans les boutons sont affichées à partir de 400px et masquées en dessous pour que le sélecteur tienne sur les écrans étroits. Fichier : `components/WeekSelector.tsx`.
 - **Chat coach (overlay)** : sous `md`, navigation mobile en 2 écrans (liste des conversations puis conversation avec bouton Retour) ; à partir de `md`, layout desktop avec sidebar + panneau conversation.
@@ -1508,6 +1508,7 @@ Actuellement, utiliser un span custom :
 ### Fichiers clés
 
 - **Tokens couleurs** : `tailwind.config.ts`, `app/globals.css`
+- **Styles formulaires** : `lib/formStyles.ts` (FORM_BASE_CLASSES, FORM_INPUT_TEXT_SIZE, FORM_INPUT_HEIGHT, etc.)
 - **Composants** : `components/Button.tsx`, `components/Input.tsx`, `components/SearchInput.tsx`, `components/Textarea.tsx`, `components/Badge.tsx`, `components/SportTileSelectable.tsx`, `components/ActivityTile.tsx`, `components/Modal.tsx`, `components/PublicHeader.tsx`, `components/DashboardPageShell.tsx`, `components/DashboardTopBar.tsx`, `components/Drawer.tsx`, `components/EmailValidatedModal.tsx`, `components/HomeEmailConfirmedTrigger.tsx`, `components/Dropdown.tsx`, `components/Segments.tsx`, `components/DatePickerPopup.tsx`, `components/AvailabilityModal.tsx`, `components/AvailabilityDetailModal.tsx`, `components/ChatAthleteListItem.tsx`, `components/ChatConversationSidebar.tsx`
 - **Sports** : `lib/sportStyles.ts`, `lib/sportsOptions.ts`, `components/SportIcons.tsx`
 - **Design system page** : `app/dashboard/admin/design-system/page.tsx`

@@ -19,15 +19,17 @@ type RequestCoachButtonProps = {
   requestId?: string | null
   /** Sports déjà renseignés dans le profil (préremplissent le formulaire à l'ouverture) */
   initialPracticedSports?: string[]
-  /** Temps à allouer/sem. (profil athlète, pour affichage dans la modale « Demande envoyée ») */
+  /** Volume actuel (profil athlète, pour envoi et affichage modale « Demande envoyée ») */
+  athleteWeeklyCurrentHours?: number | null
+  /** Volume maximum (profil athlète, pour envoi et affichage modale « Demande envoyée ») */
   athleteWeeklyTargetHours?: number | null
-  /** Volumes par sport (profil athlète, pour affichage dans la modale « Demande envoyée ») */
+  /** Volumes par sport (profil athlète, pour envoi et affichage modale « Demande envoyée ») */
   athleteWeeklyVolumeBySport?: Record<string, number> | null
   /** Objectifs de l'athlète (pour la section objectifs/résultats dans la modale « Demande envoyée ») */
   initialGoals?: import('@/types/database').Goal[]
 }
 
-export function RequestCoachButton({ coachId, coachName, requestStatus, requestId, initialPracticedSports = [], athleteWeeklyTargetHours, athleteWeeklyVolumeBySport, initialGoals = [] }: RequestCoachButtonProps) {
+export function RequestCoachButton({ coachId, coachName, requestStatus, requestId, initialPracticedSports = [], athleteWeeklyCurrentHours, athleteWeeklyTargetHours, athleteWeeklyVolumeBySport, initialGoals = [] }: RequestCoachButtonProps) {
   const t = useTranslations('requestCoachButton')
   const tCommon = useTranslations('common')
   const tErrors = useTranslations('errors')
@@ -53,7 +55,18 @@ export function RequestCoachButton({ coachId, coachName, requestStatus, requestI
     setError(null)
     startTransition(async () => {
       try {
-        const result = await createCoachRequest(coachId, sports, need.trim())
+        const result = await createCoachRequest(
+          coachId,
+          sports,
+          need.trim(),
+          undefined,
+          locale,
+          undefined,
+          undefined,
+          athleteWeeklyCurrentHours ?? undefined,
+          athleteWeeklyTargetHours ?? undefined,
+          athleteWeeklyVolumeBySport ?? undefined
+        )
         if (result.error) {
           setError(result.error)
           return
@@ -163,6 +176,7 @@ export function RequestCoachButton({ coachId, coachName, requestStatus, requestI
               setDetailModalOpen(false)
               setConfirmCancelOpen(true)
             }}
+            athleteWeeklyCurrentHours={athleteWeeklyCurrentHours}
             athleteWeeklyTargetHours={athleteWeeklyTargetHours}
             athleteWeeklyVolumeBySport={athleteWeeklyVolumeBySport}
             initialGoals={initialGoals}

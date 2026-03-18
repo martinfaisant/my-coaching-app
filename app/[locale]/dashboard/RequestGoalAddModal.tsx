@@ -11,6 +11,7 @@ import { Modal } from '@/components/Modal'
 import { DatePickerPopup } from '@/components/DatePickerPopup'
 import { addGoal, type GoalFormState } from '@/app/[locale]/dashboard/objectifs/actions'
 import { formatDateFr } from '@/lib/dateUtils'
+import { FORM_INPUT_HEIGHT, FORM_INPUT_TEXT_SIZE } from '@/lib/formStyles'
 
 type RequestGoalAddModalProps = {
   isOpen: boolean
@@ -129,19 +130,15 @@ export function RequestGoalAddModal({ isOpen, onClose }: RequestGoalAddModalProp
       >
         <input type="hidden" name="locale" value={locale} />
 
-        <div>
-          <label htmlFor="request-goal-race_name" className="block text-xs font-bold text-stone-500 uppercase tracking-wide mb-1.5 ml-1">
-            {tGoals('raceName')} *
-          </label>
-          <input
-            id="request-goal-race_name"
-            name="race_name"
-            type="text"
-            required
-            placeholder={tGoals('raceNamePlaceholder')}
-            className="w-full border border-stone-300 rounded-lg py-3 px-3 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition"
-          />
-        </div>
+        <Input
+          id="request-goal-race_name"
+          name="race_name"
+          type="text"
+          required
+          placeholder={tGoals('raceNamePlaceholder')}
+          label={`${tGoals('raceName')} *`}
+          labelClassName="block text-xs font-bold text-stone-500 uppercase tracking-wide mb-1.5 ml-1"
+        />
 
         <div className="grid grid-cols-2 gap-4">
           <div>
@@ -156,11 +153,11 @@ export function RequestGoalAddModal({ isOpen, onClose }: RequestGoalAddModalProp
               tabIndex={0}
               onClick={openDatePicker}
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openDatePicker() } }}
-              className="flex items-center gap-2 w-full border border-stone-300 rounded-lg py-3 px-3 bg-white focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition text-left"
+              className={`flex items-center gap-2 w-full border border-stone-300 rounded-lg py-2.5 px-4 bg-white focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition text-left ${FORM_INPUT_TEXT_SIZE} ${FORM_INPUT_HEIGHT}`}
               aria-label={tGoals('date')}
             >
               <span className={`text-sm flex-1 ${selectedDate ? 'font-medium text-stone-900' : 'text-stone-400'}`}>
-                {selectedDate ? formatDateFr(selectedDate, true, localeForPicker) : tGoals('date')}
+                {selectedDate ? formatDateFr(selectedDate, false, localeForPicker) : tGoals('date')}
               </span>
               <svg className="w-5 h-5 text-stone-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -168,10 +165,7 @@ export function RequestGoalAddModal({ isOpen, onClose }: RequestGoalAddModalProp
             </div>
           </div>
           <div>
-            <label htmlFor="request-goal-distance" className="block text-xs font-bold text-stone-500 uppercase tracking-wide mb-1.5 ml-1">
-              {tGoals('distance')} *
-            </label>
-            <input
+            <Input
               id="request-goal-distance"
               name="distance"
               type="number"
@@ -179,7 +173,8 @@ export function RequestGoalAddModal({ isOpen, onClose }: RequestGoalAddModalProp
               min={0}
               step="0.1"
               placeholder="42"
-              className="w-full border border-stone-300 rounded-lg py-3 px-3 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition"
+              label={`${tGoals('distance')} *`}
+              labelClassName="block text-xs font-bold text-stone-500 uppercase tracking-wide mb-1.5 ml-1"
             />
           </div>
         </div>

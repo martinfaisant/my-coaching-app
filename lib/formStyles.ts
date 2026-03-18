@@ -3,9 +3,15 @@
  * Centralise les classes Tailwind pour garantir la cohérence du design system.
  */
 
-/** Classes de base pour tous les champs de formulaire */
+/** Hauteur fixe des champs input texte/nombre (nom, prénom, nom de la course, distance, temps objectif/résultat, etc.) et du trigger date picker — !important pour neutraliser les styles navigateur sur type="number" */
+export const FORM_INPUT_HEIGHT = '!h-11'
+
+/** Taille de police des champs input (alignée sur la date du date picker, ex. « 13 mars 2026 » : text-sm) */
+export const FORM_INPUT_TEXT_SIZE = 'text-sm'
+
+/** Classes de base pour tous les champs de formulaire (inclut FORM_INPUT_TEXT_SIZE pour cohérence avec le date picker) */
 export const FORM_BASE_CLASSES =
-  'w-full px-4 py-2.5 rounded-lg border border-stone-300 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition'
+  `${FORM_INPUT_TEXT_SIZE} w-full px-4 py-2.5 rounded-lg border border-stone-300 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition`
 
 /** Classes pour l'état disabled et readonly */
 export const FORM_DISABLED_READONLY_CLASSES =

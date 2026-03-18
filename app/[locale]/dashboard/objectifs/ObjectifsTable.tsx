@@ -10,7 +10,8 @@ import { TileCard } from '@/components/TileCard'
 import { DatePickerPopup } from '@/components/DatePickerPopup'
 import { addGoal, deleteGoal, type GoalFormState } from './actions'
 import type { Goal } from '@/types/database'
-import { getDaysUntil, formatDateFr, toDateStr } from '@/lib/dateUtils'
+import { getDaysUntil, formatDateFr, toDateStr, formatGoalDateBlock } from '@/lib/dateUtils'
+import { FORM_INPUT_HEIGHT, FORM_INPUT_TEXT_SIZE } from '@/lib/formStyles'
 import { hasGoalResult, formatGoalResultTime, formatGoalResultPlaceOrdinal, hasTargetTime, formatTargetTime } from '@/lib/goalResultUtils'
 import { GoalFullModal } from './GoalFullModal'
 
@@ -59,14 +60,6 @@ const ClockIcon = ({ className = "w-3.5 h-3.5" }: { className?: string }) => (
     <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
   </svg>
 )
-
-// Fonction pour formater la date en mois/jour
-function formatDateBlock(dateStr: string, localeTag: string): { month: string; day: string } {
-  const date = new Date(dateStr + 'T12:00:00')
-  const month = date.toLocaleDateString(localeTag, { month: 'short' })
-  const day = date.getDate().toString()
-  return { month: month.charAt(0).toUpperCase() + month.slice(1), day }
-}
 
 export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
   const locale = useLocale()
@@ -257,7 +250,7 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
                 {seasonGoals.map((goal) => {
                   const isPast = goal.date < today
                   const daysUntil = getDaysUntil(goal.date)
-                  const dateBlock = formatDateBlock(goal.date, localeTag)
+                  const dateBlock = formatGoalDateBlock(goal.date, localeTag)
                   const isPrimary = goal.is_primary
                   const isResult = goal.date <= today
                   const isPastOrToday = goal.date <= today
@@ -273,7 +266,7 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
                         <div className="flex gap-4 items-center min-w-0">
                           {/* Date Block */}
                           <div className="flex flex-col items-center justify-center bg-stone-50 border border-stone-200 rounded-xl w-14 h-14 shrink-0">
-                            <span className="text-[10px] font-bold text-stone-400 uppercase">{dateBlock.month}</span>
+                            <span className="text-[10px] font-bold text-stone-400 uppercase">{dateBlock.monthYear}</span>
                             <span className="text-xl font-bold text-stone-800">{dateBlock.day}</span>
                           </div>
 
@@ -421,11 +414,11 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
                       openDatePicker()
                     }
                   }}
-                  className="flex items-center gap-2 w-full border border-stone-300 rounded-lg py-3 px-3 bg-white focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition text-left"
+                  className={`flex items-center gap-2 w-full border border-stone-300 rounded-lg py-2.5 px-4 bg-white focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition text-left ${FORM_INPUT_TEXT_SIZE} ${FORM_INPUT_HEIGHT}`}
                   aria-label={tGoals('date')}
                 >
                   <span className={`text-sm flex-1 ${addFormDate ? 'font-medium text-stone-900' : 'text-stone-400'}`}>
-                    {addFormDate ? formatDateFr(addFormDate, true, localeTag) : tGoals('date')}
+                    {addFormDate ? formatDateFr(addFormDate, false, localeTag) : tGoals('date')}
                   </span>
                   <svg className="w-5 h-5 text-stone-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />

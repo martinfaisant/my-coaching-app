@@ -24,6 +24,7 @@ export async function createCoachRequest(
   locale: string = 'fr',
   firstName?: string,
   lastName?: string,
+  weeklyCurrentHours?: number | null,
   weeklyTargetHours?: number | null,
   weeklyVolumeBySport?: Record<string, number> | null
 ): Promise<CoachRequestResult> {
@@ -32,7 +33,7 @@ export async function createCoachRequest(
   let tErrors: Awaited<ReturnType<typeof getTranslations>>
   let tAuth: Awaited<ReturnType<typeof getTranslations>>
   try {
-    const result = await requireUserWithProfile(supabase, 'role, coach_id, first_name, last_name')
+    const result = await requireUserWithProfile(supabase, 'role, coach_id, first_name, last_name, weekly_current_hours, weekly_target_hours, weekly_volume_by_sport')
     const translations = await Promise.all([
       getTranslations({ locale, namespace: 'coachRequests.validation' }),
       getTranslations({ locale, namespace: 'errors' }),
@@ -49,22 +50,31 @@ export async function createCoachRequest(
     const need = (coachingNeed ?? '').trim()
     if (sports.length === 0 || !need) return { error: t('requireSportAndNeed') }
 
-    // Objectifs et volume : champs obligatoires
-    const hours =
-      weeklyTargetHours != null && !Number.isNaN(Number(weeklyTargetHours))
-        ? Number(weeklyTargetHours)
-        : null
-    if (hours === null || hours < 0 || hours > 168) {
+    // Volumes hebdomadaires : Volume actuel et Volume maximum (fournis ou depuis le profil)
+    const currentHoursRaw =
+      weeklyCurrentHours != null && !Number.isNaN(Number(weeklyCurrentHours))
+        ? Number(weeklyCurrentHours)
+        : (profile.weekly_current_hours != null ? Number(profile.weekly_current_hours) : null)
+    if (currentHoursRaw === null || currentHoursRaw < 0 || currentHoursRaw > 168) {
       return { error: t('requireWeeklyTargetAndVolume') }
     }
-    const roundedHours = Math.round(hours * 100) / 100
+    const roundedCurrentHours = Math.round(currentHoursRaw * 100) / 100
+
+    const hoursRaw =
+      weeklyTargetHours != null && !Number.isNaN(Number(weeklyTargetHours))
+        ? Number(weeklyTargetHours)
+        : (profile.weekly_target_hours != null ? Number(profile.weekly_target_hours) : null)
+    if (hoursRaw === null || hoursRaw < 0 || hoursRaw > 168) {
+      return { error: t('requireWeeklyTargetAndVolume') }
+    }
+    const roundedHours = Math.round(hoursRaw * 100) / 100
 
     const expandedForVolume = sports.flatMap((s) =>
       s === 'triathlon' ? ['course', 'velo', 'natation'] : s === 'trail' ? ['course'] : [s]
     )
     const volumeDisplayList = DISPLAY_SPORTS_ORDER.filter((s) => expandedForVolume.includes(s))
     const volumeBySport: Record<string, number> = {}
-    const rawVolume = weeklyVolumeBySport ?? {}
+    const rawVolume = weeklyVolumeBySport ?? (profile.weekly_volume_by_sport && typeof profile.weekly_volume_by_sport === 'object' ? profile.weekly_volume_by_sport as Record<string, number> : {})
     for (const sport of volumeDisplayList) {
       const val = rawVolume[sport]
       if (val == null || Number.isNaN(Number(val)) || Number(val) < 0) {
@@ -96,15 +106,17 @@ export async function createCoachRequest(
     const firstTrim = (firstName ?? '').trim()
     const lastTrim = (lastName ?? '').trim()
 
-    // Mise à jour profil : nom (si fourni), practiced_sports, weekly_target_hours, weekly_volume_by_sport
+    // Mise à jour profil : nom (si fourni), practiced_sports, weekly_current_hours, weekly_target_hours, weekly_volume_by_sport
     const profileUpdate: {
       first_name?: string
       last_name?: string
       practiced_sports: string[]
+      weekly_current_hours: number
       weekly_target_hours: number
       weekly_volume_by_sport: Record<string, number>
     } = {
       practiced_sports: sports,
+      weekly_current_hours: roundedCurrentHours,
       weekly_target_hours: roundedHours,
       weekly_volume_by_sport: volumeBySport,
     }
@@ -316,6 +328,7 @@ export type PendingRequestWithAthlete = {
   offer_price: number | null
   offer_price_type: string | null
   created_at: string
+  athlete_weekly_current_hours: number | null
   athlete_weekly_target_hours: number | null
   athlete_weekly_volume_by_sport: Record<string, number> | null
 }
@@ -340,18 +353,20 @@ export async function getPendingCoachRequests(locale: string = 'fr'): Promise<Pe
   const athleteIds = [...new Set(rows.map((r) => r.athlete_id))]
   const { data: profiles } = await supabase
     .from('profiles')
-    .select('user_id, first_name, last_name, email, avatar_url, weekly_target_hours, weekly_volume_by_sport')
+    .select('user_id, first_name, last_name, email, avatar_url, weekly_current_hours, weekly_target_hours, weekly_volume_by_sport')
     .in('user_id', athleteIds)
 
   const nameByUserId = new Map<string, string>()
   const emailByUserId = new Map<string, string>()
   const avatarByUserId = new Map<string, string | null>()
+  const weeklyCurrentByUserId = new Map<string, number | null>()
   const weeklyTargetByUserId = new Map<string, number | null>()
   const weeklyVolumeByUserId = new Map<string, Record<string, number> | null>()
   for (const p of profiles ?? []) {
     nameByUserId.set(p.user_id, getDisplayName(p, p.email))
     emailByUserId.set(p.user_id, p.email)
     avatarByUserId.set(p.user_id, p.avatar_url ?? null)
+    weeklyCurrentByUserId.set(p.user_id, p.weekly_current_hours ?? null)
     weeklyTargetByUserId.set(p.user_id, p.weekly_target_hours ?? null)
     weeklyVolumeByUserId.set(
       p.user_id,
@@ -374,6 +389,7 @@ export async function getPendingCoachRequests(locale: string = 'fr'): Promise<Pe
     offer_price: r.frozen_price ?? null,
     offer_price_type: r.frozen_price_type ?? null,
     created_at: r.created_at,
+    athlete_weekly_current_hours: weeklyCurrentByUserId.get(r.athlete_id) ?? null,
     athlete_weekly_target_hours: weeklyTargetByUserId.get(r.athlete_id) ?? null,
     athlete_weekly_volume_by_sport: weeklyVolumeByUserId.get(r.athlete_id) ?? null,
   }))

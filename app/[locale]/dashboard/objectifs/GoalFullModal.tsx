@@ -1,6 +1,7 @@
 'use client'
 
-import { useActionState, useRef, useState, useEffect } from 'react'
+import { useActionState, useRef, useState, useEffect, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
 import { useLocale, useTranslations } from 'next-intl'
 import type { Goal } from '@/types/database'
@@ -8,6 +9,9 @@ import { Button } from '@/components/Button'
 import { Input } from '@/components/Input'
 import { Textarea } from '@/components/Textarea'
 import { Modal } from '@/components/Modal'
+import { DatePickerPopup } from '@/components/DatePickerPopup'
+import { formatDateFr } from '@/lib/dateUtils'
+import { FORM_INPUT_HEIGHT, FORM_INPUT_TEXT_SIZE } from '@/lib/formStyles'
 import { saveGoalFull, type GoalFormState } from './actions'
 
 type GoalFullModalProps = {
@@ -36,20 +40,60 @@ export function GoalFullModal({
 
   const [activeTab, setActiveTab] = useState<'objective' | 'result'>(initialTab)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [date, setDate] = useState(goal.date)
+  const [showDatePickerPopup, setShowDatePickerPopup] = useState(false)
+  const [datePickerAnchor, setDatePickerAnchor] = useState<DOMRect | null>(null)
   const formRef = useRef<HTMLFormElement>(null)
+  const dateTriggerRef = useRef<HTMLDivElement>(null)
+  const datePickerPopupRef = useRef<HTMLDivElement>(null)
 
+  const localeForPicker = locale === 'fr' ? 'fr-FR' : 'en-US'
   const today = new Date().toISOString().slice(0, 10)
   const canShowResultSection = goal.date <= today
 
   useEffect(() => {
     if (!isOpen) return
+    setDate(goal.date)
     if (!canShowResultSection && activeTab === 'result') {
       setActiveTab('objective')
     } else if (canShowResultSection) {
       setActiveTab(initialTab)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen, canShowResultSection, goal.id])
+  }, [isOpen, canShowResultSection, goal.id, goal.date])
+
+  const closeDatePicker = useCallback(() => {
+    setShowDatePickerPopup(false)
+    setDatePickerAnchor(null)
+  }, [])
+
+  const openDatePicker = useCallback(() => {
+    const rect = dateTriggerRef.current?.getBoundingClientRect()
+    if (rect) setDatePickerAnchor(rect)
+    setShowDatePickerPopup(true)
+  }, [])
+
+  useEffect(() => {
+    if (!showDatePickerPopup) return
+    const onPointerDown = (e: PointerEvent) => {
+      const target = e.target as Node | null
+      if (!target) return
+      const inPopup = datePickerPopupRef.current?.contains(target)
+      const inTrigger = dateTriggerRef.current?.contains(target)
+      if (!inPopup && !inTrigger) closeDatePicker()
+    }
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeDatePicker()
+    }
+    document.addEventListener('pointerdown', onPointerDown, true)
+    document.addEventListener('keydown', onKeyDown)
+    window.addEventListener('resize', closeDatePicker)
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown, true)
+      document.removeEventListener('keydown', onKeyDown)
+      window.removeEventListener('resize', closeDatePicker)
+    }
+  }, [showDatePickerPopup, closeDatePicker])
 
   useEffect(() => {
     if (state?.success) {
@@ -147,14 +191,27 @@ export function GoalFullModal({
             />
 
             <div className="grid grid-cols-2 gap-4">
-              <Input
-                id="full-date"
-                label={tGoals('date')}
-                name="date"
-                type="date"
-                required
-                defaultValue={goal.date}
-              />
+              <div>
+                <label htmlFor="full-date-trigger" className="block text-sm font-medium text-stone-700 mb-2">
+                  {tGoals('date')} <span className="text-palette-danger">*</span>
+                </label>
+                <input type="hidden" name="date" value={date} required readOnly aria-hidden />
+                <div
+                  ref={dateTriggerRef}
+                  id="full-date-trigger"
+                  role="button"
+                  tabIndex={0}
+                  onClick={openDatePicker}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openDatePicker() } }}
+                  className={`flex items-center gap-2 w-full border border-stone-300 rounded-lg py-2.5 px-4 bg-white text-stone-900 focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition text-left ${FORM_INPUT_TEXT_SIZE} ${FORM_INPUT_HEIGHT}`}
+                  aria-label={tGoals('date')}
+                >
+                  <span className="text-sm flex-1">{formatDateFr(date, false, localeForPicker)}</span>
+                  <svg className="w-5 h-5 text-stone-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+              </div>
               <Input
                 id="full-distance"
                 label={tGoals('distance')}
@@ -341,6 +398,37 @@ export function GoalFullModal({
           </p>
         )}
       </form>
+
+      {showDatePickerPopup && datePickerAnchor && typeof document !== 'undefined' &&
+        createPortal(
+          <div
+            className="fixed z-[210]"
+            ref={datePickerPopupRef}
+            style={(() => {
+              const POPUP_W = 280
+              const POPUP_H = 340
+              const M = 8
+              const vw = typeof window !== 'undefined' ? window.innerWidth : 1200
+              const vh = typeof window !== 'undefined' ? window.innerHeight : 800
+              const left = Math.max(M, Math.min(datePickerAnchor.left, vw - POPUP_W - M))
+              const preferBottom = datePickerAnchor.bottom + M
+              const fitsBelow = preferBottom + POPUP_H <= vh - M
+              const top = fitsBelow ? preferBottom : Math.max(M, datePickerAnchor.top - M - POPUP_H)
+              return { top, left, maxHeight: `calc(100vh - ${M * 2}px)` }
+            })()}
+          >
+            <DatePickerPopup
+              value={date}
+              onChange={(dateStr) => {
+                setDate(dateStr)
+                closeDatePicker()
+              }}
+              locale={localeForPicker}
+              monthDropdownId="goal-full-date-picker-month"
+            />
+          </div>,
+          document.body
+        )}
     </Modal>
   )
 }
