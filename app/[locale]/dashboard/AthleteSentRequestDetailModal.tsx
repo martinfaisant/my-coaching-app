@@ -10,7 +10,7 @@ import { IconClose } from '@/components/icons/IconClose'
 import { TileCard } from '@/components/TileCard'
 import { getCoachRequestDetail, type CoachRequestDetail } from './actions'
 import { getFrozenTitleForLocale, getFrozenDescriptionForLocale } from '@/lib/frozenOfferI18n'
-import { formatDateFr } from '@/lib/dateUtils'
+import { formatDateFr, formatGoalDateBlock } from '@/lib/dateUtils'
 import { getWeeklyVolumeUnit, SPORT_ICONS, SPORT_CARD_STYLES } from '@/lib/sportStyles'
 import type { SportType } from '@/lib/sportStyles'
 import type { Goal } from '@/types/database'
@@ -70,13 +70,6 @@ const sportLabelKey: Record<string, string> = {
   musculation: 'muscu',
   trail: 'trail',
   triathlon: 'triathlon',
-}
-
-function formatGoalDateBlock(dateStr: string, localeTag: string): { month: string; day: string } {
-  const date = new Date(dateStr + 'T12:00:00')
-  const month = date.toLocaleDateString(localeTag, { month: 'short' })
-  const day = date.getDate().toString()
-  return { month: month.charAt(0).toUpperCase() + month.slice(1), day }
 }
 
 const MapIconSmall = ({ className = 'w-3.5 h-3.5' }: { className?: string }) => (
@@ -410,7 +403,7 @@ export function AthleteSentRequestDetailModal({
                           >
                             <div className="flex gap-2 items-start min-w-0">
                               <div className={`flex flex-col items-center justify-center bg-stone-50 border border-stone-200 rounded-lg w-10 h-10 shrink-0 ${isPast ? 'opacity-75' : ''}`}>
-                                <span className="text-[9px] font-bold text-stone-400 uppercase">{dateBlock.month}</span>
+                                <span className="text-[9px] font-bold text-stone-400 uppercase">{dateBlock.monthYear}</span>
                                 <span className="text-sm font-bold text-stone-800">{dateBlock.day}</span>
                               </div>
                               <div className="min-w-0 flex-1">

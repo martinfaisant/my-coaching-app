@@ -135,6 +135,24 @@ export function getWeekRange(date: Date | string): { start: Date; end: Date } {
 }
 
 /**
+ * Formate la date pour le bloc date des tuiles objectif (solution D : "Mar. 26" ligne 1, jour ligne 2).
+ * @param dateStr - Date ISO (YYYY-MM-DD)
+ * @param localeTag - Locale (fr-FR, en-US)
+ * @returns { monthYear: string, day: string }
+ */
+export function formatGoalDateBlock(dateStr: string, localeTag: string): { monthYear: string; day: string } {
+  const date = new Date(dateStr + 'T12:00:00')
+  if (isNaN(date.getTime())) {
+    return { monthYear: '—', day: '—' }
+  }
+  const month = date.toLocaleDateString(localeTag, { month: 'short' })
+  const monthCapitalized = month.charAt(0).toUpperCase() + month.slice(1)
+  const yearShort = String(date.getFullYear()).slice(-2)
+  const day = date.getDate().toString()
+  return { monthYear: `${monthCapitalized} ${yearShort}`, day }
+}
+
+/**
  * Calcule la date de fin du prochain cycle mensuel (anniversaire) à partir d'une date de début.
  * Utilisé pour les souscriptions monthly : si start_date est le 4 mars, et qu'on est le 7 juin,
  * retourne le 4 juillet (même jour, mois suivant).

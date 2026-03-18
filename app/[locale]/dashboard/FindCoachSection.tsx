@@ -25,6 +25,7 @@ import { TileCard } from '@/components/TileCard'
 import { GoalFullModal } from '@/app/[locale]/dashboard/objectifs/GoalFullModal'
 import { RequestGoalAddModal } from '@/app/[locale]/dashboard/RequestGoalAddModal'
 import { RequestGoalsListModal } from '@/app/[locale]/dashboard/RequestGoalsListModal'
+import { formatGoalDateBlock } from '@/lib/dateUtils'
 import {
   hasGoalResult,
   hasTargetTime,
@@ -472,13 +473,6 @@ function OfferSelectButton({ isSelected, onClick }: OfferSelectButtonProps) {
       )}
     </Button>
   )
-}
-
-function formatGoalDateBlock(dateStr: string, localeTag: string): { month: string; day: string } {
-  const date = new Date(dateStr + 'T12:00:00')
-  const month = date.toLocaleDateString(localeTag, { month: 'short' })
-  const day = date.getDate().toString()
-  return { month: month.charAt(0).toUpperCase() + month.slice(1), day }
 }
 
 const MapIconSmall = ({ className = 'w-3.5 h-3.5' }: { className?: string }) => (
@@ -1065,7 +1059,7 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
                                   >
                                     <div className="flex gap-4 items-start min-w-0 justify-between">
                                       <div className="flex flex-col items-center justify-center bg-stone-50 border border-stone-200 rounded-xl w-12 h-12 shrink-0">
-                                        <span className="text-[10px] font-bold text-stone-400 uppercase">{dateBlock.month}</span>
+                                        <span className="text-[10px] font-bold text-stone-400 uppercase">{dateBlock.monthYear}</span>
                                         <span className="text-lg font-bold text-stone-800">{dateBlock.day}</span>
                                       </div>
                                       <div className="min-w-0 flex-1">

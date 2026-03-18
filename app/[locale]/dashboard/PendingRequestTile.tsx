@@ -23,18 +23,12 @@ import {
   formatGoalResultTime,
   formatGoalResultPlaceOrdinal,
 } from '@/lib/goalResultUtils'
+import { formatGoalDateBlock } from '@/lib/dateUtils'
 
 type PendingRequestTileProps = {
   request: PendingRequestWithAthlete
   /** Objectifs de l'athlète (triés date desc), pour les blocs Objectifs / Résultats */
   goals?: Goal[]
-}
-
-function formatGoalDateBlock(dateStr: string, localeTag: string): { month: string; day: string } {
-  const date = new Date(dateStr + 'T12:00:00')
-  const month = date.toLocaleDateString(localeTag, { month: 'short' })
-  const day = date.getDate().toString()
-  return { month: month.charAt(0).toUpperCase() + month.slice(1), day }
 }
 
 const MapIconSmall = ({ className = 'w-3.5 h-3.5' }: { className?: string }) => (
@@ -290,7 +284,7 @@ export function PendingRequestTile({ request, goals = [] }: PendingRequestTilePr
                     <TileCard key={goal.id} leftBorderColor={isPrimary ? 'amber' : 'sage'} className="py-2">
                       <div className="flex gap-2 items-start min-w-0">
                         <div className="flex flex-col items-center justify-center bg-stone-50 border border-stone-200 rounded-lg w-10 h-10 shrink-0">
-                          <span className="text-[9px] font-bold text-stone-400 uppercase">{dateBlock.month}</span>
+                          <span className="text-[9px] font-bold text-stone-400 uppercase">{dateBlock.monthYear}</span>
                           <span className="text-sm font-bold text-stone-800">{dateBlock.day}</span>
                         </div>
                         <div className="min-w-0 flex-1">
@@ -350,7 +344,7 @@ export function PendingRequestTile({ request, goals = [] }: PendingRequestTilePr
                     <TileCard key={goal.id} leftBorderColor="stone" borderLeftOnly className="py-2 opacity-90">
                       <div className="flex gap-2 items-start min-w-0">
                         <div className="flex flex-col items-center justify-center bg-stone-50 border border-stone-200 rounded-lg w-10 h-10 shrink-0">
-                          <span className="text-[9px] font-bold text-stone-400 uppercase">{dateBlock.month}</span>
+                          <span className="text-[9px] font-bold text-stone-400 uppercase">{dateBlock.monthYear}</span>
                           <span className="text-sm font-bold text-stone-800">{dateBlock.day}</span>
                         </div>
                         <div className="min-w-0 flex-1">
