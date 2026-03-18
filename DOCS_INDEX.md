@@ -450,6 +450,12 @@
 ✅ **18 mars 2026 – Loading UX (alignement des skeletons) – Mode Analyste :**
 - **Livraison :** alignement des `loading.tsx` du dashboard sur les wrappers/layouts cibles pour réduire le “flash visuel” (skeletons dans `DashboardPageShell`, et calendrier avec chrome complet : header sticky + zone scrollable).
 
+✅ **18 mars 2026 – Uniformisation typographie calendrier athlète (vue coach) – Mode Analyste :**
+- **Livraison :** `CoachAthleteCalendarPage` avec hiérarchie typographique unifiée (nom/semaines/saison, moment Matin/Midi/Soir hors tuiles, tailles objectifs + badges), labels `Disponible`/`Indisponible` sans `uppercase` et taille alignée + `ClockIcon` sur les plages horaires, et affichage temps h/min/s avec espaces (objectifs + résultats).
+- **Livraison :** uniformisation de la plage de semaine via `calendar.weekRangeSeparator` (WeekSelector).
+- **Doc :** `Project_context.md` (§4.5 Calendar, §4.7 Goals) + `docs/DESIGN_SYSTEM.md` (Calendrier).
+- **Archivage :** `docs/design-typography-calendar-coach/` → `docs/archive/design-typography-calendar-coach/` (mockups & table architecte).
+
 ✅ **17 mars 2026 – Bloc date objectif avec année (solution D) – Mode Analyste :**
 - **Livraison :** Dans les tuiles objectif (page Objectifs, calendrier coach/athlète, modales liste objectifs, demande en attente, détail demande envoyée), le **bloc date** affiche désormais **mois + année** sur la première ligne (ex. « Mar. 26 ») et le **jour** en dessous. Une seule fonction centralisée : **`formatGoalDateBlock`** dans `lib/dateUtils.ts` (retourne `monthYear`, `day`). Pas de nouveau texte i18n (locale déjà utilisée pour le format de date).
 - **Fichiers :** `lib/dateUtils.ts` (formatGoalDateBlock), `ObjectifsTable.tsx`, `CoachAthleteCalendarPage.tsx`, `RequestGoalsListModal.tsx`, `PendingRequestTile.tsx`, `AthleteSentRequestDetailModal.tsx`, `FindCoachSection.tsx`.

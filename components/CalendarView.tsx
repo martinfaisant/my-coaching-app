@@ -343,6 +343,7 @@ export function CalendarView({
     const weeks: { label: string; monthLabel: string; rangeLabel: string; isCurrentWeek: boolean; days: { dateStr: string; label: string; dayName: string; shortDateLabel: string; isToday: boolean; isTomorrow: boolean; isPast: boolean }[] }[] = []
     
     const todayMonday = getWeekMonday(today)
+    const weekRangeSeparator = tCalendar('weekRangeSeparator')
 
     for (let w = 0; w < 3; w++) {
       const weekStart = new Date(startMonday)
@@ -353,7 +354,7 @@ export function CalendarView({
       const firstDay = new Date(weekStart)
       const lastDay = new Date(weekStart)
       lastDay.setDate(lastDay.getDate() + 6)
-      const rangeLabel = `${firstDay.getDate()} ${getShortMonthName(firstDay.getMonth())} - ${lastDay.getDate()} ${getShortMonthName(lastDay.getMonth())}`
+      const rangeLabel = `${firstDay.getDate()} ${getShortMonthName(firstDay.getMonth())}${weekRangeSeparator}${lastDay.getDate()} ${getShortMonthName(lastDay.getMonth())}`
       let weekLabel = ''
       let isCurrentWeek = false
       if (weekMonday.getTime() === todayMonday.getTime()) {
@@ -622,9 +623,14 @@ export function CalendarView({
               <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
           </span>
-          <span className={`font-semibold text-[10px] uppercase ${isAvailable ? 'text-palette-forest-dark' : 'text-orange-700'}`}>{label}</span>
+          <span className={`font-semibold text-xs ${isAvailable ? 'text-palette-forest-dark' : 'text-orange-700'}`}>{label}</span>
         </div>
-        {timeRange && <div className="text-[10px] text-stone-600">{timeRange}</div>}
+        {timeRange && (
+          <div className="text-[10px] text-stone-600 flex items-center gap-1">
+            <ClockIcon className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+            <span>{timeRange}</span>
+          </div>
+        )}
         {note && <p className="text-[10px] text-stone-500 mt-0.5 line-clamp-1">{note}</p>}
       </div>
     )
@@ -659,7 +665,7 @@ export function CalendarView({
             <span className={`inline-flex items-center ${style.badge} ${style.badgeBg} px-1 py-0.5 rounded shrink-0`}>
               <SportIcon className="w-2.5 h-2.5" />
             </span>
-            <span className="text-xs font-semibold text-stone-700 leading-tight flex-1 min-w-0 break-words">{w.title}</span>
+            <span className="text-sm font-bold text-stone-700 leading-tight flex-1 min-w-0 break-words">{w.title}</span>
           </div>
         </div>
         <div className="flex items-center gap-1 flex-wrap text-[10px] text-stone-500 font-semibold mt-1">
@@ -929,8 +935,8 @@ export function CalendarView({
             return (
               <>
                 <div className="mb-4">
-                  <h2 className="text-xl font-bold text-palette-forest-dark">{week.label}</h2>
-                  <span className="text-stone-400 font-medium text-sm">— {week.rangeLabel.replace(' - ', ' au ')}</span>
+                  <h2 className="text-base font-bold text-palette-forest-dark">{week.label}</h2>
+                  <span className="text-stone-400 font-medium text-sm">— {week.rangeLabel}</span>
                 </div>
                 {renderWeeklyTotalsCard(weekPrevuBySport[1]!, weekFaitBySport[1]!, weekFaitBySport[0]!)}
                 <div className="flex flex-col gap-3">
@@ -983,7 +989,7 @@ export function CalendarView({
                                     return (
                                       <div key={entry.type === 'availability' ? `a-${entry.item.id}` : entry.type === 'goal' ? `g-${entry.item.id}` : entry.type === 'workout' ? `w-${entry.item.id}` : `i-${entry.item.id}`} className="flex flex-col gap-1.5">
                                         {showSectionTitle && (
-                                          <div className="text-[10px] font-semibold uppercase tracking-wider text-stone-400 px-0.5">
+                                          <div className="text-[10px] font-semibold uppercase tracking-wider text-stone-500 px-0.5">
                                             {entry.section === 'morning' ? tWorkouts('calendar.morning') : entry.section === 'noon' ? tWorkouts('calendar.noon') : tWorkouts('calendar.evening')}
                                           </div>
                                         )}
@@ -999,7 +1005,7 @@ export function CalendarView({
                                                 <span className={`float-left inline-flex items-center mr-1.5 ${badgeColor} px-1 py-0.5 rounded shrink-0`}>
                                                   <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" /></svg>
                                                 </span>
-                                                <div className="text-xs font-semibold text-stone-700 leading-tight">{g.race_name}</div>
+                                                <div className="text-sm font-bold text-stone-700 leading-tight">{g.race_name}</div>
                                                 <div className="clear-both" />
                                               </div>
                                               <div className="flex items-center gap-1 flex-wrap text-[10px] text-stone-500 font-semibold mt-1">
@@ -1055,7 +1061,7 @@ export function CalendarView({
                                               <circle cx="12" cy="12" r="2" />
                                             </svg>
                                           </span>
-                                          <div className="text-xs font-semibold text-stone-700 leading-tight">{firstGoal.race_name}</div>
+                                          <div className="text-sm font-bold text-stone-700 leading-tight">{firstGoal.race_name}</div>
                                           <div className="clear-both" />
                                         </div>
                                       </div>
@@ -1152,7 +1158,7 @@ export function CalendarView({
                                               <circle cx="12" cy="12" r="2" />
                                             </svg>
                                           </span>
-                                          <div className="text-xs font-semibold text-stone-700 leading-tight">{firstGoal.race_name}</div>
+                                          <div className="text-sm font-bold text-stone-700 leading-tight">{firstGoal.race_name}</div>
                                           <div className="clear-both" />
                                         </div>
                                       </div>
@@ -1230,15 +1236,15 @@ export function CalendarView({
                   <div className="flex items-center gap-4 min-w-0">
                     {isDetailed ? (
                       <>
-                        <h2 className="text-xl font-bold text-palette-forest-dark">
+                        <h2 className="text-base font-bold text-palette-forest-dark">
                           {week.label}
                         </h2>
-                        <span className="text-stone-400 font-medium text-sm">— {week.rangeLabel.replace(' - ', ' au ')}</span>
+                        <span className="text-stone-400 font-medium text-sm">— {week.rangeLabel}</span>
                       </>
                     ) : (
                       <>
                         <h2 className="text-xs font-bold uppercase tracking-wider text-stone-500">{week.label}</h2>
-                        <span className="text-stone-400 font-medium text-xs">— {week.rangeLabel.replace(' - ', ' au ')}</span>
+                        <span className="text-stone-400 font-medium text-xs">— {week.rangeLabel}</span>
                         <div className="h-px w-12 bg-stone-200 shrink-0" />
                       </>
                     )}
@@ -1367,13 +1373,13 @@ export function CalendarView({
                                   const showSectionTitle = entry.type === 'workout' && entry.section && entry.section !== prevSection
                                   return (
                                     <div key={entry.type === 'availability' ? `a-${entry.item.id}` : entry.type === 'goal' ? `g-${entry.item.id}` : entry.type === 'workout' ? `w-${entry.item.id}` : `i-${entry.item.id}`} className="flex flex-col gap-0.5">
-                                      {showSectionTitle && <div className="text-[9px] font-semibold uppercase tracking-wider text-stone-400 px-0.5">{entry.section === 'morning' ? tWorkouts('calendar.morning') : entry.section === 'noon' ? tWorkouts('calendar.noon') : tWorkouts('calendar.evening')}</div>}
+                                      {showSectionTitle && <div className="text-[10px] font-semibold uppercase tracking-wider text-stone-500 px-0.5">{entry.section === 'morning' ? tWorkouts('calendar.morning') : entry.section === 'noon' ? tWorkouts('calendar.noon') : tWorkouts('calendar.evening')}</div>}
                                       {entry.type === 'availability' ? renderAvailabilityTile(entry.item, day.dateStr, true, openAvailabilityDetail) : entry.type === 'goal' ? (() => {
                                         const g = entry.item
                                         const isPrimary = g.is_primary
                                         const borderColor = isPrimary ? 'border-palette-amber' : 'border-palette-sage'
                                         const badgeColor = isPrimary ? 'text-palette-amber bg-white' : 'text-palette-sage bg-white'
-                                        return <div onClick={(e) => { e.stopPropagation(); openGoal(g) }} className={`bg-white rounded border-l-4 ${borderColor} shadow-sm p-1.5 cursor-pointer training-card`} role="button"><div><span className={`float-left inline-flex mr-1.5 ${badgeColor} px-1 py-0.5 rounded shrink-0`}><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" /></svg></span><div className="text-xs font-semibold text-stone-700 leading-tight">{g.race_name}</div><div className="clear-both" /></div><div className="flex items-center gap-1 text-[10px] text-stone-500 font-semibold mt-1"><svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z" /><path d="m14.5 12.5 2-2" /><path d="m11.5 9.5 2-2" /><path d="m8.5 6.5 2-2" /><path d="m17.5 15.5 2-2" /></svg><span>{g.distance} km</span></div></div>
+                                        return <div onClick={(e) => { e.stopPropagation(); openGoal(g) }} className={`bg-white rounded border-l-4 ${borderColor} shadow-sm p-1.5 cursor-pointer training-card`} role="button"><div><span className={`float-left inline-flex mr-1.5 ${badgeColor} px-1 py-0.5 rounded shrink-0`}><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" /></svg></span><div className="text-sm font-bold text-stone-700 leading-tight">{g.race_name}</div><div className="clear-both" /></div><div className="flex items-center gap-1 text-[10px] text-stone-500 font-semibold mt-1"><svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z" /><path d="m14.5 12.5 2-2" /><path d="m11.5 9.5 2-2" /><path d="m8.5 6.5 2-2" /><path d="m17.5 15.5 2-2" /></svg><span>{g.distance} km</span></div></div>
                                       })() : entry.type === 'workout' ? renderCompactCard(entry.item, day.dateStr) : (() => {
                                         const a = entry.item
                                         const target = formatImportedActivityTarget(a)
@@ -1406,7 +1412,7 @@ export function CalendarView({
                                             <circle cx="12" cy="12" r="2" />
                                           </svg>
                                         </span>
-                                        <div className="text-xs font-semibold text-stone-700 leading-tight">{firstGoal.race_name}</div>
+                                        <div className="text-sm font-bold text-stone-700 leading-tight">{firstGoal.race_name}</div>
                                         <div className="clear-both"></div>
                                       </div>
                                     </div>
@@ -1511,7 +1517,7 @@ export function CalendarView({
                                             <circle cx="12" cy="12" r="2" />
                                           </svg>
                                         </span>
-                                        <div className="text-xs font-semibold text-stone-700 leading-tight">{firstGoal.race_name}</div>
+                                        <div className="text-sm font-bold text-stone-700 leading-tight">{firstGoal.race_name}</div>
                                         <div className="clear-both"></div>
                                       </div>
                                     </div>
@@ -1632,7 +1638,7 @@ export function CalendarView({
                                 return (
                                   <div key={entry.type === 'availability' ? `a-${entry.item.id}` : entry.type === 'goal' ? `g-${entry.item.id}` : entry.type === 'workout' ? `w-${entry.item.id}` : `i-${entry.item.id}`} className="flex flex-col gap-1.5">
                                     {showSectionTitle && (
-                                      <div className="text-[10px] font-semibold uppercase tracking-wider text-stone-400 px-0.5">
+                                      <div className="text-[10px] font-semibold uppercase tracking-wider text-stone-500 px-0.5">
                                         {entry.section === 'morning' ? tWorkouts('calendar.morning') : entry.section === 'noon' ? tWorkouts('calendar.noon') : tWorkouts('calendar.evening')}
                                       </div>
                                     )}
@@ -1657,7 +1663,7 @@ export function CalendarView({
                                                   <circle cx="12" cy="12" r="2" />
                                                 </svg>
                                               </span>
-                                              <div className="text-xs font-semibold text-stone-700 leading-tight">{g.race_name}</div>
+                                              <div className="text-sm font-bold text-stone-700 leading-tight">{g.race_name}</div>
                                               <div className="clear-both"></div>
                                             </div>
                                           </div>
@@ -1840,7 +1846,7 @@ export function CalendarView({
             return (
               <div key={entry.type === 'availability' ? `a-${entry.item.id}` : entry.type === 'goal' ? `g-${entry.item.id}` : entry.type === 'workout' ? `w-${entry.item.id}` : `i-${entry.item.id}`} className="flex flex-col gap-1.5">
                 {showSectionTitle && (
-                  <div className="text-[10px] font-semibold uppercase tracking-wider text-stone-400 px-0.5">
+                  <div className="text-[10px] font-semibold uppercase tracking-wider text-stone-500 px-0.5">
                     {entry.section === 'morning' ? tWorkouts('calendar.morning') : entry.section === 'noon' ? tWorkouts('calendar.noon') : tWorkouts('calendar.evening')}
                   </div>
                 )}

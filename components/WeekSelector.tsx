@@ -3,16 +3,13 @@
 import { useMemo } from 'react'
 import { Button } from './Button'
 
-/** Séparateur utilisé dans dateRangeLabel (ex. "3 févr. – 9 févr."). */
-const RANGE_SEPARATOR = ' – '
-
 type WeekSelectorProps = {
   dateRangeLabel: string
   onNavigate: (offset: number) => void
   isAnimating: boolean
   /** Dernier jour de la 1ère semaine (ex. "9 févr.") affiché à droite du chevron gauche */
   prevWeekLastDayLabel?: string
-  /** Premier jour de la 3e semaine (ex. "23 févr.") affiché à gauche du chevron droit */
+  /** Dernier jour de la 3e semaine (ex. "29 févr.") affiché à droite du chevron droit */
   nextWeekFirstDayLabel?: string
   /** Aria-label for previous week button (passed from parent to avoid useTranslations in this component). */
   prevWeekAriaLabel?: string
@@ -30,10 +27,16 @@ export function WeekSelector({
   nextWeekAriaLabel = 'Semaine suivante',
 }: WeekSelectorProps) {
   const { startLabel, endLabel, hasTwoParts } = useMemo(() => {
-    const parts = dateRangeLabel.split(RANGE_SEPARATOR)
-    const start = parts[0] ?? dateRangeLabel
-    const end = parts[1] ?? ''
-    return { startLabel: start, endLabel: end, hasTwoParts: end.length > 0 }
+    // Robustesse : certains libellés peuvent contenir des espaces non standards (ex. NBSP),
+    // et on veut toujours pouvoir séparer "start … end" (au/to/–/-).
+    const normalized = dateRangeLabel.replace(/\u00A0/g, ' ').replace(/\s+/g, ' ').trim()
+    const match = normalized.match(/^(.+?)\s*(?:au|to|–|—|-)\s*(.+)$/i)
+    if (match) {
+      const start = match[1] ?? normalized
+      const end = match[2] ?? ''
+      return { startLabel: start, endLabel: end, hasTwoParts: end.length > 0 }
+    }
+    return { startLabel: normalized, endLabel: '', hasTwoParts: false }
   }, [dateRangeLabel])
 
   return (

@@ -1052,7 +1052,7 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
                                     borderLeftOnly={isResult}
                                   >
                                     <div className="flex gap-4 items-start min-w-0 justify-between">
-                                      <div className="flex flex-col items-center justify-center bg-stone-50 border border-stone-200 rounded-xl w-12 h-12 shrink-0">
+                                      <div className="flex flex-col items-center justify-center bg-stone-50 border border-stone-200 rounded-xl w-14 h-12 shrink-0">
                                         <span className="text-[10px] font-bold text-stone-400 uppercase">{dateBlock.monthYear}</span>
                                         <span className="text-lg font-bold text-stone-800">{dateBlock.day}</span>
                                       </div>

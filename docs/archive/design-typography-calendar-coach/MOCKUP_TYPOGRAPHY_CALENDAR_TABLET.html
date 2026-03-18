@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Typographie calendrier coach – Tablette</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            'palette-olive': '#8e9856',
+            'palette-amber': '#c9a544',
+            'palette-sage': '#aaaa51',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: ui-sans-serif, system-ui, sans-serif; }
+    .mockup-note { font-size: 0.7rem; color: #78716c; margin-top: 1rem; }
+  </style>
+</head>
+<body class="bg-stone-100 min-h-screen p-4">
+  <!-- Conteneur tablette ~768px -->
+  <div class="mx-auto max-w-[768px] min-h-[600px] flex flex-col bg-white rounded-2xl overflow-hidden border border-stone-200 shadow-lg">
+    <!-- En-tête -->
+    <header class="flex flex-row items-center justify-between gap-4 shrink-0 bg-white border-b border-stone-100 px-6 py-4">
+      <div class="flex items-center gap-4 min-w-0">
+        <a href="#" class="p-2 rounded-full hover:bg-stone-100 text-stone-400 shrink-0" aria-label="Retour">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </a>
+        <div class="w-9 h-9 rounded-xl bg-palette-olive flex items-center justify-center text-white text-sm font-bold shrink-0">SP</div>
+        <h1 class="text-base font-bold text-stone-900 truncate">Sara Peregord</h1>
+      </div>
+      <div class="flex items-center gap-2 bg-stone-50 p-1.5 rounded-xl border border-stone-200 shadow-sm shrink-0">
+        <button type="button" class="p-1.5 min-h-10 flex items-center gap-1.5 text-stone-500 hover:text-palette-forest-dark shrink-0">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="m15 18-7-7 7-7"/></svg>
+          <span class="text-xs text-stone-500 hidden sm:inline">15 mars</span>
+        </button>
+        <div class="w-[120px] px-2 py-0.5 text-center">
+          <span class="text-sm font-bold text-stone-800">16 mars au 22 mars</span>
+        </div>
+        <button type="button" class="p-1.5 min-h-10 flex items-center gap-1.5 text-stone-500 hover:text-palette-forest-dark shrink-0">
+          <span class="text-xs text-stone-500 hidden sm:inline">29 mars</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="m9 18 6-6-6-6"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Contenu -->
+    <main class="flex-1 overflow-y-auto px-6 py-6">
+      <!-- SEMAINE PRÉCÉDENTE -->
+      <section class="mb-8">
+        <h2 class="text-xs font-bold uppercase tracking-wider text-stone-500 mb-2">Semaine précédente — 9 mars au 15 mars</h2>
+        <div class="flex gap-2 mb-2 text-xs font-medium text-stone-500 justify-end">
+          <span>7h06 / 0'</span>
+          <span>·</span>
+          <span>49 km / 0 km</span>
+        </div>
+        <div class="grid grid-cols-7 gap-2">
+          <div class="rounded-lg border border-dashed border-stone-200 bg-stone-50/50 p-2 min-h-[100px] text-center">
+            <div class="text-xs font-semibold uppercase tracking-wider text-stone-500 pb-1">Lun.</div>
+            <div class="text-sm font-semibold text-stone-800">9</div>
+            <div class="mt-2 flex justify-center"><span class="text-stone-300 text-xl">+</span></div>
+          </div>
+          <div class="rounded-lg border border-stone-200 bg-white p-2 min-h-[100px]">
+            <div class="text-xs font-semibold uppercase tracking-wider text-stone-500 pb-1">Mar.</div>
+            <div class="text-sm font-semibold text-stone-800">10</div>
+            <div class="mt-2 inline-flex items-center gap-1 px-1.5 py-0.5 rounded border border-palette-forest-dark text-palette-forest-dark">
+              <span class="text-[10px] font-semibold uppercase">Disponible</span>
+            </div>
+          </div>
+          <div class="rounded-lg border border-stone-200 bg-white p-2 min-h-[100px]">
+            <div class="text-xs font-semibold uppercase tracking-wider text-stone-500 pb-1">Mer.</div>
+            <div class="text-sm font-semibold text-stone-800">11</div>
+            <div class="mt-2 inline-flex items-center gap-1 px-1.5 py-0.5 rounded border border-orange-400 text-orange-700">
+              <span class="text-[10px] font-semibold uppercase">Indisponible</span>
+            </div>
+          </div>
+          <div class="rounded-lg border border-dashed border-stone-200 bg-stone-50/50 p-2 min-h-[100px] text-center">
+            <div class="text-xs font-semibold uppercase tracking-wider text-stone-500 pb-1">Jeu.</div>
+            <div class="text-sm font-semibold text-stone-800">12</div>
+            <div class="mt-4 flex justify-center"><span class="text-stone-300 text-xl">+</span></div>
+          </div>
+          <div class="rounded-lg border border-dashed border-stone-200 bg-stone-50/50 p-2 min-h-[100px] text-center">
+            <div class="text-xs font-semibold uppercase tracking-wider text-stone-500 pb-1">Ven.</div>
+            <div class="text-sm font-semibold text-stone-800">13</div>
+            <div class="mt-4 flex justify-center"><span class="text-stone-300 text-xl">+</span></div>
+          </div>
+          <div class="rounded-lg border border-dashed border-stone-200 bg-stone-50/50 p-2 min-h-[100px] text-center">
+            <div class="text-xs font-semibold uppercase tracking-wider text-stone-500 pb-1">Sam.</div>
+            <div class="text-sm font-semibold text-stone-800">14</div>
+            <div class="mt-4 flex justify-center"><span class="text-stone-300 text-xl">+</span></div>
+          </div>
+          <div class="rounded-lg border border-dashed border-stone-200 bg-stone-50/50 p-2 min-h-[100px] text-center">
+            <div class="text-xs font-semibold uppercase tracking-wider text-stone-500 pb-1">Dim.</div>
+            <div class="text-sm font-semibold text-stone-800">15</div>
+            <div class="mt-4 flex justify-center"><span class="text-stone-300 text-xl">+</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Semaine actuelle -->
+      <section class="mb-8">
+        <div class="flex items-baseline gap-2 mb-4">
+          <h2 class="text-base font-bold text-palette-forest-dark">Semaine actuelle</h2>
+          <span class="text-sm text-stone-500 font-medium">— 16 mars au 22 mars</span>
+        </div>
+        <div class="flex gap-4 mb-4">
+          <div class="flex-1">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="text-palette-amber text-sm font-semibold">Volume horaire total</span>
+            </div>
+            <div class="h-2 bg-stone-100 rounded-full overflow-hidden">
+              <div class="h-full bg-palette-forest-dark/30 rounded-full w-1/3"></div>
+            </div>
+            <p class="text-xs text-stone-500 mt-0.5">1h10 prévu</p>
+          </div>
+          <div class="flex-1">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="text-stone-600 text-sm font-semibold">Run</span>
+            </div>
+            <div class="h-2 bg-stone-100 rounded-full overflow-hidden">
+              <div class="h-full bg-stone-300 rounded-full w-1/3"></div>
+            </div>
+            <p class="text-xs text-stone-500 mt-0.5">14 km prévu</p>
+          </div>
+        </div>
+        <div class="grid grid-cols-7 gap-2">
+          <div class="rounded-lg border border-dashed border-stone-200 bg-stone-50/50 p-2 min-h-[100px] text-center">
+            <div class="text-xs font-semibold uppercase tracking-wider text-stone-500 pb-1">Lun.</div>
+            <div class="text-sm font-semibold text-stone-800">16</div>
+            <div class="mt-4 flex justify-center"><span class="text-stone-300 text-xl">+</span></div>
+          </div>
+          <div class="rounded-lg border border-stone-200 bg-white p-2 min-h-[100px]">
+            <div class="text-xs font-semibold uppercase tracking-wider text-stone-500 pb-1">Mar.</div>
+            <div class="text-sm font-semibold text-stone-800">17</div>
+            <div class="mt-2 inline-flex items-center gap-1 px-1.5 py-0.5 rounded border border-palette-forest-dark text-palette-forest-dark">
+              <span class="text-[10px] font-semibold uppercase">Disponible</span>
+            </div>
+          </div>
+          <div class="rounded-lg border border-stone-200 bg-white p-2 min-h-[100px]">
+            <div class="text-xs font-semibold uppercase tracking-wider text-palette-forest-dark pb-1 border-b-2 border-palette-forest-dark">Mer.</div>
+            <div class="text-sm font-bold text-palette-forest-dark">18</div>
+                <div class="text-xs font-semibold uppercase tracking-wider text-stone-500 mb-0.5">Midi</div>
+                <div class="mt-1 rounded-lg border-l-4 border-palette-forest-dark bg-white p-2 shadow-sm">
+                  <h3 class="text-sm font-bold text-stone-900">Zone 2</h3>
+              <p class="text-xs text-stone-500 line-clamp-2">Sortie longue fait toi plaisir</p>
+              <div class="flex flex-wrap gap-1 mt-1 text-[10px] text-stone-500">
+                <span>1h10</span><span>·</span><span>14 km</span>
+                <span class="ml-auto px-1 py-0.5 rounded-full bg-stone-100 text-stone-500 text-[10px] font-semibold">Planifié</span>
+              </div>
+            </div>
+          </div>
+          <div class="rounded-lg border border-dashed border-stone-200 bg-stone-50/50 p-2 min-h-[100px] text-center">
+            <div class="text-xs font-semibold uppercase tracking-wider text-stone-500 pb-1">Jeu.</div>
+            <div class="text-sm font-semibold text-stone-800">19</div>
+            <div class="mt-4 flex justify-center"><span class="text-stone-300 text-xl">+</span></div>
+          </div>
+          <div class="rounded-lg border border-dashed border-stone-200 bg-stone-50/50 p-2 min-h-[100px] text-center">
+            <div class="text-xs font-semibold uppercase tracking-wider text-stone-500 pb-1">Ven.</div>
+            <div class="text-sm font-semibold text-stone-800">20</div>
+            <div class="mt-4 flex justify-center"><span class="text-stone-300 text-xl">+</span></div>
+          </div>
+          <div class="rounded-lg border border-dashed border-stone-200 bg-stone-50/50 p-2 min-h-[100px] text-center">
+            <div class="text-xs font-semibold uppercase tracking-wider text-stone-500 pb-1">Sam.</div>
+            <div class="text-sm font-semibold text-stone-800">21</div>
+            <div class="mt-4 flex justify-center"><span class="text-stone-300 text-xl">+</span></div>
+          </div>
+          <div class="rounded-lg border border-dashed border-stone-200 bg-stone-50/50 p-2 min-h-[100px] text-center">
+            <div class="text-xs font-semibold uppercase tracking-wider text-stone-500 pb-1">Dim.</div>
+            <div class="text-sm font-semibold text-stone-800">22</div>
+            <div class="mt-4 flex justify-center"><span class="text-stone-300 text-xl">+</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Objectifs -->
+      <section class="pt-6 border-t border-stone-100">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="p-2 bg-palette-forest-dark/10 rounded-full text-palette-forest-dark">
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <h3 class="text-base font-bold text-stone-900">Objectifs de l'athlète</h3>
+        </div>
+        <p class="text-xs font-bold uppercase tracking-wider text-stone-500 mb-4">Saison 2026</p>
+        <div class="rounded-xl border border-l-4 border-palette-amber border-stone-200 bg-white p-4 shadow-sm">
+          <div class="flex gap-4">
+            <div class="flex flex-col items-center justify-center bg-stone-50 border border-stone-200 rounded-lg w-12 h-12 shrink-0">
+              <span class="text-[10px] font-bold uppercase text-stone-500">Déc. 26</span>
+              <span class="text-sm font-bold text-stone-800">30</span>
+            </div>
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center gap-2">
+                <h4 class="text-sm font-bold text-stone-900">test 2</h4>
+                <span class="text-[10px] font-semibold uppercase text-palette-amber bg-palette-amber/10 px-2 py-0.5 rounded-full border border-palette-amber">Principal</span>
+              </div>
+              <p class="text-xs text-stone-500 mt-0.5">32 km · Objectif : 1h30min30s</p>
+              <span class="inline-block mt-2 text-xs font-bold text-palette-forest-dark bg-palette-forest-dark/10 px-2 py-0.5 rounded-lg">J-288</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <p class="mockup-note text-center p-4 max-w-[768px] mx-auto">Mockup typographie tablette — Nom: text-base, sections: text-base, titres secondaires: text-xs uppercase</p>
+</body>
+</html>
