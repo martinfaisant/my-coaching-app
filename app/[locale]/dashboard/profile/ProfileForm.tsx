@@ -44,7 +44,9 @@ type ProfileFormProps = {
   /** Présentation du coach en anglais. */
   presentationEn?: string
   postalCode: string
-  /** Temps à allouer par semaine (heures), athlète uniquement. */
+  /** Volume actuel (heures/sem.), athlète uniquement. */
+  weeklyCurrentHours?: number | null
+  /** Volume maximum (heures/sem.), athlète uniquement. */
   weeklyTargetHours?: number | null
   /** Volume par sport (km, m ou h), athlète uniquement. */
   weeklyVolumeBySport?: Record<string, number> | null
@@ -64,6 +66,7 @@ export function ProfileForm({
   presentationEn = '',
   postalCode,
   preferredLocale: preferredLocaleProp = null,
+  weeklyCurrentHours = null,
   weeklyTargetHours = null,
   weeklyVolumeBySport = null,
 }: ProfileFormProps) {
@@ -128,6 +131,7 @@ export function ProfileForm({
     presentation: presentation || '',
     presentationFr: presentationFr || '',
     presentationEn: presentationEn || '',
+    weeklyCurrentHours: weeklyCurrentHours ?? '',
     weeklyTargetHours: weeklyTargetHours ?? '',
     weeklyVolumeBySport: JSON.stringify(weeklyVolumeBySport ?? {}),
   })
@@ -175,6 +179,8 @@ export function ProfileForm({
         .sort()
       if (JSON.stringify(currentPracticedSports) !== JSON.stringify(initialValuesRef.current.practicedSports)) return true
 
+      const currentWeeklyCurrent = (form.querySelector('[name="weekly_current_hours"]') as HTMLInputElement)?.value.trim() ?? ''
+      if (currentWeeklyCurrent !== String(initialValuesRef.current.weeklyCurrentHours)) return true
       const currentWeeklyTarget = (form.querySelector('[name="weekly_target_hours"]') as HTMLInputElement)?.value.trim() ?? ''
       if (currentWeeklyTarget !== String(initialValuesRef.current.weeklyTargetHours)) return true
 
@@ -286,6 +292,7 @@ export function ProfileForm({
           .sort()
         const currentPresentationFr = (form.querySelector('[name="presentation_fr"]') as HTMLTextAreaElement)?.value.trim() || ''
         const currentPresentationEn = (form.querySelector('[name="presentation_en"]') as HTMLTextAreaElement)?.value.trim() || ''
+        const currentWeeklyCurrent = (form.querySelector('[name="weekly_current_hours"]') as HTMLInputElement)?.value.trim() ?? ''
         const currentWeeklyTarget = (form.querySelector('[name="weekly_target_hours"]') as HTMLInputElement)?.value.trim() ?? ''
         const expandedForVolume = currentPracticedSports.flatMap((s) =>
           s === 'triathlon' ? ['course', 'velo', 'natation'] : [s]
@@ -321,6 +328,7 @@ export function ProfileForm({
           presentation: initialValuesRef.current.presentation,
           presentationFr: currentPresentationFr,
           presentationEn: currentPresentationEn,
+          weeklyCurrentHours: currentWeeklyCurrent,
           weeklyTargetHours: currentWeeklyTarget,
           weeklyVolumeBySport: JSON.stringify(currentVolume),
         }
@@ -655,34 +663,54 @@ export function ProfileForm({
             )}
           </div>
 
-          {/* Section Objectifs et volume (athlète uniquement) */}
+          {/* Section Volumes hebdomadaires (athlète uniquement) */}
           {!isCoach && (
             <>
               <hr className="border-stone-100 my-5" />
               <div className="mb-5">
                 <h2 className="text-sm font-bold text-stone-900 uppercase tracking-wide mb-3">
-                  {tProfile('weeklyTargetSectionTitle')}
+                  {tProfile('weeklyVolumesSectionTitle')}
                 </h2>
                 {selectedPracticedSports.length === 0 ? (
                   <p className="text-sm text-stone-500">{tProfile('noPracticedSportsMessage')}</p>
                 ) : (
                   <>
-                    <div className="flex flex-wrap items-center justify-between gap-3 py-2.5 px-3 rounded-xl bg-stone-50 border border-stone-100 mb-4">
-                      <span className="text-sm font-medium text-stone-700 shrink-0">
-                        {tProfile('weeklyTargetLabel')}
-                      </span>
-                      <div className="relative w-28 shrink-0">
+                    <div className="grid grid-cols-2 gap-3 mb-4">
+                      <div className="flex flex-wrap items-center justify-between gap-3 py-2.5 px-3 rounded-xl bg-stone-50 border border-stone-100">
+                        <span className="text-sm font-medium text-stone-700 shrink-0">
+                          {tProfile('weeklyCurrentHoursLabel')}
+                        </span>
+                        <div className="relative w-[6.5rem] shrink-0">
+                          <input
+                            type="text"
+                            name="weekly_current_hours"
+                            inputMode="decimal"
+                            defaultValue={weeklyCurrentHours != null ? String(weeklyCurrentHours) : ''}
+                            placeholder="6"
+                            className="w-full pl-3 pr-10 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition"
+                          />
+                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 text-sm pointer-events-none">
+                            {tProfile('suffixHoursPerWeek')}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap items-center justify-between gap-3 py-2.5 px-3 rounded-xl bg-stone-50 border border-stone-100">
+                        <span className="text-sm font-medium text-stone-700 shrink-0">
+                          {tProfile('weeklyMaxHoursLabel')}
+                        </span>
+<div className="relative w-[6.5rem] shrink-0">
                         <input
                           type="text"
                           name="weekly_target_hours"
-                          inputMode="decimal"
-                          defaultValue={weeklyTargetHours != null ? String(weeklyTargetHours) : ''}
-                          placeholder="10"
-                          className="w-full pl-3 pr-11 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition"
-                        />
-                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 text-sm pointer-events-none">
-                          {tProfile('suffixHoursPerWeek')}
-                        </span>
+                            inputMode="decimal"
+                            defaultValue={weeklyTargetHours != null ? String(weeklyTargetHours) : ''}
+                            placeholder="10"
+                            className="w-full pl-3 pr-10 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition"
+                          />
+                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 text-sm pointer-events-none">
+                            {tProfile('suffixHoursPerWeek')}
+                          </span>
+                        </div>
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-3">
@@ -711,28 +739,28 @@ export function ProfileForm({
                               </span>
                             </div>
                             <div className="flex flex-wrap items-center gap-3 ml-auto min-w-0 w-full sm:w-auto justify-end">
-                              <div className="relative w-28 shrink-0">
+                              <div className="relative w-[6.5rem] shrink-0">
                                 <input
                                   type="text"
                                   name={`weekly_volume_${sport}`}
                                   inputMode="decimal"
                                   defaultValue={defaultValue}
                                   placeholder={unit === 'm' ? '2500' : unit === 'h' ? '2,5' : '42'}
-                                  className="w-full pl-3 pr-12 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition"
+                                  className="w-full pl-3 pr-11 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition"
                                 />
                                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 text-xs pointer-events-none whitespace-nowrap">
                                   {tProfile(suffixKey)}
                                 </span>
                               </div>
                               {showCourseElevation && (
-                                <div className="relative w-28 shrink-0">
+                                <div className="relative w-[6.5rem] shrink-0">
                                   <input
                                     type="text"
                                     name="weekly_volume_course_elevation_m"
                                     inputMode="decimal"
                                     defaultValue={elevationDefault}
                                     placeholder="500"
-                                    className="w-full pl-3 pr-14 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition"
+                                    className="w-full pl-3 pr-12 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition"
                                   />
                                   <span className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 text-xs pointer-events-none whitespace-nowrap">
                                     {tProfile('suffixDPlusPerWeek')}

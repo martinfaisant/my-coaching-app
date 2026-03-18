@@ -42,6 +42,7 @@ export async function updateProfile(
     avatar_url?: string | null
     postal_code?: string | null
     preferred_locale?: string | null
+    weekly_current_hours?: number | null
     weekly_target_hours?: number | null
     weekly_volume_by_sport?: Record<string, number>
   } = {
@@ -82,16 +83,37 @@ export async function updateProfile(
       )
     payload.practiced_sports = practicedSports
 
-    // Temps à allouer (global), en heures
+    // Volume actuel (heures/sem.) — obligatoire si au moins un sport
+    const weeklyCurrentRaw = (formData.get('weekly_current_hours') as string)?.trim() ?? ''
+    if (weeklyCurrentRaw !== '') {
+      const parsed = parseFloat(weeklyCurrentRaw.replace(',', '.'))
+      if (Number.isNaN(parsed) || parsed < 0 || parsed > 168) {
+        const tErr = await getTranslations({ locale, namespace: 'profile.validation' })
+        return { error: tErr('weeklyCurrentHoursInvalid') }
+      }
+      payload.weekly_current_hours = Math.round(parsed * 100) / 100
+    } else {
+      if (practicedSports.length > 0) {
+        const tErr = await getTranslations({ locale, namespace: 'profile.validation' })
+        return { error: tErr('weeklyCurrentHoursInvalid') }
+      }
+      payload.weekly_current_hours = null
+    }
+
+    // Volume maximum (heures/sem.) — obligatoire si au moins un sport
     const weeklyTargetRaw = (formData.get('weekly_target_hours') as string)?.trim() ?? ''
     if (weeklyTargetRaw !== '') {
       const parsed = parseFloat(weeklyTargetRaw.replace(',', '.'))
       if (Number.isNaN(parsed) || parsed < 0 || parsed > 168) {
         const tErr = await getTranslations({ locale, namespace: 'profile.validation' })
-        return { error: tErr('weeklyTargetInvalid') }
+        return { error: tErr('weeklyMaxHoursInvalid') }
       }
       payload.weekly_target_hours = Math.round(parsed * 100) / 100
     } else {
+      if (practicedSports.length > 0) {
+        const tErr = await getTranslations({ locale, namespace: 'profile.validation' })
+        return { error: tErr('weeklyMaxHoursInvalid') }
+      }
       payload.weekly_target_hours = null
     }
 

@@ -106,6 +106,7 @@ export function PendingRequestTile({ request, goals = [] }: PendingRequestTilePr
     : null
 
   const hasVolume =
+    request.athlete_weekly_current_hours != null ||
     request.athlete_weekly_target_hours != null ||
     (request.athlete_weekly_volume_by_sport &&
       Object.keys(request.athlete_weekly_volume_by_sport).length > 0)
@@ -224,15 +225,23 @@ export function PendingRequestTile({ request, goals = [] }: PendingRequestTilePr
             <p className="text-sm text-stone-500 italic">{t('pendingRequests.notSpecified')}</p>
           ) : (
             <div className="space-y-2.5">
+              {request.athlete_weekly_current_hours != null && (
+                <div className="flex items-center gap-2 py-1.5 px-2.5 rounded-lg bg-white border border-stone-100">
+                  <span className="text-stone-400 shrink-0" aria-hidden>
+                    <ClockIconSmall />
+                  </span>
+                  <span className="text-sm font-medium text-stone-800">
+                    {t('pendingRequests.weeklyCurrentHoursLabel')} {request.athlete_weekly_current_hours} {tProfile('suffixHoursPerWeek')}
+                  </span>
+                </div>
+              )}
               {request.athlete_weekly_target_hours != null && (
                 <div className="flex items-center gap-2 py-1.5 px-2.5 rounded-lg bg-white border border-stone-100">
                   <span className="text-stone-400 shrink-0" aria-hidden>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
+                    <ClockIconSmall />
                   </span>
                   <span className="text-sm font-medium text-stone-800">
-                    {t('pendingRequests.weeklyTargetLabel')} {request.athlete_weekly_target_hours} {tProfile('suffixHoursPerWeek')}
+                    {t('pendingRequests.weeklyMaxHoursLabel')} {request.athlete_weekly_target_hours} {tProfile('suffixHoursPerWeek')}
                   </span>
                 </div>
               )}

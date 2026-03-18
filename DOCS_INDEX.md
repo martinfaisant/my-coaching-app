@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 17 mars 2026 (Mode Analyste : correctif mobile Mon profil — archivage design-mobile-volume-tiles ; voir Changements récents)
+**Dernière mise à jour :** 17 mars 2026 (Mode Analyste : Volumes hebdomadaires — archivage design-weekly-volume-two-columns ; voir Changements récents)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -18,7 +18,7 @@
 - **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), stack technique, **URL production https://mysportally.com**
 - **Utiliser pour :** Comprendre le projet, les features, les rôles, l'architecture globale
 - **Taille :** ~420 lignes
-- **Dernière mise à jour :** 17 mars 2026 (§4.4 Objectifs de course / résultats passés dans la demande ; trail = D+ dans Course uniquement, bande grise dès date ≤ aujourd’hui, badges fond blanc)
+- **Dernière mise à jour :** 17 mars 2026 (§4.2.1 Volumes hebdomadaires : Volume actuel + Volume maximum, 2 colonnes, weekly_current_hours ; §4.4 demande sans snapshot volumes, coach lit profil)
 
 ### **docs/DESIGN_SYSTEM.md** ⭐
 - **Contenu :** Tokens (couleurs, typo, espacements), composants (Button, Input, Badge, TileCard, DashboardPageShell, Modal, etc.), guidelines UI, exemples de code, §7 breakpoints (calendrier, chat, Trouver mon coach, My offers)
@@ -30,7 +30,7 @@
 - **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces, utilisation dans composants et server actions, **checklist pour nouvelles features** (toujours penser bilingue)
 - **Utiliser pour :** Toute nouvelle feature ou texte visible, ajout de clés de traduction, dépannage i18n
 - **Taille :** ~180 lignes
-- **Dernière mise à jour :** 2 mars 2026 (common.changeLanguage, LanguageSwitcher aria-label)
+- **Dernière mise à jour :** 17 mars 2026 (profile : Volumes hebdomadaires ; athletes.pendingRequests)
 
 ### **docs/AUTH_EMAIL_TEMPLATES.md**
 - **Contenu :** Guide de configuration des emails d’auth Supabase (sujet, i18n FR/EN, variables, dépannage logo). **Les fichiers HTML des templates** (Confirm signup, puis Magic Link, Reset Password, etc.) sont dans **docs/email-templates/**.
@@ -281,6 +281,10 @@
 - `docs/archive/design-mobile-volume-tiles/` — DESIGN_MOBILE_VOLUME_TILES.md (analyse Designer, 3 solutions), MOCKUP_MOBILE_VOLUME_SOLUTION_A.html, MOCKUP_MOBILE_VOLUME_SOLUTION_B.html.
 - **Raison :** Correctif livré ; marges latérales réduites sur mobile (wrapper -mx-3 + contentClassName shell), grille tuiles volume responsive (grid-cols-1 sm:grid-cols-2), largeur champs 6.5rem et padding droit suffixe réduit. Comportement : **Project_context.md §4.2.1** (Mon profil — mobile layout), **docs/DESIGN_SYSTEM.md** §7 (Page Mon profil).
 
+**Volumes hebdomadaires (Volume actuel + Volume maximum, 2 colonnes) – archivés 17 mars 2026 :**
+- `docs/archive/design-weekly-volume-two-columns/` — DESIGN_WEEKLY_VOLUME_TWO_COLUMNS.md, SPEC_WEEKLY_VOLUME_TWO_COLUMNS.md, USER_STORIES_WEEKLY_VOLUME_TWO_COLUMNS.md, MOCKUP_WEEKLY_VOLUME_TWO_COLUMNS.html.
+- **Raison :** Feature livrée ; section « Volumes hebdomadaires » sur Mon profil et dans la demande : Volume actuel (weekly_current_hours) + Volume maximum (weekly_target_hours) en 2 colonnes, puis volumes par sport ; pas de snapshot sur coach_requests (coach lit le profil). Comportement : **Project_context.md §4.2.1**, §4.4.
+
 **Disponibilités / indisponibilités athlète (archivés 2 mars 2026) :**
 - `docs/archive/design-athlete-availability/` — DESIGN.md (besoin, cas d’usage, décisions PO, style tuiles option D), SPEC_ARCHITECTURE.md (modèle, RLS, fichiers), MOCKUP_AVAILABILITY_MODAL.html, MOCKUP_CALENDAR_AVAILABILITY_TILES.html.
 - **Raison :** Feature livrée **sans récurrence** ; athlète peut créer/éditer/supprimer des créneaux disponibilité ou indisponibilité par jour (bouton « + » sur jours futurs, modale avec type, date, Début/Fin optionnels, Note) ; coach voit les tuiles en lecture seule sur le calendrier de l’athlète (modale détail). Comportement décrit dans **Project_context.md §4.5** (Athlete availability), **docs/DESIGN_SYSTEM.md** (§7 Calendrier, AvailabilityModal, AvailabilityDetailModal), **docs/I18N.md** (namespace availability).
@@ -417,9 +421,15 @@
 **Fréquence de mise à jour :** À chaque ajout/suppression de documentation
 
 **Dernier scan :** 17 mars 2026  
-**Dernier nettoyage :** 17 mars 2026 (archivage design-mobile-volume-tiles)
+**Dernier nettoyage :** 17 mars 2026 (archivage design-weekly-volume-two-columns, design-mobile-volume-tiles)
 
 ### Changements récents :
+
+✅ **17 mars 2026 – Volumes hebdomadaires (Volume actuel + Volume maximum, 2 colonnes) – Mode Analyste :**
+- **Livraison :** (1) **Mon profil** : section renommée en **« Volumes hebdomadaires »** ; **Volume actuel** (h/sem.) et **Volume maximum** (h/sem.) en disposition **2 colonnes** (même grille que les tuiles volume par sport) ; champs obligatoires, validation 0–168 h (pas de règle actuel ≤ max). Données : `profiles.weekly_current_hours` (migration 058), `weekly_target_hours`. (2) **Demande de coach** : même section (2 colonnes + volumes par sport) ; à l’envoi mise à jour du profil (weekly_current_hours, weekly_target_hours, weekly_volume_by_sport) ; **pas de snapshot** sur coach_requests — le coach voit toujours les volumes depuis le **profil** athlète. (3) **Tuile demande en attente** (coach) et **modale Demande envoyée** (athlète) : affichage « Volume actuel » / « Volume maximum » puis volumes par sport (même design ; titre « Volumes hebdomadaires » en dehors du bloc dans la modale athlète).
+- **Fichiers :** `supabase/migrations/058_profiles_weekly_current_hours.sql`, `types/database.ts`, `ProfileForm.tsx`, `profile/actions.ts`, `FindCoachSection.tsx`, `dashboard/actions.ts`, `PendingRequestTile.tsx`, `AthleteSentRequestDetailModal.tsx`, `RequestCoachButton.tsx`, `find-coach/page.tsx`, messages FR/EN.
+- **Doc :** Project_context.md §4.2.1 (Volumes hebdomadaires), §4.4 (demande, tuile, pas de snapshot), §5 (profiles.weekly_current_hours), project-core.mdc (Profil athlète – Volumes hebdomadaires, Demande).
+- **Archivage :** `docs/design-weekly-volume-two-columns/` → `docs/archive/design-weekly-volume-two-columns/` (DESIGN, SPEC, USER_STORIES, MOCKUP). Référence courante : **Project_context.md §4.2.1**, §4.4.
 
 ✅ **17 mars 2026 – Correctif affichage mobile Mon profil – Mode Analyste :**
 - **Livraison :** (1) **Marges latérales** : sur la page Mon profil, réduction des marges sur mobile (wrapper `-mx-3` + `DashboardPageShell` `contentClassName` `!px-2 sm:!px-6 lg:!px-8`) pour limiter le blanc à gauche/droite du bloc formulaire. (2) **Grille tuiles volume** : section « Objectifs et volume par sport » en grille responsive `grid-cols-1 sm:grid-cols-2` (ProfileForm et FindCoachSection) pour éviter le dépassement horizontal sur petit écran. (3) **Champs saisie** : largeur `w-[6.5rem]` et padding droit réduit (pr-10 / pr-11 / pr-12) pour les inputs avec suffixe (h/sem., km/sem., D+/sem.).
@@ -701,7 +711,7 @@
 | **Statut séance, modales entraînement (en-tête création/édition/lecture seule, tuile sport, date à gauche), total « fait », retour athlète (ressenti, intensité, plaisir)** | **`Project_context.md` §4.5** (Workouts), **`docs/DESIGN_SYSTEM.md`** (Modal, WorkoutModal) |
 | **Moment de la journée (Matin / Midi / Soir), sections calendrier, modale « Activités du jour »** | **`Project_context.md` §4.5** (Calendar day structure, Workout time_of_day), **`docs/DESIGN_SYSTEM.md`** (§7 Calendrier, WorkoutModal) |
 | **Bouton Déconnexion (page Profil)** | **`Project_context.md` §4.2.1** (Profile page), **`docs/DESIGN_SYSTEM.md`** (§ Button / LogoutButton) |
-| **Objectifs et volume par sport (profil athlète : temps à allouer, volume par sport, triathlon → 3 tuiles, trail → D+)** | **`Project_context.md` §4.2.1** (Athlete profile), **`docs/DESIGN_SYSTEM.md`** (§ SportTileSelectable), **`docs/I18N.md`** (profile.*) |
+| **Volumes hebdomadaires (Volume actuel + Volume maximum, 2 colonnes ; volume par sport ; triathlon → 3 tuiles, trail → D+)** | **`Project_context.md` §4.2.1** (Athlete profile), **`docs/DESIGN_SYSTEM.md`** (§ SportTileSelectable), **`docs/I18N.md`** (profile.*) |
 | **Mon profil mobile (marges réduites, grille volume responsive, champs 6.5rem)** | **`Project_context.md` §4.2.1** (Mon profil — mobile layout), **`docs/DESIGN_SYSTEM.md`** §7 (Page Mon profil) |
 | **Disponibilités / indisponibilités athlète (calendrier, modales, pas de récurrence)** | **`Project_context.md` §4.5** (Athlete availability), **`docs/DESIGN_SYSTEM.md`** (§7 Calendrier, AvailabilityModal, AvailabilityDetailModal) |
 | **Résultat objectif passé (saisie temps/place/note, modale, affichage tuile)** | **`Project_context.md` §4.7** (Goals), **`docs/DESIGN_SYSTEM.md`** (§ TileCard, Page Objectifs), **`lib/goalResultUtils.ts`** |
@@ -709,7 +719,7 @@
 | **Calendrier / sélecteur de date (modale entraînement modifiable)** | **`docs/DESIGN_SYSTEM.md`** § DatePickerPopup, § Dropdown ; **Project_context.md** §4.5 (Create & edit modal). Design archivé : `docs/archive/design-workout-modal-calendar/` |
 | **Page par défaut / redirections dashboard (find-coach, Mes athlètes)** | **`Project_context.md` §4.0** |
 | Tuile Profil sidebar (état sélectionné sur page Profil, centrage mode replié) | `Project_context.md` §4.0, `docs/DESIGN_SYSTEM.md` §7 |
-| Tuile demandes en attente (coach) / Message | Objectifs et volume / Discuter / Refuser-Accepter | `Project_context.md` §4.4, `docs/DESIGN_SYSTEM.md` §7 (PendingRequestTile) |
+| Tuile demandes en attente (coach) / Message | Volumes hebdomadaires (profil) / Discuter / Refuser-Accepter | `Project_context.md` §4.4, `docs/DESIGN_SYSTEM.md` §7 (PendingRequestTile) |
 | **Objectifs de course / résultats passés dans la demande** (Ajouter, Modifier résultat, Voir plus) | `Project_context.md` §4.4 (Objectifs de course dans la demande), Modal layer | `docs/DESIGN_SYSTEM.md` § Modal |
 | **Prix offre non modifiable après publication** (trigger BDD, UI read-only, modale) | **`Project_context.md` §4.4**, **`docs/DESIGN_SYSTEM.md`** (formulaire offres) |
 | Grilles responsive (Trouver mon coach, My offers, Mes athlètes) | `docs/DESIGN_SYSTEM.md` §7 |
