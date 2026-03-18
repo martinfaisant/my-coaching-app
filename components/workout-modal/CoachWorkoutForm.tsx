@@ -155,7 +155,7 @@ export const CoachWorkoutForm = memo(function CoachWorkoutForm({
 
           <div className="bg-stone-50 p-4 rounded-xl border border-stone-100">
             <div className="flex items-center justify-between mb-3">
-              <div className="text-xs font-bold text-stone-500 uppercase tracking-wide">
+              <div className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
                 {tWorkouts('form.sessionGoals')}
               </div>
               {hasTimeDistanceChoice && (

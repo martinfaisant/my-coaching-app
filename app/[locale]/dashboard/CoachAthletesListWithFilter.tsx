@@ -103,7 +103,7 @@ export function CoachAthletesListWithFilter({ athletes, showDivider = false }: P
     <>
       {showDivider && <div className="border-t border-stone-200 my-8" />}
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
-        <h2 className="text-base font-semibold text-stone-900">
+        <h2 className="text-sm font-bold uppercase tracking-wider text-stone-700">
           {t('myAthletesWithCount', { count: athletes.length })}
         </h2>
         <div className="flex flex-wrap items-end gap-3 w-full sm:w-auto">
@@ -125,7 +125,7 @@ export function CoachAthletesListWithFilter({ athletes, showDivider = false }: P
             ariaLabel={t('sortByLabel')}
             minWidth="180px"
             labelClassName="!text-xs !mb-1.5"
-            triggerClassName="text-sm py-2"
+            triggerClassName="text-sm !h-11"
           />
         </div>
       </div>

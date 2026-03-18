@@ -143,7 +143,7 @@ export function BadgeShowcase() {
         </p>
         <div className="space-y-8">
           <div>
-            <p className="text-xs font-medium text-stone-500 uppercase tracking-wide mb-3">État statique (non cliquable)</p>
+            <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider mb-3">État statique (non cliquable)</p>
             <p className="text-xs text-stone-500 mb-2">Badge simple, affichage uniquement (cartes coach, listes).</p>
             <div className="flex flex-wrap gap-2">
               <Badge sport="course" />
@@ -152,7 +152,7 @@ export function BadgeShowcase() {
             </div>
           </div>
           <div>
-            <p className="text-xs font-medium text-stone-500 uppercase tracking-wide mb-3">Cliquable non sélectionné</p>
+            <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider mb-3">Cliquable non sélectionné</p>
             <p className="text-xs text-stone-500 mb-2">Hover : bordure forest. Classes : border-stone-200 bg-white text-stone-600 hover:border-palette-forest-dark</p>
             <div className="flex flex-wrap gap-2">
               {(['course', 'velo', 'natation'] as SportType[]).map((sport) => {
@@ -171,7 +171,7 @@ export function BadgeShowcase() {
             </div>
           </div>
           <div>
-            <p className="text-xs font-medium text-stone-500 uppercase tracking-wide mb-3">Sélectionné</p>
+            <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider mb-3">Sélectionné</p>
             <p className="text-xs text-stone-500 mb-2">Fond forest, texte blanc. Classes : bg-palette-forest-dark text-white border-palette-forest-dark shadow-sm</p>
             <div className="flex flex-wrap gap-2">
               {(['course', 'velo'] as SportType[]).map((sport) => {
@@ -195,7 +195,7 @@ export function BadgeShowcase() {
             </div>
           </div>
           <div>
-            <p className="text-xs font-medium text-stone-500 uppercase tracking-wide mb-3">Démo interactive</p>
+            <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider mb-3">Démo interactive</p>
             <p className="text-xs text-stone-500 mb-2">Cliquez pour sélectionner/désélectionner (profil coach, FindCoachSection).</p>
             <TileDemo />
           </div>

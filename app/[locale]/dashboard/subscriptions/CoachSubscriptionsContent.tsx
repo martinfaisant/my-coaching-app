@@ -56,7 +56,7 @@ export function CoachSubscriptionsContent({
   return (
     <>
       <section className="mb-10">
-        <h2 className="text-lg font-bold text-stone-900 mb-4">{t('activeSection')}</h2>
+        <h2 className="text-sm font-bold uppercase tracking-wider text-stone-700 mb-4">{t('activeSection')}</h2>
         {activeSubscriptions.length === 0 ? (
           <p className="text-sm text-stone-500">{t('noActive')}</p>
         ) : (
@@ -74,7 +74,7 @@ export function CoachSubscriptionsContent({
                   <button
                     type="button"
                     onClick={() => setSelectedSubscription(item)}
-                    className="font-semibold text-stone-900 hover:text-palette-forest-dark transition-colors text-left"
+                    className="text-sm font-semibold text-stone-900 hover:text-palette-forest-dark transition-colors text-left"
                   >
                     {item.athlete.displayName}
                   </button>
@@ -105,7 +105,7 @@ export function CoachSubscriptionsContent({
       </section>
 
       <section className="mb-10">
-        <h2 className="text-lg font-bold text-stone-900 mb-4">{t('cancellationScheduledSection')}</h2>
+        <h2 className="text-sm font-bold uppercase tracking-wider text-stone-700 mb-4">{t('cancellationScheduledSection')}</h2>
         {cancellationScheduledSubscriptions.length === 0 ? (
           <p className="text-sm text-stone-500">{t('noCancellationScheduled')}</p>
         ) : (
@@ -123,7 +123,7 @@ export function CoachSubscriptionsContent({
                   <button
                     type="button"
                     onClick={() => setSelectedSubscription(item)}
-                    className="font-semibold text-stone-900 hover:text-palette-forest-dark transition-colors text-left"
+                    className="text-sm font-semibold text-stone-900 hover:text-palette-forest-dark transition-colors text-left"
                   >
                     {item.athlete.displayName}
                   </button>
@@ -159,7 +159,7 @@ export function CoachSubscriptionsContent({
       </section>
 
       <section>
-        <h2 className="text-lg font-bold text-stone-900 mb-4">{t('historySection')}</h2>
+        <h2 className="text-sm font-bold uppercase tracking-wider text-stone-700 mb-4">{t('historySection')}</h2>
         <p className="text-sm text-stone-600 mb-4">{t('historyIntro')}</p>
         {historySubscriptions.length === 0 ? (
           <p className="text-sm text-stone-500">{t('noHistory')}</p>
@@ -169,18 +169,12 @@ export function CoachSubscriptionsContent({
               <li key={item.subscription.id}>
                 <TileCard leftBorderColor="stone" badge={tHistory('terminatedBadge')}>
                   <p className="font-semibold text-stone-900 text-sm">
-                    {item.athlete.displayName}{' '}
-                    <span className="text-stone-500 font-normal">· {tDetail('athleteLabel')}</span>
+                    {item.athlete.displayName}
                   </p>
-                  <h3 className="text-sm font-semibold text-stone-800 mt-1">
+                  <p className="text-sm text-stone-600 mt-0.5">
                     {getFrozenTitleForLocale(item.subscription, locale) || '—'}
-                  </h3>
-                  {getFrozenDescriptionForLocale(item.subscription, locale) && (
-                    <p className="text-xs text-stone-600 mt-1 line-clamp-2">
-                      {getFrozenDescriptionForLocale(item.subscription, locale)}
-                    </p>
-                  )}
-                  <p className="text-xs text-stone-500 mt-1.5">
+                  </p>
+                  <p className="text-xs text-stone-500 mt-1">
                     {formatPriceType(item.subscription, tMyCoach)} · {tHistory('periodFromTo', {
                       start: formatShortDate(item.subscription.start_date, dateLocale),
                       end: item.subscription.end_date ? formatShortDate(item.subscription.end_date, dateLocale) : '—',

@@ -654,7 +654,7 @@ export function WorkoutModal({
               </p>
               {/* Objectifs de la séance : métriques avec icônes tuiles + ligne horizontale + description (sans label "Description") */}
               <div className="bg-stone-50 p-4 rounded-xl border border-stone-100">
-                <div className="text-xs font-bold text-stone-500 uppercase tracking-wide mb-3">
+                <div className="text-xs font-semibold text-stone-500 uppercase tracking-wider mb-3">
                   {tWorkouts('form.sessionGoals')}
                 </div>
                 <div className="flex items-center gap-2 flex-wrap text-sm text-stone-700">
@@ -845,7 +845,7 @@ export function WorkoutModal({
           </p>
           {/* Objectifs de la séance : métriques avec icônes + ligne horizontale + description */}
           <div className="bg-stone-50 p-4 rounded-xl border border-stone-100">
-            <div className="text-xs font-bold text-stone-500 uppercase tracking-wide mb-3">
+            <div className="text-xs font-semibold text-stone-500 uppercase tracking-wider mb-3">
               {tWorkouts('form.sessionGoals')}
             </div>
             <div className="flex items-center gap-2 flex-wrap text-sm text-stone-700">
@@ -912,7 +912,9 @@ export function WorkoutModal({
           {/* Retour athlète (ressenti, intensité, plaisir) — lecture seule coach */}
           {(currentWorkout.perceived_feeling != null || currentWorkout.perceived_intensity != null || currentWorkout.perceived_pleasure != null) && (
             <div className="border-t border-stone-200 pt-4 space-y-3">
-              <h3 className="text-base font-semibold text-stone-800">{tWorkouts('feedback.sectionTitle')}</h3>
+              <h3 className="text-sm font-bold uppercase tracking-wider text-stone-700">
+                {tWorkouts('feedback.sectionTitle')}
+              </h3>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
                 <div className="flex items-center gap-2">
                   {currentWorkout.perceived_feeling != null && currentWorkout.perceived_feeling >= 1 && currentWorkout.perceived_feeling <= 5 ? (
@@ -1041,7 +1043,7 @@ export function WorkoutModal({
             <div className="bg-stone-50 p-4 rounded-xl border border-stone-100">
               {/* En-tête avec titre et toggle */}
               <div className="flex items-center justify-between mb-3">
-                <div className="text-xs font-bold text-stone-500 uppercase tracking-wide">
+                <div className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
                   {tWorkouts('form.sessionGoals')}
                 </div>
                 {canEdit && hasTimeDistanceChoice && (

@@ -8,7 +8,7 @@ import { forwardRef } from 'react'
  * texte stone-900, placeholder stone-400. Préfixe vert principal (palette-forest-dark).
  */
 const PREFIX_CLASSES =
-  'shrink-0 px-2.5 text-[10px] font-bold uppercase tracking-wide text-palette-forest-dark bg-palette-forest-dark/10 border-r border-stone-200'
+  'shrink-0 px-2.5 text-[10px] font-semibold uppercase tracking-wider text-palette-forest-dark bg-palette-forest-dark/10 border-r border-stone-200'
 
 /** Conteneur commun : bordure, fond blanc, ring vert au focus (comme Input/Textarea) */
 const WRAPPER_CLASSES =

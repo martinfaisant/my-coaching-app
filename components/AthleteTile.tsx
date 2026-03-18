@@ -122,13 +122,13 @@ export function AthleteTile({
         {/* Contenu: objectif + planifié (grille 2 colonnes, comme la tuile actuelle mais dans le même style carte) */}
         <div className="grid grid-cols-2 gap-4 text-sm flex-1">
           <div>
-            <p className="text-stone-500 font-medium">{nextGoalLabel}</p>
+            <p className="text-xs font-bold uppercase tracking-wider text-stone-500">{nextGoalLabel}</p>
             <p className="text-stone-900 mt-0.5">
               {nextGoal ? `${nextGoal.date} · ${nextGoal.raceName}` : noGoalLabel}
             </p>
           </div>
           <div>
-            <p className="text-stone-500 font-medium">{plannedUntilLabel}</p>
+            <p className="text-xs font-bold uppercase tracking-wider text-stone-500">{plannedUntilLabel}</p>
             <p className="text-stone-900 font-semibold mt-0.5 text-sm">
               {plannedUntil ?? '—'}
             </p>

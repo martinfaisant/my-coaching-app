@@ -526,7 +526,7 @@ export function ProfileForm({
           {/* Header section + Bouton Enregistrer */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
             <div>
-              <h1 className="text-2xl font-bold text-stone-900">{tProfile('myInformation')}</h1>
+              <h1 className="text-sm font-bold uppercase tracking-wider text-stone-700">{tProfile('myInformation')}</h1>
               <p className="text-stone-500 text-sm">
                 {isCoach ? tProfile('coachSubtitle') : tProfile('athleteSubtitle')}
               </p>
@@ -617,7 +617,7 @@ export function ProfileForm({
           <div className="mb-5">
             {isCoach ? (
               <>
-                <h2 className="text-sm font-bold text-stone-900 uppercase tracking-wide mb-3">{tProfile('coachedSports')}</h2>
+                <h2 className="text-sm font-bold uppercase tracking-wider text-stone-700 mb-3">{tProfile('coachedSports')}</h2>
                 <div className="flex flex-wrap gap-3">
                   {coachedSportsOptions.map((opt) => (
                     <SportTileSelectable
@@ -631,7 +631,7 @@ export function ProfileForm({
               </>
             ) : (
               <>
-                <h2 className="text-sm font-bold text-stone-900 uppercase tracking-wide mb-3">{tProfile('practicedSports')}</h2>
+                <h2 className="text-sm font-bold uppercase tracking-wider text-stone-700 mb-3">{tProfile('practicedSports')}</h2>
                 <div className="flex flex-wrap gap-3">
                   {practicedSportsOptions.map((opt) => (
                     <SportTileSelectable
@@ -658,7 +658,7 @@ export function ProfileForm({
             <>
               <hr className="border-stone-100 my-5" />
               <div className="mb-5">
-                <h2 className="text-sm font-bold text-stone-900 uppercase tracking-wide mb-3">
+                <h2 className="text-sm font-bold uppercase tracking-wider text-stone-700 mb-3">
                   {tProfile('weeklyVolumesSectionTitle')}
                 </h2>
                 {selectedPracticedSports.length === 0 ? (
@@ -771,7 +771,7 @@ export function ProfileForm({
           {/* Section Langues (coach uniquement) */}
           {isCoach && (
           <div className="mb-5">
-            <h2 className="text-sm font-bold text-stone-900 uppercase tracking-wide mb-3">{tProfile('spokenLanguages')}</h2>
+            <h2 className="text-sm font-bold uppercase tracking-wider text-stone-700 mb-3">{tProfile('spokenLanguages')}</h2>
             <div className="flex flex-wrap gap-2">
               {LANGUAGES_OPTIONS.map((opt) => (
                 <label key={opt.value} className="cursor-pointer">
@@ -798,7 +798,7 @@ export function ProfileForm({
           {/* Bio (coach uniquement) — EN à gauche, FR à droite (composant LanguagePrefixField) */}
           {isCoach && (
           <div className="mb-5">
-            <h2 className="text-sm font-bold text-stone-900 uppercase tracking-wide mb-3">{tProfile('presentation')}</h2>
+            <h2 className="text-sm font-bold uppercase tracking-wider text-stone-700 mb-3">{tProfile('presentation')}</h2>
             <p className="text-xs text-stone-400 mb-2">{tProfile('presentationSubtitle')}</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
               <div className="relative">

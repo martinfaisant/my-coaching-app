@@ -28,7 +28,7 @@ export function NextGoalHeader({ goals }: NextGoalHeaderProps) {
   return (
     <div className="hidden sm:flex items-center gap-3 bg-stone-50 border border-stone-200 rounded-xl px-4 py-2">
       <div className="flex flex-col items-end">
-        <span className="text-[10px] uppercase font-bold text-stone-400">{t('nextRace')}</span>
+        <span className="text-[10px] uppercase font-semibold tracking-wider text-stone-500">{t('nextRace')}</span>
         <span className="text-sm font-bold text-palette-forest-dark">{nextGoal.race_name}</span>
       </div>
       <div className="w-px h-8 bg-stone-200"></div>

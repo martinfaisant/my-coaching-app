@@ -1504,93 +1504,174 @@ export function CalendarView({
                           </>
                         ) : (
                           <>
-                            <div className="min-h-0 shrink-0 flex flex-col gap-0.5">
-                              {firstAvailability && renderAvailabilityTile(firstAvailability, day.dateStr, true, openAvailabilityDetail)}
-                              {firstGoal && !firstWorkout && !firstImported && !firstAvailability && (() => {
-                                const isPrimary = firstGoal.is_primary
-                                const isResult = firstGoal.date <= todayStr
-                                const borderColor = isResult ? 'border-stone-400' : (isPrimary ? 'border-palette-amber' : 'border-palette-sage')
-                                const badgeColor = isPrimary ? 'text-palette-amber bg-white' : 'text-palette-sage bg-white'
-                                return (
-                                  <div
-                                    onClick={(e) => { e.stopPropagation(); openGoal(firstGoal) }}
-                                    className={`bg-white rounded border-l-4 ${borderColor} shadow-sm p-1.5 h-full flex flex-col justify-between cursor-pointer training-card`}
-                                    role="button"
-                                  >
-                                    <div>
+                            {showFullDayList ? (
+                              <div className="min-h-0 shrink-0 flex flex-col gap-1 overflow-y-auto">
+                                {dayFullList.map((entry, idx) => {
+                                  const prevSection = idx > 0 && dayFullList[idx - 1]!.type === 'workout' ? (dayFullList[idx - 1] as { type: 'workout'; section: WorkoutTimeOfDay | null }).section : null
+                                  const showSectionTitle = entry.type === 'workout' && entry.section && entry.section !== prevSection
+                                  return (
+                                    <div
+                                      key={entry.type === 'availability' ? `a-${entry.item.id}` : entry.type === 'goal' ? `g-${entry.item.id}` : entry.type === 'workout' ? `w-${entry.item.id}` : `i-${entry.item.id}`}
+                                      className="flex flex-col gap-0.5"
+                                    >
+                                      {showSectionTitle && (
+                                        <div className="text-[10px] font-semibold uppercase tracking-wider text-stone-500 px-0.5">
+                                          {entry.section === 'morning' ? tWorkouts('calendar.morning') : entry.section === 'noon' ? tWorkouts('calendar.noon') : tWorkouts('calendar.evening')}
+                                        </div>
+                                      )}
+                                      {entry.type === 'availability'
+                                        ? renderAvailabilityTile(entry.item, day.dateStr, true, openAvailabilityDetail)
+                                        : entry.type === 'goal'
+                                          ? (() => {
+                                              const g = entry.item
+                                              const isPrimary = g.is_primary
+                                              const borderColor = isPrimary ? 'border-palette-amber' : 'border-palette-sage'
+                                              const badgeColor = isPrimary ? 'text-palette-amber bg-white' : 'text-palette-sage bg-white'
+                                              return (
+                                                <div
+                                                  onClick={(e) => { e.stopPropagation(); openGoal(g) }}
+                                                  className={`bg-white rounded border-l-4 ${borderColor} shadow-sm p-1.5 cursor-pointer training-card`}
+                                                  role="button"
+                                                >
+                                                  <div>
+                                                    <div>
+                                                      <span className={`float-left inline-flex mr-1.5 ${badgeColor} px-1 py-0.5 rounded shrink-0`}>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" /></svg>
+                                                      </span>
+                                                      <div className="text-sm font-bold text-stone-700 leading-tight">{g.race_name}</div>
+                                                      <div className="clear-both" />
+                                                    </div>
+                                                  </div>
+                                                  <div className="flex items-center gap-1 text-[10px] text-stone-500 font-semibold mt-1">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z" /><path d="m14.5 12.5 2-2" /><path d="m11.5 9.5 2-2" /><path d="m8.5 6.5 2-2" /><path d="m17.5 15.5 2-2" /></svg>
+                                                    <span>{g.distance} km</span>
+                                                  </div>
+                                                </div>
+                                              )
+                                            })()
+                                          : entry.type === 'workout'
+                                            ? renderCompactCard(entry.item, day.dateStr)
+                                            : (() => {
+                                                const a = entry.item
+                                                const target = formatImportedActivityTarget(a)
+                                                return (
+                                                  <div
+                                                    onClick={(e) => { e.stopPropagation(); setSelectedImportedActivity(a) }}
+                                                    className="bg-white rounded border-l-4 border-palette-strava shadow-sm p-1.5 cursor-pointer training-card w-full"
+                                                    role="button"
+                                                  >
+                                                    <div className="inline-flex items-center gap-1">
+                                                      <img src="/strava-icon.svg" alt="" className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                                                      <span className="text-[9px] font-bold uppercase text-palette-strava bg-orange-100 px-1 py-0.5 rounded leading-none">
+                                                        {getImportedActivityTypeLabel(a, tSports)}
+                                                      </span>
+                                                    </div>
+                                                    <div className="text-xs font-semibold text-stone-700 mt-1 break-words">{a.title}</div>
+                                                    {target.primary && (
+                                                      <div className="flex items-center gap-1 text-[10px] text-stone-500 font-semibold">
+                                                        {target.hasDistance ? (
+                                                          <><MapIcon /><span>{target.primary}</span>{target.secondary && <><span className="w-px h-2.5 bg-stone-300" /><MountainIcon /><span>{target.secondary}</span></>}</>
+                                                        ) : (
+                                                          <><ClockIcon /><span>{target.primary}</span></>
+                                                        )}
+                                                      </div>
+                                                    )}
+                                                  </div>
+                                                )
+                                              })()}
+                                    </div>
+                                  )
+                                })}
+                              </div>
+                            ) : (
+                              <div className="min-h-0 shrink-0 flex flex-col gap-0.5">
+                                {firstAvailability && renderAvailabilityTile(firstAvailability, day.dateStr, true, openAvailabilityDetail)}
+                                {firstGoal && !firstWorkout && !firstImported && !firstAvailability && (() => {
+                                  const isPrimary = firstGoal.is_primary
+                                  const isResult = firstGoal.date <= todayStr
+                                  const borderColor = isResult ? 'border-stone-400' : (isPrimary ? 'border-palette-amber' : 'border-palette-sage')
+                                  const badgeColor = isPrimary ? 'text-palette-amber bg-white' : 'text-palette-sage bg-white'
+                                  return (
+                                    <div
+                                      onClick={(e) => { e.stopPropagation(); openGoal(firstGoal) }}
+                                      className={`bg-white rounded border-l-4 ${borderColor} shadow-sm p-1.5 h-full flex flex-col justify-between cursor-pointer training-card`}
+                                      role="button"
+                                    >
                                       <div>
-                                        <span className={`float-left inline-flex items-center mr-1.5 ${badgeColor} px-1 py-0.5 rounded shrink-0`}>
-                                          <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                            <circle cx="12" cy="12" r="10" />
-                                            <circle cx="12" cy="12" r="6" />
-                                            <circle cx="12" cy="12" r="2" />
+                                        <div>
+                                          <span className={`float-left inline-flex items-center mr-1.5 ${badgeColor} px-1 py-0.5 rounded shrink-0`}>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                              <circle cx="12" cy="12" r="10" />
+                                              <circle cx="12" cy="12" r="6" />
+                                              <circle cx="12" cy="12" r="2" />
+                                            </svg>
+                                          </span>
+                                          <div className="text-sm font-bold text-stone-700 leading-tight">{firstGoal.race_name}</div>
+                                          <div className="clear-both"></div>
+                                        </div>
+                                      </div>
+                                      <div className="flex items-center gap-1 flex-wrap text-[10px] text-stone-500 font-semibold mt-1">
+                                        <div className="flex items-center gap-1">
+                                          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z" />
+                                            <path d="m14.5 12.5 2-2" />
+                                            <path d="m11.5 9.5 2-2" />
+                                            <path d="m8.5 6.5 2-2" />
+                                            <path d="m17.5 15.5 2-2" />
                                           </svg>
-                                        </span>
-                                        <div className="text-sm font-bold text-stone-700 leading-tight">{firstGoal.race_name}</div>
-                                        <div className="clear-both"></div>
+                                          <span>{firstGoal.distance} km</span>
+                                        </div>
                                       </div>
                                     </div>
-                                    <div className="flex items-center gap-1 flex-wrap text-[10px] text-stone-500 font-semibold mt-1">
-                                      <div className="flex items-center gap-1">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                          <path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z" />
-                                          <path d="m14.5 12.5 2-2" />
-                                          <path d="m11.5 9.5 2-2" />
-                                          <path d="m8.5 6.5 2-2" />
-                                          <path d="m17.5 15.5 2-2" />
-                                        </svg>
-                                        <span>{firstGoal.distance} km</span>
+                                  )
+                                })()}
+                                {firstWorkout && renderCompactCard(firstWorkout, day.dateStr)}
+                                {!firstWorkout && !firstGoal && firstImported && (() => {
+                                  const target = formatImportedActivityTarget(firstImported)
+                                  return (
+                                    <div
+                                      onClick={(e) => { e.stopPropagation(); setSelectedImportedActivity(firstImported) }}
+                                      className="bg-white rounded border-l-4 border-palette-strava shadow-sm h-full p-1.5 flex flex-col justify-between cursor-pointer training-card w-full"
+                                      role="button"
+                                    >
+                                      <div>
+                                        <div className="inline-flex items-center gap-1 align-middle">
+                                          <img src="/strava-icon.svg" alt="" className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                                          <span className="text-[9px] font-bold uppercase text-palette-strava bg-orange-100 px-1 py-0.5 rounded leading-none">
+                                            {getImportedActivityTypeLabel(firstImported, tSports)}
+                                          </span>
+                                        </div>
+                                        <div className="text-xs font-semibold text-stone-700 mt-1 break-words">{firstImported.title}</div>
                                       </div>
+                                      {target.primary && (
+                                        <div className="flex items-center gap-1 text-[10px] text-stone-500 font-semibold">
+                                          {target.hasDistance ? (
+                                            <><MapIcon /><span>{target.primary}</span>{target.secondary && <><span className="w-px h-2.5 bg-stone-300" /><MountainIcon /><span>{target.secondary}</span></>}</>
+                                          ) : (
+                                            <><ClockIcon /><span>{target.primary}</span></>
+                                          )}
+                                        </div>
+                                      )}
                                     </div>
-                                  </div>
-                                )
-                              })()}
-                              {firstWorkout && renderCompactCard(firstWorkout, day.dateStr)}
-                              {!firstWorkout && !firstGoal && firstImported && (() => {
-                                const target = formatImportedActivityTarget(firstImported)
-                                return (
-                                  <div
-                                    onClick={(e) => { e.stopPropagation(); setSelectedImportedActivity(firstImported) }}
-                                    className="bg-white rounded border-l-4 border-palette-strava shadow-sm h-full p-1.5 flex flex-col justify-between cursor-pointer training-card w-full"
-                                    role="button"
+                                  )
+                                })()}
+                                {!showFullDayList && (wi === 0 || wi === 2) && dayExtraCount > 0 && (
+                                  <Button
+                                    type="button"
+                                    variant="muted"
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      setExtraActivitiesList(dayFullList)
+                                      setExtraActivitiesModalDate(day.dateStr)
+                                      setExtraActivitiesModalOpen(true)
+                                    }}
+                                    className="shrink-0 w-full text-[10px] py-1 mt-1.5"
                                   >
-                                    <div>
-                                      <div className="inline-flex items-center gap-1 align-middle">
-                                        <img src="/strava-icon.svg" alt="" className="h-3.5 w-3.5 shrink-0" aria-hidden />
-                                        <span className="text-[9px] font-bold uppercase text-palette-strava bg-orange-100 px-1 py-0.5 rounded leading-none">
-                                          {getImportedActivityTypeLabel(firstImported, tSports)}
-                                        </span>
-                                      </div>
-                                      <div className="text-xs font-semibold text-stone-700 mt-1 break-words">{firstImported.title}</div>
-                                    </div>
-                                    {target.primary && (
-                                      <div className="flex items-center gap-1 text-[10px] text-stone-500 font-semibold">
-                                        {target.hasDistance ? (
-                                          <><MapIcon /><span>{target.primary}</span>{target.secondary && <><span className="w-px h-2.5 bg-stone-300" /><MountainIcon /><span>{target.secondary}</span></>}</>
-                                        ) : (
-                                          <><ClockIcon /><span>{target.primary}</span></>
-                                        )}
-                                      </div>
-                                    )}
-                                  </div>
-                                )
-                              })()}
-                              {!showFullDayList && (wi === 0 || wi === 2) && dayExtraCount > 0 && (
-                                <Button
-                                  type="button"
-                                  variant="muted"
-                                  onClick={(e) => {
-                                    e.stopPropagation()
-                                    setExtraActivitiesList(dayFullList)
-                                    setExtraActivitiesModalDate(day.dateStr)
-                                    setExtraActivitiesModalOpen(true)
-                                  }}
-                                  className="shrink-0 w-full text-[10px] py-1 mt-1.5"
-                                >
-                                  {tCalendar(dayExtraCount === 1 ? 'moreActivities' : 'moreActivities_plural', { count: dayExtraCount })}
-                                </Button>
-                              )}
-                            </div>
+                                    {tCalendar(dayExtraCount === 1 ? 'moreActivities' : 'moreActivities_plural', { count: dayExtraCount })}
+                                  </Button>
+                                )}
+                              </div>
+                            )}
                             {showAddInCondensed && (
                               <div className="w-8 h-8 rounded-full bg-white border border-stone-300 flex items-center justify-center text-stone-300 shadow-sm group-hover:text-white group-hover:bg-palette-forest-dark group-hover:border-palette-forest-dark transition-all transform group-hover:scale-110">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1975,17 +2056,17 @@ export function CalendarView({
                 <div className="px-6 py-4">
                   <dl className="space-y-4">
                     <div>
-                      <dt className="text-xs text-stone-500 uppercase tracking-wide font-bold mb-1.5">Date</dt>
+                      <dt className="text-xs text-stone-500 uppercase tracking-wider font-semibold mb-1.5">Date</dt>
                       <dd className="text-sm text-stone-900">
                         {new Date(selectedGoal.date + 'T12:00:00').toLocaleDateString(localeTag, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
                       </dd>
                     </div>
                     <div>
-                      <dt className="text-xs text-stone-500 uppercase tracking-wide font-bold mb-1.5">{tGoals('raceName')}</dt>
+                      <dt className="text-xs text-stone-500 uppercase tracking-wider font-semibold mb-1.5">{tGoals('raceName')}</dt>
                       <dd className="text-sm text-stone-900">{selectedGoal.race_name}</dd>
                     </div>
                     <div>
-                      <dt className="text-xs text-stone-500 uppercase tracking-wide font-bold mb-1.5">{tGoals('distance')}</dt>
+                      <dt className="text-xs text-stone-500 uppercase tracking-wider font-semibold mb-1.5">{tGoals('distance')}</dt>
                       <dd className="text-sm text-stone-900 flex items-center gap-1.5">
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z" />
@@ -1998,14 +2079,14 @@ export function CalendarView({
                       </dd>
                     </div>
                     <div>
-                      <dt className="text-xs text-stone-500 uppercase tracking-wide font-bold mb-1.5">{tGoals('goalType')}</dt>
+                      <dt className="text-xs text-stone-500 uppercase tracking-wider font-semibold mb-1.5">{tGoals('goalType')}</dt>
                       <dd className="text-sm text-stone-900 flex items-center gap-2">
                         {selectedGoal.is_primary ? (
-                          <span className="bg-white text-palette-amber text-[10px] font-bold px-2 py-0.5 rounded-full border border-palette-amber">
+                          <span className="bg-white text-palette-amber text-[10px] font-semibold px-2 py-0.5 rounded-full border border-palette-amber">
                             Principal
                           </span>
                         ) : (
-                          <span className="bg-white text-palette-sage text-[10px] font-bold px-2 py-0.5 rounded-full border border-palette-sage">
+                          <span className="bg-white text-palette-sage text-[10px] font-semibold px-2 py-0.5 rounded-full border border-palette-sage">
                             Secondaire
                           </span>
                         )}
@@ -2013,14 +2094,14 @@ export function CalendarView({
                     </div>
                     {hasTargetTime(selectedGoal) && (
                       <div>
-                        <dt className="text-xs text-stone-500 uppercase tracking-wide font-bold mb-1.5">{tGoals('targetTimeSection')}</dt>
+                        <dt className="text-xs text-stone-500 uppercase tracking-wider font-semibold mb-1.5">{tGoals('targetTimeSection')}</dt>
                         <dd className="text-sm text-stone-900 font-medium text-palette-forest-dark">{formatTargetTime(selectedGoal)}</dd>
                       </div>
                     )}
                     {hasGoalResult(selectedGoal) && (
                       <>
                         <div>
-                          <dt className="text-xs text-stone-500 uppercase tracking-wide font-bold mb-1.5">{tGoals('result.resultSection')}</dt>
+                          <dt className="text-xs text-stone-500 uppercase tracking-wider font-semibold mb-1.5">{tGoals('result.resultSection')}</dt>
                           <dd className="text-sm text-stone-900 space-y-2">
                             <div className="flex items-center gap-2">
                               <span className="font-semibold text-palette-forest-dark">{formatGoalResultTime(selectedGoal)}</span>
@@ -2068,7 +2149,7 @@ export function CalendarView({
                     <img src="/strava-icon.svg" alt="" className="h-5 w-5 object-contain" aria-hidden />
                   </div>
                   <div className="min-w-0">
-                    <div className="text-[10px] font-semibold text-palette-strava uppercase tracking-wide mb-0.5">
+                    <div className="text-[10px] font-semibold text-palette-strava uppercase tracking-wider mb-0.5">
                       {getImportedActivityTypeLabel(selectedImportedActivity, tSports)}
                     </div>
                     <h2 id="imported-activity-modal-title" className="text-lg font-bold text-stone-900 break-words">

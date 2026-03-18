@@ -204,7 +204,7 @@ export default async function CoachAthletesPage({ params }: { params: Promise<{ 
 
       {pendingRequests.length > 0 && (
         <section className="mb-8">
-          <h2 className="text-base font-semibold text-stone-900 mb-2">
+          <h2 className="text-sm font-bold uppercase tracking-wider text-stone-700 mb-2">
             {t('pendingRequests.titleWithCount', { count: pendingRequests.length })}
           </h2>
           <p className="text-sm text-stone-600 mb-4">
