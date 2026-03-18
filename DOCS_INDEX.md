@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 18 mars 2026 (Mode Analyste : fusion statut refactoring/audit + correction redirection locale-aware des error boundaries ; voir Changements récents)
+**Dernière mise à jour :** 18 mars 2026 (Mode Analyste : centralisation styles sport + fusion statut refactoring/audit ; voir Changements récents)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -438,6 +438,10 @@
 **Dernier nettoyage :** 17 mars 2026 (archivage design-date-picker-compact, design-weekly-volume-two-columns, design-mobile-volume-tiles)
 
 ### Changements récents :
+
+✅ **18 mars 2026 – Centralisation styles sport (design system & refactoring) – Mode Analyste :**
+- **Livraison :** `lib/sportStyles.ts` devient la source de vérité unique pour **sport → icône / styles / label i18n** (mapping `SPORT_ICONS`, `SPORT_CARD_STYLES`, `SPORT_BADGE_STYLES`, clés `SPORT_TRANSLATION_KEYS`) + helpers (guard `isSportType`, ordre volumes hebdo, règle triathlon/trail).
+- **Livraison :** suppression des duplications dans les composants (Badges/tuiles/modales/calendrier) ; la doc **Design System** référence désormais `useSportLabel()` / `getSportLabel()` (et plus un pseudo `SPORT_LABELS`).
 
 ✅ **18 mars 2026 – Fusion docs refactoring/audit + cohérence P3 – Mode Analyste :**
 - **Livraison :** création d’une source de vérité unique `docs/ENGINEERING_STATUS_REFAC_AUDIT.md` (P1/P2 + audit P3), et remplacement de `REFACTORING_P1_P2_COMPLETE.md` + `docs/AUDIT_CODEBASE_P3.md` par des pointeurs (évite 2 sources de vérité).

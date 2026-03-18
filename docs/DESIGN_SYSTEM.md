@@ -1586,12 +1586,21 @@ Ce breakpoint `md` est le breakpoint de référence pour les bascules de layout 
 
 ### 8. Sports et labels
 
-Toujours utiliser `lib/sportStyles.ts` pour obtenir le label d'un sport :
+Toujours utiliser `lib/sportStyles.ts` (et les helpers i18n) pour obtenir le label d'un sport — **aucun label en dur**.
 
 ```tsx
-import { SPORT_LABELS } from '@/lib/sportStyles'
+// Client Component
+import { useSportLabel } from '@/lib/hooks/useSportLabel'
 
-const sportLabel = SPORT_LABELS['course'] // "Course à pied"
+const getSportLabel = useSportLabel()
+const sportLabel = getSportLabel('course') // FR: "Course" / EN: "Running"
+```
+
+```tsx
+// Server Component
+import { getSportLabel } from '@/lib/getSportLabel'
+
+const sportLabel = await getSportLabel('course')
 ```
 
 ### 9. Espacements cohérents
@@ -1614,9 +1623,10 @@ const sportLabel = SPORT_LABELS['course'] // "Course à pied"
 
 1. Créer l'icône SVG dans `components/SportIcons.tsx`
 2. Ajouter le type dans `lib/sportStyles.ts` (`SportType`)
-3. Ajouter le label dans `SPORT_LABELS`
-4. Ajouter l'icône dans `SPORT_ICONS`
-5. Ajouter les couleurs dans `SPORT_BADGE_STYLES`
+3. Ajouter la clé de traduction dans `lib/sportStyles.ts` (`SPORT_TRANSLATION_KEYS`)
+4. Ajouter l'icône dans `lib/sportStyles.ts` (`SPORT_ICONS`)
+5. Ajouter les couleurs dans `lib/sportStyles.ts` (`SPORT_BADGE_STYLES` + `SPORT_CARD_STYLES`)
+6. Ajouter les traductions dans `messages/fr.json` et `messages/en.json` (namespace `sports`)
 
 ### Comment gérer un formulaire avec tuiles sélectionnables ?
 

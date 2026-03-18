@@ -14,7 +14,7 @@ import { SearchInput } from '@/components/SearchInput'
 import { SportTileSelectable } from '@/components/SportTileSelectable'
 import { createCoachRequest } from './actions'
 import { LANGUAGES_OPTIONS } from '@/lib/sportsOptions'
-import { getWeeklyVolumeUnit, SPORT_ICONS, SPORT_CARD_STYLES, SPORT_TRANSLATION_KEYS } from '@/lib/sportStyles'
+import { getWeeklyVolumeDisplaySports, getWeeklyVolumeUnit, SPORT_ICONS, SPORT_CARD_STYLES, SPORT_TRANSLATION_KEYS } from '@/lib/sportStyles'
 import type { SportType } from '@/lib/sportStyles'
 import { useCoachedSportsOptions, usePracticedSportsOptions } from '@/lib/hooks/useSportsOptions'
 import { useRouter } from 'next/navigation'
@@ -425,9 +425,6 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
   )
 }
 
-// Volume hebdo : pas de tuile "trail" (comme Mon profil). Trail => tuile course + champ D+/sem.
-const DISPLAY_SPORTS_ORDER = ['course', 'velo', 'natation', 'musculation', 'triathlon'] as const
-
 type CoachDetailModalProps = {
   coach: CoachForList
   offers: Array<OfferForDisplay>
@@ -521,10 +518,7 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
   )
   const [weeklyVolumeInputs, setWeeklyVolumeInputs] = useState<Record<string, string>>(() => {
     const init: Record<string, string> = {}
-    const expanded = (initialPracticedSports ?? []).flatMap((s) =>
-      s === 'triathlon' ? ['course', 'velo', 'natation'] : s === 'trail' ? ['course'] : [s]
-    )
-    const list = DISPLAY_SPORTS_ORDER.filter((s) => expanded.includes(s))
+    const list = getWeeklyVolumeDisplaySports(initialPracticedSports ?? [])
     for (const sport of list) {
       const v = initialWeeklyVolumeBySport?.[sport]
       init[sport] = v != null ? String(v) : ''
@@ -538,8 +532,7 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
   const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const expandedForVolume = sports.flatMap((s) => (s === 'triathlon' ? ['course', 'velo', 'natation'] : s === 'trail' ? ['course'] : [s]))
-  const displaySportsForVolume = DISPLAY_SPORTS_ORDER.filter((s) => expandedForVolume.includes(s))
+  const displaySportsForVolume = getWeeklyVolumeDisplaySports(sports)
 
   useEffect(() => {
     setWeeklyVolumeInputs((prev) => {

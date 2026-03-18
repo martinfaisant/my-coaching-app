@@ -13,7 +13,11 @@ Ce chapitre résume les chantiers **P1/P2** terminés (error boundaries, loading
 
 - **Error boundaries** : `app/[locale]/error.tsx` et `app/[locale]/dashboard/error.tsx` (gestion d’erreur structurée + logging via `logger`, redirection **locale-aware** vers `/${locale}/dashboard`).
 - **Loading UX** : alignement des `loading.tsx` avec les layouts cibles (réduction du “flash visuel”).
-- **Design system & refactoring** : centralisation des styles sport via `lib/sportStyles.ts` (évite duplications).
+- **Design system & refactoring** : centralisation des styles sport via `lib/sportStyles.ts` (évite duplications) :
+  - sport → icône : `SPORT_ICONS` (icônes dans `components/SportIcons.tsx`)
+  - sport → styles tuiles (bordure gauche + badge) : `SPORT_CARD_STYLES`
+  - sport → styles badge (fond blanc + texte/contour) : `SPORT_BADGE_STYLES`
+  - sport → key i18n (namespace `sports`) : `SPORT_TRANSLATION_KEYS` + `useSportLabel()` / `getSportLabel()`
 
 ### Points à noter (écarts avec l’état actuel)
 
