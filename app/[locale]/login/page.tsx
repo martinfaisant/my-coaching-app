@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl'
 import { login, signup, type LoginState, type SignupState } from './actions'
 import { Button } from '@/components/Button'
 import { Input } from '@/components/Input'
+import { FORM_ERROR_TEXT_CLASSES } from '@/lib/formStyles'
 
 type SignupRole = 'athlete' | 'coach'
 
@@ -69,7 +70,7 @@ function LoginPageContent() {
                 className="rounded-xl"
               />
               {loginState?.error && (
-                <p className="text-sm text-red-600" role="alert">
+                <p className={FORM_ERROR_TEXT_CLASSES} role="alert">
                   {loginState.error}
                 </p>
               )}

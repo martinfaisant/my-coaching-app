@@ -1,8 +1,17 @@
 import type { Metadata } from 'next'
+import { getTranslations } from 'next-intl/server'
 
-export const metadata: Metadata = {
-  title: "Connexion",
-  description: "Connectez-vous à votre compte My Sport Ally pour accéder à vos entraînements et suivre vos performances."
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: 'metadata' })
+  return {
+    title: t('loginTitle'),
+    description: t('loginDescription'),
+  }
 }
 
 export default function LoginLayout({

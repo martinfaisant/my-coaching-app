@@ -13,7 +13,7 @@ const BASE_CLASSES =
 const UNSELECTED_CLASSES =
   'border-stone-200 bg-white text-stone-600 hover:border-palette-forest-dark'
 const SELECTED_CLASSES =
-  'border-palette-forest-dark bg-palette-forest-dark text-white shadow-[0_4px_6px_-1px_rgba(98,126,89,0.3)]'
+  'border-palette-forest-dark bg-palette-forest-dark text-white shadow-palette-forest'
 
 type SportTileSelectableProps =
   | {

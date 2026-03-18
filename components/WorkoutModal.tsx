@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState, useRef, useCallback } from 'react'
-import { createPortal } from 'react-dom'
 import { useFormStatus } from 'react-dom'
 import { useActionState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -18,23 +17,25 @@ import {
 } from '@/app/[locale]/dashboard/workouts/actions'
 import type { SportType, Workout, WorkoutStatus, WorkoutTimeOfDay } from '@/types/database'
 import { Modal } from '@/components/Modal'
-import { DatePickerPopup } from '@/components/DatePickerPopup'
 import { Button } from '@/components/Button'
 import { Input } from '@/components/Input'
 import { Textarea } from '@/components/Textarea'
 import { Badge } from '@/components/Badge'
 import { SportTileSelectable } from '@/components/SportTileSelectable'
-import { Angry, Frown, Meh, Smile, Laugh } from 'lucide-react'
+import { Angry, Frown, Laugh, Meh, Smile } from 'lucide-react'
 import { SPORT_ICONS, SPORT_TRANSLATION_KEYS, SPORT_BADGE_STYLES } from '@/lib/sportStyles'
 import { formatDateFr, toDateStr } from '@/lib/dateUtils'
 import { FORM_BASE_CLASSES, FORM_LABEL_CLASSES, FORM_INPUT_HEIGHT, FORM_INPUT_TEXT_SIZE, TEXTAREA_SPECIFIC_CLASSES } from '@/lib/formStyles'
-
-const FEELING_ICONS = [Angry, Frown, Meh, Smile, Laugh] as const
-const FEELING_VALUES = [1, 2, 3, 4, 5] as const
-const INTENSITY_VALUES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] as const
+import { ClockIcon, LightningIcon, MountainIcon, RulerIcon } from '@/components/workout-modal/icons'
+import { useWorkoutFormReducer } from '@/components/workout-modal/useWorkoutFormReducer'
+import { WorkoutFeedbackSection } from '@/components/workout-modal/WorkoutFeedbackSection'
+import { DatePickerPopover } from '@/components/workout-modal/DatePickerPopover'
+import { CoachWorkoutForm } from '@/components/workout-modal/CoachWorkoutForm'
 
 /** Sports pour entraînement (sous-ensemble du calendrier). */
 const WORKOUT_SPORT_TYPES: SportType[] = ['course', 'velo', 'natation', 'musculation']
+
+const FEELING_ICONS_READONLY = [Angry, Frown, Meh, Smile, Laugh] as const
 
 /** Bordure pill (tuile sport lecture seule en header). Aligné design B. */
 const PILL_BORDER_CLASSES: Record<string, string> = {
@@ -43,32 +44,6 @@ const PILL_BORDER_CLASSES: Record<string, string> = {
   natation: 'border-sky-500',
   musculation: 'border-stone-400',
 }
-
-/** Icônes objectifs (alignées tuiles calendrier, US3). */
-const ClockIcon = ({ className = 'h-4 w-4 text-stone-400' }: { className?: string }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-  </svg>
-)
-const RulerIcon = ({ className = 'h-4 w-4 text-stone-400' }: { className?: string }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z" />
-    <path d="m14.5 12.5 2-2" />
-    <path d="m11.5 9.5 2-2" />
-    <path d="m8.5 6.5 2-2" />
-    <path d="m17.5 15.5 2-2" />
-  </svg>
-)
-const LightningIcon = ({ className = 'h-4 w-4 text-stone-400' }: { className?: string }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M13 10V3L4 14h7v7l9-11h-7z" />
-  </svg>
-)
-const MountainIcon = ({ className = 'h-4 w-4 text-stone-400' }: { className?: string }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-  </svg>
-)
 
 /** Course et vélo : choix temps ou distance + dénivelé facultatif. Musculation : temps. Natation : temps ou distance. */
 type TargetMode = 'time' | 'distance'
@@ -144,6 +119,12 @@ function CommentSubmitButton({
   )
 }
 
+function preventWheelNumberChange(e: React.WheelEvent<HTMLInputElement>) {
+  if (document.activeElement === e.currentTarget) {
+    e.currentTarget.blur()
+  }
+}
+
 export function WorkoutModal({
   isOpen,
   onClose,
@@ -161,14 +142,19 @@ export function WorkoutModal({
   const router = useRouter()
   // 🔧 FIX: Stocker le workout localement pour pouvoir le mettre à jour après sauvegarde du commentaire
   const [currentWorkout, setCurrentWorkout] = useState<Workout | null>(workout ?? null)
-  const [sportType, setSportType] = useState<SportType>('course')
-  const [title, setTitle] = useState('')
-  const [description, setDescription] = useState('')
-  const [targetMode, setTargetMode] = useState<TargetMode>('time')
-  const [targetDurationMinutes, setTargetDurationMinutes] = useState<string>('')
-  const [targetDistanceKm, setTargetDistanceKm] = useState<string>('')
-  const [targetElevationM, setTargetElevationM] = useState<string>('')
-  const [targetPace, setTargetPace] = useState<string>('')
+  const workoutForm = useWorkoutFormReducer({ workout: currentWorkout, date })
+  const {
+    sportType,
+    title,
+    description,
+    targetMode,
+    targetDurationMinutes,
+    targetDistanceKm,
+    targetElevationM,
+    targetPace,
+    editableDate,
+    timeOfDaySegment,
+  } = workoutForm.values
   const [commentText, setCommentText] = useState('')
   const initialCommentRef = useRef<string>('')
   const [hasCommentChanged, setHasCommentChanged] = useState(false)
@@ -184,13 +170,8 @@ export function WorkoutModal({
   const initialIntensityRef = useRef<number | null>(null)
   const initialPleasureRef = useRef<number | null>(null)
   const previousCommentPendingRef = useRef(false)
-  const workoutJustLoadedRef = useRef(false)
   const [deleteLoading, setDeleteLoading] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
-  /** Moment de la journée (Matin / Midi / Soir). Null = non précisé (US time-of-day). */
-  const [timeOfDaySegment, setTimeOfDaySegment] = useState<WorkoutTimeOfDay | null>(null)
-  /** Date éditable (coach modifiable US4) : initialisée à date ou currentWorkout.date. */
-  const [editableDate, setEditableDate] = useState(date)
   /** Ouverture du popup calendrier (design system) : popover sous le champ date, pas une 2e modale. */
   const [showDatePickerPopup, setShowDatePickerPopup] = useState(false)
   const dateTriggerRef = useRef<HTMLDivElement>(null)
@@ -201,18 +182,7 @@ export function WorkoutModal({
   const previousWorkoutSubmittingRef = useRef(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const isSubmittingRef = useRef(false)
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
-  const initialWorkoutValuesRef = useRef<{
-    sportType: string
-    title: string
-    description: string
-    targetDurationMinutes: string
-    targetDistanceKm: string
-    targetElevationM: string
-    targetPace: string
-    date?: string
-    timeOfDay?: WorkoutTimeOfDay | null
-  } | null>(null)
+  const hasUnsavedChanges = workoutForm.hasUnsavedChanges
 
   const isEdit = !!currentWorkout
   const hasTimeDistanceChoice = sportType === 'course' || sportType === 'velo' || sportType === 'natation'
@@ -269,34 +239,6 @@ export function WorkoutModal({
 
   useEffect(() => {
     if (currentWorkout) {
-      workoutJustLoadedRef.current = true
-      setSportType(currentWorkout.sport_type)
-      setTitle(currentWorkout.title)
-      setDescription(currentWorkout.description)
-      const durationStr = currentWorkout.target_duration_minutes != null ? String(currentWorkout.target_duration_minutes) : ''
-      const distanceStr = currentWorkout.target_distance_km != null ? String(currentWorkout.target_distance_km) : ''
-      const elevationStr = currentWorkout.target_elevation_m != null ? String(currentWorkout.target_elevation_m) : ''
-      const paceStr = currentWorkout.target_pace != null ? String(currentWorkout.target_pace) : ''
-      setTargetDurationMinutes(durationStr)
-      setTargetDistanceKm(distanceStr)
-      setTargetElevationM(elevationStr)
-      setTargetPace(paceStr)
-      setTargetMode(
-        currentWorkout.target_distance_km != null && currentWorkout.target_distance_km > 0 ? 'distance' : 'time'
-      )
-      // Stocker les valeurs initiales pour détecter les modifications
-      initialWorkoutValuesRef.current = {
-        sportType: currentWorkout.sport_type,
-        title: currentWorkout.title,
-        description: currentWorkout.description,
-        targetDurationMinutes: durationStr,
-        targetDistanceKm: distanceStr,
-        targetElevationM: elevationStr,
-        targetPace: paceStr,
-        date: currentWorkout.date,
-        timeOfDay: currentWorkout.time_of_day ?? null,
-      }
-      setHasUnsavedChanges(false)
       const initialComment = currentWorkout.athlete_comment ?? ''
       setCommentText(initialComment)
       initialCommentRef.current = initialComment
@@ -304,8 +246,6 @@ export function WorkoutModal({
       const st = (currentWorkout.status ?? 'planned') as WorkoutStatus
       setStatusSegment(st)
       initialStatusRef.current = st
-      setEditableDate(currentWorkout.date)
-      setTimeOfDaySegment(currentWorkout.time_of_day ?? null)
       const feeling = currentWorkout.perceived_feeling != null && currentWorkout.perceived_feeling >= 1 && currentWorkout.perceived_feeling <= 5 ? currentWorkout.perceived_feeling : null
       const intensity = currentWorkout.perceived_intensity != null && currentWorkout.perceived_intensity >= 1 && currentWorkout.perceived_intensity <= 10 ? currentWorkout.perceived_intensity : null
       const pleasure = currentWorkout.perceived_pleasure != null && currentWorkout.perceived_pleasure >= 1 && currentWorkout.perceived_pleasure <= 5 ? currentWorkout.perceived_pleasure : null
@@ -316,33 +256,11 @@ export function WorkoutModal({
       initialIntensityRef.current = intensity
       initialPleasureRef.current = pleasure
     } else {
-      setSportType('course')
-      setTitle('')
-      setDescription('')
-      setTargetMode('time')
-      setTargetDurationMinutes('')
-      setTargetDistanceKm('')
-      setTargetElevationM('')
-      setTargetPace('')
-      initialWorkoutValuesRef.current = {
-        sportType: 'course',
-        title: '',
-        description: '',
-        targetDurationMinutes: '',
-        targetDistanceKm: '',
-        targetElevationM: '',
-        targetPace: '',
-        date: date,
-        timeOfDay: null,
-      }
-      setHasUnsavedChanges(false)
       setCommentText('')
       initialCommentRef.current = ''
       setHasCommentChanged(false)
       setStatusSegment('planned')
       initialStatusRef.current = 'planned'
-      setEditableDate(date)
-      setTimeOfDaySegment(null)
       setPerceivedFeeling(null)
       setPerceivedIntensity(null)
       setPerceivedPleasure(null)
@@ -354,58 +272,6 @@ export function WorkoutModal({
       setDeleteError(null)
     }
   }, [currentWorkout, isOpen])
-
-  useEffect(() => {
-    if (sportType === 'musculation') setTargetMode('time')
-  }, [sportType])
-
-  // Calcul automatique avec la vitesse : ne remplir le champ non sélectionnable que si les deux autres (temps ou distance + vitesse) sont complétés
-  useEffect(() => {
-    if (!hasTimeDistanceChoice) return
-
-    const paceOk = targetPace && Number(targetPace) > 0
-    const pace = paceOk ? Number(targetPace) : 0
-    const skipClear = workoutJustLoadedRef.current
-
-    if (targetMode === 'distance') {
-      // Champ désactivé = durée. Remplir seulement si distance ET vitesse sont renseignés
-      if (targetDistanceKm && Number(targetDistanceKm) > 0 && paceOk) {
-        workoutJustLoadedRef.current = false
-        if (sportType === 'course') {
-          const distance = Number(targetDistanceKm)
-          setTargetDurationMinutes(String(Math.round(distance * pace)))
-        } else if (sportType === 'velo') {
-          const distance = Number(targetDistanceKm)
-          const durationMinutes = (distance / pace) * 60
-          setTargetDurationMinutes(String(Math.round(durationMinutes)))
-        } else if (sportType === 'natation') {
-          const distanceM = Number(targetDistanceKm) * 1000
-          setTargetDurationMinutes(String(Math.round((distanceM / 100) * pace)))
-        }
-      } else if (!skipClear && (!targetDistanceKm || !paceOk)) {
-        setTargetDurationMinutes('')
-      }
-    } else {
-      // targetMode === 'time' : champ désactivé = distance. Remplir seulement si durée ET vitesse sont renseignés
-      if (targetDurationMinutes && Number(targetDurationMinutes) > 0 && paceOk) {
-        workoutJustLoadedRef.current = false
-        if (sportType === 'course') {
-          const duration = Number(targetDurationMinutes)
-          setTargetDistanceKm((duration / pace).toFixed(2))
-        } else if (sportType === 'velo') {
-          const durationMinutes = Number(targetDurationMinutes)
-          setTargetDistanceKm(((durationMinutes / 60) * pace).toFixed(2))
-        } else if (sportType === 'natation') {
-          const duration = Number(targetDurationMinutes)
-          const distanceKm = ((duration / pace) * 100) / 1000
-          setTargetDistanceKm(distanceKm.toFixed(3))
-        }
-      } else if (!skipClear && (!targetDurationMinutes || !paceOk)) {
-        setTargetDistanceKm('')
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [targetPace, targetMode, sportType, hasTimeDistanceChoice, targetDistanceKm, targetDurationMinutes])
 
   const [createState, createAction, createPending] = useActionState<WorkoutFormState, FormData>(
     (_, fd) => createWorkout(athleteId, pathToRevalidate, {}, fd),
@@ -454,8 +320,8 @@ export function WorkoutModal({
     
     if (state?.success && justFinishedSubmitting) {
       setShowWorkoutSavedFeedback(true)
-      // Réinitialiser hasUnsavedChanges après succès
-      setHasUnsavedChanges(false)
+      // Réinitialiser l'état initial du formulaire après succès
+      workoutForm.markSaved()
       
       const timer = setTimeout(() => {
         setShowWorkoutSavedFeedback(false)
@@ -470,28 +336,6 @@ export function WorkoutModal({
       setShowWorkoutSavedFeedback(false)
     }
   }, [workoutSaveFeedbackKey])
-  
-  // Détecter les modifications pour activer/désactiver le bouton
-  useEffect(() => {
-    if (!initialWorkoutValuesRef.current) {
-      setHasUnsavedChanges(false)
-      return
-    }
-    
-    const initial = initialWorkoutValuesRef.current
-    const hasChanges = 
-      sportType !== initial.sportType ||
-      title !== initial.title ||
-      description !== initial.description ||
-      targetDurationMinutes !== initial.targetDurationMinutes ||
-      targetDistanceKm !== initial.targetDistanceKm ||
-      targetElevationM !== initial.targetElevationM ||
-      targetPace !== initial.targetPace ||
-      (initial.date != null && editableDate !== initial.date) ||
-      timeOfDaySegment !== (initial.timeOfDay ?? null)
-    
-    setHasUnsavedChanges(hasChanges)
-  }, [sportType, title, description, targetDurationMinutes, targetDistanceKm, targetElevationM, targetPace, editableDate, timeOfDaySegment])
 
   // Fermeture immédiate si erreur (pas de délai)
   useEffect(() => {
@@ -660,38 +504,21 @@ export function WorkoutModal({
     ) : null
 
   /** Popover calendrier : positionné sous le champ date, au-dessus de la modale (z-[110]), pas une 2e modale. */
-  const datePickerPopover =
-    showDatePickerPopup && datePickerAnchor && typeof document !== 'undefined'
-      ? createPortal(
-          <>
-            <div
-              className="fixed inset-0 z-[105]"
-              aria-hidden
-              onClick={closeDatePicker}
-            />
-            <div
-              className="fixed z-[110] shadow-xl"
-              style={{
-                top: datePickerAnchor.bottom + 8,
-                left: datePickerAnchor.left,
-              }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <DatePickerPopup
-                value={editableDate}
-                onChange={(dateStr) => {
-                  setEditableDate(dateStr)
-                  closeDatePicker()
-                }}
-                locale={localeForPicker}
-                minDate={toDateStr(new Date())}
-                monthDropdownId="workout-date-picker-month"
-              />
-            </div>
-          </>,
-          document.body
-        )
-      : null
+  const datePickerPopover = (
+    <DatePickerPopover
+      isOpen={showDatePickerPopup}
+      anchor={datePickerAnchor}
+      value={editableDate}
+      onChange={(dateStr) => {
+        workoutForm.setValue('editableDate', dateStr)
+        closeDatePicker()
+      }}
+      onClose={closeDatePicker}
+      locale={localeForPicker}
+      minDate={toDateStr(new Date())}
+      monthDropdownId="workout-date-picker-month"
+    />
+  )
 
   /** Badge statut seul (création : à droite). */
   const coachStatusBadge = coachFormNewLayout ? (
@@ -924,81 +751,15 @@ export function WorkoutModal({
               ))}
             </div>
             {statusSegment === 'completed' && (
-              <>
-                <div>
-                  <label className="block text-sm font-medium text-stone-700 mb-2">{tWorkouts('feedback.feelingLabel')}</label>
-                  <div className="flex w-full gap-2" role="group" aria-label={tWorkouts('feedback.feelingLabel')}>
-                    {FEELING_VALUES.map((value, idx) => {
-                      const Icon = FEELING_ICONS[idx]
-                      const selected = perceivedFeeling === value
-                      return (
-                        <button
-                          key={value}
-                          type="button"
-                          onClick={() => setPerceivedFeeling(value)}
-                          title={tWorkouts(`feedback.feelingScale.${value}` as 'feedback.feelingScale.1')}
-                          aria-pressed={selected}
-                          className={`flex-1 min-w-0 flex flex-col items-center justify-center gap-1.5 p-2 rounded-xl border-2 transition shrink-0 ${
-                            selected ? 'border-palette-forest-dark bg-palette-forest-dark/10' : 'border-stone-200 bg-white hover:bg-stone-50'
-                          }`}
-                        >
-                          <Icon className={`h-7 w-7 shrink-0 ${selected ? 'text-palette-forest-dark' : 'text-stone-500'}`} strokeWidth={2} aria-hidden />
-                          <span className={`text-xs font-medium text-center leading-tight line-clamp-2 ${selected ? 'text-palette-forest-dark' : 'text-stone-600'}`}>
-                            {tWorkouts(`feedback.feelingScale.${value}` as 'feedback.feelingScale.1')}
-                          </span>
-                        </button>
-                      )
-                    })}
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-stone-700 mb-2">{tWorkouts('feedback.intensityLabel')}</label>
-                  <div className="flex w-full gap-2" role="group" aria-label={tWorkouts('feedback.intensityLabel')}>
-                    {INTENSITY_VALUES.map((value) => {
-                      const selected = perceivedIntensity === value
-                      return (
-                        <button
-                          key={value}
-                          type="button"
-                          onClick={() => setPerceivedIntensity(value)}
-                          aria-pressed={selected}
-                          className={`flex-1 min-w-0 flex items-center justify-center h-10 rounded-lg text-xs font-semibold border transition ${
-                            selected ? 'border-palette-forest-dark bg-palette-forest-dark text-white' : 'border-stone-200 bg-white text-stone-500 hover:bg-stone-50'
-                          }`}
-                        >
-                          {value}
-                        </button>
-                      )
-                    })}
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-stone-700 mb-2">{tWorkouts('feedback.pleasureLabel')}</label>
-                  <div className="flex w-full gap-2" role="group" aria-label={tWorkouts('feedback.pleasureLabel')}>
-                    {FEELING_VALUES.map((value, idx) => {
-                      const Icon = FEELING_ICONS[idx]
-                      const selected = perceivedPleasure === value
-                      return (
-                        <button
-                          key={value}
-                          type="button"
-                          onClick={() => setPerceivedPleasure(value)}
-                          title={tWorkouts(`feedback.pleasureScale.${value}` as 'feedback.pleasureScale.1')}
-                          aria-pressed={selected}
-                          className={`flex-1 min-w-0 flex flex-col items-center justify-center gap-1.5 p-2 rounded-xl border-2 transition shrink-0 ${
-                            selected ? 'border-palette-forest-dark bg-palette-forest-dark/10' : 'border-stone-200 bg-white hover:bg-stone-50'
-                          }`}
-                        >
-                          <Icon className={`h-7 w-7 shrink-0 ${selected ? 'text-palette-forest-dark' : 'text-stone-500'}`} strokeWidth={2} aria-hidden />
-                          <span className={`text-xs font-medium text-center leading-tight line-clamp-2 ${selected ? 'text-palette-forest-dark' : 'text-stone-600'}`}>
-                            {tWorkouts(`feedback.pleasureScale.${value}` as 'feedback.pleasureScale.1')}
-                          </span>
-                        </button>
-                      )
-                    })}
-                  </div>
-                </div>
-              </>
+              <WorkoutFeedbackSection
+                perceivedFeeling={perceivedFeeling}
+                perceivedIntensity={perceivedIntensity}
+                perceivedPleasure={perceivedPleasure}
+                onFeelingChange={setPerceivedFeeling}
+                onIntensityChange={setPerceivedIntensity}
+                onPleasureChange={setPerceivedPleasure}
+                tWorkouts={tWorkouts}
+              />
             )}
             <Textarea
               name="comment"
@@ -1039,243 +800,45 @@ export function WorkoutModal({
           </form>
         </>
       ) : coachFormNewLayout ? (
-      <form
-        id="workout-form"
+      <CoachWorkoutForm
         action={action}
-        className="flex flex-col flex-1 min-h-0"
+        canEdit={canEdit}
+        isEdit={isEdit}
+        currentWorkout={currentWorkout}
+        workoutStatus={(currentWorkout?.status ?? 'planned') as WorkoutStatus}
+        editableDate={editableDate}
+        sportType={sportType}
+        title={title}
+        description={description}
+        targetMode={targetMode}
+        targetDurationMinutes={targetDurationMinutes}
+        targetDistanceKm={targetDistanceKm}
+        targetElevationM={targetElevationM}
+        targetPace={targetPace}
+        showDisabledDistance={showDisabledDistance}
+        showDisabledDuration={showDisabledDuration}
+        hasTimeDistanceChoice={hasTimeDistanceChoice}
+        hasElevation={hasElevation}
+        isTimeOnly={isTimeOnly}
+        workoutSportTypes={WORKOUT_SPORT_TYPES}
+        onSportChange={(sport) => workoutForm.setValue('sportType', sport)}
+        onTitleChange={(value) => workoutForm.setValue('title', value)}
+        onDescriptionChange={(value) => workoutForm.setValue('description', value)}
+        onTargetModeChange={(mode) => workoutForm.setTargetMode(mode)}
+        onTargetDurationChange={(value) => workoutForm.setValue('targetDurationMinutes', value)}
+        onTargetDistanceChange={(value) => workoutForm.setValue('targetDistanceKm', value)}
+        onTargetElevationChange={(value) => workoutForm.setValue('targetElevationM', value)}
+        onTargetPaceChange={(value) => workoutForm.setValue('targetPace', value)}
+        timeOfDaySegment={timeOfDaySegment ?? ''}
+        onTimeOfDayChange={(value) =>
+          workoutForm.setValue('timeOfDaySegment', (value || null) as WorkoutTimeOfDay | null)
+        }
+        tWorkouts={tWorkouts}
         onSubmit={() => {
           isSubmittingRef.current = true
           setIsSubmitting(true)
         }}
-      >
-        <input type="hidden" name="date" value={editableDate} />
-        {isEdit && currentWorkout && <input type="hidden" name="workout_id" value={currentWorkout.id} />}
-        <div className="flex-1 overflow-y-auto min-h-0">
-          <div className="px-6 py-4 space-y-5">
-            <input type="hidden" name="sport_type" value={sportType} />
-            {/* 1. Sport — SportTileSelectable, pas de label "Type de sport" (US4) */}
-            <div className="flex flex-wrap gap-3">
-              {WORKOUT_SPORT_TYPES.map((sport) => (
-                <SportTileSelectable
-                  key={sport}
-                  value={sport}
-                  selected={sportType === sport}
-                  onChange={() => setSportType(sport)}
-                />
-              ))}
-            </div>
-            {/* 2. Titre */}
-            <div>
-              <label htmlFor="title-coach" className={FORM_LABEL_CLASSES}>{tWorkouts('form.title')}</label>
-              <Input
-                id="title-coach"
-                name="title"
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                required
-                placeholder={tWorkouts('form.titlePlaceholder')}
-              />
-            </div>
-            {/* 2b. Moment de la journée (segments : Non précisé | Matin | Midi | Soir) */}
-            <div>
-              <label className={FORM_LABEL_CLASSES}>{tWorkouts('form.timeOfDay')}</label>
-              <div className="flex bg-stone-200 p-0.5 rounded-lg" role="group" aria-label={tWorkouts('form.timeOfDay')}>
-                <button
-                  type="button"
-                  onClick={() => setTimeOfDaySegment(null)}
-                  className={`flex-1 px-2 py-2 text-xs font-medium rounded-md transition-all ${timeOfDaySegment === null ? 'bg-palette-forest-dark text-white shadow-sm' : 'text-stone-600 hover:bg-stone-50'}`}
-                >
-                  {tWorkouts('form.timeOfDayUnspecified')}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setTimeOfDaySegment('morning')}
-                  className={`flex-1 px-2 py-2 text-xs font-medium rounded-md transition-all ${timeOfDaySegment === 'morning' ? 'bg-palette-forest-dark text-white shadow-sm' : 'text-stone-600 hover:bg-stone-50'}`}
-                >
-                  {tWorkouts('form.timeOfDayMorning')}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setTimeOfDaySegment('noon')}
-                  className={`flex-1 px-2 py-2 text-xs font-medium rounded-md transition-all ${timeOfDaySegment === 'noon' ? 'bg-palette-forest-dark text-white shadow-sm' : 'text-stone-600 hover:bg-stone-50'}`}
-                >
-                  {tWorkouts('form.timeOfDayNoon')}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setTimeOfDaySegment('evening')}
-                  className={`flex-1 px-2 py-2 text-xs font-medium rounded-md transition-all ${timeOfDaySegment === 'evening' ? 'bg-palette-forest-dark text-white shadow-sm' : 'text-stone-600 hover:bg-stone-50'}`}
-                >
-                  {tWorkouts('form.timeOfDayEvening')}
-                </button>
-              </div>
-              <input type="hidden" name="time_of_day" value={timeOfDaySegment ?? ''} />
-            </div>
-            {/* 3. Objectifs de la séance : toggle, grille, hr, description (sans label) */}
-            <div className="bg-stone-50 p-4 rounded-xl border border-stone-100">
-              <div className="flex items-center justify-between mb-3">
-                <div className="text-xs font-bold text-stone-500 uppercase tracking-wide">
-                  {tWorkouts('form.sessionGoals')}
-                </div>
-                {hasTimeDistanceChoice && (
-                  <div className="flex bg-stone-200 p-0.5 rounded-lg">
-                    <button
-                      type="button"
-                      onClick={() => setTargetMode('time')}
-                      className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${targetMode === 'time' ? 'bg-palette-forest-dark text-white shadow-sm' : 'text-stone-600'}`}
-                    >
-                      {tWorkouts('form.targetMode.time')}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setTargetMode('distance')}
-                      className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${targetMode === 'distance' ? 'bg-palette-forest-dark text-white shadow-sm' : 'text-stone-600'}`}
-                    >
-                      {tWorkouts('form.targetMode.distance')}
-                    </button>
-                  </div>
-                )}
-              </div>
-              {isTimeOnly && (
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="relative">
-                    <input
-                      name="target_duration_minutes"
-                      type="number"
-                      min={1}
-                      value={targetDurationMinutes}
-                      onChange={(e) => setTargetDurationMinutes(e.target.value)}
-                      placeholder="22"
-                      className={`${FORM_BASE_CLASSES} font-semibold pr-12`}
-                    />
-                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                      <ClockIcon className="h-4 w-4 text-stone-400" />
-                    </div>
-                    <input type="hidden" name="target_distance_km" value="" />
-                    <input type="hidden" name="target_elevation_m" value="" />
-                  </div>
-                  <div />
-                </div>
-              )}
-              {hasTimeDistanceChoice && (
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="relative">
-                    {sportType === 'natation' ? (
-                      <>
-                        <input
-                          type="number"
-                          min={0}
-                          step={1}
-                          value={targetMode === 'time' ? (showDisabledDistance && targetDistanceKm ? String(Math.round(Number(targetDistanceKm) * 1000)) : '') : (targetDistanceKm ? String(Math.round(Number(targetDistanceKm) * 1000)) : '')}
-                          onChange={(e) => setTargetDistanceKm(e.target.value ? String(Number(e.target.value) / 1000) : '')}
-                          placeholder={targetMode === 'time' ? '' : '1500'}
-                          disabled={targetMode === 'time'}
-                          className={`${FORM_BASE_CLASSES} font-semibold pr-10 ${targetMode === 'time' ? 'bg-stone-100 text-stone-400 cursor-not-allowed' : ''}`}
-                        />
-                        <input type="hidden" name="target_distance_km" value={targetMode === 'distance' ? targetDistanceKm : (showDisabledDistance ? targetDistanceKm : '')} />
-                        <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-xs text-stone-400">m</div>
-                      </>
-                    ) : (
-                      <>
-                        <input
-                          name="target_distance_km"
-                          type="number"
-                          min={0}
-                          step={0.1}
-                          value={showDisabledDistance ? targetDistanceKm : (targetMode === 'time' ? '' : targetDistanceKm)}
-                          onChange={(e) => setTargetDistanceKm(e.target.value)}
-                          placeholder={targetMode === 'time' ? '' : '14,3'}
-                          disabled={targetMode === 'time'}
-                          className={`${FORM_BASE_CLASSES} font-semibold pr-10 ${targetMode === 'time' ? 'bg-stone-100 text-stone-400 cursor-not-allowed' : ''}`}
-                        />
-                        <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-xs text-stone-400">km</div>
-                      </>
-                    )}
-                  </div>
-                  <div className="relative">
-                    <input
-                      name="target_duration_minutes"
-                      type="number"
-                      min={1}
-                      value={showDisabledDuration ? targetDurationMinutes : (targetMode === 'distance' ? '' : targetDurationMinutes)}
-                      onChange={(e) => setTargetDurationMinutes(e.target.value)}
-                      placeholder={targetMode === 'distance' ? '' : '22'}
-                      disabled={targetMode === 'distance'}
-                      className={`${FORM_BASE_CLASSES} font-semibold pr-12 ${targetMode === 'distance' ? 'bg-stone-100 text-stone-400 cursor-not-allowed' : ''}`}
-                    />
-                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                      <ClockIcon className="h-4 w-4 text-stone-400" />
-                    </div>
-                    <input type="hidden" name="target_duration_minutes" value={targetMode === 'time' ? targetDurationMinutes : (showDisabledDuration ? targetDurationMinutes : '')} />
-                    <input type="hidden" name="target_distance_km" value={targetMode === 'distance' ? targetDistanceKm : (showDisabledDistance ? targetDistanceKm : '')} />
-                    <input type="hidden" name="target_elevation_m" value={hasElevation ? targetElevationM : ''} />
-                  </div>
-                  {hasElevation ? (
-                    <div className="relative">
-                      <input
-                        name="target_elevation_m"
-                        type="number"
-                        min={0}
-                        value={targetElevationM}
-                        onChange={(e) => setTargetElevationM(e.target.value)}
-                        placeholder="200"
-                        className={`${FORM_BASE_CLASSES} font-semibold pr-14`}
-                      />
-                      <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                        <MountainIcon className="h-4 w-4 text-stone-400" />
-                      </div>
-                    </div>
-                  ) : (
-                    <div />
-                  )}
-                  <div className="relative">
-                    <input
-                      name="target_pace"
-                      type="number"
-                      min={0}
-                      step={sportType === 'velo' ? 1 : 0.1}
-                      value={targetPace}
-                      onChange={(e) => setTargetPace(e.target.value)}
-                      placeholder={sportType === 'course' ? '5.0' : sportType === 'velo' ? '39' : '2.0'}
-                      className={`${FORM_BASE_CLASSES} font-semibold pr-16`}
-                    />
-                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-xs text-stone-400">
-                      {sportType === 'course' ? tWorkouts('form.paceUnitRunning') : sportType === 'velo' ? tWorkouts('form.paceUnitCycling') : tWorkouts('form.paceUnitSwimming')}
-                    </div>
-                  </div>
-                </div>
-              )}
-              <hr className="my-3 border-stone-200" />
-              <Textarea
-                name="description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                rows={3}
-                placeholder={tWorkouts('form.descriptionPlaceholder')}
-                className={`${FORM_BASE_CLASSES} ${TEXTAREA_SPECIFIC_CLASSES} min-h-[80px]`}
-                aria-label={tWorkouts('form.description')}
-              />
-            </div>
-            {/* 4. Commentaire de l'athlète (lecture seule, uniquement en édition) */}
-            {currentWorkout && (
-              <div className="border-t border-stone-200 pt-4">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="p-2 bg-stone-200/80 rounded-full text-stone-600">
-                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-lg font-bold text-stone-900">{tWorkouts('comments.athleteComment')}</h3>
-                </div>
-                <p className="text-sm text-stone-600">
-                  {currentWorkout.athlete_comment?.trim() ? currentWorkout.athlete_comment : tWorkouts('comments.noComment')}
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
-      </form>
+      />
       ) : coachReadOnly && currentWorkout ? (
       /* US5 : modale coach lecture seule — titre = titre séance, sport dans l'en-tête (tuile pill) */
       <div className="flex flex-col flex-1 min-h-0 overflow-y-auto">
@@ -1360,7 +923,7 @@ export function WorkoutModal({
                   {currentWorkout.perceived_feeling != null && currentWorkout.perceived_feeling >= 1 && currentWorkout.perceived_feeling <= 5 ? (
                     <>
                       {(() => {
-                        const Icon = FEELING_ICONS[currentWorkout.perceived_feeling - 1]
+                        const Icon = FEELING_ICONS_READONLY[currentWorkout.perceived_feeling - 1]
                         return <Icon className="h-5 w-5 text-stone-600 shrink-0" strokeWidth={2} aria-hidden />
                       })()}
                       <span className="text-stone-700">{tWorkouts(`feedback.feelingScale.${currentWorkout.perceived_feeling}` as 'feedback.feelingScale.1')}</span>
@@ -1380,7 +943,7 @@ export function WorkoutModal({
                   {currentWorkout.perceived_pleasure != null && currentWorkout.perceived_pleasure >= 1 && currentWorkout.perceived_pleasure <= 5 ? (
                     <>
                       {(() => {
-                        const Icon = FEELING_ICONS[currentWorkout.perceived_pleasure - 1]
+                        const Icon = FEELING_ICONS_READONLY[currentWorkout.perceived_pleasure - 1]
                         return <Icon className="h-5 w-5 text-stone-600 shrink-0" strokeWidth={2} aria-hidden />
                       })()}
                       <span className="text-stone-700">{tWorkouts(`feedback.pleasureScale.${currentWorkout.perceived_pleasure}` as 'feedback.pleasureScale.1')}</span>
@@ -1449,7 +1012,7 @@ export function WorkoutModal({
                     <button
                       key={sport}
                       type="button"
-                      onClick={() => setSportType(sport)}
+                      onClick={() => workoutForm.setValue('sportType', sport)}
                       className={`flex flex-col items-center justify-center gap-1 rounded-xl border-2 py-3 px-2 transition text-center min-h-[72px] ${
                         selected
                           ? 'border-palette-forest-dark bg-palette-forest-dark/10 text-palette-forest-dark font-semibold'
@@ -1489,13 +1052,13 @@ export function WorkoutModal({
                 {canEdit && hasTimeDistanceChoice && (
                   <div className="flex bg-stone-200 p-0.5 rounded-lg">
                     <label className="cursor-pointer">
-                      <input type="radio" name="target_mode" value="time" checked={targetMode === 'time'} onChange={() => setTargetMode('time')} className="sr-only" />
+                      <input type="radio" name="target_mode" value="time" checked={targetMode === 'time'} onChange={() => workoutForm.setTargetMode('time')} className="sr-only" />
                       <div className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${targetMode === 'time' ? 'bg-palette-forest-dark text-white shadow-sm' : 'text-stone-600'}`}>
                         {tWorkouts('form.targetMode.time')}
                       </div>
                     </label>
                     <label className="cursor-pointer">
-                      <input type="radio" name="target_mode" value="distance" checked={targetMode === 'distance'} onChange={() => setTargetMode('distance')} className="sr-only" />
+                      <input type="radio" name="target_mode" value="distance" checked={targetMode === 'distance'} onChange={() => workoutForm.setTargetMode('distance')} className="sr-only" />
                       <div className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${targetMode === 'distance' ? 'bg-palette-forest-dark text-white shadow-sm' : 'text-stone-600'}`}>
                         {tWorkouts('form.targetMode.distance')}
                       </div>
@@ -1529,7 +1092,8 @@ export function WorkoutModal({
                           type="number"
                           min={1}
                           value={targetDurationMinutes}
-                          onChange={(e) => setTargetDurationMinutes(e.target.value)}
+                          onChange={(e) => workoutForm.setValue('targetDurationMinutes', e.target.value)}
+                          onWheel={preventWheelNumberChange}
                           placeholder="22"
                           className="w-full border border-stone-300 rounded-lg py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition-all bg-white text-stone-900 placeholder-stone-300 font-semibold pr-12"
                         />
@@ -1555,7 +1119,8 @@ export function WorkoutModal({
                               min={0}
                               step={1}
                               value={targetMode === 'time' ? (showDisabledDistance && targetDistanceKm ? String(Math.round(Number(targetDistanceKm) * 1000)) : '') : (targetDistanceKm ? String(Math.round(Number(targetDistanceKm) * 1000)) : '')}
-                              onChange={(e) => setTargetDistanceKm(e.target.value ? String(Number(e.target.value) / 1000) : '')}
+                              onChange={(e) => workoutForm.setValue('targetDistanceKm', e.target.value ? String(Number(e.target.value) / 1000) : '')}
+                              onWheel={preventWheelNumberChange}
                               placeholder={targetMode === 'time' ? '' : '1500'}
                               disabled={targetMode === 'time'}
                               className={`w-full border border-stone-300 rounded-lg py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition-all font-semibold placeholder-stone-300 pr-10 ${
@@ -1578,7 +1143,8 @@ export function WorkoutModal({
                               min={0}
                               step={0.1}
                               value={showDisabledDistance ? targetDistanceKm : (targetMode === 'time' ? '' : targetDistanceKm)}
-                              onChange={(e) => setTargetDistanceKm(e.target.value)}
+                              onChange={(e) => workoutForm.setValue('targetDistanceKm', e.target.value)}
+                              onWheel={preventWheelNumberChange}
                               placeholder={targetMode === 'time' ? '' : '14,3'}
                               disabled={targetMode === 'time'}
                               className={`w-full border border-stone-300 rounded-lg py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition-all font-semibold placeholder-stone-300 pr-10 ${
@@ -1602,7 +1168,8 @@ export function WorkoutModal({
                           type="number"
                           min={1}
                           value={showDisabledDuration ? targetDurationMinutes : (targetMode === 'distance' ? '' : targetDurationMinutes)}
-                          onChange={(e) => setTargetDurationMinutes(e.target.value)}
+                          onChange={(e) => workoutForm.setValue('targetDurationMinutes', e.target.value)}
+                          onWheel={preventWheelNumberChange}
                           placeholder={targetMode === 'distance' ? '' : '22'}
                           disabled={targetMode === 'distance'}
                           className={`w-full border border-stone-300 rounded-lg py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition-all font-semibold placeholder-stone-300 pr-12 ${
@@ -1628,7 +1195,8 @@ export function WorkoutModal({
                             type="number"
                             min={0}
                             value={targetElevationM}
-                            onChange={(e) => setTargetElevationM(e.target.value)}
+                            onChange={(e) => workoutForm.setValue('targetElevationM', e.target.value)}
+                            onWheel={preventWheelNumberChange}
                             placeholder="200"
                             className="w-full border border-stone-300 rounded-lg py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition-all bg-white text-stone-900 placeholder-stone-300 font-semibold pr-14"
                           />
@@ -1650,7 +1218,8 @@ export function WorkoutModal({
                             min={0}
                             step={sportType === 'velo' ? 1 : 0.1}
                             value={targetPace}
-                            onChange={(e) => setTargetPace(e.target.value)}
+                            onChange={(e) => workoutForm.setValue('targetPace', e.target.value)}
+                            onWheel={preventWheelNumberChange}
                             placeholder={sportType === 'course' ? '5.0' : sportType === 'velo' ? '39' : '2.0'}
                             title={tCommon('paceRequiredHint')}
                             className="w-full border border-stone-300 rounded-lg py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition-all bg-white text-stone-900 placeholder-stone-300 font-semibold pr-16"
@@ -1675,7 +1244,7 @@ export function WorkoutModal({
             name="title"
             type="text"
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={(e) => workoutForm.setValue('title', e.target.value)}
             required
             disabled={!canEdit}
             placeholder={tWorkouts('form.titlePlaceholder')}
@@ -1687,7 +1256,7 @@ export function WorkoutModal({
               label={canEdit ? tWorkouts('form.description') : tWorkouts('form.description')}
               name="description"
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={(e) => workoutForm.setValue('description', e.target.value)}
               disabled={!canEdit}
               rows={4}
               placeholder={tWorkouts('form.descriptionPlaceholder')}
@@ -1696,7 +1265,7 @@ export function WorkoutModal({
 
           {(state?.error || state?.success) && (
             <p
-              className={`text-sm ${state.error ? 'text-red-600' : 'text-palette-forest-dark font-medium'}`}
+              className={`text-sm ${state.error ? 'text-palette-danger-dark' : 'text-palette-forest-dark font-medium'}`}
               role="alert"
             >
               {state.error || state.success}

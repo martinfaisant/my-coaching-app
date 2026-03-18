@@ -1,7 +1,7 @@
 'use server'
 
 import { createClient } from '@/utils/supabase/server'
-import { getTranslations } from 'next-intl/server'
+import { getLocale, getTranslations } from 'next-intl/server'
 import type { ChatMessage } from '@/types/database'
 import { getDisplayName } from '@/lib/displayName'
 
@@ -166,6 +166,9 @@ export async function getAthletesForCoachForChat(): Promise<AthleteForChat[]> {
   } = await supabase.auth.getUser()
   if (!user) return []
 
+  const locale = await getLocale()
+  const tCommon = await getTranslations({ locale, namespace: 'common' })
+
   const { data: requests } = await supabase
     .from('coach_requests')
     .select('id, athlete_id, status, created_at')
@@ -218,7 +221,7 @@ export async function getAthletesForCoachForChat(): Promise<AthleteForChat[]> {
     (profiles ?? []).map((p) => [
       p.user_id,
       {
-        displayName: getDisplayName(p, 'Athlète'),
+        displayName: getDisplayName(p, tCommon('athlete')),
         avatar_url: p.avatar_url ?? null,
       },
     ])
@@ -230,7 +233,7 @@ export async function getAthletesForCoachForChat(): Promise<AthleteForChat[]> {
     const conv = convByAthleteId.get(aid)
     return {
       athlete_id: aid,
-      displayName: profile?.displayName ?? 'Athlète',
+      displayName: profile?.displayName ?? tCommon('athlete'),
       avatar_url: profile?.avatar_url ?? null,
       request_id: writableByAthleteId.get(aid) ?? '',
       conversation_id: conv?.id ?? null,
@@ -255,6 +258,9 @@ export async function getCoachesForAthleteForChat(): Promise<CoachForChat[]> {
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) return []
+
+  const locale = await getLocale()
+  const tCommon = await getTranslations({ locale, namespace: 'common' })
 
   const { data: requests } = await supabase
     .from('coach_requests')
@@ -308,7 +314,7 @@ export async function getCoachesForAthleteForChat(): Promise<CoachForChat[]> {
     (profiles ?? []).map((p) => [
       p.user_id,
       {
-        displayName: getDisplayName(p, 'Coach'),
+        displayName: getDisplayName(p, tCommon('coach')),
         avatar_url: p.avatar_url ?? null,
       },
     ])
@@ -320,7 +326,7 @@ export async function getCoachesForAthleteForChat(): Promise<CoachForChat[]> {
     const conv = convByCoachId.get(cid)
     return {
       coach_id: cid,
-      displayName: profile?.displayName ?? 'Coach',
+      displayName: profile?.displayName ?? tCommon('coach'),
       avatar_url: profile?.avatar_url ?? null,
       request_id: writableByCoachId.get(cid) ?? '',
       conversation_id: conv?.id ?? null,
@@ -387,7 +393,8 @@ export async function getOrCreateConversationForCoach(
     .eq('user_id', athleteId)
     .single()
 
-  const athleteName = profile ? getDisplayName(profile, 'Athlète') : 'Athlète'
+  const tCommon = await getTranslations({ locale, namespace: 'common' })
+  const athleteName = profile ? getDisplayName(profile, tCommon('athlete')) : tCommon('athlete')
   return { ok: true, conversationId: conv.id, athleteName }
 }
 
@@ -440,7 +447,8 @@ export async function getOrCreateConversationForAthlete(
     .eq('user_id', coachId)
     .single()
 
-  const coachName = coachProfile ? getDisplayName(coachProfile, 'Coach') : 'Coach'
+  const tCommon = await getTranslations({ locale, namespace: 'common' })
+  const coachName = coachProfile ? getDisplayName(coachProfile, tCommon('coach')) : tCommon('coach')
   return { ok: true, conversationId: conv.id, coachName }
 }
 
@@ -460,6 +468,9 @@ export async function getConversationsForCoach(): Promise<ConversationWithMeta[]
 
   if (!rows?.length) return []
 
+  const locale = await getLocale()
+  const tCommon = await getTranslations({ locale, namespace: 'common' })
+
   const athleteIds = [...new Set(rows.map((r) => r.athlete_id))]
   const { data: profiles } = await supabase
     .from('profiles')
@@ -469,7 +480,7 @@ export async function getConversationsForCoach(): Promise<ConversationWithMeta[]
   const nameByUserId = new Map<string, string>()
   const avatarByUserId = new Map<string, string | null>()
   for (const p of profiles ?? []) {
-    nameByUserId.set(p.user_id, getDisplayName(p, 'Athlète'))
+    nameByUserId.set(p.user_id, getDisplayName(p, tCommon('athlete')))
     avatarByUserId.set(p.user_id, p.avatar_url ?? null)
   }
 
@@ -485,7 +496,7 @@ export async function getConversationsForCoach(): Promise<ConversationWithMeta[]
       id: r.id,
       request_id: effectiveRequestId ?? null,
       athlete_id: r.athlete_id,
-      athlete_name: nameByUserId.get(r.athlete_id) ?? 'Athlète',
+      athlete_name: nameByUserId.get(r.athlete_id) ?? tCommon('athlete'),
       avatar_url: avatarByUserId.get(r.athlete_id) ?? null,
       updated_at: r.updated_at,
       can_send: canSend,
@@ -511,6 +522,9 @@ export async function getConversationsForAthlete(): Promise<ConversationWithCoac
 
   if (!rows?.length) return []
 
+  const locale = await getLocale()
+  const tCommon = await getTranslations({ locale, namespace: 'common' })
+
   const coachIds = [...new Set(rows.map((r) => r.coach_id))]
   const { data: profiles } = await supabase
     .from('profiles')
@@ -520,7 +534,7 @@ export async function getConversationsForAthlete(): Promise<ConversationWithCoac
   const nameByUserId = new Map<string, string>()
   const avatarByUserId = new Map<string, string | null>()
   for (const p of profiles ?? []) {
-    nameByUserId.set(p.user_id, getDisplayName(p, 'Coach'))
+    nameByUserId.set(p.user_id, getDisplayName(p, tCommon('coach')))
     avatarByUserId.set(p.user_id, p.avatar_url ?? null)
   }
 
@@ -536,7 +550,7 @@ export async function getConversationsForAthlete(): Promise<ConversationWithCoac
       id: r.id,
       request_id: effectiveRequestId ?? null,
       coach_id: r.coach_id,
-      coach_name: nameByUserId.get(r.coach_id) ?? 'Coach',
+      coach_name: nameByUserId.get(r.coach_id) ?? tCommon('coach'),
       avatar_url: avatarByUserId.get(r.coach_id) ?? null,
       updated_at: r.updated_at,
       can_send: canSend,

@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { getTranslations } from 'next-intl/server'
 import { requireRole } from '@/utils/auth'
 import { DashboardPageShell } from '@/components/DashboardPageShell'
 import { ButtonShowcase } from './ButtonShowcase'
@@ -12,42 +13,44 @@ import { LanguageSwitcherShowcase } from './LanguageSwitcherShowcase'
 import { LanguagePrefixFieldShowcase } from './LanguagePrefixFieldShowcase'
 import { PersonTileShowcase } from './PersonTileShowcase'
 import { ChatShowcase } from './ChatShowcase'
+import { TypographyTable } from './TypographyTable'
 
 const PALETTE = [
-  { token: 'palette-forest-dark', hex: '#627e59', description: 'Principal — boutons, liens, focus' },
-  { token: 'palette-forest-darker', hex: '#506648', description: 'Hover foncé, CTA accentués' },
-  { token: 'palette-olive', hex: '#8e9856', description: 'Hover principal, avatar fallback' },
-  { token: 'palette-sage', hex: '#aaaa51', description: 'Calendrier, objectif secondaire' },
-  { token: 'palette-gold', hex: '#cbb44b', description: 'Calendrier, ski rando' },
-  { token: 'palette-amber', hex: '#c9a544', description: 'Objectif primaire, badges' },
-  { token: 'palette-strava', hex: '#FC4C02', description: 'Connexion Strava, activités importées' },
-  { token: 'palette-danger', hex: '#c0564b', description: 'Actions destructives — Déconnexion, Supprimer, erreurs (Harmonie Nature)' },
-  { token: 'palette-danger-light', hex: '#fdf2f1', description: 'Fond très léger, chaleureux' },
-  { token: 'palette-danger-dark', hex: '#9e3b31', description: 'Interaction, plus profond' },
+  { token: 'palette-forest-dark', hex: '#627e59', descriptionKey: 'forestDark' },
+  { token: 'palette-forest-darker', hex: '#506648', descriptionKey: 'forestDarker' },
+  { token: 'palette-olive', hex: '#8e9856', descriptionKey: 'olive' },
+  { token: 'palette-sage', hex: '#aaaa51', descriptionKey: 'sage' },
+  { token: 'palette-gold', hex: '#cbb44b', descriptionKey: 'gold' },
+  { token: 'palette-amber', hex: '#c9a544', descriptionKey: 'amber' },
+  { token: 'palette-strava', hex: '#FC4C02', descriptionKey: 'strava' },
+  { token: 'palette-danger', hex: '#c0564b', descriptionKey: 'danger' },
+  { token: 'palette-danger-light', hex: '#fdf2f1', descriptionKey: 'dangerLight' },
+  { token: 'palette-danger-dark', hex: '#9e3b31', descriptionKey: 'dangerDark' },
 ] as const
 
 export default async function DesignSystemPage() {
   await requireRole(['admin'])
+  const t = await getTranslations('adminDesignSystem')
 
   return (
     <DashboardPageShell contentClassName="py-8">
         <p className="mb-8 flex flex-wrap items-center justify-between gap-4 text-stone-600">
-          <span>Référence des tokens et composants. Priorité : utiliser ces tokens plutôt que des couleurs hex en dur.</span>
+          <span>{t('intro')}</span>
           <Link
             href="/dashboard/admin/members"
             className="shrink-0 text-sm font-medium text-stone-500 hover:text-palette-forest-dark"
           >
-            Membres
+            {t('membersLink')}
           </Link>
         </p>
 
         <section>
           <h2 className="text-lg font-semibold text-stone-800 mb-4">
-            Palette de couleurs
+            {t('sections.palette.title')}
           </h2>
 
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {PALETTE.map(({ token, hex, description }) => (
+            {PALETTE.map(({ token, hex, descriptionKey }) => (
               <div
                 key={token}
                 className="rounded-xl border border-stone-200 bg-white overflow-hidden shadow-sm hover:shadow-md transition-shadow"
@@ -65,7 +68,7 @@ export default async function DesignSystemPage() {
                     {hex}
                   </p>
                   <p className="mt-2 text-sm text-stone-600">
-                    {description}
+                    {t(`sections.palette.${descriptionKey}`)}
                   </p>
                   <div className="mt-3 flex flex-wrap gap-2">
                     <span className="inline-block rounded px-2 py-0.5 text-[10px] font-mono bg-stone-100 text-stone-600">
@@ -86,10 +89,10 @@ export default async function DesignSystemPage() {
 
         <section className="mt-12">
           <h2 className="text-lg font-semibold text-stone-800 mb-4">
-            Composant Button
+            {t('sections.button.title')}
           </h2>
           <p className="mb-6 text-sm text-stone-600">
-            Variantes alignées sur les boutons existants de l&apos;app : Créer un compte, Enregistrer (modale entraînement), Se connecter, Déconnexion.
+            {t('sections.button.description')}
           </p>
           <div className="rounded-xl border border-stone-200 bg-white p-6">
             <ButtonShowcase />
@@ -98,23 +101,23 @@ export default async function DesignSystemPage() {
 
         <section className="mt-12">
           <h2 className="text-lg font-semibold text-stone-800 mb-4">
-            Composants Input / Textarea
+            {t('sections.inputs.title')}
           </h2>
           <p className="mb-6 text-sm text-stone-600">
-            Champs de formulaire alignés sur LoginForm, ProfileForm, WorkoutModal.
+            {t('sections.inputs.description')}
           </p>
           <div className="rounded-xl border border-stone-200 bg-white p-6">
             <div className="space-y-12">
               <div>
-                <h3 className="text-base font-semibold text-stone-800 mb-4">Input</h3>
+                <h3 className="text-base font-semibold text-stone-800 mb-4">{t('sections.inputs.inputTitle')}</h3>
                 <InputShowcase />
               </div>
               <div className="pt-8 border-t border-stone-200">
-                <h3 className="text-base font-semibold text-stone-800 mb-4">Textarea</h3>
+                <h3 className="text-base font-semibold text-stone-800 mb-4">{t('sections.inputs.textareaTitle')}</h3>
                 <TextareaShowcase />
               </div>
               <div className="pt-8 border-t border-stone-200">
-                <h3 className="text-base font-semibold text-stone-800 mb-4">Champ avec préfixe langue (EN/FR)</h3>
+                <h3 className="text-base font-semibold text-stone-800 mb-4">{t('sections.inputs.languagePrefixTitle')}</h3>
                 <LanguagePrefixFieldShowcase />
               </div>
             </div>
@@ -123,10 +126,22 @@ export default async function DesignSystemPage() {
 
         <section className="mt-12">
           <h2 className="text-lg font-semibold text-stone-800 mb-4">
-            Composant Badge
+            {t('sections.typography.title')}
           </h2>
           <p className="mb-6 text-sm text-stone-600">
-            Étiquettes pour sports, langues, objectifs, statuts. Variantes default, primary, sport-*, success, warning. Tuiles cliquables : états statique, non sélectionné, sélectionné (profil coach).
+            {t('sections.typography.description')}
+          </p>
+          <div className="rounded-xl border border-stone-200 bg-white overflow-hidden">
+            <TypographyTable />
+          </div>
+        </section>
+
+        <section className="mt-12">
+          <h2 className="text-lg font-semibold text-stone-800 mb-4">
+            {t('sections.badge.title')}
+          </h2>
+          <p className="mb-6 text-sm text-stone-600">
+            {t('sections.badge.description')}
           </p>
           <div className="rounded-xl border border-stone-200 bg-white p-6">
             <BadgeShowcase />
@@ -135,10 +150,10 @@ export default async function DesignSystemPage() {
 
         <section className="mt-12">
           <h2 className="text-lg font-semibold text-stone-800 mb-4">
-            Composant ActivityTile
+            {t('sections.activityTile.title')}
           </h2>
           <p className="mb-6 text-sm text-stone-600">
-            Tuiles d&apos;activités unifiées pour entraînements planifiés, activités Strava importées et objectifs de course. Style inspiré de Strava avec bordure gauche colorée adaptée au type d&apos;activité.
+            {t('sections.activityTile.description')}
           </p>
           <div className="rounded-xl border border-stone-200 bg-white p-6">
             <ActivityTileShowcase />
@@ -147,10 +162,10 @@ export default async function DesignSystemPage() {
 
         <section className="mt-12">
           <h2 className="text-lg font-semibold text-stone-800 mb-4">
-            Composant TileCard
+            {t('sections.tileCard.title')}
           </h2>
           <p className="mb-6 text-sm text-stone-600">
-            Conteneur avec le même style de tour (bordure) que les tuiles de la modale « Activités du jour ». Pour objectifs, listes personnalisées, etc.
+            {t('sections.tileCard.description')}
           </p>
           <div className="rounded-xl border border-stone-200 bg-white p-6">
             <TileCardShowcase />
@@ -159,10 +174,10 @@ export default async function DesignSystemPage() {
 
         <section className="mt-12">
           <h2 className="text-lg font-semibold text-stone-800 mb-4">
-            Tuiles Coach et Athlète (CoachTile / AthleteTile)
+            {t('sections.personTiles.title')}
           </h2>
           <p className="mb-6 text-sm text-stone-600">
-            Tuiles de liste au design unifié : carte rounded-2xl, header (avatar + nom), badges sports, zone contenu, footer d’action. CoachTile pour « Trouver un coach », AthleteTile pour « Mes athlètes ».
+            {t('sections.personTiles.description')}
           </p>
           <div className="rounded-xl border border-stone-200 bg-white p-6">
             <PersonTileShowcase />
@@ -171,10 +186,10 @@ export default async function DesignSystemPage() {
 
         <section className="mt-12">
           <h2 className="text-lg font-semibold text-stone-800 mb-4">
-            Composant Modal
+            {t('sections.modal.title')}
           </h2>
           <p className="mb-6 text-sm text-stone-600">
-            Modales réutilisables avec overlay, gestion Escape, tailles variées (sm à 4xl), support icône, footer, et alignements.
+            {t('sections.modal.description')}
           </p>
           <div className="rounded-xl border border-stone-200 bg-white p-6">
             <ModalShowcase />
@@ -183,10 +198,10 @@ export default async function DesignSystemPage() {
 
         <section className="mt-12">
           <h2 className="text-lg font-semibold text-stone-800 mb-4">
-            Composant LanguageSwitcher
+            {t('sections.languageSwitcher.title')}
           </h2>
           <p className="mb-6 text-sm text-stone-600">
-            Dropdown de changement de langue (FR/EN) avec icône globe, libellés « Français » / « English » et coche sur la langue active. Conforme au design system (tokens palette, stone).
+            {t('sections.languageSwitcher.description')}
           </p>
           <div className="rounded-xl border border-stone-200 bg-white p-6">
             <LanguageSwitcherShowcase />
@@ -195,10 +210,10 @@ export default async function DesignSystemPage() {
 
         <section className="mt-12">
           <h2 className="text-lg font-semibold text-stone-800 mb-4">
-            Composants Chat (overlay coach)
+            {t('sections.chat.title')}
           </h2>
           <p className="mb-6 text-sm text-stone-600">
-            ChatAthleteListItem : ligne athlète pour la liste « Choisir un athlète pour démarrer » (état 1). ChatConversationSidebar : sidebar des conversations réductible (états 2a/2b). Référence : docs/CHAT_COACH_START_CONVERSATION_DESIGN.md, mockup.
+            {t('sections.chat.description')}
           </p>
           <div className="rounded-xl border border-stone-200 bg-white p-6">
             <ChatShowcase />
@@ -207,7 +222,7 @@ export default async function DesignSystemPage() {
 
         <section className="mt-12">
           <h2 className="text-lg font-semibold text-stone-800 mb-4">
-            Aperçu des classes Tailwind
+            {t('sections.tailwindPreview.title')}
           </h2>
           <div className="rounded-xl border border-stone-200 bg-white p-6">
             <div className="flex flex-wrap gap-4 items-center">

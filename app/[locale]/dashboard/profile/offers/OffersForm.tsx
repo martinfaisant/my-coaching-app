@@ -10,6 +10,7 @@ import { TileCard } from '@/components/TileCard'
 import { LanguagePrefixInput, LanguagePrefixTextarea } from '@/components/LanguagePrefixField'
 import { saveOffers, archiveOffer, publishOffer, type OffersFormState } from './actions'
 import type { CoachOffer, CoachOfferArchived } from '@/types/database'
+import { FORM_ERROR_BOX_CLASSES } from '@/lib/formStyles'
 
 type OffersFormProps = {
   offers: CoachOffer[]
@@ -416,7 +417,7 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
         <div className="flex-1 min-h-0 overflow-y-auto px-6 lg:px-8 py-8">
           {state?.error && (
             <div
-              className="mb-6 p-3 rounded-lg text-sm bg-red-50 border border-red-200 text-red-700"
+              className={`mb-6 ${FORM_ERROR_BOX_CLASSES}`}
               role="alert"
             >
               {state.error}
@@ -424,7 +425,7 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
           )}
           {publishError && (
             <div
-              className="mb-6 p-3 rounded-lg text-sm bg-red-50 border border-red-200 text-red-700"
+              className={`mb-6 ${FORM_ERROR_BOX_CLASSES}`}
               role="alert"
             >
               {publishError}

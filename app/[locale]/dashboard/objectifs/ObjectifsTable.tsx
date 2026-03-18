@@ -541,7 +541,7 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
 
             {state?.error  && (
               <p
-                className={`text-sm ${state.error ? 'text-red-600' : 'text-palette-forest-dark font-medium'}`}
+                className={`text-sm ${state.error ? 'text-palette-danger-dark' : 'text-palette-forest-dark font-medium'}`}
                 role="alert"
               >
                 {state.error}

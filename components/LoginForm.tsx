@@ -12,6 +12,7 @@ import {
 } from '@/app/[locale]/login/actions'
 import { Button } from '@/components/Button'
 import { Input } from '@/components/Input'
+import { FORM_ERROR_TEXT_CLASSES } from '@/lib/formStyles'
 import type { AuthModalMode } from './LoginModal'
 
 type SignupRole = 'athlete' | 'coach'
@@ -107,7 +108,7 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
             placeholder={t('passwordPlaceholder')}
           />
           {loginState?.error && (
-            <p className="text-sm text-red-600" role="alert">
+            <p className={FORM_ERROR_TEXT_CLASSES} role="alert">
               {loginState.error}
             </p>
           )}
@@ -303,7 +304,7 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
           placeholder={t('passwordPlaceholder')}
         />
         {signupState?.error && (
-          <p className="text-sm text-red-600" role="alert">
+          <p className={FORM_ERROR_TEXT_CLASSES} role="alert">
             {signupState.error}
             {signupState.userExists && signupState.existingEmail && onModeChange && (
               <>

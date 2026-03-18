@@ -45,7 +45,7 @@ function TileDemo() {
             onClick={() => toggle(sport)}
             className={`px-4 py-2 rounded-full border text-sm font-medium select-none flex items-center gap-2 transition-all ${
               isSelected
-                ? 'border-palette-forest-dark bg-palette-forest-dark text-white shadow-[0_4px_6px_-1px_rgba(98,126,89,0.3)]'
+                ? 'border-palette-forest-dark bg-palette-forest-dark text-white shadow-palette-forest'
                 : 'border-stone-200 bg-white text-stone-600 hover:border-palette-forest-dark'
             }`}
           >
@@ -180,7 +180,7 @@ export function BadgeShowcase() {
                 return (
                   <div
                     key={sport}
-                    className="px-4 py-2 rounded-full border border-palette-forest-dark bg-palette-forest-dark text-white shadow-[0_4px_6px_-1px_rgba(98,126,89,0.3)] text-sm font-medium select-none flex items-center gap-2"
+                    className="px-4 py-2 rounded-full border border-palette-forest-dark bg-palette-forest-dark text-white shadow-palette-forest text-sm font-medium select-none flex items-center gap-2"
                   >
                     <Icon className="w-3.5 h-3.5 shrink-0" aria-hidden />
                     <span>{label}</span>

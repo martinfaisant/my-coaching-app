@@ -559,7 +559,7 @@ export function ProfileForm({
               </Button>
             </div>
             {state?.error && (
-              <p className="text-sm text-red-600 mt-3" role="alert">
+              <p className="text-sm text-palette-danger-dark mt-3" role="alert">
                 {state.error}
               </p>
             )}
@@ -881,7 +881,7 @@ export function ProfileForm({
             </div>
             <div className="min-h-[2.5rem] mt-2 text-center w-full max-w-md">
               {deleteBlockReason && (
-                <p className="text-sm text-red-600" role="alert">
+                <p className="text-sm text-palette-danger-dark" role="alert">
                   {deleteBlockReason}
                 </p>
               )}
@@ -940,7 +940,7 @@ export function ProfileForm({
             {tProfile('deleteConfirmMessage')}
           </p>
           {deleteError && (
-            <p className="text-sm text-red-600" role="alert">{deleteError}</p>
+            <p className="text-sm text-palette-danger-dark" role="alert">{deleteError}</p>
           )}
         </div>
       </Modal>

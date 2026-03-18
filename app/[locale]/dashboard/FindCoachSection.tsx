@@ -26,6 +26,7 @@ import { GoalFullModal } from '@/app/[locale]/dashboard/objectifs/GoalFullModal'
 import { RequestGoalAddModal } from '@/app/[locale]/dashboard/RequestGoalAddModal'
 import { RequestGoalsListModal } from '@/app/[locale]/dashboard/RequestGoalsListModal'
 import { formatGoalDateBlock } from '@/lib/dateUtils'
+import { FORM_ERROR_BOX_CLASSES } from '@/lib/formStyles'
 import {
   hasGoalResult,
   hasTargetTime,
@@ -252,7 +253,7 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
                   onClick={() => toggleLanguage(opt.value)}
                   className={`px-4 py-2 rounded-full border text-sm font-medium select-none transition-all ${
                     selectedLanguages.includes(opt.value)
-                      ? 'border-palette-forest-dark bg-palette-forest-dark text-white shadow-[0_4px_6px_-1px_rgba(98,126,89,0.3)]'
+                      ? 'border-palette-forest-dark bg-palette-forest-dark text-white shadow-palette-forest'
                       : 'border-stone-200 bg-white text-stone-600 hover:border-palette-forest-dark'
                   }`}
                 >
@@ -868,7 +869,7 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
                       <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-stone-200 p-6 space-y-6">
                         <h4 className="text-base font-semibold text-stone-900">{t('modal.completeRequest')}</h4>
                         {error && (
-                          <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
+                          <div className={FORM_ERROR_BOX_CLASSES} role="alert">
                             {error}
                           </div>
                         )}

@@ -87,6 +87,7 @@ export function AvailabilityModal({
 
   const [showSavedFeedback, setShowSavedFeedback] = useState(false)
   const previousSubmittingRef = useRef(false)
+  const previousPendingRef = useRef(false)
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
   const initialValuesRef = useRef({ typeSegment, editableDate, startTime, endTime, note })
   const [deleteLoading, setDeleteLoading] = useState(false)
@@ -103,6 +104,7 @@ export function AvailabilityModal({
   useEffect(() => {
     if (isOpen) {
       setDeleteError(null)
+      previousPendingRef.current = false
       if (editSlot) {
         setEditableDate(editSlot.date)
         setTypeSegment(editSlot.type)
@@ -172,18 +174,20 @@ export function AvailabilityModal({
     }
   }
 
-  // Fermer la modale une seule fois quand le succès arrive. onClose exclu des deps volontairement
-  // pour éviter une boucle : après router.refresh() le parent repasse une nouvelle ref → effet
-  // se ré-exécutait et rappelait onClose(true) en boucle.
+  // Fermer la modale quand une soumission vient de se terminer avec succès.
+  // Important : `useActionState` peut conserver `state.success` entre ouvertures,
+  // donc on se base sur la transition pending -> not pending.
+  const closeFeedbackKey = `${state?.success ?? ''}|${state?.error ?? ''}|${isPending}`
   useEffect(() => {
-    if (state?.success) {
-      const t = setTimeout(() => {
-        onClose(true)
-      }, 500)
+    const justFinished = previousPendingRef.current && !isPending
+    previousPendingRef.current = isPending
+
+    if (state?.success && justFinished) {
+      const t = setTimeout(() => onClose(true), 500)
       return () => clearTimeout(t)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state?.success])
+  }, [closeFeedbackKey])
 
   const dateBlock = (
     <div

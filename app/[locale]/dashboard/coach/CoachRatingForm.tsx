@@ -185,7 +185,7 @@ export function CoachRatingForm({ coachId, initialRating, initialComment }: Coac
         </Button>
       </div>
       {error && (
-        <p className="text-sm text-red-600 -mt-2 mb-2" role="alert">
+        <p className="text-sm text-palette-danger-dark -mt-2 mb-2" role="alert">
           {error}
         </p>
       )}

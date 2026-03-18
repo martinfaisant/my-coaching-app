@@ -153,7 +153,7 @@ export function DashboardTopBar({ profile }: DashboardTopBarProps) {
               </Link>
               <hr className="border-stone-200 my-2" />
               <div className="px-3 py-2">
-                <LogoutButton className="w-full justify-start gap-3 rounded-xl font-medium !py-3 hover:bg-red-50" />
+                <LogoutButton className="w-full justify-start gap-3 rounded-xl font-medium !py-3 hover:bg-palette-danger-light" />
               </div>
             </div>
           </div>
