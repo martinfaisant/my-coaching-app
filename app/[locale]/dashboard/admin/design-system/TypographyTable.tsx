@@ -484,7 +484,7 @@ const PROPOSED: Record<string, { labelKey: string; classes: string }> = {
   },
   microUpper: {
     labelKey: 'proposed.microUpper.label',
-    classes: 'text-[10px] font-bold uppercase tracking-wide',
+    classes: 'text-[10px] font-semibold uppercase tracking-wider',
   },
   feedbackError: {
     labelKey: 'proposed.feedbackError.label',

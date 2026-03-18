@@ -137,12 +137,12 @@ export function RequestGoalAddModal({ isOpen, onClose }: RequestGoalAddModalProp
           required
           placeholder={tGoals('raceNamePlaceholder')}
           label={`${tGoals('raceName')} *`}
-          labelClassName="block text-xs font-bold text-stone-500 uppercase tracking-wide mb-1.5 ml-1"
+          labelClassName="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-1.5 ml-1"
         />
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label htmlFor="request-goal-date-trigger" className="block text-xs font-bold text-stone-500 uppercase tracking-wide mb-1.5 ml-1">
+            <label htmlFor="request-goal-date-trigger" className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-1.5 ml-1">
               {tGoals('date')} *
             </label>
             <input type="hidden" name="date" value={selectedDate} required readOnly aria-hidden />
@@ -174,13 +174,13 @@ export function RequestGoalAddModal({ isOpen, onClose }: RequestGoalAddModalProp
               step="0.1"
               placeholder="42"
               label={`${tGoals('distance')} *`}
-              labelClassName="block text-xs font-bold text-stone-500 uppercase tracking-wide mb-1.5 ml-1"
+              labelClassName="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-1.5 ml-1"
             />
           </div>
         </div>
 
         <div>
-          <label className="block text-xs font-bold text-stone-500 uppercase mb-2 ml-1">{tGoals('priority.label')}</label>
+          <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2 ml-1">{tGoals('priority.label')}</label>
           <div className="grid grid-cols-2 gap-2">
             <label className="cursor-pointer">
               <input
@@ -191,7 +191,7 @@ export function RequestGoalAddModal({ isOpen, onClose }: RequestGoalAddModalProp
                 onChange={() => setPriority('primary')}
                 className="hidden peer"
               />
-              <div className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg border text-[10px] font-bold transition-all ${
+              <div className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg border text-[10px] font-semibold transition-all ${
                 priority === 'primary'
                   ? 'bg-white text-palette-amber border-palette-amber'
                   : 'bg-white text-stone-400 border-stone-200 hover:border-stone-300'
@@ -208,7 +208,7 @@ export function RequestGoalAddModal({ isOpen, onClose }: RequestGoalAddModalProp
                 onChange={() => setPriority('secondary')}
                 className="hidden peer"
               />
-              <div className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg border text-[10px] font-bold transition-all ${
+              <div className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg border text-[10px] font-semibold transition-all ${
                 priority === 'secondary'
                   ? 'bg-white text-palette-sage border-palette-sage'
                   : 'bg-white text-stone-400 border-stone-200 hover:border-stone-300'
@@ -220,7 +220,7 @@ export function RequestGoalAddModal({ isOpen, onClose }: RequestGoalAddModalProp
         </div>
 
         <div className="space-y-2">
-          <label className="block text-xs font-bold text-stone-500 uppercase tracking-wide ml-1">
+          <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider ml-1">
             {tGoals('targetTimeOptional')}
           </label>
           <div className="grid grid-cols-3 gap-2">

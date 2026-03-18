@@ -246,7 +246,7 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
             const seasonGoals = goalsBySeason.get(seasonYear)!
             return (
               <div key={seasonYear} className="space-y-6">
-                <h3 className="text-sm font-bold text-stone-400 uppercase tracking-wide">{tGoals('season', { year: seasonYear })}</h3>
+                <h3 className="text-xs font-bold text-stone-500 uppercase tracking-wider">{tGoals('season', { year: seasonYear })}</h3>
                 {seasonGoals.map((goal) => {
                   const isPast = goal.date < today
                   const daysUntil = getDaysUntil(goal.date)
@@ -272,15 +272,15 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
 
                           <div className="min-w-0">
                             <div className="flex items-center gap-2 mb-0.5">
-                              <h3 className="text-base font-bold truncate text-stone-900">
+                              <h3 className="text-sm font-bold truncate text-stone-900">
                                 {goal.race_name}
                               </h3>
                               {isPrimary ? (
-                                <span className="bg-white text-palette-amber text-[10px] font-bold px-2 py-0.5 rounded-full border border-palette-amber shrink-0">
+                                <span className="bg-white text-palette-amber text-[10px] font-semibold px-2 py-0.5 rounded-full border border-palette-amber shrink-0">
                                   {tGoals('priority.primary')}
                                 </span>
                               ) : (
-                                <span className="bg-white text-palette-sage text-[10px] font-bold px-2 py-0.5 rounded-full border border-palette-sage shrink-0">
+                                <span className="bg-white text-palette-sage text-[10px] font-semibold px-2 py-0.5 rounded-full border border-palette-sage shrink-0">
                                   {tGoals('priority.secondary')}
                                 </span>
                               )}
@@ -396,7 +396,7 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label htmlFor="objectif-date-trigger" className="block text-xs font-bold text-stone-500 uppercase tracking-wide mb-1.5 ml-1">
+                <label htmlFor="objectif-date-trigger" className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-1.5 ml-1">
                   {tGoals('date')} *
                 </label>
                 <input type="hidden" name="date" value={addFormDate} required readOnly aria-hidden />
@@ -439,7 +439,7 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
 
             {/* Type (Sélecteur Visuel) */}
             <div>
-              <label className="block text-xs font-bold text-stone-500 uppercase mb-2 ml-1">{tGoals('priority.label')}</label>
+              <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2 ml-1">{tGoals('priority.label')}</label>
               <div className="grid grid-cols-2 gap-2">
                 {/* Principal */}
                 <label className="cursor-pointer">
@@ -487,7 +487,7 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
             </div>
 
             <div className="space-y-2">
-              <label className="block text-xs font-bold text-stone-500 uppercase tracking-wide ml-1">
+              <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider ml-1">
                 {tGoals('targetTimeOptional')}
               </label>
               <div className="grid grid-cols-3 gap-2">

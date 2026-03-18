@@ -397,7 +397,7 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
         <input type="hidden" name="_locale" value={locale} />
         <input type="hidden" name="_save_slot" value="" />
         <header className="h-20 flex items-center justify-between px-6 lg:px-8 shrink-0 bg-white border-b border-stone-100">
-          <h1 className="text-2xl font-bold text-stone-800">{t('title')}</h1>
+          <h1 className="text-base font-bold uppercase tracking-wider text-stone-700">{t('title')}</h1>
           <Button
             type="submit"
             variant="primary"
@@ -414,7 +414,7 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
         </header>
 
         {/* CONTENU (GRILLE D'OFFRES) */}
-        <div className="flex-1 min-h-0 overflow-y-auto px-6 lg:px-8 py-8">
+        <div className="flex-1 min-h-0 overflow-y-auto px-6 lg:px-8 py-4">
           {state?.error && (
             <div
               className={`mb-6 ${FORM_ERROR_BOX_CLASSES}`}
@@ -448,7 +448,7 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
                   } transition-all`}
                 >
                   {isFeatured && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-palette-forest-dark text-white px-3 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide shadow-sm flex items-center gap-1">
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-palette-forest-dark text-white px-3 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider shadow-sm flex items-center gap-1">
                       <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3 fill-current" viewBox="0 0 20 20">
                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                       </svg>
@@ -457,7 +457,7 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
                   )}
 
                   <div className="p-4 border-b border-stone-100 flex justify-between items-center bg-stone-50/50 rounded-t-2xl flex-wrap gap-2">
-                    <span className="text-xs font-bold text-stone-400 uppercase flex items-center gap-2">
+                    <span className="text-sm font-bold uppercase tracking-wider text-stone-700 flex items-center gap-2">
                       {t('offerNumber', { number: index + 1 })}
                       {offer?.id && (offer as { status?: string }).status === 'draft' && !publishedIdsInThisSession.has(offer.id) && (
                         <span className="px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 text-[10px] font-medium">
@@ -686,7 +686,7 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
           {/* Section Offres archivées */}
           {displayedArchivedOffers.length > 0 && (
             <section className="mt-10 pt-8 border-t border-stone-200" aria-labelledby="archived-offers-heading">
-              <h2 id="archived-offers-heading" className="text-lg font-bold text-stone-800 mb-4">
+              <h2 id="archived-offers-heading" className="text-sm font-bold uppercase tracking-wider text-stone-700 mb-4">
                 {t('archivedOffersSection')}
               </h2>
               <ul className="space-y-3">
@@ -706,7 +706,7 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
                       <TileCard leftBorderColor="stone" badge={t('status.archived')}>
                         <h3 className="text-sm font-semibold text-stone-800">{title}</h3>
                         <p className="text-xs text-stone-500 mt-1">{priceLabel}</p>
-                        <p className="text-xs text-stone-500 mt-1.5">{archivedDate}</p>
+                        <p className="text-xs text-stone-500 mt-1.5">{t('archivedAt')} {archivedDate}</p>
                       </TileCard>
                     </li>
                   )
@@ -716,7 +716,7 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
           )}
           {displayedArchivedOffers.length === 0 && (
             <section className="mt-10 pt-8 border-t border-stone-200" aria-labelledby="archived-offers-heading">
-              <h2 id="archived-offers-heading" className="text-lg font-bold text-stone-800 mb-2">
+              <h2 id="archived-offers-heading" className="text-sm font-bold uppercase tracking-wider text-stone-700 mb-2">
                 {t('archivedOffersSection')}
               </h2>
               <p className="text-sm text-stone-500">{t('noArchivedOffers')}</p>

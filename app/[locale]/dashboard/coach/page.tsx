@@ -142,7 +142,7 @@ export default async function MonCoachPage({ params }: { params: Promise<{ local
           <div className="pt-16 pb-4 px-8">
             {/* Header section */}
             <div className="mb-8">
-              <h1 className="text-2xl font-bold text-stone-900">
+              <h1 className="text-2xl font-bold text-stone-800">
                 {getDisplayName(coach, coach.email)}
               </h1>
             </div>
@@ -154,7 +154,7 @@ export default async function MonCoachPage({ params }: { params: Promise<{ local
                   {/* Section Sports coachés */}
                   {(coach.coached_sports ?? []).length > 0 && (
                     <div>
-                      <h2 className="text-sm font-bold text-stone-900 uppercase tracking-wide mb-3">{t('coachedSports')}</h2>
+                      <h2 className="text-sm font-bold uppercase tracking-wider text-stone-700 mb-3">{t('coachedSports')}</h2>
                       <div className="flex flex-wrap gap-3">
                         {(coach.coached_sports ?? []).map((sportValue: string) => {
                           const sportKey = sportValue in SPORT_ICONS ? (sportValue as SportType) : 'course'
@@ -178,7 +178,7 @@ export default async function MonCoachPage({ params }: { params: Promise<{ local
                   {/* Section Langues */}
                   {(coach.languages ?? []).length > 0 && (
                     <div>
-                      <h2 className="text-sm font-bold text-stone-900 uppercase tracking-wide mb-3">{t('spokenLanguages')}</h2>
+                      <h2 className="text-sm font-bold uppercase tracking-wider text-stone-700 mb-3">{t('spokenLanguages')}</h2>
                       <div className="flex flex-wrap gap-2">
                         {(coach.languages ?? []).map((langCode: string) => {
                           const opt = LANGUAGES_OPTIONS.find(o => o.value === langCode)
@@ -205,7 +205,7 @@ export default async function MonCoachPage({ params }: { params: Promise<{ local
             {/* Présentation (selon langue d'affichage) */}
             {displayPresentation && (
               <div className="mb-4">
-                <h2 className="text-sm font-bold text-stone-900 uppercase tracking-wide mb-3">{t('presentation')}</h2>
+                <h2 className="text-sm font-bold uppercase tracking-wider text-stone-700 mb-3">{t('presentation')}</h2>
                 <div className="relative">
                   <p className="w-full border border-stone-200 rounded-xl p-4 text-stone-700 leading-relaxed text-sm bg-stone-50 whitespace-pre-wrap">
                     {displayPresentation}
@@ -219,11 +219,11 @@ export default async function MonCoachPage({ params }: { params: Promise<{ local
         {/* Bloc Ma souscription (US1) – design aligné mockup 01 */}
         <div className="max-w-3xl mx-auto mt-8 bg-white rounded-2xl shadow-xl overflow-hidden border border-stone-100 mb-8">
           <div className="px-8 py-6">
-            <h2 className="text-sm font-bold text-stone-900 uppercase tracking-wide mb-4">{t('subscription.blockTitle')}</h2>
+            <h2 className="text-sm font-bold uppercase tracking-wider text-stone-700 mb-4">{t('subscription.blockTitle')}</h2>
             {activeSubscription ? (
               <div className="border border-stone-200 rounded-xl p-5 bg-stone-50/50">
                 <div className="flex flex-wrap items-start justify-between gap-2">
-                  <h3 className="text-base font-semibold text-stone-900">
+                  <h3 className="text-base font-bold text-stone-900">
                     {getFrozenTitleForLocale(activeSubscription, locale) || t('subscription.inProgress')}
                   </h3>
                   {isCancellationScheduled ? (

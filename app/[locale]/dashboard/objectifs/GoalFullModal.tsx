@@ -270,7 +270,7 @@ export function GoalFullModal({
             </div>
 
             <div className="space-y-2">
-              <label className="block text-xs font-bold text-stone-500 uppercase tracking-wide ml-1">
+              <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider ml-1">
                 {tGoals('targetTimeOptional')}
               </label>
               <div className="grid grid-cols-3 gap-2">

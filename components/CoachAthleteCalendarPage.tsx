@@ -147,7 +147,7 @@ export function CoachAthleteCalendarPage({
                       const seasonGoals = goalsBySeason.get(seasonYear)!
                       return (
                         <div key={seasonYear} className="space-y-6">
-                          <h3 className="text-xs font-bold uppercase tracking-wider text-stone-500">{t('season', { year: seasonYear })}</h3>
+                          <h3 className="text-xs font-semibold uppercase tracking-wider text-stone-500">{t('season', { year: seasonYear })}</h3>
                           {seasonGoals.map((goal) => {
                             const isPast = goal.date < today
                             const daysUntil = getDaysUntil(goal.date)
@@ -185,7 +185,7 @@ export function CoachAthleteCalendarPage({
                                           </span>
                                         )}
                                       </div>
-                                      <div className="flex items-center gap-1 text-xs text-stone-500 font-medium flex-wrap">
+                                      <div className="flex items-center gap-1 text-xs text-stone-500 flex-wrap">
                                         <MapIcon className="w-3.5 h-3.5 text-stone-400 shrink-0" />
                                         <span>{goal.distance} km</span>
                                         {hasTargetTime(goal) && (

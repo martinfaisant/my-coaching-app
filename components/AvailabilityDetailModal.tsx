@@ -148,7 +148,7 @@ export function AvailabilityDetailModal({
           )}
           {note && (
             <div>
-              <div className="text-xs font-medium text-stone-500 uppercase tracking-wide mb-1">{t('note')}</div>
+              <div className="text-xs font-semibold text-stone-500 uppercase tracking-wider mb-1">{t('note')}</div>
               <p className="text-sm text-stone-700 whitespace-pre-wrap">{note}</p>
             </div>
           )}

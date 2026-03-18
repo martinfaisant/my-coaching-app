@@ -883,7 +883,7 @@
     }
   },
   "offers": {
-    "title": "My Offer",
+    "title": "Offer list",
     "offerNumber": "Offer {number}",
     "recommended": "Recommended",
     "feature": "Feature",
@@ -931,6 +931,7 @@
     },
     "archivedOffersSection": "Archived offers",
     "noArchivedOffers": "No archived offers.",
+    "archivedAt": "Archived on",
     "status": {
       "draft": "Draft",
       "published": "Published",

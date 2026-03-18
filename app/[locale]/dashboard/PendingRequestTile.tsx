@@ -145,7 +145,7 @@ export function PendingRequestTile({ request, goals = [] }: PendingRequestTilePr
           />
           <div className="min-w-0 flex-1">
             <div className="min-w-0 truncate flex items-baseline gap-1.5 flex-wrap">
-              <span className="font-semibold text-stone-900 truncate">{name}</span>
+              <span className="text-sm font-bold text-stone-900 truncate">{name}</span>
               {offerLine && (
                 <>
                   <span className="text-stone-400 shrink-0">·</span>
@@ -276,18 +276,18 @@ export function PendingRequestTile({ request, goals = [] }: PendingRequestTilePr
                     <TileCard key={goal.id} leftBorderColor={isPrimary ? 'amber' : 'sage'} className="py-2">
                       <div className="flex gap-2 items-start min-w-0">
                         <div className="flex flex-col items-center justify-center bg-stone-50 border border-stone-200 rounded-lg w-12 h-10 shrink-0">
-                          <span className="text-[9px] font-bold text-stone-400 uppercase">{dateBlock.monthYear}</span>
+                          <span className="text-[10px] font-bold text-stone-400 uppercase">{dateBlock.monthYear}</span>
                           <span className="text-sm font-bold text-stone-800">{dateBlock.day}</span>
                         </div>
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-1.5 flex-wrap">
                             <span className="text-sm font-bold text-stone-900 truncate">{goal.race_name}</span>
                             {isPrimary ? (
-                              <span className="bg-white text-palette-amber text-[9px] font-bold px-1.5 py-0.5 rounded-full border border-palette-amber shrink-0">
+                              <span className="bg-white text-palette-amber text-[10px] font-semibold px-1.5 py-0.5 rounded-full border border-palette-amber shrink-0">
                                 {tGoals('priority.primary')}
                               </span>
                             ) : (
-                              <span className="bg-white text-palette-sage text-[9px] font-bold px-1.5 py-0.5 rounded-full border border-palette-sage shrink-0">
+                              <span className="bg-white text-palette-sage text-[10px] font-semibold px-1.5 py-0.5 rounded-full border border-palette-sage shrink-0">
                                 {tGoals('priority.secondary')}
                               </span>
                             )}
@@ -322,7 +322,7 @@ export function PendingRequestTile({ request, goals = [] }: PendingRequestTilePr
             )}
           </div>
           <div className="rounded-xl border border-stone-200 bg-stone-50/50 p-4">
-            <div className="text-xs font-bold uppercase tracking-wider text-stone-500 mb-3">
+            <div className="text-xs font-semibold uppercase tracking-wider text-stone-500 mb-3">
               {t('pendingRequests.goalsResults')}
             </div>
             {pastGoals.length === 0 ? (
@@ -336,18 +336,18 @@ export function PendingRequestTile({ request, goals = [] }: PendingRequestTilePr
                     <TileCard key={goal.id} leftBorderColor="stone" borderLeftOnly className="py-2 opacity-90">
                       <div className="flex gap-2 items-start min-w-0">
                         <div className="flex flex-col items-center justify-center bg-stone-50 border border-stone-200 rounded-lg w-12 h-10 shrink-0">
-                          <span className="text-[9px] font-bold text-stone-400 uppercase">{dateBlock.monthYear}</span>
+                          <span className="text-[10px] font-bold text-stone-400 uppercase">{dateBlock.monthYear}</span>
                           <span className="text-sm font-bold text-stone-800">{dateBlock.day}</span>
                         </div>
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-1.5 flex-wrap">
-                            <span className="text-sm font-bold text-stone-700 truncate">{goal.race_name}</span>
+                            <span className="text-sm font-bold text-stone-900 truncate">{goal.race_name}</span>
                             {isPrimary ? (
-                              <span className="bg-white text-palette-amber text-[9px] font-bold px-1.5 py-0.5 rounded-full border border-palette-amber shrink-0">
+                              <span className="bg-white text-palette-amber text-[10px] font-semibold px-1.5 py-0.5 rounded-full border border-palette-amber shrink-0">
                                 {tGoals('priority.primary')}
                               </span>
                             ) : (
-                              <span className="bg-white text-palette-sage text-[9px] font-bold px-1.5 py-0.5 rounded-full border border-palette-sage shrink-0">
+                              <span className="bg-white text-palette-sage text-[10px] font-semibold px-1.5 py-0.5 rounded-full border border-palette-sage shrink-0">
                                 {tGoals('priority.secondary')}
                               </span>
                             )}

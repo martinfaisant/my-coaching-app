@@ -220,7 +220,7 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
         </div>
 
         <div className="mb-4">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-stone-400 mb-3">{t('filters.nameSearchLabel')}</h3>
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-stone-500 mb-3">{t('filters.nameSearchLabel')}</h3>
           <SearchInput
             placeholder={t('filters.nameSearchPlaceholder')}
             value={searchName}
@@ -231,7 +231,7 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div>
-            <h3 className="text-xs font-bold uppercase tracking-wider text-stone-400 mb-3">{t('filters.coachedSport')}</h3>
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-stone-500 mb-3">{t('filters.coachedSport')}</h3>
             <div className="flex flex-wrap gap-2">
               {coachedSportsOptions.map((opt) => (
                 <SportTileSelectable
@@ -244,7 +244,7 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
             </div>
           </div>
           <div>
-            <h3 className="text-xs font-bold uppercase tracking-wider text-stone-400 mb-3">{t('filters.spokenLanguage')}</h3>
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-stone-500 mb-3">{t('filters.spokenLanguage')}</h3>
             <div className="flex flex-wrap gap-2">
               {LANGUAGES_OPTIONS.map((opt) => (
                 <button
@@ -784,7 +784,7 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
                 )}
 
                 {/* SECTION OFFRES */}
-                <h3 className="text-lg font-bold text-stone-800 mb-4 flex items-center gap-2">
+                <h3 className="text-base font-bold text-stone-800 mb-4 flex items-center gap-2">
                   <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-palette-forest-dark" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path d="M20 7h-4m-2-4H8a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2Z" />
                   </svg>
@@ -811,7 +811,7 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
                             onClick={() => setSelectedOfferId(offer.id)}
                           >
                             {isFeatured && (
-                              <div className={`absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide shadow-sm transition-colors ${
+                              <div className={`absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider shadow-sm transition-colors ${
                                 isSelected ? 'bg-palette-forest-dark text-white' : 'bg-stone-500 text-white group-hover:bg-palette-forest-dark'
                               }`}>
                                   {t('modal.recommended')}
@@ -819,7 +819,7 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
                             )}
                             <div className="flex justify-between items-start mb-4">
                               <div>
-                                <h4 className="text-lg font-bold text-stone-900">{getOfferDisplayTitle(offer, locale)}</h4>
+                                <h4 className="text-base font-bold text-stone-900">{getOfferDisplayTitle(offer, locale)}</h4>
                                 {getOfferDisplayDescription(offer, locale) && (
                                   <p className="text-sm text-stone-500 mt-1 whitespace-pre-wrap">{getOfferDisplayDescription(offer, locale)}</p>
                                 )}
@@ -860,7 +860,7 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
                       </div>
                     ) : (
                       <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-stone-200 p-6 space-y-6">
-                        <h4 className="text-base font-semibold text-stone-900">{t('modal.completeRequest')}</h4>
+                        <h4 className="text-base font-bold text-stone-900">{t('modal.completeRequest')}</h4>
                         {error && (
                           <div className={FORM_ERROR_BOX_CLASSES} role="alert">
                             {error}
@@ -902,7 +902,7 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
 
                         {/* Section Volumes hebdomadaires */}
                         <div>
-                          <h4 className="text-sm font-bold text-stone-900 uppercase tracking-wide mb-3">
+                          <h4 className="text-sm font-bold text-stone-900 uppercase tracking-wider mb-3">
                             {tProfile('weeklyVolumesSectionTitle')}
                           </h4>
                           {sports.length === 0 ? (
@@ -1010,7 +1010,7 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
                         {/* Section Objectifs de course / résultats passés */}
                         <div>
                           <div className="flex items-center justify-between gap-3 mb-3">
-                            <h4 className="text-sm font-bold text-stone-900 uppercase tracking-wide">
+                            <h4 className="text-sm font-bold text-stone-900 uppercase tracking-wider">
                               {t('requestGoals.sectionTitle')}
                             </h4>
                             {initialGoals.length > 0 && (
@@ -1062,11 +1062,11 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
                                             {goal.race_name}
                                           </h4>
                                           {isPrimary ? (
-                                            <span className="bg-white text-palette-amber text-[10px] font-bold px-2 py-0.5 rounded-full border border-palette-amber shrink-0">
+                                            <span className="bg-white text-palette-amber text-[10px] font-semibold px-2 py-0.5 rounded-full border border-palette-amber shrink-0">
                                               {tGoals('priority.primary')}
                                             </span>
                                           ) : (
-                                            <span className="bg-white text-palette-sage text-[10px] font-bold px-2 py-0.5 rounded-full border border-palette-sage shrink-0">
+                                            <span className="bg-white text-palette-sage text-[10px] font-semibold px-2 py-0.5 rounded-full border border-palette-sage shrink-0">
                                               {tGoals('priority.secondary')}
                                             </span>
                                           )}
