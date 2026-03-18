@@ -112,6 +112,213 @@
     "designSystem": "Design System",
     "members": "Member management"
   },
+  "adminDesignSystem": {
+    "intro": "Reference for tokens and components. Priority: use these tokens instead of hardcoded hex colors.",
+    "membersLink": "Members",
+    "sections": {
+      "palette": {
+        "title": "Color palette",
+        "forestDark": "Primary — buttons, links, focus",
+        "forestDarker": "Darker hover, emphasized CTAs",
+        "olive": "Primary hover, avatar fallback",
+        "sage": "Calendar, secondary goal",
+        "gold": "Calendar, backcountry ski",
+        "amber": "Primary goal, badges",
+        "strava": "Strava connection, imported activities",
+        "danger": "Destructive actions — logout, delete, error states",
+        "dangerLight": "Very light background",
+        "dangerDark": "Interaction, deeper tone"
+      },
+      "button": {
+        "title": "Button component",
+        "description": "Variants aligned with existing app buttons: Create account, Save (workout modal), Log in, Log out."
+      },
+      "inputs": {
+        "title": "Input / Textarea components",
+        "description": "Form fields aligned with LoginForm, ProfileForm, WorkoutModal.",
+        "inputTitle": "Input",
+        "textareaTitle": "Textarea",
+        "languagePrefixTitle": "Language prefix field (EN/FR)"
+      },
+      "typography": {
+        "title": "Typography",
+        "description": "Inventory of current text styles, where they are used, and the recommendation: keep or replace."
+      },
+      "badge": {
+        "title": "Badge component",
+        "description": "Labels for sports, languages, goals, statuses. Variants: default, primary, sport-*, success, warning."
+      },
+      "activityTile": {
+        "title": "ActivityTile component",
+        "description": "Unified activity tiles for planned workouts, imported Strava activities, and race goals."
+      },
+      "tileCard": {
+        "title": "TileCard component",
+        "description": "Container with the same border style as the “Day activities” modal tiles."
+      },
+      "personTiles": {
+        "title": "Coach and Athlete tiles (CoachTile / AthleteTile)",
+        "description": "Unified list tiles: card, header (avatar + name), sport badges, content area, action footer."
+      },
+      "modal": {
+        "title": "Modal component",
+        "description": "Reusable modals with overlay, Escape handling, multiple sizes (sm to 4xl), icon support, footer, and alignments."
+      },
+      "languageSwitcher": {
+        "title": "LanguageSwitcher component",
+        "description": "Language switch dropdown (FR/EN) with a globe icon."
+      },
+      "chat": {
+        "title": "Chat components (coach overlay)",
+        "description": "ChatAthleteListItem and ChatConversationSidebar: components used in the coach chat overlay."
+      },
+      "tailwindPreview": {
+        "title": "Tailwind class preview"
+      }
+    },
+    "typography": {
+      "columns": {
+        "style": "Style",
+        "currentClasses": "Current classes",
+        "example": "Example",
+        "usedIn": "Used in",
+        "decision": "Decision",
+        "replacement": "Replacement"
+      },
+      "decisions": {
+        "keep": "Keep",
+        "replace": "Replace"
+      },
+      "usedInNotes": {
+        "stravaLabel": "(Strava label)",
+        "goalDateBlock": "(goal date block)",
+        "languagePrefixField": "(EN/FR prefix field)",
+        "formLabelClasses": "(FORM_LABEL_CLASSES)",
+        "formInputTextSize": "(FORM_INPUT_TEXT_SIZE)",
+        "heroVariant": "(hero variant)",
+        "reviewsLine": "(rating/reviews line)",
+        "mobileTwoLines": "(two-line layout on mobile)",
+        "tileCardBadge": "(TileCard embedded badge)",
+        "segmentsMd": "(size=md)",
+        "segmentsSm": "(size=sm)",
+        "formErrorMessageClasses": "(FORM_ERROR_MESSAGE_CLASSES)",
+        "landingStats": "(stats block)"
+      },
+      "examples": {
+        "brand": { "appName": "My Sport Ally" },
+        "titles": {
+          "modal": "Edit profile",
+          "auth": "Log in",
+          "hero": "A coach, a plan, real results",
+          "section": "Features",
+          "page": "My calendar"
+        },
+        "navigation": { "link": "Goals" },
+        "people": { "name": "John Doe", "initials": "JD" },
+        "actions": {
+          "cta": "Start for free",
+          "subscription": "Performance coaching",
+          "start": "Start",
+          "logout": "Log out",
+          "save": "Save"
+          ,
+          "inlineLink": "Log in"
+        },
+        "badges": { "new": "New", "sample": "Running" },
+        "misc": {
+          "ratingLine": "4.8 (12 reviews)",
+          "bio": "Specialized in running/trail. Progress without getting injured.",
+          "availableOffers": "Available offers",
+          "offerTitle": "Monthly plan",
+          "free": "Free",
+          "price": "49€",
+          "perMonth": "/month",
+          "fieldLabel": "Next goal",
+          "fieldValue": "Apr 12 · Marathon",
+          "tileTitle": "Long run",
+          "meta": "Mon · 1h30 · 15 km",
+          "stravaType": "Run",
+          "microLabel": "MAR 26"
+          ,
+          "segmentOption": "Monthly",
+          "kpi": "500+",
+          "lead": "Plan, track, improve — with a coach."
+          ,
+          "muted": "Secondary text"
+        },
+        "status": { "upToDate": "Up to date" },
+        "calendar": {
+          "weekRange": "Feb 3 – Feb 9",
+          "weekRangeShort": "Feb 3",
+          "dayShort": "Feb 9",
+          "dateLong": "March 13, 2026"
+          ,
+          "weekday": "Mon"
+        },
+        "forms": { "label": "Email", "value": "you@example.com", "error": "Required field" },
+        "goals": { "priorityNumber": "1", "primary": "Primary goal" }
+      },
+      "rows": {
+        "modalTitle": { "label": "Modal title (app)" },
+        "authTitle": { "label": "Auth title (login/signup)" },
+        "publicHeroTitle": { "label": "Hero title (landing)" },
+        "publicSectionTitle": { "label": "Section title (landing)" },
+        "publicHeaderLogo": { "label": "Public header logo" },
+        "heroButtons": { "label": "Hero buttons (landing)" },
+        "navLink": { "label": "Navigation link (dashboard)" },
+        "dashboardMobilePageTitle": { "label": "Page title (mobile top bar)" },
+        "dashboardBrand": { "label": "Brand (dashboard top bar)" },
+        "personTileName": { "label": "Name (CoachTile / AthleteTile)" },
+        "personTileReviewsLine": { "label": "Rating/reviews line (CoachTile)" },
+        "personTileNewBadge": { "label": "\"New\" badge (CoachTile)" },
+        "personTileBio": { "label": "Bio (CoachTile)" },
+        "offersBlockLabel": { "label": "Offers block label (CoachTile)" },
+        "offerTitle": { "label": "Offer title (CoachTile)" },
+        "offerFreeBadge": { "label": "\"Free\" badge (CoachTile)" },
+        "offerPrice": { "label": "Offer price (CoachTile)" },
+        "offerPriceSuffix": { "label": "Price suffix (/month, /plan)" },
+        "athleteSubscriptionLink": { "label": "Subscription link (AthleteTile)" },
+        "athleteTileFieldLabel": { "label": "Field label (AthleteTile)" },
+        "athleteTileValue": { "label": "Field value (AthleteTile)" },
+        "athleteTileStatusMicro": { "label": "Micro status (AthleteTile)" },
+        "tileTitleImplicit": { "label": "Implicit tile title (no text-*)" },
+        "tileMeta": { "label": "Tile meta (date + separators + details)" },
+        "tileMicroLabelStrava": { "label": "Strava micro label (ActivityTile)" },
+        "goalTargetBadgeNumber": { "label": "Goal badge number (1/2)" },
+        "microUpperMixed": { "label": "Micro uppercase (current mix)" },
+        "weekSelectorRange": { "label": "Week range (WeekSelector)" },
+        "weekSelectorRangeSmallLines": { "label": "Two-line week range (mobile)" },
+        "weekSelectorSideLabel": { "label": "Side label (WeekSelector)" },
+        "chatSidebarName": { "label": "Conversation name (chat sidebar)" },
+        "chatSidebarAvatarInitials": { "label": "Avatar initials (chat sidebar)" },
+        "chatListActionLabel": { "label": "Action label (chat list)" },
+        "logoutLabel": { "label": "Logout label" },
+        "buttonBase": { "label": "Button text (base)" },
+        "badgeBase": { "label": "Badge text (pill)" },
+        "dropdownLabel": { "label": "Dropdown label" },
+        "segmentsOptionMd": { "label": "Segment option (md)" },
+        "segmentsOptionSm": { "label": "Segment option (sm)" },
+        "formErrorToken": { "label": "Error (danger token)" },
+        "landingKpiValue": { "label": "KPI value (landing)" },
+        "landingLead": { "label": "Lead (landing)" },
+        "secondaryMuted": { "label": "Secondary muted text" },
+        "inlineLinkUnderline": { "label": "Inline underlined link" },
+        "microUpper9": { "label": "Micro uppercase 9px" },
+        "datePickerWeekday": { "label": "Weekday (date picker)" },
+        "formLabel": { "label": "Form field label" },
+        "formInputText": { "label": "Form field text" },
+        "formErrorHardRed": { "label": "Hardcoded red error" }
+      },
+      "proposed": {
+        "titleCard": { "label": "Card/tile title (proposed)" },
+        "metaInline": { "label": "Meta / secondary (proposed)" },
+        "microUpper": { "label": "Micro uppercase (proposed)" },
+        "feedbackError": { "label": "Error / danger (proposed)" },
+        "microBadge": { "label": "Micro badge (proposed)" },
+        "microStatus": { "label": "Micro status (proposed)" }
+      }
+    }
+  },
   "sports": {
     "course": "Running",
     "velo": "Cycling",
@@ -555,6 +762,18 @@
     "members": {
       "title": "Member management",
       "description": "List of all members and role modification.",
+      "list": {
+        "empty": "No members.",
+        "email": "Email",
+        "role": "Role",
+        "action": "Action",
+        "edit": "Edit",
+        "roles": {
+          "athlete": "Athlete",
+          "coach": "Coach",
+          "admin": "Admin"
+        }
+      },
       "validation": {
         "missingData": "Missing data.",
         "invalidRole": "Invalid role.",
@@ -563,6 +782,8 @@
     }
   },
   "metadata": {
+    "loginTitle": "Log in",
+    "loginDescription": "Log in to your My Sport Ally account to access your workouts and track your performance.",
     "dashboardTitle": "Dashboard",
     "dashboardDescription": "Manage your workouts, goals and coach",
     "calendarTitle": "My calendar",
