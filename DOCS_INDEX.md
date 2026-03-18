@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 17 mars 2026 (Mode Analyste : bloc date objectif avec année ; voir Changements récents)
+**Dernière mise à jour :** 18 mars 2026 (Mode Analyste : fusion statut refactoring/audit + correction redirection locale-aware des error boundaries ; voir Changements récents)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -38,6 +38,12 @@
 - **Dernière mise à jour :** 26 février 2026
 
 ### **docs/email-templates/** (dossier)
+### **docs/ENGINEERING_STATUS_REFAC_AUDIT.md**
+- **Contenu :** Source canonique de l’**état d’avancement engineering** : refactoring P1/P2 (historique) + audit P3 (Quick Wins faits, refactors, reste à faire) + checklist de cohérence.
+- **Utiliser pour :** Savoir ce qui est fait / à faire sans ambiguïté ; éviter les doublons entre “refactoring” et “audit”.
+- **Taille :** ~65 lignes
+- **Dernière mise à jour :** 18 mars 2026
+
 - **Contenu :** Templates HTML des emails Supabase (confirm-signup.html, etc.), index dans README.md. Un seul dossier pour tous les types d’emails pour faciliter le suivi.
 - **Utiliser pour :** Récupérer le Body à coller dans Supabase pour chaque type d’email (Confirm signup, Magic Link, Reset Password, etc.).
 - **Dernière mise à jour :** 26 février 2026
@@ -100,8 +106,8 @@
 
 ## 📂 Archives (Historique - READ-ONLY)
 
-> **Tous les documents d'audit, de refactoring et d'états des lieux ont été archivés dans `docs/archive/`**  
-> Ils servent de référence historique mais ne sont plus nécessaires au quotidien.
+> La majorité des documents d'audit/refactoring historiques sont archivés dans `docs/archive/`.  
+> L’état courant canonique est dans **`docs/ENGINEERING_STATUS_REFAC_AUDIT.md`**.
 
 ### Documents archivés (39 fichiers)
 
@@ -116,7 +122,7 @@
 - `REFACTORING_P0_P2_COMPLETE.md` - Validation + logger + nettoyage
 - `REFACTORING_P1_MODALS_COMPLETE.md` - Consolidation modales
 - `REFACTORING_P2_P1_SEO_FORMS.md` - SEO + styles formulaires
-- `REFACTORING_P1_P2_COMPLETE.md` - Session finale (5 tâches) ⭐
+- `REFACTORING_P1_P2_COMPLETE.md` - Session finale (5 tâches) ⭐ *(pointeur vers le doc canonique depuis mars 2026)*
 
 **États des lieux & Simplifications :**
 - `MODALES_ETAT_DES_LIEUX_FINAL.md` - État des lieux modales (5 février 2026)
@@ -432,6 +438,10 @@
 **Dernier nettoyage :** 17 mars 2026 (archivage design-date-picker-compact, design-weekly-volume-two-columns, design-mobile-volume-tiles)
 
 ### Changements récents :
+
+✅ **18 mars 2026 – Fusion docs refactoring/audit + cohérence P3 – Mode Analyste :**
+- **Livraison :** création d’une source de vérité unique `docs/ENGINEERING_STATUS_REFAC_AUDIT.md` (P1/P2 + audit P3), et remplacement de `REFACTORING_P1_P2_COMPLETE.md` + `docs/AUDIT_CODEBASE_P3.md` par des pointeurs (évite 2 sources de vérité).
+- **Livraison :** error boundaries globales et dashboard : redirection **locale-aware** vers `/${locale}/dashboard` (au lieu de `/dashboard` en dur), en conservant logging via `logger` et `useTranslations('errors')`.
 
 ✅ **17 mars 2026 – Bloc date objectif avec année (solution D) – Mode Analyste :**
 - **Livraison :** Dans les tuiles objectif (page Objectifs, calendrier coach/athlète, modales liste objectifs, demande en attente, détail demande envoyée), le **bloc date** affiche désormais **mois + année** sur la première ligne (ex. « Mar. 26 ») et le **jour** en dessous. Une seule fonction centralisée : **`formatGoalDateBlock`** dans `lib/dateUtils.ts` (retourne `monthYear`, `day`). Pas de nouveau texte i18n (locale déjà utilisée pour le format de date).
