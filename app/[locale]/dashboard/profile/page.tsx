@@ -20,7 +20,8 @@ export default async function ProfilePage({ params }: { params: Promise<{ locale
   const isCoach = current.profile.role === 'coach'
 
   return (
-    <DashboardPageShell>
+    <div className="-mx-3 sm:mx-0">
+      <DashboardPageShell contentClassName="!px-2 sm:!px-6 lg:!px-8">
       {isCoach ? (
         <ProfileForm
           email={current.email}
@@ -50,10 +51,12 @@ export default async function ProfilePage({ params }: { params: Promise<{ locale
           preferredLocale={current.profile.preferred_locale ?? undefined}
           presentation={current.profile.presentation ?? ''}
           postalCode={current.profile.postal_code ?? ''}
+          weeklyCurrentHours={current.profile.weekly_current_hours ?? undefined}
           weeklyTargetHours={current.profile.weekly_target_hours ?? undefined}
           weeklyVolumeBySport={current.profile.weekly_volume_by_sport ?? undefined}
         />
       )}
-    </DashboardPageShell>
+      </DashboardPageShell>
+    </div>
   )
 }

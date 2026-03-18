@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 17 mars 2026 (Mode Analyste : fusion boutons objectifs GoalFullModal + archivage mockups objectifs-modale-complete ; voir Changements récents)
+**Dernière mise à jour :** 17 mars 2026 (Mode Analyste : correctif mobile Mon profil — archivage design-mobile-volume-tiles ; voir Changements récents)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -277,6 +277,10 @@
 - `docs/archive/objectifs-modale-complete/` — index.html, solution-1-modale-complete-sections.html, solution-2-modale-onglets.html (mockups Designer).
 - **Raison :** Feature livrée ; **un seul bouton** par objectif (Modifier / Ajouter un résultat) ouvre **GoalFullModal** (onglets Objectif | Résultat, sauvegarde combinée `saveGoalFull`). Page Objectifs et section objectifs dans la demande de coaching alignées. Comportement : **Project_context.md §4.7**, **docs/DESIGN_SYSTEM.md** (§ TileCard / Page Objectifs).
 
+**Affichage mobile Mon profil (marges, grille volume, champs) – archivés 17 mars 2026 :**
+- `docs/archive/design-mobile-volume-tiles/` — DESIGN_MOBILE_VOLUME_TILES.md (analyse Designer, 3 solutions), MOCKUP_MOBILE_VOLUME_SOLUTION_A.html, MOCKUP_MOBILE_VOLUME_SOLUTION_B.html.
+- **Raison :** Correctif livré ; marges latérales réduites sur mobile (wrapper -mx-3 + contentClassName shell), grille tuiles volume responsive (grid-cols-1 sm:grid-cols-2), largeur champs 6.5rem et padding droit suffixe réduit. Comportement : **Project_context.md §4.2.1** (Mon profil — mobile layout), **docs/DESIGN_SYSTEM.md** §7 (Page Mon profil).
+
 **Disponibilités / indisponibilités athlète (archivés 2 mars 2026) :**
 - `docs/archive/design-athlete-availability/` — DESIGN.md (besoin, cas d’usage, décisions PO, style tuiles option D), SPEC_ARCHITECTURE.md (modèle, RLS, fichiers), MOCKUP_AVAILABILITY_MODAL.html, MOCKUP_CALENDAR_AVAILABILITY_TILES.html.
 - **Raison :** Feature livrée **sans récurrence** ; athlète peut créer/éditer/supprimer des créneaux disponibilité ou indisponibilité par jour (bouton « + » sur jours futurs, modale avec type, date, Début/Fin optionnels, Note) ; coach voit les tuiles en lecture seule sur le calendrier de l’athlète (modale détail). Comportement décrit dans **Project_context.md §4.5** (Athlete availability), **docs/DESIGN_SYSTEM.md** (§7 Calendrier, AvailabilityModal, AvailabilityDetailModal), **docs/I18N.md** (namespace availability).
@@ -413,9 +417,15 @@
 **Fréquence de mise à jour :** À chaque ajout/suppression de documentation
 
 **Dernier scan :** 17 mars 2026  
-**Dernier nettoyage :** 17 mars 2026 (archivage objectifs-modale-complete)
+**Dernier nettoyage :** 17 mars 2026 (archivage design-mobile-volume-tiles)
 
 ### Changements récents :
+
+✅ **17 mars 2026 – Correctif affichage mobile Mon profil – Mode Analyste :**
+- **Livraison :** (1) **Marges latérales** : sur la page Mon profil, réduction des marges sur mobile (wrapper `-mx-3` + `DashboardPageShell` `contentClassName` `!px-2 sm:!px-6 lg:!px-8`) pour limiter le blanc à gauche/droite du bloc formulaire. (2) **Grille tuiles volume** : section « Objectifs et volume par sport » en grille responsive `grid-cols-1 sm:grid-cols-2` (ProfileForm et FindCoachSection) pour éviter le dépassement horizontal sur petit écran. (3) **Champs saisie** : largeur `w-[6.5rem]` et padding droit réduit (pr-10 / pr-11 / pr-12) pour les inputs avec suffixe (h/sem., km/sem., D+/sem.).
+- **Fichiers :** `app/[locale]/dashboard/profile/page.tsx`, `ProfileForm.tsx`, `FindCoachSection.tsx`.
+- **Doc :** Project_context.md §4.2.1 (Mon profil — mobile layout), DESIGN_SYSTEM §7 (Page Mon profil), version 1.14.
+- **Archivage :** `docs/design-mobile-volume-tiles/` → `docs/archive/design-mobile-volume-tiles/` (DESIGN_MOBILE_VOLUME_TILES.md, MOCKUP_*_SOLUTION_A/B.html). Référence courante : **Project_context.md §4.2.1**, **docs/DESIGN_SYSTEM.md** §7.
 
 ✅ **17 mars 2026 – Fusion boutons objectifs (GoalFullModal) + correctifs – Mode Analyste :**
 - **Livraison :** (1) **Modale objectif fusionnée** : un seul bouton par objectif (libellé « Modifier » ou « Ajouter un résultat » selon date et présence de résultat), ouverture de **GoalFullModal** (onglets Objectif | Résultat ; si date > aujourd'hui : onglet Objectif seul ; si date ≤ aujourd'hui : ouverture sur Résultat). Une sauvegarde **saveGoalFull** enregistre objectif + résultat. Page Objectifs : saisons triées du plus loin dans le futur en haut ; pas d'opacité sur les tuiles passées ; « Aucun résultat saisi » sur la même ligne que la distance ; bouton muted. (2) **Demande de coaching** : section objectifs alignée (même bouton unique, GoalFullModal avec layer=1) ; tuiles volume en fond blanc comme Mon profil ; RequestGoalAddModal : Nom de la course et Distance en label + input natif (comme Date), DatePicker sans fermeture au scroll. (3) **Divers** : objectif de temps (champs vides = 0) ; affichage « 55min » quand une seule composante ; saveGoalResult autorisé si date ≤ aujourd'hui (jour J inclus).
@@ -692,6 +702,7 @@
 | **Moment de la journée (Matin / Midi / Soir), sections calendrier, modale « Activités du jour »** | **`Project_context.md` §4.5** (Calendar day structure, Workout time_of_day), **`docs/DESIGN_SYSTEM.md`** (§7 Calendrier, WorkoutModal) |
 | **Bouton Déconnexion (page Profil)** | **`Project_context.md` §4.2.1** (Profile page), **`docs/DESIGN_SYSTEM.md`** (§ Button / LogoutButton) |
 | **Objectifs et volume par sport (profil athlète : temps à allouer, volume par sport, triathlon → 3 tuiles, trail → D+)** | **`Project_context.md` §4.2.1** (Athlete profile), **`docs/DESIGN_SYSTEM.md`** (§ SportTileSelectable), **`docs/I18N.md`** (profile.*) |
+| **Mon profil mobile (marges réduites, grille volume responsive, champs 6.5rem)** | **`Project_context.md` §4.2.1** (Mon profil — mobile layout), **`docs/DESIGN_SYSTEM.md`** §7 (Page Mon profil) |
 | **Disponibilités / indisponibilités athlète (calendrier, modales, pas de récurrence)** | **`Project_context.md` §4.5** (Athlete availability), **`docs/DESIGN_SYSTEM.md`** (§7 Calendrier, AvailabilityModal, AvailabilityDetailModal) |
 | **Résultat objectif passé (saisie temps/place/note, modale, affichage tuile)** | **`Project_context.md` §4.7** (Goals), **`docs/DESIGN_SYSTEM.md`** (§ TileCard, Page Objectifs), **`lib/goalResultUtils.ts`** |
 | **Objectif de temps facultatif + édition objectif (Modifier, GoalEditModal, affichage Objectif / Réalisé)** | **`Project_context.md` §4.7** (Goals), **`docs/DESIGN_SYSTEM.md`** (§ TileCard, Page Objectifs, GoalEditModal), **`lib/goalResultUtils.ts`** (hasTargetTime, formatTargetTime) |

@@ -167,6 +167,8 @@ On the **Mon profil** page (`/dashboard/profile`), the athlete can edit:
 
 **Profile page (athlete and coach):** At the bottom of the form, a **Déconnexion** (Logout) button (danger variant) is displayed above a horizontal separator and the **Supprimer mon compte** (Delete account) button. The drawer menu (mobile) also offers Logout.
 
+**Mon profil — mobile layout:** Side margins are reduced on mobile (wrapper `-mx-3` + `DashboardPageShell` `contentClassName` `!px-2 sm:!px-6 lg:!px-8`) to avoid excessive white space. The section « Objectifs et volume par sport » uses a **responsive grid**: 1 column below `sm`, 2 columns from `sm` (`grid-cols-1 sm:grid-cols-2`), so tiles stack vertically on narrow screens and avoid horizontal overflow. Inputs for temps à allouer and volume per sport use width `6.5rem` and reduced right padding for the suffix (h/sem., km/sem., D+/sem.) to gain horizontal space while keeping the suffix visible. Same layout and input sizes apply in the coach-request form (Objectifs et volume).
+
 ---
 
 ### 4.3 Search & Discovery ✅
