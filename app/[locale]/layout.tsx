@@ -4,6 +4,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
+import type { Locale } from '@/i18n/types'
 import "../globals.css";
 
 const geistSans = Geist({
@@ -50,7 +51,10 @@ export default async function LocaleLayout({
   const { locale } = await params;
   
   // Ensure that the incoming `locale` is valid
-  if (!routing.locales.includes(locale as any)) {
+  const isLocale = (value: unknown): value is Locale =>
+    typeof value === 'string' && (routing.locales as readonly string[]).includes(value)
+
+  if (!isLocale(locale)) {
     notFound();
   }
 

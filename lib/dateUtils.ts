@@ -3,6 +3,8 @@
  * Centralise les fonctions utilisées dans les calendriers, objectifs, etc.
  */
 
+import { logger } from '@/lib/logger'
+
 /**
  * Retourne le lundi de la semaine contenant la date donnée.
  * @param dateInput - Date ou string ISO (YYYY-MM-DD)
@@ -13,7 +15,7 @@ export function getWeekMonday(dateInput: Date | string): Date {
   
   // Validation: vérifier si la date est valide
   if (isNaN(date.getTime())) {
-    console.warn('[getWeekMonday] Date invalide reçue:', dateInput)
+    logger.warn('[getWeekMonday] Date invalide reçue', { dateInput })
     return new Date() // Retourner aujourd'hui par défaut
   }
   
@@ -52,7 +54,7 @@ export function formatDateFr(dateInput: Date | string, includeWeekday: boolean =
     date = dateInput
   }
   if (isNaN(date.getTime())) {
-    console.warn('[formatDateFr] Date invalide reçue:', dateInput)
+    logger.warn('[formatDateFr] Date invalide reçue', { dateInput })
     return 'Date invalide'
   }
   
@@ -80,7 +82,7 @@ export function getDaysUntil(targetDate: string | Date): number {
   
   // Validation: vérifier si la date est valide
   if (isNaN(target.getTime())) {
-    console.warn('[getDaysUntil] Date invalide reçue:', targetDate)
+    logger.warn('[getDaysUntil] Date invalide reçue', { targetDate })
     return 0
   }
   
@@ -105,7 +107,7 @@ export function formatShortDate(dateInput: Date | string, locale: string = 'fr-F
     date = dateInput
   }
   if (isNaN(date.getTime())) {
-    console.warn('[formatShortDate] Date invalide reçue:', dateInput)
+    logger.warn('[formatShortDate] Date invalide reçue', { dateInput })
     return '--/--/----'
   }
   return new Intl.DateTimeFormat(locale).format(date)

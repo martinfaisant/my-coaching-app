@@ -20,10 +20,15 @@
    - [SearchInput](#searchinput)
    - [Textarea](#textarea)
    - [Badge](#badge)
+   - [Avatar](#avatar)
+   - [AvatarImage](#avatarimage)
    - [SportTileSelectable](#sporttileselectable)
    - [ActivityTile](#activitytile)
    - [TileCard](#tilecard)
    - [Modal](#modal)
+   - [DashboardPageShell](#dashboardpageshell)
+   - [DashboardTopBar](#dashboardtopbar)
+   - [Drawer](#drawer)
    - [PublicHeader](#publicheader)
    - [LanguageSwitcher](#languageswitcher)
    - [Dropdown](#dropdown)
@@ -114,6 +119,33 @@ Toutes les couleurs sont définies dans `tailwind.config.ts` et `app/globals.css
 | Body | `text-sm text-stone-600` | Texte courant |
 | Label | `text-xs font-bold uppercase tracking-wider text-stone-400` | Labels de formulaire |
 | Caption | `text-xs text-stone-500` | Texte secondaire, descriptions |
+
+#### Polices (font stack)
+
+- **Police principale (sans)** : **Geist Sans** via `next/font` dans `app/[locale]/layout.tsx` (variable CSS `--font-geist-sans`).
+- **Police monospace** : **Geist Mono** via `next/font` (variable CSS `--font-geist-mono`).
+- **Conventions** :
+  - Le `body` doit utiliser **`var(--font-sans)`** (qui pointe sur Geist via `--font-geist-sans`) — pas de fallback “Arial” en dur.
+  - Utiliser la monospace uniquement pour les éléments de type code (`font-mono` / `var(--font-mono)`).
+
+#### Exemples (Tailwind)
+
+```tsx
+// Texte standard (par défaut) : hérite du body = font-sans
+<p className="text-sm text-stone-600">
+  Texte courant…
+</p>
+
+// Forcer la police sans si besoin (rare, mais explicite)
+<h2 className="font-sans text-lg font-bold text-stone-900">
+  Titre de section
+</h2>
+
+// Monospace : uniquement pour code / identifiants techniques
+<code className="font-mono text-xs bg-stone-100 px-1 rounded">
+  coach_requests.status
+</code>
+```
 
 #### Conventions
 
@@ -554,6 +586,40 @@ Tous les sports ont une icône SVG dédiée (définie dans `components/SportIcon
 - Ski nordique (`IconNordicSki`)
 - Ski de randonnée (`IconBackcountrySki`)
 - Patin à glace (`IconIceSkating`)
+
+---
+
+### Avatar
+
+**Fichier :** `components/Avatar.tsx`
+
+Avatar réutilisable (photo ou initiales) utilisé dans la top bar dashboard, le drawer mobile, et les listes chat.
+
+#### Règles
+
+- **Fallback** : si pas d’image, afficher des initiales (via `getInitials` dans `lib/stringUtils.ts`).
+- **Accessibilité** : si l’avatar est purement décoratif, utiliser `alt=""` + `aria-hidden`; sinon un `alt` descriptif.
+- **Couleurs** : respecter les tokens (fallback généralement `bg-palette-forest-dark` + `text-white` ou neutres stone).
+
+---
+
+### AvatarImage
+
+**Fichier :** `components/AvatarImage.tsx`
+
+Wrapper image d’avatar (souvent basé sur `next/image`) : gère le rendu rond, le fallback, et la cohérence des tailles.
+
+#### Usage
+
+```tsx
+import { AvatarImage } from '@/components/AvatarImage'
+
+<AvatarImage
+  src={profile.avatar_url}
+  alt=""
+  size="sm"
+/>
+```
 
 ---
 
@@ -1092,6 +1158,80 @@ const [isOpen, setIsOpen] = useState(false)
 
 ---
 
+### DashboardPageShell
+
+**Fichier :** `components/DashboardPageShell.tsx`
+
+Shell standard des pages dashboard. **Règle projet :** une page dashboard doit utiliser `DashboardPageShell` (pas de `<main>` custom).
+
+#### Rôle
+
+- Fournit le **conteneur** et le **padding** cohérents du contenu.
+- Ne duplique pas le layout global (top bar / drawer) : c’est géré par `app/[locale]/dashboard/layout.tsx`.
+- Peut accepter un `contentClassName` pour des variantes (ex. pages avec padding réduit).
+
+#### Exemple
+
+```tsx
+import { DashboardPageShell } from '@/components/DashboardPageShell'
+
+export default function Page() {
+  return (
+    <DashboardPageShell>
+      <div className="space-y-6">
+        {/* contenu */}
+      </div>
+    </DashboardPageShell>
+  )
+}
+```
+
+---
+
+### DashboardTopBar
+
+**Fichier :** `components/DashboardTopBar.tsx`
+
+Top bar du dashboard.
+
+#### Comportement attendu
+
+- **Desktop / tablette** : logo à gauche, navigation centrée, bloc profil à droite.
+- **Mobile** : titre de page au centre, bouton “menu” à droite ; clic ouvre un **Drawer**.
+- **Rôles** : navigation adaptée au rôle (athlete/coach/admin).
+
+#### Composants associés
+
+- `DashboardNavLinks` / `DashboardNavIcons` : configuration et rendu des liens.
+- `Drawer` : menu mobile.
+- `LogoutButton` : déconnexion (variant `danger`).
+
+---
+
+### Drawer
+
+**Fichier :** `components/Drawer.tsx`
+
+Overlay latéral (principalement pour le menu mobile dashboard). Le Drawer est un “panel” qui apparaît depuis la droite.
+
+#### Règles
+
+- **Accessibilité** : `role="dialog"`, `aria-modal="true"`, focus visible, fermeture Escape.
+- **Overlay** : fond semi-opaque avec blur (`backdrop-blur-sm`) cohérent avec `Modal`.
+- **Z-index** : doit rester cohérent avec la hiérarchie des overlays (`Modal` au-dessus si nécessaire).
+
+#### Exemple
+
+```tsx
+import { Drawer } from '@/components/Drawer'
+
+<Drawer isOpen={isOpen} onClose={onClose} title="Menu">
+  <div className="p-4">{/* navigation */}</div>
+</Drawer>
+```
+
+---
+
 ### PublicHeader
 
 **Fichier :** `components/PublicHeader.tsx`
@@ -1509,7 +1649,7 @@ Actuellement, utiliser un span custom :
 
 - **Tokens couleurs** : `tailwind.config.ts`, `app/globals.css`
 - **Styles formulaires** : `lib/formStyles.ts` (FORM_BASE_CLASSES, FORM_INPUT_TEXT_SIZE, FORM_INPUT_HEIGHT, etc.)
-- **Composants** : `components/Button.tsx`, `components/Input.tsx`, `components/SearchInput.tsx`, `components/Textarea.tsx`, `components/Badge.tsx`, `components/SportTileSelectable.tsx`, `components/ActivityTile.tsx`, `components/Modal.tsx`, `components/PublicHeader.tsx`, `components/DashboardPageShell.tsx`, `components/DashboardTopBar.tsx`, `components/Drawer.tsx`, `components/EmailValidatedModal.tsx`, `components/HomeEmailConfirmedTrigger.tsx`, `components/Dropdown.tsx`, `components/Segments.tsx`, `components/DatePickerPopup.tsx`, `components/AvailabilityModal.tsx`, `components/AvailabilityDetailModal.tsx`, `components/ChatAthleteListItem.tsx`, `components/ChatConversationSidebar.tsx`
+- **Composants** : `components/Button.tsx`, `components/Input.tsx`, `components/SearchInput.tsx`, `components/Textarea.tsx`, `components/Badge.tsx`, `components/Avatar.tsx`, `components/AvatarImage.tsx`, `components/SportTileSelectable.tsx`, `components/ActivityTile.tsx`, `components/Modal.tsx`, `components/DashboardPageShell.tsx`, `components/DashboardTopBar.tsx`, `components/Drawer.tsx`, `components/PublicHeader.tsx`, `components/EmailValidatedModal.tsx`, `components/HomeEmailConfirmedTrigger.tsx`, `components/Dropdown.tsx`, `components/Segments.tsx`, `components/DatePickerPopup.tsx`, `components/AvailabilityModal.tsx`, `components/AvailabilityDetailModal.tsx`, `components/ChatAthleteListItem.tsx`, `components/ChatConversationSidebar.tsx`
 - **Sports** : `lib/sportStyles.ts`, `lib/sportsOptions.ts`, `components/SportIcons.tsx`
 - **Design system page** : `app/dashboard/admin/design-system/page.tsx`
 

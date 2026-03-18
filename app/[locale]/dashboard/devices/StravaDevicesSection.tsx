@@ -140,7 +140,7 @@ export function StravaDevicesSection({ userId, connected, connection }: StravaDe
             <div
               className={`mt-6 rounded-lg px-4 py-3 text-sm ${
                 message?.type === 'error' || (searchParams.get('error') && !urlMessage)
-                  ? 'bg-red-50 text-red-800 border border-red-200'
+                  ? 'bg-palette-danger-light text-palette-danger-dark border border-palette-danger'
                   : 'bg-palette-forest-dark/10 text-palette-forest-dark border border-palette-forest-dark/20'
               }`}
             >

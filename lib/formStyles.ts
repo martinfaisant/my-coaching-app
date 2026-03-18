@@ -28,3 +28,10 @@ export const FORM_LABEL_CLASSES = 'block text-sm font-medium text-stone-700 mb-2
 
 /** Classes pour les messages d'erreur */
 export const FORM_ERROR_MESSAGE_CLASSES = 'mt-1.5 text-sm text-palette-danger'
+
+/** Classes pour un texte d'erreur standard (inline, role=alert). */
+export const FORM_ERROR_TEXT_CLASSES = 'text-sm text-palette-danger-dark'
+
+/** Classes pour un bloc d'erreur (alert box) standard. */
+export const FORM_ERROR_BOX_CLASSES =
+  'p-3 rounded-lg text-sm bg-palette-danger-light border border-palette-danger text-palette-danger-dark'

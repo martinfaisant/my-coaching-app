@@ -10,6 +10,7 @@ import { createCoachRequest, cancelCoachRequest } from './actions'
 import { SportTileSelectable } from '@/components/SportTileSelectable'
 import { usePracticedSportsOptions } from '@/lib/hooks/useSportsOptions'
 import { AthleteSentRequestDetailModal } from './AthleteSentRequestDetailModal'
+import { FORM_ERROR_TEXT_CLASSES } from '@/lib/formStyles'
 
 type RequestCoachButtonProps = {
   coachId: string
@@ -241,7 +242,7 @@ export function RequestCoachButton({ coachId, coachName, requestStatus, requestI
                           </Button>
                         </div>
                         {error && (
-                          <p className="text-sm text-red-600 mt-4 text-center" role="alert">{error}</p>
+                          <p className={`${FORM_ERROR_TEXT_CLASSES} mt-4 text-center`} role="alert">{error}</p>
                         )}
                       </div>
                     </div>
@@ -322,7 +323,7 @@ export function RequestCoachButton({ coachId, coachName, requestStatus, requestI
                     rows={4}
                   />
                   {error && (
-                    <p className="text-sm text-red-600" role="alert">{error}</p>
+                    <p className={FORM_ERROR_TEXT_CLASSES} role="alert">{error}</p>
                   )}
                   <div className="flex gap-3 pt-2">
                     <Button

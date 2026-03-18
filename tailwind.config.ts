@@ -8,6 +8,31 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: [
+          'var(--font-sans)',
+          'ui-sans-serif',
+          'system-ui',
+          '-apple-system',
+          '"Segoe UI"',
+          'Roboto',
+          'Helvetica',
+          'Arial',
+          '"Apple Color Emoji"',
+          '"Segoe UI Emoji"',
+        ],
+        mono: [
+          'var(--font-mono)',
+          'ui-monospace',
+          'SFMono-Regular',
+          'Menlo',
+          'Monaco',
+          'Consolas',
+          '"Liberation Mono"',
+          '"Courier New"',
+          'monospace',
+        ],
+      },
       colors: {
         'palette': {
           'forest-dark': '#627e59',
@@ -28,6 +53,7 @@ const config: Config = {
       boxShadow: {
         'chat': '0 4px 24px -4px rgba(0,0,0,0.08), 0 8px 32px -8px rgba(0,0,0,0.06)',
         'chat-inner': '0 1px 2px rgba(0,0,0,0.04)',
+        'palette-forest': '0 4px 6px -1px rgba(98,126,89,0.3)',
       },
     },
   },

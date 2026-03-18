@@ -190,7 +190,7 @@ export function ResetPasswordForm() {
           placeholder="••••••••"
         />
         {(localError || state?.error) && (
-          <p className="text-sm text-red-600" role="alert">
+          <p className="text-sm text-palette-danger-dark" role="alert">
             {localError || state.error}
           </p>
         )}
