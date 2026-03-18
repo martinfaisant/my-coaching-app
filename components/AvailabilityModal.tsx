@@ -14,6 +14,7 @@ import { Button } from '@/components/Button'
 import { Textarea } from '@/components/Textarea'
 import { Dropdown } from '@/components/Dropdown'
 import { formatDateFr, toDateStr } from '@/lib/dateUtils'
+import { FORM_INPUT_HEIGHT, FORM_INPUT_TEXT_SIZE } from '@/lib/formStyles'
 
 /** Options horaires par pas de 15 min (00:00 à 23:45). */
 function getTimeOptions(): { value: string; label: string }[] {
@@ -187,7 +188,7 @@ export function AvailabilityModal({
   const dateBlock = (
     <div
       ref={dateTriggerRef}
-      className="flex items-center gap-2 border border-stone-300 rounded-lg py-1.5 px-3 bg-white focus-within:ring-2 focus-within:ring-palette-forest-dark focus-within:border-transparent transition"
+      className={`flex items-center gap-2 border border-stone-300 rounded-lg py-2.5 px-4 bg-white focus-within:ring-2 focus-within:ring-palette-forest-dark focus-within:border-transparent transition ${FORM_INPUT_TEXT_SIZE} ${FORM_INPUT_HEIGHT}`}
     >
       <span className="text-sm font-bold text-stone-900 min-w-[10rem]" aria-hidden>
         {formatDateFr(editableDate, true, localeForPicker)}

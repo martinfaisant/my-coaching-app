@@ -552,7 +552,7 @@ function ChatOverlay({
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={handleSearchKeyDown}
               placeholder={searchPlaceholderLabel}
-              className={`${FORM_BASE_CLASSES} py-2 text-sm`}
+              className={`${FORM_BASE_CLASSES} py-2`}
               aria-label={searchPlaceholderLabel}
             />
           </div>

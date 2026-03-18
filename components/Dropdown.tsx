@@ -43,6 +43,8 @@ export type DropdownProps = {
   showCheckmark?: boolean
   /** Classes additionnelles sur le bouton trigger (ex. text-sm font-medium text-stone-700 pour aligner sur un bouton secondaire) */
   triggerClassName?: string
+  /** Classes additionnelles sur chaque option du panneau (ex. text-xs py-2 px-3 pour un panneau compact) */
+  optionClassName?: string
 }
 
 const OPTION_SELECTED =
@@ -65,6 +67,7 @@ export function Dropdown({
   showCheckmark = false,
   triggerClassName = '',
   labelClassName = '',
+  optionClassName = '',
 }: DropdownProps) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
@@ -138,9 +141,9 @@ export function Dropdown({
                 type="button"
                 role="option"
                 aria-selected={isSelected}
-                className={`w-full flex items-center justify-between gap-2 text-left px-4 py-2.5 rounded-lg cursor-pointer transition-all duration-300 ${
-                  isSelected ? OPTION_SELECTED : OPTION_UNSELECTED
-                }`}
+                className={`w-full flex items-center justify-between gap-2 text-left rounded-lg cursor-pointer transition-all duration-300 ${
+                  optionClassName || 'px-4 py-2.5'
+                } ${isSelected ? OPTION_SELECTED : OPTION_UNSELECTED}`}
                 onClick={() => {
                   onChange(option.value)
                   setOpen(false)

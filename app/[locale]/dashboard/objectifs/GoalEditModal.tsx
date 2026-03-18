@@ -1,12 +1,16 @@
 'use client'
 
 import { useActionState, useRef, useEffect, useState, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
 import type { Goal } from '@/types/database'
 import { useLocale, useTranslations } from 'next-intl'
 import { Button } from '@/components/Button'
 import { Input } from '@/components/Input'
 import { Modal } from '@/components/Modal'
+import { DatePickerPopup } from '@/components/DatePickerPopup'
+import { formatDateFr } from '@/lib/dateUtils'
+import { FORM_INPUT_HEIGHT, FORM_INPUT_TEXT_SIZE } from '@/lib/formStyles'
 import { updateGoal, type GoalFormState } from './actions'
 
 type GoalEditModalProps = {
@@ -26,10 +30,17 @@ export function GoalEditModal({ goal, isOpen, onClose }: GoalEditModalProps) {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
   const [showSavedFeedback, setShowSavedFeedback] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [date, setDate] = useState(goal.date)
+  const [showDatePickerPopup, setShowDatePickerPopup] = useState(false)
+  const [datePickerAnchor, setDatePickerAnchor] = useState<DOMRect | null>(null)
   const previousIsSubmittingRef = useRef(false)
   const isSubmittingRef = useRef(false)
   const formRef = useRef<HTMLFormElement>(null)
+  const dateTriggerRef = useRef<HTMLDivElement>(null)
+  const datePickerPopupRef = useRef<HTMLDivElement>(null)
   const [priority, setPriority] = useState<'primary' | 'secondary'>(goal.is_primary ? 'primary' : 'secondary')
+
+  const localeForPicker = locale === 'fr' ? 'fr-FR' : 'en-US'
 
   const initialValues = {
     race_name: goal.race_name,
@@ -44,6 +55,7 @@ export function GoalEditModal({ goal, isOpen, onClose }: GoalEditModalProps) {
 
   useEffect(() => {
     if (isOpen) {
+      setDate(goal.date)
       setPriority(goal.is_primary ? 'primary' : 'secondary')
       initialValuesRef.current = {
         race_name: goal.race_name,
@@ -92,6 +104,39 @@ export function GoalEditModal({ goal, isOpen, onClose }: GoalEditModalProps) {
       })
     }
   }, [isOpen, checkUnsavedChanges])
+
+  const closeDatePicker = useCallback(() => {
+    setShowDatePickerPopup(false)
+    setDatePickerAnchor(null)
+  }, [])
+
+  const openDatePicker = useCallback(() => {
+    const rect = dateTriggerRef.current?.getBoundingClientRect()
+    if (rect) setDatePickerAnchor(rect)
+    setShowDatePickerPopup(true)
+  }, [])
+
+  useEffect(() => {
+    if (!showDatePickerPopup) return
+    const onPointerDown = (e: PointerEvent) => {
+      const target = e.target as Node | null
+      if (!target) return
+      const inPopup = datePickerPopupRef.current?.contains(target)
+      const inTrigger = dateTriggerRef.current?.contains(target)
+      if (!inPopup && !inTrigger) closeDatePicker()
+    }
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeDatePicker()
+    }
+    document.addEventListener('pointerdown', onPointerDown, true)
+    document.addEventListener('keydown', onKeyDown)
+    window.addEventListener('resize', closeDatePicker)
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown, true)
+      document.removeEventListener('keydown', onKeyDown)
+      window.removeEventListener('resize', closeDatePicker)
+    }
+  }, [showDatePickerPopup, closeDatePicker])
 
   const saveFeedbackKey = `${state?.success ?? ''}|${state?.error ?? ''}|${isSubmitting}`
   useEffect(() => {
@@ -170,14 +215,27 @@ export function GoalEditModal({ goal, isOpen, onClose }: GoalEditModalProps) {
         />
 
         <div className="grid grid-cols-2 gap-4">
-          <Input
-            id="edit-date"
-            label={tGoals('date')}
-            name="date"
-            type="date"
-            required
-            defaultValue={goal.date}
-          />
+          <div>
+            <label htmlFor="edit-date-trigger" className="block text-sm font-medium text-stone-700 mb-2">
+              {tGoals('date')} <span className="text-palette-danger">*</span>
+            </label>
+            <input type="hidden" name="date" value={date} required readOnly aria-hidden />
+            <div
+              ref={dateTriggerRef}
+              id="edit-date-trigger"
+              role="button"
+              tabIndex={0}
+              onClick={openDatePicker}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openDatePicker() } }}
+              className={`flex items-center gap-2 w-full border border-stone-300 rounded-lg py-2.5 px-4 bg-white text-stone-900 focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition text-left ${FORM_INPUT_TEXT_SIZE} ${FORM_INPUT_HEIGHT}`}
+              aria-label={tGoals('date')}
+            >
+              <span className="text-sm flex-1">{formatDateFr(date, false, localeForPicker)}</span>
+              <svg className="w-5 h-5 text-stone-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+          </div>
           <Input
             id="edit-distance"
             label={tGoals('distance')}
@@ -286,6 +344,37 @@ export function GoalEditModal({ goal, isOpen, onClose }: GoalEditModalProps) {
           </p>
         )}
       </form>
+
+      {showDatePickerPopup && datePickerAnchor && typeof document !== 'undefined' &&
+        createPortal(
+          <div
+            className="fixed z-[210]"
+            ref={datePickerPopupRef}
+            style={(() => {
+              const POPUP_W = 280
+              const POPUP_H = 340
+              const M = 8
+              const vw = typeof window !== 'undefined' ? window.innerWidth : 1200
+              const vh = typeof window !== 'undefined' ? window.innerHeight : 800
+              const left = Math.max(M, Math.min(datePickerAnchor.left, vw - POPUP_W - M))
+              const preferBottom = datePickerAnchor.bottom + M
+              const fitsBelow = preferBottom + POPUP_H <= vh - M
+              const top = fitsBelow ? preferBottom : Math.max(M, datePickerAnchor.top - M - POPUP_H)
+              return { top, left, maxHeight: `calc(100vh - ${M * 2}px)` }
+            })()}
+          >
+            <DatePickerPopup
+              value={date}
+              onChange={(dateStr) => {
+                setDate(dateStr)
+                closeDatePicker()
+              }}
+              locale={localeForPicker}
+              monthDropdownId="goal-edit-date-picker-month"
+            />
+          </div>,
+          document.body
+        )}
     </Modal>
   )
 }
