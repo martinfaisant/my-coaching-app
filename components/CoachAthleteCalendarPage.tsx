@@ -85,9 +85,9 @@ export function CoachAthleteCalendarPage({
                 </svg>
               </Link>
               <div className="flex items-center gap-3 min-w-0">
-                <AvatarImage src={athleteAvatarUrl} initials={initials} className="w-10 h-10 rounded-xl shrink-0" />
+                <AvatarImage src={athleteAvatarUrl} initials={initials} className="w-9 h-9 rounded-xl shrink-0" />
                 <div className="min-w-0">
-                  <h1 className="text-lg font-bold text-stone-800 truncate">{athleteName}</h1>
+                  <h1 className="text-base font-bold text-stone-800 truncate">{athleteName}</h1>
                 </div>
               </div>
             </div>
@@ -133,7 +133,7 @@ export function CoachAthleteCalendarPage({
                       <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </div>
-                  <h2 className="text-lg font-bold text-stone-900">{t('athleteGoalsTitle')}</h2>
+                  <h2 className="text-base font-bold text-stone-900">{t('athleteGoalsTitle')}</h2>
                 </div>
                 {seasons.length === 0 ? (
                   <div className="bg-white rounded-2xl p-8 border border-stone-200 text-center">
@@ -147,7 +147,7 @@ export function CoachAthleteCalendarPage({
                       const seasonGoals = goalsBySeason.get(seasonYear)!
                       return (
                         <div key={seasonYear} className="space-y-6">
-                          <h3 className="text-sm font-bold text-stone-400 uppercase tracking-wide">{t('season', { year: seasonYear })}</h3>
+                          <h3 className="text-xs font-bold uppercase tracking-wider text-stone-500">{t('season', { year: seasonYear })}</h3>
                           {seasonGoals.map((goal) => {
                             const isPast = goal.date < today
                             const daysUntil = getDaysUntil(goal.date)
@@ -160,32 +160,32 @@ export function CoachAthleteCalendarPage({
                                 key={goal.id}
                                 leftBorderColor={isResult ? 'stone' : isPrimary ? 'amber' : 'sage'}
                                 borderLeftOnly={isResult}
-                                className={isPast ? 'opacity-75' : ''}
+                                className=""
                               >
                                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                                   <div className="flex gap-4 items-center min-w-0">
                                     {/* Date Block */}
-                                    <div className={`flex flex-col items-center justify-center bg-stone-50 border border-stone-200 rounded-xl w-14 h-14 shrink-0 ${isPast ? 'opacity-75' : ''}`}>
+                                    <div className="flex flex-col items-center justify-center bg-stone-50 border border-stone-200 rounded-lg w-14 h-12 shrink-0">
                                       <span className="text-[10px] font-bold text-stone-400 uppercase">{dateBlock.monthYear}</span>
-                                      <span className="text-xl font-bold text-stone-800">{dateBlock.day}</span>
+                                      <span className="text-sm font-bold text-stone-800">{dateBlock.day}</span>
                                     </div>
 
                                     <div className="min-w-0">
                                       <div className="flex items-center gap-2 mb-0.5">
-                                        <h3 className={`text-base font-bold truncate ${isPast ? 'text-stone-700' : 'text-stone-900'}`}>
+                                        <h3 className={`text-sm font-bold truncate ${isPast ? 'text-stone-700' : 'text-stone-900'}`}>
                                           {goal.race_name}
                                         </h3>
                                         {isPrimary ? (
-                                          <span className="bg-white text-palette-amber text-[10px] font-bold px-2 py-0.5 rounded-full border border-palette-amber shrink-0">
+                                          <span className="bg-white text-palette-amber text-[10px] font-semibold px-2 py-0.5 rounded-full border border-palette-amber shrink-0">
                                             {t('priority.primary')}
                                           </span>
                                         ) : (
-                                          <span className="bg-white text-palette-sage text-[10px] font-bold px-2 py-0.5 rounded-full border border-palette-sage shrink-0">
+                                          <span className="bg-white text-palette-sage text-[10px] font-semibold px-2 py-0.5 rounded-full border border-palette-sage shrink-0">
                                             {t('priority.secondary')}
                                           </span>
                                         )}
                                       </div>
-                                      <div className="flex items-center gap-1 text-sm text-stone-500 font-medium flex-wrap">
+                                      <div className="flex items-center gap-1 text-xs text-stone-500 font-medium flex-wrap">
                                         <MapIcon className="w-3.5 h-3.5 text-stone-400 shrink-0" />
                                         <span>{goal.distance} km</span>
                                         {hasTargetTime(goal) && (

@@ -20,14 +20,14 @@ function formatShortDate(date: Date, locale: string): string {
   return date.toLocaleDateString(localeTag(locale), { day: 'numeric', month: 'short' })
 }
 
-/** Affiche la plage de la semaine du milieu uniquement (ex. "16 févr. – 22 févr."). */
-function formatWeekRangeLabel(referenceMonday: Date, locale: string): string {
+/** Affiche la plage de la semaine du milieu uniquement (ex. "16 févr. au 22 févr."). */
+function formatWeekRangeLabel(referenceMonday: Date, locale: string, rangeSeparator: string): string {
   const startMonday = new Date(referenceMonday)
   const endSunday = new Date(referenceMonday)
   endSunday.setDate(endSunday.getDate() + 6)
   const startLabel = formatShortDate(startMonday, locale)
   const endLabel = formatShortDate(endSunday, locale)
-  return `${startLabel} – ${endLabel}`
+  return `${startLabel}${rangeSeparator}${endLabel}`
 }
 
 /** Dernier jour (dimanche) de la semaine précédente par rapport à referenceMonday. */
@@ -37,10 +37,13 @@ function getPreviousWeekLastDay(referenceMonday: Date): Date {
   return d
 }
 
-/** Premier jour (lundi) de la semaine suivante par rapport à referenceMonday. */
+/** Dernier jour (dimanche) de la semaine suivante par rapport à referenceMonday. */
 function getNextWeekFirstDay(referenceMonday: Date): Date {
   const d = new Date(referenceMonday)
-  d.setDate(d.getDate() + 7)
+  // referenceMonday = lundi de la semaine centrale
+  // donc "dernier jour de la semaine suivante" = dimanche de (referenceMonday + 1 semaine)
+  // lundi ( + 7 jours) + 6 jours
+  d.setDate(d.getDate() + 13)
   return d
 }
 
@@ -75,7 +78,7 @@ type CalendarViewWithNavigationProps = {
     isAnimating: boolean
     /** Dernier jour de la 1ère semaine (ex. "9 févr.") pour le chevron gauche */
     prevWeekLastDayLabel: string
-    /** Premier jour de la 3e semaine (ex. "23 févr.") pour le chevron droit */
+    /** Dernier jour de la 3e semaine (ex. "29 févr.") pour le chevron droit */
     nextWeekFirstDayLabel: string
   }) => React.ReactNode
   /** Si true, n'affiche pas le sélecteur intégré (utilisé avec renderWeekSelector) */
@@ -129,6 +132,7 @@ export function CalendarViewWithNavigation({
 }: CalendarViewWithNavigationProps) {
   const locale = useLocale()
   const tCalendar = useTranslations('calendar')
+  const weekRangeSeparator = tCalendar('weekRangeSeparator')
   const today = new Date()
   const currentMonday = getWeekMonday(today)
   const [referenceMonday, setReferenceMonday] = useState<Date>(currentMonday)
@@ -407,7 +411,7 @@ export function CalendarViewWithNavigation({
     }, SLIDE_DURATION_MS)
   }
 
-  const dateRangeLabel = formatWeekRangeLabel(referenceMonday, locale)
+  const dateRangeLabel = formatWeekRangeLabel(referenceMonday, locale, weekRangeSeparator)
 
   // Suivant = semaines plus tard = le calendrier « remonte » (nouveau contenu vient du bas et monte)
   // Précédent = semaines plus tôt = le calendrier « descend » (nouveau contenu vient du haut et descend)

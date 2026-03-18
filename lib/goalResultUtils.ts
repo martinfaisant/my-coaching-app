@@ -25,7 +25,8 @@ export function formatGoalResultTime(goal: Goal): string {
   if (h > 0) parts.push(`${h}h`)
   if (m > 0) parts.push(s > 0 ? `${String(m).padStart(2, '0')}min` : `${m}min`)
   if (s > 0) parts.push(`${String(s).padStart(2, '0')}s`)
-  return parts.join('')
+  // On affiche les unités avec des espaces (ex. "1h 30min 30s")
+  return parts.join(' ')
 }
 
 /**
@@ -69,7 +70,8 @@ export function formatTargetTime(goal: Goal): string {
   if (h > 0) parts.push(`${h}h`)
   if (m > 0) parts.push(s > 0 ? `${String(m).padStart(2, '0')}min` : `${m}min`)
   if (s > 0) parts.push(`${String(s).padStart(2, '0')}s`)
-  return parts.join('')
+  // On affiche les unités avec des espaces (ex. "1h 30min 30s")
+  return parts.join(' ')
 }
 
 export { MAX_NOTE_LENGTH }

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Typographie calendrier coach – Mobile</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            'palette-olive': '#8e9856',
+            'palette-amber': '#c9a544',
+            'palette-sage': '#aaaa51',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: ui-sans-serif, system-ui, sans-serif; }
+    .mockup-note { font-size: 0.7rem; color: #78716c; margin-top: 1rem; }
+  </style>
+</head>
+<body class="bg-stone-100 min-h-screen">
+  <!-- Simulateur mobile max 428px -->
+  <div class="mx-auto max-w-[428px] min-h-screen flex flex-col bg-white shadow-sm">
+    <!-- Top bar simplifiée -->
+    <div class="flex items-center justify-between px-4 py-3 border-b border-stone-200 bg-white shrink-0">
+      <div class="w-8 h-8" aria-hidden></div>
+      <h1 class="text-base font-bold text-stone-900">Mes Athlètes</h1>
+      <button type="button" class="w-8 h-8 flex items-center justify-center text-stone-500" aria-label="Menu">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+    </div>
+
+    <!-- En-tête athlète + sélecteur semaine -->
+    <header class="flex flex-col gap-3 shrink-0 bg-white border-b border-stone-100 px-4 py-4">
+      <div class="flex items-center gap-3 min-w-0">
+        <a href="#" class="p-2 rounded-full hover:bg-stone-100 text-stone-400" aria-label="Retour">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </a>
+        <div class="w-9 h-9 rounded-xl bg-palette-olive flex items-center justify-center text-white text-sm font-bold shrink-0">SP</div>
+        <h2 class="text-base font-bold text-stone-900 truncate">Sara Peregord</h2>
+      </div>
+      <div class="flex justify-center w-full">
+        <div class="flex items-center gap-2 bg-stone-50 p-1.5 rounded-xl border border-stone-200 shadow-sm w-full max-w-[320px]">
+          <button type="button" class="p-1.5 min-h-10 w-10 flex items-center justify-center text-stone-500 hover:text-palette-forest-dark shrink-0">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="m15 18-7-7 7-7"/></svg>
+          </button>
+          <div class="flex-1 min-w-0 px-1 py-0.5 flex flex-col items-center justify-center text-center">
+            <span class="text-sm font-bold text-stone-800 leading-tight block">16 mars</span>
+            <span class="text-sm font-bold text-stone-800 leading-tight block">22 mars</span>
+          </div>
+          <button type="button" class="p-1.5 min-h-10 w-10 flex items-center justify-center text-stone-500 hover:text-palette-forest-dark shrink-0">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="m9 18 6-6-6-6"/></svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Zone scrollable -->
+    <main class="flex-1 overflow-y-auto px-4 py-4">
+      <!-- Semaine actuelle -->
+      <section class="mb-6">
+        <h3 class="text-base font-bold text-palette-forest-dark">Semaine actuelle</h3>
+        <p class="text-sm text-stone-500 font-medium">— 16 mars au 22 mars</p>
+
+        <!-- Stats volume -->
+        <div class="mt-4 p-4 rounded-2xl border border-stone-200 bg-white shadow-sm space-y-4">
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="text-palette-amber">🕐</span>
+              <span class="text-sm font-semibold text-palette-amber">Volume horaire total</span>
+            </div>
+            <div class="h-1.5 bg-stone-100 rounded-full overflow-hidden">
+              <div class="h-full bg-palette-forest-dark/30 rounded-full w-1/3"></div>
+            </div>
+            <p class="text-xs text-stone-500 mt-0.5">1h10 prévu</p>
+          </div>
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="text-stone-400">🏃</span>
+              <span class="text-sm font-semibold text-stone-600">Run</span>
+            </div>
+            <div class="h-1.5 bg-stone-100 rounded-full overflow-hidden">
+              <div class="h-full bg-stone-300 rounded-full w-1/3"></div>
+            </div>
+            <p class="text-xs text-stone-500 mt-0.5">14 km prévu</p>
+          </div>
+        </div>
+
+        <!-- Jours en liste -->
+        <div class="mt-4 space-y-3">
+          <article class="rounded-xl border border-dashed border-stone-200 bg-stone-50/50 p-4 min-h-[80px]">
+            <header class="flex items-center gap-2 mb-2">
+              <span class="text-xs font-semibold uppercase tracking-wider text-stone-500">Lun.</span>
+              <span class="text-sm font-semibold text-stone-800">16 mars</span>
+            </header>
+            <div class="flex items-center justify-center min-h-12">
+              <span class="text-stone-300 text-2xl">+</span>
+            </div>
+          </article>
+
+          <article class="rounded-xl border border-stone-200 bg-white p-4 shadow-sm">
+            <header class="flex items-center gap-2 mb-3">
+              <span class="text-xs font-semibold uppercase tracking-wider text-stone-500">Mar.</span>
+              <span class="text-sm font-semibold text-stone-800">17 mars</span>
+            </header>
+            <div class="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg border border-palette-forest-dark text-palette-forest-dark">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              <span class="text-[10px] font-semibold uppercase">Disponible</span>
+            </div>
+          </article>
+
+          <article class="rounded-xl border border-stone-200 bg-white p-4 shadow-sm">
+            <header class="flex items-center gap-2 mb-3">
+              <span class="text-xs font-semibold uppercase tracking-wider text-palette-forest-dark">Mer.</span>
+              <span class="text-sm font-bold text-palette-forest-dark">18 mars</span>
+              <span class="ml-auto text-xs font-medium text-palette-forest-dark bg-palette-forest-dark/10 px-1.5 py-0.5 rounded">Aujourd'hui</span>
+            </header>
+            <div class="space-y-2">
+              <div class="text-xs font-semibold uppercase tracking-wider text-stone-500">Midi</div>
+              <div class="rounded-lg border-l-4 border-palette-forest-dark bg-white p-3 shadow-sm">
+                <h4 class="text-sm font-bold text-stone-900">Zone 2</h4>
+                <p class="text-xs text-stone-500 mt-1">Sortie longue fait toi plaisir</p>
+                <div class="flex items-center gap-2 flex-wrap mt-2 text-[10px] text-stone-500">
+                  <span>1h10</span>
+                  <span>·</span>
+                  <span>14 km</span>
+                  <span>·</span>
+                  <span>5.0 min/km</span>
+                  <span class="ml-auto px-1.5 py-0.5 rounded-full bg-stone-100 text-stone-500 text-[10px] font-semibold">Planifié</span>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- Objectifs de l'athlète -->
+      <section class="mt-8 pt-6 border-t border-stone-100">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="p-2 bg-palette-forest-dark/10 rounded-full text-palette-forest-dark">
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <h3 class="text-base font-bold text-stone-900">Objectifs de l'athlète</h3>
+        </div>
+        <p class="text-xs font-bold uppercase tracking-wider text-stone-500 mb-4">Saison 2026</p>
+        <div class="space-y-4">
+          <div class="rounded-xl border border-l-4 border-palette-amber border-stone-200 bg-white p-4 shadow-sm">
+            <div class="flex gap-4">
+              <div class="flex flex-col items-center justify-center bg-stone-50 border border-stone-200 rounded-lg w-12 h-12 shrink-0">
+                <span class="text-[10px] font-bold uppercase text-stone-500">Déc. 26</span>
+                <span class="text-sm font-bold text-stone-800">30</span>
+              </div>
+              <div class="min-w-0 flex-1">
+                <span class="text-[10px] font-semibold uppercase text-palette-amber bg-palette-amber/10 px-2 py-0.5 rounded-full border border-palette-amber">Principal</span>
+                <h4 class="text-sm font-bold text-stone-900 mt-1">test 2</h4>
+                <p class="text-xs text-stone-500 mt-0.5 flex items-center gap-1">32 km · Objectif : 1h30min30s</p>
+                <span class="inline-block mt-2 text-xs font-bold text-palette-forest-dark bg-palette-forest-dark/10 px-2 py-0.5 rounded-lg">J-288</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- FAB -->
+    <div class="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-palette-forest-dark text-white flex items-center justify-center shadow-lg" aria-hidden>
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+    </div>
+  </div>
+
+  <p class="mockup-note text-center p-4">Mockup typographie mobile — Nom athlète: text-base, Semaine actuelle: text-base, Titres cartes: text-sm, H4: text-xs uppercase (MIDI), Body: text-sm, Caption: text-xs</p>
+</body>
+</html>

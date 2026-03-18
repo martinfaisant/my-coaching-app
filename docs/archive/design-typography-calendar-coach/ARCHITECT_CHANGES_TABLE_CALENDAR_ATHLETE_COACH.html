@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Changements à appliquer - Calendrier athlète (vue coach)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background: #f5f5f4; }
+    .cell { vertical-align: top; }
+    code { white-space: pre-wrap; word-break: break-word; }
+  </style>
+</head>
+<body class="min-h-screen p-6">
+  <div class="max-w-[1200px] mx-auto">
+    <header class="mb-6">
+      <h1 class="text-2xl font-bold text-stone-900 mb-2">Changements à appliquer (Etat actuel -> Nouvel état)</h1>
+      <p class="text-sm text-stone-600">
+        Conçu pour visualiser rapidement toutes les modifications typographie / libellés / cohérence de format sur la page calendrier d’un athlète (vue coach).
+      </p>
+    </header>
+
+    <div class="bg-white rounded-2xl border border-stone-200 shadow-sm p-4 mb-6">
+      <p class="text-sm text-stone-700 font-semibold mb-2">Question de verrouillage</p>
+      <p class="text-sm text-stone-600">
+        Si le “bouton droit = fin de la semaine suivante” doit être valable <span class="font-semibold">pour toutes les semaines</span> (pas uniquement l’exemple), alors il faut verrouiller la règle de calcul “last day” partout dans le code.
+      </p>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="min-w-[1180px] w-full text-sm">
+          <thead class="bg-stone-50 border-b border-stone-200">
+            <tr>
+              <th class="text-left px-4 py-3 font-bold text-stone-800 w-[30%]">Zone / Fichier</th>
+              <th class="text-left px-4 py-3 font-bold text-stone-800 w-[12%]">Type</th>
+              <th class="text-left px-4 py-3 font-bold text-stone-800 w-[18%]">lib/typography.ts (TypoKey)</th>
+              <th class="text-left px-4 py-3 font-bold text-stone-800 w-[10%]">Taille (lg/md/sm/xs)</th>
+              <th class="text-left px-4 py-3 font-bold text-stone-800 w-[20%]">Etat actuel</th>
+              <th class="text-left px-4 py-3 font-bold text-stone-800 w-[20%]">Nouvel état</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-stone-100">
+            <tr>
+              <td class="cell px-4 py-3">
+                <div class="font-semibold text-stone-900">`components/CalendarViewWithNavigation.tsx` — `formatWeekRangeLabel`</div>
+                <div class="text-xs text-stone-600">Libellé de semaine : séparateur</div>
+              </td>
+              <td class="cell px-4 py-3 text-stone-700 font-semibold">Date</td>
+              <td class="cell px-4 py-3 text-stone-700 font-semibold">WeekSelectorRangeLabel</td>
+              <td class="cell px-4 py-3 text-stone-700 font-semibold">md</td>
+              <td class="cell px-4 py-3 text-stone-700">
+                <div class="font-semibold text-base">— 16 mars – 22 mars</div>
+              </td>
+              <td class="cell px-4 py-3 text-stone-900 font-semibold">
+                <div class="font-semibold text-base">— 16 mars au 22 mars</div>
+              </td>
+            </tr>
+
+            <tr>
+              <td class="cell px-4 py-3">
+                <div class="font-semibold text-stone-900">`components/WeekSelector.tsx` — split `dateRangeLabel`</div>
+                <div class="text-xs text-stone-600">Plage multi-parties (start/end)</div>
+              </td>
+              <td class="cell px-4 py-3 text-stone-700 font-semibold">Date</td>
+              <td class="cell px-4 py-3 text-stone-700 font-semibold">WeekSelectorRangeSplit</td>
+              <td class="cell px-4 py-3 text-stone-700 font-semibold">md</td>
+              <td class="cell px-4 py-3 text-stone-700">
+                <div class="font-semibold">
+                  split sur <code>' – '</code>
+                </div>
+              </td>
+              <td class="cell px-4 py-3 text-stone-900 font-semibold">
+                <div class="font-semibold">
+                  split sur <code>' au '</code> (ou split tolérant)
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td class="cell px-4 py-3">
+                <div class="font-semibold text-stone-900">`components/CalendarViewWithNavigation.tsx` + `components/WeekSelector.tsx` — bouton droit</div>
+                <div class="text-xs text-stone-600">Uniformité avec le bouton gauche (ex. 15 mars)</div>
+              </td>
+              <td class="cell px-4 py-3 text-stone-700 font-semibold">Navigation</td>
+              <td class="cell px-4 py-3 text-stone-700 font-semibold">WeekSelectorPrevNextLabel</td>
+              <td class="cell px-4 py-3 text-stone-700 font-semibold">xs</td>
+              <td class="cell px-4 py-3 text-stone-700">
+                <div>
+                  Affiche le <span class="font-semibold">1er jour</span> semaine suivante : <span class="font-semibold">23 mars</span> (au lieu de 29 mars).
+                </div>
+              </td>
+              <td class="cell px-4 py-3 text-stone-900 font-semibold">
+                <div>
+                  Affiche le <span class="font-semibold">dernier jour</span> : <span class="font-semibold">29 mars</span> (cohérent avec gauche : 15 mars).
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td class="cell px-4 py-3">
+                <div class="font-semibold text-stone-900">`components/CoachAthleteCalendarPage.tsx` — logo/avatar “SP”</div>
+              </td>
+              <td class="cell px-4 py-3 text-stone-700 font-semibold">Header</td>
+              <td class="cell px-4 py-3 text-stone-700 font-semibold">AvatarFallbackInitials</td>
+              <td class="cell px-4 py-3 text-stone-700 font-semibold">md</td>
+              <td class="cell px-4 py-3 text-stone-700">
+                <div class="w-10 h-10 rounded-xl bg-stone-200 flex items-center justify-center text-stone-900 font-bold">SP</div>
+              </td>
+              <td class="cell px-4 py-3 text-stone-900 font-semibold">
+                <div class="w-9 h-9 rounded-xl bg-stone-200 flex items-center justify-center text-stone-900 font-bold">SP</div>
+              </td>
+            </tr>
+
+            <tr>
+              <td class="cell px-4 py-3">
+                <div class="font-semibold text-stone-900">`components/CoachAthleteCalendarPage.tsx` — nom athlète</div>
+                <div class="text-xs text-stone-600">Réduction de la hiérarchie visuelle</div>
+              </td>
+              <td class="cell px-4 py-3 text-stone-700 font-semibold">Typographie</td>
+              <td class="cell px-4 py-3 text-stone-700 font-semibold">AthleteNameHeader</td>
+              <td class="cell px-4 py-3 text-stone-700 font-semibold">md</td>
+              <td class="cell px-4 py-3 text-stone-700">
+                <div class="text-lg font-bold text-stone-800">Sara Peregord</div>
+              </td>
+              <td class="cell px-4 py-3 text-stone-900 font-semibold">
+                <div class="text-base font-bold text-stone-800">Sara Peregord</div>
+              </td>
+            </tr>
+
+            <tr>
+              <td class="cell px-4 py-3">
+                <div class="font-semibold text-stone-900">`components/CoachAthleteCalendarPage.tsx` — titre “Objectifs de l'athlète”</div>
+                <div class="text-xs text-stone-600">Même niveau que la réduction des gros titres</div>
+              </td>
+              <td class="cell px-4 py-3 text-stone-700 font-semibold">Typographie</td>
+              <td class="cell px-4 py-3 text-stone-700 font-semibold">ObjectivesSectionTitle</td>
+              <td class="cell px-4 py-3 text-stone-700 font-semibold">md</td>
+              <td class="cell px-4 py-3 text-stone-700">
+                <div class="text-lg font-bold text-stone-900">Objectifs de l'athlète</div>
+              </td>
+              <td class="cell px-4 py-3 text-stone-900 font-semibold">
+                <div class="text-base font-bold text-stone-900">Objectifs de l'athlète</div>
+              </td>
+            </tr>
+
+            <tr>
+              <td class="cell px-4 py-3">
+                <div class="font-semibold text-stone-900">Layout — objectifs toujours en dessous</div>
+                <div class="text-xs text-stone-600">Desktop: pas de sidebar / pas de panneau à droite</div>
+              </td>
+              <td class="cell px-4 py-3 text-stone-700 font-semibold">Mise en page</td>
+              <td class="cell px-4 py-3 text-stone-700 font-semibold">ObjectivesLayoutPlacement</td>
+              <td class="cell px-4 py-3 text-stone-700 font-semibold">—</td>
+              <td class="cell px-4 py-3 text-stone-700">
+                <div class="flex flex-row gap-4">
+                  <div class="w-2/3 bg-stone-50 border border-stone-200 p-2 rounded text-xs font-semibold text-stone-600">Calendrier</div>
+                  <div class="w-1/3 bg-stone-100 border border-stone-200 p-2 rounded text-xs font-semibold text-stone-600">Objectifs (sidebar)</div>
+                </div>
+              </td>
+              <td class="cell px-4 py-3 text-stone-900 font-semibold">
+                <div class="flex flex-col gap-2">
+                  <div class="bg-stone-50 border border-stone-200 p-2 rounded text-xs font-semibold text-stone-600">Calendrier</div>
+                  <div class="bg-stone-100 border border-stone-200 p-2 rounded text-xs font-semibold text-stone-600">Objectifs (toujours dessous)</div>
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td class="cell px-4 py-3">
+                <div class="font-semibold text-stone-900">`components/CoachAthleteCalendarPage.tsx` — bloc date objectif (carré)</div>
+              </td>
+              <td class="cell px-4 py-3 text-stone-700 font-semibold">Objectifs</td>
+              <td class="cell px-4 py-3 text-stone-700 font-semibold">ObjectiveDateBlock</td>
+              <td class="cell px-4 py-3 text-stone-700 font-semibold">sm</td>
+              <td class="cell px-4 py-3 text-stone-700">
+                <div class="w-14 h-14 rounded-xl border border-stone-200 bg-stone-50 flex flex-col items-center justify-center">
+                  <div class="text-[10px] font-bold text-stone-500 uppercase">Déc. 26</div>
+                  <div class="text-xl font-bold text-stone-800 leading-none mt-1">30</div>
+                </div>
+              </td>
+              <td class="cell px-4 py-3 text-stone-900 font-semibold">
+                <div class="w-12 h-12 rounded-lg border border-stone-200 bg-stone-50 flex flex-col items-center justify-center">
+                  <div class="text-[10px] font-bold text-stone-500 uppercase">Déc. 26</div>
+                  <div class="text-sm font-bold text-stone-800 leading-none mt-1">30</div>
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td class="cell px-4 py-3">
+                <div class="font-semibold text-stone-900">`components/CoachAthleteCalendarPage.tsx` — titre objectif (`race_name`)</div>
+                <div class="text-xs text-stone-600">Uniformiser avec le titre workout (taille réduite)</div>
+              </td>
+              <td class="cell px-4 py-3 text-stone-700 font-semibold">Objectifs</td>
+              <td class="cell px-4 py-3 text-stone-700 font-semibold">ObjectiveTileTitle</td>
+              <td class="cell px-4 py-3 text-stone-700 font-semibold">sm</td>
+              <td class="cell px-4 py-3 text-stone-700">
+                <div class="text-base font-bold text-stone-900">test 2</div>
+              </td>
+              <td class="cell px-4 py-3 text-stone-900 font-semibold">
+                <div class="text-sm font-bold text-stone-900">test 2</div>
+              </td>
+            </tr>
+
+            <tr>
+              <td class="cell px-4 py-3">
+                <div class="font-semibold text-stone-900">`components/CoachAthleteCalendarPage.tsx` — badges priorité (Principal/Secondaire)</div>
+                <div class="text-xs text-stone-600">Taille identique aux badges disponibilité (Disponible / Indisponible)</div>
+              </td>
+              <td class="cell px-4 py-3 text-stone-700 font-semibold">Badges</td>
+              <td class="cell px-4 py-3 text-stone-700 font-semibold">BadgePriority</td>
+              <td class="cell px-4 py-3 text-stone-700 font-semibold">xs</td>
+              <td class="cell px-4 py-3 text-stone-700">
+                <div class="inline-flex items-center px-2 py-0.5 rounded-full border border-stone-300 bg-stone-100 text-xs font-bold text-stone-700">Principal</div>
+              </td>
+              <td class="cell px-4 py-3 text-stone-900 font-semibold">
+                <div class="inline-flex items-center px-2 py-0.5 rounded-full border border-stone-300 bg-stone-100 text-[10px] font-semibold text-stone-700">Principal</div>
+              </td>
+            </tr>
+
+            <tr>
+              <td class="cell px-4 py-3">
+                <div class="font-semibold text-stone-900">`components/CalendarView.tsx` — badge disponibilité (Disponible / Indisponible)</div>
+                <div class="text-xs text-stone-600">Même taille que les badges priorité</div>
+              </td>
+              <td class="cell px-4 py-3 text-stone-700 font-semibold">Badges</td>
+              <td class="cell px-4 py-3 text-stone-700 font-semibold">BadgeAvailability</td>
+              <td class="cell px-4 py-3 text-stone-700 font-semibold">xs</td>
+              <td class="cell px-4 py-3 text-stone-700">
+                <div class="inline-flex items-center px-2 py-0.5 rounded-full border border-stone-300 bg-stone-100 text-xs font-semibold text-stone-700">Disponible</div>
+              </td>
+              <td class="cell px-4 py-3 text-stone-900 font-semibold">
+                <div class="inline-flex items-center px-2 py-0.5 rounded-full border border-stone-300 bg-stone-100 text-[10px] font-semibold text-stone-700">Disponible</div>
+              </td>
+            </tr>
+
+            <tr>
+              <td class="cell px-4 py-3">
+                <div class="font-semibold text-stone-900">`components/CalendarView.tsx` — badge statut entraînement (Planifié, Réalisé, Non réalisé)</div>
+                <div class="text-xs text-stone-600">Réduction typographique</div>
+              </td>
+              <td class="cell px-4 py-3 text-stone-700 font-semibold">Badges</td>
+              <td class="cell px-4 py-3 text-stone-700 font-semibold">WorkoutStatusBadge</td>
+              <td class="cell px-4 py-3 text-stone-700 font-semibold">xs</td>
+              <td class="cell px-4 py-3 text-stone-700">
+                <div class="inline-flex items-center px-2 py-0.5 rounded-full bg-stone-100 text-stone-600 text-xs font-semibold">Planifié</div>
+              </td>
+              <td class="cell px-4 py-3 text-stone-900 font-semibold">
+                <div class="inline-flex items-center px-2 py-0.5 rounded-full bg-stone-100 text-stone-600 text-[10px] font-semibold">Planifié</div>
+              </td>
+            </tr>
+
+            <tr>
+              <td class="cell px-4 py-3">
+                <div class="font-semibold text-stone-900">`components/CalendarView.tsx` — “Semaine” titres</div>
+                <div class="text-xs text-stone-600">Desktop/tablette + mobile condensed</div>
+              </td>
+              <td class="cell px-4 py-3 text-stone-700 font-semibold">Typographie</td>
+              <td class="cell px-4 py-3 text-stone-700 font-semibold">CalendarWeekHeading</td>
+              <td class="cell px-4 py-3 text-stone-700 font-semibold">md</td>
+              <td class="cell px-4 py-3 text-stone-700">
+                <div class="text-xl font-bold text-palette-forest-dark">Semaine actuelle</div>
+              </td>
+              <td class="cell px-4 py-3 text-stone-900 font-semibold">
+                <div class="text-base font-bold text-palette-forest-dark">Semaine actuelle</div>
+              </td>
+            </tr>
+
+            <tr>
+              <td class="cell px-4 py-3">
+                <div class="font-semibold text-stone-900">`components/CalendarView.tsx` — “Matin/Midi/Soir”</div>
+                <div class="text-xs text-stone-600">H4 (en dehors de la tuile entraînement)</div>
+              </td>
+              <td class="cell px-4 py-3 text-stone-700 font-semibold">Placement</td>
+              <td class="cell px-4 py-3 text-stone-700 font-semibold">MomentOfDayLabel</td>
+              <td class="cell px-4 py-3 text-stone-700 font-semibold">xs</td>
+              <td class="cell px-4 py-3 text-stone-700">
+                <div class="border border-stone-200 bg-white rounded-lg p-2">
+                  <div class="text-[9px] font-semibold uppercase tracking-wider text-stone-600">Midi</div>
+                  <div class="mt-1 text-xs text-stone-700 font-semibold">Tuile entraînement…</div>
+                </div>
+              </td>
+              <td class="cell px-4 py-3 text-stone-900 font-semibold">
+                <div>
+                  <div class="text-[10px] font-semibold uppercase tracking-wider text-stone-500">Midi</div>
+                  <div class="mt-1 border border-stone-200 bg-white rounded-lg p-2">
+                    <div class="text-xs text-stone-700 font-semibold">Tuile entraînement…</div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td class="cell px-4 py-3">
+                <div class="font-semibold text-stone-900">`components/CalendarView.tsx` — description workout</div>
+                <div class="text-xs text-stone-600">Réduire la taille et gris (Body)</div>
+              </td>
+              <td class="cell px-4 py-3 text-stone-700 font-semibold">Workouts</td>
+              <td class="cell px-4 py-3 text-stone-700 font-semibold">WorkoutDescriptionSmall</td>
+              <td class="cell px-4 py-3 text-stone-700 font-semibold">xs</td>
+              <td class="cell px-4 py-3 text-stone-700">
+                <div class="text-sm text-stone-600 leading-snug">“La description de la séance…”</div>
+              </td>
+              <td class="cell px-4 py-3 text-stone-900 font-semibold">
+                <div class="text-xs text-stone-500 leading-snug">“La description de la séance…”</div>
+              </td>
+            </tr>
+
+            <tr>
+              <td class="cell px-4 py-3">
+                <div class="font-semibold text-stone-900">`components/CalendarView.tsx` — métadonnées workout (1h10, 14 km, etc.)</div>
+                <div class="text-xs text-stone-600">Passer à `Caption` (texte plus compact)</div>
+              </td>
+              <td class="cell px-4 py-3 text-stone-700 font-semibold">Workouts</td>
+              <td class="cell px-4 py-3 text-stone-700 font-semibold">WorkoutMetadataCaption</td>
+              <td class="cell px-4 py-3 text-stone-700 font-semibold">xs</td>
+              <td class="cell px-4 py-3 text-stone-700">
+                <div class="text-xs text-stone-500 font-semibold">1h10 · 14 km · Planifié</div>
+              </td>
+              <td class="cell px-4 py-3 text-stone-900 font-semibold">
+                <div class="text-[10px] text-stone-500 font-semibold">1h10 · 14 km · Planifié</div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <footer class="mt-6 text-xs text-stone-500">
+      Astuce : ouvre ce fichier dans ton navigateur pour zoomer / faire du compare rapide.
+    </footer>
+  </div>
+</body>
+</html>
+

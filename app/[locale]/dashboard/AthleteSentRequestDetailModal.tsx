@@ -378,7 +378,7 @@ export function AthleteSentRequestDetailModal({
                             className={isPast ? 'opacity-75 py-2' : 'py-2'}
                           >
                             <div className="flex gap-2 items-start min-w-0">
-                              <div className={`flex flex-col items-center justify-center bg-stone-50 border border-stone-200 rounded-lg w-10 h-10 shrink-0 ${isPast ? 'opacity-75' : ''}`}>
+                              <div className={`flex flex-col items-center justify-center bg-stone-50 border border-stone-200 rounded-lg w-12 h-10 shrink-0 ${isPast ? 'opacity-75' : ''}`}>
                                 <span className="text-[9px] font-bold text-stone-400 uppercase">{dateBlock.monthYear}</span>
                                 <span className="text-sm font-bold text-stone-800">{dateBlock.day}</span>
                               </div>
