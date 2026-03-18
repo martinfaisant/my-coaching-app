@@ -249,6 +249,7 @@
         "status": { "upToDate": "À jour" },
         "calendar": {
           "weekRange": "3 févr. – 9 févr.",
+          "weekRangeSeparator": " au ",
           "weekRangeShort": "3 févr.",
           "dayShort": "9 févr.",
           "dateLong": "13 mars 2026"
@@ -701,6 +702,7 @@
     },
     "previousWeekButton": "Semaine précédente",
     "nextWeekButton": "Semaine suivante",
+    "weekRangeSeparator": " au ",
     "tile": {
       "athleteCommentLabel": "Commentaire de l'athlète"
     },
