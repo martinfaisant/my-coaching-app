@@ -1,6 +1,9 @@
+import { DashboardPageShell } from '@/components/DashboardPageShell'
+
 export default function CoachAthletesLoading() {
   return (
-    <div className="px-6 lg:px-8 pt-6 pb-24 space-y-8 animate-pulse">
+    <DashboardPageShell>
+      <div className="space-y-8 animate-pulse">
       <section>
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
             <div className="h-5 w-40 bg-stone-200 rounded" />
@@ -45,6 +48,7 @@ export default function CoachAthletesLoading() {
             ))}
           </div>
       </section>
-    </div>
+      </div>
+    </DashboardPageShell>
   )
 }

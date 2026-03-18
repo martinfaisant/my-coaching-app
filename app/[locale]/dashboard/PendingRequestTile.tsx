@@ -10,7 +10,7 @@ import { Modal } from '@/components/Modal'
 import { TileCard } from '@/components/TileCard'
 import { useOpenChat } from '@/contexts/OpenChatContext'
 import { getInitials } from '@/lib/stringUtils'
-import { getWeeklyVolumeUnit, SPORT_ICONS, SPORT_CARD_STYLES } from '@/lib/sportStyles'
+import { getSportTranslationKey, getWeeklyVolumeUnit, SPORT_CARD_STYLES, SPORT_ICONS, WEEKLY_VOLUME_DISPLAY_ORDER } from '@/lib/sportStyles'
 import type { SportType } from '@/lib/sportStyles'
 import { respondToCoachRequest } from '@/app/[locale]/dashboard/actions'
 import type { PendingRequestWithAthlete } from '@/app/[locale]/dashboard/actions'
@@ -106,15 +106,6 @@ export function PendingRequestTile({ request, goals = [] }: PendingRequestTilePr
       Object.keys(request.athlete_weekly_volume_by_sport).length > 0)
   const tProfile = useTranslations('profile')
   const tSports = useTranslations('sports')
-  const DISPLAY_ORDER = ['course', 'course_elevation_m', 'velo', 'natation', 'musculation', 'trail', 'triathlon'] as const
-  const sportLabelKey: Record<string, string> = {
-    course: 'course',
-    velo: 'velo',
-    natation: 'natation',
-    musculation: 'muscu',
-    trail: 'trail',
-    triathlon: 'triathlon',
-  }
 
   const vol = request.athlete_weekly_volume_by_sport
   const volumeEntries: {
@@ -126,14 +117,15 @@ export function PendingRequestTile({ request, goals = [] }: PendingRequestTilePr
     elevationValue?: number
   }[] = []
   if (vol && typeof vol === 'object') {
-    for (const sport of DISPLAY_ORDER) {
+    for (const sport of WEEKLY_VOLUME_DISPLAY_ORDER) {
       if (sport === 'course_elevation_m') continue
       const v = vol[sport]
       if (v == null) continue
       const unit = getWeeklyVolumeUnit(sport)
       const suffix =
         unit === 'km' ? tProfile('suffixKmPerWeek') : unit === 'm' ? tProfile('suffixMPerWeek') : tProfile('suffixHoursPerWeek')
-      const sportLabel = sportLabelKey[sport] ? tSports(sportLabelKey[sport] as 'course') : sport
+      const translationKey = getSportTranslationKey(sport)
+      const sportLabel = translationKey ? tSports(translationKey as 'course') : sport
       const sportKey = sport as SportType
       const style = SPORT_CARD_STYLES[sportKey] ?? SPORT_CARD_STYLES.course
       const elevationValue = sport === 'course' ? vol['course_elevation_m'] ?? undefined : undefined

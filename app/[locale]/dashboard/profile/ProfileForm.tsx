@@ -20,11 +20,8 @@ import { logger } from '@/lib/logger'
 
 import { LANGUAGES_OPTIONS } from '@/lib/sportsOptions'
 import { useCoachedSportsOptions, usePracticedSportsOptions } from '@/lib/hooks/useSportsOptions'
-import { SPORT_ICONS, SPORT_CARD_STYLES, SPORT_TRANSLATION_KEYS, getWeeklyVolumeUnit } from '@/lib/sportStyles'
+import { getWeeklyVolumeDisplaySports, PRACTICED_SPORTS_DISPLAY_ORDER, SPORT_ICONS, SPORT_CARD_STYLES, SPORT_TRANSLATION_KEYS, getWeeklyVolumeUnit } from '@/lib/sportStyles'
 import type { SportType } from '@/lib/sportStyles'
-
-/** Ordre stable pour afficher les sports dans la section volume (triathlon → course, vélo, natation). */
-const DISPLAY_SPORTS_ORDER = ['course', 'velo', 'natation', 'musculation', 'trail', 'triathlon'] as const
 
 type ProfileFormProps = {
   email: string
@@ -108,14 +105,7 @@ export function ProfileForm({
 
   /** Liste des sports pour la section volume : triathlon → course, vélo, natation ; trail n’a pas de tuile dédiée (champ D+ dans la tuile Course). */
   const displaySportsForVolume = useMemo(() => {
-    const expanded = selectedPracticedSports.flatMap((s) =>
-      s === 'triathlon' ? ['course', 'velo', 'natation'] : [s]
-    )
-    const withoutTrail = expanded.filter((s) => s !== 'trail')
-    if (selectedPracticedSports.includes('trail') && !withoutTrail.includes('course')) {
-      withoutTrail.push('course')
-    }
-    return DISPLAY_SPORTS_ORDER.filter((s) => withoutTrail.includes(s))
+    return getWeeklyVolumeDisplaySports(selectedPracticedSports)
   }, [selectedPracticedSports])
 
   // Valeurs initiales pour détecter les modifications
@@ -187,7 +177,7 @@ export function ProfileForm({
       const expandedForVolume = currentPracticedSports.flatMap((s) =>
         s === 'triathlon' ? ['course', 'velo', 'natation'] : [s]
       )
-      const volumeDisplayList = DISPLAY_SPORTS_ORDER.filter((s) => expandedForVolume.includes(s))
+      const volumeDisplayList = PRACTICED_SPORTS_DISPLAY_ORDER.filter((s) => expandedForVolume.includes(s))
       const currentVolume: Record<string, number> = {}
       volumeDisplayList.forEach((sport) => {
         const el = form.querySelector(`[name="weekly_volume_${sport}"]`) as HTMLInputElement
@@ -297,7 +287,7 @@ export function ProfileForm({
         const expandedForVolume = currentPracticedSports.flatMap((s) =>
           s === 'triathlon' ? ['course', 'velo', 'natation'] : [s]
         )
-        const volumeDisplayList = DISPLAY_SPORTS_ORDER.filter((s) => expandedForVolume.includes(s))
+        const volumeDisplayList = PRACTICED_SPORTS_DISPLAY_ORDER.filter((s) => expandedForVolume.includes(s))
         const currentVolume: Record<string, number> = {}
         volumeDisplayList.forEach((sport) => {
           const el = form.querySelector(`[name="weekly_volume_${sport}"]`) as HTMLInputElement

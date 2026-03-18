@@ -7,13 +7,10 @@ import { logger } from '@/lib/logger'
 import { getTranslations, getLocale } from 'next-intl/server'
 import { getFrozenTitleForLocale } from '@/lib/frozenOfferI18n'
 import { getDisplayName } from '@/lib/displayName'
-import { getWeeklyVolumeUnit } from '@/lib/sportStyles'
+import { getWeeklyVolumeDisplaySports, getWeeklyVolumeUnit } from '@/lib/sportStyles'
 
 export type SetCoachResult = { error?: string }
 export type CoachRequestResult = { error?: string }
-
-// Volume hebdo : pas de tuile "trail" (comme Mon profil). Trail => tuile course + champ D+/sem.
-const DISPLAY_SPORTS_ORDER = ['course', 'velo', 'natation', 'musculation', 'triathlon'] as const
 
 /** Athlète : envoyer une demande de coaching au coach. Met à jour le profil (nom, sports, objectifs/volume) puis crée la demande. */
 export async function createCoachRequest(
@@ -69,10 +66,7 @@ export async function createCoachRequest(
     }
     const roundedHours = Math.round(hoursRaw * 100) / 100
 
-    const expandedForVolume = sports.flatMap((s) =>
-      s === 'triathlon' ? ['course', 'velo', 'natation'] : s === 'trail' ? ['course'] : [s]
-    )
-    const volumeDisplayList = DISPLAY_SPORTS_ORDER.filter((s) => expandedForVolume.includes(s))
+    const volumeDisplayList = getWeeklyVolumeDisplaySports(sports)
     const volumeBySport: Record<string, number> = {}
     const rawVolume = weeklyVolumeBySport ?? (profile.weekly_volume_by_sport && typeof profile.weekly_volume_by_sport === 'object' ? profile.weekly_volume_by_sport as Record<string, number> : {})
     for (const sport of volumeDisplayList) {

@@ -11,7 +11,7 @@ import { TileCard } from '@/components/TileCard'
 import { getCoachRequestDetail, type CoachRequestDetail } from './actions'
 import { getFrozenTitleForLocale, getFrozenDescriptionForLocale } from '@/lib/frozenOfferI18n'
 import { formatDateFr, formatGoalDateBlock } from '@/lib/dateUtils'
-import { getWeeklyVolumeUnit, SPORT_ICONS, SPORT_CARD_STYLES } from '@/lib/sportStyles'
+import { getSportTranslationKey, getWeeklyVolumeUnit, isSportType, SPORT_ICONS, SPORT_CARD_STYLES, WEEKLY_VOLUME_DISPLAY_ORDER } from '@/lib/sportStyles'
 import type { SportType } from '@/lib/sportStyles'
 import type { Goal } from '@/types/database'
 import { RequestGoalsListModal } from '@/app/[locale]/dashboard/RequestGoalsListModal'
@@ -41,35 +41,11 @@ type AthleteSentRequestDetailModalProps = {
   initialGoals?: Goal[]
 }
 
-const KNOWN_SPORT_TYPES: SportType[] = [
-  'course',
-  'course_route',
-  'velo',
-  'natation',
-  'musculation',
-  'nordic_ski',
-  'backcountry_ski',
-  'ice_skating',
-  'trail',
-  'randonnee',
-  'triathlon',
-]
-
 function parseSports(sportPracticed: string): string[] {
   return sportPracticed
     .split(',')
     .map((s) => s.trim())
     .filter(Boolean)
-}
-
-const DISPLAY_ORDER_VOLUME = ['course', 'course_elevation_m', 'velo', 'natation', 'musculation', 'trail', 'triathlon'] as const
-const sportLabelKey: Record<string, string> = {
-  course: 'course',
-  velo: 'velo',
-  natation: 'natation',
-  musculation: 'muscu',
-  trail: 'trail',
-  triathlon: 'triathlon',
 }
 
 const MapIconSmall = ({ className = 'w-3.5 h-3.5' }: { className?: string }) => (
@@ -269,10 +245,9 @@ export function AthleteSentRequestDetailModal({
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {parseSports(detail.sport_practiced).map((sportValue) => {
-                      const normalized = sportValue as SportType
-                      if (KNOWN_SPORT_TYPES.includes(normalized)) {
-                        return <Badge key={sportValue} sport={normalized} />
-                      }
+                      const normalized = sportValue.trim()
+                      const sportKey = isSportType(normalized) ? (normalized as SportType) : null
+                      if (sportKey) return <Badge key={sportValue} sport={sportKey} />
                       return (
                         <Badge key={sportValue} variant="default">
                           {sportValue}
@@ -309,14 +284,15 @@ export function AthleteSentRequestDetailModal({
                     elevationValue?: number
                   }[] = []
                   if (vol && typeof vol === 'object') {
-                    for (const sport of DISPLAY_ORDER_VOLUME) {
+                    for (const sport of WEEKLY_VOLUME_DISPLAY_ORDER) {
                       if (sport === 'course_elevation_m') continue
                       const v = vol[sport]
                       if (v == null) continue
                       const unit = getWeeklyVolumeUnit(sport)
                       const suffix =
                         unit === 'km' ? tProfile('suffixKmPerWeek') : unit === 'm' ? tProfile('suffixMPerWeek') : tProfile('suffixHoursPerWeek')
-                      const sportLabel = sportLabelKey[sport] ? tSports(sportLabelKey[sport] as 'course') : sport
+                      const translationKey = getSportTranslationKey(sport)
+                      const sportLabel = translationKey ? tSports(translationKey as 'course') : sport
                       const sportKey = sport as SportType
                       const style = SPORT_CARD_STYLES[sportKey] ?? SPORT_CARD_STYLES.course
                       const elevationValue = sport === 'course' ? vol['course_elevation_m'] ?? undefined : undefined

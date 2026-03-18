@@ -216,3 +216,78 @@ export function getWeeklyVolumeUnit(sport: string): WeeklyVolumeUnit {
       return 'km'
   }
 }
+
+/**
+ * Ordre d'affichage des sports pratiqués (profil).
+ * Note: `trail` n'a pas de tuile volume dédiée (D+ dans Course) mais reste un sport sélectionnable.
+ */
+export const PRACTICED_SPORTS_DISPLAY_ORDER: PracticedSportKey[] = [
+  'course',
+  'velo',
+  'natation',
+  'musculation',
+  'trail',
+  'triathlon',
+]
+
+export type WeeklyVolumeBySportKey =
+  | 'course'
+  | 'velo'
+  | 'natation'
+  | 'musculation'
+  | 'trail'
+  | 'course_elevation_m'
+
+/**
+ * Ordre d'affichage des entrées `weekly_volume_by_sport` (lecture seule coach/demandes).
+ * `course_elevation_m` est affiché comme D+ associé à la tuile Course (pas comme une ligne séparée).
+ */
+export const WEEKLY_VOLUME_DISPLAY_ORDER: WeeklyVolumeBySportKey[] = [
+  'course',
+  'velo',
+  'natation',
+  'musculation',
+  'trail',
+  'course_elevation_m',
+]
+
+/** Type guard runtime (utile quand on lit des strings depuis la DB). */
+export function isSportType(value: string): value is SportType {
+  return value in SPORT_TRANSLATION_KEYS
+}
+
+/**
+ * Retourne la clé de traduction (namespace `sports`) si le sport est connu,
+ * sinon `null` (le caller peut alors fallback sur la valeur brute).
+ */
+export function getSportTranslationKey(value: string): string | null {
+  return isSportType(value) ? SPORT_TRANSLATION_KEYS[value] : null
+}
+
+/**
+ * Liste des sports à afficher dans la section "Volumes hebdomadaires" du profil.
+ * - triathlon => course + vélo + natation
+ * - trail => pas de tuile dédiée (D+ dans course), donc on affiche course au minimum
+ */
+export function getWeeklyVolumeDisplaySports(practicedSports: string[]): Array<'course' | 'velo' | 'natation' | 'musculation'> {
+  const set = new Set(practicedSports)
+  const isTriathlon = set.has('triathlon')
+
+  // Sous-ensemble affichable en tuiles volume
+  const base: Array<'course' | 'velo' | 'natation' | 'musculation'> = ['course', 'velo', 'natation', 'musculation']
+
+  if (isTriathlon) return ['course', 'velo', 'natation']
+
+  // Trail : utilise la tuile course (avec champ D+ en plus)
+  if (set.has('trail')) set.add('course')
+
+  return base.filter((s) => set.has(s))
+}
+
+/**
+ * Styles "pill" (WorkoutModal) : uniquement la bordure colorée, alignée sur les badges.
+ * Reprend les classes de `SPORT_BADGE_STYLES[*].border`.
+ */
+export const SPORT_PILL_STYLES: Record<SportType, { border: string }> = Object.fromEntries(
+  (Object.keys(SPORT_BADGE_STYLES) as SportType[]).map((sport) => [sport, { border: SPORT_BADGE_STYLES[sport].border }]),
+) as Record<SportType, { border: string }>

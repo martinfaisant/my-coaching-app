@@ -1,6 +1,9 @@
+import { DashboardPageShell } from '@/components/DashboardPageShell'
+
 export default function AthleteCalendarLoading() {
   return (
-    <div className="px-6 lg:px-8 pt-6 pb-24 space-y-6 animate-pulse">
+    <DashboardPageShell>
+      <div className="space-y-6 animate-pulse">
       {/* Grille calendrier (3 semaines, 7 jours) */}
       <div className="rounded-xl border border-stone-200 bg-white overflow-hidden">
           <div className="grid grid-cols-7 border-b border-stone-200 bg-stone-50">
@@ -54,6 +57,7 @@ export default function AthleteCalendarLoading() {
             </div>
           </div>
         </div>
-    </div>
+      </div>
+    </DashboardPageShell>
   )
 }

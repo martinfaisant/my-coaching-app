@@ -23,7 +23,7 @@ import { Textarea } from '@/components/Textarea'
 import { Badge } from '@/components/Badge'
 import { SportTileSelectable } from '@/components/SportTileSelectable'
 import { Angry, Frown, Laugh, Meh, Smile } from 'lucide-react'
-import { SPORT_ICONS, SPORT_TRANSLATION_KEYS, SPORT_BADGE_STYLES } from '@/lib/sportStyles'
+import { SPORT_ICONS, SPORT_PILL_STYLES, SPORT_TRANSLATION_KEYS, SPORT_BADGE_STYLES } from '@/lib/sportStyles'
 import { formatDateFr, toDateStr } from '@/lib/dateUtils'
 import { FORM_BASE_CLASSES, FORM_LABEL_CLASSES, FORM_INPUT_HEIGHT, FORM_INPUT_TEXT_SIZE, TEXTAREA_SPECIFIC_CLASSES } from '@/lib/formStyles'
 import { ClockIcon, LightningIcon, MountainIcon, RulerIcon } from '@/components/workout-modal/icons'
@@ -36,14 +36,6 @@ import { CoachWorkoutForm } from '@/components/workout-modal/CoachWorkoutForm'
 const WORKOUT_SPORT_TYPES: SportType[] = ['course', 'velo', 'natation', 'musculation']
 
 const FEELING_ICONS_READONLY = [Angry, Frown, Meh, Smile, Laugh] as const
-
-/** Bordure pill (tuile sport lecture seule en header). Aligné design B. */
-const PILL_BORDER_CLASSES: Record<string, string> = {
-  course: 'border-palette-forest-dark',
-  velo: 'border-palette-olive',
-  natation: 'border-sky-500',
-  musculation: 'border-stone-400',
-}
 
 /** Course et vélo : choix temps ou distance + dénivelé facultatif. Musculation : temps. Natation : temps ou distance. */
 type TargetMode = 'time' | 'distance'
@@ -548,7 +540,10 @@ export function WorkoutModal({
         const sport = currentWorkout.sport_type as keyof typeof SPORT_ICONS
         const Icon = SPORT_ICONS[sport]
         const styles = sport in SPORT_BADGE_STYLES ? SPORT_BADGE_STYLES[sport as keyof typeof SPORT_BADGE_STYLES] : { bg: 'bg-stone-100', text: 'text-stone-600', border: 'border-stone-300' }
-        const borderClass = PILL_BORDER_CLASSES[currentWorkout.sport_type] ?? 'border-stone-300'
+        const borderClass =
+          currentWorkout.sport_type in SPORT_PILL_STYLES
+            ? SPORT_PILL_STYLES[currentWorkout.sport_type as keyof typeof SPORT_PILL_STYLES].border
+            : 'border-stone-300'
         const label = sport in SPORT_TRANSLATION_KEYS ? tSports(SPORT_TRANSLATION_KEYS[sport as keyof typeof SPORT_TRANSLATION_KEYS]) : currentWorkout.sport_type
         return (
           <span

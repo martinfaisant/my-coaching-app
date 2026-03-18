@@ -2,6 +2,8 @@
 
 import { useEffect } from 'react'
 import { useTranslations } from 'next-intl'
+import { useLocale } from 'next-intl'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/Button'
 import { logger } from '@/lib/logger'
 
@@ -13,6 +15,8 @@ export default function Error({
   reset: () => void
 }) {
   const t = useTranslations('errors')
+  const locale = useLocale()
+  const router = useRouter()
 
   useEffect(() => {
     // Log l'erreur pour monitoring
@@ -52,7 +56,7 @@ export default function Error({
           </Button>
           <Button
             variant="outline"
-            onClick={() => window.location.href = '/dashboard'}
+            onClick={() => router.push(`/${locale}/dashboard`)}
             className="flex-1"
           >
             {t('backToHome')}
