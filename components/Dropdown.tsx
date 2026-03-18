@@ -33,6 +33,8 @@ export type DropdownProps = {
   className?: string
   /** Masquer le label (ex. pour intégration dans un en-tête de calendrier) */
   hideLabel?: boolean
+  /** Classes additionnelles sur le label (ex. text-xs pour un bloc plus compact) */
+  labelClassName?: string
   /** Texte affiché dans le trigger à la place du label de l'option (ex. code langue "FR") */
   valueDisplay?: string
   /** Contenu rendu avant le label dans le trigger (ex. icône globe) */
@@ -62,6 +64,7 @@ export function Dropdown({
   triggerPrefix,
   showCheckmark = false,
   triggerClassName = '',
+  labelClassName = '',
 }: DropdownProps) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
@@ -85,7 +88,7 @@ export function Dropdown({
     <div className={`relative inline-block ${className}`.trim()} ref={ref}>
       {!hideLabel && (
         <label
-          className="block text-sm font-medium text-stone-700 mb-2"
+          className={`block text-sm font-medium text-stone-700 mb-2 ${labelClassName}`.trim()}
           htmlFor={id}
         >
           {label}

@@ -106,13 +106,14 @@ export function CoachAthletesListWithFilter({ athletes, showDivider = false }: P
         <h2 className="text-base font-semibold text-stone-900">
           {t('myAthletesWithCount', { count: athletes.length })}
         </h2>
-        <div className="flex flex-wrap items-end gap-4 w-full sm:w-auto">
-          <div className="w-full sm:w-64 sm:min-w-[14rem]">
+        <div className="flex flex-wrap items-end gap-3 w-full sm:w-auto">
+          <div className="w-full sm:w-52 sm:min-w-[12rem]">
             <SearchInput
               placeholder={t('nameFilterPlaceholder')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               aria-label={t('nameFilterPlaceholder')}
+              className="text-sm py-2"
             />
           </div>
           <Dropdown
@@ -122,7 +123,9 @@ export function CoachAthletesListWithFilter({ athletes, showDivider = false }: P
             value={sortMode}
             onChange={(v) => setSortMode(v as SortMode)}
             ariaLabel={t('sortByLabel')}
-            minWidth="200px"
+            minWidth="180px"
+            labelClassName="!text-xs !mb-1.5"
+            triggerClassName="text-sm py-2"
           />
         </div>
       </div>
