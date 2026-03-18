@@ -5,7 +5,7 @@ import type { SportType, Workout, WorkoutStatus } from '@/types/database'
 import { SportTileSelectable } from '@/components/SportTileSelectable'
 import { Input } from '@/components/Input'
 import { Textarea } from '@/components/Textarea'
-import { ClockIcon, MountainIcon } from '@/components/workout-modal/icons'
+import { ClockIcon, LightningIcon, MountainIcon, RulerIcon } from '@/components/workout-modal/icons'
 import { FORM_BASE_CLASSES, FORM_LABEL_CLASSES, TEXTAREA_SPECIFIC_CLASSES } from '@/lib/formStyles'
 
 type TargetMode = 'time' | 'distance'
@@ -197,10 +197,13 @@ export const CoachWorkoutForm = memo(function CoachWorkoutForm({
                     onChange={(e) => onTargetDurationChange(e.target.value)}
                     onWheel={preventWheelNumberChange}
                     placeholder="22"
-                    className={`${FORM_BASE_CLASSES} ${DISABLED_NUMBER_CLASSES} font-semibold pr-12`}
+                    className={`${FORM_BASE_CLASSES} ${DISABLED_NUMBER_CLASSES} font-semibold pl-10 pr-12`}
                   />
-                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <ClockIcon className="h-4 w-4 text-stone-400" />
+                  </div>
+                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                    <span className="text-xs text-stone-400">{tWorkouts('form.durationUnit')}</span>
                   </div>
                   <input type="hidden" name="target_distance_km" value="" />
                   <input type="hidden" name="target_elevation_m" value="" />
@@ -235,7 +238,7 @@ export const CoachWorkoutForm = memo(function CoachWorkoutForm({
                         onWheel={preventWheelNumberChange}
                         placeholder={targetMode === 'time' ? '' : '1500'}
                         disabled={targetMode === 'time'}
-                        className={`${FORM_BASE_CLASSES} ${DISABLED_NUMBER_CLASSES} font-semibold pr-10`}
+                        className={`${FORM_BASE_CLASSES} ${DISABLED_NUMBER_CLASSES} font-semibold pl-10 pr-10`}
                       />
                       <input
                         type="hidden"
@@ -248,6 +251,9 @@ export const CoachWorkoutForm = memo(function CoachWorkoutForm({
                               : ''
                         }
                       />
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <RulerIcon className="h-4 w-4 text-stone-400" />
+                      </div>
                       <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-xs text-stone-400">
                         m
                       </div>
@@ -264,8 +270,11 @@ export const CoachWorkoutForm = memo(function CoachWorkoutForm({
                         onWheel={preventWheelNumberChange}
                         placeholder={targetMode === 'time' ? '' : '14,3'}
                         disabled={targetMode === 'time'}
-                        className={`${FORM_BASE_CLASSES} ${DISABLED_NUMBER_CLASSES} font-semibold pr-10`}
+                        className={`${FORM_BASE_CLASSES} ${DISABLED_NUMBER_CLASSES} font-semibold pl-10 pr-10`}
                       />
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <RulerIcon className="h-4 w-4 text-stone-400" />
+                      </div>
                       <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-xs text-stone-400">
                         km
                       </div>
@@ -283,10 +292,13 @@ export const CoachWorkoutForm = memo(function CoachWorkoutForm({
                     onWheel={preventWheelNumberChange}
                     placeholder={targetMode === 'distance' ? '' : '22'}
                     disabled={targetMode === 'distance'}
-                    className={`${FORM_BASE_CLASSES} ${DISABLED_NUMBER_CLASSES} font-semibold pr-12`}
+                    className={`${FORM_BASE_CLASSES} ${DISABLED_NUMBER_CLASSES} font-semibold pl-10 pr-12`}
                   />
-                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <ClockIcon className="h-4 w-4 text-stone-400" />
+                  </div>
+                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                    <span className="text-xs text-stone-400">{tWorkouts('form.durationUnit')}</span>
                   </div>
                   <input
                     type="hidden"
@@ -323,10 +335,13 @@ export const CoachWorkoutForm = memo(function CoachWorkoutForm({
                       onChange={(e) => onTargetElevationChange(e.target.value)}
                       onWheel={preventWheelNumberChange}
                       placeholder="200"
-                      className={`${FORM_BASE_CLASSES} ${DISABLED_NUMBER_CLASSES} font-semibold pr-14`}
+                      className={`${FORM_BASE_CLASSES} ${DISABLED_NUMBER_CLASSES} font-semibold pl-10 pr-14`}
                     />
-                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                       <MountainIcon className="h-4 w-4 text-stone-400" />
+                    </div>
+                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                      <span className="text-xs text-stone-400">{tWorkouts('form.elevationUnit')}</span>
                     </div>
                   </div>
                 ) : (
@@ -343,8 +358,11 @@ export const CoachWorkoutForm = memo(function CoachWorkoutForm({
                     onChange={(e) => onTargetPaceChange(e.target.value)}
                     onWheel={preventWheelNumberChange}
                     placeholder={sportType === 'course' ? '5.0' : sportType === 'velo' ? '39' : '2.0'}
-                    className={`${FORM_BASE_CLASSES} ${DISABLED_NUMBER_CLASSES} font-semibold pr-16`}
+                    className={`${FORM_BASE_CLASSES} ${DISABLED_NUMBER_CLASSES} font-semibold pl-10 pr-16`}
                   />
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <LightningIcon className="h-4 w-4 text-stone-400" />
+                  </div>
                   <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-xs text-stone-400">
                     {sportType === 'course'
                       ? tWorkouts('form.paceUnitRunning')
