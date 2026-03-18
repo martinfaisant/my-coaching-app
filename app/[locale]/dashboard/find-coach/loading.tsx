@@ -1,6 +1,9 @@
+import { DashboardPageShell } from '@/components/DashboardPageShell'
+
 export default function FindCoachLoading() {
   return (
-    <div className="px-6 lg:px-8 pt-6 pb-24 space-y-6 animate-pulse">
+    <DashboardPageShell>
+      <div className="space-y-6 animate-pulse">
       <div className="bg-white rounded-2xl shadow-sm border border-stone-200 p-6">
           <div className="flex justify-between items-center mb-4">
             <div className="h-6 w-20 bg-stone-200 rounded" />
@@ -70,6 +73,7 @@ export default function FindCoachLoading() {
             </div>
           ))}
         </div>
-    </div>
+      </div>
+    </DashboardPageShell>
   )
 }

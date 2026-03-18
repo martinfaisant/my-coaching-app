@@ -447,6 +447,9 @@
 - **Livraison :** création d’une source de vérité unique `docs/ENGINEERING_STATUS_REFAC_AUDIT.md` (P1/P2 + audit P3), et remplacement de `REFACTORING_P1_P2_COMPLETE.md` + `docs/AUDIT_CODEBASE_P3.md` par des pointeurs (évite 2 sources de vérité).
 - **Livraison :** error boundaries globales et dashboard : redirection **locale-aware** vers `/${locale}/dashboard` (au lieu de `/dashboard` en dur), en conservant logging via `logger` et `useTranslations('errors')`.
 
+✅ **18 mars 2026 – Loading UX (alignement des skeletons) – Mode Analyste :**
+- **Livraison :** alignement des `loading.tsx` du dashboard sur les wrappers/layouts cibles pour réduire le “flash visuel” (skeletons dans `DashboardPageShell`, et calendrier avec chrome complet : header sticky + zone scrollable).
+
 ✅ **17 mars 2026 – Bloc date objectif avec année (solution D) – Mode Analyste :**
 - **Livraison :** Dans les tuiles objectif (page Objectifs, calendrier coach/athlète, modales liste objectifs, demande en attente, détail demande envoyée), le **bloc date** affiche désormais **mois + année** sur la première ligne (ex. « Mar. 26 ») et le **jour** en dessous. Une seule fonction centralisée : **`formatGoalDateBlock`** dans `lib/dateUtils.ts` (retourne `monthYear`, `day`). Pas de nouveau texte i18n (locale déjà utilisée pour le format de date).
 - **Fichiers :** `lib/dateUtils.ts` (formatGoalDateBlock), `ObjectifsTable.tsx`, `CoachAthleteCalendarPage.tsx`, `RequestGoalsListModal.tsx`, `PendingRequestTile.tsx`, `AthleteSentRequestDetailModal.tsx`, `FindCoachSection.tsx`.

@@ -1,6 +1,9 @@
+import { DashboardPageShell } from '@/components/DashboardPageShell'
+
 export default function CoachSubscriptionsLoading() {
   return (
-    <div className="px-6 lg:px-8 pt-6 pb-24 space-y-10 animate-pulse">
+    <DashboardPageShell>
+      <div className="space-y-10 animate-pulse">
         {/* Section Actives */}
         <section>
           <div className="h-6 w-32 bg-stone-200 rounded mb-4" />
@@ -60,6 +63,7 @@ export default function CoachSubscriptionsLoading() {
             ))}
           </ul>
         </section>
-    </div>
+      </div>
+    </DashboardPageShell>
   )
 }

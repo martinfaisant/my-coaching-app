@@ -30,6 +30,9 @@ Ce chapitre résume les chantiers **P1/P2** terminés (error boundaries, loading
 
 ### ✅ Quick Wins P3 (faits)
 
+- **Loading UX (dashboard)** : alignement des `loading.tsx` sur les wrappers/layouts cibles pour réduire le “flash visuel” :
+  - pages dashboard standard : skeletons rendus dans `DashboardPageShell` (pas de `<main>`/scroll artificiels)
+  - calendrier : skeleton avec le même chrome (header sticky + zone scrollable) que `AthleteCalendarPage` / `CalendarViewWithNavigation`
 - **Logger** : `lib/dateUtils.ts` – remplacement de `console.warn` par `logger.warn` (4 occurrences) + contexte.
 - **Login metadata i18n** : `app/[locale]/login/layout.tsx` → `generateMetadata` + clés `metadata.loginTitle` / `metadata.loginDescription` (FR/EN).
 - **Styles erreurs (tokens)** : `lib/formStyles.ts` – ajout `FORM_ERROR_TEXT_CLASSES` et `FORM_ERROR_BOX_CLASSES` + remplacements principaux des `text-red-*`, `bg-red-*`, `border-red-*`.
@@ -56,7 +59,6 @@ Ce chapitre résume les chantiers **P1/P2** terminés (error boundaries, loading
 | Modales custom | `createPortal` “maison” dans certaines pages (ex. `FindCoachSection`, `AthleteSentRequestDetailModal`) | Haute | Migrer vers `components/Modal` quand possible |
 | Palette Strava / statuts | `orange-*`, `emerald-*` encore présents | Moyenne | Remplacer par tokens `palette-*` (Strava/danger/forest) + fonds `.../10` |
 | Typage i18n nav | `as any` dans nav (DashboardTopBar/NavLinks) | Moyenne | Typer les clés i18n (union de clés / mapping) pour supprimer les casts |
-| `loading.tsx` dashboard | Certains skeletons utilisent encore `<main>` direct | Moyenne | Uniformiser autour de `DashboardPageShell` (squelettes cohérents) |
 
 ---
 

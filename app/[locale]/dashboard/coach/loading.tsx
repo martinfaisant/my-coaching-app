@@ -1,8 +1,10 @@
+import { DashboardPageShell } from '@/components/DashboardPageShell'
+
 export default function MonCoachLoading() {
   return (
-    <div className="px-6 lg:px-8 pt-6 pb-24 animate-pulse">
-      {/* Carte coach */}
-      <div className="rounded-2xl border border-stone-200 bg-section p-6 shadow-sm space-y-6">
+    <DashboardPageShell>
+      <div className="animate-pulse">
+        <div className="rounded-2xl border border-stone-200 bg-section p-6 shadow-sm space-y-6">
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1 space-y-2">
               <div className="h-3 w-12 bg-stone-200 rounded" />
@@ -34,6 +36,7 @@ export default function MonCoachLoading() {
             <div className="mt-3 h-10 w-28 bg-stone-200 rounded-lg" />
           </div>
         </div>
-    </div>
+      </div>
+    </DashboardPageShell>
   )
 }

@@ -1,8 +1,11 @@
+import { DashboardPageShell } from '@/components/DashboardPageShell'
+
 export default function ProfileLoading() {
   return (
-    <div className="px-6 lg:px-8 pt-6 pb-24 animate-pulse">
-      {/* Formulaire profil : avatar + champs */}
-      <div className="rounded-2xl border border-stone-200 bg-section overflow-hidden">
+    <div className="-mx-3 sm:mx-0">
+      <DashboardPageShell contentClassName="!px-2 sm:!px-6 lg:!px-8">
+        <div className="animate-pulse">
+          <div className="rounded-2xl border border-stone-200 bg-section overflow-hidden">
           <div className="p-6 space-y-6">
             <div className="flex items-start gap-4">
               <div className="w-20 h-20 rounded-xl bg-stone-200 shrink-0" />
@@ -31,7 +34,9 @@ export default function ProfileLoading() {
               <div className="h-11 w-32 bg-stone-200 rounded-lg" />
             </div>
           </div>
+          </div>
         </div>
+      </DashboardPageShell>
     </div>
   )
 }
