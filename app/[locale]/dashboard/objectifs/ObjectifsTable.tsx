@@ -67,7 +67,6 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
   const tGoals = useTranslations('goals')
   const tCommon = useTranslations('common')
   const router = useRouter()
-  const [state, action] = useActionState<GoalFormState, FormData>(addGoal, {})
   const formRef = useRef<HTMLFormElement>(null)
   const dateTriggerRef = useRef<HTMLDivElement>(null)
   const datePickerPopupRef = useRef<HTMLDivElement>(null)
@@ -84,6 +83,7 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const previousIsSubmittingRef = useRef(false)
   const isSubmittingRef = useRef(false)
+  const successTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const initialValuesRef = useRef({
     race_name: '',
     date: '',
@@ -153,13 +153,15 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
   }, [showDatePickerPopup, closeDatePicker])
 
   useEffect(() => {
-    setHasUnsavedChanges(checkUnsavedChanges())
-  }, [addFormDate, checkUnsavedChanges])
-
-  useEffect(() => {
     const form = formRef.current
     if (!form) return
-    const updateUnsavedChanges = () => setHasUnsavedChanges(checkUnsavedChanges())
+    const updateUnsavedChanges = () => {
+      const changed = checkUnsavedChanges()
+      setHasUnsavedChanges(changed)
+      if (changed && showSavedFeedback) {
+        setShowSavedFeedback(false)
+      }
+    }
     const inputs = form.querySelectorAll('input, textarea')
     inputs.forEach((input) => {
       input.addEventListener('input', updateUnsavedChanges)
@@ -171,43 +173,54 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
         input.removeEventListener('change', updateUnsavedChanges)
       })
     }
-  }, [checkUnsavedChanges])
+  }, [checkUnsavedChanges, showSavedFeedback])
 
-  const saveFeedbackKey = `${state?.success ?? ''}|${state?.error ?? ''}|${isSubmitting}`
-  useEffect(() => {
-    const justFinishedSubmitting = previousIsSubmittingRef.current && !isSubmitting
-    previousIsSubmittingRef.current = isSubmitting
+  const actionWithUiSync = useCallback(async (_prev: GoalFormState, formData: FormData) => {
+    const result = await addGoal(_prev, formData)
 
-    if (state?.success && justFinishedSubmitting) {
+    isSubmittingRef.current = false
+    setIsSubmitting(false)
+
+    if (result?.success) {
       setShowSavedFeedback(true)
       router.refresh()
-      const t = setTimeout(() => setShowSavedFeedback(false), 2500)
+
       if (formRef.current) {
         formRef.current.reset()
-        setPriority('primary')
-        setAddFormDate('')
-        initialValuesRef.current = { race_name: '', date: '', distance: '', is_primary: 'primary', target_time_hours: '', target_time_minutes: '', target_time_seconds: '' }
-        setHasUnsavedChanges(false)
       }
-      return () => clearTimeout(t)
-    }
-    if (state?.error) {
+      setPriority('primary')
+      setAddFormDate('')
+      initialValuesRef.current = {
+        race_name: '',
+        date: '',
+        distance: '',
+        is_primary: 'primary',
+        target_time_hours: '',
+        target_time_minutes: '',
+        target_time_seconds: '',
+      }
+      setHasUnsavedChanges(false)
+
+      if (successTimerRef.current) clearTimeout(successTimerRef.current)
+      successTimerRef.current = setTimeout(() => setShowSavedFeedback(false), 2500)
+    } else if (result?.error) {
       setShowSavedFeedback(false)
     }
-  }, [saveFeedbackKey])
+
+    return result
+  }, [router])
+
+  const [state, action] = useActionState<GoalFormState, FormData>(actionWithUiSync, {})
 
   useEffect(() => {
-    if (hasUnsavedChanges && showSavedFeedback) {
-      setShowSavedFeedback(false)
-    }
-  }, [hasUnsavedChanges, showSavedFeedback])
+    previousIsSubmittingRef.current = isSubmitting
+  }, [isSubmitting])
 
   useEffect(() => {
-    if (state?.success || state?.error) {
-      isSubmittingRef.current = false
-      setIsSubmitting(false)
+    return () => {
+      if (successTimerRef.current) clearTimeout(successTimerRef.current)
     }
-  }, [state])
+  }, [])
 
   // Séparer les objectifs futurs et passés
   const today = new Date().toISOString().slice(0, 10)
@@ -450,7 +463,9 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
                     checked={priority === 'primary'}
                     onChange={() => {
                       setPriority('primary')
-                      setTimeout(() => setHasUnsavedChanges(checkUnsavedChanges('primary')), 0)
+                      const changed = checkUnsavedChanges('primary')
+                      setHasUnsavedChanges(changed)
+                      if (changed && showSavedFeedback) setShowSavedFeedback(false)
                     }}
                     className="hidden peer"
                   />
@@ -471,7 +486,9 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
                     checked={priority === 'secondary'}
                     onChange={() => {
                       setPriority('secondary')
-                      setTimeout(() => setHasUnsavedChanges(checkUnsavedChanges('secondary')), 0)
+                      const changed = checkUnsavedChanges('secondary')
+                      setHasUnsavedChanges(changed)
+                      if (changed && showSavedFeedback) setShowSavedFeedback(false)
                     }}
                     className="hidden peer"
                   />
@@ -602,6 +619,9 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
                 value={addFormDate || toDateStr(new Date())}
                 onChange={(dateStr) => {
                   setAddFormDate(dateStr)
+                  const changed = checkUnsavedChanges()
+                  setHasUnsavedChanges(changed)
+                  if (changed && showSavedFeedback) setShowSavedFeedback(false)
                   closeDatePicker()
                 }}
                 locale={localeTag}

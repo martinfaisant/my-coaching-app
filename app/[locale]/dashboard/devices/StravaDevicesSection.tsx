@@ -71,12 +71,6 @@ export function StravaDevicesSection({ userId, connected, connection }: StravaDe
     }
   }
 
-  const ConnectWithStravaButton = () => (
-    <Button href="/api/auth/strava" variant="strava" aria-label={t('connectStrava')}>
-      {t('connectStrava')}
-    </Button>
-  )
-
   return (
     <div className="max-w-3xl mx-auto">
       <section className="bg-white rounded-2xl shadow-xl overflow-hidden border border-stone-100">
@@ -132,7 +126,9 @@ export function StravaDevicesSection({ userId, connected, connection }: StravaDe
                   </Button>
                 </>
               ) : (
-                <ConnectWithStravaButton />
+                <Button href="/api/auth/strava" variant="strava" aria-label={t('connectStrava')}>
+                  {t('connectStrava')}
+                </Button>
               )}
             </div>
           </div>

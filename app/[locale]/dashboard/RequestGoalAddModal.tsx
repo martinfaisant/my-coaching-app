@@ -27,7 +27,6 @@ export function RequestGoalAddModal({ isOpen, onClose }: RequestGoalAddModalProp
   const tFindCoach = useTranslations('findCoach')
   const tCommon = useTranslations('common')
 
-  const [state, action] = useActionState<GoalFormState, FormData>(addGoal, {})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [priority, setPriority] = useState<'primary' | 'secondary'>('primary')
   const [selectedDate, setSelectedDate] = useState('')
@@ -36,7 +35,20 @@ export function RequestGoalAddModal({ isOpen, onClose }: RequestGoalAddModalProp
   const dateTriggerRef = useRef<HTMLDivElement>(null)
   const datePickerPopupRef = useRef<HTMLDivElement>(null)
   const formRef = useRef<HTMLFormElement>(null)
-  const handledSuccessRef = useRef(false)
+  const actionWithUiSync = useCallback(async (prevState: GoalFormState, formData: FormData) => {
+    const result = await addGoal(prevState, formData)
+    setIsSubmitting(false)
+
+    if (result?.success) {
+      onClose()
+      router.refresh()
+    }
+
+    return result
+  }, [onClose, router])
+
+  const [state, action] = useActionState<GoalFormState, FormData>(actionWithUiSync, {})
+
 
   const localeForPicker = locale === 'fr' ? 'fr-FR' : 'en-US'
   const isPast = selectedDate !== '' && selectedDate < today()
@@ -77,20 +89,6 @@ export function RequestGoalAddModal({ isOpen, onClose }: RequestGoalAddModalProp
       window.removeEventListener('resize', closeDatePicker)
     }
   }, [showDatePickerPopup, closeDatePicker])
-
-  useEffect(() => {
-    if (!state?.success) return
-    if (handledSuccessRef.current) return
-    handledSuccessRef.current = true
-    onClose()
-    router.refresh()
-  }, [state?.success, onClose, router])
-
-  useEffect(() => {
-    if (state?.success || state?.error) {
-      setIsSubmitting(false)
-    }
-  }, [state])
 
   if (!isOpen) return null
 

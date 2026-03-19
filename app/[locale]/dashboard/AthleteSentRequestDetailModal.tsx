@@ -76,6 +76,37 @@ export function AthleteSentRequestDetailModal({
   athleteWeeklyVolumeBySport,
   initialGoals = [],
 }: AthleteSentRequestDetailModalProps) {
+  if (!isOpen) return null
+
+  const modalKey = `${requestId}|${locale}`
+  return (
+    <AthleteSentRequestDetailModalInner
+      key={modalKey}
+      isOpen={isOpen}
+      onClose={onClose}
+      requestId={requestId}
+      coachName={coachName}
+      locale={locale}
+      onRequestCancel={onRequestCancel}
+      athleteWeeklyCurrentHours={athleteWeeklyCurrentHours}
+      athleteWeeklyTargetHours={athleteWeeklyTargetHours}
+      athleteWeeklyVolumeBySport={athleteWeeklyVolumeBySport}
+      initialGoals={initialGoals}
+    />
+  )
+}
+
+function AthleteSentRequestDetailModalInner({
+  onClose,
+  requestId,
+  coachName,
+  locale,
+  onRequestCancel,
+  athleteWeeklyCurrentHours,
+  athleteWeeklyTargetHours,
+  athleteWeeklyVolumeBySport,
+  initialGoals = [],
+}: AthleteSentRequestDetailModalProps) {
   const t = useTranslations('athleteSentRequest')
   const tAthletes = useTranslations('athletes')
   const tFindCoach = useTranslations('findCoach')
@@ -91,11 +122,11 @@ export function AthleteSentRequestDetailModal({
   const today = new Date().toISOString().slice(0, 10)
 
   useEffect(() => {
-    if (!isOpen || !requestId) return
-    setLoading(true)
-    setNotFound(false)
-    setDetail(null)
+    if (!requestId) return
+    let cancelled = false
+
     getCoachRequestDetail(requestId).then((result) => {
+      if (cancelled) return
       setLoading(false)
       if ('notFound' in result && result.notFound) {
         setNotFound(true)
@@ -107,10 +138,13 @@ export function AthleteSentRequestDetailModal({
       }
       setDetail(result as CoachRequestDetail)
     })
-  }, [isOpen, requestId])
+
+    return () => {
+      cancelled = true
+    }
+  }, [requestId])
 
   useEffect(() => {
-    if (!isOpen) return
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose()
     }
@@ -120,9 +154,7 @@ export function AthleteSentRequestDetailModal({
       document.removeEventListener('keydown', handleEscape)
       document.body.style.overflow = ''
     }
-  }, [isOpen, onClose])
-
-  if (!isOpen) return null
+  }, [onClose])
 
   const localeForDate = locale === 'fr' ? 'fr-FR' : 'en-US'
   const dateLabel =

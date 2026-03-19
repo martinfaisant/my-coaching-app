@@ -31,6 +31,7 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
   const [publishedIdsInThisSession, setPublishedIdsInThisSession] = useState<Set<string>>(new Set())
   const [publishError, setPublishError] = useState<string | null>(null)
   const [publishingOfferId, setPublishingOfferId] = useState<string | null>(null)
+  const [publishableByIndex, setPublishableByIndex] = useState<Record<number, boolean>>({})
 
   /** Offres « live » affichées : props moins celles archivées dans cette session (sans refetch). */
   const displayedOffers = useMemo(
@@ -96,12 +97,18 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
         const key = offer.id ?? `new-${idx - sortedOffers.length}`
         newPriceTypes[key] = offer.price_type ?? undefined
       })
-      setPriceTypes(newPriceTypes)
+      queueMicrotask(() => {
+        setPriceTypes(newPriceTypes)
+      })
       const featuredIdx = sortedOffers.findIndex(offer => offer.is_featured)
-      setFeaturedOfferIndex(featuredIdx >= 0 ? featuredIdx : null)
+      queueMicrotask(() => {
+        setFeaturedOfferIndex(featuredIdx >= 0 ? featuredIdx : null)
+      })
       initialOffersRef.current = [...sortedOffers]
       isInitializedRef.current = true
-      setOfferCount(Math.min(3, Math.max(sortedOffers.length, 1)))
+      queueMicrotask(() => {
+        setOfferCount(Math.min(3, Math.max(sortedOffers.length, 1)))
+      })
       return
     }
     if (needsInitialOffersUpdateRef.current) {
@@ -173,6 +180,38 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
     return false
   }, [offerCount, featuredOfferIndex, priceTypes])
 
+  /** Offre complète (titre FR/EN, description FR/EN, prix et récurrence) */
+  const computeCanPublishOfferAtSlot = useCallback(
+    (index: number) => {
+      const form = formRef.current
+      if (!form) return false
+      const offer = sortedOffers[index] as (CoachOffer & { price_type?: string }) | undefined
+      const titleFr = (form.querySelector(`[name="offer_${index}_title_fr"]`) as HTMLInputElement)?.value?.trim() ?? ''
+      const titleEn = (form.querySelector(`[name="offer_${index}_title_en"]`) as HTMLInputElement)?.value?.trim() ?? ''
+      const descFr = (form.querySelector(`[name="offer_${index}_description_fr"]`) as HTMLTextAreaElement)?.value?.trim() ?? ''
+      const descEn = (form.querySelector(`[name="offer_${index}_description_en"]`) as HTMLTextAreaElement)?.value?.trim() ?? ''
+      const slotKey = offer?.id ?? `new-${index - sortedOffers.length}`
+      const priceType = priceTypes[slotKey] ?? offer?.price_type
+      const priceStr = (form.querySelector(`[name="offer_${index}_price"]`) as HTMLInputElement)?.value?.trim() ?? ''
+      const hasTitles = titleFr.length > 0 && titleEn.length > 0
+      const hasDescriptions = descFr.length > 0 && descEn.length > 0
+      const hasRecurrence = priceType === 'one_time' || priceType === 'monthly' || priceType === 'free'
+      const hasValidPrice =
+        priceType === 'free' || (priceStr.length > 0 && !isNaN(parseFloat(priceStr)) && parseFloat(priceStr) >= 0)
+      return hasTitles && hasDescriptions && hasRecurrence && hasValidPrice
+    },
+    [sortedOffers, priceTypes]
+  )
+
+  const recomputePublishableByIndex = useCallback(() => {
+    const next: Record<number, boolean> = {}
+    const max = Math.min(offerCount, 3)
+    for (let i = 0; i < max; i++) {
+      next[i] = computeCanPublishOfferAtSlot(i)
+    }
+    setPublishableByIndex(next)
+  }, [offerCount, computeCanPublishOfferAtSlot])
+
   // Détection des modifications : écouter les champs du formulaire (comme ProfileForm)
   useEffect(() => {
     const form = formRef.current
@@ -196,9 +235,17 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
     }
   }, [checkUnsavedChanges])
 
+  useEffect(() => {
+    // Recompute after refs/inputs are mounted and when relevant slot data changes.
+    queueMicrotask(() => {
+      recomputePublishableByIndex()
+    })
+  }, [recomputePublishableByIndex, sortedOffers, priceTypes])
+
   const triggerUnsavedCheck = useCallback(() => {
     setHasUnsavedChanges(checkUnsavedChanges())
-  }, [checkUnsavedChanges])
+    recomputePublishableByIndex()
+  }, [checkUnsavedChanges, recomputePublishableByIndex])
 
 
 
@@ -255,29 +302,6 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
     return () => window.removeEventListener('popstate', handlePopState)
   }, [hasUnsavedChanges, t])
 
-  /** Offre complète (titre FR/EN, description FR/EN, prix et récurrence) → bouton Publier actif */
-  const canPublishOfferAtSlot = useCallback(
-    (index: number) => {
-      const form = formRef.current
-      if (!form) return false
-      const offer = sortedOffers[index] as (CoachOffer & { price_type?: string }) | undefined
-      const titleFr = (form.querySelector(`[name="offer_${index}_title_fr"]`) as HTMLInputElement)?.value?.trim() ?? ''
-      const titleEn = (form.querySelector(`[name="offer_${index}_title_en"]`) as HTMLInputElement)?.value?.trim() ?? ''
-      const descFr = (form.querySelector(`[name="offer_${index}_description_fr"]`) as HTMLTextAreaElement)?.value?.trim() ?? ''
-      const descEn = (form.querySelector(`[name="offer_${index}_description_en"]`) as HTMLTextAreaElement)?.value?.trim() ?? ''
-      const slotKey = offer?.id ?? `new-${index - sortedOffers.length}`
-      const priceType = priceTypes[slotKey] ?? offer?.price_type
-      const priceStr = (form.querySelector(`[name="offer_${index}_price"]`) as HTMLInputElement)?.value?.trim() ?? ''
-      const hasTitles = titleFr.length > 0 && titleEn.length > 0
-      const hasDescriptions = descFr.length > 0 && descEn.length > 0
-      const hasRecurrence = priceType === 'one_time' || priceType === 'monthly' || priceType === 'free'
-      const hasValidPrice =
-        priceType === 'free' || (priceStr.length > 0 && !isNaN(parseFloat(priceStr)) && parseFloat(priceStr) >= 0)
-      return hasTitles && hasDescriptions && hasRecurrence && hasValidPrice
-    },
-    [sortedOffers, priceTypes]
-  )
-
   // Soumission : marquer l’envoi en cours et le slot (aligné sur ProfileForm handleFormSubmit)
   const handleFormSubmit = () => {
     isSubmittingRef.current = true
@@ -288,7 +312,9 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
   useEffect(() => {
     if (state?.success || state?.error) {
       isSubmittingRef.current = false
-      setIsSubmitting(false)
+      queueMicrotask(() => {
+        setIsSubmitting(false)
+      })
     }
   }, [state])
 
@@ -301,20 +327,28 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
     if (state?.success && justFinishedSubmitting) {
       needsInitialOffersUpdateRef.current = true
       router.refresh()
-      setHasUnsavedChanges(false)
-      setShowSavedFeedback(true)
+      queueMicrotask(() => {
+        setHasUnsavedChanges(false)
+        setShowSavedFeedback(true)
+      })
       const t = setTimeout(() => setShowSavedFeedback(false), 2500)
       return () => clearTimeout(t)
     }
 
     if (state?.error) {
-      setShowSavedFeedback(false)
+      queueMicrotask(() => {
+        setShowSavedFeedback(false)
+      })
     }
   }, [saveFeedbackKey])
 
   // Cacher le feedback « Enregistré » dès qu’une modification est détectée (pattern PATTERN_SAVE_BUTTON)
   useEffect(() => {
-    if (hasUnsavedChanges && showSavedFeedback) setShowSavedFeedback(false)
+    if (hasUnsavedChanges && showSavedFeedback) {
+      queueMicrotask(() => {
+        setShowSavedFeedback(false)
+      })
+    }
   }, [hasUnsavedChanges, showSavedFeedback])
 
   const handleSaveAndLeave = async () => {
@@ -475,7 +509,7 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
                             setPublishConfirmModalOpen(true)
                             setPublishError(null)
                           }}
-                          disabled={!canPublishOfferAtSlot(index)}
+                          disabled={!publishableByIndex[index]}
                           className="px-2.5 py-1 rounded-lg text-xs font-medium bg-palette-forest-dark text-white hover:bg-palette-forest-darker disabled:opacity-50 disabled:pointer-events-none"
                           title={t('publish')}
                         >
