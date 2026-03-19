@@ -19,12 +19,33 @@ type GoalResultModalProps = {
 }
 
 export function GoalResultModal({ goal, isOpen, onClose, layer = 0 }: GoalResultModalProps) {
+  if (!isOpen) return null
+
+  const modalKey = [
+    goal.id,
+    goal.result_time_hours ?? '',
+    goal.result_time_minutes ?? '',
+    goal.result_time_seconds ?? '',
+    goal.result_place ?? '',
+    goal.result_note ?? '',
+  ].join('|')
+
+  return (
+    <GoalResultModalInner
+      key={modalKey}
+      goal={goal}
+      isOpen={isOpen}
+      onClose={onClose}
+      layer={layer}
+    />
+  )
+}
+
+function GoalResultModalInner({ goal, isOpen, onClose, layer = 0 }: GoalResultModalProps) {
   const locale = useLocale()
   const tGoals = useTranslations('goals')
   const tCommon = useTranslations('common')
   const router = useRouter()
-
-  const [state, action] = useActionState<GoalFormState, FormData>(saveGoalResult, {})
 
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
   const [showSavedFeedback, setShowSavedFeedback] = useState(false)
@@ -41,18 +62,28 @@ export function GoalResultModal({ goal, isOpen, onClose, layer = 0 }: GoalResult
     note: goal.result_note ?? '',
   }
   const initialValuesRef = useRef(initialValues)
+  const successTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  useEffect(() => {
-    if (isOpen) {
-      initialValuesRef.current = {
-        hours: goal.result_time_hours != null ? String(goal.result_time_hours) : '',
-        minutes: goal.result_time_minutes != null ? String(goal.result_time_minutes) : '',
-        seconds: goal.result_time_seconds != null ? String(goal.result_time_seconds) : '',
-        place: goal.result_place != null ? String(goal.result_place) : '',
-        note: goal.result_note ?? '',
-      }
+  const actionWithUiSync = useCallback(async (_prev: GoalFormState, formData: FormData) => {
+    const result = await saveGoalResult(_prev, formData)
+
+    isSubmittingRef.current = false
+    setIsSubmitting(false)
+
+    if (result?.success) {
+      setShowSavedFeedback(true)
+      onClose()
+      router.refresh()
+      if (successTimerRef.current) clearTimeout(successTimerRef.current)
+      successTimerRef.current = setTimeout(() => setShowSavedFeedback(false), 2500)
+    } else if (result?.error) {
+      setShowSavedFeedback(false)
     }
-  }, [isOpen, goal.id, goal.result_time_hours, goal.result_time_minutes, goal.result_time_seconds, goal.result_place, goal.result_note])
+
+    return result
+  }, [onClose, router])
+
+  const [state, action] = useActionState<GoalFormState, FormData>(actionWithUiSync, {})
 
   const checkUnsavedChanges = useCallback(() => {
     const form = formRef.current
@@ -75,7 +106,11 @@ export function GoalResultModal({ goal, isOpen, onClose, layer = 0 }: GoalResult
   useEffect(() => {
     const form = formRef.current
     if (!form) return
-    const update = () => setHasUnsavedChanges(checkUnsavedChanges())
+    const update = () => {
+      const changed = checkUnsavedChanges()
+      setHasUnsavedChanges(changed)
+      if (changed && showSavedFeedback) setShowSavedFeedback(false)
+    }
     const inputs = form.querySelectorAll('input, textarea')
     inputs.forEach((el) => {
       el.addEventListener('input', update)
@@ -87,39 +122,17 @@ export function GoalResultModal({ goal, isOpen, onClose, layer = 0 }: GoalResult
         el.removeEventListener('change', update)
       })
     }
-  }, [isOpen, checkUnsavedChanges])
+  }, [isOpen, checkUnsavedChanges, showSavedFeedback])
 
-  const saveFeedbackKey = `${state?.success ?? ''}|${state?.error ?? ''}|${isSubmitting}`
   useEffect(() => {
-    const justFinishedSubmitting = previousIsSubmittingRef.current && !isSubmitting
     previousIsSubmittingRef.current = isSubmitting
-
-    if (state?.success && justFinishedSubmitting) {
-      setShowSavedFeedback(true)
-      onClose()
-      router.refresh()
-      const t = setTimeout(() => setShowSavedFeedback(false), 2500)
-      return () => clearTimeout(t)
-    }
-    if (state?.error) {
-      setShowSavedFeedback(false)
-    }
-  }, [saveFeedbackKey, state?.success, state?.error, isSubmitting, onClose, router])
+  }, [isSubmitting])
 
   useEffect(() => {
-    if (hasUnsavedChanges && showSavedFeedback) {
-      setShowSavedFeedback(false)
+    return () => {
+      if (successTimerRef.current) clearTimeout(successTimerRef.current)
     }
-  }, [hasUnsavedChanges, showSavedFeedback])
-
-  useEffect(() => {
-    if (state?.success || state?.error) {
-      isSubmittingRef.current = false
-      setIsSubmitting(false)
-    }
-  }, [state])
-
-  if (!isOpen) return null
+  }, [])
 
   return (
     <Modal

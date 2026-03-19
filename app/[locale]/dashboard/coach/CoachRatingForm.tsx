@@ -16,7 +16,6 @@ type CoachRatingFormProps = {
 
 export function CoachRatingForm({ coachId, initialRating, initialComment }: CoachRatingFormProps) {
   const t = useTranslations('myCoach.rating')
-  const tCommon = useTranslations('common')
   const locale = useLocale()
   const [rating, setRating] = useState<number>(initialRating ?? 0)
   const [comment, setComment] = useState(initialComment ?? '')
@@ -31,30 +30,33 @@ export function CoachRatingForm({ coachId, initialRating, initialComment }: Coac
 
   const initialRatingValue = initialRating ?? 0
   const initialCommentValue = initialComment ?? ''
+  const initialSignature = `${coachId}|${initialRatingValue}|${initialCommentValue.trim()}`
   // Valeurs de référence après un save réussi (comme ProfileForm)
-  const [savedValues, setSavedValues] = useState<{ rating: number; comment: string } | null>(null)
-  const refForComparison = savedValues ?? { rating: initialRatingValue, comment: initialCommentValue }
+  const [savedState, setSavedState] = useState<{
+    signature: string
+    values: { rating: number; comment: string }
+  } | null>(null)
+  const refForComparison =
+    savedState?.signature === initialSignature
+      ? savedState.values
+      : { rating: initialRatingValue, comment: initialCommentValue }
   const hasUnsavedChanges =
     rating !== refForComparison.rating || comment.trim() !== refForComparison.comment.trim()
 
-  // Réinitialiser "Enregistré" dès qu'une nouvelle modification est détectée (comportement profil)
-  useEffect(() => {
-    if (hasUnsavedChanges && showSavedFeedback) {
-      setShowSavedFeedback(false)
-    }
-  }, [hasUnsavedChanges, showSavedFeedback])
+  const clearFeedbackOnInput = () => {
+    if (showSavedFeedback) setShowSavedFeedback(false)
+    if (error) setError(null)
+  }
 
-  // Réinitialiser l'erreur quand l'utilisateur modifie le formulaire
-  useEffect(() => {
-    if (hasUnsavedChanges && error) {
-      setError(null)
-    }
-  }, [hasUnsavedChanges, error])
+  const handleRatingChange = (value: number) => {
+    clearFeedbackOnInput()
+    setRating(value)
+  }
 
-  // Réinitialiser savedValues quand les props changent (ex. après refresh/navigation)
-  useEffect(() => {
-    setSavedValues(null)
-  }, [initialRating, initialComment])
+  const handleCommentChange = (value: string) => {
+    clearFeedbackOnInput()
+    setComment(value)
+  }
 
   // beforeunload : avertir si modifications non enregistrées
   useEffect(() => {
@@ -157,7 +159,10 @@ export function CoachRatingForm({ coachId, initialRating, initialComment }: Coac
       }
       // Comme ProfileForm : mettre à jour les refs pour que hasUnsavedChanges passe à false
       // (sinon le useEffect "clear on hasUnsavedChanges" efface immédiatement le feedback)
-      setSavedValues({ rating, comment })
+      setSavedState({
+        signature: initialSignature,
+        values: { rating, comment },
+      })
       setShowSavedFeedback(true)
       setTimeout(() => {
         setShowSavedFeedback(false)
@@ -196,7 +201,7 @@ export function CoachRatingForm({ coachId, initialRating, initialComment }: Coac
             <button
               key={value}
               type="button"
-              onClick={() => setRating(value)}
+              onClick={() => handleRatingChange(value)}
               className="p-1 rounded focus:outline-none focus:ring-2 focus:ring-palette-olive focus:ring-offset-1 transition-transform hover:scale-110"
               aria-label={t('starLabel', { value })}
               aria-pressed={rating === value}
@@ -219,7 +224,7 @@ export function CoachRatingForm({ coachId, initialRating, initialComment }: Coac
         id="rating-comment"
         label={t('commentLabel')}
         value={comment}
-        onChange={(e) => setComment(e.target.value)}
+        onChange={(e) => handleCommentChange(e.target.value)}
         rows={3}
         placeholder={t('commentPlaceholder')}
       />

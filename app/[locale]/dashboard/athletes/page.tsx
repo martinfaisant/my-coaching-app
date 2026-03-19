@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { createClient } from '@/utils/supabase/server'
 import { getCurrentUserWithProfile } from '@/utils/auth'
 import { redirect } from 'next/navigation'
-import { getTranslations, getLocale } from 'next-intl/server'
+import { getTranslations } from 'next-intl/server'
 import { pathWithLocale } from '@/lib/pathWithLocale'
 import { DashboardPageShell } from '@/components/DashboardPageShell'
 import { CoachAthletesListWithFilter } from '@/app/[locale]/dashboard/CoachAthletesListWithFilter'
@@ -41,7 +41,6 @@ export default async function CoachAthletesPage({ params }: { params: Promise<{ 
 
   const supabase = await createClient()
   const t = await getTranslations({ locale, namespace: 'athletes' })
-  const tNav = await getTranslations({ locale, namespace: 'navigation' })
 
   const [pendingResult, athletesResult] = await Promise.all([
     getPendingCoachRequests(locale),
@@ -56,7 +55,7 @@ export default async function CoachAthletesPage({ params }: { params: Promise<{ 
   const coachAthleteIds = visibleProfiles.map((p) => p.user_id)
 
   const pendingAthleteIds = [...new Set(pendingRequests.map((r) => r.athlete_id))]
-  let goalsByAthleteId: Record<string, Goal[]> = {}
+  const goalsByAthleteId: Record<string, Goal[]> = {}
   if (pendingAthleteIds.length > 0) {
     const goalsResult = await supabase
       .from('goals')
@@ -76,8 +75,8 @@ export default async function CoachAthletesPage({ params }: { params: Promise<{ 
     (current.profile.languages ?? []).length > 0 &&
     (((current.profile.presentation_fr ?? '').trim() !== '' || (current.profile.presentation_en ?? '').trim() !== ''))
 
-  let coachAthleteData: Record<string, CoachAthleteData> = {}
-  let subscriptionByAthleteId: Record<string, CoachSubscriptionRow> = {}
+  const coachAthleteData: Record<string, CoachAthleteData> = {}
+  const subscriptionByAthleteId: Record<string, CoachSubscriptionRow> = {}
 
   if (coachAthleteIds.length > 0) {
     const [workoutsResult, goalsResult, subscriptionsResult] = await Promise.all([

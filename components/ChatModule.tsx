@@ -78,7 +78,7 @@ export function ChatModule({
 }: ChatModuleProps = {}) {
   const t = useTranslations('chat')
   const [chatRole, setChatRole] = useState<ChatRoleResult>(initialChatRole ?? null)
-  const [open, setOpen] = useState(false)
+  const [manualOpen, setManualOpen] = useState(false)
   const [coachConvs, setCoachConvs] = useState<ConversationWithMeta[]>([])
   const [selectedCoachConvId, setSelectedCoachConvId] = useState<string | null>(null)
 
@@ -87,14 +87,10 @@ export function ChatModule({
     getChatRole().then(setChatRole)
   }, [initialChatRole])
 
-  useEffect(() => {
-    if (openWithAthleteId && chatRole?.role === 'coach') {
-      setOpen(true)
-    }
-  }, [openWithAthleteId, chatRole?.role])
-
   if (!chatRole) return null
 
+  const autoOpen = !!openWithAthleteId && chatRole.role === 'coach'
+  const isOpen = manualOpen || autoOpen
   const label = chatRole.role === 'athlete' ? t('chatWithCoach') : t('chatWithAthletes')
 
   return (
@@ -102,7 +98,7 @@ export function ChatModule({
       <Button
         type="button"
         variant="primary"
-        onClick={() => setOpen(true)}
+        onClick={() => setManualOpen(true)}
         className="fixed bottom-6 right-6 z-40 rounded-full shadow-lg"
         aria-label={label}
       >
@@ -122,11 +118,11 @@ export function ChatModule({
         <span className="hidden sm:inline">{label}</span>
       </Button>
 
-      {open && (
+      {isOpen && (
         <ChatOverlay
           role={chatRole.role}
           userId={chatRole.userId}
-          onClose={() => setOpen(false)}
+          onClose={() => setManualOpen(false)}
           coachConvs={coachConvs}
           setCoachConvs={setCoachConvs}
           selectedCoachConvId={selectedCoachConvId}

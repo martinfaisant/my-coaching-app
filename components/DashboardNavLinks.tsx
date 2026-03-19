@@ -62,7 +62,7 @@ export function DashboardNavLinks({
             className={`${linkBase} ${active ? activeClass : inactiveClass}`}
           >
             {icon}
-            <span>{t(item.i18nKey as any)}</span>
+            <span>{t(item.i18nKey)}</span>
           </Link>
         )
       })}

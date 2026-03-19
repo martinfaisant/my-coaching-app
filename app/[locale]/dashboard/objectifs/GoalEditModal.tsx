@@ -20,12 +20,27 @@ type GoalEditModalProps = {
 }
 
 export function GoalEditModal({ goal, isOpen, onClose }: GoalEditModalProps) {
+  if (!isOpen) return null
+
+  const modalKey = [
+    goal.id,
+    goal.race_name,
+    goal.date,
+    goal.distance,
+    goal.is_primary ? '1' : '0',
+    goal.target_time_hours ?? '',
+    goal.target_time_minutes ?? '',
+    goal.target_time_seconds ?? '',
+  ].join('|')
+
+  return <GoalEditModalInner key={modalKey} goal={goal} isOpen={isOpen} onClose={onClose} />
+}
+
+function GoalEditModalInner({ goal, isOpen, onClose }: GoalEditModalProps) {
   const locale = useLocale()
   const router = useRouter()
   const tGoals = useTranslations('goals')
   const tCommon = useTranslations('common')
-
-  const [state, action] = useActionState<GoalFormState, FormData>(updateGoal, {})
 
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
   const [showSavedFeedback, setShowSavedFeedback] = useState(false)
@@ -52,22 +67,28 @@ export function GoalEditModal({ goal, isOpen, onClose }: GoalEditModalProps) {
     target_time_seconds: goal.target_time_seconds != null ? String(goal.target_time_seconds) : '',
   }
   const initialValuesRef = useRef(initialValues)
+  const successTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  useEffect(() => {
-    if (isOpen) {
-      setDate(goal.date)
-      setPriority(goal.is_primary ? 'primary' : 'secondary')
-      initialValuesRef.current = {
-        race_name: goal.race_name,
-        date: goal.date,
-        distance: goal.distance,
-        is_primary: goal.is_primary ? 'primary' : 'secondary',
-        target_time_hours: goal.target_time_hours != null ? String(goal.target_time_hours) : '',
-        target_time_minutes: goal.target_time_minutes != null ? String(goal.target_time_minutes) : '',
-        target_time_seconds: goal.target_time_seconds != null ? String(goal.target_time_seconds) : '',
-      }
+  const actionWithUiSync = useCallback(async (_prev: GoalFormState, formData: FormData) => {
+    const result = await updateGoal(_prev, formData)
+
+    isSubmittingRef.current = false
+    setIsSubmitting(false)
+
+    if (result?.success) {
+      setShowSavedFeedback(true)
+      onClose()
+      router.refresh()
+      if (successTimerRef.current) clearTimeout(successTimerRef.current)
+      successTimerRef.current = setTimeout(() => setShowSavedFeedback(false), 2500)
+    } else if (result?.error) {
+      setShowSavedFeedback(false)
     }
-  }, [isOpen, goal.id, goal.race_name, goal.date, goal.distance, goal.is_primary, goal.target_time_hours, goal.target_time_minutes, goal.target_time_seconds])
+
+    return result
+  }, [onClose, router])
+
+  const [state, action] = useActionState<GoalFormState, FormData>(actionWithUiSync, {})
 
   const checkUnsavedChanges = useCallback((priorityOverride?: 'primary' | 'secondary') => {
     const form = formRef.current
@@ -138,29 +159,15 @@ export function GoalEditModal({ goal, isOpen, onClose }: GoalEditModalProps) {
     }
   }, [showDatePickerPopup, closeDatePicker])
 
-  const saveFeedbackKey = `${state?.success ?? ''}|${state?.error ?? ''}|${isSubmitting}`
   useEffect(() => {
-    const justFinishedSubmitting = previousIsSubmittingRef.current && !isSubmitting
     previousIsSubmittingRef.current = isSubmitting
-
-    if (state?.success && justFinishedSubmitting) {
-      setShowSavedFeedback(true)
-      onClose()
-      router.refresh()
-      const t = setTimeout(() => setShowSavedFeedback(false), 2500)
-      return () => clearTimeout(t)
-    }
-    if (state?.error) setShowSavedFeedback(false)
-  }, [saveFeedbackKey, state?.success, state?.error, isSubmitting, onClose])
+  }, [isSubmitting])
 
   useEffect(() => {
-    if (state?.success || state?.error) {
-      isSubmittingRef.current = false
-      setIsSubmitting(false)
+    return () => {
+      if (successTimerRef.current) clearTimeout(successTimerRef.current)
     }
-  }, [state])
-
-  if (!isOpen) return null
+  }, [])
 
   return (
     <Modal

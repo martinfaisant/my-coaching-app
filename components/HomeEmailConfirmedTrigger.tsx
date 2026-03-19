@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { EmailValidatedModal } from '@/components/EmailValidatedModal'
 
 type HomeEmailConfirmedTriggerProps = {
@@ -10,15 +10,13 @@ type HomeEmailConfirmedTriggerProps = {
 export function HomeEmailConfirmedTrigger({
   showEmailConfirmedModal,
 }: HomeEmailConfirmedTriggerProps) {
-  const [isOpen, setIsOpen] = useState(false)
-
-  useEffect(() => {
-    if (showEmailConfirmedModal) {
-      setIsOpen(true)
-    }
-  }, [showEmailConfirmedModal])
-
   if (!showEmailConfirmedModal) return null
+
+  return <HomeEmailConfirmedTriggerInner />
+}
+
+function HomeEmailConfirmedTriggerInner() {
+  const [isOpen, setIsOpen] = useState(true)
 
   return (
     <EmailValidatedModal

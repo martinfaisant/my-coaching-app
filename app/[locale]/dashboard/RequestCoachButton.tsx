@@ -93,7 +93,6 @@ export function RequestCoachButton({ coachId, coachName, requestStatus, requestI
     if (open) {
       document.addEventListener('keydown', handleEscape)
       document.body.style.overflow = 'hidden'
-      if (!isPending) setSports(initialPracticedSports?.length ? [...initialPracticedSports] : [])
     }
     return () => {
       document.removeEventListener('keydown', handleEscape)
@@ -102,7 +101,7 @@ export function RequestCoachButton({ coachId, coachName, requestStatus, requestI
         document.body.style.overflow = ''
       }
     }
-  }, [open, isPending, initialPracticedSports, confirmCancelOpen])
+  }, [open, isPending, confirmCancelOpen])
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -259,7 +258,12 @@ export function RequestCoachButton({ coachId, coachName, requestStatus, requestI
       <Button
         type="button"
         variant="primary"
-        onClick={() => setOpen(true)}
+        onClick={() => {
+          if (!isPending) {
+            setSports(initialPracticedSports?.length ? [...initialPracticedSports] : [])
+          }
+          setOpen(true)
+        }}
         disabled={isPending}
       >
         {t('chooseCoach')}

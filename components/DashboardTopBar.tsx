@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { Link, usePathname } from '@/i18n/navigation'
@@ -21,7 +21,7 @@ type DashboardTopBarProps = {
 export function DashboardTopBar({ profile }: DashboardTopBarProps) {
   const t = useTranslations('navigation')
   const pathname = usePathname()
-  const [drawerOpen, setDrawerOpen] = useState(false)
+  const [drawerOpenPathname, setDrawerOpenPathname] = useState<string | null>(null)
   const navItems = getDashboardNavItems(profile)
   const displayName = getDisplayName(profile, '')
   const initials = getInitials(displayName)
@@ -33,9 +33,7 @@ export function DashboardTopBar({ profile }: DashboardTopBarProps) {
       ? `${displayName.slice(0, maxLength - 3)}...`
       : displayName
 
-  useEffect(() => {
-    setDrawerOpen(false)
-  }, [pathname])
+  const isDrawerOpen = drawerOpenPathname === pathname
 
   return (
     <>
@@ -62,13 +60,13 @@ export function DashboardTopBar({ profile }: DashboardTopBarProps) {
         {/* Mobile : titre de la page au centre */}
         <div className="flex-1 flex justify-center min-w-0 md:hidden">
           <span className="text-sm font-semibold text-stone-800 truncate px-2" aria-hidden>
-            {t(getPageTitleI18nKey(pathname, navItems) as any)}
+            {t(getPageTitleI18nKey(pathname, navItems))}
           </span>
         </div>
         <button
           type="button"
           className="md:hidden ml-auto p-2.5 rounded-xl text-stone-500 hover:bg-stone-100 shrink-0 transition-colors"
-          onClick={() => setDrawerOpen(true)}
+          onClick={() => setDrawerOpenPathname(pathname)}
           aria-label={t('openMenu')}
         >
           <svg
@@ -115,8 +113,8 @@ export function DashboardTopBar({ profile }: DashboardTopBarProps) {
 
       {/* Drawer mobile */}
       <Drawer
-        isOpen={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
+        isOpen={isDrawerOpen}
+        onClose={() => setDrawerOpenPathname(null)}
         placement="right"
         aria-label={t('openMenu')}
       >
@@ -124,7 +122,7 @@ export function DashboardTopBar({ profile }: DashboardTopBarProps) {
           <div className="flex items-center justify-end p-4 border-b border-stone-200 bg-stone-50 shrink-0">
             <button
               type="button"
-              onClick={() => setDrawerOpen(false)}
+              onClick={() => setDrawerOpenPathname(null)}
               className="p-2.5 rounded-xl text-stone-500 hover:bg-stone-100 transition-colors"
               aria-label={t('collapseMenu')}
             >
@@ -136,7 +134,7 @@ export function DashboardTopBar({ profile }: DashboardTopBarProps) {
             <div className="border-t border-stone-200 p-2 mt-2 space-y-1">
               <Link
                 href="/dashboard/profile"
-                onClick={() => setDrawerOpen(false)}
+                onClick={() => setDrawerOpenPathname(null)}
                 className="flex items-center gap-3 px-3 py-3 rounded-xl border border-stone-100 bg-stone-50"
               >
                 <AvatarImage

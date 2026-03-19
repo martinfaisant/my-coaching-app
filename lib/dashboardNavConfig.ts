@@ -6,10 +6,25 @@
 
 export type NavItem = {
   href: string
-  i18nKey: string
+  i18nKey: NavigationI18nKey
   /** Si false, actif quand pathname.startsWith(href). Défaut true = pathname === href */
   exact?: boolean
 }
+
+export type NavigationI18nKey =
+  | 'findCoach'
+  | 'calendar'
+  | 'goals'
+  | 'devices'
+  | 'myCoach'
+  | 'subscriptionHistory'
+  | 'athletes'
+  | 'offers'
+  | 'subscriptions'
+  | 'members'
+  | 'designSystem'
+  | 'profile'
+  | 'dashboard'
 
 export type ProfileNavInput = {
   role: string
@@ -62,7 +77,7 @@ export function isNavItemActive(pathname: string, item: NavItem): boolean {
  * Retourne la clé i18n du titre de la page courante (namespace navigation).
  * Utilisé pour afficher le titre dans la barre sur mobile.
  */
-export function getPageTitleI18nKey(pathname: string, navItems: NavItem[]): string {
+export function getPageTitleI18nKey(pathname: string, navItems: NavItem[]): NavigationI18nKey {
   if (pathname === '/dashboard/profile') return 'profile'
   const active = navItems.find((item) => isNavItemActive(pathname, item))
   if (active) return active.i18nKey
