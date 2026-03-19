@@ -51,21 +51,35 @@
 - Eviter les refactors sans benefice direct: preferer un diff minimal.
 
 ## 6) Definition of Done (DoD) - pour une tache/feature code
-1. La feature respecte la spec/les criteres d'acceptation (UI + comportements).
-2. UI:
-   - Design system respecte (tokens, composants, sports styles/icone)
-   - etats UI couverts (loading/empty/error/disabled selon cas)
-3. i18n:
-   - toutes les chaines visibles utilisateur sont traduites (FR + EN) dans les namespaces corrects
-   - server actions: erreurs/succes traduits via `getTranslations`
-4. Qualite:
-   - pas de `any`, pas de `console.*` en production
-   - erreurs structurees via `lib/errors.ts`
-5. Verification:
-   - `npm run check` passe
-   - `npm run build` passe
-6. S'il y a ajout de composant reusable: `docs/DESIGN_SYSTEM.md` mis a jour.
-7. S'il y a mise a jour doc: verifier avec `DOCS_INDEX.md` (pas de doublons).
+1. La feature respecte la spec/les critères d'acceptation (UI + comportements, y compris états UI).
+2. i18n (bilingue FR/EN) :
+  - aucun texte visible en dur (composants + server actions)
+  - traductions via `useTranslations` / `getTranslations`
+  - clés ajoutées/modifiées dans `messages/fr.json` et `messages/en.json` (mêmes structures)
+3. Design system :
+  - pas de couleurs en dur (pas de hex) : tokens Tailwind uniquement
+  - composants existants réutilisés (au moins ~80% du besoin)
+  - sports : couleurs + icônes via `lib/sportStyles.ts` et `components/SportIcons.tsx` (jamais ailleurs)
+  - styles formulaires via `lib/formStyles.ts` si applicable
+4. Réutilisation helpers :
+  - logique métier/formatage via helpers existants (pas de duplication)
+  - si extension nécessaire : diff minimal, et justification dans le résumé
+5. Pas de code debug/temp :
+  - aucun `console.*`, `debugger`, stubs temporaires, code mort/commenté inutile
+6. Qualité & erreurs :
+  - TypeScript strict : pas de `any`
+  - erreurs structurées via `lib/errors.ts` (et limites prévues dans le projet)
+7. Vérifications locales obligatoires :
+  - `npm run check` puis `npm run build` (et corriger tout échec)
+8. Résumé diff & impacts (à inclure dans la sortie finale de l'agent) :
+  - fichiers modifiés/créés
+  - résumé fonctionnel + états UI couverts
+  - i18n : namespaces/keys ajoutées ou modifiées
+  - impacts/risques (pages concernées, compatibilité FR/EN, changements DB/RLS si applicables)
+  - commandes exécutées
+9. Documentation :
+  - si composant réutilisable ajouté/modifié : mise à jour de `docs/DESIGN_SYSTEM.md`
+  - si docs modifiées : vérifier avec `DOCS_INDEX.md` (pas de doublons)
 
 ## 7) Regles de securite (eviter changements inutiles/risk)
 - Ne touche pas schema DB / policies RLS / auth helpers sans spec explicite. Si besoin non couvert: demander avant d'imposer une modif.
@@ -78,8 +92,9 @@
 
 ## 8) Mini-checklist avant de livrer
 - `npm run check` + `npm run build`
-- 0 texte visible hardcode en FR/EN
-- 0 hex hardcode pour couleurs
-- Sports: `lib/sportStyles.ts` + `components/SportIcons.tsx`
-- Console: rien en prod, logger uniquement
+- i18n : aucune clé manquante (FR/EN) + aucune chaîne en dur
+- Design system : aucun hex + sports via `lib/sportStyles.ts` / `components/SportIcons.tsx`
+- Helpers : pas de duplication, logique via utilitaires existants
+- Debug/temp : aucun `console.*` / `debugger` / stubs temporaires
+- Résumé diff : fichiers, i18n, impacts + commandes exécutées
 
