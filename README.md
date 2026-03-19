@@ -190,8 +190,14 @@ my-coaching-app/
 ## 🧪 Tests
 
 ```bash
-# Linter
-npm run lint
+# Quality gate local
+npm run check
+
+# TypeScript uniquement
+npm run typecheck
+
+# Lint (auto-fix)
+npm run lint:fix
 
 # Build de vérification
 npm run build
