@@ -46,7 +46,7 @@ export function ModalShowcase() {
             Ceci est une modale de taille moyenne (md) avec un titre et un contenu simple.
           </p>
           <p className="text-sm text-stone-600">
-            Le bouton X permet de fermer, tout comme Escape ou un clic sur l'overlay.
+            Le bouton X permet de fermer, tout comme Escape ou un clic sur l&apos;overlay.
           </p>
         </div>
       </Modal>
@@ -79,7 +79,7 @@ export function ModalShowcase() {
           </p>
           <div className="bg-stone-50 p-4 rounded-xl border border-stone-100">
             <p className="text-xs text-stone-500">
-              L'icône est affichée à gauche du titre dans un badge coloré.
+              L&apos;icône est affichée à gauche du titre dans un badge coloré.
             </p>
           </div>
         </div>
@@ -127,7 +127,7 @@ export function ModalShowcase() {
       >
         <div className="px-6 py-4 space-y-4">
           <p className="text-sm text-stone-600">
-            Cette modale contient un footer avec boutons d'action.
+            Cette modale contient un footer avec boutons d&apos;action.
           </p>
           <p className="text-sm text-stone-600">
             Le footer est fixe en bas (ne scroll pas) et utilise un fond gris clair.

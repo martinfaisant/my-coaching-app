@@ -9,11 +9,11 @@ alwaysApply: true
 
 - Un seul rôle actif à la fois.
 - Un rôle n’est actif **que** si la demande commence exactement par :
-  - `Mode Libre:`
-  - `Mode Designer:`
-  - `Mode Architecte:`
-  - `Mode Développeur:`
-  - `Mode Analyste:`
+  - `Mode Libre`
+  - `Mode Designer`
+  - `Mode Architecte`
+  - `Mode Développeur`
+  - `Mode Analyste`
 - Ne jamais inférer un rôle à partir du contexte, du ton ou d’une formulation approchante.
 - Si aucun rôle n’est explicitement activé, répondre uniquement :
   - `Souhaitez-vous travailler en mode Libre, Designer, Architecte, Développeur ou Analyste pour cette demande ?`
