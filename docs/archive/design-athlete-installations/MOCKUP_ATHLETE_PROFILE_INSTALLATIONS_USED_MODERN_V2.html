@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mon profil — Athlète | Installations utilisées (Modern v2)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            'palette-forest-darker': '#506648',
+            'palette-olive': '#8e9856',
+            'palette-danger': '#c0564b',
+            'palette-danger-dark': '#9e3b31',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="min-h-screen bg-stone-100 text-stone-800 antialiased">
+  <div class="max-w-3xl mx-auto py-6 px-4">
+    <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-stone-100">
+      <!-- Banner -->
+      <div class="h-[136px] bg-gradient-to-r from-palette-forest-dark to-palette-olive relative">
+        <div class="absolute -bottom-10 left-8">
+          <div class="w-28 h-28 rounded-full bg-stone-100 border-4 border-white shadow-md flex items-center justify-center text-stone-300 overflow-hidden">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 transform translate-y-2" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-16 pb-6 px-8">
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+          <div>
+            <h1 class="text-sm font-bold uppercase tracking-wider text-stone-700">Mon profil</h1>
+            <p class="text-stone-500 text-sm">Centres, adresses et horaires d’ouverture.</p>
+          </div>
+          <button type="button" class="px-4 py-2.5 rounded-lg bg-palette-forest-dark text-white text-sm font-medium hover:bg-palette-forest-darker transition">
+            Enregistrer
+          </button>
+        </div>
+
+        <!-- Installations utilisées -->
+        <section class="mb-6 space-y-3">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <h2 class="text-sm font-bold text-stone-900 uppercase tracking-wide mb-1">Installations utilisées</h2>
+              <p class="text-sm text-stone-500">Ces informations aident le coach à mieux planifier les entraînements.</p>
+            </div>
+            <button type="button" class="shrink-0 px-3 py-2 rounded-lg border border-stone-200 bg-stone-50 text-stone-700 text-sm font-medium hover:border-palette-forest-dark hover:text-palette-forest-dark transition">
+              + Ajouter un centre
+            </button>
+          </div>
+
+          <div class="space-y-4">
+            <!-- Centre #1 -->
+            <article class="overflow-hidden rounded-[24px] border border-stone-200 bg-white shadow-sm">
+              <div class="flex flex-col gap-4 border-b border-stone-100 p-5 sm:flex-row sm:items-center sm:justify-between">
+                <div class="flex flex-wrap items-center gap-3">
+                  <span class="inline-flex items-center rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-700">
+                    Piscine
+                  </span>
+                  <div>
+                    <h3 class="text-lg font-semibold text-stone-900">Centre Aquatique</h3>
+                  </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                  <button type="button"
+                    class="rounded-xl border border-stone-200 bg-white px-3 py-2 text-sm font-medium text-palette-forest-dark transition hover:bg-stone-50">
+                    Modifier
+                  </button>
+                  <button type="button" aria-label="Supprimer"
+                    class="rounded-xl px-3 py-2 text-sm font-medium text-palette-danger-dark transition hover:bg-stone-50">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M3 6h18" />
+                      <path d="M8 6V4h8v2" />
+                      <path d="M19 6l-1 14H6L5 6" />
+                      <path d="M10 11v6" />
+                      <path d="M14 11v6" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <div class="m-5 lg:mx-6">
+                <div class="grid gap-4 sm:grid-cols-2">
+                  <div class="sm:col-span-2">
+                    <p class="mb-1.5 text-xs font-bold uppercase tracking-wider text-stone-400">Nom du centre</p>
+                    <p class="text-sm text-stone-700">Centre Aquatique</p>
+                  </div>
+                  <div>
+                    <p class="mb-1.5 text-xs font-bold uppercase tracking-wider text-stone-400">Rue et numéro</p>
+                    <p class="text-sm text-stone-700">Avenue des Sports 12</p>
+                  </div>
+                  <div>
+                    <p class="mb-1.5 text-xs font-bold uppercase tracking-wider text-stone-400">Code postal · Ville</p>
+                    <p class="text-sm text-stone-700">1010 Bruxelles</p>
+                  </div>
+                  <div class="sm:col-span-2">
+                    <p class="mb-1.5 text-xs font-bold uppercase tracking-wider text-stone-400">Pays</p>
+                    <p class="text-sm text-stone-700">Belgique</p>
+                  </div>
+                  <div class="sm:col-span-2">
+                    <p class="mb-1.5 text-xs font-bold uppercase tracking-wider text-stone-400">Complément</p>
+                    <p class="text-sm text-stone-700">Entrée latérale, étage, accès PMR…</p>
+                  </div>
+                </div>
+
+                <div class="mt-4 flex items-start justify-between gap-3">
+                  <p class="mb-1.5 text-xs font-bold uppercase tracking-wider text-stone-400">Horaires d'ouverture</p>
+                </div>
+
+                <div class="mt-4 overflow-hidden rounded-2xl border border-stone-200 bg-white">
+                  <ul class="divide-y divide-stone-100">
+                    <li class="flex items-center justify-between px-4 py-3 text-sm">
+                      <span class="font-medium text-stone-800">Lundi</span>
+                      <span class="text-right text-stone-600">
+                        07:00 – 12:00<br class="sm:hidden" /> <span class="hidden sm:inline">·</span> 15:00 – 20:00
+                      </span>
+                    </li>
+                    <li class="flex items-center justify-between px-4 py-3 text-sm">
+                      <span class="font-medium text-stone-800">Mardi</span>
+                      <span class="text-stone-600">06:30 – 11:30</span>
+                    </li>
+                    <li class="flex items-center justify-between px-4 py-3 text-sm">
+                      <span class="font-medium text-stone-800">Mercredi</span>
+                      <span class="text-stone-400">Fermé</span>
+                    </li>
+                    <li class="flex items-center justify-between px-4 py-3 text-sm">
+                      <span class="font-medium text-stone-800">Jeudi</span>
+                      <span class="text-stone-400">Fermé</span>
+                    </li>
+                    <li class="flex items-center justify-between px-4 py-3 text-sm">
+                      <span class="font-medium text-stone-800">Vendredi</span>
+                      <span class="text-stone-400">Fermé</span>
+                    </li>
+                    <li class="flex items-center justify-between px-4 py-3 text-sm">
+                      <span class="font-medium text-stone-800">Samedi</span>
+                      <span class="text-stone-600">09:00 – 12:30</span>
+                    </li>
+                    <li class="flex items-center justify-between px-4 py-3 text-sm">
+                      <span class="font-medium text-stone-800">Dimanche</span>
+                      <span class="text-stone-400">Fermé</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </article>
+
+            <!-- Centre #2 -->
+            <article class="overflow-hidden rounded-[24px] border border-stone-200 bg-white shadow-sm">
+              <div class="flex flex-col gap-4 border-b border-stone-100 p-5 sm:flex-row sm:items-center sm:justify-between">
+                <div class="flex flex-wrap items-center gap-3">
+                  <span class="inline-flex items-center rounded-full border border-stone-200 bg-stone-100 px-3 py-1 text-xs font-semibold text-stone-700">
+                    Salle de sport
+                  </span>
+                  <div>
+                    <h3 class="text-lg font-semibold text-stone-900">Salle Move&Go</h3>
+                  </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                  <button type="button"
+                    class="rounded-xl border border-stone-200 bg-white px-3 py-2 text-sm font-medium text-palette-forest-dark transition hover:bg-stone-50">
+                    Modifier
+                  </button>
+                  <button type="button" aria-label="Supprimer"
+                    class="rounded-xl px-3 py-2 text-sm font-medium text-palette-danger-dark transition hover:bg-stone-50">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M3 6h18" />
+                      <path d="M8 6V4h8v2" />
+                      <path d="M19 6l-1 14H6L5 6" />
+                      <path d="M10 11v6" />
+                      <path d="M14 11v6" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <div class="m-5 lg:mx-6">
+                <div class="grid gap-4 sm:grid-cols-2">
+                  <div class="sm:col-span-2">
+                    <p class="mb-1.5 text-xs font-bold uppercase tracking-wider text-stone-400">Nom du centre</p>
+                    <p class="text-sm text-stone-700">Salle Move&Go</p>
+                  </div>
+                  <div>
+                    <p class="mb-1.5 text-xs font-bold uppercase tracking-wider text-stone-400">Rue et numéro</p>
+                    <p class="text-sm text-stone-700">Rue de l’Endurance 5</p>
+                  </div>
+                  <div>
+                    <p class="mb-1.5 text-xs font-bold uppercase tracking-wider text-stone-400">Code postal · Ville</p>
+                    <p class="text-sm text-stone-700">3300 Tirlemont</p>
+                  </div>
+                  <div class="sm:col-span-2">
+                    <p class="mb-1.5 text-xs font-bold uppercase tracking-wider text-stone-400">Pays</p>
+                    <p class="text-sm text-stone-700">Belgique</p>
+                  </div>
+                  <div class="sm:col-span-2">
+                    <p class="mb-1.5 text-xs font-bold uppercase tracking-wider text-stone-400">Complément</p>
+                    <p class="text-sm text-stone-700">Entrée latérale, étage, accès PMR…</p>
+                  </div>
+                </div>
+
+                <div class="mt-4 flex items-start justify-between gap-3">
+                  <p class="mb-1.5 text-xs font-bold uppercase tracking-wider text-stone-400">Horaires d'ouverture</p>
+                </div>
+
+                <div class="mt-4 overflow-hidden rounded-2xl border border-stone-200 bg-white">
+                  <ul class="divide-y divide-stone-100">
+                    <li class="flex items-center justify-between px-4 py-3 text-sm">
+                      <span class="font-medium text-stone-800">Lundi</span>
+                      <span class="text-right text-stone-400">Fermé</span>
+                    </li>
+                    <li class="flex items-center justify-between px-4 py-3 text-sm">
+                      <span class="font-medium text-stone-800">Mardi</span>
+                      <span class="text-right text-stone-400">Fermé</span>
+                    </li>
+                    <li class="flex items-center justify-between px-4 py-3 text-sm">
+                      <span class="font-medium text-stone-800">Mercredi</span>
+                      <span class="text-right text-stone-400">Fermé</span>
+                    </li>
+                    <li class="flex items-center justify-between px-4 py-3 text-sm">
+                      <span class="font-medium text-stone-800">Jeudi</span>
+                      <span class="text-right text-stone-400">Fermé</span>
+                    </li>
+                    <li class="flex items-center justify-between px-4 py-3 text-sm">
+                      <span class="font-medium text-stone-800">Vendredi</span>
+                      <span class="text-right text-stone-400">Fermé</span>
+                    </li>
+                    <li class="flex items-center justify-between px-4 py-3 text-sm">
+                      <span class="font-medium text-stone-800">Samedi</span>
+                      <span class="text-right text-stone-600">09:00 – 12:30</span>
+                    </li>
+                    <li class="flex items-center justify-between px-4 py-3 text-sm">
+                      <span class="font-medium text-stone-800">Dimanche</span>
+                      <span class="text-right text-stone-400">Fermé</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+
