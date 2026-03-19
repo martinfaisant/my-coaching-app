@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mon profil — Installations utilisées (multi-centres + horaires détaillés)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        colors: {
+          'palette-forest-dark': '#627e59',
+          'palette-forest-darker': '#506648',
+          'palette-olive': '#8e9856',
+          'palette-danger': '#c0564b',
+          'palette-danger-dark': '#9e3b31',
+          'stone-400': '#a8a29e',
+          'stone-500': '#78716c',
+          'stone-600': '#57534e',
+          'stone-700': '#44403c',
+        }
+      }}
+    }
+  </script>
+</head>
+<body class="bg-stone-100 text-stone-800 antialiased min-h-screen">
+  <div class="max-w-2xl mx-auto py-4 px-3">
+    <p class="text-sm text-stone-500 mb-4">
+      Mockup (Designer) : section <strong>Installations utilisées</strong> sur <strong>Mon profil</strong> (athlète).
+      Exigences : <strong>plusieurs installations</strong>, <strong>plusieurs plages par jour</strong>, <strong>adresse structurée</strong>.
+      (Le coach verra ces informations après création d’une souscription : affichage traité plus tard.)
+    </p>
+
+    <form class="bg-white rounded-2xl shadow-xl overflow-hidden border border-stone-100">
+      <div class="h-[136px] bg-gradient-to-r from-palette-forest-dark to-palette-olive relative">
+        <div class="absolute -bottom-10 left-8">
+          <div class="w-28 h-28 rounded-full bg-stone-100 border-4 border-white shadow-md flex items-center justify-center text-stone-300 overflow-hidden">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 transform translate-y-2" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-12 pb-6 px-6">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+          <div>
+            <h1 class="text-2xl font-bold text-stone-900">Mes informations</h1>
+            <p class="text-stone-500 text-sm">Centres, adresses et horaires d’entraînement.</p>
+          </div>
+          <button type="button" class="px-4 py-2.5 rounded-lg bg-palette-forest-dark text-white text-sm font-medium hover:bg-palette-forest-darker transition">
+            Enregistrer
+          </button>
+        </div>
+
+        <hr class="border-stone-100 my-6" />
+
+        <!-- Section Installations utilisées -->
+        <section class="mb-6 space-y-3">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <h2 class="text-sm font-bold text-stone-900 uppercase tracking-wide mb-1">Installations utilisées</h2>
+              <p class="text-sm text-stone-500">
+                Renseignez vos centres (type, adresse et horaires).
+              </p>
+            </div>
+            <button type="button" class="shrink-0 px-3 py-2 rounded-lg border border-stone-200 bg-stone-50 text-stone-700 text-sm font-medium hover:border-palette-forest-dark hover:text-palette-forest-dark transition">
+              + Ajouter un centre
+            </button>
+          </div>
+
+          <div class="space-y-4">
+            <!-- Installation #1 -->
+            <div class="rounded-xl border border-stone-200 bg-white p-4 shadow-sm">
+              <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-3">
+                <div class="flex items-center gap-3 min-w-0">
+                  <div class="flex items-center gap-2">
+                    <span class="px-2.5 py-0.5 rounded-full bg-palette-forest-dark/10 border border-palette-forest-dark/20 text-palette-forest-dark text-xs font-semibold">
+                      Piscine
+                    </span>
+                  </div>
+                </div>
+                <button type="button" class="text-sm font-medium text-palette-danger-dark hover:text-palette-danger transition">
+                  Supprimer
+                </button>
+              </div>
+
+              <div class="grid grid-cols-1 gap-4">
+                <div>
+                  <label class="block text-xs font-bold uppercase tracking-wider text-stone-400 mb-2">Nom du centre</label>
+                  <input type="text" value="Centre Aquatique" class="w-full px-3 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold uppercase tracking-wider text-stone-400 mb-2">Type</label>
+                  <select class="w-full px-4 py-2.5 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm">
+                    <option selected>Piscine</option>
+                    <option>Salle de sport</option>
+                    <option>Stade d’athlétisme</option>
+                  </select>
+                </div>
+
+                <!-- Adresse -->
+                <div>
+                  <label class="block text-xs font-bold uppercase tracking-wider text-stone-400 mb-2">Adresse</label>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <input type="text" value="Avenue des Sports" class="w-full px-3 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm" />
+                    <input type="text" value="12" placeholder="Numéro / bâtiment" class="w-full px-3 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm" />
+                    <input type="text" value="1010" placeholder="Code postal" class="w-full px-3 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm" />
+                    <input type="text" value="Bruxelles" placeholder="Ville" class="w-full px-3 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm" />
+                    <input type="text" value="Belgique" placeholder="Pays" class="w-full px-3 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm sm:col-span-2" />
+                    <textarea rows="2" placeholder="Complément (optionnel : étage, accès, notes)" class="w-full px-3 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm sm:col-span-2"></textarea>
+                  </div>
+                </div>
+              </div>
+
+              <hr class="border-stone-100 my-5" />
+
+              <!-- Horaires -->
+              <div class="space-y-2">
+                <div class="flex items-center justify-between gap-4">
+                  <label class="block text-xs font-bold uppercase tracking-wider text-stone-400">Horaires d’ouverture</label>
+                </div>
+
+                <!-- Grille jours -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <!-- Lundi (2 plages) -->
+                  <div class="rounded-xl border border-stone-200 bg-stone-50/50 p-3">
+                    <div class="flex items-center justify-between gap-4 mb-2">
+                      <div class="flex items-center gap-2">
+                        <span class="text-sm font-semibold text-stone-700">Lun.</span>
+                        <span class="text-xs text-stone-500">Ouvert</span>
+                      </div>
+                      <button type="button" class="text-xs font-medium text-palette-forest-dark hover:text-palette-forest-darker transition">
+                        + Ajouter une plage
+                      </button>
+                    </div>
+
+                    <div class="space-y-2">
+                      <div class="grid grid-cols-12 gap-2 items-center">
+                        <div class="col-span-5">
+                          <select class="w-full px-3 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm">
+                            <option selected>07:00</option>
+                            <option>07:15</option>
+                            <option>08:00</option>
+                          </select>
+                        </div>
+                        <div class="col-span-2 text-center text-stone-400 text-sm">–</div>
+                        <div class="col-span-5">
+                          <select class="w-full px-3 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm">
+                            <option selected>12:00</option>
+                            <option>12:15</option>
+                            <option>13:00</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div class="grid grid-cols-12 gap-2 items-center">
+                        <div class="col-span-5">
+                          <select class="w-full px-3 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm">
+                            <option selected>15:00</option>
+                            <option>14:45</option>
+                            <option>16:00</option>
+                          </select>
+                        </div>
+                        <div class="col-span-2 text-center text-stone-400 text-sm">–</div>
+                        <div class="col-span-5">
+                          <select class="w-full px-3 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm">
+                            <option selected>20:00</option>
+                            <option>19:30</option>
+                            <option>21:00</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Mar. (1 plage) -->
+                  <div class="rounded-xl border border-stone-200 bg-stone-50/50 p-3">
+                    <div class="flex items-center justify-between gap-4 mb-2">
+                      <div class="flex items-center gap-2">
+                        <span class="text-sm font-semibold text-stone-700">Mar.</span>
+                        <span class="text-xs text-stone-500">Ouvert</span>
+                      </div>
+                      <button type="button" class="text-xs font-medium text-palette-forest-dark hover:text-palette-forest-darker transition">
+                        + Ajouter une plage
+                      </button>
+                    </div>
+                    <div class="grid grid-cols-12 gap-2 items-center">
+                      <div class="col-span-5">
+                        <select class="w-full px-3 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm">
+                          <option selected>06:30</option>
+                          <option>07:00</option>
+                          <option>07:30</option>
+                        </select>
+                      </div>
+                      <div class="col-span-2 text-center text-stone-400 text-sm">–</div>
+                      <div class="col-span-5">
+                        <select class="w-full px-3 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm">
+                          <option selected>11:30</option>
+                          <option>12:00</option>
+                          <option>13:00</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Mer., Jeu., Ven. (Fermé en exemple) -->
+                  <div class="rounded-xl border border-stone-200 bg-white p-3">
+                    <div class="flex items-center justify-between gap-4">
+                      <div class="flex items-center gap-2">
+                        <span class="text-sm font-semibold text-stone-700">Mer.</span>
+                        <span class="text-xs text-stone-500">Fermé</span>
+                      </div>
+                      <button type="button" class="text-xs font-medium text-palette-forest-dark hover:text-palette-forest-darker transition">
+                        Définir des horaires
+                      </button>
+                    </div>
+                  </div>
+
+                    <div class="rounded-xl border border-stone-200 bg-white p-3">
+                      <div class="flex items-center justify-between gap-4">
+                        <div class="flex items-center gap-2">
+                          <span class="text-sm font-semibold text-stone-700">Jeu.</span>
+                          <span class="text-xs text-stone-500">Fermé</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="rounded-xl border border-stone-200 bg-white p-3">
+                      <div class="flex items-center justify-between gap-4">
+                        <div class="flex items-center gap-2">
+                          <span class="text-sm font-semibold text-stone-700">Ven.</span>
+                          <span class="text-xs text-stone-500">Fermé</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="rounded-xl border border-stone-200 bg-white p-3">
+                      <div class="flex items-center justify-between gap-4">
+                        <div class="flex items-center gap-2">
+                          <span class="text-sm font-semibold text-stone-700">Sam.</span>
+                          <span class="text-xs text-stone-500">Fermé</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="rounded-xl border border-stone-200 bg-white p-3">
+                      <div class="flex items-center justify-between gap-4">
+                        <div class="flex items-center gap-2">
+                          <span class="text-sm font-semibold text-stone-700">Dim.</span>
+                          <span class="text-xs text-stone-500">Fermé</span>
+                        </div>
+                      </div>
+                    </div>
+
+                </div>
+              </div>
+            </div>
+
+            <!-- Installation #2 -->
+            <div class="rounded-xl border border-stone-200 bg-white p-4 shadow-sm">
+              <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-3">
+                <div class="flex items-center gap-3 min-w-0">
+                  <div class="flex items-center gap-2">
+                    <span class="px-2.5 py-0.5 rounded-full bg-palette-olive/10 border border-palette-olive/20 text-palette-olive text-xs font-semibold">
+                      Salle de sport
+                    </span>
+                  </div>
+                </div>
+                <button type="button" class="text-sm font-medium text-palette-danger-dark hover:text-palette-danger transition">
+                  Supprimer
+                </button>
+              </div>
+
+              <div class="grid grid-cols-1 gap-4">
+                <div>
+                  <label class="block text-xs font-bold uppercase tracking-wider text-stone-400 mb-2">Nom du centre</label>
+                  <input type="text" value="Salle Move&Go" class="w-full px-3 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold uppercase tracking-wider text-stone-400 mb-2">Type</label>
+                  <select class="w-full px-4 py-2.5 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm">
+                    <option>Salle de sport</option>
+                    <option>Piscine</option>
+                    <option>Stade d’athlétisme</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-xs font-bold uppercase tracking-wider text-stone-400 mb-2">Adresse</label>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <input type="text" value="Rue de l’Endurance" class="w-full px-3 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm" />
+                    <input type="text" value="5" placeholder="Numéro / bâtiment" class="w-full px-3 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm" />
+                    <input type="text" value="3300" placeholder="Code postal" class="w-full px-3 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm" />
+                    <input type="text" value="Tirlemont" placeholder="Ville" class="w-full px-3 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm" />
+                    <input type="text" value="Belgique" placeholder="Pays" class="w-full px-3 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm sm:col-span-2" />
+                    <textarea rows="2" placeholder="Complément (optionnel : notes)" class="w-full px-3 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm sm:col-span-2"></textarea>
+                  </div>
+                </div>
+              </div>
+
+              <hr class="border-stone-100 my-5" />
+
+              <div class="space-y-2">
+                <label class="block text-xs font-bold uppercase tracking-wider text-stone-400">Horaires d’ouverture</label>
+                <div class="rounded-xl border border-stone-200 bg-stone-50/50 p-3">
+                  <div class="flex items-center justify-between gap-4 mb-2">
+                    <div class="flex items-center gap-2">
+                      <span class="text-sm font-semibold text-stone-700">Sam.</span>
+                      <span class="text-xs text-stone-500">Ouvert</span>
+                    </div>
+                    <button type="button" class="text-xs font-medium text-palette-forest-dark hover:text-palette-forest-darker transition">
+                      + Ajouter une plage
+                    </button>
+                  </div>
+                  <div class="space-y-2">
+                    <div class="grid grid-cols-12 gap-2 items-center">
+                      <div class="col-span-5">
+                        <select class="w-full px-3 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm">
+                          <option selected>09:00</option>
+                          <option>08:30</option>
+                          <option>10:00</option>
+                        </select>
+                      </div>
+                      <div class="col-span-2 text-center text-stone-400 text-sm">–</div>
+                      <div class="col-span-5">
+                        <select class="w-full px-3 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm">
+                          <option selected>12:30</option>
+                          <option>12:00</option>
+                          <option>13:00</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="rounded-xl border border-stone-200 bg-white p-3">
+                  <div class="flex items-center justify-between gap-4">
+                    <div class="flex items-center gap-2">
+                      <span class="text-sm font-semibold text-stone-700">Dim.</span>
+                      <span class="text-xs text-stone-500">Fermé</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <p class="text-xs text-stone-500 mt-2">
+          Note mockup : affichage coach “après souscription” traité plus tard. Ici, on se concentre sur la saisie athlète.
+        </p>
+      </div>
+    </form>
+  </div>
+</body>
+</html>
+

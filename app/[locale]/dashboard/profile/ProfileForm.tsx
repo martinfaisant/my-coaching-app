@@ -14,9 +14,10 @@ import { SportTileSelectable } from '@/components/SportTileSelectable'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { createClient } from '@/utils/supabase/client'
 import { updateProfile, checkCanDeleteAccount, deleteMyAccount, type ProfileFormState } from './actions'
-import type { Role } from '@/types/database'
+import type { Role, AthleteFacility } from '@/types/database'
 import { compressProfileImage } from '@/utils/imageCompress'
 import { logger } from '@/lib/logger'
+import { AthleteFacilitiesSection } from './installations/AthleteFacilitiesSection'
 
 import { LANGUAGES_OPTIONS } from '@/lib/sportsOptions'
 import { useCoachedSportsOptions, usePracticedSportsOptions } from '@/lib/hooks/useSportsOptions'
@@ -47,6 +48,9 @@ type ProfileFormProps = {
   weeklyTargetHours?: number | null
   /** Volume par sport (km, m ou h), athlète uniquement. */
   weeklyVolumeBySport?: Record<string, number> | null
+
+  /** Installations utilisées (athlète uniquement). */
+  initialFacilities?: AthleteFacility[]
 }
 
 export function ProfileForm({
@@ -66,6 +70,7 @@ export function ProfileForm({
   weeklyCurrentHours = null,
   weeklyTargetHours = null,
   weeklyVolumeBySport = null,
+  initialFacilities = [],
 }: ProfileFormProps) {
   const locale = useLocale()
   const effectiveInitialLocale = preferredLocaleProp === 'fr' || preferredLocaleProp === 'en' ? preferredLocaleProp : (locale === 'en' ? 'en' : 'fr')
@@ -768,6 +773,8 @@ export function ProfileForm({
             </>
           )}
 
+          {!isCoach && <AthleteFacilitiesSection initialFacilities={initialFacilities} />}
+
           {/* Section Langues (coach uniquement) */}
           {isCoach && (
           <div className="mb-5">
@@ -836,7 +843,11 @@ export function ProfileForm({
           )}
 
           {/* Danger Zone */}
-          <div className="mt-16 pt-6 border-t border-stone-100 flex flex-col items-center">
+          <div
+            className={
+              isCoach ? 'mt-16 pt-6 border-t border-stone-100 flex flex-col items-center' : 'mt-4 pt-4 border-t border-stone-100 flex flex-col items-center'
+            }
+          >
             <div className="w-full max-w-md flex flex-col items-center gap-4">
               <LogoutButton />
               <hr className="w-full border-t border-stone-200" aria-hidden />

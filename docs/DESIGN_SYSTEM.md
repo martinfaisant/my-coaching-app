@@ -1,7 +1,7 @@
 # 🎨 Design System
 
-**Version :** 1.16  
-**Dernière mise à jour :** 17 mars 2026 (Bloc date objectif : mois + année ligne 1, jour ligne 2, formatGoalDateBlock dans lib/dateUtils. Précédent : Date picker compact, FORM_INPUT_TEXT_SIZE, RequestGoalAddModal.)
+**Version :** 1.17  
+**Dernière mise à jour :** 18 mars 2026 (Profil athlète : section Facilities Used, modal add/edit installations, responsive opening-hours table. Précédent : bloc date objectif, Date picker compact.)
 
 ---
 
@@ -1336,7 +1336,7 @@ Groupe de choix exclusif par segments (style offres coach : / Mois | Unique | Gr
 #### Props
 
 ```typescript
-type SegmentOption = { value: string; label: string }
+type SegmentOption = { value: string; label: React.ReactNode }
 
 type SegmentsProps = {
   options: SegmentOption[]
@@ -1375,6 +1375,8 @@ import { Segments } from '@/components/Segments'
 - Inputs radio masqués (sr-only), labels cliquables ; un seul choix possible.
 - **size="md"** (défaut) : hauteur min 42px, texte `text-sm`.
 - **size="sm"** : `py-1.5` `text-xs` pour blocs secondaires (ex. récurrence dans une modale).
+- Sur petits écrans, les labels peuvent être rendus sur 2 lignes (ex. types d’installation) ; à partir de `sm`, rendu compact sur une ligne.
+- Les segments gardent une hauteur interne homogène via `min-h-*` même si un libellé tient sur une seule ligne.
 
 ---
 
@@ -1576,7 +1578,7 @@ Ce breakpoint `md` est le breakpoint de référence pour les bascules de layout 
 
 **Usages actuels documentés :**
 - **Top bar dashboard** : barre en haut (`DashboardTopBar`) — logo My Sport Ally à gauche, liens de navigation au centre (tablette/desktop, centrés), bloc Profil (avatar + nom) à droite. **Mobile :** titre de la page au centre, bouton hamburger à droite ; clic ouvre un **Drawer** à droite avec liste des liens, bloc Profil et Déconnexion. **Admin** : nav = Gestion des membres + Design System uniquement (pas « Mes athlètes »). Fichiers : `components/DashboardTopBar.tsx`, `components/DashboardNavLinks.tsx`, `components/Drawer.tsx`, `lib/dashboardNavConfig.ts`. **Pages dashboard** : `DashboardPageShell` fournit uniquement le padding de contenu — pas de titre en tête de page ni conteneur carte. Fichier : `components/DashboardPageShell.tsx`.
-- **Page « Mon profil »** (`/dashboard/profile`) : sur **mobile**, marges latérales réduites (wrapper `-mx-3` + `contentClassName` `!px-2 sm:!px-6 lg:!px-8` sur le shell) ; section Objectifs et volume : grille **responsive** `grid-cols-1 sm:grid-cols-2` (1 colonne en dessous de `sm`, 2 colonnes à partir de `sm`) pour éviter le dépassement horizontal ; champs temps à allouer et volumes par sport : largeur `w-[6.5rem]`, padding droit réduit (pr-10 / pr-11 / pr-12) pour le suffixe. Même disposition et tailles de champs dans le formulaire de demande (Objectifs et volume). Fichiers : `app/[locale]/dashboard/profile/page.tsx`, `ProfileForm.tsx`, `FindCoachSection.tsx`.
+- **Page « Mon profil »** (`/dashboard/profile`) : sur **mobile**, marges latérales réduites (wrapper `-mx-3` + `contentClassName` `!px-2 sm:!px-6 lg:!px-8` sur le shell) ; section Volumes hebdomadaires : grille **responsive** `grid-cols-1 sm:grid-cols-2` (1 colonne en dessous de `sm`, 2 colonnes à partir de `sm`) ; champs temps à allouer et volumes par sport : largeur `w-[6.5rem]`, padding droit réduit (pr-10 / pr-11 / pr-12) pour le suffixe. **Section Facilities Used :** cards en 2 blocs (adresse 1/3, horaires 2/3), table horaires compacte avec badge open/closed aligné ; modal add/edit en `size="2xl"` avec cartes jour bordées et fallback mobile (ligne 1 : jour + badge, ligne 2 : créneaux pleine largeur) pour éviter le débordement. Fichiers : `app/[locale]/dashboard/profile/page.tsx`, `ProfileForm.tsx`, `installations/*`.
 - **Calendrier (athlète + coach)** : sous `md`, en-tête sur 2 lignes + bloc totaux de la semaine (volume horaire total + barres par sport, identique au mode étendu desktop) + 1 semaine en stack ; à partir de `md`, layout desktop (3 semaines, grille 7 colonnes). **Structure du jour :** **disponibilités athlète** (tuiles Disponible/Indisponible) → objectifs → entraînements → Strava ; puis sections **Matin** / **Midi** / **Soir** pour les entraînements avec moment ; couleurs et icônes des tuiles entraînement = sport uniquement. **Tuiles disponibilité :** bordure fine (vert / orange), icône calendrier, libellé Disponible/Indisponible en `text-xs font-semibold` (sans `uppercase`) + plage horaire précédée d'une icône horloge (`ClockIcon`), ou note ; pas de récurrence. **Modales :** `AvailabilityModal` (création/édition : Segments type, date en en-tête, Début/Fin en Dropdown 15 min, Note ; athlète : bouton « + » sur jours futurs, clic tuile → édition avec Supprimer + Enregistrer) ; `AvailabilityDetailModal` (lecture seule coach : détail créneau, bouton Fermer). **Natation :** totaux et métadonnées en **mètres (m)** ; icône commentaire sur tuiles entraînement (`calendar.tile.athleteCommentLabel`). Détail : `Project_context.md` §4.5.
 - **Sélecteur de semaine (WeekSelector, calendrier)** : zone centrale à largeur fixe (80px sous `lg`, 150px à partir de `lg`) ; plage de dates sur une ligne à partir de `lg` (1024px), sur deux lignes sous `lg`. Boutons gauche/droite : largeur fixe 40px sous 400px, 80px à partir de 400px ; les dates « semaine précédente/suivante » dans les boutons sont affichées à partir de 400px et masquées en dessous pour que le sélecteur tienne sur les écrans étroits. Fichier : `components/WeekSelector.tsx`.
 - **Chat coach (overlay)** : sous `md`, navigation mobile en 2 écrans (liste des conversations puis conversation avec bouton Retour) ; à partir de `md`, layout desktop avec sidebar + panneau conversation.

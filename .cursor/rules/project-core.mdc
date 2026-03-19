@@ -285,6 +285,18 @@ if ('error' in result) return result
 
 ---
 
+## Installations athlète (facilities)
+
+- **Section Mon profil (athlète)** : `installations` permet d’ajouter/modifier/supprimer des centres utilisés (liste illimitée).
+- **Type centre** : `piscine` | `salle` | `stade` | `autre` (Segments dans la modale).
+- **Adresse** : un seul champ `address` (+ `address_postal_code`, `address_city`, `address_country`, `address_complement`). Ne pas réintroduire `street` + `number` séparés.
+- **Code postal** : normaliser **à la sauvegarde** (uppercase + suppression espaces), sans contrainte UX côté saisie.
+- **Horaires** : JSONB structuré (7 jours, open/closed, plages multiples). Validation serveur stricte (jours présents, `start < end`, pas de chevauchement, closed => 0 plage). `24:00` autorisé en interne (affichage `00:00`).
+- **Responsive** : en modal, sur petit écran afficher jour+badge sur la 1re ligne puis créneaux dessous ; éviter tout débordement badge/horaires.
+- **RLS** : athlète CRUD sur ses lignes ; coach SELECT seulement si subscription `active` / `cancellation_scheduled` ; admin SELECT global.
+
+---
+
 ## Disponibilités athlète (availability)
 
 - **Table :** `athlete_availability_slots` (un créneau = une date ; **pas de récurrence** en produit). Athlète : CRUD sur ses créneaux ; coach : lecture seule sur les créneaux de ses athlètes.
@@ -347,8 +359,8 @@ if ('error' in result) return result
 
 ---
 
-**Version:** 2.4 
-**Last updated:** 17 mars 2026
+**Version:** 2.5
+**Last updated:** 18 mars 2026
 **Refactoring status:** 13/17 tasks completed (76%)  
 **i18n:** Bilingue FR/EN complété — toujours penser bilingue pour les nouvelles features  
-**Offres/souscriptions:** Snapshot à la demande (frozen_* dans coach_requests), souscription à l’acceptation depuis coach_requests ; statuts offre draft / published / archived (voir Project_context.md). **Workouts:** Statut planifié / réalisé / non réalisé ; retour athlète (ressenti, intensité, plaisir) optionnel quand réalisé ; total « fait » avec déduplication Strava (voir Project_context.md §4.5). **Profil athlète – Volumes hebdomadaires :** weekly_current_hours (Volume actuel), weekly_target_hours (Volume maximum), weekly_volume_by_sport ; disposition 2 colonnes ; triathlon → 3 tuiles, trail → D+ dans tuile Course (voir Project_context.md §4.2.1). **Disponibilités athlète :** créneaux par jour (table athlete_availability_slots), pas de récurrence ; athlète CRUD, coach lecture seule (voir Project_context.md §4.5).
+**Offres/souscriptions:** Snapshot à la demande (frozen_* dans coach_requests), souscription à l’acceptation depuis coach_requests ; statuts offre draft / published / archived (voir Project_context.md). **Workouts:** Statut planifié / réalisé / non réalisé ; retour athlète (ressenti, intensité, plaisir) optionnel quand réalisé ; total « fait » avec déduplication Strava (voir Project_context.md §4.5). **Profil athlète – Volumes hebdomadaires :** weekly_current_hours (Volume actuel), weekly_target_hours (Volume maximum), weekly_volume_by_sport ; disposition 2 colonnes ; triathlon → 3 tuiles, trail → D+ dans tuile Course (voir Project_context.md §4.2.1). **Installations athlète :** table `athlete_facilities` (type, adresse, horaires JSONB), modal add/edit, code postal normalisé à la sauvegarde, RLS athlète CRUD / coach SELECT souscription active (voir Project_context.md §4.2.2). **Disponibilités athlète :** créneaux par jour (table athlete_availability_slots), pas de récurrence ; athlète CRUD, coach lecture seule (voir Project_context.md §4.5).

@@ -1226,5 +1226,82 @@
     "noActive": "No active subscriptions.",
     "noCancellationScheduled": "No subscriptions with scheduled cancellation.",
     "noHistory": "No subscriptions in history."
+  },
+  "facilities": {
+    "sectionTitle": "Facilities used",
+    "sectionSubtitle": "These details help the coach plan your training sessions better.",
+    "addButton": "+ Add a facility",
+    "editButton": "Edit",
+    "deleteConfirmation": "Are you sure you want to delete this facility?",
+    "deleteButtonAriaLabel": "Delete facility",
+    "emptyTitle": "No facility added",
+    "emptyDescription": "Click “+ Add a facility” to fill in the type, address and opening hours.",
+    "facilityTypes": {
+      "piscine": "Swimming pool",
+      "salle": "Gym",
+      "stade": "Athletics stadium",
+      "autre": "Other"
+    },
+    "fields": {
+      "facilityName": "Facility name",
+      "streetAndNumber": "Street and number",
+      "street": "Street",
+      "number": "Number",
+      "postalCodeCity": "Postal code · City",
+      "postalCode": "Postal code",
+      "city": "City",
+      "country": "Country",
+      "addressComplement": "Additional details (optional)"
+    },
+    "openingHours": {
+      "title": "Opening hours",
+      "closed": "Closed"
+    },
+    "days": {
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday",
+      "sunday": "Sunday"
+    },
+    "form": {
+      "typeLabel": "Facility type",
+      "addressSectionTitle": "Address"
+    },
+    "hours": {
+      "title": "Opening hours",
+      "subtitle": "7 days · 1 or more time slots per day",
+      "open": "Open",
+      "closed": "Closed",
+      "addSlot": "Add a time slot",
+      "addHours": "Add opening hours",
+      "removeSlotAriaLabel": "Remove time slot",
+      "slotStartAria": "Start time",
+      "slotEndAria": "End time"
+    },
+    "modal": {
+      "addTitle": "Add a facility",
+      "editTitle": "Edit facility",
+      "addButton": "Save facility",
+      "saveButton": "Save changes"
+    },
+    "validation": {
+      "invalidFacilityType": "Invalid facility type.",
+      "facilityNameRequired": "Facility name is required.",
+      "addressRequired": "All required address fields must be filled in.",
+      "openingHoursRequired": "Opening hours are required.",
+      "invalidOpeningHours": "Opening hours are invalid.",
+      "missingDay": "A day of the opening hours is missing.",
+      "dayOpenSlotsRequired": "An open day must include at least one time slot.",
+      "dayClosedSlotsMustBeEmpty": "A closed day must not include any time slots.",
+      "invalidSlotTimeFormat": "Invalid time format (expected HH:MM).",
+      "invalidSlotStartEnd": "Start time must be before end time.",
+      "slotOverlaps": "Opening time slots overlap within the same day.",
+      "missingFacilityId": "Facility ID is missing.",
+      "facilityNotFound": "Facility not found.",
+      "serverError": "An error occurred. Please try again."
+    }
   }
 }

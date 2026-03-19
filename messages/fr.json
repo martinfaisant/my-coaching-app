@@ -205,7 +205,9 @@
         "landingStats": "(bloc stats)"
       },
       "examples": {
-        "brand": { "appName": "My Sport Ally" },
+        "brand": {
+          "appName": "My Sport Ally"
+        },
         "titles": {
           "modal": "Modifier le profil",
           "auth": "Connexion",
@@ -213,18 +215,25 @@
           "section": "Fonctionnalités",
           "page": "Mon calendrier"
         },
-        "navigation": { "link": "Objectifs" },
-        "people": { "name": "Jean Dupont", "initials": "JD" },
+        "navigation": {
+          "link": "Objectifs"
+        },
+        "people": {
+          "name": "Jean Dupont",
+          "initials": "JD"
+        },
         "actions": {
           "cta": "Commencer gratuitement",
           "subscription": "Suivi Performance",
           "start": "Démarrer",
           "logout": "Se déconnecter",
-          "save": "Enregistrer"
-          ,
+          "save": "Enregistrer",
           "inlineLink": "Se connecter"
         },
-        "badges": { "new": "Nouveau", "sample": "Course" },
+        "badges": {
+          "new": "Nouveau",
+          "sample": "Course"
+        },
         "misc": {
           "ratingLine": "4.8 (12 avis)",
           "bio": "Spécialisé course/trail. Objectif : progresser sans se blesser.",
@@ -238,85 +247,201 @@
           "tileTitle": "Sortie longue",
           "meta": "Lun. 12 févr. · 1h30 · 15 km",
           "stravaType": "Run",
-          "microLabel": "MAR. 26"
-          ,
+          "microLabel": "MAR. 26",
           "segmentOption": "Mensuel",
           "kpi": "500+",
-          "lead": "Planifie, suis, progresse — avec un coach."
-          ,
+          "lead": "Planifie, suis, progresse — avec un coach.",
           "muted": "Texte secondaire"
         },
-        "status": { "upToDate": "À jour" },
+        "status": {
+          "upToDate": "À jour"
+        },
         "calendar": {
           "weekRange": "3 févr. – 9 févr.",
           "weekRangeSeparator": " au ",
           "weekRangeShort": "3 févr.",
           "dayShort": "9 févr.",
-          "dateLong": "13 mars 2026"
-          ,
+          "dateLong": "13 mars 2026",
           "weekday": "Lun."
         },
-        "forms": { "label": "Email", "value": "vous@exemple.com", "error": "Champ requis" },
-        "goals": { "priorityNumber": "1", "primary": "Objectif principal" }
+        "forms": {
+          "label": "Email",
+          "value": "vous@exemple.com",
+          "error": "Champ requis"
+        },
+        "goals": {
+          "priorityNumber": "1",
+          "primary": "Objectif principal"
+        }
       },
       "rows": {
-        "modalTitle": { "label": "Titre de modale (app)" },
-        "authTitle": { "label": "Titre auth (login/signup)" },
-        "publicHeroTitle": { "label": "Hero title (landing)" },
-        "publicSectionTitle": { "label": "Titre de section (landing)" },
-        "publicHeaderLogo": { "label": "Logo header public" },
-        "heroButtons": { "label": "Boutons hero (landing)" },
-        "navLink": { "label": "Lien de navigation (dashboard)" },
-        "dashboardMobilePageTitle": { "label": "Titre de page (top bar mobile)" },
-        "dashboardBrand": { "label": "Marque (top bar dashboard)" },
-        "personTileName": { "label": "Nom (CoachTile / AthleteTile)" },
-        "personTileReviewsLine": { "label": "Ligne note/avis (CoachTile)" },
-        "personTileNewBadge": { "label": "Badge \"Nouveau\" (CoachTile)" },
-        "personTileBio": { "label": "Bio (CoachTile)" },
-        "offersBlockLabel": { "label": "Label bloc offres (CoachTile)" },
-        "offerTitle": { "label": "Titre offre (CoachTile)" },
-        "offerFreeBadge": { "label": "Badge \"Gratuit\" (CoachTile)" },
-        "offerPrice": { "label": "Prix offre (CoachTile)" },
-        "offerPriceSuffix": { "label": "Suffixe prix (/mois, /forfait)" },
-        "athleteSubscriptionLink": { "label": "Lien souscription (AthleteTile)" },
-        "athleteTileFieldLabel": { "label": "Libellé champ (AthleteTile)" },
-        "athleteTileValue": { "label": "Valeur champ (AthleteTile)" },
-        "athleteTileStatusMicro": { "label": "Statut micro (AthleteTile)" },
-        "tileTitleImplicit": { "label": "Titre de tuile implicite (sans text-*)" },
-        "tileMeta": { "label": "Meta tuile (date + séparateurs + détails)" },
-        "tileMicroLabelStrava": { "label": "Micro-label Strava (ActivityTile)" },
-        "goalTargetBadgeNumber": { "label": "Chiffre badge objectif (1/2)" },
-        "microUpperMixed": { "label": "Micro uppercase (mix actuel)" },
-        "weekSelectorRange": { "label": "Semaine (WeekSelector)" },
-        "weekSelectorRangeSmallLines": { "label": "Semaine sur 2 lignes (mobile)" },
-        "weekSelectorSideLabel": { "label": "Libellé côté (WeekSelector)" },
-        "chatSidebarName": { "label": "Nom conversation (sidebar chat)" },
-        "chatSidebarAvatarInitials": { "label": "Initiales avatar (sidebar chat)" },
-        "chatListActionLabel": { "label": "Label action (liste chat)" },
-        "logoutLabel": { "label": "Libellé déconnexion" },
-        "buttonBase": { "label": "Texte bouton (base)" },
-        "badgeBase": { "label": "Texte badge (pill)" },
-        "dropdownLabel": { "label": "Label dropdown" },
-        "segmentsOptionMd": { "label": "Option segment (md)" },
-        "segmentsOptionSm": { "label": "Option segment (sm)" },
-        "formErrorToken": { "label": "Erreur (token danger)" },
-        "landingKpiValue": { "label": "Valeur KPI (landing)" },
-        "landingLead": { "label": "Lead (landing)" },
-        "secondaryMuted": { "label": "Texte secondaire (muted)" },
-        "inlineLinkUnderline": { "label": "Lien inline souligné" },
-        "microUpper9": { "label": "Micro uppercase 9px" },
-        "datePickerWeekday": { "label": "Jour semaine (date picker)" },
-        "formLabel": { "label": "Label de champ (form)" },
-        "formInputText": { "label": "Texte de champ (form)" },
-        "formErrorHardRed": { "label": "Erreur en rouge (hardcoded)" }
+        "modalTitle": {
+          "label": "Titre de modale (app)"
+        },
+        "authTitle": {
+          "label": "Titre auth (login/signup)"
+        },
+        "publicHeroTitle": {
+          "label": "Hero title (landing)"
+        },
+        "publicSectionTitle": {
+          "label": "Titre de section (landing)"
+        },
+        "publicHeaderLogo": {
+          "label": "Logo header public"
+        },
+        "heroButtons": {
+          "label": "Boutons hero (landing)"
+        },
+        "navLink": {
+          "label": "Lien de navigation (dashboard)"
+        },
+        "dashboardMobilePageTitle": {
+          "label": "Titre de page (top bar mobile)"
+        },
+        "dashboardBrand": {
+          "label": "Marque (top bar dashboard)"
+        },
+        "personTileName": {
+          "label": "Nom (CoachTile / AthleteTile)"
+        },
+        "personTileReviewsLine": {
+          "label": "Ligne note/avis (CoachTile)"
+        },
+        "personTileNewBadge": {
+          "label": "Badge \"Nouveau\" (CoachTile)"
+        },
+        "personTileBio": {
+          "label": "Bio (CoachTile)"
+        },
+        "offersBlockLabel": {
+          "label": "Label bloc offres (CoachTile)"
+        },
+        "offerTitle": {
+          "label": "Titre offre (CoachTile)"
+        },
+        "offerFreeBadge": {
+          "label": "Badge \"Gratuit\" (CoachTile)"
+        },
+        "offerPrice": {
+          "label": "Prix offre (CoachTile)"
+        },
+        "offerPriceSuffix": {
+          "label": "Suffixe prix (/mois, /forfait)"
+        },
+        "athleteSubscriptionLink": {
+          "label": "Lien souscription (AthleteTile)"
+        },
+        "athleteTileFieldLabel": {
+          "label": "Libellé champ (AthleteTile)"
+        },
+        "athleteTileValue": {
+          "label": "Valeur champ (AthleteTile)"
+        },
+        "athleteTileStatusMicro": {
+          "label": "Statut micro (AthleteTile)"
+        },
+        "tileTitleImplicit": {
+          "label": "Titre de tuile implicite (sans text-*)"
+        },
+        "tileMeta": {
+          "label": "Meta tuile (date + séparateurs + détails)"
+        },
+        "tileMicroLabelStrava": {
+          "label": "Micro-label Strava (ActivityTile)"
+        },
+        "goalTargetBadgeNumber": {
+          "label": "Chiffre badge objectif (1/2)"
+        },
+        "microUpperMixed": {
+          "label": "Micro uppercase (mix actuel)"
+        },
+        "weekSelectorRange": {
+          "label": "Semaine (WeekSelector)"
+        },
+        "weekSelectorRangeSmallLines": {
+          "label": "Semaine sur 2 lignes (mobile)"
+        },
+        "weekSelectorSideLabel": {
+          "label": "Libellé côté (WeekSelector)"
+        },
+        "chatSidebarName": {
+          "label": "Nom conversation (sidebar chat)"
+        },
+        "chatSidebarAvatarInitials": {
+          "label": "Initiales avatar (sidebar chat)"
+        },
+        "chatListActionLabel": {
+          "label": "Label action (liste chat)"
+        },
+        "logoutLabel": {
+          "label": "Libellé déconnexion"
+        },
+        "buttonBase": {
+          "label": "Texte bouton (base)"
+        },
+        "badgeBase": {
+          "label": "Texte badge (pill)"
+        },
+        "dropdownLabel": {
+          "label": "Label dropdown"
+        },
+        "segmentsOptionMd": {
+          "label": "Option segment (md)"
+        },
+        "segmentsOptionSm": {
+          "label": "Option segment (sm)"
+        },
+        "formErrorToken": {
+          "label": "Erreur (token danger)"
+        },
+        "landingKpiValue": {
+          "label": "Valeur KPI (landing)"
+        },
+        "landingLead": {
+          "label": "Lead (landing)"
+        },
+        "secondaryMuted": {
+          "label": "Texte secondaire (muted)"
+        },
+        "inlineLinkUnderline": {
+          "label": "Lien inline souligné"
+        },
+        "microUpper9": {
+          "label": "Micro uppercase 9px"
+        },
+        "datePickerWeekday": {
+          "label": "Jour semaine (date picker)"
+        },
+        "formLabel": {
+          "label": "Label de champ (form)"
+        },
+        "formInputText": {
+          "label": "Texte de champ (form)"
+        },
+        "formErrorHardRed": {
+          "label": "Erreur en rouge (hardcoded)"
+        }
       },
       "proposed": {
-        "titleCard": { "label": "Titre carte/tuile (proposé)" },
-        "metaInline": { "label": "Meta / secondaire (proposé)" },
-        "microUpper": { "label": "Micro uppercase (proposé)" },
-        "feedbackError": { "label": "Erreur / danger (proposé)" },
-        "microBadge": { "label": "Micro-badge (proposé)" },
-        "microStatus": { "label": "Micro-statut (proposé)" }
+        "titleCard": {
+          "label": "Titre carte/tuile (proposé)"
+        },
+        "metaInline": {
+          "label": "Meta / secondaire (proposé)"
+        },
+        "microUpper": {
+          "label": "Micro uppercase (proposé)"
+        },
+        "feedbackError": {
+          "label": "Erreur / danger (proposé)"
+        },
+        "microBadge": {
+          "label": "Micro-badge (proposé)"
+        },
+        "microStatus": {
+          "label": "Micro-statut (proposé)"
+        }
       }
     }
   },
@@ -1225,5 +1350,82 @@
     "noActive": "Aucune souscription active.",
     "noCancellationScheduled": "Aucune souscription en résiliation.",
     "noHistory": "Aucune souscription dans l'historique."
+  },
+  "facilities": {
+    "sectionTitle": "Installations utilisées",
+    "sectionSubtitle": "Ces informations aident le coach à mieux planifier les entraînements.",
+    "addButton": "+ Ajouter un centre",
+    "editButton": "Modifier",
+    "deleteConfirmation": "Êtes-vous sûr de vouloir supprimer ce centre ?",
+    "deleteButtonAriaLabel": "Supprimer le centre",
+    "emptyTitle": "Aucun établissement ajouté",
+    "emptyDescription": "Cliquez sur “+ Ajouter un centre” pour renseigner le type, l’adresse et vos horaires d’ouverture.",
+    "facilityTypes": {
+      "piscine": "Piscine",
+      "salle": "Salle de sport",
+      "stade": "Stade d’athlétisme",
+      "autre": "Autre"
+    },
+    "fields": {
+      "facilityName": "Nom du centre",
+      "streetAndNumber": "Rue et numéro",
+      "street": "Rue",
+      "number": "Numéro",
+      "postalCodeCity": "Code postal · Ville",
+      "postalCode": "Code postal",
+      "city": "Ville",
+      "country": "Pays",
+      "addressComplement": "Complément (optionnel)"
+    },
+    "openingHours": {
+      "title": "Horaires d'ouverture",
+      "closed": "Fermé"
+    },
+    "days": {
+      "monday": "Lundi",
+      "tuesday": "Mardi",
+      "wednesday": "Mercredi",
+      "thursday": "Jeudi",
+      "friday": "Vendredi",
+      "saturday": "Samedi",
+      "sunday": "Dimanche"
+    },
+    "form": {
+      "typeLabel": "Type de centre",
+      "addressSectionTitle": "Adresse"
+    },
+    "hours": {
+      "title": "Horaires d’ouverture",
+      "subtitle": "7 jours · 1 ou plusieurs plages par jour",
+      "open": "Ouvert",
+      "closed": "Fermé",
+      "addSlot": "Ajouter une plage",
+      "addHours": "Ajouter des heures d'ouvertures",
+      "removeSlotAriaLabel": "Supprimer la plage",
+      "slotStartAria": "Heure de début",
+      "slotEndAria": "Heure de fin"
+    },
+    "modal": {
+      "addTitle": "Ajouter un centre",
+      "editTitle": "Modifier un centre",
+      "addButton": "Enregistrer le centre",
+      "saveButton": "Enregistrer les modifications"
+    },
+    "validation": {
+      "invalidFacilityType": "Type de centre invalide.",
+      "facilityNameRequired": "Le nom du centre est requis.",
+      "addressRequired": "Tous les champs d’adresse requis doivent être complétés.",
+      "openingHoursRequired": "Les horaires d’ouverture sont requis.",
+      "invalidOpeningHours": "Les horaires d’ouverture sont invalides.",
+      "missingDay": "Un jour des horaires est manquant.",
+      "dayOpenSlotsRequired": "Un jour ouvert doit contenir au moins une plage.",
+      "dayClosedSlotsMustBeEmpty": "Un jour fermé ne doit contenir aucune plage.",
+      "invalidSlotTimeFormat": "Un format d’heure est invalide (attendu HH:MM).",
+      "invalidSlotStartEnd": "L’heure de début doit être avant l’heure de fin.",
+      "slotOverlaps": "Les plages horaires se chevauchent sur un même jour.",
+      "missingFacilityId": "ID du centre manquant.",
+      "facilityNotFound": "Centre introuvable.",
+      "serverError": "Une erreur est survenue. Veuillez réessayer."
+    }
   }
 }
