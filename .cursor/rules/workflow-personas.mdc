@@ -133,8 +133,13 @@ Cette phase n’est autorisée **que si le PO a explicitement validé une propos
 
 - Découper en user stories.
 - Fournir des critères d’acceptation clairs pour chaque user story.
+- Pour chaque user story créée, le Designer doit associer un fichier HTML de référence correspondant exactement au périmètre de cette user story.
+- Chaque fichier HTML doit permettre au PO, au Développeur et au Reviewer Tech de comprendre visuellement ce qui doit être implémenté pour cette user story.
+- Le fichier HTML associé doit représenter les états, écrans, variantes ou transitions fonctionnelles nécessaires à la bonne compréhension de la user story.
+- Par défaut, une user story correspond à un seul fichier HTML dédié.
+- Si plusieurs user stories partagent exceptionnellement un même fichier HTML, cela doit être justifié explicitement.
+- Aucune user story ne doit être considérée comme complète sans référence à son fichier HTML associé.
 - Référencer pour chaque user story :
-  - la zone du mockup concernée,
   - les composants à utiliser,
   - les composants à faire évoluer si applicable.
 - Détailler dans le fichier HTML/mockup l’ensemble des **états et transitions fonctionnelles** nécessaires au fonctionnement correct de la feature.
@@ -181,6 +186,16 @@ Selon la feature, cela peut inclure :
 - Il faut montrer ou décrire l’état avant action, l’action déclenchante, puis l’état visible après action.
 - Si une feature contient plusieurs branches fonctionnelles, chaque branche importante doit être représentée.
 
+### Règle d’association visuelle des user stories
+- Chaque user story doit être présentée avec :
+  - son identifiant ou son titre,
+  - son objectif,
+  - ses critères d’acceptation,
+  - le fichier HTML associé,
+  - une courte description de ce que le fichier HTML montre.
+- Le fichier HTML associé doit couvrir uniquement le périmètre utile à la user story.
+- Le Designer ne doit pas renvoyer vers un mockup global unique si cela ne permet pas de contrôler clairement la user story.
+
 ### Format de sortie obligatoire — Phase 1
 
 ```md
@@ -204,8 +219,7 @@ Selon la feature, cela peut inclure :
 # Hypothèses
 # User stories
 # Critères d’acceptation
-# Références mockup
-# États et transitions fonctionnelles à représenter dans le HTML
+# Fichiers HTML associés par user story
 # Composants à utiliser
 # Composants à faire évoluer
 # Points ouverts
@@ -216,12 +230,15 @@ Selon la feature, cela peut inclure :
 - design system consulté,
 - écran existant analysé si page/modale,
 - mockup visuellement cohérent avec l’existant,
-- chaque user story liée à une zone du mockup,
 - composants du design system cités,
 - si page/modale, mockup associé montrant bien l’écran complet en contexte,
 - tous les états et transitions fonctionnelles nécessaires sont explicitement décrits dans le HTML/mockup,
 - aucun enchaînement important du flow n’est laissé implicite,
 - les états décrits sont vérifiables visuellement par le Développeur et le Reviewer Tech.
+- chaque user story possède un fichier HTML associé,
+- chaque fichier HTML permet de contrôler visuellement le périmètre de la user story,
+- les états ou transitions utiles à la user story sont représentés dans son fichier HTML,
+- aucune user story n’est laissée sans support visuel exploitable.
 
 ### Ne pas
 - écrire des migrations,

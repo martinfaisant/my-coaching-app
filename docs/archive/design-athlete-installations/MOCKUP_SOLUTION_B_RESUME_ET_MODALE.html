@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Solution B — Résumé horaires + modale d’édition</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        colors: {
+          'palette-forest-dark': '#627e59',
+          'palette-forest-darker': '#506648',
+          'palette-olive': '#8e9856',
+          'palette-danger': '#c0564b',
+          'palette-danger-dark': '#9e3b31',
+        }
+      }}
+    }
+  </script>
+</head>
+<body class="bg-stone-100 text-stone-800 antialiased min-h-screen">
+  <div class="max-w-3xl mx-auto py-6 px-4">
+    <!-- Explication Designer -->
+    <div class="bg-white/80 rounded-xl border border-stone-200 p-4 mb-6">
+      <h2 class="text-sm font-bold text-stone-700 uppercase tracking-wider mb-2">Solution B — Résumé horaires + modale</h2>
+      <p class="text-sm text-stone-600 mb-2">
+        <strong>Principe :</strong> Chaque carte centre affiche d’abord l’identité (type, nom) et l’adresse. Les horaires sont résumés en une phrase lisible (ex. « Lun. 07:00–12:00, 15:00–20:00 · Mar. 06:30–11:30 · Mer.–Dim. Fermé »). Un bouton « Modifier les horaires » ouvre une modale dédiée où l’utilisateur configure les 7 jours et les plages. La carte reste simple ; la complexité est dans la modale.
+      </p>
+      <p class="text-xs text-stone-500">
+        Composants : Badge, Input/Textarea, Button, Modal (design system). Résumé en texte ; modale = liste des 7 jours avec Ouvert/Fermé et plages par jour.
+      </p>
+    </div>
+
+    <form class="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-stone-100">
+      <div class="h-[100px] bg-gradient-to-r from-palette-forest-dark to-palette-olive"></div>
+      <div class="px-8 pb-8 pt-6">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+          <div>
+            <h1 class="text-sm font-bold uppercase tracking-wider text-stone-700">Mes informations</h1>
+            <p class="text-stone-500 text-sm">Centres, adresses et horaires.</p>
+          </div>
+          <button type="button" class="px-4 py-2.5 rounded-lg bg-palette-forest-dark text-white text-sm font-medium hover:bg-palette-forest-darker">Enregistrer</button>
+        </div>
+        <hr class="border-stone-100 mb-6" />
+
+        <section class="space-y-4">
+          <div class="flex items-end justify-between gap-4">
+            <div>
+              <h2 class="text-lg font-bold text-stone-900">Installations utilisées</h2>
+              <p class="text-sm text-stone-500 mt-0.5">Lieu, adresse et horaires. Cliquez sur « Modifier les horaires » pour configurer chaque centre.</p>
+            </div>
+            <button type="button" class="shrink-0 px-3 py-2 rounded-lg border border-stone-200 bg-stone-50 text-stone-700 text-sm font-medium hover:border-palette-forest-dark hover:text-palette-forest-dark">+ Ajouter un centre</button>
+          </div>
+
+          <!-- Carte 1 -->
+          <div class="rounded-2xl border border-stone-200 bg-white overflow-hidden shadow-sm">
+            <div class="p-4 border-b border-stone-100 flex flex-wrap items-center justify-between gap-3">
+              <div class="flex items-center gap-3 flex-wrap">
+                <span class="px-2.5 py-0.5 rounded-full bg-sky-100 border border-sky-200 text-sky-700 text-xs font-semibold">Piscine</span>
+                <span class="text-base font-semibold text-stone-800">Centre Aquatique</span>
+              </div>
+              <button type="button" class="text-sm font-medium text-palette-danger-dark hover:text-palette-danger">Supprimer</button>
+            </div>
+
+            <div class="p-4 space-y-6">
+              <div>
+                <h3 class="text-sm font-bold text-stone-700 mb-3">Adresse</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div class="sm:col-span-2"><label class="block text-xs font-bold uppercase tracking-wider text-stone-400 mb-1">Nom du centre</label><input type="text" value="Centre Aquatique" class="w-full px-3 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm" /></div>
+                  <div><label class="block text-xs font-bold uppercase tracking-wider text-stone-400 mb-1">Rue</label><input type="text" value="Avenue des Sports" class="w-full px-3 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm" /></div>
+                  <div><label class="block text-xs font-bold uppercase tracking-wider text-stone-400 mb-1">N°</label><input type="text" value="12" class="w-full px-3 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm" /></div>
+                  <div><label class="block text-xs font-bold uppercase tracking-wider text-stone-400 mb-1">Code postal</label><input type="text" value="1010" class="w-full px-3 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm" /></div>
+                  <div><label class="block text-xs font-bold uppercase tracking-wider text-stone-400 mb-1">Ville</label><input type="text" value="Bruxelles" class="w-full px-3 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm" /></div>
+                  <div class="sm:col-span-2"><label class="block text-xs font-bold uppercase tracking-wider text-stone-400 mb-1">Pays</label><input type="text" value="Belgique" class="w-full px-3 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm" /></div>
+                  <div class="sm:col-span-2"><label class="block text-xs font-bold uppercase tracking-wider text-stone-400 mb-1">Complément (optionnel)</label><textarea rows="2" placeholder="Étage, accès…" class="w-full px-3 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm resize-y"></textarea></div>
+                </div>
+              </div>
+
+              <div>
+                <h3 class="text-sm font-bold text-stone-700 mb-2">Horaires d’ouverture</h3>
+                <div class="flex flex-wrap items-center gap-3">
+                  <p class="text-sm text-stone-600 flex-1 min-w-0">
+                    Lun. 07:00–12:00, 15:00–20:00 · Mar. 06:30–11:30 · Mer.–Dim. Fermé
+                  </p>
+                  <button type="button" class="shrink-0 px-3 py-2 rounded-lg border border-palette-forest-dark text-palette-forest-dark text-sm font-medium hover:bg-palette-forest-dark/10">Modifier les horaires</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Carte 2 (résumé) -->
+          <div class="rounded-2xl border border-stone-200 bg-white overflow-hidden shadow-sm">
+            <div class="p-4 border-b border-stone-100 flex flex-wrap items-center justify-between gap-3">
+              <div class="flex items-center gap-3 flex-wrap">
+                <span class="px-2.5 py-0.5 rounded-full bg-stone-200 border border-stone-300 text-stone-700 text-xs font-semibold">Salle de sport</span>
+                <span class="text-base font-semibold text-stone-800">Salle Move&amp;Go</span>
+              </div>
+              <button type="button" class="text-sm font-medium text-palette-danger-dark hover:text-palette-danger">Supprimer</button>
+            </div>
+            <div class="p-4">
+              <p class="text-sm text-stone-600">Rue de l’Endurance 5, 3300 Tirlemont, Belgique.</p>
+              <div class="flex flex-wrap items-center gap-3 mt-2">
+                <p class="text-sm text-stone-600">Sam. 09:00–12:30 · Autres jours fermés.</p>
+                <button type="button" class="text-sm font-medium text-palette-forest-dark hover:underline">Modifier les horaires</button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </form>
+
+    <!-- Simulacre modale « Horaires » (pour démo design) -->
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/50" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div class="bg-white rounded-2xl shadow-xl border border-stone-200 max-w-lg w-full max-h-[90vh] overflow-hidden flex flex-col">
+        <div class="p-4 border-b border-stone-200 flex items-center justify-between">
+          <h2 id="modal-title" class="text-lg font-bold text-stone-900">Horaires d’ouverture — Centre Aquatique</h2>
+          <button type="button" class="p-2 rounded-lg hover:bg-stone-100 text-stone-500" aria-label="Fermer">✕</button>
+        </div>
+        <div class="p-4 overflow-y-auto flex-1">
+          <p class="text-sm text-stone-500 mb-4">Pour chaque jour : indiquez « Ouvert » ou « Fermé ». Si ouvert, ajoutez une ou plusieurs plages (début – fin).</p>
+          <div class="space-y-4">
+            <div class="rounded-xl border border-stone-200 p-3 bg-stone-50/50">
+              <div class="flex items-center justify-between mb-2">
+                <span class="font-medium text-stone-800">Lundi</span>
+                <span class="text-xs text-stone-500">Ouvert</span>
+              </div>
+              <div class="space-y-2">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <select class="px-2 py-1.5 rounded-lg border border-stone-300 bg-white text-sm"><option>07:00</option><option>12:00</option></select>
+                  <span class="text-stone-400">–</span>
+                  <select class="px-2 py-1.5 rounded-lg border border-stone-300 bg-white text-sm"><option>12:00</option><option>20:00</option></select>
+                </div>
+                <div class="flex items-center gap-2 flex-wrap">
+                  <select class="px-2 py-1.5 rounded-lg border border-stone-300 bg-white text-sm"><option>15:00</option></select>
+                  <span class="text-stone-400">–</span>
+                  <select class="px-2 py-1.5 rounded-lg border border-stone-300 bg-white text-sm"><option>20:00</option></select>
+                  <button type="button" class="text-xs text-palette-danger-dark">Suppr.</button>
+                </div>
+                <button type="button" class="text-sm text-palette-forest-dark font-medium">+ Ajouter une plage</button>
+              </div>
+            </div>
+            <div class="rounded-xl border border-stone-200 p-3">
+              <div class="flex items-center justify-between">
+                <span class="font-medium text-stone-800">Mardi</span>
+                <span class="text-xs text-stone-500">Ouvert · 06:30–11:30</span>
+                <button type="button" class="text-sm text-palette-forest-dark">Modifier</button>
+              </div>
+            </div>
+            <div class="rounded-xl border border-stone-200 p-3">
+              <div class="flex items-center justify-between">
+                <span class="font-medium text-stone-800">Mercredi</span>
+                <span class="text-xs text-stone-500">Fermé</span>
+                <button type="button" class="text-sm text-palette-forest-dark">Définir</button>
+              </div>
+            </div>
+            <p class="text-xs text-stone-400">Jeu., Ven., Sam., Dim. : idem (Fermé / Définir).</p>
+          </div>
+        </div>
+        <div class="p-4 border-t border-stone-200 flex justify-end gap-2">
+          <button type="button" class="px-4 py-2 rounded-lg border border-stone-200 text-stone-700 text-sm hover:bg-stone-50">Annuler</button>
+          <button type="button" class="px-4 py-2 rounded-lg bg-palette-forest-dark text-white text-sm font-medium hover:bg-palette-forest-darker">Enregistrer les horaires</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

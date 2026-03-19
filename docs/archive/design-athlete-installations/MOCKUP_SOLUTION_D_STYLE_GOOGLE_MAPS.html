@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Solution D — Style Google Maps (liste horaires)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        colors: {
+          'palette-forest-dark': '#627e59',
+          'palette-forest-darker': '#506648',
+          'palette-olive': '#8e9856',
+          'palette-danger': '#c0564b',
+          'palette-danger-dark': '#9e3b31',
+        }
+      }}
+    }
+  </script>
+</head>
+<body class="bg-stone-100 text-stone-800 antialiased min-h-screen">
+  <div class="max-w-3xl mx-auto py-6 px-4">
+    <!-- Explication Designer -->
+    <div class="bg-white/80 rounded-xl border border-stone-200 p-4 mb-6">
+      <h2 class="text-sm font-bold text-stone-700 uppercase tracking-wider mb-2">Solution D — Inspirée de Google Maps</h2>
+      <p class="text-sm text-stone-600 mb-2">
+        <strong>Principe :</strong> Affichage des horaires comme sur une fiche Google Maps : une liste simple, une ligne par jour. À gauche le nom du jour, à droite les horaires (ex. « 07:00 – 12:00, 15:00 – 20:00 ») ou « Fermé ». Aucune boîte par jour, pas de tableau à en-têtes — uniquement une liste facile à parcourir. Option : mettre en valeur la ligne du jour (ex. fond léger). Pour modifier : bouton « Modifier les horaires » qui rend la liste éditable (chaque ligne avec un lien « Modifier » qui déplie les champs plage début–fin et « + Ajouter une plage »).
+      </p>
+      <p class="text-xs text-stone-500">
+        Composants : Badge, Input/Textarea, Button. Liste type « Horaires » = divs ou listes avec flex justify-between (jour | horaires). Édition = même liste + zone dépliable par ligne.
+      </p>
+    </div>
+
+    <form class="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-stone-100">
+      <div class="h-[100px] bg-gradient-to-r from-palette-forest-dark to-palette-olive"></div>
+      <div class="px-8 pb-8 pt-6">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+          <div>
+            <h1 class="text-sm font-bold uppercase tracking-wider text-stone-700">Mes informations</h1>
+            <p class="text-stone-500 text-sm">Centres, adresses et horaires.</p>
+          </div>
+          <button type="button" class="px-4 py-2.5 rounded-lg bg-palette-forest-dark text-white text-sm font-medium hover:bg-palette-forest-darker">Enregistrer</button>
+        </div>
+        <hr class="border-stone-100 mb-6" />
+
+        <section class="space-y-4">
+          <div class="flex items-end justify-between gap-4">
+            <div>
+              <h2 class="text-lg font-bold text-stone-900">Installations utilisées</h2>
+              <p class="text-sm text-stone-500 mt-0.5">Lieu, adresse et horaires de chaque centre.</p>
+            </div>
+            <button type="button" class="shrink-0 px-3 py-2 rounded-lg border border-stone-200 bg-stone-50 text-stone-700 text-sm font-medium hover:border-palette-forest-dark hover:text-palette-forest-dark">+ Ajouter un centre</button>
+          </div>
+
+          <!-- Carte 1 : style Google Maps -->
+          <div class="rounded-2xl border border-stone-200 bg-white overflow-hidden shadow-sm">
+            <div class="p-4 border-b border-stone-100 flex flex-wrap items-center justify-between gap-3">
+              <div class="flex items-center gap-3 flex-wrap">
+                <span class="px-2.5 py-0.5 rounded-full bg-sky-100 border border-sky-200 text-sky-700 text-xs font-semibold">Piscine</span>
+                <span class="text-base font-semibold text-stone-800">Centre Aquatique</span>
+              </div>
+              <button type="button" class="text-sm font-medium text-palette-danger-dark hover:text-palette-danger">Supprimer</button>
+            </div>
+
+            <div class="p-4 space-y-6">
+              <!-- Adresse (compact) -->
+              <div>
+                <h3 class="text-sm font-semibold text-stone-800 mb-2">Adresse</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div class="sm:col-span-2"><label class="block text-xs font-bold uppercase tracking-wider text-stone-400 mb-1">Nom du centre</label><input type="text" value="Centre Aquatique" class="w-full px-3 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm" /></div>
+                  <div><label class="block text-xs font-bold uppercase tracking-wider text-stone-400 mb-1">Rue et numéro</label><input type="text" value="Avenue des Sports 12" class="w-full px-3 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm" /></div>
+                  <div><label class="block text-xs font-bold uppercase tracking-wider text-stone-400 mb-1">Code postal · Ville</label><input type="text" value="1010 Bruxelles" class="w-full px-3 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm" /></div>
+                  <div class="sm:col-span-2"><label class="block text-xs font-bold uppercase tracking-wider text-stone-400 mb-1">Pays</label><input type="text" value="Belgique" class="w-full px-3 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm" /></div>
+                  <div class="sm:col-span-2"><label class="block text-xs font-bold uppercase tracking-wider text-stone-400 mb-1">Complément (optionnel)</label><input type="text" placeholder="Étage, accès…" class="w-full px-3 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm" /></div>
+                </div>
+              </div>
+
+              <!-- Horaires : liste style Google Maps (affichage) -->
+              <div>
+                <div class="flex items-center justify-between gap-4 mb-2">
+                  <h3 class="text-sm font-semibold text-stone-800">Horaires d'ouverture</h3>
+                  <button type="button" class="text-sm font-medium text-palette-forest-dark hover:underline">Modifier les horaires</button>
+                </div>
+                <!-- Liste simple : jour à gauche, horaires à droite -->
+                <ul class="border border-stone-200 rounded-lg overflow-hidden divide-y divide-stone-100">
+                  <li class="flex justify-between items-center py-2.5 px-3 bg-stone-50/80">
+                    <span class="text-sm font-medium text-stone-800">Lundi</span>
+                    <span class="text-sm text-stone-600">07:00 – 12:00, 15:00 – 20:00</span>
+                  </li>
+                  <li class="flex justify-between items-center py-2.5 px-3">
+                    <span class="text-sm font-medium text-stone-800">Mardi</span>
+                    <span class="text-sm text-stone-600">06:30 – 11:30</span>
+                  </li>
+                  <li class="flex justify-between items-center py-2.5 px-3">
+                    <span class="text-sm font-medium text-stone-800">Mercredi</span>
+                    <span class="text-sm text-stone-500">Fermé</span>
+                  </li>
+                  <li class="flex justify-between items-center py-2.5 px-3">
+                    <span class="text-sm font-medium text-stone-800">Jeudi</span>
+                    <span class="text-sm text-stone-500">Fermé</span>
+                  </li>
+                  <li class="flex justify-between items-center py-2.5 px-3">
+                    <span class="text-sm font-medium text-stone-800">Vendredi</span>
+                    <span class="text-sm text-stone-500">Fermé</span>
+                  </li>
+                  <li class="flex justify-between items-center py-2.5 px-3">
+                    <span class="text-sm font-medium text-stone-800">Samedi</span>
+                    <span class="text-sm text-stone-500">Fermé</span>
+                  </li>
+                  <li class="flex justify-between items-center py-2.5 px-3">
+                    <span class="text-sm font-medium text-stone-800">Dimanche</span>
+                    <span class="text-sm text-stone-500">Fermé</span>
+                  </li>
+                </ul>
+                <p class="text-xs text-stone-400 mt-1.5">Comme sur Google Maps : une ligne par jour, horaires à droite.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- État « édition horaires » : même liste mais avec Modifier par ligne -->
+          <div class="rounded-2xl border-2 border-palette-forest-dark/30 bg-white overflow-hidden shadow-sm">
+            <div class="p-3 border-b border-stone-100 bg-palette-forest-dark/5">
+              <p class="text-xs font-bold uppercase tracking-wider text-stone-500">Exemple : mode édition des horaires (même style liste)</p>
+            </div>
+            <div class="p-4">
+              <h3 class="text-sm font-semibold text-stone-800 mb-3">Horaires d'ouverture — Centre Aquatique</h3>
+              <ul class="border border-stone-200 rounded-lg overflow-hidden divide-y divide-stone-100">
+                <li class="py-2.5 px-3 flex justify-between items-center gap-4 flex-wrap">
+                  <span class="text-sm font-medium text-stone-800">Lundi</span>
+                  <div class="flex items-center gap-2">
+                    <span class="text-sm text-stone-600">07:00 – 12:00, 15:00 – 20:00</span>
+                    <button type="button" class="text-sm text-palette-forest-dark font-medium hover:underline">Modifier</button>
+                  </div>
+                </li>
+                <li class="py-2.5 px-3 bg-stone-50/50 border-l-2 border-palette-forest-dark/40">
+                  <div class="flex justify-between items-start gap-4 mb-2">
+                    <span class="text-sm font-medium text-stone-800">Lundi — modifier</span>
+                    <button type="button" class="text-sm text-stone-500 hover:text-stone-700">Fermer</button>
+                  </div>
+                  <div class="space-y-2 pl-0">
+                    <div class="flex items-center gap-2 flex-wrap">
+                      <select class="px-2 py-1.5 rounded-lg border border-stone-300 bg-white text-sm"><option>07:00</option><option>12:00</option></select>
+                      <span class="text-stone-400">–</span>
+                      <select class="px-2 py-1.5 rounded-lg border border-stone-300 bg-white text-sm"><option>12:00</option><option>20:00</option></select>
+                    </div>
+                    <div class="flex items-center gap-2 flex-wrap">
+                      <select class="px-2 py-1.5 rounded-lg border border-stone-300 bg-white text-sm"><option>15:00</option></select>
+                      <span class="text-stone-400">–</span>
+                      <select class="px-2 py-1.5 rounded-lg border border-stone-300 bg-white text-sm"><option>20:00</option></select>
+                      <button type="button" class="text-xs text-palette-danger-dark">Suppr.</button>
+                    </div>
+                    <button type="button" class="text-sm text-palette-forest-dark font-medium">+ Ajouter une plage</button>
+                  </div>
+                </li>
+                <li class="py-2.5 px-3 flex justify-between items-center">
+                  <span class="text-sm font-medium text-stone-800">Mardi</span>
+                  <div class="flex items-center gap-2">
+                    <span class="text-sm text-stone-600">06:30 – 11:30</span>
+                    <button type="button" class="text-sm text-palette-forest-dark font-medium hover:underline">Modifier</button>
+                  </div>
+                </li>
+                <li class="py-2.5 px-3 flex justify-between items-center">
+                  <span class="text-sm font-medium text-stone-800">Mercredi</span>
+                  <button type="button" class="text-sm text-palette-forest-dark font-medium hover:underline">Définir des horaires</button>
+                </li>
+                <li class="py-2.5 px-3 flex justify-between items-center">
+                  <span class="text-sm font-medium text-stone-800">Jeudi</span>
+                  <span class="text-sm text-stone-500">Fermé</span>
+                  <button type="button" class="text-sm text-palette-forest-dark font-medium hover:underline">Modifier</button>
+                </li>
+                <li class="py-2.5 px-3 flex justify-between items-center">
+                  <span class="text-sm font-medium text-stone-800">Vendredi</span>
+                  <span class="text-sm text-stone-500">Fermé</span>
+                  <button type="button" class="text-sm text-palette-forest-dark font-medium hover:underline">Modifier</button>
+                </li>
+                <li class="py-2.5 px-3 flex justify-between items-center">
+                  <span class="text-sm font-medium text-stone-800">Samedi</span>
+                  <span class="text-sm text-stone-500">Fermé</span>
+                  <button type="button" class="text-sm text-palette-forest-dark font-medium hover:underline">Modifier</button>
+                </li>
+                <li class="py-2.5 px-3 flex justify-between items-center">
+                  <span class="text-sm font-medium text-stone-800">Dimanche</span>
+                  <span class="text-sm text-stone-500">Fermé</span>
+                  <button type="button" class="text-sm text-palette-forest-dark font-medium hover:underline">Modifier</button>
+                </li>
+              </ul>
+              <div class="mt-3 flex justify-end">
+                <button type="button" class="px-3 py-1.5 rounded-lg border border-stone-200 bg-white text-stone-700 text-sm hover:bg-stone-50">Terminer l’édition</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Carte 2 (résumé) -->
+          <div class="rounded-2xl border border-stone-200 bg-white overflow-hidden shadow-sm">
+            <div class="p-4 border-b border-stone-100 flex flex-wrap items-center justify-between gap-3">
+              <div class="flex items-center gap-3 flex-wrap">
+                <span class="px-2.5 py-0.5 rounded-full bg-stone-200 border border-stone-300 text-stone-700 text-xs font-semibold">Salle de sport</span>
+                <span class="text-base font-semibold text-stone-800">Salle Move&amp;Go</span>
+              </div>
+              <button type="button" class="text-sm font-medium text-palette-danger-dark hover:text-palette-danger">Supprimer</button>
+            </div>
+            <div class="p-4">
+              <p class="text-sm text-stone-600">Rue de l’Endurance 5, 3300 Tirlemont, Belgique.</p>
+              <ul class="mt-2 border border-stone-200 rounded-lg divide-y divide-stone-100 max-w-sm">
+                <li class="flex justify-between py-2 px-3 text-sm"><span class="text-stone-700">Samedi</span><span class="text-stone-600">09:00 – 12:30</span></li>
+                <li class="flex justify-between py-2 px-3 text-sm"><span class="text-stone-700">Autres jours</span><span class="text-stone-500">Fermé</span></li>
+              </ul>
+            </div>
+          </div>
+        </section>
+      </div>
+    </form>
+  </div>
+</body>
+</html>
