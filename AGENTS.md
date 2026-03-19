@@ -51,34 +51,38 @@
 - Eviter les refactors sans benefice direct: preferer un diff minimal.
 
 ## 6) Definition of Done (DoD) - pour une tache/feature code
-1. La feature respecte la spec/les critères d'acceptation (UI + comportements, y compris états UI).
-2. i18n (bilingue FR/EN) :
-  - aucun texte visible en dur (composants + server actions)
+Toutes les cases doivent être vraies avant de considérer la tâche "terminée".
+
+1. Critères d'acceptation couverts : spec / critères (UI + comportements) et états visibles (loading, vide, erreur si applicable).
+2. i18n (FR/EN) :
+  - aucun texte utilisateur en dur (composants + server actions)
   - traductions via `useTranslations` / `getTranslations`
   - clés ajoutées/modifiées dans `messages/fr.json` et `messages/en.json` (mêmes structures)
 3. Design system :
-  - pas de couleurs en dur (pas de hex) : tokens Tailwind uniquement
-  - composants existants réutilisés (au moins ~80% du besoin)
-  - sports : couleurs + icônes via `lib/sportStyles.ts` et `components/SportIcons.tsx` (jamais ailleurs)
-  - styles formulaires via `lib/formStyles.ts` si applicable
+  - aucune couleur hardcodée (pas de hex) : utiliser tokens Tailwind + composants existants
+  - sports : couleurs + icônes via `lib/sportStyles.ts` et `components/SportIcons.tsx` (pas ailleurs)
+  - styles formulaires via `lib/formStyles.ts` si champs de formulaire
 4. Réutilisation helpers :
-  - logique métier/formatage via helpers existants (pas de duplication)
-  - si extension nécessaire : diff minimal, et justification dans le résumé
-5. Pas de code debug/temp :
-  - aucun `console.*`, `debugger`, stubs temporaires, code mort/commenté inutile
-6. Qualité & erreurs :
-  - TypeScript strict : pas de `any`
-  - erreurs structurées via `lib/errors.ts` (et limites prévues dans le projet)
-7. Vérifications locales obligatoires :
-  - `npm run check` puis `npm run build` (et corriger tout échec)
-8. Résumé diff & impacts (à inclure dans la sortie finale de l'agent) :
-  - fichiers modifiés/créés
+  - logique via helpers existants (pas de duplication)
+  - si extension nécessaire : diff minimal + justification dans le résumé
+5. Pas de debug/temp :
+  - aucun `console.*`, `debugger`, stubs temporaires, code mort/commenté
+6. Qualité TypeScript / erreurs :
+  - pas de `any`
+  - erreurs structurées via `lib/errors.ts` ; logs via `lib/logger.ts`
+7. Sécurité / accès :
+  - opérations DB respectent RLS + contrôles role-based (helpers `lib/authHelpers.ts`)
+  - pas de modif DB/RLS/auth helpers sans spec explicite
+8. Vérifications locales obligatoires :
+  - exécuter `npm run check` puis `npm run build` et corriger tout échec
+9. Sortie finale de l'agent (résumé vérifiable) :
+  - fichiers créés/modifiés
   - résumé fonctionnel + états UI couverts
   - i18n : namespaces/keys ajoutées ou modifiées
-  - impacts/risques (pages concernées, compatibilité FR/EN, changements DB/RLS si applicables)
+  - impacts/risques : pages concernées, compat FR/EN, éventuels changements DB/RLS
   - commandes exécutées
-9. Documentation :
-  - si composant réutilisable ajouté/modifié : mise à jour de `docs/DESIGN_SYSTEM.md`
+10. Documentation :
+  - si composant reusable ajouté/modifié : mise à jour de `docs/DESIGN_SYSTEM.md`
   - si docs modifiées : vérifier avec `DOCS_INDEX.md` (pas de doublons)
 
 ## 7) Regles de securite (eviter changements inutiles/risk)

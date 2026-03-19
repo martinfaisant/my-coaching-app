@@ -241,6 +241,7 @@ Voir [DOCS_INDEX.md](./DOCS_INDEX.md) et [docs/archive/](./docs/archive/) pour l
 2. Suivre les conventions du design system et **penser bilingue** pour toute nouvelle feature ([docs/I18N.md](./docs/I18N.md))
 3. Utiliser les composants existants
 4. Respecter la philosophie MVP-first
+5. Avant livraison, vérifier la Definition of Done dans `AGENTS.md` (section 6)
 
 ## 📞 Support
 
