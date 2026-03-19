@@ -13,7 +13,7 @@ export function mapStravaTypeToSportType(stravaType: string): SportType {
   if (t.includes('yoga') || t.includes('weight') || t.includes('workout') || t.includes('crossfit')) return 'musculation'
   if (t.includes('nordic')) return 'nordic_ski'
   if (t.includes('backcountry')) return 'backcountry_ski'
-  if (t.includes('iceskate') || t.includes('ice_skate') || t.includes('ice skate')) return 'ice_skating'
+  if (t.includes('iceskate') || t.includes('ice_skate') || t.includes('ice skate') || t.includes('ice skating')) return 'ice_skating'
   if (t.includes('ski') && !t.includes('alpine') && !t.includes('roller')) return 'nordic_ski'
   return 'course'
 }
