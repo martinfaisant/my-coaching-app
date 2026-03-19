@@ -35,6 +35,45 @@ export type Profile = {
 
 export type SportType = 'course' | 'musculation' | 'natation' | 'velo' | 'nordic_ski' | 'backcountry_ski' | 'ice_skating'
 
+/** Types d'installations utilisées par l'athlète. */
+export type FacilityType = 'piscine' | 'salle' | 'stade' | 'autre'
+
+/** Plage horaire d'ouverture (fin possible en interne à "24:00"). */
+export type FacilityOpeningSlot = {
+  start: string // HH:MM
+  end: string // HH:MM ou "24:00"
+}
+
+/** Ouverture/fermeture et plages pour un jour. */
+export type FacilityDayOpening = {
+  open: boolean
+  slots: FacilityOpeningSlot[]
+}
+
+export type FacilityDayKey = 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday'
+
+/** Structure JSONB persistée dans `opening_hours`. */
+export type FacilityWeekOpening = Record<FacilityDayKey, FacilityDayOpening>
+
+export type AthleteFacility = {
+  id: string
+  athlete_id: string
+  facility_type: FacilityType
+  facility_name: string
+
+  // Adresse fusionnée (street + number)
+  address: string
+  address_postal_code: string
+  address_city: string
+  address_country: string
+  address_complement: string | null
+
+  opening_hours: FacilityWeekOpening
+
+  created_at: string
+  updated_at: string
+}
+
 export type Goal = {
   id: string
   athlete_id: string

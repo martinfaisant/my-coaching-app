@@ -3,6 +3,8 @@ import { getCurrentUserWithProfile } from '@/utils/auth'
 import { getTranslations } from 'next-intl/server'
 import { DashboardPageShell } from '@/components/DashboardPageShell'
 import { ProfileForm } from './ProfileForm'
+import { createClient } from '@/utils/supabase/server'
+import type { AthleteFacility } from '@/types/database'
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params
@@ -18,6 +20,20 @@ export default async function ProfilePage({ params }: { params: Promise<{ locale
   const current = await getCurrentUserWithProfile()
   const isAthlete = current.profile.role === 'athlete'
   const isCoach = current.profile.role === 'coach'
+
+  let initialFacilities: AthleteFacility[] = []
+  if (isAthlete) {
+    const supabase = await createClient()
+    const { data } = await supabase
+      .from('athlete_facilities')
+      .select(
+        'id, athlete_id, facility_type, facility_name, address, address_postal_code, address_city, address_country, address_complement, opening_hours, created_at, updated_at'
+      )
+      .eq('athlete_id', current.id)
+      .order('created_at', { ascending: true })
+
+    initialFacilities = (data ?? []) as AthleteFacility[]
+  }
 
   return (
     <div className="-mx-3 sm:mx-0">
@@ -54,6 +70,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ locale
           weeklyCurrentHours={current.profile.weekly_current_hours ?? undefined}
           weeklyTargetHours={current.profile.weekly_target_hours ?? undefined}
           weeklyVolumeBySport={current.profile.weekly_volume_by_sport ?? undefined}
+            initialFacilities={initialFacilities}
         />
       )}
       </DashboardPageShell>

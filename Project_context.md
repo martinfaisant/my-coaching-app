@@ -59,6 +59,7 @@ Avoid:
 - Access training calendar (workouts assigned by coach)
 - Track workouts (mark complete, add comments)
 - Manage goals (races, dates)
+- Manage training facilities used (type, address, opening hours)
 - Chat with coach (1-to-1)
 - Rate coach (1–5 stars + comment)
 - Connect Strava (import activities into calendar)
@@ -168,6 +169,32 @@ On the **Mon profil** page (`/dashboard/profile`), the athlete can edit:
 **Profile page (athlete and coach):** At the bottom of the form, a **Déconnexion** (Logout) button (danger variant) is displayed above a horizontal separator and the **Supprimer mon compte** (Delete account) button. The drawer menu (mobile) also offers Logout.
 
 **Mon profil — mobile layout:** Side margins are reduced on mobile (wrapper `-mx-3` + `DashboardPageShell` `contentClassName` `!px-2 sm:!px-6 lg:!px-8`) to avoid excessive white space. The section « Volumes hebdomadaires » uses a **responsive grid**: 2 columns for Volume actuel / Volume maximum, then 1 column below `sm`, 2 columns from `sm` for sport volume tiles. Inputs use width `6.5rem` and reduced right padding for the suffix (h/sem., km/sem., D+/sem.). Same layout and input sizes apply in the coach-request form (Volumes hebdomadaires).
+
+---
+
+### 4.2.2 Athlete facilities used (Mon profil) ✅
+
+On the **Mon profil** page (`/dashboard/profile`), the athlete can manage a section **Installations utilisées / Facilities used**:
+
+- Unlimited list of facilities (no cap).
+- Each facility stores:
+  - **Type**: `piscine` | `salle` | `stade` | `autre`
+  - **Facility name**
+  - **Address** (single field) + postal code + city + country + optional additional details
+  - **Opening hours** by day (Monday to Sunday), with open/closed status and one or more time slots per day.
+- Add/edit flow uses a dedicated **modal**:
+  - Type selection with Segments
+  - Address fields
+  - Opening-hours editor (day cards + slots)
+  - End time supports internal `24:00` (displayed as `00:00`).
+- Save behavior:
+  - Postal code is normalized at save time (uppercase + spaces removed), without imposing input constraints in the form.
+  - Server-side validation checks opening-hours structure (days present, open/closed consistency, `start < end`, no overlapping slots).
+- Profile display behavior:
+  - Facility card is read-only (edit + delete actions).
+  - Two-column layout: address/details on the left, opening hours on the right.
+  - No dedicated empty-state card: when no facility exists, only section header and add button are shown.
+- Scope: coach read UI can be added later; DB/RLS already allows coach `SELECT` when athlete has an `active` or `cancellation_scheduled` subscription with that coach.
 
 ---
 
@@ -348,6 +375,7 @@ Athletes filter coaches by:
 | Entity | Purpose |
 |--------|---------|
 | `profiles` | User profile, role, coach_id, coached_sports, languages, presentation, avatar, postal_code. **Athlete:** `practiced_sports`, `weekly_current_hours` (h, “Volume actuel”), `weekly_target_hours` (h, “Volume maximum”), `weekly_volume_by_sport` (JSONB: sport → volume; keys e.g. course, velo, natation, musculation, `course_elevation_m` for trail D+). |
+| `athlete_facilities` | Facilities used by athlete (`athlete_id`, `facility_type`, `facility_name`, `address`, `address_postal_code`, `address_city`, `address_country`, `address_complement`, `opening_hours` JSONB). Athlete full CRUD on own rows; coach read-only for subscribed athletes (`active`/`cancellation_scheduled`); admin read-all. |
 | `coach_offers` | Coach offers (title, description, price, price_type). Status: `draft` (coach only) / `published` (3 slots, visible to athletes) / `archived` (coach only, no new requests). |
 | `coach_requests` | Athlete → Coach request (status: pending / accepted / declined). When offer is chosen: `offer_id` + snapshot `frozen_price`, `frozen_title`, `frozen_description` (offer as seen by athlete at request time). |
 | `subscriptions` | Subscription per accepted request: `athlete_id`, `coach_id`, `request_id`, same `frozen_*` copied from `coach_requests` (not from offers). `status`: `'active'` \| `'cancellation_scheduled'` \| `'cancelled'`. `cancellation_requested_by_user_id` (UUID, nullable): user who requested the scheduled cancellation; only they can cancel the cancellation. Used for billing history; unchanged if coach later changes the offer. |

@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 18 mars 2026 (Mode Analyste : centralisation styles sport + fusion statut refactoring/audit ; voir Changements récents)
+**Dernière mise à jour :** 18 mars 2026 (Mode Analyste : feature Installations athlète consolidée dans docs actives + archive indexée ; voir Changements récents)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -17,20 +17,20 @@
 ### **Project_context.md** ⭐
 - **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), stack technique, **URL production https://mysportally.com**
 - **Utiliser pour :** Comprendre le projet, les features, les rôles, l'architecture globale
-- **Taille :** ~420 lignes
-- **Dernière mise à jour :** 17 mars 2026 (§4.2.1 Volumes hebdomadaires : Volume actuel + Volume maximum, 2 colonnes, weekly_current_hours ; §4.4 demande sans snapshot volumes, coach lit profil)
+- **Taille :** ~450 lignes
+- **Dernière mise à jour :** 18 mars 2026 (§4.2.2 Installations utilisées athlète : type/adresse/horaires, modal add/edit, validation, RLS ; §5 table `athlete_facilities`)
 
 ### **docs/DESIGN_SYSTEM.md** ⭐
 - **Contenu :** Tokens (couleurs, typo, espacements), composants (Button, Input, Badge, TileCard, DashboardPageShell, Modal, etc.), guidelines UI, exemples de code, §7 breakpoints (calendrier, chat, Trouver mon coach, My offers)
 - **Utiliser pour :** Créer ou modifier des composants UI, choisir des couleurs, appliquer le design system, règles responsive par page
 - **Taille :** ~850 lignes
-- **Dernière mise à jour :** 17 mars 2026 (Bloc date objectif avec année § TileCard ; formatGoalDateBlock lib/dateUtils)
+- **Dernière mise à jour :** 18 mars 2026 (Page Mon profil : section Facilities Used + responsive modal/table horaires ; Segments labels multi-lignes mobile)
 
 ### **docs/I18N.md** ⭐
 - **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces, utilisation dans composants et server actions, **checklist pour nouvelles features** (toujours penser bilingue)
 - **Utiliser pour :** Toute nouvelle feature ou texte visible, ajout de clés de traduction, dépannage i18n
 - **Taille :** ~180 lignes
-- **Dernière mise à jour :** 17 mars 2026 (profile : Volumes hebdomadaires ; athletes.pendingRequests)
+- **Dernière mise à jour :** 18 mars 2026 (namespace `facilities` documenté : UI + validations server-side)
 
 ### **docs/AUTH_EMAIL_TEMPLATES.md**
 - **Contenu :** Guide de configuration des emails d’auth Supabase (sujet, i18n FR/EN, variables, dépannage logo). **Les fichiers HTML des templates** (Confirm signup, puis Magic Link, Reset Password, etc.) sont dans **docs/email-templates/**.
@@ -303,6 +303,10 @@
 - `docs/archive/design-athlete-availability/` — DESIGN.md (besoin, cas d’usage, décisions PO, style tuiles option D), SPEC_ARCHITECTURE.md (modèle, RLS, fichiers), MOCKUP_AVAILABILITY_MODAL.html, MOCKUP_CALENDAR_AVAILABILITY_TILES.html.
 - **Raison :** Feature livrée **sans récurrence** ; athlète peut créer/éditer/supprimer des créneaux disponibilité ou indisponibilité par jour (bouton « + » sur jours futurs, modale avec type, date, Début/Fin optionnels, Note) ; coach voit les tuiles en lecture seule sur le calendrier de l’athlète (modale détail). Comportement décrit dans **Project_context.md §4.5** (Athlete availability), **docs/DESIGN_SYSTEM.md** (§7 Calendrier, AvailabilityModal, AvailabilityDetailModal), **docs/I18N.md** (namespace availability).
 
+**Installations utilisées athlète (archivés 18 mars 2026) :**
+- `docs/archive/design-athlete-installations/` — mockups Designer (solutions A/B/C/D/E, formulaire, vue profil, vue coach post-subscription) pour la section Facilities Used.
+- **Raison :** Feature livrée ; athlète peut gérer ses installations (type, adresse, horaires par jour/plages) via modal add/edit, affichage profil en 2 blocs (adresse / horaires), responsive mobile pour la table horaires. Comportement décrit dans **Project_context.md §4.2.2**, **docs/DESIGN_SYSTEM.md** (§7 Page Mon profil), **docs/I18N.md** (namespace `facilities`).
+
 **Séparation pages dashboard – find-coach / Mes athlètes (archivé 23 février 2026) :**
 - `docs/archive/dashboard-pages-separation/SPEC_ARCHI_DASHBOARD_PAGES_SEPARATION.md` — Spec architecture (redirections depuis /dashboard, pages dédiées, skeletons)
 - **Raison :** Feature livrée ; comportement décrit dans **Project_context.md §4.0** (Dashboard entry point) et **docs/DESIGN_SYSTEM.md** §7 (pages Trouver mon coach, Mes athlètes).
@@ -434,10 +438,15 @@
 
 **Fréquence de mise à jour :** À chaque ajout/suppression de documentation
 
-**Dernier scan :** 17 mars 2026  
-**Dernier nettoyage :** 17 mars 2026 (archivage design-date-picker-compact, design-weekly-volume-two-columns, design-mobile-volume-tiles)
+**Dernier scan :** 18 mars 2026  
+**Dernier nettoyage :** 18 mars 2026 (index archive mis à jour : design-athlete-installations)
 
 ### Changements récents :
+
+✅ **18 mars 2026 – Installations athlète (facilities) – Mode Analyste :**
+- **Livraison :** section **Facilities Used** sur Mon profil (athlète), modal add/edit (type, adresse, horaires), normalisation code postal à la sauvegarde (uppercase + sans espaces), affichage profil en 2 blocs (adresse 1/3, horaires 2/3), responsive anti-débordement (modal + table horaires).
+- **Doc :** `Project_context.md` (§4.2.2 + §5 `athlete_facilities`), `docs/DESIGN_SYSTEM.md` (§ Segments + §7 Mon profil), `docs/I18N.md` (namespace `facilities`).
+- **Archivage :** index du dossier `docs/archive/design-athlete-installations/` ajouté avec référence aux docs actives.
 
 ✅ **18 mars 2026 – Centralisation styles sport (design system & refactoring) – Mode Analyste :**
 - **Livraison :** `lib/sportStyles.ts` devient la source de vérité unique pour **sport → icône / styles / label i18n** (mapping `SPORT_ICONS`, `SPORT_CARD_STYLES`, `SPORT_BADGE_STYLES`, clés `SPORT_TRANSLATION_KEYS`) + helpers (guard `isSportType`, ordre volumes hebdo, règle triathlon/trail).

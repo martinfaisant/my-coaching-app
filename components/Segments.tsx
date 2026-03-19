@@ -4,10 +4,11 @@
  * Groupe de choix par segments (style offres coach : / Mois | Unique | Gratuit).
  * Réutilisable pour tout choix exclusif 2 à N options (type dispo/indispo, récurrence, etc.).
  */
+import type { ReactNode } from 'react'
 
 export type SegmentOption = {
   value: string
-  label: string
+  label: ReactNode
 }
 
 export type SegmentsProps = {
@@ -43,15 +44,15 @@ export function Segments({
   const isSm = size === 'sm'
   const containerClass = `flex bg-stone-100 rounded-lg border border-stone-200 items-center ${isSm ? 'gap-2 p-1.5' : 'gap-1 p-1 min-h-[42px]'} ${className}`.trim()
   const optionInnerClass = isSm
-    ? 'w-full px-4 py-2 rounded-md text-xs font-medium select-none transition-all text-center flex items-center justify-center whitespace-nowrap'
-    : 'w-full py-2 rounded-md text-sm font-medium select-none transition-all text-center flex items-center justify-center whitespace-nowrap'
+    ? 'w-full px-4 py-2 rounded-md text-xs font-medium select-none transition-all text-center flex items-center justify-center min-h-[36px] whitespace-normal sm:whitespace-nowrap leading-tight'
+    : 'w-full py-2 rounded-md text-sm font-medium select-none transition-all text-center flex items-center justify-center min-h-[42px] whitespace-normal sm:whitespace-nowrap leading-tight'
 
   return (
     <div className={containerClass} role="group" aria-label={ariaLabel}>
       {options.map((opt) => {
         const selected = value === opt.value
         return (
-          <label key={opt.value} className="flex-1 cursor-pointer flex items-center justify-center min-h-0">
+          <label key={opt.value} className="flex-1 cursor-pointer flex items-center justify-center">
             <input
               type="radio"
               name={name}
