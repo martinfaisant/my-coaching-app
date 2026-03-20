@@ -1,6 +1,7 @@
 import { cache } from 'react'
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
+import { headers } from 'next/headers'
 import type { Profile, Role } from '@/types/database'
 
 export type CurrentUserWithProfile = {
@@ -55,10 +56,23 @@ const getCachedUserAndProfile = cache(async (): Promise<CurrentUserWithProfile |
   }
 })
 
-/** Retourne l'utilisateur connecté et son profil. Crée le profil si absent (nouveau compte). Redirige vers /login si non connecté. */
+async function getLocaleFromAcceptLanguageHeader(): Promise<'en' | 'fr'> {
+  const acceptLanguage = (await headers()).get('accept-language') ?? ''
+  return acceptLanguage.toLowerCase().includes('en') ? 'en' : 'fr'
+}
+
+function getHomePathForLocale(locale: 'en' | 'fr'): string {
+  // Routing next-intl : `fr` sans prefixe, `en` avec prefixe.
+  return locale === 'en' ? '/en' : '/'
+}
+
+/** Retourne l'utilisateur connecté et son profil. Crée le profil si absent (nouveau compte). Redirige vers la page d'accueil si non connecté. */
 export async function getCurrentUserWithProfile(): Promise<CurrentUserWithProfile> {
   const result = await getCachedUserAndProfile()
-  if (!result) redirect('/login')
+  if (!result) {
+    const locale = await getLocaleFromAcceptLanguageHeader()
+    redirect(getHomePathForLocale(locale))
+  }
   return result
 }
 

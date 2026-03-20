@@ -6,6 +6,16 @@ import { logger } from '@/lib/logger'
 const STRAVA_AUTH_URL = 'https://www.strava.com/oauth/authorize'
 const SCOPES = 'activity:read_all'
 
+function getLocaleFromAcceptLanguage(request: NextRequest): 'en' | 'fr' {
+  const acceptLanguage = request.headers.get('accept-language') ?? ''
+  return acceptLanguage.toLowerCase().includes('en') ? 'en' : 'fr'
+}
+
+function getHomePathForLocale(locale: 'en' | 'fr'): string {
+  // Routing next-intl : `fr` sans prefixe, `en` avec prefixe.
+  return locale === 'en' ? '/en' : '/'
+}
+
 function getOrigin(request: NextRequest): string {
   // Priorité à une URL explicite (doit correspondre au "Authorization Callback Domain" dans Strava)
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? process.env.SITE_URL
@@ -34,7 +44,8 @@ export async function GET(request: NextRequest) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
-      return NextResponse.redirect(new URL('/login', origin))
+      const locale = getLocaleFromAcceptLanguage(request)
+      return NextResponse.redirect(new URL(getHomePathForLocale(locale), origin))
     }
 
     const redirectUri = `${origin}/api/auth/strava/callback`
