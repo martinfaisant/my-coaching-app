@@ -181,6 +181,70 @@ export async function requireCoachOrAthleteAccess(
 }
 
 /**
+ * Accès mutation (update/delete) sur `athlete_facilities` : aligné sur les politiques RLS
+ * (athlète propriétaire, ou coach via `profiles.coach_id`, ou coach via souscription active / en résiliation).
+ */
+export async function requireAthleteFacilityMutationAccess(
+  supabase: SupabaseClient,
+  athleteId: string
+): Promise<
+  | ErrorResult
+  | {
+      user: { id: string; email: string | undefined }
+      /** true si le demandeur est un coach (profil ou souscription), pas l’athlète lui-même */
+      isCoachActor: boolean
+    }
+> {
+  const userResult = await requireUser(supabase)
+  if ('error' in userResult) return userResult
+
+  const { user } = userResult
+
+  const myProfile = await getProfile(supabase, user.id, 'role, user_id, email, first_name, last_name')
+  if (!myProfile?.role) {
+    return {
+      error: 'Profil introuvable.',
+      errorCode: AUTH_ERROR_CODES.PROFILE_NOT_FOUND,
+    }
+  }
+
+  if (myProfile.role === 'athlete' && user.id === athleteId) {
+    return { user: { id: user.id, email: user.email }, isCoachActor: false }
+  }
+
+  if (myProfile.role === 'coach') {
+    const athleteProfile = await getProfile(supabase, athleteId, 'coach_id, user_id')
+    if (!athleteProfile) {
+      return {
+        error: 'Profil introuvable.',
+        errorCode: AUTH_ERROR_CODES.PROFILE_NOT_FOUND,
+      }
+    }
+
+    if (athleteProfile.coach_id === user.id) {
+      return { user: { id: user.id, email: user.email }, isCoachActor: true }
+    }
+
+    const { data: sub } = await supabase
+      .from('subscriptions')
+      .select('id')
+      .eq('athlete_id', athleteId)
+      .eq('coach_id', user.id)
+      .in('status', ['active', 'cancellation_scheduled'])
+      .maybeSingle()
+
+    if (sub) {
+      return { user: { id: user.id, email: user.email }, isCoachActor: true }
+    }
+  }
+
+  return {
+    error: 'Accès refusé.',
+    errorCode: AUTH_ERROR_CODES.ACCESS_DENIED,
+  }
+}
+
+/**
  * Vérifie qu'un utilisateur est authentifié et récupère son profil.
  * Cas d'usage : actions où on a besoin du profil mais pas de vérification de rôle stricte.
  * 

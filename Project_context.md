@@ -191,10 +191,11 @@ On the **Mon profil** page (`/dashboard/profile`), the athlete can manage a sect
   - Postal code is normalized at save time (uppercase + spaces removed), without imposing input constraints in the form.
   - Server-side validation checks opening-hours structure (days present, open/closed consistency, `start < end`, no overlapping slots).
 - Profile display behavior:
-  - Facility card is read-only (edit + delete actions).
+  - Facility card shows **Edit** and **Delete** (same layout for address + opening hours as below).
   - Two-column layout: address/details on the left, opening hours on the right.
   - No dedicated empty-state card: when no facility exists, only section header and add button are shown.
-- Scope: coach read UI can be added later; DB/RLS already allows coach `SELECT` when athlete has an `active` or `cancellation_scheduled` subscription with that coach.
+
+**Coach — athlete calendar (`/dashboard/athletes/[athleteId]`):** Below the calendar, a tab bar **Objectifs | Installations** (`goals.calendarTabObjectives`, `facilities.calendarTabFacilities`). The **Installations** tab lists the athlete’s saved facilities with the same card UI as Mon profil (`AthleteFacilityDetails` / `AthleteFacilityCard` via shared component). The coach can **edit** and **delete** each facility (same modal as the athlete: `AthleteFacilityModal`; server actions `updateAthleteFacility` / `deleteAthleteFacility` with `requireAthleteFacilityMutationAccess` in `lib/authHelpers.ts`). **Creating** a new facility remains **athlete-only** (Mon profil — `createAthleteFacility`). RLS: coach `SELECT` (migrations 059–060); coach `UPDATE` / `DELETE` on the same access scope as `SELECT` (migration **061**). After coach mutations, paths `/dashboard/profile`, `/dashboard/athletes/{athleteId}` and `/dashboard/athletes` are revalidated where applicable.
 
 ---
 
@@ -377,7 +378,7 @@ Athletes filter coaches by:
 | Entity | Purpose |
 |--------|---------|
 | `profiles` | User profile, role, coach_id, coached_sports, languages, presentation, avatar, postal_code. **Athlete:** `practiced_sports`, `weekly_current_hours` (h, “Volume actuel”), `weekly_target_hours` (h, “Volume maximum”), `weekly_volume_by_sport` (JSONB: sport → volume; keys e.g. course, velo, natation, musculation, `course_elevation_m` for trail D+). |
-| `athlete_facilities` | Facilities used by athlete (`athlete_id`, `facility_type`, `facility_name`, `address`, `address_postal_code`, `address_city`, `address_country`, `address_complement`, `opening_hours` JSONB). Athlete full CRUD on own rows; coach read-only for subscribed athletes (`active`/`cancellation_scheduled`); admin read-all. |
+| `athlete_facilities` | Facilities used by athlete (`athlete_id`, `facility_type`, `facility_name`, `address`, `address_postal_code`, `address_city`, `address_country`, `address_complement`, `opening_hours` JSONB). **Athlete:** full CRUD on own rows. **Coach:** `SELECT` / `UPDATE` / `DELETE` when linked via `active` or `cancellation_scheduled` subscription **or** `profiles.coach_id` (same scope as workouts; migrations 059–060 for read, **061** for coach update/delete). **Admin:** read-all. **Insert** remains athlete-only (`athlete_id = auth.uid()`). |
 | `coach_offers` | Coach offers (title, description, price, price_type). Status: `draft` (coach only) / `published` (3 slots, visible to athletes) / `archived` (coach only, no new requests). |
 | `coach_requests` | Athlete → Coach request (status: pending / accepted / declined). When offer is chosen: `offer_id` + snapshot `frozen_price`, `frozen_title`, `frozen_description` (offer as seen by athlete at request time). |
 | `subscriptions` | Subscription per accepted request: `athlete_id`, `coach_id`, `request_id`, same `frozen_*` copied from `coach_requests` (not from offers). `status`: `'active'` \| `'cancellation_scheduled'` \| `'cancelled'`. `cancellation_requested_by_user_id` (UUID, nullable): user who requested the scheduled cancellation; only they can cancel the cancellation. Used for billing history; unchanged if coach later changes the offer. |

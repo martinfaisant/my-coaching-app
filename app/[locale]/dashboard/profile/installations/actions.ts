@@ -3,7 +3,7 @@
 import { createClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { getLocale, getTranslations } from 'next-intl/server'
-import { requireRole } from '@/lib/authHelpers'
+import { requireAthleteFacilityMutationAccess, requireRole } from '@/lib/authHelpers'
 import { validateFacilityOpeningHours } from '@/lib/facilityHoursUtils'
 import type { FacilityType } from '@/types/database'
 
@@ -129,20 +129,18 @@ export async function updateAthleteFacility(_prevState: AthleteFacilityFormState
   if (!facilityId) return { error: t('missingFacilityId') }
 
   const supabase = await createClient()
-  const accessResult = await requireRole(supabase, 'athlete')
-  if ('error' in accessResult) return { error: t('serverError') }
 
-  const { user } = accessResult
-
-  const { error: fetchError, data } = await supabase
+  const { data: existing, error: fetchError } = await supabase
     .from('athlete_facilities')
-    .select('id')
+    .select('id, athlete_id')
     .eq('id', facilityId)
-    .eq('athlete_id', user.id)
     .maybeSingle()
 
   if (fetchError) return { error: t('serverError') }
-  if (!data) return { error: t('facilityNotFound') }
+  if (!existing) return { error: t('facilityNotFound') }
+
+  const access = await requireAthleteFacilityMutationAccess(supabase, existing.athlete_id)
+  if ('error' in access) return { error: t('serverError') }
 
   const { error } = await supabase
     .from('athlete_facilities')
@@ -157,11 +155,15 @@ export async function updateAthleteFacility(_prevState: AthleteFacilityFormState
       opening_hours: openingHoursValidation.value,
     })
     .eq('id', facilityId)
-    .eq('athlete_id', user.id)
+    .eq('athlete_id', existing.athlete_id)
 
   if (error) return { error: t('serverError') }
 
   revalidatePath('/dashboard/profile')
+  if (access.isCoachActor) {
+    revalidatePath(`/dashboard/athletes/${existing.athlete_id}`)
+    revalidatePath('/dashboard/athletes')
+  }
   return { success: true }
 }
 
@@ -170,32 +172,34 @@ export async function deleteAthleteFacility(facilityId: string): Promise<Athlete
   const t = await getTranslations({ locale, namespace: 'facilities.validation' })
 
   const supabase = await createClient()
-  const accessResult = await requireRole(supabase, 'athlete')
-  if ('error' in accessResult) return { error: t('serverError') }
-
-  const { user } = accessResult
   const facilityIdTrimmed = facilityId.trim()
   if (!facilityIdTrimmed) return { error: t('missingFacilityId') }
 
-  const { error: fetchError, data } = await supabase
+  const { data: existing, error: fetchError } = await supabase
     .from('athlete_facilities')
-    .select('id')
+    .select('id, athlete_id')
     .eq('id', facilityIdTrimmed)
-    .eq('athlete_id', user.id)
     .maybeSingle()
 
   if (fetchError) return { error: t('serverError') }
-  if (!data) return { error: t('facilityNotFound') }
+  if (!existing) return { error: t('facilityNotFound') }
+
+  const access = await requireAthleteFacilityMutationAccess(supabase, existing.athlete_id)
+  if ('error' in access) return { error: t('serverError') }
 
   const { error } = await supabase
     .from('athlete_facilities')
     .delete()
     .eq('id', facilityIdTrimmed)
-    .eq('athlete_id', user.id)
+    .eq('athlete_id', existing.athlete_id)
 
   if (error) return { error: t('serverError') }
 
   revalidatePath('/dashboard/profile')
+  if (access.isCoachActor) {
+    revalidatePath(`/dashboard/athletes/${existing.athlete_id}`)
+    revalidatePath('/dashboard/athletes')
+  }
   return { success: true }
 }
 
