@@ -577,7 +577,7 @@ Mettre à jour la documentation projet après livraison du Développeur, aligner
 - Toute mise à jour doc doit refléter l’implémentation réelle, pas l’intention initiale.
 - Ne jamais modifier une règle métier dans la documentation sans source explicite dans les fichiers livrés.
 - Si une doc semble contradictoire avec le code livré, signaler l’écart au lieu d’inventer la bonne version.
-- La réponse finale doit inclure un **texte de commit** court centré sur les features livrées, pas sur le travail de documentation.
+- La réponse finale doit inclure un **texte de commit** court centré sur les features livrées par le développeur, pas sur le travail de documentation. Le **texte de commit** est à destination du Product Owner. Il faut que ce soit une description fonctionnel et non technique de ce qui a été fait 
 
 ### Format de sortie obligatoire
 
