@@ -4,32 +4,14 @@ import { createClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { requireRole, requireUser } from '@/lib/authHelpers'
 import { getTranslations } from 'next-intl/server'
+import {
+  parseTargetTime,
+  validateGoalFields,
+  parseResultFields,
+} from '@/lib/goalValidation'
+import type { GoalFormState } from '@/lib/goalValidation'
 
-export type GoalFormState = {
-  error?: string
-  success?: string
-}
-
-const RESULT_NOTE_MAX_LENGTH = 500
-
-function parseTargetTime(
-  formData: FormData,
-  t: (key: string) => string
-): { hours: number; minutes: number; seconds: number } | null | { error: string } {
-  const hStr = (formData.get('target_time_hours') as string)?.trim() ?? ''
-  const mStr = (formData.get('target_time_minutes') as string)?.trim() ?? ''
-  const sStr = (formData.get('target_time_seconds') as string)?.trim() ?? ''
-  const anySet = hStr !== '' || mStr !== '' || sStr !== ''
-  if (!anySet) return null
-  // Si au moins un champ est renseigné, les champs vides sont traités comme 0 (ex. 55 min seul → 0h 55min 0s)
-  const hours = hStr === '' ? 0 : parseInt(hStr, 10)
-  const minutes = mStr === '' ? 0 : parseInt(mStr, 10)
-  const seconds = sStr === '' ? 0 : parseInt(sStr, 10)
-  if (Number.isNaN(hours) || hours < 0 || hours > 99) return { error: t('invalidTimeRange') }
-  if (Number.isNaN(minutes) || minutes < 0 || minutes > 59) return { error: t('invalidTimeRange') }
-  if (Number.isNaN(seconds) || seconds < 0 || seconds > 59) return { error: t('invalidTimeRange') }
-  return { hours, minutes, seconds }
-}
+export type { GoalFormState } from '@/lib/goalValidation'
 
 export async function addGoal(
   _prevState: GoalFormState,
@@ -37,21 +19,16 @@ export async function addGoal(
 ): Promise<GoalFormState> {
   const locale = (formData.get('locale') as string) || 'fr'
   const t = await getTranslations({ locale, namespace: 'goals.validation' })
-  
+
   const supabase = await createClient()
   const result = await requireRole(supabase, 'athlete')
   if ('error' in result) return { error: result.error }
 
   const { user } = result
 
-  const date = formData.get('date') as string
-  const raceName = (formData.get('race_name') as string)?.trim()
-  const distance = (formData.get('distance') as string)?.trim()
-  const isPrimary = formData.get('is_primary') === 'primary'
-
-  if (!date || !raceName || !distance) {
-    return { error: t('allFieldsRequired') }
-  }
+  const fieldsResult = validateGoalFields(formData, t)
+  if ('error' in fieldsResult) return { error: fieldsResult.error }
+  const { date, raceName, distance, isPrimary } = fieldsResult.data
 
   const targetTime = parseTargetTime(formData, t)
   if (targetTime && 'error' in targetTime) return { error: targetTime.error }
@@ -65,6 +42,11 @@ export async function addGoal(
     target_time_hours?: number
     target_time_minutes?: number
     target_time_seconds?: number
+    result_time_hours?: number
+    result_time_minutes?: number
+    result_time_seconds?: number
+    result_place?: number | null
+    result_note?: string | null
   } = {
     athlete_id: user.id,
     date,
@@ -72,6 +54,7 @@ export async function addGoal(
     distance,
     is_primary: isPrimary,
   }
+
   if (targetTime) {
     insertPayload.target_time_hours = targetTime.hours
     insertPayload.target_time_minutes = targetTime.minutes
@@ -80,31 +63,15 @@ export async function addGoal(
 
   const today = new Date().toISOString().slice(0, 10)
   if (date < today) {
-    const hoursStr = (formData.get('result_time_hours') as string)?.trim() ?? ''
-    const minutesStr = (formData.get('result_time_minutes') as string)?.trim() ?? ''
-    const secondsStr = (formData.get('result_time_seconds') as string)?.trim() ?? ''
-    const placeStr = (formData.get('result_place') as string)?.trim()
-    const note = (formData.get('result_note') as string)?.trim() ?? ''
-    const hasAnyResult = hoursStr !== '' || minutesStr !== '' || secondsStr !== ''
-    if (hasAnyResult) {
-      // Au moins un champ temps saisi => les champs vides sont interprétés comme 0
-      const hours = parseInt(hoursStr === '' ? '0' : hoursStr, 10)
-      const minutes = parseInt(minutesStr === '' ? '0' : minutesStr, 10)
-      const seconds = parseInt(secondsStr === '' ? '0' : secondsStr, 10)
-      if (Number.isNaN(hours) || hours < 0 || hours > 99 || Number.isNaN(minutes) || minutes < 0 || minutes > 59 || Number.isNaN(seconds) || seconds < 0 || seconds > 59) {
-        return { error: t('invalidTimeRange') }
-      }
-      if (note.length > RESULT_NOTE_MAX_LENGTH) {
-        return { error: t('noteMaxLength', { max: RESULT_NOTE_MAX_LENGTH }) }
-      }
-      const resultPlace = placeStr === '' ? null : Math.max(1, parseInt(placeStr, 10))
-      Object.assign(insertPayload, {
-        result_time_hours: hours,
-        result_time_minutes: minutes,
-        result_time_seconds: seconds,
-        result_place: resultPlace,
-        result_note: note || null,
-      })
+    const resultFields = parseResultFields(formData, t)
+    if (resultFields.kind === 'error') return { error: resultFields.error }
+    if (resultFields.kind === 'parsed') {
+      const { data: d } = resultFields
+      insertPayload.result_time_hours = d.resultTimeHours
+      insertPayload.result_time_minutes = d.resultTimeMinutes
+      insertPayload.result_time_seconds = d.resultTimeSeconds
+      insertPayload.result_place = d.resultPlace
+      insertPayload.result_note = d.resultNote
     }
   }
 
@@ -142,39 +109,24 @@ export async function updateGoal(
 
   if (!goal) return { error: t('goalNotFound') }
 
-  const date = (formData.get('date') as string)?.trim()
-  const raceName = (formData.get('race_name') as string)?.trim()
-  const distance = (formData.get('distance') as string)?.trim()
-  const isPrimary = formData.get('is_primary') === 'primary'
-
-  if (!date || !raceName || !distance) {
-    return { error: t('allFieldsRequired') }
-  }
+  const fieldsResult = validateGoalFields(formData, t)
+  if ('error' in fieldsResult) return { error: fieldsResult.error }
+  const { date, raceName, distance, isPrimary } = fieldsResult.data
 
   const targetTime = parseTargetTime(formData, t)
   if (targetTime && 'error' in targetTime) return { error: targetTime.error }
 
-  const updatePayload: {
-    date: string
-    race_name: string
-    distance: string
-    is_primary: boolean
-    target_time_hours: number | null
-    target_time_minutes: number | null
-    target_time_seconds: number | null
-  } = {
-    date,
-    race_name: raceName,
-    distance,
-    is_primary: isPrimary,
-    target_time_hours: targetTime ? targetTime.hours : null,
-    target_time_minutes: targetTime ? targetTime.minutes : null,
-    target_time_seconds: targetTime ? targetTime.seconds : null,
-  }
-
   const { error } = await supabase
     .from('goals')
-    .update(updatePayload)
+    .update({
+      date,
+      race_name: raceName,
+      distance,
+      is_primary: isPrimary,
+      target_time_hours: targetTime ? targetTime.hours : null,
+      target_time_minutes: targetTime ? targetTime.minutes : null,
+      target_time_seconds: targetTime ? targetTime.seconds : null,
+    })
     .eq('id', goalId)
     .eq('athlete_id', user.id)
 
@@ -187,7 +139,7 @@ export async function updateGoal(
 export async function deleteGoal(goalId: string, locale?: string): Promise<GoalFormState> {
   const currentLocale = locale || 'fr'
   const t = await getTranslations({ locale: currentLocale, namespace: 'goals.validation' })
-  
+
   const supabase = await createClient()
   const result = await requireUser(supabase)
   if ('error' in result) return { error: result.error }
@@ -239,16 +191,10 @@ export async function saveGoalResult(
     return { error: t('resultOnlyForPastGoal') }
   }
 
-  const hoursStr = (formData.get('result_time_hours') as string)?.trim() ?? ''
-  const minutesStr = (formData.get('result_time_minutes') as string)?.trim() ?? ''
-  const secondsStr = (formData.get('result_time_seconds') as string)?.trim() ?? ''
-  const placeStr = (formData.get('result_place') as string)?.trim()
-  const note = (formData.get('result_note') as string)?.trim() ?? ''
+  const resultFields = parseResultFields(formData, t)
+  if (resultFields.kind === 'error') return { error: resultFields.error }
 
-  const hasAnyTime = hoursStr !== '' || minutesStr !== '' || secondsStr !== ''
-
-  // Aucun champ temps saisi => on traite comme "pas de résultat"
-  if (!hasAnyTime) {
+  if (resultFields.kind === 'none') {
     const { error: updateError } = await supabase
       .from('goals')
       .update({
@@ -268,35 +214,15 @@ export async function saveGoalResult(
     return { success: t('resultSaved') }
   }
 
-  // Au moins un champ temps saisi => les champs vides sont interprétés comme 0
-  const hours = parseInt(hoursStr === '' ? '0' : hoursStr, 10)
-  const minutes = parseInt(minutesStr === '' ? '0' : minutesStr, 10)
-  const seconds = parseInt(secondsStr === '' ? '0' : secondsStr, 10)
-
-  if (Number.isNaN(hours) || hours < 0 || hours > 99) {
-    return { error: t('invalidTimeRange') }
-  }
-  if (Number.isNaN(minutes) || minutes < 0 || minutes > 59) {
-    return { error: t('invalidTimeRange') }
-  }
-  if (Number.isNaN(seconds) || seconds < 0 || seconds > 59) {
-    return { error: t('invalidTimeRange') }
-  }
-
-  if (note.length > RESULT_NOTE_MAX_LENGTH) {
-    return { error: t('noteMaxLength', { max: RESULT_NOTE_MAX_LENGTH }) }
-  }
-
-  const resultPlace = placeStr === '' ? null : Math.max(1, parseInt(placeStr, 10))
-
+  const { data: d } = resultFields
   const { error: updateError } = await supabase
     .from('goals')
     .update({
-      result_time_hours: hours,
-      result_time_minutes: minutes,
-      result_time_seconds: seconds,
-      result_place: resultPlace,
-      result_note: note || null,
+      result_time_hours: d.resultTimeHours,
+      result_time_minutes: d.resultTimeMinutes,
+      result_time_seconds: d.resultTimeSeconds,
+      result_place: d.resultPlace,
+      result_note: d.resultNote,
     })
     .eq('id', goalId)
     .eq('athlete_id', user.id)
@@ -336,19 +262,14 @@ export async function saveGoalFull(
 
   if (!goal) return { error: t('goalNotFound') }
 
-  const date = (formData.get('date') as string)?.trim()
-  const raceName = (formData.get('race_name') as string)?.trim()
-  const distance = (formData.get('distance') as string)?.trim()
-  const isPrimary = formData.get('is_primary') === 'primary'
-
-  if (!date || !raceName || !distance) {
-    return { error: t('allFieldsRequired') }
-  }
+  const fieldsResult = validateGoalFields(formData, t)
+  if ('error' in fieldsResult) return { error: fieldsResult.error }
+  const { date, raceName, distance, isPrimary } = fieldsResult.data
 
   const targetTime = parseTargetTime(formData, t)
   if (targetTime && 'error' in targetTime) return { error: targetTime.error }
 
-  type GoalUpdatePayload = {
+  type GoalFullUpdatePayload = {
     date: string
     race_name: string
     distance: string
@@ -363,7 +284,7 @@ export async function saveGoalFull(
     result_note?: string | null
   }
 
-  const updatePayload: GoalUpdatePayload = {
+  const updatePayload: GoalFullUpdatePayload = {
     date,
     race_name: raceName,
     distance,
@@ -377,48 +298,16 @@ export async function saveGoalFull(
   const canHaveResult = date <= today
 
   if (canHaveResult) {
-    const hoursStr = (formData.get('result_time_hours') as string)?.trim() ?? ''
-    const minutesStr = (formData.get('result_time_minutes') as string)?.trim() ?? ''
-    const secondsStr = (formData.get('result_time_seconds') as string)?.trim() ?? ''
-    const placeStr = (formData.get('result_place') as string)?.trim()
-    const note = (formData.get('result_note') as string)?.trim() ?? ''
-
-    const anySet = hoursStr !== '' || minutesStr !== '' || secondsStr !== ''
-
-    if (anySet) {
-      // Au moins un champ temps saisi => les champs vides sont interprétés comme 0
-      const hours = parseInt(hoursStr === '' ? '0' : hoursStr, 10)
-      const minutes = parseInt(minutesStr === '' ? '0' : minutesStr, 10)
-      const seconds = parseInt(secondsStr === '' ? '0' : secondsStr, 10)
-
-      if (
-        Number.isNaN(hours) ||
-        hours < 0 ||
-        hours > 99 ||
-        Number.isNaN(minutes) ||
-        minutes < 0 ||
-        minutes > 59 ||
-        Number.isNaN(seconds) ||
-        seconds < 0 ||
-        seconds > 59
-      ) {
-        return { error: t('invalidTimeRange') }
-      }
-
-      if (note.length > RESULT_NOTE_MAX_LENGTH) {
-        return { error: t('noteMaxLength', { max: RESULT_NOTE_MAX_LENGTH }) }
-      }
-
-      const resultPlace =
-        placeStr == null || placeStr === '' ? null : Math.max(1, parseInt(placeStr, 10))
-
-      updatePayload.result_time_hours = hours
-      updatePayload.result_time_minutes = minutes
-      updatePayload.result_time_seconds = seconds
-      updatePayload.result_place = resultPlace
-      updatePayload.result_note = note || null
+    const resultFields = parseResultFields(formData, t)
+    if (resultFields.kind === 'error') return { error: resultFields.error }
+    if (resultFields.kind === 'parsed') {
+      const { data: d } = resultFields
+      updatePayload.result_time_hours = d.resultTimeHours
+      updatePayload.result_time_minutes = d.resultTimeMinutes
+      updatePayload.result_time_seconds = d.resultTimeSeconds
+      updatePayload.result_place = d.resultPlace
+      updatePayload.result_note = d.resultNote
     } else {
-      // Aucun temps renseigné dans le formulaire : on efface le résultat
       updatePayload.result_time_hours = null
       updatePayload.result_time_minutes = null
       updatePayload.result_time_seconds = null
@@ -426,7 +315,6 @@ export async function saveGoalFull(
       updatePayload.result_note = null
     }
   } else {
-    // Date future : on efface le résultat éventuel
     updatePayload.result_time_hours = null
     updatePayload.result_time_minutes = null
     updatePayload.result_time_seconds = null
