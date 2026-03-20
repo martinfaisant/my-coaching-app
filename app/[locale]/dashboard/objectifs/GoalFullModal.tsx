@@ -325,7 +325,7 @@ export function GoalFullModal({
           <div className={`space-y-5 ${activeTab === 'result' ? '' : 'hidden'}`}>
             <div>
               <label className="block text-sm font-medium text-stone-700 mb-2">
-                {tGoals('result.time')} <span className="text-palette-danger">*</span>
+                {tGoals('result.time')}
               </label>
               <div className="grid grid-cols-3 gap-3">
                 <div className="relative">
@@ -378,7 +378,6 @@ export function GoalFullModal({
               label={tGoals('result.placeOptional')}
               type="number"
               min={1}
-              placeholder="42"
               defaultValue={goal.result_place != null ? String(goal.result_place) : ''}
             />
 
