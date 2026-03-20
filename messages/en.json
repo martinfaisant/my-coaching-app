@@ -968,6 +968,11 @@
       "description": "Complete your profile to appear in their searches and receive your first coaching requests.",
       "button": "Complete my profile"
     },
+    "publishOfferPrompt": {
+      "title": "Make your coaching visible",
+      "description": "Publish at least one offer so athletes can send you a request from \"Find a coach\".",
+      "button": "Manage my offers"
+    },
     "pendingRequests": {
       "title": "Pending requests",
       "titleWithCount": "Pending requests ({count})",
@@ -992,6 +997,7 @@
       "title": "Your coaching requests will appear on this page.",
       "description": "Athletes who choose you will appear here. You can accept or decline them."
     },
+    "listLoadError": "Unable to load the athlete list.",
     "myAthletes": "My athletes",
     "myAthletesWithCount": "My Athletes ({count})",
     "nameFilterPlaceholder": "Search for an athlete",

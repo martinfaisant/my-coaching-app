@@ -1092,6 +1092,11 @@
       "description": "Complétez votre profil pour apparaître dans leurs recherches et recevoir vos premières demandes de coaching.",
       "button": "Compléter mon profil"
     },
+    "publishOfferPrompt": {
+      "title": "Rendez votre coaching visible",
+      "description": "Publiez au moins une offre pour que les athlètes puissent vous envoyer une demande depuis « Trouver un coach ».",
+      "button": "Gérer mes offres"
+    },
     "pendingRequests": {
       "title": "Demandes en attente",
       "titleWithCount": "Demandes en attente ({count})",
@@ -1116,6 +1121,7 @@
       "title": "Vos demandes de coaching apparaîtront sur cette page.",
       "description": "Les athlètes qui vous choisiront apparaitront ici. Vous pourrez l'accepter ou la refuser."
     },
+    "listLoadError": "Impossible de charger la liste des athlètes.",
     "myAthletes": "Mes athlètes",
     "myAthletesWithCount": "Mes athlètes ({count})",
     "nameFilterPlaceholder": "Rechercher un athlète",
