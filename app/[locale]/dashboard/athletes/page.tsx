@@ -16,6 +16,7 @@ import {
 import type { Profile, Goal } from '@/types/database'
 import { formatShortDate } from '@/lib/dateUtils'
 import { getDisplayName } from '@/lib/displayName'
+import { logger } from '@/lib/logger'
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params
@@ -42,16 +43,40 @@ export default async function CoachAthletesPage({ params }: { params: Promise<{ 
   const supabase = await createClient()
   const t = await getTranslations({ locale, namespace: 'athletes' })
 
-  const [pendingResult, athletesResult] = await Promise.all([
+  const [pendingResult, athletesResult, publishedOfferResult] = await Promise.all([
     getPendingCoachRequests(locale),
     supabase
       .from('profiles')
       .select('user_id, email, first_name, last_name, role, coach_id, created_at, updated_at, practiced_sports, avatar_url')
       .eq('coach_id', current.id)
       .order('email'),
+    supabase
+      .from('coach_offers')
+      .select('id')
+      .eq('coach_id', current.id)
+      .eq('status', 'published')
+      .limit(1),
   ])
   const pendingRequests = pendingResult
-  const visibleProfiles = (athletesResult.data ?? []) as Profile[]
+
+  let hasPublishedOffer = false
+  if (publishedOfferResult.error) {
+    logger.error('Coach athletes page: failed to load published offers', publishedOfferResult.error, {
+      coachId: current.id,
+    })
+  } else {
+    hasPublishedOffer = (publishedOfferResult.data?.length ?? 0) > 0
+  }
+
+  if (athletesResult.error) {
+    logger.error('Coach athletes page: failed to load coach athletes profiles', athletesResult.error, {
+      coachId: current.id,
+    })
+  }
+  const athletesListLoadFailed = Boolean(athletesResult.error)
+  const visibleProfiles = athletesListLoadFailed
+    ? ([] as Profile[])
+    : ((athletesResult.data ?? []) as Profile[])
   const coachAthleteIds = visibleProfiles.map((p) => p.user_id)
 
   const pendingAthleteIds = [...new Set(pendingRequests.map((r) => r.athlete_id))]
@@ -201,6 +226,23 @@ export default async function CoachAthletesPage({ params }: { params: Promise<{ 
         </div>
       )}
 
+      {!hasPublishedOffer && (
+        <div className="rounded-xl border border-palette-olive/40 bg-section p-6 mb-8">
+          <p className="text-stone-800 font-medium mb-1">
+            {t('publishOfferPrompt.title')}
+          </p>
+          <p className="text-sm text-stone-600 mb-4">
+            {t('publishOfferPrompt.description')}
+          </p>
+          <Link
+            href="/dashboard/profile/offers"
+            className="inline-flex items-center rounded-lg bg-palette-forest-dark px-4 py-2.5 text-sm font-medium text-white hover:bg-palette-olive transition-colors focus:outline-none focus:ring-2 focus:ring-palette-olive focus:ring-offset-2"
+          >
+            {t('publishOfferPrompt.button')}
+          </Link>
+        </div>
+      )}
+
       {pendingRequests.length > 0 && (
         <section className="mb-8">
           <h2 className="text-sm font-bold uppercase tracking-wider text-stone-700 mb-2">
@@ -222,7 +264,14 @@ export default async function CoachAthletesPage({ params }: { params: Promise<{ 
       )}
 
       <section>
-        {visibleProfiles.length === 0 ? (
+        {athletesListLoadFailed ? (
+          <div
+            className="rounded-2xl border border-palette-danger/30 bg-palette-danger-light p-12 text-center"
+            role="alert"
+          >
+            <p className="text-palette-danger-dark font-medium">{t('listLoadError')}</p>
+          </div>
+        ) : visibleProfiles.length === 0 ? (
           <div className="rounded-2xl border border-stone-200 bg-section border-dashed p-12 text-center">
             <p className="text-stone-600 font-medium">
               {t('noAthletes.title')}

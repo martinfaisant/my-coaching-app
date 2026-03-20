@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mes athlètes — Bandeau « Publier une offre » (solution A)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            palette: {
+              'forest-dark': '#627e59',
+              'forest-darker': '#506648',
+              olive: '#8e9856',
+            },
+          },
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-stone-100 min-h-screen p-4 md:p-8 text-stone-900">
+  <div class="max-w-5xl mx-auto space-y-14">
+    <header>
+      <h1 class="text-2xl font-bold text-stone-800">Mes athlètes — bandeau offre publiée (solution A)</h1>
+      <p class="text-sm text-stone-600 mt-1">Mockup non fonctionnel · Tokens alignés design system · Cible : <code class="text-xs bg-stone-200 px-1 rounded">/dashboard/athletes</code></p>
+    </header>
+
+    <!-- ========== État 1 : Profil incomplet + pas d’offre publiée — deux bandeaux empilés ========== -->
+    <section class="space-y-4">
+      <h2 class="text-lg font-bold text-stone-900">État 1 — Profil incomplet + aucune offre <code class="text-sm font-normal text-stone-600">published</code></h2>
+      <p class="text-sm text-stone-600">Ordre implémenté : <strong>1)</strong> bandeau profil · <strong>2)</strong> bandeau offre · <strong>3)</strong> demandes en attente (si &gt; 0) · <strong>4)</strong> Mes athlètes.</p>
+
+      <div class="rounded-xl border border-palette-olive/40 bg-stone-50/80 p-6">
+        <p class="text-stone-800 font-medium mb-1">Faites-vous connaître auprès des athlètes</p>
+        <p class="text-sm text-stone-600 mb-4">Complétez votre profil pour apparaître dans leurs recherches et recevoir vos premières demandes de coaching.</p>
+        <a href="#" class="inline-flex items-center rounded-lg bg-palette-forest-dark px-4 py-2.5 text-sm font-medium text-white hover:bg-palette-olive transition-colors">Compléter mon profil</a>
+      </div>
+
+      <div class="rounded-xl border border-palette-olive/40 bg-stone-50/80 p-6">
+        <p class="text-stone-800 font-medium mb-1">[Titre i18n — ex. Rendez votre coaching visible]</p>
+        <p class="text-sm text-stone-600 mb-4">[Description — ex. Publiez au moins une offre pour que les athlètes puissent vous envoyer une demande depuis « Trouver un coach ».]</p>
+        <a href="#" class="inline-flex items-center rounded-lg bg-palette-forest-dark px-4 py-2.5 text-sm font-medium text-white hover:bg-palette-olive transition-colors">[CTA — ex. Gérer mes offres]</a>
+      </div>
+
+      <div class="rounded-2xl border border-stone-200 border-dashed bg-stone-50/80 p-12 text-center">
+        <p class="text-stone-600 font-medium">[noAthletes.title]</p>
+        <p class="text-sm text-stone-500 mt-2">[noAthletes.description]</p>
+      </div>
+    </section>
+
+    <!-- ========== État 2 : Profil complet + pas d’offre — bandeau offre seul + liste d’athlètes ========== -->
+    <section class="space-y-4">
+      <h2 class="text-lg font-bold text-stone-900">État 2 — Profil complet + aucune offre <code class="text-sm font-normal text-stone-600">published</code> + athlètes</h2>
+      <p class="text-sm text-stone-600">Le bandeau offre reste visible au-dessus de la section liste (y compris avec brouillons uniquement côté offres).</p>
+
+      <div class="rounded-xl border border-palette-olive/40 bg-stone-50/80 p-6">
+        <p class="text-stone-800 font-medium mb-1">[Titre bandeau offre]</p>
+        <p class="text-sm text-stone-600 mb-4">[Description bandeau offre]</p>
+        <a href="#" class="inline-flex items-center rounded-lg bg-palette-forest-dark px-4 py-2.5 text-sm font-medium text-white hover:bg-palette-olive transition-colors">[CTA offres]</a>
+      </div>
+
+      <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
+        <h3 class="text-sm font-bold uppercase tracking-wider text-stone-700">Mes athlètes (2)</h3>
+        <div class="flex flex-wrap gap-3 text-sm text-stone-500">[Recherche] [Tri]</div>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div class="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm">Tuile athlète A</div>
+        <div class="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm">Tuile athlète B</div>
+      </div>
+    </section>
+
+    <!-- ========== État 3 : Bandeaux profil + offre puis demandes en attente ========== -->
+    <section class="space-y-4">
+      <h2 class="text-lg font-bold text-stone-900">État 3 — Profil + offre + demandes en attente + liste</h2>
+      <p class="text-sm text-stone-600">Ordre vertical : <strong>bandeau profil</strong> (si incomplet) → <strong>bandeau offre</strong> (si pas de <code class="text-xs bg-stone-200 px-1 rounded">published</code>) → <strong>Demandes en attente</strong> (si &gt; 0) → <strong>Mes athlètes</strong>.</p>
+
+      <div class="rounded-xl border border-palette-olive/40 bg-stone-50/80 p-6 opacity-90">
+        <p class="text-stone-800 font-medium mb-1">[Bandeau profil si incomplet]</p>
+      </div>
+
+      <div class="rounded-xl border border-palette-olive/40 bg-stone-50/80 p-6">
+        <p class="text-stone-800 font-medium mb-1">[Titre bandeau offre]</p>
+        <p class="text-sm text-stone-600 mb-4">[Description]</p>
+        <a href="#" class="inline-flex rounded-lg bg-palette-forest-dark px-4 py-2.5 text-sm font-medium text-white">[CTA]</a>
+      </div>
+
+      <div class="border border-stone-200 rounded-xl p-4 bg-white">
+        <p class="text-sm font-bold uppercase tracking-wider text-stone-700">Demandes en attente (1)</p>
+        <p class="text-sm text-stone-600 mt-2">Tuile demande…</p>
+      </div>
+
+      <p class="text-xs text-stone-500">→ Section Mes athlètes (filtre + grille) identique à l’existant.</p>
+    </section>
+
+    <!-- ========== État 4 : Au moins une offre publiée — pas de bandeau offre ========== -->
+    <section class="space-y-4">
+      <h2 class="text-lg font-bold text-stone-900">État 4 — Au moins une offre <code class="text-sm font-normal text-stone-600">published</code></h2>
+      <p class="text-sm text-stone-600">Aucun bandeau « offre ». Le bandeau profil incomplet peut toujours s’afficher seul. Comportement liste / vide inchangé par ailleurs.</p>
+      <div class="rounded-2xl border border-stone-200 border-dashed bg-white p-8 text-center text-stone-500 text-sm">Page sans bandeau offre (témoin)</div>
+    </section>
+
+    <!-- ========== Transitions fonctionnelles (parcours visible) ========== -->
+    <section class="border-t border-stone-200 pt-10">
+      <h2 class="text-lg font-bold text-stone-900 mb-4">Transitions fonctionnelles (côté utilisateur)</h2>
+      <ol class="list-decimal list-inside text-sm text-stone-600 space-y-2">
+        <li><strong>Avant</strong> : coach sans offre publiée ouvre Mes athlètes → <strong>Après</strong> : bandeau offre visible + CTA.</li>
+        <li><strong>Action</strong> : clic CTA → navigation vers <code class="text-xs bg-stone-200 px-1 rounded">/dashboard/profile/offers</code> (comportement identique à un lien interne).</li>
+        <li><strong>Après publication</strong> : au retour sur Mes athlètes (rechargement), si ≥ 1 offre <code class="text-xs bg-stone-200 px-1 rounded">published</code> → bandeau offre disparaît.</li>
+        <li><strong>Brouillon seul</strong> : tant qu’aucune offre n’est <code class="text-xs bg-stone-200 px-1 rounded">published</code>, le bandeau reste affiché.</li>
+      </ol>
+    </section>
+  </div>
+</body>
+</html>

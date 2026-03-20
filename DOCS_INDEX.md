@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 20 mars 2026 (Modale coach : horaires installations sous la date ; **Project_context** §4.5 + **docs/DESIGN_SYSTEM.md** + archive mockups ; voir Changements récents)
+**Dernière mise à jour :** 20 mars 2026 (Mes athlètes coach : bandeaux offre + erreur liste ; **Project_context** §4.4, **docs/DESIGN_SYSTEM.md** §7, archive mockup ; voir Changements récents)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -18,19 +18,19 @@
 - **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), stack technique, **URL production https://mysportally.com**
 - **Utiliser pour :** Comprendre le projet, les features, les rôles, l'architecture globale
 - **Taille :** ~450 lignes
-- **Dernière mise à jour :** 20 mars 2026 (§4.7 Goals : résultat sans obligation des trois champs temps, effacement si tous vides ; i18n validation résultat ; §4.2.2 / §5 installations inchangés en substance)
+- **Dernière mise à jour :** 20 mars 2026 (§4.4 Mes athlètes coach : bandeaux profil / offre publiée, erreur chargement liste ; §4.7 Goals et §4.2.2 / §5 inchangés ailleurs)
 
 ### **docs/DESIGN_SYSTEM.md** ⭐
 - **Contenu :** Tokens (couleurs, typo, espacements), composants (Button, Input, Badge, TileCard, DashboardPageShell, Modal, etc.), guidelines UI, exemples de code, §7 breakpoints (calendrier, chat, Trouver mon coach, My offers)
 - **Utiliser pour :** Créer ou modifier des composants UI, choisir des couleurs, appliquer le design system, règles responsive par page
 - **Taille :** ~850 lignes
-- **Dernière mise à jour :** 20 mars 2026 (`WorkoutFacilityHoursStrip` — icône bâtiment, horaires sous la date modale coach ; §7 inchangé ailleurs)
+- **Dernière mise à jour :** 20 mars 2026 (§7 Mes athlètes coach : bandeaux, erreur liste ; `WorkoutFacilityHoursStrip` inchangé)
 
 ### **docs/I18N.md** ⭐
 - **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces, utilisation dans composants et server actions, **checklist pour nouvelles features** (toujours penser bilingue)
 - **Utiliser pour :** Toute nouvelle feature ou texte visible, ajout de clés de traduction, dépannage i18n
 - **Taille :** ~180 lignes
-- **Dernière mise à jour :** 20 mars 2026 (`goals.validation` : `missingGoalId` ; note retrait `timeRequired`)
+- **Dernière mise à jour :** 20 mars 2026 (`athletes.publishOfferPrompt`, `athletes.listLoadError` ; `goals.validation` : `missingGoalId` ; note retrait `timeRequired`)
 
 ### **docs/AUTH_EMAIL_TEMPLATES.md**
 - **Contenu :** Guide de configuration des emails d’auth Supabase (sujet, i18n FR/EN, variables, dépannage logo). **Les fichiers HTML des templates** (Confirm signup, puis Magic Link, Reset Password, etc.) sont dans **docs/email-templates/**.
@@ -109,7 +109,7 @@
 > La majorité des documents d'audit/refactoring historiques sont archivés dans `docs/archive/`.  
 > L’état courant canonique est dans **`docs/ENGINEERING_STATUS_REFAC_AUDIT.md`**.
 
-### Documents archivés (41 fichiers)
+### Documents archivés (42 fichiers)
 
 **Audit & Plan initial :**
 - `AUDIT_COMPLET.md` - Audit complet du projet (13 février 2026) - 1202 lignes
@@ -311,6 +311,10 @@
 - `docs/archive/design-coach-workout-facility-hours/` — `MOCKUP_COACH_WORKOUT_MODAL_FACILITY_HOURS.html`, `MOCKUP_COACH_WORKOUT_MODAL_FACILITY_HOURS_EDGE_CASES.html`.
 - **Raison :** Feature livrée ; sous le bloc date dans l’en-tête de la modale workout (coach), bandeau lecture seule : installations `athlete_facilities` filtrées par sport ↔ type et par jour local, tri A→Z du nom, icône bâtiment commune, créneaux ou fermé. Comportement décrit dans **Project_context.md §4.5** (Workouts), **docs/DESIGN_SYSTEM.md** (WorkoutFacilityHoursStrip), **docs/I18N.md** (`workouts.facilityHoursStripAriaLabel`, `facilities.hours`). RLS : migrations **059** (`facilities_used`), **060** (SELECT coach via `profiles.coach_id`).
 
+**Bandeau offre publiée — Mes athlètes coach (archivés 20 mars 2026) :**
+- `docs/archive/design-coach-athletes-publish-offer/MOCKUP_COACH_ATHLETES_PUBLISH_OFFER_BANNER.html` — mockup HTML (bandeaux profil / offre, ordre, demandes en attente, erreur liste).
+- **Raison :** Feature livrée ; bandeau si aucune offre `published`, bandeau profil au-dessus, message erreur si échec chargement liste athlètes. Comportement décrit dans **Project_context.md §4.4**, **docs/DESIGN_SYSTEM.md** §7, **docs/I18N.md** (`athletes.publishOfferPrompt`, `athletes.listLoadError`).
+
 **Séparation pages dashboard – find-coach / Mes athlètes (archivé 23 février 2026) :**
 - `docs/archive/dashboard-pages-separation/SPEC_ARCHI_DASHBOARD_PAGES_SEPARATION.md` — Spec architecture (redirections depuis /dashboard, pages dédiées, skeletons)
 - **Raison :** Feature livrée ; comportement décrit dans **Project_context.md §4.0** (Dashboard entry point) et **docs/DESIGN_SYSTEM.md** §7 (pages Trouver mon coach, Mes athlètes).
@@ -443,9 +447,14 @@
 **Fréquence de mise à jour :** À chaque ajout/suppression de documentation
 
 **Dernier scan :** 20 mars 2026  
-**Dernier nettoyage :** 20 mars 2026 (index archive : design-coach-workout-facility-hours)
+**Dernier nettoyage :** 20 mars 2026 (index archive : design-coach-athletes-publish-offer)
 
 ### Changements récents :
+
+✅ **20 mars 2026 – Mes athlètes coach (bandeau offre publiée + erreur chargement liste) – Mode Analyste :**
+- **Livraison :** Sur `/dashboard/athletes`, si le coach n’a **aucune** offre `published`, un **bandeau** l’invite à gérer ses offres (lien `/dashboard/profile/offers`) ; si le **profil** est incomplet, le bandeau **Compléter le profil** est **au-dessus**. Ordre : bandeaux → **Demandes en attente** → liste. Si le chargement de la **liste des athlètes** échoue, un **message d’erreur** (`athletes.listLoadError`) remplace l’état vide.
+- **Doc :** `Project_context.md` §4.4, `docs/DESIGN_SYSTEM.md` §7 + Fichiers clés, `docs/I18N.md` (namespace `athletes`).
+- **Archivage :** `docs/design-coach-athletes-publish-offer/` → `docs/archive/design-coach-athletes-publish-offer/` (`MOCKUP_COACH_ATHLETES_PUBLISH_OFFER_BANNER.html`).
 
 ✅ **20 mars 2026 – Horaires installations (modale entraînement coach) – Mode Analyste :**
 - **Livraison :** Dans la modale workout côté coach (création, édition, lecture seule), **sous la date** dans l’en-tête : liste des installations de l’athlète dont le type correspond au sport de la séance pour le **jour** de la date (natation → piscine, musculation → salle, course → stade ; vélo → pas de bandeau), **tri alphabétique** du nom, **icône bâtiment** identique sur chaque ligne, affichage des **créneaux** ou **fermé**. `WorkoutFacilityHoursStrip`, `lib/workoutFacilityHours.ts` ; accès coach aux lignes `athlete_facilities` aligné sur les workouts (souscription + `profiles.coach_id`, migrations 059–060).
@@ -793,6 +802,7 @@
 | Grilles responsive (Trouver mon coach, My offers, Mes athlètes) | `docs/DESIGN_SYSTEM.md` §7 |
 | Filtre par nom/prénom (Trouver mon coach) | `Project_context.md` (Athlete), `docs/DESIGN_SYSTEM.md` §7 |
 | Filtre par nom (Mes athlètes, coach) | `Project_context.md` (§ Coach), `docs/DESIGN_SYSTEM.md` §7 |
+| **Bandeaux Mes athlètes coach** (profil / offre publiée, erreur chargement liste) | **`Project_context.md` §4.4**, **`docs/DESIGN_SYSTEM.md` §7**, **`docs/I18N.md`** (`athletes.publishOfferPrompt`, `athletes.listLoadError`) |
 | **Tri liste athlètes (nom / date planifiée), SearchInput, Dropdown** | **`Project_context.md`** (§ Coach), **`docs/DESIGN_SYSTEM.md`** (§ SearchInput, § Dropdown) |
 | Tuile archivée / offres archivées / historique souscriptions (issue #43) | `docs/DESIGN_SYSTEM.md` § TileCard (stone, badge) |
 | **Vue souscription, résiliation, « En résiliation »** | **`Project_context.md` §4.10** |
