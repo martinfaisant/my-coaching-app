@@ -71,8 +71,10 @@ export async function proxy(request: NextRequest) {
   // If user is not logged in and tries to access protected route
   if (!user && isProtectedRoute && isGet) {
     const redirectUrl = request.nextUrl.clone()
-    redirectUrl.pathname = locale === 'fr' ? '/login' : `/${locale}/login`
-    redirectUrl.searchParams.set('redirect', pathname)
+    // Au lieu de rediriger vers `/login?redirect=...`, on renvoie sur la page d'accueil.
+    // Cela correspond à la demande produit: route protégée => page d'accueil.
+    redirectUrl.pathname = locale === 'en' ? '/en' : '/'
+    redirectUrl.searchParams.delete('redirect')
     return NextResponse.redirect(redirectUrl)
   }
 

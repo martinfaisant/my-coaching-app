@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 18 mars 2026 (Mode Analyste : feature Installations athlète consolidée dans docs actives + archive indexée ; voir Changements récents)
+**Dernière mise à jour :** 20 mars 2026 (Objectifs : résultat + i18n `goals.validation` ; **Project_context** §4.7 + **docs/I18N.md** ; voir Changements récents)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -18,7 +18,7 @@
 - **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), stack technique, **URL production https://mysportally.com**
 - **Utiliser pour :** Comprendre le projet, les features, les rôles, l'architecture globale
 - **Taille :** ~450 lignes
-- **Dernière mise à jour :** 18 mars 2026 (§4.2.2 Installations utilisées athlète : type/adresse/horaires, modal add/edit, validation, RLS ; §5 table `athlete_facilities`)
+- **Dernière mise à jour :** 20 mars 2026 (§4.7 Goals : résultat sans obligation des trois champs temps, effacement si tous vides ; i18n validation résultat ; §4.2.2 / §5 installations inchangés en substance)
 
 ### **docs/DESIGN_SYSTEM.md** ⭐
 - **Contenu :** Tokens (couleurs, typo, espacements), composants (Button, Input, Badge, TileCard, DashboardPageShell, Modal, etc.), guidelines UI, exemples de code, §7 breakpoints (calendrier, chat, Trouver mon coach, My offers)
@@ -30,7 +30,7 @@
 - **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces, utilisation dans composants et server actions, **checklist pour nouvelles features** (toujours penser bilingue)
 - **Utiliser pour :** Toute nouvelle feature ou texte visible, ajout de clés de traduction, dépannage i18n
 - **Taille :** ~180 lignes
-- **Dernière mise à jour :** 18 mars 2026 (namespace `facilities` documenté : UI + validations server-side)
+- **Dernière mise à jour :** 20 mars 2026 (`goals.validation` : `missingGoalId` ; note retrait `timeRequired`)
 
 ### **docs/AUTH_EMAIL_TEMPLATES.md**
 - **Contenu :** Guide de configuration des emails d’auth Supabase (sujet, i18n FR/EN, variables, dépannage logo). **Les fichiers HTML des templates** (Confirm signup, puis Magic Link, Reset Password, etc.) sont dans **docs/email-templates/**.
@@ -62,7 +62,7 @@
 - **Utiliser pour :** Conventions de code, règles automatiques Cursor AI
 - **Type :** Always-applied workspace rule
 - **Taille :** ~230 lignes
-- **Dernière mise à jour :** 16 février 2026
+- **Dernière mise à jour :** 20 mars 2026 (section Objectifs : résultat temps non obligatoire champ par champ, effacement si tous vides)
 
 ### **.cursor/rules/save-button-pattern.mdc**
 - **Contenu :** Règle Cursor pour pattern de bouton de sauvegarde
@@ -701,6 +701,12 @@
 - **Architecte** : table des fichiers obligatoire, « aucun changement BDD » si pertinent, section Tests manuels recommandés, points à trancher en implémentation, checklist avant livraison.
 - **Développeur** : vérification conformité au mockup (signaler écarts), livrable pour l’Analyste = liste des fichiers créés/modifiés (+ optionnel note de livraison).
 - **Analyste** : règle explicite **Garder / Fusionner / Archiver** pour les docs de feature ; où transférer l’info (Project_context, DESIGN_SYSTEM) avant archivage ; cohérence des liens après archivage.
+
+✅ **20 mars 2026 – Objectifs (résultat) + i18n (Mode Analyste) :**
+- Alignement **Project_context.md** §4.7 sur l’implémentation : temps résultat h/min/s sans obligation des trois champs ; champs vides = 0 si au moins un temps saisi ; si tous les temps vides à la sauvegarde → effacement du résultat (temps + place + note) ; `saveGoalResult` / `addGoal` (date passée) ; mention `goals.validation.missingGoalId` et retrait de la clé message `timeRequired`.
+- **docs/I18N.md** : en-tête + tableau namespaces `goals` (déjà à jour dans le corps du fichier).
+- **.cursor/rules/project-core.mdc** : section Objectifs enrichie (résultat temps) ; date de version.
+- **DOCS_INDEX.md** : dates des entrées concernées.
 
 ✅ **19 février 2026 – Mise à jour doc (Mode Analyste) – Vue souscription, résiliation, « En résiliation » :**
 - Alignement de la documentation sur l'implémentation réalisée.

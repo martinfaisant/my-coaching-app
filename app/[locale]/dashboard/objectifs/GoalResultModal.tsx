@@ -180,7 +180,7 @@ function GoalResultModalInner({ goal, isOpen, onClose, layer = 0 }: GoalResultMo
 
         <div>
           <label className="block text-sm font-medium text-stone-700 mb-2">
-            {tGoals('result.time')} <span className="text-palette-danger">*</span>
+            {tGoals('result.time')}
           </label>
           <div className="grid grid-cols-3 gap-3">
             <div className="relative">
@@ -233,7 +233,6 @@ function GoalResultModalInner({ goal, isOpen, onClose, layer = 0 }: GoalResultMo
           label={tGoals('result.placeOptional')}
           type="number"
           min={1}
-          placeholder="42"
           defaultValue={initialValues.place}
         />
 

@@ -274,7 +274,7 @@ export function RequestGoalAddModal({ isOpen, onClose }: RequestGoalAddModalProp
           <>
             <div>
               <label className="block text-sm font-medium text-stone-700 mb-2">
-                {tGoals('result.time')} <span className="text-palette-danger">*</span>
+                {tGoals('result.time')}
               </label>
               <div className="grid grid-cols-3 gap-3">
                 <div className="relative">
@@ -283,7 +283,6 @@ export function RequestGoalAddModal({ isOpen, onClose }: RequestGoalAddModalProp
                     type="number"
                     min={0}
                     max={99}
-                    placeholder="0"
                     className="text-center pr-9"
                     aria-label={tGoals('result.hours')}
                   />
@@ -297,7 +296,6 @@ export function RequestGoalAddModal({ isOpen, onClose }: RequestGoalAddModalProp
                     type="number"
                     min={0}
                     max={59}
-                    placeholder="0"
                     className="text-center pr-10"
                     aria-label={tGoals('result.minutes')}
                   />
@@ -311,7 +309,6 @@ export function RequestGoalAddModal({ isOpen, onClose }: RequestGoalAddModalProp
                     type="number"
                     min={0}
                     max={59}
-                    placeholder="0"
                     className="text-center pr-8"
                     aria-label={tGoals('result.seconds')}
                   />
@@ -326,7 +323,6 @@ export function RequestGoalAddModal({ isOpen, onClose }: RequestGoalAddModalProp
               label={tGoals('result.placeOptional')}
               type="number"
               min={1}
-              placeholder="42"
             />
             <Textarea
               name="result_note"

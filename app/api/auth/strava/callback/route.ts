@@ -5,6 +5,16 @@ import { logger } from '@/lib/logger'
 
 const STRAVA_TOKEN_URL = 'https://www.strava.com/oauth/token'
 
+function getLocaleFromAcceptLanguage(request: NextRequest): 'en' | 'fr' {
+  const acceptLanguage = request.headers.get('accept-language') ?? ''
+  return acceptLanguage.toLowerCase().includes('en') ? 'en' : 'fr'
+}
+
+function getHomePathForLocale(locale: 'en' | 'fr'): string {
+  // Routing next-intl : `fr` sans prefixe, `en` avec prefixe.
+  return locale === 'en' ? '/en' : '/'
+}
+
 function getOrigin(request: NextRequest): string {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? process.env.SITE_URL
   if (appUrl) {
@@ -45,7 +55,8 @@ export async function GET(request: NextRequest) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
-      return NextResponse.redirect(new URL('/login', origin))
+      const locale = getLocaleFromAcceptLanguage(request)
+      return NextResponse.redirect(new URL(getHomePathForLocale(locale), origin))
     }
 
     // Vérifier que le state correspond à l'utilisateur connecté (1 token par utilisateur, pas de mélange)

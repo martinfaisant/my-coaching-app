@@ -8,6 +8,11 @@ function urlForLocale(locale: Locale, path: string) {
   return `${prefix}${path}`
 }
 
+function normalizePathname(pathname: string) {
+  const trimmed = pathname.replace(/\/+$/, '')
+  return trimmed === '' ? '/' : trimmed
+}
+
 async function loginViaForm(page: Page, locale: Locale, email: string, password: string) {
   await page.goto(urlForLocale(locale, '/login'))
 
@@ -41,10 +46,19 @@ test.describe('Smoke - parcours critiques', () => {
     }
   })
 
-  test('Dashboard non authentifié => redirection login', async ({ page }) => {
+  test('Dashboard non authentifié (FR) => redirection accueil', async ({ page }) => {
     // La locale "fr" est sans préfixe (localePrefix: as-needed).
     await page.goto('/dashboard')
-    await expect(page).toHaveURL(/\/(en\/|fr\/)?login/)
+
+    const pathname = normalizePathname(new URL(page.url()).pathname)
+    expect(pathname).toBe('/')
+  })
+
+  test('Dashboard non authentifié (EN) => redirection accueil', async ({ page }) => {
+    await page.goto(urlForLocale('en', '/dashboard'))
+
+    const pathname = normalizePathname(new URL(page.url()).pathname)
+    expect(pathname).toBe('/en')
   })
 
   test('Athlete: /dashboard => calendrier ou recherche coach', async ({ page }) => {
