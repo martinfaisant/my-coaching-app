@@ -1414,7 +1414,8 @@
       "addHours": "Ajouter des heures d'ouvertures",
       "removeSlotAriaLabel": "Supprimer la plage",
       "slotStartAria": "Heure de début",
-      "slotEndAria": "Heure de fin"
+      "slotEndAria": "Heure de fin",
+      "dayHoursSeparator": " : "
     },
     "modal": {
       "addTitle": "Ajouter un centre",

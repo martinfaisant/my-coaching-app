@@ -1290,7 +1290,8 @@
       "addHours": "Add opening hours",
       "removeSlotAriaLabel": "Remove time slot",
       "slotStartAria": "Start time",
-      "slotEndAria": "End time"
+      "slotEndAria": "End time",
+      "dayHoursSeparator": ": "
     },
     "modal": {
       "addTitle": "Add a facility",

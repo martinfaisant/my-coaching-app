@@ -61,28 +61,37 @@ export function AthleteFacilityDetails({ facility, headerRight, footer }: Athlet
     const dayOpening = facility.opening_hours[dayKey]
     const isOpen = dayOpening.open
 
+    const hasSlotHours = isOpen && dayOpening.slots.length > 0
+
     return (
       <div
         key={dayKey}
-        className="grid grid-cols-[80px_1fr_auto] sm:grid-cols-[80px_1fr_auto] gap-3 items-start"
+        className="flex w-full min-w-0 flex-wrap items-center justify-between gap-x-2 gap-y-0.5"
       >
-        <div className="text-xs font-bold uppercase tracking-wider text-stone-500 leading-none">{tDays(dayKey)}</div>
-
-        <div className="flex justify-center">
+        <span className="text-xs font-bold uppercase tracking-wider text-stone-500 shrink-0">
+          {tDays(dayKey)}
+        </span>
+        <span
+          className={
+            hasSlotHours
+              ? 'inline-flex min-w-0 shrink flex-wrap items-center gap-x-0.5 rounded-full border border-stone-300 bg-white px-2 py-1 text-xs font-medium text-stone-700'
+              : 'inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-stone-300 bg-white px-2 py-1 text-xs font-medium text-stone-700'
+          }
+        >
           {isOpen ? (
-            <div className="text-sm font-medium text-stone-700 text-center leading-none">
-              {formatSlots(dayOpening.slots)}
-            </div>
+            <>
+              {tHours('open')}
+              {hasSlotHours ? (
+                <>
+                  <span className="text-stone-500">{tHours('dayHoursSeparator')}</span>
+                  <span className="font-medium text-stone-800">{formatSlots(dayOpening.slots)}</span>
+                </>
+              ) : null}
+            </>
           ) : (
-            <div className="min-h-[1.5rem]" />
+            tHours('closed')
           )}
-        </div>
-
-        <div className="flex items-start justify-end">
-          <span className="inline-flex items-center justify-center rounded-full border border-stone-300 bg-white px-2 py-1 text-xs font-medium text-stone-700 whitespace-nowrap">
-            {isOpen ? tHours('open') : tHours('closed')}
-          </span>
-        </div>
+        </span>
       </div>
     )
   }
@@ -107,7 +116,7 @@ export function AthleteFacilityDetails({ facility, headerRight, footer }: Athlet
         ) : null}
       </div>
 
-      <div className="mt-4 grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-6 items-start">
+      <div className="mt-4 grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-6 items-start">
         <div className="text-sm text-stone-700 space-y-1.5">
           <div className="whitespace-pre-wrap">{facility.address}</div>
           <div>
@@ -118,7 +127,7 @@ export function AthleteFacilityDetails({ facility, headerRight, footer }: Athlet
         </div>
 
         <div>
-          <div className="space-y-1">{DAYS_ORDER.map((dayKey) => renderDayRow(dayKey))}</div>
+          <div className="space-y-0.5">{DAYS_ORDER.map((dayKey) => renderDayRow(dayKey))}</div>
         </div>
       </div>
 
