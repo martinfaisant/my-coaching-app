@@ -1,0 +1,128 @@
+'use client'
+
+import { Badge } from '@/components/Badge'
+import { formatFacilitySlotTime, DAYS_ORDER } from '@/lib/facilityHoursUtils'
+import type { AthleteFacility, FacilityDayKey, FacilityType } from '@/types/database'
+import type { SportType } from '@/lib/sportStyles'
+import { useTranslations } from 'next-intl'
+import type { ReactNode } from 'react'
+
+function facilityTypeToSport(facilityType: FacilityType): SportType {
+  switch (facilityType) {
+    case 'piscine':
+      return 'natation'
+    case 'salle':
+      return 'musculation'
+    case 'stade':
+      return 'course'
+    case 'autre':
+      return 'musculation'
+  }
+}
+
+function formatSlots(slots: { start: string; end: string }[]) {
+  return slots.map((s, idx) => {
+    const start = formatFacilitySlotTime(s.start)
+    const end = formatFacilitySlotTime(s.end)
+    const isLast = idx >= slots.length - 1
+    return (
+      <span key={`${s.start}-${s.end}-${idx}`} className="whitespace-nowrap">
+        {start} - {end}
+        {!isLast ? (
+          <>
+            <br className="sm:hidden" />
+            <span className="hidden sm:inline"> · </span>
+          </>
+        ) : null}
+      </span>
+    )
+  })
+}
+
+export type AthleteFacilityDetailsProps = {
+  facility: AthleteFacility
+  /** Zone à droite du titre (ex. boutons Modifier / Supprimer). */
+  headerRight?: ReactNode
+  /** Sous le bloc adresse + horaires (ex. message d’erreur suppression). */
+  footer?: ReactNode
+}
+
+/**
+ * Affichage lecture seule d’une installation : type (badge sport), nom, adresse, horaires sur 7 jours.
+ * Utilisé par `AthleteFacilityCard` (avec actions) et par le calendrier coach (sans actions).
+ */
+export function AthleteFacilityDetails({ facility, headerRight, footer }: AthleteFacilityDetailsProps) {
+  const tDays = useTranslations('facilities.days')
+  const tFacilityTypes = useTranslations('facilities.facilityTypes')
+  const tHours = useTranslations('facilities.hours')
+  const badgeSport = facilityTypeToSport(facility.facility_type)
+
+  const renderDayRow = (dayKey: FacilityDayKey) => {
+    const dayOpening = facility.opening_hours[dayKey]
+    const isOpen = dayOpening.open
+
+    return (
+      <div
+        key={dayKey}
+        className="grid grid-cols-[80px_1fr_auto] sm:grid-cols-[80px_1fr_auto] gap-3 items-start"
+      >
+        <div className="text-xs font-bold uppercase tracking-wider text-stone-500 leading-none">{tDays(dayKey)}</div>
+
+        <div className="flex justify-center">
+          {isOpen ? (
+            <div className="text-sm font-medium text-stone-700 text-center leading-none">
+              {formatSlots(dayOpening.slots)}
+            </div>
+          ) : (
+            <div className="min-h-[1.5rem]" />
+          )}
+        </div>
+
+        <div className="flex items-start justify-end">
+          <span className="inline-flex items-center justify-center rounded-full border border-stone-300 bg-white px-2 py-1 text-xs font-medium text-stone-700 whitespace-nowrap">
+            {isOpen ? tHours('open') : tHours('closed')}
+          </span>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="border border-stone-100 bg-white rounded-2xl p-4">
+      {/* Colonne sur mobile : évite que badge+titre écrasent les boutons (refactor AthleteFacilityDetails). */}
+      <div className="flex w-full min-w-0 flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:flex-wrap sm:gap-3">
+            <Badge sport={badgeSport} className="bg-white w-fit shrink-0">
+              {tFacilityTypes(facility.facility_type)}
+            </Badge>
+            <div className="text-sm font-bold text-stone-900 break-words min-w-0 sm:truncate">
+              {facility.facility_name}
+            </div>
+          </div>
+        </div>
+
+        {headerRight ? (
+          <div className="flex shrink-0 flex-wrap items-center justify-end gap-2 sm:justify-end">{headerRight}</div>
+        ) : null}
+      </div>
+
+      <div className="mt-4 grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-6 items-start">
+        <div className="text-sm text-stone-700 space-y-1.5">
+          <div className="whitespace-pre-wrap">{facility.address}</div>
+          <div>
+            {facility.address_postal_code} · {facility.address_city}
+          </div>
+          <div>{facility.address_country}</div>
+          {facility.address_complement ? <div className="text-stone-500">{facility.address_complement}</div> : null}
+        </div>
+
+        <div>
+          <div className="space-y-1">{DAYS_ORDER.map((dayKey) => renderDayRow(dayKey))}</div>
+        </div>
+      </div>
+
+      {footer}
+    </div>
+  )
+}
