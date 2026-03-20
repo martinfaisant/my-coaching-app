@@ -12,7 +12,18 @@ import { AvailabilityDetailModal } from './AvailabilityDetailModal'
 import { Modal } from './Modal'
 import { SPORT_ICONS, SPORT_CARD_STYLES, SPORT_TRANSLATION_KEYS } from '@/lib/sportStyles'
 import { ActivityTile } from './ActivityTile'
-import type { Workout, WorkoutStatus, SportType, Goal, ImportedActivity, ImportedActivityWeeklyTotal, WorkoutWeeklyTotal, WorkoutTimeOfDay, AthleteAvailabilitySlot } from '@/types/database'
+import type {
+  AthleteFacility,
+  Workout,
+  WorkoutStatus,
+  SportType,
+  Goal,
+  ImportedActivity,
+  ImportedActivityWeeklyTotal,
+  WorkoutWeeklyTotal,
+  WorkoutTimeOfDay,
+  AthleteAvailabilitySlot,
+} from '@/types/database'
 import { hasGoalResult, formatGoalResultTime, formatGoalResultPlaceOrdinal, hasTargetTime, formatTargetTime } from '@/lib/goalResultUtils'
 
 const RunIcon = SPORT_ICONS.course
@@ -198,6 +209,8 @@ type CalendarViewProps = {
   onAvailabilitySaved?: () => void
   /** Quand true, le titre de la première semaine n'est pas affiché (il est dans la barre de navigation). */
   hideFirstWeekTitle?: boolean
+  /** Installations athlète (vue coach) pour le bandeau horaires dans la modale workout */
+  athleteFacilities?: AthleteFacility[]
 }
 
 /** Icône cible avec badge 1 (objectif principal) ou 2 (secondaire). */
@@ -240,6 +253,7 @@ export function CalendarView({
   availabilities = [],
   onAvailabilitySaved,
   hideFirstWeekTitle = false,
+  athleteFacilities = [],
 }: CalendarViewProps) {
   const locale = useLocale()
   const localeTag = locale === 'fr' ? 'fr-FR' : 'en-US'
@@ -1871,6 +1885,7 @@ export function CalendarView({
         canEdit={canEdit}
         athleteView={athleteView}
         workout={modalWorkout}
+        athleteFacilities={athleteFacilities}
       />
 
       {athleteView && (

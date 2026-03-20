@@ -6,7 +6,15 @@ import { Button } from './Button'
 import { CalendarView } from './CalendarView'
 import { getWorkoutsForDateRange, getImportedActivitiesForDateRange, getEffectiveWeeklyTotalsFait, getWorkoutWeeklyTotals } from '@/app/[locale]/dashboard/workouts/actions'
 import { getAvailabilityForDateRange } from '@/app/[locale]/dashboard/availability/actions'
-import type { Workout, Goal, ImportedActivity, ImportedActivityWeeklyTotal, WorkoutWeeklyTotal, AthleteAvailabilitySlot } from '@/types/database'
+import type {
+  AthleteFacility,
+  Workout,
+  Goal,
+  ImportedActivity,
+  ImportedActivityWeeklyTotal,
+  WorkoutWeeklyTotal,
+  AthleteAvailabilitySlot,
+} from '@/types/database'
 import { getWeekMonday, toDateStr } from '@/lib/dateUtils'
 
 const SLIDE_DURATION_MS = 380
@@ -87,6 +95,8 @@ type CalendarViewWithNavigationProps = {
   disableContentScroll?: boolean
   /** Contenu à afficher après le calendrier dans la même zone scrollable */
   renderAfterCalendar?: () => React.ReactNode
+  /** Installations athlète (vue coach) — bandeau horaires modale workout */
+  initialAthleteFacilities?: AthleteFacility[]
 }
 
 /** Retourne le lundi d'une semaine donnée (offset par rapport à referenceMonday). */
@@ -129,6 +139,7 @@ export function CalendarViewWithNavigation({
   hideBuiltInSelector = false,
   disableContentScroll = false,
   renderAfterCalendar,
+  initialAthleteFacilities = [],
 }: CalendarViewWithNavigationProps) {
   const locale = useLocale()
   const tCalendar = useTranslations('calendar')
@@ -462,6 +473,7 @@ export function CalendarViewWithNavigation({
                   onNavigate={handleNavigate}
                   onWorkoutSaved={refetchWorkoutsAfterSave}
                   onAvailabilitySaved={refetchAvailabilitiesAfterSave}
+                  athleteFacilities={initialAthleteFacilities}
                 />
               </div>
             </div>
@@ -540,6 +552,7 @@ export function CalendarViewWithNavigation({
             onNavigate={handleNavigate}
             onWorkoutSaved={refetchWorkoutsAfterSave}
             onAvailabilitySaved={refetchAvailabilitiesAfterSave}
+            athleteFacilities={initialAthleteFacilities}
           />
             </div>
           </div>

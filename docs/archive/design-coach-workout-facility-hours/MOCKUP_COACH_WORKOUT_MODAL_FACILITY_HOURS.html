@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Coach — Modale workout — Bandeau horaires installations (solution A)</title>
+  <!-- Aligné sur app/[locale]/layout.tsx : Geist via next/font → --font-geist-sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --stone-50: #fafaf9;
+      --stone-200: #e7e5e4;
+      --stone-400: #a8a29e;
+      --stone-500: #78716c;
+      --stone-600: #57534e;
+      --stone-700: #44403c;
+      --stone-900: #1c1917;
+      --forest: #627e59;
+    }
+    /* Même stack que tailwind.config + globals.css (sans variable CSS Next) */
+    body {
+      font-family: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial,
+        "Apple Color Emoji", "Segoe UI Emoji";
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      background: #292524;
+      margin: 0;
+      padding: 24px;
+    }
+    .modal {
+      max-width: 520px; margin: 0 auto; background: #fff; border-radius: 16px;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,.35); overflow: hidden; display: flex; flex-direction: column; max-height: 90vh;
+    }
+    .header { padding: 16px 24px; border-bottom: 1px solid var(--stone-200); display: flex; justify-content: space-between; align-items: center; }
+    .header-date { font-size: 0.875rem; line-height: 1.25rem; font-weight: 700; color: var(--stone-900); }
+    .header-badge { font-size: 0.6875rem; line-height: 1rem; font-weight: 600; padding: 4px 8px; border-radius: 9999px; background: var(--stone-200); color: var(--stone-700); }
+    .scroll { flex: 1; overflow-y: auto; padding: 16px 24px; }
+    .footer { border-top: 1px solid var(--stone-200); padding: 12px 16px; }
+    /* Bandeau solution A — sticky au-dessus du footer */
+    .strip {
+      border-top: 1px solid var(--stone-200);
+      background: rgba(250, 250, 249, 0.95);
+      padding: 10px 16px;
+      flex-shrink: 0;
+    }
+    /* DS : text-sm — nom font-semibold text-stone-900, horaires text-stone-600 */
+    .facility {
+      font-size: 0.875rem;
+      line-height: 1.25rem;
+      color: var(--stone-600);
+      margin-bottom: 6px;
+    }
+    .facility:last-child { margin-bottom: 0; }
+    .fname { font-weight: 600; color: var(--stone-900); }
+    .sep { color: var(--stone-400); font-weight: 400; padding: 0 0.15em; }
+    .slots { font-weight: 400; }
+    .hint { font-size: 0.75rem; line-height: 1rem; color: var(--stone-500); margin-top: 12px; }
+    .btn-row { display: flex; gap: 12px; }
+    .btn { flex: 1; padding: 12px; border-radius: 10px; border: none; font-family: inherit; font-size: 0.875rem; font-weight: 600; cursor: pointer; }
+    .btn-primary { background: var(--forest); color: #fff; }
+    .btn-danger { background: #fff; color: #9e3b31; border: 1px solid var(--stone-200); }
+    label { display: block; font-size: 0.75rem; line-height: 1rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: #a8a29e; margin-bottom: 6px; }
+    .tiles { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+    .tile { padding: 8px 14px; border-radius: 12px; border: 2px solid var(--stone-200); font-size: 0.875rem; line-height: 1.25rem; }
+    .tile.on { border-color: var(--forest); background: rgba(98,126,89,0.08); color: var(--forest); font-weight: 600; }
+    .placeholder { font-size: 0.875rem; line-height: 1.25rem; color: var(--stone-600); }
+  </style>
+</head>
+<body>
+  <p class="hint" style="color:#a8a29e;max-width:520px;margin:0 auto 16px;">
+    Référence visuelle : bandeau <strong>sticky</strong> entre zone scroll formulaire et footer (boutons). Pas de bandeau pour vélo.
+  </p>
+
+  <!-- État nominal : natation, mardi, 2 piscines — une ligne par facility : nom · horaires -->
+  <div class="modal">
+    <div class="header">
+      <span class="header-date">mar. 18 mars 2026</span>
+      <span class="header-badge">Planifié</span>
+    </div>
+    <div class="scroll">
+      <div class="tiles">
+        <span class="tile">Course</span>
+        <span class="tile">Vélo</span>
+        <span class="tile on">Natation</span>
+        <span class="tile">Musculation</span>
+      </div>
+      <label>Titre</label>
+      <div style="height:40px;background:var(--stone-50);border:1px solid var(--stone-200);border-radius:8px;margin-bottom:16px"></div>
+      <p class="placeholder">… objectifs séance, description …</p>
+    </div>
+    <div class="strip" aria-label="Horaires installations du jour">
+      <div class="facility">
+        <span class="fname">Piscine municipale Nord</span><span class="sep">·</span><span class="slots">06:30 – 08:00 · 12:00 – 14:00 · 20:00 – 22:30</span>
+      </div>
+      <div class="facility">
+        <span class="fname">Centre aquatique Sud</span><span class="sep">·</span><span class="slots">07:00 – 21:00</span>
+      </div>
+    </div>
+    <div class="footer">
+      <div class="btn-row">
+        <button type="button" class="btn btn-danger">Supprimer</button>
+        <button type="button" class="btn btn-primary">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+  <p class="hint" style="max-width:520px;margin:24px auto 16px;color:#a8a29e;">Même bandeau : course → stades uniquement ; musculation → salles ; jour fermé → « Fermé » sur la même ligne après le nom ; 0 installation du type → pas de bandeau.</p>
+</body>
+</html>

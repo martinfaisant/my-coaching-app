@@ -293,8 +293,9 @@ if ('error' in result) return result
 - **Adresse** : un seul champ `address` (+ `address_postal_code`, `address_city`, `address_country`, `address_complement`). Ne pas réintroduire `street` + `number` séparés.
 - **Code postal** : normaliser **à la sauvegarde** (uppercase + suppression espaces), sans contrainte UX côté saisie.
 - **Horaires** : JSONB structuré (7 jours, open/closed, plages multiples). Validation serveur stricte (jours présents, `start < end`, pas de chevauchement, closed => 0 plage). `24:00` autorisé en interne (affichage `00:00`).
+- **Modale entraînement (coach)** : sous le bloc date, bandeau lecture seule des horaires des installations filtrées par sport et jour (`WorkoutFacilityHoursStrip`, `lib/workoutFacilityHours.ts`). Référence : `Project_context.md` §4.5 (Workouts).
 - **Responsive** : en modal, sur petit écran afficher jour+badge sur la 1re ligne puis créneaux dessous ; éviter tout débordement badge/horaires.
-- **RLS** : athlète CRUD sur ses lignes ; coach SELECT seulement si subscription `active` / `cancellation_scheduled` ; admin SELECT global.
+- **RLS** : athlète CRUD sur ses lignes ; coach SELECT si souscription `active` / `cancellation_scheduled` avec l’athlète, **ou** si `profiles.coach_id = auth.uid()` pour cet athlète (aligné sur les workouts ; migrations 059–060) ; admin SELECT global.
 
 ---
 

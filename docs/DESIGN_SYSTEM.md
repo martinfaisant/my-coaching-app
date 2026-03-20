@@ -1,7 +1,7 @@
 # 🎨 Design System
 
-**Version :** 1.17  
-**Dernière mise à jour :** 18 mars 2026 (Profil athlète : section Facilities Used, modal add/edit installations, responsive opening-hours table. Précédent : bloc date objectif, Date picker compact.)
+**Version :** 1.18  
+**Dernière mise à jour :** 20 mars 2026 (`WorkoutFacilityHoursStrip` — horaires + icône bâtiment `IconBuilding` sous la date, en-tête modale workout coach ; `Modal.preFooter` optionnel ailleurs. Précédent : Facilities Used, etc.)
 
 ---
 
@@ -26,6 +26,7 @@
    - [ActivityTile](#activitytile)
    - [TileCard](#tilecard)
    - [Modal](#modal)
+   - [WorkoutFacilityHoursStrip](#workoutfacilityhoursstrip)
    - [DashboardPageShell](#dashboardpageshell)
    - [DashboardTopBar](#dashboardtopbar)
    - [Drawer](#drawer)
@@ -1030,6 +1031,8 @@ type ModalProps = {
   disableOverlayClose?: boolean
   disableEscapeClose?: boolean
   footer?: React.ReactNode
+  /** Zone fixe entre le corps scrollable et le footer (ex. bandeau horaires installations) */
+  preFooter?: React.ReactNode
   className?: string
   contentClassName?: string
   titleId?: string
@@ -1143,8 +1146,15 @@ const [isOpen, setIsOpen] = useState(false)
     - Contenu custom à droite (headerRight)
     - Bouton fermer (X) par défaut
   - Corps scrollable (children)
+  - preFooter optionnel (fixe, entre corps et footer — bandeau contextuel générique)
   - Footer optionnel (fixe, ne scroll pas)
 ```
+
+### WorkoutFacilityHoursStrip
+
+**Fichier :** `components/workout-modal/WorkoutFacilityHoursStrip.tsx`
+
+Modale workout **coach** : rendu **sous la date** dans l’en-tête (`variant="compact"`) ; sinon usage avec `variant="default"`. Une ligne par installation : **icône bâtiment** (`IconBuilding`, identique pour toutes) · **nom** · **créneaux** ou fermé (`facilities.hours.closed`). Données : `lib/workoutFacilityHours.ts` (`getWorkoutFacilityDisplayLines`, `facilityType` pour filtrage / clés).
 
 #### Modales auth dérivées
 
@@ -1661,8 +1671,9 @@ Actuellement, utiliser un span custom :
 
 - **Tokens couleurs** : `tailwind.config.ts`, `app/globals.css`
 - **Styles formulaires** : `lib/formStyles.ts` (FORM_BASE_CLASSES, FORM_INPUT_TEXT_SIZE, FORM_INPUT_HEIGHT, etc.)
-- **Composants** : `components/Button.tsx`, `components/Input.tsx`, `components/SearchInput.tsx`, `components/Textarea.tsx`, `components/Badge.tsx`, `components/Avatar.tsx`, `components/AvatarImage.tsx`, `components/SportTileSelectable.tsx`, `components/ActivityTile.tsx`, `components/Modal.tsx`, `components/DashboardPageShell.tsx`, `components/DashboardTopBar.tsx`, `components/Drawer.tsx`, `components/PublicHeader.tsx`, `components/EmailValidatedModal.tsx`, `components/HomeEmailConfirmedTrigger.tsx`, `components/Dropdown.tsx`, `components/Segments.tsx`, `components/DatePickerPopup.tsx`, `components/AvailabilityModal.tsx`, `components/AvailabilityDetailModal.tsx`, `components/ChatAthleteListItem.tsx`, `components/ChatConversationSidebar.tsx`
+- **Composants** : `components/Button.tsx`, `components/Input.tsx`, `components/SearchInput.tsx`, `components/Textarea.tsx`, `components/Badge.tsx`, `components/Avatar.tsx`, `components/AvatarImage.tsx`, `components/SportTileSelectable.tsx`, `components/ActivityTile.tsx`, `components/Modal.tsx`, `components/workout-modal/WorkoutFacilityHoursStrip.tsx`, `components/DashboardPageShell.tsx`, `components/DashboardTopBar.tsx`, `components/Drawer.tsx`, `components/PublicHeader.tsx`, `components/EmailValidatedModal.tsx`, `components/HomeEmailConfirmedTrigger.tsx`, `components/Dropdown.tsx`, `components/Segments.tsx`, `components/DatePickerPopup.tsx`, `components/AvailabilityModal.tsx`, `components/AvailabilityDetailModal.tsx`, `components/ChatAthleteListItem.tsx`, `components/ChatConversationSidebar.tsx`
 - **Sports** : `lib/sportStyles.ts`, `lib/sportsOptions.ts`, `components/SportIcons.tsx`
+- **Horaires modale workout (coach)** : `lib/workoutFacilityHours.ts` (filtre sport ↔ type d’installation, jour, tri alphabétique)
 - **Design system page** : `app/dashboard/admin/design-system/page.tsx`
 
 ### Évolutions futures

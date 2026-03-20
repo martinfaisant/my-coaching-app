@@ -63,6 +63,8 @@ type ModalProps = {
   disableEscapeClose?: boolean
   /** Footer personnalisé (boutons d'action) */
   footer?: React.ReactNode
+  /** Bloc fixe entre le corps scrollable et le footer (ex. bandeau infos) */
+  preFooter?: React.ReactNode
   /** Classes CSS additionnelles pour le contenu */
   className?: string
   /** Classes CSS pour le conteneur interne */
@@ -106,6 +108,7 @@ export function Modal({
   disableOverlayClose = false,
   disableEscapeClose = false,
   footer,
+  preFooter,
   className = '',
   contentClassName = '',
   titleId = 'modal-title',
@@ -209,6 +212,10 @@ export function Modal({
           <div className={`flex-1 overflow-y-auto min-h-0 ${contentClassName}`}>
             {children}
           </div>
+
+          {preFooter ? (
+            <div className="shrink-0 border-t border-stone-200 bg-stone-50/95 px-4 py-2.5">{preFooter}</div>
+          ) : null}
 
           {/* Footer (si fourni) */}
           {footer && (

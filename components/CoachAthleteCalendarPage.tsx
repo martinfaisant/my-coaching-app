@@ -6,7 +6,14 @@ import { CalendarViewWithNavigation } from './CalendarViewWithNavigation'
 import { WeekSelector } from './WeekSelector'
 import { AvatarImage } from './AvatarImage'
 import { TileCard } from './TileCard'
-import type { Workout, Goal, ImportedActivityWeeklyTotal, WorkoutWeeklyTotal, AthleteAvailabilitySlot } from '@/types/database'
+import type {
+  AthleteFacility,
+  Workout,
+  Goal,
+  ImportedActivityWeeklyTotal,
+  WorkoutWeeklyTotal,
+  AthleteAvailabilitySlot,
+} from '@/types/database'
 import { getDaysUntil, formatGoalDateBlock } from '@/lib/dateUtils'
 import { getInitials } from '@/lib/stringUtils'
 import { hasGoalResult, formatGoalResultTime, formatGoalResultPlaceOrdinal, hasTargetTime, formatTargetTime } from '@/lib/goalResultUtils'
@@ -36,6 +43,7 @@ type CoachAthleteCalendarPageProps = {
   initialWeeklyTotals?: ImportedActivityWeeklyTotal[]
   initialWorkoutTotals?: WorkoutWeeklyTotal[]
   initialAvailabilities?: AthleteAvailabilitySlot[]
+  initialAthleteFacilities?: AthleteFacility[]
   goals?: Goal[]
   canEdit: boolean
   pathToRevalidate: string
@@ -53,6 +61,7 @@ export function CoachAthleteCalendarPage({
   goals = [],
   canEdit,
   pathToRevalidate,
+  initialAthleteFacilities = [],
 }: CoachAthleteCalendarPageProps) {
   const locale = useLocale()
   const localeTag = locale === 'fr' ? 'fr-FR' : 'en-US'
@@ -68,6 +77,7 @@ export function CoachAthleteCalendarPage({
         initialWeeklyTotals={initialWeeklyTotals}
         initialWorkoutTotals={initialWorkoutTotals}
         initialAvailabilities={initialAvailabilities}
+        initialAthleteFacilities={initialAthleteFacilities}
         goals={goals}
         canEdit={canEdit}
         pathToRevalidate={pathToRevalidate}
