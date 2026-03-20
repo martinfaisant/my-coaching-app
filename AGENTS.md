@@ -12,6 +12,7 @@
 - Lint: `npm run lint`
 - Fix auto: `npm run lint:fix`
 - Gate qualite: `npm run check` (lint + typecheck)
+- Tests unitaires: `npm run test` (Vitest, `**/*.test.{ts,tsx}`, jsdom + `@testing-library/react`, cleanup `vitest.setup.ts` ; dossier `e2e/` exclu)
 - Build verification: `npm run build`
 
 ## 3) Sources de verite (verifie avant de specifier/decider)

@@ -127,7 +127,12 @@ export function AthleteFacilityDetails({ facility, headerRight, footer }: Athlet
         </div>
 
         <div>
-          <div className="space-y-0.5">{DAYS_ORDER.map((dayKey) => renderDayRow(dayKey))}</div>
+          <div
+            className="space-y-0.5"
+            data-testid="facility-opening-schedule"
+          >
+            {DAYS_ORDER.map((dayKey) => renderDayRow(dayKey))}
+          </div>
         </div>
       </div>
 
