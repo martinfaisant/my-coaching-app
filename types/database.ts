@@ -55,6 +55,17 @@ export type FacilityDayKey = 'monday' | 'tuesday' | 'wednesday' | 'thursday' | '
 /** Structure JSONB persistée dans `opening_hours`. */
 export type FacilityWeekOpening = Record<FacilityDayKey, FacilityDayOpening>
 
+/** Note privée coach sur un athlète (auteur = coach_id ; non visible par l’athlète). */
+export type CoachAthleteNote = {
+  id: string
+  athlete_id: string
+  coach_id: string
+  title: string
+  body: string
+  created_at: string
+  updated_at: string
+}
+
 export type AthleteFacility = {
   id: string
   athlete_id: string

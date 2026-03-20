@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 20 mars 2026 (Calendrier coach : onglet Installations — lecture / édition / suppression pour l’athlète ; **Project_context** §4.2.2 / §5, **docs/I18N.md** `facilities`, `.cursor/rules/project-core.mdc` ; voir Changements récents)
+**Dernière mise à jour :** 20 mars 2026 (**notes privées coach** livrées — `coach_athlete_notes`, migration **062** ; mockups archivés `docs/archive/design-coach-athlete-notes/` ; voir Changements récents)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -18,13 +18,13 @@
 - **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), stack technique, **URL production https://mysportally.com**
 - **Utiliser pour :** Comprendre le projet, les features, les rôles, l'architecture globale
 - **Taille :** ~450 lignes
-- **Dernière mise à jour :** 20 mars 2026 (§4.2.2 Installations : onglet calendrier coach + mutations coach, RLS 061 ; §4.4 Mes athlètes coach ; §5 `athlete_facilities`)
+- **Dernière mise à jour :** 20 mars 2026 (§4.2.2 calendrier coach : Installations + **Notes privées** `coach_athlete_notes`, RLS **062** ; §4.4 Mes athlètes coach ; §5)
 
 ### **docs/DESIGN_SYSTEM.md** ⭐
 - **Contenu :** Tokens (couleurs, typo, espacements), composants (Button, Input, Badge, TileCard, DashboardPageShell, Modal, etc.), guidelines UI, exemples de code, §7 breakpoints (calendrier, chat, Trouver mon coach, My offers)
 - **Utiliser pour :** Créer ou modifier des composants UI, choisir des couleurs, appliquer le design system, règles responsive par page
 - **Taille :** ~850 lignes
-- **Dernière mise à jour :** 20 mars 2026 (`AthleteFacilityDetails` / coach onglet Installations ; §7 Mes athlètes coach ; `WorkoutFacilityHoursStrip`)
+- **Dernière mise à jour :** 20 mars 2026 (`AthleteFacilityDetails` / coach onglet Installations ; `CoachAthleteNotesSection` / `CoachAthleteNoteModal` ; §7 Mes athlètes coach ; `WorkoutFacilityHoursStrip`)
 
 ### **docs/I18N.md** ⭐
 - **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces, utilisation dans composants et server actions, **checklist pour nouvelles features** (toujours penser bilingue)
@@ -109,7 +109,7 @@
 > La majorité des documents d'audit/refactoring historiques sont archivés dans `docs/archive/`.  
 > L’état courant canonique est dans **`docs/ENGINEERING_STATUS_REFAC_AUDIT.md`**.
 
-### Documents archivés (42 fichiers)
+### Documents archivés (historique — liste ci-dessous)
 
 **Audit & Plan initial :**
 - `AUDIT_COMPLET.md` - Audit complet du projet (13 février 2026) - 1202 lignes
@@ -447,9 +447,14 @@
 **Fréquence de mise à jour :** À chaque ajout/suppression de documentation
 
 **Dernier scan :** 20 mars 2026  
-**Dernier nettoyage :** 20 mars 2026 (index archive : design-coach-athletes-publish-offer)
+**Dernier nettoyage :** 20 mars 2026 (index archive : design-coach-athlete-notes, design-coach-athletes-publish-offer)
 
 ### Changements récents :
+
+✅ **20 mars 2026 – Notes privées coach (calendrier athlète) – Mode Analyste :**
+- **Livraison :** Onglet **Notes** sur `/dashboard/athletes/[athleteId]` (troisième onglet avec Objectifs et Installations) : notes **privées** par coach auteur (`coach_athlete_notes`), liste + modale création/édition/suppression (`CoachAthleteNotesSection`, `CoachAthleteNoteModal`), actions serveur `coachNotesActions.ts`, accès `requireCoachAthleteCalendarAccess`. L’athlète **ne voit pas** les notes (RLS). Migration **062**. Tests unitaires : `CoachAthleteNotesSection.test.tsx`, `CoachAthleteNoteModal.test.tsx`.
+- **Doc :** `Project_context.md` §4.2.2 et §5, `README.md` (rôle Coach), `docs/DESIGN_SYSTEM.md`, `docs/I18N.md` (`coachAthleteNotes`), `.cursor/rules/project-core.mdc`.
+- **Archivage :** mockups Designer déplacés vers `docs/archive/design-coach-athlete-notes/` (dossier précédemment non versionné — ajouté au dépôt lors du prochain commit).
 
 ✅ **20 mars 2026 – Installations athlète côté coach (calendrier : onglet + édition / suppression) – Mode Analyste :**
 - **Livraison :** Sur la page calendrier d’un athlète (`/dashboard/athletes/[athleteId]`), onglet **Installations** sous le calendrier : liste des centres (`AthleteFacilityDetails` / `AthleteFacilityCard`), **Modifier** / **Supprimer** pour le coach, même modale que Mon profil (`AthleteFacilityModal`). Création d’un nouveau centre toujours depuis le **profil athlète**. Server actions `updateAthleteFacility` / `deleteAthleteFacility` avec `requireAthleteFacilityMutationAccess` ; RLS **061** (`athlete_facilities_update_coach`, `athlete_facilities_delete_coach`). i18n : `facilities.edit`, `facilities.delete`, etc.
