@@ -1,11 +1,18 @@
 'use client'
 
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useLocale, useTranslations } from 'next-intl'
 import Link from 'next/link'
+import { AthleteFacilityCard } from '@/app/[locale]/dashboard/profile/installations/AthleteFacilityCard'
+import { AthleteFacilityModal } from '@/app/[locale]/dashboard/profile/installations/AthleteFacilityModal'
+import { deleteAthleteFacility } from '@/app/[locale]/dashboard/profile/installations/actions'
 import { CalendarViewWithNavigation } from './CalendarViewWithNavigation'
 import { WeekSelector } from './WeekSelector'
 import { AvatarImage } from './AvatarImage'
 import { TileCard } from './TileCard'
+import { AthleteFacilityDetails } from '@/components/AthleteFacilityDetails'
+import { IconBuilding } from '@/components/icons/IconBuilding'
 import type {
   AthleteFacility,
   Workout,
@@ -31,6 +38,25 @@ const MapIcon = ({ className = "w-3.5 h-3.5" }: { className?: string }) => (
 const ClockIcon = ({ className = "w-3.5 h-3.5" }: { className?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+)
+
+/** Icône cible pour l'onglet Objectifs. */
+const TargetIcon = ({ className = 'h-5 w-5' }: { className?: string }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    className={className}
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden
+  >
+    <circle cx="12" cy="12" r="10" />
+    <circle cx="12" cy="12" r="6" />
+    <circle cx="12" cy="12" r="2" />
   </svg>
 )
 
@@ -68,8 +94,55 @@ export function CoachAthleteCalendarPage({
   const initials = getInitials(athleteName)
   const t = useTranslations('goals')
   const tCommon = useTranslations('common')
+  const tFacilities = useTranslations('facilities')
+  const router = useRouter()
+
+  const [afterCalendarTab, setAfterCalendarTab] = useState<'goals' | 'facilities'>('goals')
+  const [facilityModalOpen, setFacilityModalOpen] = useState(false)
+  const [facilityToEdit, setFacilityToEdit] = useState<AthleteFacility | null>(null)
+  const [facilityDeleteErrorById, setFacilityDeleteErrorById] = useState<Record<string, string>>({})
+  const [facilityDeleteLoading, setFacilityDeleteLoading] = useState(false)
+
+  const openFacilityEdit = (facility: AthleteFacility) => {
+    setFacilityToEdit(facility)
+    setFacilityModalOpen(true)
+  }
+
+  const closeFacilityModal = () => {
+    setFacilityModalOpen(false)
+  }
+
+  const onFacilitySaved = () => {
+    setFacilityModalOpen(false)
+    router.refresh()
+  }
+
+  const handleFacilityDelete = async (facilityId: string) => {
+    if (facilityDeleteLoading) return
+
+    const ok = window.confirm(tFacilities('deleteConfirmation'))
+    if (!ok) return
+
+    setFacilityDeleteLoading(true)
+    setFacilityDeleteErrorById((prev) => {
+      const next = { ...prev }
+      delete next[facilityId]
+      return next
+    })
+
+    const res = await deleteAthleteFacility(facilityId)
+    if (res.error) {
+      setFacilityDeleteErrorById((prev) => ({ ...prev, [facilityId]: res.error ?? 'Error' }))
+      setFacilityDeleteLoading(false)
+      return
+    }
+
+    setFacilityDeleteLoading(false)
+    router.refresh()
+  }
 
   return (
+    <>
     <CalendarViewWithNavigation
         athleteId={athleteId}
         athleteEmail={athleteEmail}
@@ -116,6 +189,7 @@ export function CoachAthleteCalendarPage({
         )}
         renderAfterCalendar={() => {
           const goalsList = (goals ?? []) as Goal[]
+          const facilitiesSorted = [...initialAthleteFacilities].sort((a, b) => (a.created_at ?? '').localeCompare(b.created_at ?? ''))
           const today = new Date().toISOString().slice(0, 10)
           const futureGoals = goalsList.filter(g => g.date >= today).sort((a, b) => a.date.localeCompare(b.date))
           const pastGoals = goalsList.filter(g => g.date < today).sort((a, b) => b.date.localeCompare(a.date))
@@ -136,119 +210,173 @@ export function CoachAthleteCalendarPage({
 
           return (
             <div className="pb-6 border-t border-stone-100">
-              <section className="mt-6">
-                <div className="mb-6 flex items-center gap-3">
-                  <div className="p-2 bg-palette-forest-dark/10 rounded-full text-palette-forest-dark">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                  <h2 className="text-base font-bold text-stone-900">{t('athleteGoalsTitle')}</h2>
+              <div className="mb-6 w-full">
+                <div className="flex w-full bg-stone-200 p-0.5 rounded-lg" role="group">
+                  <button
+                    type="button"
+                    className={`flex flex-1 min-w-0 items-center justify-center gap-2 px-3 py-2.5 text-base font-bold rounded-md transition-all ${
+                      afterCalendarTab === 'goals'
+                        ? 'bg-palette-forest-dark text-white shadow-sm'
+                        : 'text-stone-600 hover:bg-stone-50'
+                    }`}
+                    onClick={() => setAfterCalendarTab('goals')}
+                  >
+                    <TargetIcon className="h-5 w-5 shrink-0" />
+                    <span className="truncate">{t('calendarTabObjectives')}</span>
+                  </button>
+                  <button
+                    type="button"
+                    className={`flex flex-1 min-w-0 items-center justify-center gap-2 px-3 py-2.5 text-base font-bold rounded-md transition-all ${
+                      afterCalendarTab === 'facilities'
+                        ? 'bg-palette-forest-dark text-white shadow-sm'
+                        : 'text-stone-600 hover:bg-stone-50'
+                    }`}
+                    onClick={() => setAfterCalendarTab('facilities')}
+                  >
+                    <IconBuilding className="h-5 w-5 shrink-0" />
+                    <span className="truncate">{tFacilities('calendarTabFacilities')}</span>
+                  </button>
                 </div>
-                {seasons.length === 0 ? (
-                  <div className="bg-white rounded-2xl p-8 border border-stone-200 text-center">
-                    <p className="text-sm text-stone-500">
-                      {t('noAthleteGoals')}
-                    </p>
-                  </div>
-                ) : (
-                  <div className="space-y-8">
-                    {seasons.map((seasonYear) => {
-                      const seasonGoals = goalsBySeason.get(seasonYear)!
-                      return (
-                        <div key={seasonYear} className="space-y-6">
-                          <h3 className="text-xs font-semibold uppercase tracking-wider text-stone-500">{t('season', { year: seasonYear })}</h3>
-                          {seasonGoals.map((goal) => {
-                            const isPast = goal.date < today
-                            const daysUntil = getDaysUntil(goal.date)
-                            const dateBlock = formatGoalDateBlock(goal.date, localeTag)
-                            const isPrimary = goal.is_primary
-                            const isResult = goal.date <= today
+              </div>
 
-                            return (
-                              <TileCard
-                                key={goal.id}
-                                leftBorderColor={isResult ? 'stone' : isPrimary ? 'amber' : 'sage'}
-                                borderLeftOnly={isResult}
-                                className=""
-                              >
-                                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                                  <div className="flex gap-4 items-center min-w-0">
-                                    {/* Date Block */}
-                                    <div className="flex flex-col items-center justify-center bg-stone-50 border border-stone-200 rounded-lg w-14 h-12 shrink-0">
-                                      <span className="text-[10px] font-bold text-stone-400 uppercase">{dateBlock.monthYear}</span>
-                                      <span className="text-sm font-bold text-stone-800">{dateBlock.day}</span>
+              {afterCalendarTab === 'goals' ? (
+                <section>
+                  {seasons.length === 0 ? (
+                    <div className="bg-white rounded-2xl p-8 border border-stone-200 text-center">
+                      <p className="text-sm text-stone-500">
+                        {t('noAthleteGoals')}
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-8">
+                      {seasons.map((seasonYear) => {
+                        const seasonGoals = goalsBySeason.get(seasonYear)!
+                        return (
+                          <div key={seasonYear} className="space-y-6">
+                            <h3 className="text-xs font-semibold uppercase tracking-wider text-stone-500">{t('season', { year: seasonYear })}</h3>
+                            {seasonGoals.map((goal) => {
+                              const isPast = goal.date < today
+                              const daysUntil = getDaysUntil(goal.date)
+                              const dateBlock = formatGoalDateBlock(goal.date, localeTag)
+                              const isPrimary = goal.is_primary
+                              const isResult = goal.date <= today
+
+                              return (
+                                <TileCard
+                                  key={goal.id}
+                                  leftBorderColor={isResult ? 'stone' : isPrimary ? 'amber' : 'sage'}
+                                  borderLeftOnly={isResult}
+                                  className=""
+                                >
+                                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                    <div className="flex gap-4 items-center min-w-0">
+                                      <div className="flex flex-col items-center justify-center bg-stone-50 border border-stone-200 rounded-lg w-14 h-12 shrink-0">
+                                        <span className="text-[10px] font-bold text-stone-400 uppercase">{dateBlock.monthYear}</span>
+                                        <span className="text-sm font-bold text-stone-800">{dateBlock.day}</span>
+                                      </div>
+
+                                      <div className="min-w-0">
+                                        <div className="flex items-center gap-2 mb-0.5">
+                                          <h3 className={`text-sm font-bold truncate ${isPast ? 'text-stone-700' : 'text-stone-900'}`}>
+                                            {goal.race_name}
+                                          </h3>
+                                          {isPrimary ? (
+                                            <span className="bg-white text-palette-amber text-[10px] font-semibold px-2 py-0.5 rounded-full border border-palette-amber shrink-0">
+                                              {t('priority.primary')}
+                                            </span>
+                                          ) : (
+                                            <span className="bg-white text-palette-sage text-[10px] font-semibold px-2 py-0.5 rounded-full border border-palette-sage shrink-0">
+                                              {t('priority.secondary')}
+                                            </span>
+                                          )}
+                                        </div>
+                                        <div className="flex items-center gap-1 text-xs text-stone-500 flex-wrap">
+                                          <MapIcon className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+                                          <span>{goal.distance} km</span>
+                                          {hasTargetTime(goal) && (
+                                            <>
+                                              <span className="text-stone-400">·</span>
+                                              <span className="flex items-center gap-1">
+                                                <ClockIcon className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+                                                {isPast && hasGoalResult(goal) ? (
+                                                  <span>{t('targetTimeLabel')} {formatTargetTime(goal)} · {t('achieved')} {formatGoalResultTime(goal)}</span>
+                                                ) : (
+                                                  <span>{t('targetTimeLabel')} : {formatTargetTime(goal)}</span>
+                                                )}
+                                              </span>
+                                            </>
+                                          )}
+                                          {!hasTargetTime(goal) && isPast && hasGoalResult(goal) && (
+                                            <>
+                                              <span className="text-stone-400">·</span>
+                                              <span className="flex items-center gap-1">
+                                                <ClockIcon className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+                                                <span>{formatGoalResultTime(goal)}</span>
+                                              </span>
+                                            </>
+                                          )}
+                                          {hasGoalResult(goal) && goal.result_place != null && (
+                                            <>
+                                              <span className="text-stone-400">·</span>
+                                              <span>{formatGoalResultPlaceOrdinal(goal.result_place, locale)}</span>
+                                            </>
+                                          )}
+                                        </div>
+                                      </div>
                                     </div>
 
-                                    <div className="min-w-0">
-                                      <div className="flex items-center gap-2 mb-0.5">
-                                        <h3 className={`text-sm font-bold truncate ${isPast ? 'text-stone-700' : 'text-stone-900'}`}>
-                                          {goal.race_name}
-                                        </h3>
-                                        {isPrimary ? (
-                                          <span className="bg-white text-palette-amber text-[10px] font-semibold px-2 py-0.5 rounded-full border border-palette-amber shrink-0">
-                                            {t('priority.primary')}
-                                          </span>
-                                        ) : (
-                                          <span className="bg-white text-palette-sage text-[10px] font-semibold px-2 py-0.5 rounded-full border border-palette-sage shrink-0">
-                                            {t('priority.secondary')}
-                                          </span>
-                                        )}
-                                      </div>
-                                      <div className="flex items-center gap-1 text-xs text-stone-500 flex-wrap">
-                                        <MapIcon className="w-3.5 h-3.5 text-stone-400 shrink-0" />
-                                        <span>{goal.distance} km</span>
-                                        {hasTargetTime(goal) && (
-                                          <>
-                                            <span className="text-stone-400">·</span>
-                                            <span className="flex items-center gap-1">
-                                              <ClockIcon className="w-3.5 h-3.5 text-stone-400 shrink-0" />
-                                              {isPast && hasGoalResult(goal) ? (
-                                                <span>{t('targetTimeLabel')} {formatTargetTime(goal)} · {t('achieved')} {formatGoalResultTime(goal)}</span>
-                                              ) : (
-                                                <span>{t('targetTimeLabel')} : {formatTargetTime(goal)}</span>
-                                              )}
-                                            </span>
-                                          </>
-                                        )}
-                                        {!hasTargetTime(goal) && isPast && hasGoalResult(goal) && (
-                                          <>
-                                            <span className="text-stone-400">·</span>
-                                            <span className="flex items-center gap-1">
-                                              <ClockIcon className="w-3.5 h-3.5 text-stone-400 shrink-0" />
-                                              <span>{formatGoalResultTime(goal)}</span>
-                                            </span>
-                                          </>
-                                        )}
-                                        {hasGoalResult(goal) && goal.result_place != null && (
-                                          <>
-                                            <span className="text-stone-400">·</span>
-                                            <span>{formatGoalResultPlaceOrdinal(goal.result_place, locale)}</span>
-                                          </>
-                                        )}
-                                      </div>
-                                    </div>
+                                    {daysUntil !== null && !isPast && (
+                                      <span className="text-sm font-bold text-palette-forest-dark bg-palette-forest-dark/10 px-3 py-1 rounded-lg shrink-0">
+                                        {t('daysUntil', { days: daysUntil })}
+                                      </span>
+                                    )}
                                   </div>
-
-                                  {/* Actions */}
-                                  {daysUntil !== null && !isPast && (
-                                    <span className="text-sm font-bold text-palette-forest-dark bg-palette-forest-dark/10 px-3 py-1 rounded-lg shrink-0">
-                                      {t('daysUntil', { days: daysUntil })}
-                                    </span>
-                                  )}
-                                </div>
-                              </TileCard>
-                            )
-                          })}
-                        </div>
-                      )
-                    })}
-                  </div>
-                )}
-              </section>
+                                </TileCard>
+                              )
+                            })}
+                          </div>
+                        )
+                      })}
+                    </div>
+                  )}
+                </section>
+              ) : (
+                <section>
+                  {facilitiesSorted.length === 0 ? (
+                    <div className="bg-white rounded-2xl p-8 border border-stone-200 text-center">
+                      <p className="text-sm font-semibold text-stone-700">{tFacilities('emptyTitle')}</p>
+                      <p className="mt-2 text-sm text-stone-500">{tFacilities('emptyDescription')}</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {facilitiesSorted.map((facility) =>
+                        canEdit ? (
+                          <AthleteFacilityCard
+                            key={facility.id}
+                            facility={facility}
+                            onEdit={openFacilityEdit}
+                            onDelete={(f) => void handleFacilityDelete(f.id)}
+                            deleteError={facilityDeleteErrorById[facility.id] ?? null}
+                          />
+                        ) : (
+                          <AthleteFacilityDetails key={facility.id} facility={facility} />
+                        )
+                      )}
+                    </div>
+                  )}
+                </section>
+              )}
             </div>
           )
         }}
       />
+      <AthleteFacilityModal
+        key={facilityModalOpen ? facilityToEdit?.id ?? 'edit' : 'closed'}
+        isOpen={facilityModalOpen}
+        facility={facilityToEdit}
+        onClose={closeFacilityModal}
+        onSaved={onFacilitySaved}
+      />
+    </>
   )
 }

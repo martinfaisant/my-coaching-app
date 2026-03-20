@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 20 mars 2026 (Mes athlètes coach : bandeaux offre + erreur liste ; **Project_context** §4.4, **docs/DESIGN_SYSTEM.md** §7, archive mockup ; voir Changements récents)
+**Dernière mise à jour :** 20 mars 2026 (Calendrier coach : onglet Installations — lecture / édition / suppression pour l’athlète ; **Project_context** §4.2.2 / §5, **docs/I18N.md** `facilities`, `.cursor/rules/project-core.mdc` ; voir Changements récents)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -18,13 +18,13 @@
 - **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), stack technique, **URL production https://mysportally.com**
 - **Utiliser pour :** Comprendre le projet, les features, les rôles, l'architecture globale
 - **Taille :** ~450 lignes
-- **Dernière mise à jour :** 20 mars 2026 (§4.4 Mes athlètes coach : bandeaux profil / offre publiée, erreur chargement liste ; §4.7 Goals et §4.2.2 / §5 inchangés ailleurs)
+- **Dernière mise à jour :** 20 mars 2026 (§4.2.2 Installations : onglet calendrier coach + mutations coach, RLS 061 ; §4.4 Mes athlètes coach ; §5 `athlete_facilities`)
 
 ### **docs/DESIGN_SYSTEM.md** ⭐
 - **Contenu :** Tokens (couleurs, typo, espacements), composants (Button, Input, Badge, TileCard, DashboardPageShell, Modal, etc.), guidelines UI, exemples de code, §7 breakpoints (calendrier, chat, Trouver mon coach, My offers)
 - **Utiliser pour :** Créer ou modifier des composants UI, choisir des couleurs, appliquer le design system, règles responsive par page
 - **Taille :** ~850 lignes
-- **Dernière mise à jour :** 20 mars 2026 (§7 Mes athlètes coach : bandeaux, erreur liste ; `WorkoutFacilityHoursStrip` inchangé)
+- **Dernière mise à jour :** 20 mars 2026 (`AthleteFacilityDetails` / coach onglet Installations ; §7 Mes athlètes coach ; `WorkoutFacilityHoursStrip`)
 
 ### **docs/I18N.md** ⭐
 - **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces, utilisation dans composants et server actions, **checklist pour nouvelles features** (toujours penser bilingue)
@@ -450,6 +450,11 @@
 **Dernier nettoyage :** 20 mars 2026 (index archive : design-coach-athletes-publish-offer)
 
 ### Changements récents :
+
+✅ **20 mars 2026 – Installations athlète côté coach (calendrier : onglet + édition / suppression) – Mode Analyste :**
+- **Livraison :** Sur la page calendrier d’un athlète (`/dashboard/athletes/[athleteId]`), onglet **Installations** sous le calendrier : liste des centres (`AthleteFacilityDetails` / `AthleteFacilityCard`), **Modifier** / **Supprimer** pour le coach, même modale que Mon profil (`AthleteFacilityModal`). Création d’un nouveau centre toujours depuis le **profil athlète**. Server actions `updateAthleteFacility` / `deleteAthleteFacility` avec `requireAthleteFacilityMutationAccess` ; RLS **061** (`athlete_facilities_update_coach`, `athlete_facilities_delete_coach`). i18n : `facilities.edit`, `facilities.delete`, etc.
+- **Doc :** `Project_context.md` §4.2.2 (coach calendrier), §5 (`athlete_facilities`), `docs/I18N.md` (namespace `facilities`), `.cursor/rules/project-core.mdc` (installations + RLS), `docs/DESIGN_SYSTEM.md` (`AthleteFacilityDetails`).
+- **Archivage :** aucun (pas de doc de feature temporaire à archiver).
 
 ✅ **20 mars 2026 – Mes athlètes coach (bandeau offre publiée + erreur chargement liste) – Mode Analyste :**
 - **Livraison :** Sur `/dashboard/athletes`, si le coach n’a **aucune** offre `published`, un **bandeau** l’invite à gérer ses offres (lien `/dashboard/profile/offers`) ; si le **profil** est incomplet, le bandeau **Compléter le profil** est **au-dessus**. Ordre : bandeaux → **Demandes en attente** → liste. Si le chargement de la **liste des athlètes** échoue, un **message d’erreur** (`athletes.listLoadError`) remplace l’état vide.

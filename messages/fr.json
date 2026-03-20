@@ -560,6 +560,7 @@
   "goals": {
     "title": "Mes Objectifs",
     "athleteGoalsTitle": "Objectifs de l'athlète",
+    "calendarTabObjectives": "Objectifs",
     "addGoal": "Ajouter un objectif",
     "editGoal": "Modifier",
     "editGoalTitle": "Modifier l'objectif",
@@ -1362,6 +1363,9 @@
     "sectionTitle": "Installations utilisées",
     "sectionSubtitle": "Ces informations aident le coach à mieux planifier les entraînements.",
     "addButton": "+ Ajouter un centre",
+    "calendarTabFacilities": "Installations",
+    "edit": "Modifier",
+    "delete": "Supprimer",
     "editButton": "Modifier",
     "deleteConfirmation": "Êtes-vous sûr de vouloir supprimer ce centre ?",
     "deleteButtonAriaLabel": "Supprimer le centre",

@@ -1,7 +1,7 @@
 # 🎨 Design System
 
-**Version :** 1.19  
-**Dernière mise à jour :** 20 mars 2026 (page Mes athlètes coach : bandeaux profil / offre publiée, message erreur chargement liste ; précédent : `WorkoutFacilityHoursStrip`, etc.)
+**Version :** 1.21  
+**Dernière mise à jour :** 20 mars 2026 (`AthleteFacilityDetails` / `AthleteFacilityCard` : profil athlète + onglet Installations calendrier coach avec actions ; précédent : `WorkoutFacilityHoursStrip`, etc.)
 
 ---
 
@@ -27,6 +27,7 @@
    - [TileCard](#tilecard)
    - [Modal](#modal)
    - [WorkoutFacilityHoursStrip](#workoutfacilityhoursstrip)
+   - [AthleteFacilityDetails](#athletefacilitydetails)
    - [DashboardPageShell](#dashboardpageshell)
    - [DashboardTopBar](#dashboardtopbar)
    - [Drawer](#drawer)
@@ -1150,12 +1151,6 @@ const [isOpen, setIsOpen] = useState(false)
   - Footer optionnel (fixe, ne scroll pas)
 ```
 
-### WorkoutFacilityHoursStrip
-
-**Fichier :** `components/workout-modal/WorkoutFacilityHoursStrip.tsx`
-
-Modale workout **coach** : rendu **sous la date** dans l’en-tête (`variant="compact"`) ; sinon usage avec `variant="default"`. Une ligne par installation : **icône bâtiment** (`IconBuilding`, identique pour toutes) · **nom** · **créneaux** ou fermé (`facilities.hours.closed`). Données : `lib/workoutFacilityHours.ts` (`getWorkoutFacilityDisplayLines`, `facilityType` pour filtrage / clés).
-
 #### Modales auth dérivées
 
 - **EmailValidatedModal** (`components/EmailValidatedModal.tsx`) : modale affichée après confirmation d’email (landing avec `?emailConfirmed=1`). Taille `md`, titre i18n « Email validé », message « Vous pouvez vous connecter », formulaire de connexion (email, mot de passe, bouton Se connecter) dans la modale. Utilise `Modal`, `Input`, `Button`, action `login` ; fermeture par overlay/Escape. i18n : `auth.emailValidatedTitle`, `auth.emailValidatedMessage`.
@@ -1164,6 +1159,43 @@ Modale workout **coach** : rendu **sous la date** dans l’en-tête (`variant="c
 ```tsx
 // Page d'accueil : après callback confirmation email
 <HomeEmailConfirmedTrigger showEmailConfirmedModal={emailConfirmed} />
+```
+
+### WorkoutFacilityHoursStrip
+
+**Fichier :** `components/workout-modal/WorkoutFacilityHoursStrip.tsx`
+
+Modale workout **coach** : rendu **sous la date** dans l’en-tête (`variant="compact"`) ; sinon usage avec `variant="default"`. Une ligne par installation : **icône bâtiment** (`IconBuilding`, identique pour toutes) · **nom** · **créneaux** ou fermé (`facilities.hours.closed`). Données : `lib/workoutFacilityHours.ts` (`getWorkoutFacilityDisplayLines`, `facilityType` pour filtrage / clés).
+
+### AthleteFacilityDetails
+
+**Fichier :** `components/AthleteFacilityDetails.tsx`
+
+Affichage **lecture seule** d’une installation athlète : badge type (couleur sport via `Badge sport={…}`), nom, adresse complète, grille horaires sur 7 jours (ouverts / fermés, créneaux formatés via `lib/facilityHoursUtils`). i18n : `facilities.facilityTypes`, `facilities.days`, `facilities.hours`. **En-tête** : en colonne sur mobile, ligne à partir de `sm` pour éviter que badge + titre ne compressent les boutons `headerRight`.
+
+#### Props
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `facility` | `AthleteFacility` | Données installation |
+| `headerRight` | `ReactNode` (optionnel) | Zone à droite du titre (ex. boutons Modifier / Supprimer sur Mon profil) |
+| `footer` | `ReactNode` (optionnel) | Sous le bloc adresse + horaires (ex. message d’erreur suppression) |
+
+#### Usage
+
+- **Page Mon profil — Installations** : `AthleteFacilityCard` compose `AthleteFacilityDetails` avec `headerRight` (actions) et `footer` si erreur.
+- **Calendrier coach (onglet Installations)** : si `canEdit`, même `AthleteFacilityCard` + `AthleteFacilityModal` (édition / suppression pour l’athlète) ; sinon `AthleteFacilityDetails` seul.
+
+```tsx
+import { AthleteFacilityDetails } from '@/components/AthleteFacilityDetails'
+
+<AthleteFacilityDetails facility={facility} />
+
+<AthleteFacilityDetails
+  facility={facility}
+  headerRight={<>{/* boutons */}</>}
+  footer={<p className="mt-3 text-sm text-palette-danger">{deleteError}</p>}
+/>
 ```
 
 ---
@@ -1671,7 +1703,7 @@ Actuellement, utiliser un span custom :
 
 - **Tokens couleurs** : `tailwind.config.ts`, `app/globals.css`
 - **Styles formulaires** : `lib/formStyles.ts` (FORM_BASE_CLASSES, FORM_INPUT_TEXT_SIZE, FORM_INPUT_HEIGHT, etc.)
-- **Composants** : `components/Button.tsx`, `components/Input.tsx`, `components/SearchInput.tsx`, `components/Textarea.tsx`, `components/Badge.tsx`, `components/Avatar.tsx`, `components/AvatarImage.tsx`, `components/SportTileSelectable.tsx`, `components/ActivityTile.tsx`, `components/Modal.tsx`, `components/workout-modal/WorkoutFacilityHoursStrip.tsx`, `components/DashboardPageShell.tsx`, `components/DashboardTopBar.tsx`, `components/Drawer.tsx`, `components/PublicHeader.tsx`, `components/EmailValidatedModal.tsx`, `components/HomeEmailConfirmedTrigger.tsx`, `components/Dropdown.tsx`, `components/Segments.tsx`, `components/DatePickerPopup.tsx`, `components/AvailabilityModal.tsx`, `components/AvailabilityDetailModal.tsx`, `components/ChatAthleteListItem.tsx`, `components/ChatConversationSidebar.tsx`
+- **Composants** : `components/Button.tsx`, `components/Input.tsx`, `components/SearchInput.tsx`, `components/Textarea.tsx`, `components/Badge.tsx`, `components/Avatar.tsx`, `components/AvatarImage.tsx`, `components/SportTileSelectable.tsx`, `components/ActivityTile.tsx`, `components/Modal.tsx`, `components/workout-modal/WorkoutFacilityHoursStrip.tsx`, `components/AthleteFacilityDetails.tsx`, `components/DashboardPageShell.tsx`, `components/DashboardTopBar.tsx`, `components/Drawer.tsx`, `components/PublicHeader.tsx`, `components/EmailValidatedModal.tsx`, `components/HomeEmailConfirmedTrigger.tsx`, `components/Dropdown.tsx`, `components/Segments.tsx`, `components/DatePickerPopup.tsx`, `components/AvailabilityModal.tsx`, `components/AvailabilityDetailModal.tsx`, `components/ChatAthleteListItem.tsx`, `components/ChatConversationSidebar.tsx`
 - **Page Mes athlètes (coach)** : `app/[locale]/dashboard/athletes/page.tsx` (bandeaux profil / offre publiée, erreur chargement liste), `CoachAthletesListWithFilter.tsx`, `PendingRequestTile.tsx`
 - **Sports** : `lib/sportStyles.ts`, `lib/sportsOptions.ts`, `components/SportIcons.tsx`
 - **Horaires modale workout (coach)** : `lib/workoutFacilityHours.ts` (filtre sport ↔ type d’installation, jour, tri alphabétique)

@@ -436,6 +436,7 @@
   "goals": {
     "title": "My Goals",
     "athleteGoalsTitle": "Athlete's goals",
+    "calendarTabObjectives": "Goals",
     "addGoal": "Add goal",
     "editGoal": "Edit",
     "editGoalTitle": "Edit goal",
@@ -1238,6 +1239,9 @@
     "sectionTitle": "Facilities used",
     "sectionSubtitle": "These details help the coach plan your training sessions better.",
     "addButton": "+ Add a facility",
+    "calendarTabFacilities": "Facilities",
+    "edit": "Edit",
+    "delete": "Delete",
     "editButton": "Edit",
     "deleteConfirmation": "Are you sure you want to delete this facility?",
     "deleteButtonAriaLabel": "Delete facility",
