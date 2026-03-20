@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>US3 — Liste des notes coach (tuiles)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        colors: {
+          'palette-forest-dark': '#627e59',
+          'palette-forest-darker': '#506648',
+          'palette-sage': '#aaaa51',
+          'palette-danger': '#c0564b',
+          'palette-danger-light': '#fdf2f1',
+        }
+      }}
+    }
+  </script>
+</head>
+<body class="bg-stone-100 text-stone-800 antialiased min-h-screen">
+  <div class="max-w-3xl mx-auto py-4 px-3">
+    <p class="text-sm text-stone-500 mb-4">
+      <strong>Mockup US3</strong> (non fonctionnel) — Le segment à 3 onglets est <strong>seul sur sa ligne</strong> (pleine largeur). Le bouton <strong>Nouvelle note</strong> est la <strong>première ligne de la liste</strong>, pleine largeur (même gabarit qu’une tuile). Ordre : <strong>updated_at</strong> décroissant (sans afficher de date sur les tuiles). Aperçu corps : <strong>au moins 3 lignes</strong> (<code class="text-xs">line-clamp-3</code>). <strong>Titre obligatoire</strong>. Chaque coach ne voit que <strong>ses</strong> notes. Actions <strong>Modifier</strong> et <strong>Supprimer</strong>.
+    </p>
+
+    <div class="bg-white rounded-2xl border border-stone-200 p-4 md:p-6">
+      <!-- Toggle seul : ne pas placer le CTA à côté (évite de pousser / compresser les onglets) -->
+      <div class="flex w-full bg-stone-200 p-0.5 rounded-lg mb-6" role="group">
+        <button type="button" class="flex flex-1 min-w-0 items-center justify-center gap-2 px-2 sm:px-3 py-2.5 text-sm sm:text-base font-bold rounded-md text-stone-600">Objectifs</button>
+        <button type="button" class="flex flex-1 min-w-0 items-center justify-center gap-2 px-2 sm:px-3 py-2.5 text-sm sm:text-base font-bold rounded-md text-stone-600">Installations</button>
+        <button type="button" class="flex flex-1 min-w-0 items-center justify-center gap-2 px-2 sm:px-3 py-2.5 text-sm sm:text-base font-bold rounded-md bg-palette-forest-dark text-white shadow-sm">Notes</button>
+      </div>
+
+      <div class="space-y-4">
+        <!-- Ligne 1 = ajout, pleine largeur (comme une « tuile » d’action) -->
+        <button type="button" class="w-full rounded-xl border-2 border-dashed border-palette-forest-dark/35 bg-palette-forest-dark/5 hover:bg-palette-forest-dark/10 transition flex items-center justify-center gap-2 px-4 py-4 text-sm font-bold text-palette-forest-dark">
+          <span class="text-lg leading-none" aria-hidden>+</span>
+          Nouvelle note
+        </button>
+
+        <!-- Note la plus récemment modifiée -->
+        <article class="rounded-xl border border-stone-200 bg-white shadow-sm overflow-hidden flex">
+          <div class="w-1 bg-palette-sage shrink-0" aria-hidden></div>
+          <div class="flex-1 p-4 min-w-0">
+            <div class="flex flex-col gap-2">
+              <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
+                <h3 class="text-sm font-bold text-stone-900">Point genou droit</h3>
+                <div class="flex flex-wrap items-center gap-2 shrink-0">
+                  <button type="button" class="text-sm font-medium text-stone-600 px-3 py-1.5 rounded-lg border border-stone-200 hover:border-palette-forest-dark hover:text-palette-forest-dark">
+                    Modifier
+                  </button>
+                  <button type="button" class="text-sm font-medium text-palette-danger px-3 py-1.5 rounded-lg border border-palette-danger/40 bg-palette-danger-light hover:bg-red-100">
+                    Supprimer
+                  </button>
+                </div>
+              </div>
+              <p class="text-sm text-stone-600 line-clamp-3 leading-relaxed">
+                Séance VMA raccourcie ; surveiller récupération post-séance longue du dimanche. Poursuivre le renforcement ischio-jambiers comme convenu. Prochain point après la séance longue du week-end prochain pour ajuster le volume si besoin.
+              </p>
+            </div>
+          </div>
+        </article>
+
+        <article class="rounded-xl border border-stone-200 bg-white shadow-sm overflow-hidden flex">
+          <div class="w-1 bg-palette-sage shrink-0" aria-hidden></div>
+          <div class="flex-1 p-4 min-w-0">
+            <div class="flex flex-col gap-2">
+              <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
+                <h3 class="text-sm font-bold text-stone-900">Première sortie côte</h3>
+                <div class="flex flex-wrap items-center gap-2 shrink-0">
+                  <button type="button" class="text-sm font-medium text-stone-600 px-3 py-1.5 rounded-lg border border-stone-200">Modifier</button>
+                  <button type="button" class="text-sm font-medium text-palette-danger px-3 py-1.5 rounded-lg border border-palette-danger/40 bg-palette-danger-light">Supprimer</button>
+                </div>
+              </div>
+              <p class="text-xs text-stone-500">Modifiée le 10 mars 2026, 09:15</p>
+              <p class="text-sm text-stone-600 line-clamp-3 leading-relaxed">
+                Bonne sensation dans l’effort ; rythme cardiaque maîtrisé en fin de montée. Prévoir répétition semaine prochaine avec un dénivelé un peu plus long pour valider la tenue du rythme sur 45–50 min.
+              </p>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <div class="mt-8 p-4 bg-stone-50 rounded-xl border border-stone-200 text-sm text-stone-600">
+      <p class="font-semibold text-stone-800 mb-2">Règles d’affichage (mise à jour PO)</p>
+      <ul class="list-disc pl-5 space-y-1">
+        <li><strong>Titre</strong> obligatoire (saisie modale).</li>
+        <li><strong>Aucune date</strong> sur les tuiles (ni création ni modification) ; le tri reste basé sur <strong>updated_at</strong> côté données uniquement.</li>
+        <li>Tri liste : <strong>updated_at</strong> décroissant (plus récent en haut, après la ligne « Nouvelle note »).</li>
+        <li>Aperçu du corps : <strong>minimum 3 lignes</strong> visibles (tronature au-delà si texte long).</li>
+        <li><strong>Visibilité</strong> : une note n’est listée que pour le <strong>coach auteur</strong> (autres coachs : liste sans ces entrées).</li>
+        <li><strong>Supprimer</strong> : avec confirmation (pattern danger) ; pas de limite de longueur de texte côté produit.</li>
+        <li>CTA <strong>Nouvelle note</strong> : <strong>premier élément</strong> de la zone liste, <strong>pleine largeur</strong>, jamais dans la même ligne que le toggle.</li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>

@@ -109,6 +109,7 @@ Voir [docs/DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md) pour tous les détails.
 - Recevoir des demandes, accepter ou refuser ; à l’acceptation une souscription active est créée (données d’offre figées)
 - Chatter avec les athlètes dès la demande `pending` ; après fin de droit d'écriture, l'historique reste lisible (lecture seule)
 - Gérer ses athlètes
+- Rédiger des notes privées sur le calendrier d’un athlète (onglet Notes) — invisibles pour l’athlète
 - Créer des entraînements
 - Consulter les totaux hebdomadaires
 - Communiquer avec les athlètes

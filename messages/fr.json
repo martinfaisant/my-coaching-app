@@ -1359,6 +1359,29 @@
     "noCancellationScheduled": "Aucune souscription en résiliation.",
     "noHistory": "Aucune souscription dans l'historique."
   },
+  "coachAthleteNotes": {
+    "calendarTabNotes": "Notes",
+    "newNote": "Nouvelle note",
+    "emptyTitle": "Aucune note pour le moment",
+    "emptyDescription": "Seul le coach qui crée une note peut la voir. L’athlète ne peut pas consulter ces notes.",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "deleteNote": "Supprimer la note",
+    "deleteConfirm": "Supprimer cette note ? Cette action est irréversible.",
+    "modalCreateTitle": "Nouvelle note",
+    "modalEditTitle": "Modifier la note",
+    "fieldTitle": "Titre",
+    "fieldBody": "Note",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "saving": "Enregistrement…",
+    "validation": {
+      "titleRequired": "Saisissez un titre.",
+      "bodyRequired": "Saisissez le texte de la note.",
+      "noteNotFound": "Note introuvable.",
+      "serverError": "Une erreur est survenue. Veuillez réessayer."
+    }
+  },
   "facilities": {
     "sectionTitle": "Installations utilisées",
     "sectionSubtitle": "Ces informations aident le coach à mieux planifier les entraînements.",
@@ -1414,7 +1437,8 @@
       "addHours": "Ajouter des heures d'ouvertures",
       "removeSlotAriaLabel": "Supprimer la plage",
       "slotStartAria": "Heure de début",
-      "slotEndAria": "Heure de fin"
+      "slotEndAria": "Heure de fin",
+      "dayHoursSeparator": " : "
     },
     "modal": {
       "addTitle": "Ajouter un centre",

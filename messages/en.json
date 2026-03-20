@@ -1235,6 +1235,29 @@
     "noCancellationScheduled": "No subscriptions with scheduled cancellation.",
     "noHistory": "No subscriptions in history."
   },
+  "coachAthleteNotes": {
+    "calendarTabNotes": "Notes",
+    "newNote": "New note",
+    "emptyTitle": "No notes yet",
+    "emptyDescription": "Only the coach who creates a note can see it. Athletes cannot read these notes.",
+    "edit": "Edit",
+    "delete": "Delete",
+    "deleteNote": "Delete note",
+    "deleteConfirm": "Delete this note? This cannot be undone.",
+    "modalCreateTitle": "New note",
+    "modalEditTitle": "Edit note",
+    "fieldTitle": "Title",
+    "fieldBody": "Note",
+    "cancel": "Cancel",
+    "save": "Save",
+    "saving": "Saving…",
+    "validation": {
+      "titleRequired": "Enter a title.",
+      "bodyRequired": "Enter the note text.",
+      "noteNotFound": "Note not found.",
+      "serverError": "Something went wrong. Please try again."
+    }
+  },
   "facilities": {
     "sectionTitle": "Facilities used",
     "sectionSubtitle": "These details help the coach plan your training sessions better.",
@@ -1290,7 +1313,8 @@
       "addHours": "Add opening hours",
       "removeSlotAriaLabel": "Remove time slot",
       "slotStartAria": "Start time",
-      "slotEndAria": "End time"
+      "slotEndAria": "End time",
+      "dayHoursSeparator": ": "
     },
     "modal": {
       "addTitle": "Add a facility",

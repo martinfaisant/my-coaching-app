@@ -12,9 +12,11 @@ import { WeekSelector } from './WeekSelector'
 import { AvatarImage } from './AvatarImage'
 import { TileCard } from './TileCard'
 import { AthleteFacilityDetails } from '@/components/AthleteFacilityDetails'
+import { CoachAthleteNotesSection } from '@/components/CoachAthleteNotesSection'
 import { IconBuilding } from '@/components/icons/IconBuilding'
 import type {
   AthleteFacility,
+  CoachAthleteNote,
   Workout,
   Goal,
   ImportedActivityWeeklyTotal,
@@ -38,6 +40,25 @@ const MapIcon = ({ className = "w-3.5 h-3.5" }: { className?: string }) => (
 const ClockIcon = ({ className = "w-3.5 h-3.5" }: { className?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+)
+
+/** Icône notes (calendrier coach). */
+const NoteTabIcon = ({ className = 'h-5 w-5' }: { className?: string }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    className={className}
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden
+  >
+    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+    <path d="M8 7h8M8 11h6" />
   </svg>
 )
 
@@ -73,6 +94,7 @@ type CoachAthleteCalendarPageProps = {
   goals?: Goal[]
   canEdit: boolean
   pathToRevalidate: string
+  initialCoachNotes?: CoachAthleteNote[]
 }
 
 export function CoachAthleteCalendarPage({
@@ -88,6 +110,7 @@ export function CoachAthleteCalendarPage({
   canEdit,
   pathToRevalidate,
   initialAthleteFacilities = [],
+  initialCoachNotes = [],
 }: CoachAthleteCalendarPageProps) {
   const locale = useLocale()
   const localeTag = locale === 'fr' ? 'fr-FR' : 'en-US'
@@ -95,9 +118,10 @@ export function CoachAthleteCalendarPage({
   const t = useTranslations('goals')
   const tCommon = useTranslations('common')
   const tFacilities = useTranslations('facilities')
+  const tNotes = useTranslations('coachAthleteNotes')
   const router = useRouter()
 
-  const [afterCalendarTab, setAfterCalendarTab] = useState<'goals' | 'facilities'>('goals')
+  const [afterCalendarTab, setAfterCalendarTab] = useState<'goals' | 'facilities' | 'notes'>('goals')
   const [facilityModalOpen, setFacilityModalOpen] = useState(false)
   const [facilityToEdit, setFacilityToEdit] = useState<AthleteFacility | null>(null)
   const [facilityDeleteErrorById, setFacilityDeleteErrorById] = useState<Record<string, string>>({})
@@ -236,6 +260,18 @@ export function CoachAthleteCalendarPage({
                     <IconBuilding className="h-5 w-5 shrink-0" />
                     <span className="truncate">{tFacilities('calendarTabFacilities')}</span>
                   </button>
+                  <button
+                    type="button"
+                    className={`flex flex-1 min-w-0 items-center justify-center gap-2 px-3 py-2.5 text-base font-bold rounded-md transition-all ${
+                      afterCalendarTab === 'notes'
+                        ? 'bg-palette-forest-dark text-white shadow-sm'
+                        : 'text-stone-600 hover:bg-stone-50'
+                    }`}
+                    onClick={() => setAfterCalendarTab('notes')}
+                  >
+                    <NoteTabIcon className="h-5 w-5 shrink-0" />
+                    <span className="truncate">{tNotes('calendarTabNotes')}</span>
+                  </button>
                 </div>
               </div>
 
@@ -340,7 +376,7 @@ export function CoachAthleteCalendarPage({
                     </div>
                   )}
                 </section>
-              ) : (
+              ) : afterCalendarTab === 'facilities' ? (
                 <section>
                   {facilitiesSorted.length === 0 ? (
                     <div className="bg-white rounded-2xl p-8 border border-stone-200 text-center">
@@ -364,6 +400,14 @@ export function CoachAthleteCalendarPage({
                       )}
                     </div>
                   )}
+                </section>
+              ) : (
+                <section>
+                  <CoachAthleteNotesSection
+                    athleteId={athleteId}
+                    initialNotes={initialCoachNotes}
+                    onNotesChanged={() => router.refresh()}
+                  />
                 </section>
               )}
             </div>

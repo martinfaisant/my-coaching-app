@@ -245,6 +245,74 @@ export async function requireAthleteFacilityMutationAccess(
 }
 
 /**
+ * Accès à la page calendrier d’un athlète pour un **coach** : le coach connecté doit être celui
+ * référencé sur `profiles.coach_id` de l’athlète (`athleteProfile.coach_id === user.id`).
+ *
+ * **Même règle** que `app/[locale]/dashboard/athletes/[athleteId]/page.tsx` et que les server actions
+ * des notes privées (`coachNotesActions.ts`). Ne couvre pas un accès **uniquement** via souscription
+ * si `profiles.coach_id` ne pointe pas vers ce coach (les installations utilisent un périmètre élargi
+ * via `requireAthleteFacilityMutationAccess`).
+ */
+export async function requireCoachAthleteCalendarAccess(
+  supabase: SupabaseClient,
+  athleteId: string
+): Promise<
+  | ErrorResult
+  | {
+      user: { id: string; email: string | undefined }
+      athleteProfile: Partial<Profile>
+    }
+> {
+  const userResult = await requireUser(supabase)
+  if ('error' in userResult) return userResult
+
+  const { user } = userResult
+
+  const myProfile = await getProfile(supabase, user.id, 'role, user_id, email, first_name, last_name')
+  if (!myProfile?.role) {
+    return {
+      error: 'Profil introuvable.',
+      errorCode: AUTH_ERROR_CODES.PROFILE_NOT_FOUND,
+    }
+  }
+
+  if (myProfile.role !== 'coach') {
+    return {
+      error: 'Accès refusé.',
+      errorCode: AUTH_ERROR_CODES.ACCESS_DENIED,
+    }
+  }
+
+  const athleteProfile = await getProfile(
+    supabase,
+    athleteId,
+    'coach_id, user_id, email, first_name, last_name, avatar_url'
+  )
+  if (!athleteProfile) {
+    return {
+      error: 'Profil introuvable.',
+      errorCode: AUTH_ERROR_CODES.PROFILE_NOT_FOUND,
+    }
+  }
+
+  if (user.id === athleteId) {
+    return {
+      error: 'Accès refusé.',
+      errorCode: AUTH_ERROR_CODES.ACCESS_DENIED,
+    }
+  }
+
+  if (athleteProfile.coach_id !== user.id) {
+    return {
+      error: 'Accès refusé.',
+      errorCode: AUTH_ERROR_CODES.ACCESS_DENIED,
+    }
+  }
+
+  return { user: { id: user.id, email: user.email }, athleteProfile }
+}
+
+/**
  * Vérifie qu'un utilisateur est authentifié et récupère son profil.
  * Cas d'usage : actions où on a besoin du profil mais pas de vérification de rôle stricte.
  * 

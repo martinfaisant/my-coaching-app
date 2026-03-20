@@ -1,10 +1,9 @@
-import Link from 'next/link'
 import { createClient } from '@/utils/supabase/server'
-import { getCurrentUserWithProfile } from '@/utils/auth'
 import { redirect } from 'next/navigation'
 import { CoachAthleteCalendarPage } from '@/components/CoachAthleteCalendarPage'
 import type {
   AthleteFacility,
+  CoachAthleteNote,
   Workout,
   Goal,
   ImportedActivityWeeklyTotal,
@@ -16,27 +15,20 @@ import { getDisplayName } from '@/lib/displayName'
 import { getEffectiveWeeklyTotalsFait } from '@/app/[locale]/dashboard/workouts/actions'
 import { getAvailabilityForDateRange } from '@/app/[locale]/dashboard/availability/actions'
 import { logger } from '@/lib/logger'
+import { requireCoachAthleteCalendarAccess } from '@/lib/authHelpers'
 
 type PageProps = { params: Promise<{ athleteId: string }> }
 
 export default async function AthleteCalendarPage({ params }: PageProps) {
   const { athleteId } = await params
-  const current = await getCurrentUserWithProfile()
-
-  if (current.profile.role !== 'coach') {
-    redirect('/dashboard')
-  }
 
   const supabase = await createClient()
-  const { data: athleteProfile } = await supabase
-    .from('profiles')
-    .select('user_id, email, coach_id, first_name, last_name, avatar_url')
-    .eq('user_id', athleteId)
-    .single()
-
-  if (!athleteProfile || athleteProfile.user_id === current.id || athleteProfile.coach_id !== current.id) {
+  const access = await requireCoachAthleteCalendarAccess(supabase, athleteId)
+  if ('error' in access) {
     redirect('/dashboard/athletes')
   }
+
+  const { user, athleteProfile } = access
 
   const today = new Date()
   const currentMonday = getWeekMonday(today)
@@ -56,7 +48,7 @@ export default async function AthleteCalendarPage({ params }: PageProps) {
     weekMondays.push(weekMonday.toISOString().slice(0, 10))
   }
 
-  const [workoutsResult, goalsResult, workoutTotalsResult, effectiveFaitResult, initialAvailabilities, facilitiesResult] =
+  const [workoutsResult, goalsResult, workoutTotalsResult, effectiveFaitResult, initialAvailabilities, facilitiesResult, coachNotesResult] =
     await Promise.all([
       supabase
         .from('workouts')
@@ -81,13 +73,19 @@ export default async function AthleteCalendarPage({ params }: PageProps) {
       getEffectiveWeeklyTotalsFait(athleteId, weekMondays[0], weekMondays[weekMondays.length - 1]),
       getAvailabilityForDateRange(athleteId, startStr, endStr),
       supabase.from('athlete_facilities').select('*').eq('athlete_id', athleteId),
+      supabase
+        .from('coach_athlete_notes')
+        .select('*')
+        .eq('athlete_id', athleteId)
+        .eq('coach_id', user.id)
+        .order('updated_at', { ascending: false }),
     ])
   const workouts = workoutsResult.data
   const goals = goalsResult.data
   const initialWorkoutTotals = workoutTotalsResult.data ?? []
   const initialWeeklyTotals = effectiveFaitResult.weeklyTotals ?? []
 
-  const displayName = getDisplayName(athleteProfile, athleteProfile.email)
+  const displayName = getDisplayName(athleteProfile, athleteProfile.email ?? '')
   if (facilitiesResult.error) {
     logger.warn('athlete_facilities: erreur chargement (calendrier coach)', {
       athleteId,
@@ -96,17 +94,26 @@ export default async function AthleteCalendarPage({ params }: PageProps) {
   }
   const initialAthleteFacilities = (facilitiesResult.data ?? []) as AthleteFacility[]
 
+  if (coachNotesResult.error) {
+    logger.warn('coach_athlete_notes: erreur chargement (calendrier coach)', {
+      athleteId,
+      message: coachNotesResult.error.message,
+    })
+  }
+  const initialCoachNotes = (coachNotesResult.data ?? []) as CoachAthleteNote[]
+
   return (
     <CoachAthleteCalendarPage
       athleteId={athleteId}
-      athleteEmail={athleteProfile.email}
+      athleteEmail={athleteProfile.email ?? ''}
       athleteName={displayName}
-      athleteAvatarUrl={athleteProfile.avatar_url}
+      athleteAvatarUrl={athleteProfile.avatar_url ?? null}
       initialWorkouts={(workouts ?? []) as Workout[]}
       initialWeeklyTotals={(initialWeeklyTotals ?? []) as ImportedActivityWeeklyTotal[]}
       initialWorkoutTotals={(initialWorkoutTotals ?? []) as WorkoutWeeklyTotal[]}
       initialAvailabilities={(initialAvailabilities ?? []) as AthleteAvailabilitySlot[]}
       initialAthleteFacilities={initialAthleteFacilities}
+      initialCoachNotes={initialCoachNotes}
       goals={(goals ?? []) as Goal[]}
       canEdit={true}
       pathToRevalidate={`/dashboard/athletes/${athleteId}`}

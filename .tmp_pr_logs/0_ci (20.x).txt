@@ -1,0 +1,200 @@
+﻿2026-03-20T20:45:33.1554175Z Current runner version: '2.332.0'
+2026-03-20T20:45:33.1579958Z ##[group]Runner Image Provisioner
+2026-03-20T20:45:33.1580871Z Hosted Compute Agent
+2026-03-20T20:45:33.1581479Z Version: 20260213.493
+2026-03-20T20:45:33.1582129Z Commit: 5c115507f6dd24b8de37d8bbe0bb4509d0cc0fa3
+2026-03-20T20:45:33.1582845Z Build Date: 2026-02-13T00:28:41Z
+2026-03-20T20:45:33.1583510Z Worker ID: {5f31c735-dd6f-41e4-b866-1b4f75b8ab15}
+2026-03-20T20:45:33.1584267Z Azure Region: eastus2
+2026-03-20T20:45:33.1584824Z ##[endgroup]
+2026-03-20T20:45:33.1586758Z ##[group]Operating System
+2026-03-20T20:45:33.1587400Z Ubuntu
+2026-03-20T20:45:33.1587892Z 24.04.3
+2026-03-20T20:45:33.1588314Z LTS
+2026-03-20T20:45:33.1589122Z ##[endgroup]
+2026-03-20T20:45:33.1589773Z ##[group]Runner Image
+2026-03-20T20:45:33.1590340Z Image: ubuntu-24.04
+2026-03-20T20:45:33.1591017Z Version: 20260309.50.1
+2026-03-20T20:45:33.1592183Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260309.50/images/ubuntu/Ubuntu2404-Readme.md
+2026-03-20T20:45:33.1593721Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260309.50
+2026-03-20T20:45:33.1594663Z ##[endgroup]
+2026-03-20T20:45:33.1595820Z ##[group]GITHUB_TOKEN Permissions
+2026-03-20T20:45:33.1597886Z Contents: read
+2026-03-20T20:45:33.1598418Z Metadata: read
+2026-03-20T20:45:33.1599393Z Packages: read
+2026-03-20T20:45:33.1599973Z ##[endgroup]
+2026-03-20T20:45:33.1601989Z Secret source: Actions
+2026-03-20T20:45:33.1603129Z Prepare workflow directory
+2026-03-20T20:45:33.1999261Z Prepare all required actions
+2026-03-20T20:45:33.2037154Z Getting action download info
+2026-03-20T20:45:33.5020582Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+2026-03-20T20:45:33.6199356Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+2026-03-20T20:45:33.8134203Z Complete job name: ci (20.x)
+2026-03-20T20:45:33.8854406Z ##[group]Run actions/checkout@v4
+2026-03-20T20:45:33.8855330Z with:
+2026-03-20T20:45:33.8855795Z   repository: martinfaisant/my-coaching-app
+2026-03-20T20:45:33.8856509Z   token: ***
+2026-03-20T20:45:33.8856905Z   ssh-strict: true
+2026-03-20T20:45:33.8857312Z   ssh-user: git
+2026-03-20T20:45:33.8857716Z   persist-credentials: true
+2026-03-20T20:45:33.8858173Z   clean: true
+2026-03-20T20:45:33.8858593Z   sparse-checkout-cone-mode: true
+2026-03-20T20:45:33.8859239Z   fetch-depth: 1
+2026-03-20T20:45:33.8859648Z   fetch-tags: false
+2026-03-20T20:45:33.8860061Z   show-progress: true
+2026-03-20T20:45:33.8860467Z   lfs: false
+2026-03-20T20:45:33.8860843Z   submodules: false
+2026-03-20T20:45:33.8861256Z   set-safe-directory: true
+2026-03-20T20:45:33.8861940Z env:
+2026-03-20T20:45:33.8862433Z   NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
+2026-03-20T20:45:33.8863058Z   NEXT_PUBLIC_SUPABASE_ANON_KEY: anon-key
+2026-03-20T20:45:33.8863648Z   SUPABASE_SERVICE_ROLE_KEY: service-role-key
+2026-03-20T20:45:33.8864222Z   NEXT_PUBLIC_APP_URL: http://localhost:3000
+2026-03-20T20:45:33.8864808Z   NEXT_PUBLIC_SITE_URL: http://localhost:3000
+2026-03-20T20:45:33.8865331Z ##[endgroup]
+2026-03-20T20:45:33.9973728Z Syncing repository: martinfaisant/my-coaching-app
+2026-03-20T20:45:33.9975444Z ##[group]Getting Git version info
+2026-03-20T20:45:33.9976229Z Working directory is '/home/runner/work/my-coaching-app/my-coaching-app'
+2026-03-20T20:45:33.9977267Z [command]/usr/bin/git version
+2026-03-20T20:45:34.0059556Z git version 2.53.0
+2026-03-20T20:45:34.0086049Z ##[endgroup]
+2026-03-20T20:45:34.0101928Z Temporarily overriding HOME='/home/runner/work/_temp/747bc5b9-c34a-4348-a44f-69a6cab0ac61' before making global git config changes
+2026-03-20T20:45:34.0104263Z Adding repository directory to the temporary git global config as a safe directory
+2026-03-20T20:45:34.0108835Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/my-coaching-app/my-coaching-app
+2026-03-20T20:45:34.0149907Z Deleting the contents of '/home/runner/work/my-coaching-app/my-coaching-app'
+2026-03-20T20:45:34.0153471Z ##[group]Initializing the repository
+2026-03-20T20:45:34.0158809Z [command]/usr/bin/git init /home/runner/work/my-coaching-app/my-coaching-app
+2026-03-20T20:45:34.0257827Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-03-20T20:45:34.0259473Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-03-20T20:45:34.0260393Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-03-20T20:45:34.0261444Z hint: call:
+2026-03-20T20:45:34.0262096Z hint:
+2026-03-20T20:45:34.0262614Z hint: 	git config --global init.defaultBranch <name>
+2026-03-20T20:45:34.0263428Z hint:
+2026-03-20T20:45:34.0264413Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-03-20T20:45:34.0266028Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-03-20T20:45:34.0267333Z hint:
+2026-03-20T20:45:34.0268079Z hint: 	git branch -m <name>
+2026-03-20T20:45:34.0269107Z hint:
+2026-03-20T20:45:34.0270218Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-03-20T20:45:34.0272033Z Initialized empty Git repository in /home/runner/work/my-coaching-app/my-coaching-app/.git/
+2026-03-20T20:45:34.0276322Z [command]/usr/bin/git remote add origin https://github.com/martinfaisant/my-coaching-app
+2026-03-20T20:45:34.0313974Z ##[endgroup]
+2026-03-20T20:45:34.0315172Z ##[group]Disabling automatic garbage collection
+2026-03-20T20:45:34.0319295Z [command]/usr/bin/git config --local gc.auto 0
+2026-03-20T20:45:34.0349733Z ##[endgroup]
+2026-03-20T20:45:34.0350934Z ##[group]Setting up auth
+2026-03-20T20:45:34.0357468Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-03-20T20:45:34.0390635Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-03-20T20:45:34.0739280Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-03-20T20:45:34.0772490Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-03-20T20:45:34.1007873Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-03-20T20:45:34.1040932Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-03-20T20:45:34.1296930Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-03-20T20:45:34.1339344Z ##[endgroup]
+2026-03-20T20:45:34.1340746Z ##[group]Fetching the repository
+2026-03-20T20:45:34.1352037Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +69233f5db27e46fa6769718aba3e5248edc6faa5:refs/remotes/pull/74/merge
+2026-03-20T20:45:34.4756849Z From https://github.com/martinfaisant/my-coaching-app
+2026-03-20T20:45:34.4790155Z  * [new ref]         69233f5db27e46fa6769718aba3e5248edc6faa5 -> pull/74/merge
+2026-03-20T20:45:34.4793515Z ##[endgroup]
+2026-03-20T20:45:34.4795026Z ##[group]Determining the checkout info
+2026-03-20T20:45:34.4796555Z ##[endgroup]
+2026-03-20T20:45:34.4801200Z [command]/usr/bin/git sparse-checkout disable
+2026-03-20T20:45:34.4844513Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-03-20T20:45:34.4872361Z ##[group]Checking out the ref
+2026-03-20T20:45:34.4877121Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/74/merge
+2026-03-20T20:45:34.5273746Z Note: switching to 'refs/remotes/pull/74/merge'.
+2026-03-20T20:45:34.5306433Z 
+2026-03-20T20:45:34.5307064Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-03-20T20:45:34.5308535Z changes and commit them, and you can discard any commits you make in this
+2026-03-20T20:45:34.5310184Z state without impacting any branches by switching back to a branch.
+2026-03-20T20:45:34.5311320Z 
+2026-03-20T20:45:34.5311947Z If you want to create a new branch to retain commits you create, you may
+2026-03-20T20:45:34.5313638Z do so (now or later) by using -c with the switch command. Example:
+2026-03-20T20:45:34.5314486Z 
+2026-03-20T20:45:34.5314828Z   git switch -c <new-branch-name>
+2026-03-20T20:45:34.5315428Z 
+2026-03-20T20:45:34.5315740Z Or undo this operation with:
+2026-03-20T20:45:34.5316262Z 
+2026-03-20T20:45:34.5316545Z   git switch -
+2026-03-20T20:45:34.5316952Z 
+2026-03-20T20:45:34.5317640Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-03-20T20:45:34.5318694Z 
+2026-03-20T20:45:34.5320368Z HEAD is now at 69233f5 Merge 942d5e1f776157c7126ebcee93c771e9200c8943 into 94361715471ebd7b9ad107034a526efd1a211806
+2026-03-20T20:45:34.5323754Z ##[endgroup]
+2026-03-20T20:45:34.5332341Z [command]/usr/bin/git log -1 --format=%H
+2026-03-20T20:45:34.5358643Z 69233f5db27e46fa6769718aba3e5248edc6faa5
+2026-03-20T20:45:34.5626363Z ##[group]Run actions/setup-node@v4
+2026-03-20T20:45:34.5627001Z with:
+2026-03-20T20:45:34.5627394Z   node-version: 20.x
+2026-03-20T20:45:34.5627859Z   cache: npm
+2026-03-20T20:45:34.5628260Z   always-auth: false
+2026-03-20T20:45:34.5628714Z   check-latest: false
+2026-03-20T20:45:34.5629550Z   token: ***
+2026-03-20T20:45:34.5629935Z env:
+2026-03-20T20:45:34.5630451Z   NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
+2026-03-20T20:45:34.5631211Z   NEXT_PUBLIC_SUPABASE_ANON_KEY: anon-key
+2026-03-20T20:45:34.5631870Z   SUPABASE_SERVICE_ROLE_KEY: service-role-key
+2026-03-20T20:45:34.5632583Z   NEXT_PUBLIC_APP_URL: http://localhost:3000
+2026-03-20T20:45:34.5633307Z   NEXT_PUBLIC_SITE_URL: http://localhost:3000
+2026-03-20T20:45:34.5633939Z ##[endgroup]
+2026-03-20T20:45:34.7418135Z Found in cache @ /opt/hostedtoolcache/node/20.20.1/x64
+2026-03-20T20:45:34.7426775Z ##[group]Environment details
+2026-03-20T20:45:35.0734091Z node: v20.20.1
+2026-03-20T20:45:35.0735096Z npm: 10.8.2
+2026-03-20T20:45:35.0735792Z yarn: 1.22.22
+2026-03-20T20:45:35.0737204Z ##[endgroup]
+2026-03-20T20:45:35.0762698Z [command]/opt/hostedtoolcache/node/20.20.1/x64/bin/npm config get cache
+2026-03-20T20:45:35.2156261Z /home/runner/.npm
+2026-03-20T20:45:35.3107438Z npm cache is not found
+2026-03-20T20:45:35.3266795Z ##[group]Run npm ci
+2026-03-20T20:45:35.3267871Z [36;1mnpm ci[0m
+2026-03-20T20:45:35.3332133Z shell: /usr/bin/bash -e {0}
+2026-03-20T20:45:35.3333190Z env:
+2026-03-20T20:45:35.3334321Z   NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
+2026-03-20T20:45:35.3335876Z   NEXT_PUBLIC_SUPABASE_ANON_KEY: anon-key
+2026-03-20T20:45:35.3337229Z   SUPABASE_SERVICE_ROLE_KEY: service-role-key
+2026-03-20T20:45:35.3338615Z   NEXT_PUBLIC_APP_URL: http://localhost:3000
+2026-03-20T20:45:35.3340262Z   NEXT_PUBLIC_SITE_URL: http://localhost:3000
+2026-03-20T20:45:35.3341513Z ##[endgroup]
+2026-03-20T20:45:36.8710157Z npm error code EUSAGE
+2026-03-20T20:45:36.8710634Z npm error
+2026-03-20T20:45:36.8711943Z npm error `npm ci` can only install packages when your package.json and package-lock.json or npm-shrinkwrap.json are in sync. Please update your lock file with `npm install` before continuing.
+2026-03-20T20:45:36.8712975Z npm error
+2026-03-20T20:45:36.8713428Z npm error Missing: @swc/helpers@0.5.19 from lock file
+2026-03-20T20:45:36.8713732Z npm error
+2026-03-20T20:45:36.8713982Z npm error Clean install a project
+2026-03-20T20:45:36.8714268Z npm error
+2026-03-20T20:45:36.8714591Z npm error Usage:
+2026-03-20T20:45:36.8714969Z npm error npm ci
+2026-03-20T20:45:36.8715290Z npm error
+2026-03-20T20:45:36.8715611Z npm error Options:
+2026-03-20T20:45:36.8716089Z npm error [--install-strategy <hoisted|nested|shallow|linked>] [--legacy-bundling]
+2026-03-20T20:45:36.8716786Z npm error [--global-style] [--omit <dev|optional|peer> [--omit <dev|optional|peer> ...]]
+2026-03-20T20:45:36.8717828Z npm error [--include <prod|dev|optional|peer> [--include <prod|dev|optional|peer> ...]]
+2026-03-20T20:45:36.8719288Z npm error [--strict-peer-deps] [--foreground-scripts] [--ignore-scripts] [--no-audit]
+2026-03-20T20:45:36.8720986Z npm error [--no-bin-links] [--no-fund] [--dry-run]
+2026-03-20T20:45:36.8721891Z npm error [-w|--workspace <workspace-name> [-w|--workspace <workspace-name> ...]]
+2026-03-20T20:45:36.8722853Z npm error [-ws|--workspaces] [--include-workspace-root] [--install-links]
+2026-03-20T20:45:36.8723438Z npm error
+2026-03-20T20:45:36.8724006Z npm error aliases: clean-install, ic, install-clean, isntall-clean
+2026-03-20T20:45:36.8724570Z npm error
+2026-03-20T20:45:36.8724935Z npm error Run "npm help ci" for more info
+2026-03-20T20:45:36.8726142Z npm error A complete log of this run can be found in: /home/runner/.npm/_logs/2026-03-20T20_45_35_411Z-debug-0.log
+2026-03-20T20:45:36.8795391Z ##[error]Process completed with exit code 1.
+2026-03-20T20:45:36.8931923Z Post job cleanup.
+2026-03-20T20:45:36.9895627Z [command]/usr/bin/git version
+2026-03-20T20:45:36.9932933Z git version 2.53.0
+2026-03-20T20:45:36.9976913Z Temporarily overriding HOME='/home/runner/work/_temp/a838624e-a3c8-484f-802a-786420158600' before making global git config changes
+2026-03-20T20:45:36.9978480Z Adding repository directory to the temporary git global config as a safe directory
+2026-03-20T20:45:36.9990929Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/my-coaching-app/my-coaching-app
+2026-03-20T20:45:37.0027073Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-03-20T20:45:37.0061826Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-03-20T20:45:37.0302507Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-03-20T20:45:37.0324049Z http.https://github.com/.extraheader
+2026-03-20T20:45:37.0336704Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-03-20T20:45:37.0367816Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-03-20T20:45:37.0602877Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-03-20T20:45:37.0634413Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-03-20T20:45:37.1013584Z Cleaning up orphan processes
+2026-03-20T20:45:37.1298346Z ##[warning]Node.js 20 actions are deprecated. The following actions are running on Node.js 20 and may not work as expected: actions/checkout@v4, actions/setup-node@v4. Actions will be forced to run with Node.js 24 by default starting June 2nd, 2026. Please check if updated versions of these actions are available that support Node.js 24. To opt into Node.js 24 now, set the FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true environment variable on the runner or in your workflow file. Once Node.js 24 becomes the default, you can temporarily opt out by setting ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
