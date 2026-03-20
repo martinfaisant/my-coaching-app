@@ -466,6 +466,7 @@
     "editWorkout": "Modifier l'entraînement",
     "deleteWorkout": "Supprimer",
     "deleteConfirmation": "Supprimer cet entraînement ? Cette action est irréversible.",
+    "facilityHoursStripAriaLabel": "Horaires des installations de l'athlète pour le jour sélectionné",
     "addWorkout": "Ajouter un entraînement",
     "exerciseTitle": "Titre de l'exercice",
     "description": "Description",

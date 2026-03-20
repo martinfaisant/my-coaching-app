@@ -341,6 +341,7 @@
     "editWorkout": "Edit Workout",
     "deleteWorkout": "Delete",
     "deleteConfirmation": "Delete this workout? This action is irreversible.",
+    "facilityHoursStripAriaLabel": "Athlete facility opening hours for the selected day",
     "addWorkout": "Add workout",
     "exerciseTitle": "Exercise title",
     "description": "Description",

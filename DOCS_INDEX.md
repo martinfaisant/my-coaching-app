@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 20 mars 2026 (Objectifs : résultat + i18n `goals.validation` ; **Project_context** §4.7 + **docs/I18N.md** ; voir Changements récents)
+**Dernière mise à jour :** 20 mars 2026 (Modale coach : horaires installations sous la date ; **Project_context** §4.5 + **docs/DESIGN_SYSTEM.md** + archive mockups ; voir Changements récents)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -24,7 +24,7 @@
 - **Contenu :** Tokens (couleurs, typo, espacements), composants (Button, Input, Badge, TileCard, DashboardPageShell, Modal, etc.), guidelines UI, exemples de code, §7 breakpoints (calendrier, chat, Trouver mon coach, My offers)
 - **Utiliser pour :** Créer ou modifier des composants UI, choisir des couleurs, appliquer le design system, règles responsive par page
 - **Taille :** ~850 lignes
-- **Dernière mise à jour :** 18 mars 2026 (Page Mon profil : section Facilities Used + responsive modal/table horaires ; Segments labels multi-lignes mobile)
+- **Dernière mise à jour :** 20 mars 2026 (`WorkoutFacilityHoursStrip` — icône bâtiment, horaires sous la date modale coach ; §7 inchangé ailleurs)
 
 ### **docs/I18N.md** ⭐
 - **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces, utilisation dans composants et server actions, **checklist pour nouvelles features** (toujours penser bilingue)
@@ -109,7 +109,7 @@
 > La majorité des documents d'audit/refactoring historiques sont archivés dans `docs/archive/`.  
 > L’état courant canonique est dans **`docs/ENGINEERING_STATUS_REFAC_AUDIT.md`**.
 
-### Documents archivés (39 fichiers)
+### Documents archivés (41 fichiers)
 
 **Audit & Plan initial :**
 - `AUDIT_COMPLET.md` - Audit complet du projet (13 février 2026) - 1202 lignes
@@ -307,6 +307,10 @@
 - `docs/archive/design-athlete-installations/` — mockups Designer (solutions A/B/C/D/E, formulaire, vue profil, vue coach post-subscription) pour la section Facilities Used.
 - **Raison :** Feature livrée ; athlète peut gérer ses installations (type, adresse, horaires par jour/plages) via modal add/edit, affichage profil en 2 blocs (adresse / horaires), responsive mobile pour la table horaires. Comportement décrit dans **Project_context.md §4.2.2**, **docs/DESIGN_SYSTEM.md** (§7 Page Mon profil), **docs/I18N.md** (namespace `facilities`).
 
+**Horaires installations — modale entraînement coach (archivés 20 mars 2026) :**
+- `docs/archive/design-coach-workout-facility-hours/` — `MOCKUP_COACH_WORKOUT_MODAL_FACILITY_HOURS.html`, `MOCKUP_COACH_WORKOUT_MODAL_FACILITY_HOURS_EDGE_CASES.html`.
+- **Raison :** Feature livrée ; sous le bloc date dans l’en-tête de la modale workout (coach), bandeau lecture seule : installations `athlete_facilities` filtrées par sport ↔ type et par jour local, tri A→Z du nom, icône bâtiment commune, créneaux ou fermé. Comportement décrit dans **Project_context.md §4.5** (Workouts), **docs/DESIGN_SYSTEM.md** (WorkoutFacilityHoursStrip), **docs/I18N.md** (`workouts.facilityHoursStripAriaLabel`, `facilities.hours`). RLS : migrations **059** (`facilities_used`), **060** (SELECT coach via `profiles.coach_id`).
+
 **Séparation pages dashboard – find-coach / Mes athlètes (archivé 23 février 2026) :**
 - `docs/archive/dashboard-pages-separation/SPEC_ARCHI_DASHBOARD_PAGES_SEPARATION.md` — Spec architecture (redirections depuis /dashboard, pages dédiées, skeletons)
 - **Raison :** Feature livrée ; comportement décrit dans **Project_context.md §4.0** (Dashboard entry point) et **docs/DESIGN_SYSTEM.md** §7 (pages Trouver mon coach, Mes athlètes).
@@ -438,10 +442,15 @@
 
 **Fréquence de mise à jour :** À chaque ajout/suppression de documentation
 
-**Dernier scan :** 18 mars 2026  
-**Dernier nettoyage :** 18 mars 2026 (index archive mis à jour : design-athlete-installations)
+**Dernier scan :** 20 mars 2026  
+**Dernier nettoyage :** 20 mars 2026 (index archive : design-coach-workout-facility-hours)
 
 ### Changements récents :
+
+✅ **20 mars 2026 – Horaires installations (modale entraînement coach) – Mode Analyste :**
+- **Livraison :** Dans la modale workout côté coach (création, édition, lecture seule), **sous la date** dans l’en-tête : liste des installations de l’athlète dont le type correspond au sport de la séance pour le **jour** de la date (natation → piscine, musculation → salle, course → stade ; vélo → pas de bandeau), **tri alphabétique** du nom, **icône bâtiment** identique sur chaque ligne, affichage des **créneaux** ou **fermé**. `WorkoutFacilityHoursStrip`, `lib/workoutFacilityHours.ts` ; accès coach aux lignes `athlete_facilities` aligné sur les workouts (souscription + `profiles.coach_id`, migrations 059–060).
+- **Doc :** `Project_context.md` §4.5, `docs/DESIGN_SYSTEM.md` (WorkoutFacilityHoursStrip, changelog), `.cursor/rules/project-core.mdc` (installations + RLS), `docs/I18N.md` (référence §4.5).
+- **Archivage :** `docs/design-coach-workout-facility-hours/` → `docs/archive/design-coach-workout-facility-hours/` (mockups HTML).
 
 ✅ **18 mars 2026 – Installations athlète (facilities) – Mode Analyste :**
 - **Livraison :** section **Facilities Used** sur Mon profil (athlète), modal add/edit (type, adresse, horaires), normalisation code postal à la sauvegarde (uppercase + sans espaces), affichage profil en 2 blocs (adresse 1/3, horaires 2/3), responsive anti-débordement (modal + table horaires).

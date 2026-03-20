@@ -1,6 +1,8 @@
 'use client'
 
-import { useEffect, useState, useRef, useCallback } from 'react'
+import { useEffect, useState, useRef, useCallback, useMemo } from 'react'
+import { createClient } from '@/utils/supabase/client'
+import { logger } from '@/lib/logger'
 import { useFormStatus } from 'react-dom'
 import { useActionState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -15,7 +17,7 @@ import {
   type CommentFormState,
   type StatusCommentFormState,
 } from '@/app/[locale]/dashboard/workouts/actions'
-import type { SportType, Workout, WorkoutStatus, WorkoutTimeOfDay } from '@/types/database'
+import type { AthleteFacility, SportType, Workout, WorkoutStatus, WorkoutTimeOfDay } from '@/types/database'
 import { Modal } from '@/components/Modal'
 import { Button } from '@/components/Button'
 import { Input } from '@/components/Input'
@@ -31,6 +33,8 @@ import { useWorkoutFormReducer } from '@/components/workout-modal/useWorkoutForm
 import { WorkoutFeedbackSection } from '@/components/workout-modal/WorkoutFeedbackSection'
 import { DatePickerPopover } from '@/components/workout-modal/DatePickerPopover'
 import { CoachWorkoutForm } from '@/components/workout-modal/CoachWorkoutForm'
+import { WorkoutFacilityHoursStrip } from '@/components/workout-modal/WorkoutFacilityHoursStrip'
+import { getWorkoutFacilityDisplayLines } from '@/lib/workoutFacilityHours'
 
 /** Sports pour entraînement (sous-ensemble du calendrier). */
 const WORKOUT_SPORT_TYPES: SportType[] = ['course', 'velo', 'natation', 'musculation']
@@ -50,6 +54,8 @@ type WorkoutModalProps = {
   /** Vue athlète (son propre calendrier) : titre "Mon entrainement" au lieu de "Modifier l'entraînement" */
   athleteView?: boolean
   workout?: Workout | null
+  /** Installations athlète (coach) : bandeau horaires dans la modale création/édition */
+  athleteFacilities?: AthleteFacility[]
 }
 
 function SubmitButton({
@@ -126,7 +132,11 @@ export function WorkoutModal({
   canEdit,
   athleteView = false,
   workout,
+  athleteFacilities = [],
 }: WorkoutModalProps) {
+  /** Fetch client (RLS) quand la modale coach s’ouvre — fiabilise les données si le SSR n’a rien retourné. */
+  const [fetchedAthleteFacilities, setFetchedAthleteFacilities] = useState<AthleteFacility[] | null>(null)
+
   const locale = useLocale()
   const tWorkouts = useTranslations('workouts')
   const tCommon = useTranslations('common')
@@ -194,6 +204,45 @@ export function WorkoutModal({
 
   /** US5 : séance en lecture seule (passée ou réalisée) — pas de formulaire ni boutons. */
   const coachReadOnly = canEdit && !athleteView && !!currentWorkout && !coachCanEdit
+
+  useEffect(() => {
+    if (!isOpen || athleteView || !canEdit) {
+      setFetchedAthleteFacilities(null)
+      return
+    }
+    let cancelled = false
+    const supabase = createClient()
+    void supabase
+      .from('athlete_facilities')
+      .select('*')
+      .eq('athlete_id', athleteId)
+      .then(({ data, error }) => {
+        if (cancelled) return
+        if (error) {
+          logger.error('WorkoutModal: échec chargement athlete_facilities', error, { athleteId })
+          setFetchedAthleteFacilities([])
+          return
+        }
+        setFetchedAthleteFacilities((data ?? []) as AthleteFacility[])
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [isOpen, athleteView, canEdit, athleteId])
+
+  const facilitiesForHoursStrip =
+    fetchedAthleteFacilities !== null ? fetchedAthleteFacilities : athleteFacilities
+
+  const facilityHoursLines = useMemo(
+    () =>
+      getWorkoutFacilityDisplayLines(
+        sportType,
+        editableDate,
+        facilitiesForHoursStrip,
+        locale === 'fr' ? 'fr' : 'en'
+      ),
+    [sportType, editableDate, facilitiesForHoursStrip, locale]
+  )
 
   /** Badge statut pour l’en-tête coach (US4/US5). */
   const getStatusBadge = (s: WorkoutStatus) => {
@@ -474,24 +523,33 @@ export function WorkoutModal({
   const localeForPicker = locale === 'fr' ? 'fr-FR' : 'en-US'
   const coachDateBlock =
     coachFormNewLayout ? (
-      <div
-        ref={dateTriggerRef}
-        className={`flex items-center gap-2 border border-stone-300 rounded-lg py-2.5 px-4 bg-white focus-within:ring-2 focus-within:ring-palette-forest-dark focus-within:border-transparent transition ${FORM_INPUT_TEXT_SIZE} ${FORM_INPUT_HEIGHT}`}
-      >
-        <span className="text-sm font-bold text-stone-900 min-w-[10rem]" aria-hidden>
-          {formatDateFr(editableDate, true, localeForPicker)}
-        </span>
-        <button
-          type="button"
-          onClick={openDatePicker}
-          className="shrink-0 p-1 rounded text-stone-400 hover:text-palette-forest-dark hover:bg-stone-100"
-          title={tWorkouts('form.chooseDate')}
-          aria-label={tWorkouts('form.chooseDate')}
+      <div className="flex flex-col gap-2 min-w-0 max-w-[min(100%,20rem)]">
+        <div
+          ref={dateTriggerRef}
+          className={`flex items-center gap-2 border border-stone-300 rounded-lg py-2.5 px-4 bg-white focus-within:ring-2 focus-within:ring-palette-forest-dark focus-within:border-transparent transition ${FORM_INPUT_TEXT_SIZE} ${FORM_INPUT_HEIGHT}`}
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
-        </button>
+          <span className="text-sm font-bold text-stone-900 min-w-[10rem]" aria-hidden>
+            {formatDateFr(editableDate, true, localeForPicker)}
+          </span>
+          <button
+            type="button"
+            onClick={openDatePicker}
+            className="shrink-0 p-1 rounded text-stone-400 hover:text-palette-forest-dark hover:bg-stone-100"
+            title={tWorkouts('form.chooseDate')}
+            aria-label={tWorkouts('form.chooseDate')}
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </button>
+        </div>
+        {facilityHoursLines.length > 0 ? (
+          <WorkoutFacilityHoursStrip
+            lines={facilityHoursLines}
+            ariaLabel={tWorkouts('facilityHoursStripAriaLabel')}
+            variant="compact"
+          />
+        ) : null}
       </div>
     ) : null
 

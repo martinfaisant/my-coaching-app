@@ -3,11 +3,19 @@ import { createClient } from '@/utils/supabase/server'
 import { getCurrentUserWithProfile } from '@/utils/auth'
 import { redirect } from 'next/navigation'
 import { CoachAthleteCalendarPage } from '@/components/CoachAthleteCalendarPage'
-import type { Workout, Goal, ImportedActivityWeeklyTotal, WorkoutWeeklyTotal, AthleteAvailabilitySlot } from '@/types/database'
+import type {
+  AthleteFacility,
+  Workout,
+  Goal,
+  ImportedActivityWeeklyTotal,
+  WorkoutWeeklyTotal,
+  AthleteAvailabilitySlot,
+} from '@/types/database'
 import { getWeekMonday } from '@/lib/dateUtils'
 import { getDisplayName } from '@/lib/displayName'
 import { getEffectiveWeeklyTotalsFait } from '@/app/[locale]/dashboard/workouts/actions'
 import { getAvailabilityForDateRange } from '@/app/[locale]/dashboard/availability/actions'
+import { logger } from '@/lib/logger'
 
 type PageProps = { params: Promise<{ athleteId: string }> }
 
@@ -48,36 +56,45 @@ export default async function AthleteCalendarPage({ params }: PageProps) {
     weekMondays.push(weekMonday.toISOString().slice(0, 10))
   }
 
-  const [workoutsResult, goalsResult, workoutTotalsResult, effectiveFaitResult, initialAvailabilities] = await Promise.all([
-    supabase
-      .from('workouts')
-      .select('*')
-      .eq('athlete_id', athleteId)
-      .gte('date', startStr)
-      .lte('date', endStr)
-      .order('date')
-      .order('created_at'),
-    supabase
-      .from('goals')
-      .select('*')
-      .eq('athlete_id', athleteId)
-      .order('date', { ascending: true }),
-    supabase
-      .from('workout_weekly_totals')
-      .select('*')
-      .eq('athlete_id', athleteId)
-      .in('week_start', weekMondays)
-      .order('week_start')
-      .order('sport_type'),
-    getEffectiveWeeklyTotalsFait(athleteId, weekMondays[0], weekMondays[weekMondays.length - 1]),
-    getAvailabilityForDateRange(athleteId, startStr, endStr),
-  ])
+  const [workoutsResult, goalsResult, workoutTotalsResult, effectiveFaitResult, initialAvailabilities, facilitiesResult] =
+    await Promise.all([
+      supabase
+        .from('workouts')
+        .select('*')
+        .eq('athlete_id', athleteId)
+        .gte('date', startStr)
+        .lte('date', endStr)
+        .order('date')
+        .order('created_at'),
+      supabase
+        .from('goals')
+        .select('*')
+        .eq('athlete_id', athleteId)
+        .order('date', { ascending: true }),
+      supabase
+        .from('workout_weekly_totals')
+        .select('*')
+        .eq('athlete_id', athleteId)
+        .in('week_start', weekMondays)
+        .order('week_start')
+        .order('sport_type'),
+      getEffectiveWeeklyTotalsFait(athleteId, weekMondays[0], weekMondays[weekMondays.length - 1]),
+      getAvailabilityForDateRange(athleteId, startStr, endStr),
+      supabase.from('athlete_facilities').select('*').eq('athlete_id', athleteId),
+    ])
   const workouts = workoutsResult.data
   const goals = goalsResult.data
   const initialWorkoutTotals = workoutTotalsResult.data ?? []
   const initialWeeklyTotals = effectiveFaitResult.weeklyTotals ?? []
 
   const displayName = getDisplayName(athleteProfile, athleteProfile.email)
+  if (facilitiesResult.error) {
+    logger.warn('athlete_facilities: erreur chargement (calendrier coach)', {
+      athleteId,
+      message: facilitiesResult.error.message,
+    })
+  }
+  const initialAthleteFacilities = (facilitiesResult.data ?? []) as AthleteFacility[]
 
   return (
     <CoachAthleteCalendarPage
@@ -89,6 +106,7 @@ export default async function AthleteCalendarPage({ params }: PageProps) {
       initialWeeklyTotals={(initialWeeklyTotals ?? []) as ImportedActivityWeeklyTotal[]}
       initialWorkoutTotals={(initialWorkoutTotals ?? []) as WorkoutWeeklyTotal[]}
       initialAvailabilities={(initialAvailabilities ?? []) as AthleteAvailabilitySlot[]}
+      initialAthleteFacilities={initialAthleteFacilities}
       goals={(goals ?? []) as Goal[]}
       canEdit={true}
       pathToRevalidate={`/dashboard/athletes/${athleteId}`}
