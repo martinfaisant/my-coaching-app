@@ -34,10 +34,14 @@ export type CoachTileProps = {
   offers?: CoachTileOffer[]
   /** Contenu du footer (bouton « Voir détails », etc.) */
   footer: React.ReactNode
+  /** Clic sur « (N avis) » — ouvre la liste des avis (ex. modale) */
+  onReviewsClick?: () => void
   /** Labels optionnels (pour i18n côté appelant) */
   labels?: {
     new?: string
     reviews?: string
+    /** aria-label du lien vers la liste des avis */
+    openReviewsAria?: string
     availableOffers?: string
     free?: string
     perMonth?: string
@@ -57,6 +61,7 @@ export function CoachTile({
   rating,
   offers = [],
   footer,
+  onReviewsClick,
   labels = {},
 }: CoachTileProps) {
   const displayName = (fullName ?? '').trim() || email
@@ -65,6 +70,7 @@ export function CoachTile({
   const {
     new: newLabel = 'Nouveau',
     reviews: reviewsLabel = 'avis',
+    openReviewsAria: openReviewsAriaLabel,
     availableOffers: availableOffersLabel = 'Offres disponibles',
     free: freeLabel = 'Gratuit',
     perMonth: perMonthLabel = 'mois',
@@ -109,7 +115,21 @@ export function CoachTile({
                     </svg>
                     {rating!.averageRating}
                   </span>
-                  <span>({rating!.reviewCount} {reviewsLabel})</span>
+                  {onReviewsClick ? (
+                    <button
+                      type="button"
+                      className="text-left underline-offset-2 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-palette-forest-dark rounded"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        onReviewsClick()
+                      }}
+                      aria-label={openReviewsAriaLabel ?? undefined}
+                    >
+                      ({rating!.reviewCount} {reviewsLabel})
+                    </button>
+                  ) : (
+                    <span>({rating!.reviewCount} {reviewsLabel})</span>
+                  )}
                 </div>
               ) : (
                 <span className="text-[10px] bg-stone-100 text-stone-500 px-1.5 py-0.5 rounded">{newLabel}</span>

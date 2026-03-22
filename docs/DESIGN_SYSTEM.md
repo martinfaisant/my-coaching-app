@@ -1,7 +1,7 @@
 # 🎨 Design System
 
 **Version :** 1.24  
-**Dernière mise à jour :** 20 mars 2026 (`CoachReviewsModal` : liste des avis coach sur « Trouver mon coach »)
+**Dernière mise à jour :** 21 mars 2026 (`CoachReviewsModal` : liste des avis sur « Trouver mon coach »)
 
 ---
 

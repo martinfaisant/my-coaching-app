@@ -109,3 +109,11 @@ Ces scripts ne sont **pas nécessaires** pour le déploiement en production, mai
 - Affichage dans les semaines condensées et détaillées
 - Mapping automatique depuis Strava
 - Calcul automatique des totaux par les triggers
+
+---
+
+## Migration 063 — Liste publique des avis coach (Trouver mon coach)
+
+**Fichier :** `supabase/migrations/063_get_coach_public_reviews.sql`
+
+**Description :** crée la fonction **`get_coach_public_reviews(p_coach_id uuid)`** (SECURITY DEFINER, `RETURNS` id, rating, comment, created_at) pour alimenter la modale liste d’avis côté athlète. **À exécuter en production** lorsque cette fonctionnalité est déployée. Dépend de la table **`coach_ratings`** (migration **021**).
