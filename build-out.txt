@@ -1,0 +1,9 @@
+﻿node.exe : Ô¿» Unable to acquire lock at C:\Users\marti\my-coaching-app\.next\lock, is another instance of next build 
+running?
+Au caractère Ligne:1 : 1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Ô¿» Unable to a... build running?:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  Suggestion: If you intended to restart next build, terminate the other process, and then try again.
