@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
 import { Modal } from '@/components/Modal'
 import { getCoachPublicReviews, type CoachPublicReview } from '@/app/[locale]/dashboard/find-coach/reviewsActions'
@@ -28,25 +28,30 @@ export function CoachReviewsModal({
   const [reviews, setReviews] = useState<CoachPublicReview[] | null>(null)
   const [loadError, setLoadError] = useState(false)
 
-  useEffect(() => {
-    if (!isOpen) {
-      setReviews(null)
-      setLoadError(false)
-      return
-    }
-    let cancelled = false
-    setLoadError(false)
+  const handleClose = useCallback(() => {
     setReviews(null)
-    void (async () => {
-      const result = await getCoachPublicReviews(coachId)
+    setLoadError(false)
+    onClose()
+  }, [onClose])
+
+  useEffect(() => {
+    if (!isOpen) return
+    let cancelled = false
+    queueMicrotask(() => {
       if (cancelled) return
-      if (result.ok) {
-        setReviews(result.reviews)
-      } else {
-        setLoadError(true)
-        setReviews([])
-      }
-    })()
+      setLoadError(false)
+      setReviews(null)
+      void (async () => {
+        const result = await getCoachPublicReviews(coachId)
+        if (cancelled) return
+        if (result.ok) {
+          setReviews(result.reviews)
+        } else {
+          setLoadError(true)
+          setReviews([])
+        }
+      })()
+    })
     return () => {
       cancelled = true
     }
@@ -57,7 +62,7 @@ export function CoachReviewsModal({
   return (
     <Modal
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={handleClose}
       layer={layer}
       size="lg"
       title={t('title', { name: coachDisplayName })}
