@@ -12,6 +12,7 @@ import {
 } from '@/app/[locale]/login/actions'
 import { Button } from '@/components/Button'
 import { Input } from '@/components/Input'
+import { PasswordInput } from '@/components/PasswordInput'
 import { FORM_ERROR_TEXT_CLASSES } from '@/lib/formStyles'
 import type { AuthModalMode } from './LoginModal'
 
@@ -98,11 +99,10 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
             placeholder={t('emailPlaceholder')}
             defaultValue={prefilledEmail}
           />
-          <Input
+          <PasswordInput
             id="modal-password"
             label={t('password')}
             name="password"
-            type="password"
             autoComplete="current-password"
             required
             placeholder={t('passwordPlaceholder')}
@@ -293,11 +293,10 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
           placeholder={t('emailPlaceholder')}
           defaultValue={signupState?.existingEmail ?? ''}
         />
-        <Input
+        <PasswordInput
           id="modal-signup-password"
           label={t('passwordMin')}
           name="password"
-          type="password"
           autoComplete="new-password"
           required
           minLength={6}

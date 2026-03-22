@@ -52,6 +52,8 @@
     "coachDesc": "Accompagner des athlètes",
     "emailPlaceholder": "vous@exemple.com",
     "passwordPlaceholder": "••••••••",
+    "showPassword": "Afficher le mot de passe",
+    "hidePassword": "Masquer le mot de passe",
     "alreadyHaveAccount": "Vous avez déjà un compte ?",
     "noAccountYet": "Pas encore de compte ?",
     "backToLogin": "Retour à la connexion",
@@ -1163,6 +1165,14 @@
     },
     "results": "Résultats",
     "noResults": "Aucun coach ne correspond à vos critères. Modifiez les filtres ou revenez plus tard.",
+    "reviewsModal": {
+      "title": "Avis — {name}",
+      "loading": "Chargement des avis…",
+      "empty": "Aucun avis à afficher.",
+      "error": "Impossible de charger les avis. Réessayez plus tard.",
+      "noComment": "Pas de commentaire",
+      "openReviewsAria": "Voir la liste des avis sur {name}"
+    },
     "coachCard": {
       "new": "Nouveau",
       "reviews": "avis",
