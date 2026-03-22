@@ -52,6 +52,8 @@
     "coachDesc": "Coach athletes",
     "emailPlaceholder": "you@example.com",
     "passwordPlaceholder": "••••••••",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
     "alreadyHaveAccount": "Already have an account?",
     "noAccountYet": "No account yet?",
     "backToLogin": "Back to login",
@@ -1039,6 +1041,14 @@
     },
     "results": "Results",
     "noResults": "No coach matches your criteria. Change the filters or come back later.",
+    "reviewsModal": {
+      "title": "Reviews — {name}",
+      "loading": "Loading reviews…",
+      "empty": "No reviews to display.",
+      "error": "Could not load reviews. Please try again later.",
+      "noComment": "No comment",
+      "openReviewsAria": "View all reviews for {name}"
+    },
     "coachCard": {
       "new": "New",
       "reviews": "reviews",

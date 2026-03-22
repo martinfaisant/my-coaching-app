@@ -1,7 +1,7 @@
 # 🎨 Design System
 
-**Version :** 1.22  
-**Dernière mise à jour :** 20 mars 2026 (`CoachAthleteNotesSection` / `CoachAthleteNoteModal` : onglet Notes calendrier coach ; précédent : `AthleteFacilityDetails`, etc.)
+**Version :** 1.24  
+**Dernière mise à jour :** 21 mars 2026 (`CoachReviewsModal` : liste des avis sur « Trouver mon coach »)
 
 ---
 
@@ -17,6 +17,7 @@
 3. [Composants](#composants)
    - [Button](#button)
    - [Input](#input)
+   - [PasswordInput](#passwordinput)
    - [SearchInput](#searchinput)
    - [Textarea](#textarea)
    - [Badge](#badge)
@@ -26,6 +27,7 @@
    - [ActivityTile](#activitytile)
    - [TileCard](#tilecard)
    - [Modal](#modal)
+   - [CoachReviewsModal](#coachreviewsmodal)
    - [WorkoutFacilityHoursStrip](#workoutfacilityhoursstrip)
    - [AthleteFacilityDetails](#athletefacilitydetails)
    - [CoachAthleteNotesSection](#coachathletenotessection)
@@ -437,6 +439,31 @@ Pour les champs bilingues (ex. offres coach : titre et description en français 
   <span className="shrink-0 px-2.5 min-h-full text-[10px] font-bold uppercase text-palette-forest-dark bg-palette-forest-dark/10 flex items-center justify-center border-r border-stone-200">FR</span>
   <textarea name="description_fr" className="flex-1 min-w-0 py-2.5 pr-4 bg-transparent border-0 ..." />
 </div>
+```
+
+---
+
+### PasswordInput
+
+**Fichier :** `components/PasswordInput.tsx`
+
+Champ mot de passe avec le même contrat que `Input` (label, erreur, `forwardRef`, styles `lib/formStyles.ts`), plus un bouton à droite pour basculer entre masqué et visible. **Client component** (`'use client'`) — état local `visible` / `type="password"` | `type="text"`.
+
+- **Icônes** : `components/icons/IconEye.tsx` (mot de passe masqué — clic pour afficher), `components/icons/IconEyeClosed.tsx` (mot de passe visible — clic pour masquer). Couleur via `currentColor` (`text-stone-500` sur le bouton).
+- **Accessibilité** : `aria-label` via i18n `auth.showPassword` / `auth.hidePassword`, `aria-pressed={visible}`.
+- **Usage** : page `app/[locale]/login/page.tsx` (connexion + inscription), modale `components/LoginForm.tsx`.
+
+```tsx
+import { PasswordInput } from '@/components/PasswordInput'
+
+<PasswordInput
+  id="password"
+  label={t('password')}
+  name="password"
+  autoComplete="current-password"
+  required
+  placeholder={t('passwordPlaceholder')}
+/>
 ```
 
 ---
@@ -1163,6 +1190,23 @@ const [isOpen, setIsOpen] = useState(false)
 <HomeEmailConfirmedTrigger showEmailConfirmedModal={emailConfirmed} />
 ```
 
+### CoachReviewsModal
+
+**Fichier :** `components/CoachReviewsModal.tsx`
+
+Liste des avis publics pour un coach (note 1–5, date, commentaire ou libellé « Pas de commentaire »). Données via RPC Supabase `get_coach_public_reviews` (server action `getCoachPublicReviews` dans `app/[locale]/dashboard/find-coach/reviewsActions.ts`). S’ouvre au clic sur « (N avis) » dans `CoachTile` ou dans l’en-tête de la modale détail coach (`FindCoachSection` / `CoachDetailModal`). Utilise `Modal` taille `lg` ; **`layer={1}`** lorsque la modale détail coach est déjà ouverte. i18n : `findCoach.reviewsModal`.
+
+```tsx
+import { CoachReviewsModal } from '@/components/CoachReviewsModal'
+
+<CoachReviewsModal
+  isOpen={open}
+  onClose={() => setOpen(false)}
+  coachId={coachId}
+  coachDisplayName={displayName}
+/>
+```
+
 ### WorkoutFacilityHoursStrip
 
 **Fichier :** `components/workout-modal/WorkoutFacilityHoursStrip.tsx`
@@ -1739,7 +1783,7 @@ Actuellement, utiliser un span custom :
 
 - **Tokens couleurs** : `tailwind.config.ts`, `app/globals.css`
 - **Styles formulaires** : `lib/formStyles.ts` (FORM_BASE_CLASSES, FORM_INPUT_TEXT_SIZE, FORM_INPUT_HEIGHT, etc.)
-- **Composants** : `components/Button.tsx`, `components/Input.tsx`, `components/SearchInput.tsx`, `components/Textarea.tsx`, `components/Badge.tsx`, `components/Avatar.tsx`, `components/AvatarImage.tsx`, `components/SportTileSelectable.tsx`, `components/ActivityTile.tsx`, `components/Modal.tsx`, `components/workout-modal/WorkoutFacilityHoursStrip.tsx`, `components/AthleteFacilityDetails.tsx`, `components/CoachAthleteNotesSection.tsx`, `components/CoachAthleteNoteModal.tsx`, `components/DashboardPageShell.tsx`, `components/DashboardTopBar.tsx`, `components/Drawer.tsx`, `components/PublicHeader.tsx`, `components/EmailValidatedModal.tsx`, `components/HomeEmailConfirmedTrigger.tsx`, `components/Dropdown.tsx`, `components/Segments.tsx`, `components/DatePickerPopup.tsx`, `components/AvailabilityModal.tsx`, `components/AvailabilityDetailModal.tsx`, `components/ChatAthleteListItem.tsx`, `components/ChatConversationSidebar.tsx`
+- **Composants** : `components/Button.tsx`, `components/Input.tsx`, `components/PasswordInput.tsx`, `components/SearchInput.tsx`, `components/Textarea.tsx`, `components/Badge.tsx`, `components/Avatar.tsx`, `components/AvatarImage.tsx`, `components/SportTileSelectable.tsx`, `components/ActivityTile.tsx`, `components/Modal.tsx`, `components/CoachReviewsModal.tsx`, `components/workout-modal/WorkoutFacilityHoursStrip.tsx`, `components/AthleteFacilityDetails.tsx`, `components/CoachAthleteNotesSection.tsx`, `components/CoachAthleteNoteModal.tsx`, `components/DashboardPageShell.tsx`, `components/DashboardTopBar.tsx`, `components/Drawer.tsx`, `components/PublicHeader.tsx`, `components/EmailValidatedModal.tsx`, `components/HomeEmailConfirmedTrigger.tsx`, `components/Dropdown.tsx`, `components/Segments.tsx`, `components/DatePickerPopup.tsx`, `components/AvailabilityModal.tsx`, `components/AvailabilityDetailModal.tsx`, `components/ChatAthleteListItem.tsx`, `components/ChatConversationSidebar.tsx`
 - **Page Mes athlètes (coach)** : `app/[locale]/dashboard/athletes/page.tsx` (bandeaux profil / offre publiée, erreur chargement liste), `CoachAthletesListWithFilter.tsx`, `PendingRequestTile.tsx`
 - **Sports** : `lib/sportStyles.ts`, `lib/sportsOptions.ts`, `components/SportIcons.tsx`
 - **Horaires modale workout (coach)** : `lib/workoutFacilityHours.ts` (filtre sport ↔ type d’installation, jour, tri alphabétique)

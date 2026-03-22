@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl'
 import { login, signup, type LoginState, type SignupState } from './actions'
 import { Button } from '@/components/Button'
 import { Input } from '@/components/Input'
+import { PasswordInput } from '@/components/PasswordInput'
 import { FORM_ERROR_TEXT_CLASSES } from '@/lib/formStyles'
 
 type SignupRole = 'athlete' | 'coach'
@@ -59,11 +60,10 @@ function LoginPageContent() {
                 placeholder={t('emailPlaceholder')}
                 className="rounded-xl"
               />
-              <Input
+              <PasswordInput
                 id="password"
                 label={t('password')}
                 name="password"
-                type="password"
                 autoComplete="current-password"
                 required
                 placeholder={t('passwordPlaceholder')}
@@ -176,11 +176,10 @@ function LoginPageContent() {
                   className="rounded-xl"
                   defaultValue={signupState?.existingEmail ?? ''}
                 />
-                <Input
+                <PasswordInput
                   id="signup-password"
                   label={t('passwordMin')}
                   name="password"
-                  type="password"
                   autoComplete="new-password"
                   required
                   minLength={6}

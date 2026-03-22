@@ -201,6 +201,8 @@ On the **Mon profil** page (`/dashboard/profile`), the athlete can manage a sect
 
 ### 4.3 Search & Discovery ✅
 
+**Page « Trouver mon coach »** (`/dashboard/find-coach`, athlète sans `profiles.coach_id`) : filtres par **nom ou prénom**, **sport coaché**, **langue** ; grille de tuiles coach (`CoachTile`) avec présentation, offres publiées (max 3 affichées), note moyenne et **nombre d’avis** lorsque `review_count > 0` (sinon badge « Nouveau »). Les **stats agrégées** (moyenne + nombre d’avis) viennent de la RPC **`get_coach_rating_stats`** (SECURITY DEFINER, migration **022**). Un clic sur **« (N avis) »** ouvre une modale **`CoachReviewsModal`** listant les avis (note 1–5, date, commentaire ou libellé sans commentaire) ; les **identités des athlètes noteurs ne sont pas exposées**. Les lignes sont chargées via la RPC **`get_coach_public_reviews(p_coach_id)`** (SECURITY DEFINER, migration **063**), nécessaire car la RLS sur `coach_ratings` ne permet pas aux athlètes de lire les notes des *autres* athlètes. Même liste accessible depuis l’en-tête de la **modale détail coach** (« Voir le détail »). **Clavier :** lorsque la modale liste d’avis est ouverte **au-dessus** de la modale détail, la touche **Échap** ferme d’abord uniquement la liste d’avis (pas toute la modale détail).
+
 Athletes filter coaches by:
 
 - Sport coached
@@ -388,7 +390,7 @@ Athletes filter coaches by:
 | `goals` | Athlete race/event objectives. Optional **target time** (migration 056): `target_time_hours/minutes/seconds`. Optional result for past goals (migration 053): `result_time_hours/minutes/seconds`, `result_place`, `result_note`. |
 | `conversations` | 1-to-1 coach–athlete. Includes `request_id` (source `coach_requests` row) used to determine chat write access lifecycle. Participants can update `request_id` to the latest writable request (RLS policy `conversations_update_participant`). |
 | `chat_messages` | Messages in a conversation |
-| `coach_ratings` | Athlete rating + comment for coach |
+| `coach_ratings` | Athlete rating + comment for coach (1–5, comment optional; **unique** `(athlete_id, coach_id)`). **RLS :** athlète lit/écrit **sa** ligne ; coach lit **ses** notes reçues. **Affichage public (autres athlètes) :** pas de SELECT direct ; agrégats via RPC **`get_coach_rating_stats`** ; liste des avis via RPC **`get_coach_public_reviews`** (migration **063**, sans colonne `athlete_id` dans le résultat). |
 | `athlete_connected_services` | Strava OAuth tokens |
 | `imported_activities` | Activities from Strava |
 | `workout_weekly_totals` | Precomputed weekly totals (planned) |

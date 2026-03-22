@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { useTranslations, useLocale } from 'next-intl'
 import { RequestCoachButton } from './RequestCoachButton'
@@ -22,6 +22,7 @@ import { getInitials } from '@/lib/stringUtils'
 import { getDisplayName } from '@/lib/displayName'
 import type { Goal } from '@/types/database'
 import { TileCard } from '@/components/TileCard'
+import { CoachReviewsModal } from '@/components/CoachReviewsModal'
 import { GoalFullModal } from '@/app/[locale]/dashboard/objectifs/GoalFullModal'
 import { RequestGoalAddModal } from '@/app/[locale]/dashboard/RequestGoalAddModal'
 import { RequestGoalsListModal } from '@/app/[locale]/dashboard/RequestGoalsListModal'
@@ -155,6 +156,7 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([])
   const [presentationModalCoach, setPresentationModalCoach] = useState<CoachForList | null>(null)
   const [detailModalCoach, setDetailModalCoach] = useState<CoachForList | null>(null)
+  const [reviewsModalCoach, setReviewsModalCoach] = useState<{ id: string; name: string } | null>(null)
   const getStatus = (coachId: string): 'pending' | 'declined' | null =>
     statusByCoach[coachId] ?? null
   const getRequestId = (coachId: string): string | null => requestIdByCoach[coachId] ?? null
@@ -288,6 +290,15 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
                 coachedSports={c.coached_sports ?? []}
                 bio={getDisplayPresentation(c, locale) || t('coachCard.defaultBio')}
                 rating={ratingsByCoach[c.user_id] ?? null}
+                onReviewsClick={
+                  (ratingsByCoach[c.user_id]?.reviewCount ?? 0) > 0
+                    ? () =>
+                        setReviewsModalCoach({
+                          id: c.user_id,
+                          name: getDisplayName(c, c.email),
+                        })
+                    : undefined
+                }
                 offers={(offersByCoach[c.user_id] ?? []).slice(0, 3).map((offer) => ({
                   id: offer.id,
                   title: getOfferDisplayTitle(offer, locale),
@@ -325,6 +336,9 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
                 labels={{
                   new: t('coachCard.new'),
                   reviews: t('coachCard.reviews'),
+                  openReviewsAria: t('reviewsModal.openReviewsAria', {
+                    name: getDisplayName(c, c.email),
+                  }),
                   availableOffers: t('coachCard.availableOffers'),
                   free: t('coachCard.free'),
                   perMonth: t('coachCard.perMonth'),
@@ -334,6 +348,15 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
             </li>
           ))}
         </ul>
+      )}
+
+      {reviewsModalCoach && (
+        <CoachReviewsModal
+          isOpen
+          onClose={() => setReviewsModalCoach(null)}
+          coachId={reviewsModalCoach.id}
+          coachDisplayName={reviewsModalCoach.name}
+        />
       )}
 
       {detailModalCoach && (
@@ -506,6 +529,9 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
   const [seeMoreGoalsModalOpen, setSeeMoreGoalsModalOpen] = useState(false)
   const [goalForFullModal, setGoalForFullModal] = useState<Goal | null>(null)
   const [fullModalInitialTab, setFullModalInitialTab] = useState<'objective' | 'result'>('objective')
+  const [reviewsListOpen, setReviewsListOpen] = useState(false)
+  const reviewsListOpenRef = useRef(reviewsListOpen)
+  reviewsListOpenRef.current = reviewsListOpen
   const [sports, setSports] = useState<string[]>(initialPracticedSports)
   const [need, setNeed] = useState('')
   const [firstName, setFirstName] = useState(athleteFirstName)
@@ -676,7 +702,12 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose()
+      if (e.key !== 'Escape') return
+      if (reviewsListOpenRef.current) {
+        setReviewsListOpen(false)
+        return
+      }
+      onClose()
     }
     document.addEventListener('keydown', handleEscape)
     document.body.style.overflow = 'hidden'
@@ -685,6 +716,12 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
       document.body.style.overflow = ''
     }
   }, [onClose])
+
+  useEffect(() => {
+    if (!reviewsListOpen) {
+      document.body.style.overflow = 'hidden'
+    }
+  }, [reviewsListOpen])
 
   const formatPrice = (offer: typeof offers[0]) => {
     if (offer.price_type === 'free') return t('modal.free')
@@ -716,11 +753,21 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
             <div className="flex-1">
               <h2 className="text-xl font-bold text-stone-900">{getDisplayName(coach, coach.email)}</h2>
               {ratings && ratings.reviewCount > 0 && (
-                <div className="flex items-center gap-1 text-sm text-amber-500 font-bold mt-0.5">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                <div className="flex items-center gap-1 text-sm text-amber-500 font-bold mt-0.5 flex-wrap">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 fill-current shrink-0" viewBox="0 0 20 20" aria-hidden>
                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                   </svg>
-                  {ratings.averageRating} <span className="text-stone-400 font-normal ml-1">({ratings.reviewCount} {t('coachCard.reviews')})</span>
+                  <span>{ratings.averageRating}</span>
+                  <button
+                    type="button"
+                    className="text-stone-400 font-normal ml-1 underline-offset-2 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-palette-forest-dark rounded"
+                    onClick={() => setReviewsListOpen(true)}
+                    aria-label={t('reviewsModal.openReviewsAria', {
+                      name: getDisplayName(coach, coach.email),
+                    })}
+                  >
+                    ({ratings.reviewCount} {t('coachCard.reviews')})
+                  </button>
                 </div>
               )}
               {/* Tags Sports & Langues */}
@@ -1181,6 +1228,13 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
         </div>
       </div>
 
+      <CoachReviewsModal
+        isOpen={reviewsListOpen}
+        onClose={() => setReviewsListOpen(false)}
+        coachId={coach.user_id}
+        coachDisplayName={getDisplayName(coach, coach.email)}
+        layer={1}
+      />
       <RequestGoalAddModal
         isOpen={addGoalModalOpen}
         onClose={() => setAddGoalModalOpen(false)}

@@ -97,7 +97,7 @@ Voir [docs/DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md) pour tous les détails.
 ### 3 rôles utilisateur :
 
 **Athlète**
-- Chercher un coach et envoyer une demande (avec choix d’une offre ; l’offre est figée au moment de la demande)
+- Chercher un coach et envoyer une demande (avec choix d’une offre ; l’offre est figée au moment de la demande) ; sur la page **Trouver mon coach**, consulter la **liste des avis** d’un coach (note et commentaire ; pas d’identité des noteurs)
 - Chatter avec les coachs liés par demande (`pending`/`accepted`) ; certaines conversations peuvent être en lecture seule selon le statut
 - Consulter son calendrier d'entraînement
 - Gérer ses objectifs

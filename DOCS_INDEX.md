@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 20 mars 2026 (**notes privées coach** livrées — `coach_athlete_notes`, migration **062** ; mockups archivés `docs/archive/design-coach-athlete-notes/` ; voir Changements récents)
+**Dernière mise à jour :** 21 mars 2026 (**liste d’avis coach** sur Trouver mon coach — `CoachReviewsModal`, RPC **`get_coach_public_reviews`**, migration **063** ; correction **Échap** modale sur modale ; voir Changements récents)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -18,19 +18,19 @@
 - **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), stack technique, **URL production https://mysportally.com**
 - **Utiliser pour :** Comprendre le projet, les features, les rôles, l'architecture globale
 - **Taille :** ~450 lignes
-- **Dernière mise à jour :** 20 mars 2026 (§4.2.2 calendrier coach : Installations + **Notes privées** `coach_athlete_notes`, RLS **062** ; §4.4 Mes athlètes coach ; §5)
+- **Dernière mise à jour :** 21 mars 2026 (§4.3 Trouver mon coach : liste d’avis, RPC **063** ; §4.2.2 calendrier coach : Installations + Notes ; §5 `coach_ratings`)
 
 ### **docs/DESIGN_SYSTEM.md** ⭐
 - **Contenu :** Tokens (couleurs, typo, espacements), composants (Button, Input, Badge, TileCard, DashboardPageShell, Modal, etc.), guidelines UI, exemples de code, §7 breakpoints (calendrier, chat, Trouver mon coach, My offers)
 - **Utiliser pour :** Créer ou modifier des composants UI, choisir des couleurs, appliquer le design system, règles responsive par page
 - **Taille :** ~850 lignes
-- **Dernière mise à jour :** 20 mars 2026 (`AthleteFacilityDetails` / coach onglet Installations ; `CoachAthleteNotesSection` / `CoachAthleteNoteModal` ; §7 Mes athlètes coach ; `WorkoutFacilityHoursStrip`)
+- **Dernière mise à jour :** 21 mars 2026 (`CoachReviewsModal` ; §7 Trouver mon coach ; précédent : `CoachAthleteNotesSection`, `WorkoutFacilityHoursStrip`…)
 
 ### **docs/I18N.md** ⭐
 - **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces, utilisation dans composants et server actions, **checklist pour nouvelles features** (toujours penser bilingue)
 - **Utiliser pour :** Toute nouvelle feature ou texte visible, ajout de clés de traduction, dépannage i18n
 - **Taille :** ~180 lignes
-- **Dernière mise à jour :** 20 mars 2026 (`athletes.publishOfferPrompt`, `athletes.listLoadError` ; `goals.validation` : `missingGoalId` ; note retrait `timeRequired`)
+- **Dernière mise à jour :** 21 mars 2026 (`findCoach.reviewsModal` ; précédent : `athletes`, `goals.validation`…)
 
 ### **docs/AUTH_EMAIL_TEMPLATES.md**
 - **Contenu :** Guide de configuration des emails d’auth Supabase (sujet, i18n FR/EN, variables, dépannage logo). **Les fichiers HTML des templates** (Confirm signup, puis Magic Link, Reset Password, etc.) sont dans **docs/email-templates/**.
@@ -446,10 +446,15 @@
 
 **Fréquence de mise à jour :** À chaque ajout/suppression de documentation
 
-**Dernier scan :** 20 mars 2026  
-**Dernier nettoyage :** 20 mars 2026 (index archive : design-coach-athlete-notes, design-coach-athletes-publish-offer)
+**Dernier scan :** 21 mars 2026  
+**Dernier nettoyage :** 21 mars 2026 (entrée Changements récents : liste avis coach)
 
 ### Changements récents :
+
+✅ **21 mars 2026 – Liste d’avis coach (Trouver mon coach) – Mode Analyste :**
+- **Livraison :** Sur `/dashboard/find-coach`, clic sur **« (N avis) »** sur une tuile ou dans la **modale détail coach** → modale **`CoachReviewsModal`** (note, date, commentaire ; pas d’identité des noteurs). Données : RPC **`get_coach_public_reviews`** (migration **063**), server action `getCoachPublicReviews`. i18n : **`findCoach.reviewsModal`**. **Échap** : lorsque la liste est ouverte au-dessus de la modale détail, **fermeture de la liste uniquement** (ref `reviewsListOpenRef` dans `CoachDetailModal`).
+- **Doc :** `Project_context.md` §4.3 et §5 (`coach_ratings`), `README.md` (rôle Athlète), `docs/DESIGN_SYSTEM.md` (`CoachReviewsModal`), `docs/I18N.md` (`findCoach.reviewsModal`), `DEPLOYMENT_NOTES.md` / `MISE_EN_PROD.md` (migration **063**).
+- **Archivage :** aucun (pas de dossier de design temporaire à archiver).
 
 ✅ **20 mars 2026 – Notes privées coach (calendrier athlète) – Mode Analyste :**
 - **Livraison :** Onglet **Notes** sur `/dashboard/athletes/[athleteId]` (troisième onglet avec Objectifs et Installations) : notes **privées** par coach auteur (`coach_athlete_notes`), liste + modale création/édition/suppression (`CoachAthleteNotesSection`, `CoachAthleteNoteModal`), actions serveur `coachNotesActions.ts`, accès `requireCoachAthleteCalendarAccess`. L’athlète **ne voit pas** les notes (RLS). Migration **062**. Tests unitaires : `CoachAthleteNotesSection.test.tsx`, `CoachAthleteNoteModal.test.tsx`.

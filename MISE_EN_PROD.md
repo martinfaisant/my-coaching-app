@@ -46,6 +46,8 @@ Dans le **SQL Editor** de Supabase (prod), exécuter les fichiers **dans cet ord
 
 Si une migration a déjà été exécutée en prod (ex. 025 ou 026), sauter celle-là et exécuter seulement les suivantes.
 
+**Migrations postérieures (030 et suivantes, ex. 063)** : en général appliquées via **`supabase db push`** ou le SQL Editor en respectant l’ordre des fichiers dans `supabase/migrations/`. Pour la **liste d’avis** sur « Trouver mon coach » : fichier **`063_get_coach_public_reviews.sql`**.
+
 ---
 
 ## 3. Après la mise en prod
