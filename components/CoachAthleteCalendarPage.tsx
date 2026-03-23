@@ -14,6 +14,7 @@ import { TileCard } from './TileCard'
 import { AthleteFacilityDetails } from '@/components/AthleteFacilityDetails'
 import { CoachAthleteNotesSection } from '@/components/CoachAthleteNotesSection'
 import { IconBuilding } from '@/components/icons/IconBuilding'
+import { getGoalColor, getGoalBadgeClass } from '@/lib/goalColor'
 import type {
   AthleteFacility,
   CoachAthleteNote,
@@ -22,6 +23,7 @@ import type {
   ImportedActivityWeeklyTotal,
   WorkoutWeeklyTotal,
   AthleteAvailabilitySlot,
+  WorkoutPrimaryMetricBySport,
 } from '@/types/database'
 import { getDaysUntil, formatGoalDateBlock } from '@/lib/dateUtils'
 import { getInitials } from '@/lib/stringUtils'
@@ -95,6 +97,7 @@ type CoachAthleteCalendarPageProps = {
   canEdit: boolean
   pathToRevalidate: string
   initialCoachNotes?: CoachAthleteNote[]
+  coachWorkoutPrimaryMetrics?: WorkoutPrimaryMetricBySport | null
 }
 
 export function CoachAthleteCalendarPage({
@@ -111,6 +114,7 @@ export function CoachAthleteCalendarPage({
   pathToRevalidate,
   initialAthleteFacilities = [],
   initialCoachNotes = [],
+  coachWorkoutPrimaryMetrics = null,
 }: CoachAthleteCalendarPageProps) {
   const locale = useLocale()
   const localeTag = locale === 'fr' ? 'fr-FR' : 'en-US'
@@ -178,6 +182,7 @@ export function CoachAthleteCalendarPage({
         goals={goals}
         canEdit={canEdit}
         pathToRevalidate={pathToRevalidate}
+        initialCoachWorkoutPrimaryMetrics={coachWorkoutPrimaryMetrics}
         hideBuiltInSelector={true}
         disableContentScroll={true}
         renderWeekSelector={({ dateRangeLabel, onNavigate, isAnimating, prevWeekLastDayLabel, nextWeekFirstDayLabel }) => (
@@ -296,11 +301,13 @@ export function CoachAthleteCalendarPage({
                               const dateBlock = formatGoalDateBlock(goal.date, localeTag)
                               const isPrimary = goal.is_primary
                               const isResult = goal.date <= today
+                              const borderColor = getGoalColor(isPrimary, isResult)
+                              const badgeClass = getGoalBadgeClass(isPrimary)
 
                               return (
                                 <TileCard
                                   key={goal.id}
-                                  leftBorderColor={isResult ? 'stone' : isPrimary ? 'amber' : 'sage'}
+                                  leftBorderColor={borderColor}
                                   borderLeftOnly={isResult}
                                   className=""
                                 >
@@ -316,15 +323,9 @@ export function CoachAthleteCalendarPage({
                                           <h3 className={`text-sm font-bold truncate ${isPast ? 'text-stone-700' : 'text-stone-900'}`}>
                                             {goal.race_name}
                                           </h3>
-                                          {isPrimary ? (
-                                            <span className="bg-white text-palette-amber text-[10px] font-semibold px-2 py-0.5 rounded-full border border-palette-amber shrink-0">
-                                              {t('priority.primary')}
-                                            </span>
-                                          ) : (
-                                            <span className="bg-white text-palette-sage text-[10px] font-semibold px-2 py-0.5 rounded-full border border-palette-sage shrink-0">
-                                              {t('priority.secondary')}
-                                            </span>
-                                          )}
+                                          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border shrink-0 ${badgeClass}`}>
+                                                {isPrimary ? t('priority.primary') : t('priority.secondary')}
+                                         </span>
                                         </div>
                                         <div className="flex items-center gap-1 text-xs text-stone-500 flex-wrap">
                                           <MapIcon className="w-3.5 h-3.5 text-stone-400 shrink-0" />

@@ -505,7 +505,12 @@
       "timeOfDayUnspecified": "Non précisé",
       "timeOfDayMorning": "Matin",
       "timeOfDayNoon": "Midi",
-      "timeOfDayEvening": "Soir"
+      "timeOfDayEvening": "Soir",
+      "mandatoryMetricDistance": "Métrique principale : distance — renseignez la distance (ou calculez-la via durée + allure).",
+      "mandatoryMetricTime": "Métrique principale : temps — renseignez la durée (ou calculez-la via distance + allure).",
+      "unitsSetupIntro": "Choisissez l’unité principale pour vos séances course, vélo et natation. Elle s’applique à toutes vos séances et à la synthèse hebdomadaire.",
+      "unitsSetupMuscuNote": "La musculation reste en durée (minutes).",
+      "saveUnits": "Enregistrer les unités"
     },
     "comments": {
       "athleteComment": "Commentaire de l'athlète",
@@ -556,7 +561,11 @@
       "deleteSuccess": "Entraînement supprimé avec succès.",
       "notAuthenticated": "Non connecté.",
       "unauthorized": "Non autorisé.",
-      "commentSaveFailed": "Impossible d'enregistrer le commentaire."
+      "commentSaveFailed": "Impossible d'enregistrer le commentaire.",
+      "targetRequired": "Indiquez un objectif (temps ou distance selon le sport).",
+      "paceRequired": "La vitesse (allure ou km/h) est obligatoire pour ce sport.",
+      "primaryMetricRequired": "Complétez la métrique principale (temps ou distance) ou les champs permettant de la calculer.",
+      "workoutUnitsNotConfigured": "Configurez les unités des séances (profil coach) avant de créer une séance."
     }
   },
   "goals": {
@@ -710,6 +719,8 @@
     "suffixKmPerWeek": "km/sem.",
     "suffixMPerWeek": "m/sem.",
     "suffixDPlusPerWeek": "D+/sem.",
+    "workoutPrimaryMetricsSectionTitle": "Unités des séances (course, vélo, natation)",
+    "workoutPrimaryMetricsIntro": "Indiquez si vous planifiez d’abord en temps ou en distance pour chaque sport. Utilisé pour vos séances et la synthèse hebdomadaire.",
     "validation": {
       "saved": "Informations enregistrées.",
       "weeklyTargetInvalid": "Le temps à allouer doit être un nombre positif (max 168 h).",
@@ -718,7 +729,8 @@
       "weeklyVolumeInvalid": "Le volume doit être un nombre positif.",
       "cannotDelete": "La suppression n'est pas possible. Vous devez d'abord mettre un terme à votre contrat avec vos athlètes.",
       "deletionFailed": "Suppression impossible.",
-      "deletionError": "Erreur lors de la suppression."
+      "deletionError": "Erreur lors de la suppression.",
+      "workoutPrimaryMetricInvalid": "Sélection invalide pour les unités des séances (course, vélo, natation)."
     }
   },
   "coach": {

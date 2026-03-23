@@ -2,10 +2,11 @@
 
 import { createClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
-import type { Workout, ImportedActivityWeeklyTotal, SportType } from '@/types/database'
+import type { Workout, ImportedActivityWeeklyTotal, SportType, WorkoutPrimaryMetricBySport } from '@/types/database'
 import { requireCoachOrAthleteAccess } from '@/lib/authHelpers'
 import { getWeekMonday, toDateStr } from '@/lib/dateUtils'
 import { validateWorkoutFormData } from '@/lib/workoutValidation'
+import { parseWorkoutPrimaryMetricBySport, isCoachWorkoutPrimaryMetricsComplete } from '@/lib/workoutPrimaryMetric'
 import { logger } from '@/lib/logger'
 import { getTranslations, getLocale } from 'next-intl/server'
 
@@ -32,12 +33,22 @@ export async function createWorkout(
   ])
   if ('error' in accessResult) return { error: tAuth(accessResult.errorCode ?? 'notAuthenticated') }
 
-  const { isCoach, isAthlete } = accessResult
+  const { isCoach, isAthlete, user } = accessResult
   if (isAthlete) return { error: t('onlyCoachCanCreate') }
   if (!isCoach) return { error: t('unauthorized') }
 
-  // Validation des données du formulaire
-  const validation = validateWorkoutFormData(formData)
+  const { data: coachProf } = await supabase
+    .from('profiles')
+    .select('workout_primary_metric_by_sport')
+    .eq('user_id', user.id)
+    .single()
+
+  const prefsCoach = parseWorkoutPrimaryMetricBySport(coachProf?.workout_primary_metric_by_sport) as WorkoutPrimaryMetricBySport | null
+  if (!isCoachWorkoutPrimaryMetricsComplete(prefsCoach)) {
+    return { error: t('workoutUnitsNotConfigured') }
+  }
+
+  const validation = validateWorkoutFormData(formData, { primaryMetricBySport: prefsCoach })
   if ('error' in validation) return validation
 
   const {
@@ -92,11 +103,21 @@ export async function updateWorkout(
   ])
   if ('error' in accessResult) return { error: tAuth(accessResult.errorCode ?? 'notAuthenticated') }
 
-  const { isCoach } = accessResult
+  const { isCoach, user } = accessResult
   if (!isCoach) return { error: t('onlyCoachCanEdit') }
 
-  // Validation des données du formulaire
-  const validation = validateWorkoutFormData(formData)
+  const { data: coachProf } = await supabase
+    .from('profiles')
+    .select('workout_primary_metric_by_sport')
+    .eq('user_id', user.id)
+    .single()
+
+  const prefsCoach = parseWorkoutPrimaryMetricBySport(coachProf?.workout_primary_metric_by_sport) as WorkoutPrimaryMetricBySport | null
+  if (!isCoachWorkoutPrimaryMetricsComplete(prefsCoach)) {
+    return { error: t('workoutUnitsNotConfigured') }
+  }
+
+  const validation = validateWorkoutFormData(formData, { primaryMetricBySport: prefsCoach })
   if ('error' in validation) return validation
 
   const {

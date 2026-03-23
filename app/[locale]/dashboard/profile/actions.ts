@@ -6,6 +6,8 @@ import { getTranslations } from 'next-intl/server'
 import { COACHED_SPORTS_VALUES, PRACTICED_SPORTS_VALUES } from '@/lib/sportsOptions'
 import { requireUserWithProfile, requireUser } from '@/lib/authHelpers'
 import { getWeeklyVolumeUnit } from '@/lib/sportStyles'
+import type { WorkoutPrimaryMetricBySport } from '@/types/database'
+import { isCoachWorkoutPrimaryMetricsComplete } from '@/lib/workoutPrimaryMetric'
 
 export type ProfileFormState = {
   error?: string
@@ -45,6 +47,7 @@ export async function updateProfile(
     weekly_current_hours?: number | null
     weekly_target_hours?: number | null
     weekly_volume_by_sport?: Record<string, number>
+    workout_primary_metric_by_sport?: WorkoutPrimaryMetricBySport
   } = {
     first_name: firstName,
     last_name: lastName,
@@ -72,6 +75,24 @@ export async function updateProfile(
     payload.languages = languages
     payload.presentation_fr = presentationFr
     payload.presentation_en = presentationEn
+
+    const mc = (formData.get('workout_primary_metric_course') as string)?.trim()
+    const mv = (formData.get('workout_primary_metric_velo') as string)?.trim()
+    const mn = (formData.get('workout_primary_metric_natation') as string)?.trim()
+    if (
+      (mc === 'time' || mc === 'distance') &&
+      (mv === 'time' || mv === 'distance') &&
+      (mn === 'time' || mn === 'distance')
+    ) {
+      const workout_primary_metric_by_sport: WorkoutPrimaryMetricBySport = {
+        course: mc,
+        velo: mv,
+        natation: mn,
+      }
+      if (isCoachWorkoutPrimaryMetricsComplete(workout_primary_metric_by_sport)) {
+        payload.workout_primary_metric_by_sport = workout_primary_metric_by_sport
+      }
+    }
   }
 
   if (profile?.role === 'athlete') {
@@ -163,6 +184,52 @@ export async function updateProfile(
   revalidatePath('/dashboard')
   revalidatePath('/dashboard/profile')
   revalidatePath('/dashboard/coach')
+  return { success: t('saved') }
+}
+
+/** Enregistrement des unités obligatoires (modale première séance). Coach uniquement. */
+export async function saveCoachWorkoutPrimaryMetrics(
+  _prevState: ProfileFormState,
+  formData: FormData
+): Promise<ProfileFormState> {
+  const locale = (formData.get('locale') as string) || 'fr'
+  const t = await getTranslations({ locale, namespace: 'profile.validation' })
+  const supabase = await createClient()
+  const result = await requireUserWithProfile(supabase, 'role, user_id')
+  if ('error' in result) return { error: result.error }
+  if (result.profile.role !== 'coach') {
+    return { error: (await getTranslations({ locale, namespace: 'profile.validation' }))('workoutPrimaryMetricInvalid') }
+  }
+
+  const mc = (formData.get('workout_primary_metric_course') as string)?.trim()
+  const mv = (formData.get('workout_primary_metric_velo') as string)?.trim()
+  const mn = (formData.get('workout_primary_metric_natation') as string)?.trim()
+  if (
+    (mc !== 'time' && mc !== 'distance') ||
+    (mv !== 'time' && mv !== 'distance') ||
+    (mn !== 'time' && mn !== 'distance')
+  ) {
+    return { error: t('workoutPrimaryMetricInvalid') }
+  }
+  const workout_primary_metric_by_sport: WorkoutPrimaryMetricBySport = {
+    course: mc,
+    velo: mv,
+    natation: mn,
+  }
+  if (!isCoachWorkoutPrimaryMetricsComplete(workout_primary_metric_by_sport)) {
+    return { error: t('workoutPrimaryMetricInvalid') }
+  }
+
+  const { error } = await supabase
+    .from('profiles')
+    .update({ workout_primary_metric_by_sport })
+    .eq('user_id', result.user.id)
+
+  if (error) return { error: error.message }
+  revalidatePath('/dashboard')
+  revalidatePath('/dashboard/profile')
+  revalidatePath('/dashboard/coach')
+  revalidatePath('/dashboard/athletes')
   return { success: t('saved') }
 }
 

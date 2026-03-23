@@ -14,6 +14,7 @@ import type {
   ImportedActivityWeeklyTotal,
   WorkoutWeeklyTotal,
   AthleteAvailabilitySlot,
+  WorkoutPrimaryMetricBySport,
 } from '@/types/database'
 import { getWeekMonday, toDateStr } from '@/lib/dateUtils'
 
@@ -97,6 +98,8 @@ type CalendarViewWithNavigationProps = {
   renderAfterCalendar?: () => React.ReactNode
   /** Installations athlète (vue coach) — bandeau horaires modale workout */
   initialAthleteFacilities?: AthleteFacility[]
+  /** Préférences coach (métrique principale C/V/N) */
+  initialCoachWorkoutPrimaryMetrics?: WorkoutPrimaryMetricBySport | null
 }
 
 /** Retourne le lundi d'une semaine donnée (offset par rapport à referenceMonday). */
@@ -140,6 +143,7 @@ export function CalendarViewWithNavigation({
   disableContentScroll = false,
   renderAfterCalendar,
   initialAthleteFacilities = [],
+  initialCoachWorkoutPrimaryMetrics = null,
 }: CalendarViewWithNavigationProps) {
   const locale = useLocale()
   const tCalendar = useTranslations('calendar')
@@ -474,6 +478,7 @@ export function CalendarViewWithNavigation({
                   onWorkoutSaved={refetchWorkoutsAfterSave}
                   onAvailabilitySaved={refetchAvailabilitiesAfterSave}
                   athleteFacilities={initialAthleteFacilities}
+                  coachWorkoutPrimaryMetrics={initialCoachWorkoutPrimaryMetrics}
                 />
               </div>
             </div>
@@ -553,6 +558,7 @@ export function CalendarViewWithNavigation({
             onWorkoutSaved={refetchWorkoutsAfterSave}
             onAvailabilitySaved={refetchAvailabilitiesAfterSave}
             athleteFacilities={initialAthleteFacilities}
+            coachWorkoutPrimaryMetrics={initialCoachWorkoutPrimaryMetrics}
           />
             </div>
           </div>

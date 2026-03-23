@@ -8,8 +8,6 @@ import { Textarea } from '@/components/Textarea'
 import { ClockIcon, LightningIcon, MountainIcon, RulerIcon } from '@/components/workout-modal/icons'
 import { FORM_BASE_CLASSES, FORM_LABEL_CLASSES, TEXTAREA_SPECIFIC_CLASSES } from '@/lib/formStyles'
 
-type TargetMode = 'time' | 'distance'
-
 type Props = {
   action: (formData: FormData) => void
   canEdit: boolean
@@ -21,21 +19,19 @@ type Props = {
   sportType: SportType
   title: string
   description: string
-  targetMode: TargetMode
   targetDurationMinutes: string
   targetDistanceKm: string
   targetElevationM: string
   targetPace: string
-  showDisabledDistance: boolean
-  showDisabledDuration: boolean
-  hasTimeDistanceChoice: boolean
+  hasCvNTargets: boolean
   hasElevation: boolean
   isTimeOnly: boolean
   workoutSportTypes: SportType[]
+  /** Ligne d’aide sous « Objectifs de séance » (métrique obligatoire selon profil coach). */
+  mandatoryMetricHint: string
   onSportChange: (sport: SportType) => void
   onTitleChange: (value: string) => void
   onDescriptionChange: (value: string) => void
-  onTargetModeChange: (mode: TargetMode) => void
   onTargetDurationChange: (value: string) => void
   onTargetDistanceChange: (value: string) => void
   onTargetElevationChange: (value: string) => void
@@ -47,7 +43,6 @@ type Props = {
 }
 
 function preventWheelNumberChange(e: React.WheelEvent<HTMLInputElement>) {
-  // Prevent mouse wheel from incrementing/decrementing number inputs while scrolling inside the modal.
   if (document.activeElement === e.currentTarget) {
     e.currentTarget.blur()
   }
@@ -71,21 +66,18 @@ export const CoachWorkoutForm = memo(function CoachWorkoutForm({
   sportType,
   title,
   description,
-  targetMode,
   targetDurationMinutes,
   targetDistanceKm,
   targetElevationM,
   targetPace,
-  showDisabledDistance,
-  showDisabledDuration,
-  hasTimeDistanceChoice,
+  hasCvNTargets,
   hasElevation,
   isTimeOnly,
   workoutSportTypes,
+  mandatoryMetricHint,
   onSportChange,
   onTitleChange,
   onDescriptionChange,
-  onTargetModeChange,
   onTargetDurationChange,
   onTargetDistanceChange,
   onTargetElevationChange,
@@ -154,36 +146,13 @@ export const CoachWorkoutForm = memo(function CoachWorkoutForm({
           </div>
 
           <div className="bg-stone-50 p-4 rounded-xl border border-stone-100">
-            <div className="flex items-center justify-between mb-3">
+            <div className="flex flex-col gap-1 mb-3">
               <div className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
                 {tWorkouts('form.sessionGoals')}
               </div>
-              {hasTimeDistanceChoice && (
-                <div className="flex bg-stone-200 p-0.5 rounded-lg">
-                  <button
-                    type="button"
-                    onClick={() => onTargetModeChange('time')}
-                    className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${
-                      targetMode === 'time'
-                        ? 'bg-palette-forest-dark text-white shadow-sm'
-                        : 'text-stone-600'
-                    }`}
-                  >
-                    {tWorkouts('form.targetMode.time')}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => onTargetModeChange('distance')}
-                    className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${
-                      targetMode === 'distance'
-                        ? 'bg-palette-forest-dark text-white shadow-sm'
-                        : 'text-stone-600'
-                    }`}
-                  >
-                    {tWorkouts('form.targetMode.distance')}
-                  </button>
-                </div>
-              )}
+              {mandatoryMetricHint ? (
+                <p className="text-[10px] text-stone-500 leading-snug">{mandatoryMetricHint}</p>
+              ) : null}
             </div>
 
             {isTimeOnly && (
@@ -212,23 +181,18 @@ export const CoachWorkoutForm = memo(function CoachWorkoutForm({
               </div>
             )}
 
-            {hasTimeDistanceChoice && (
+            {hasCvNTargets && (
               <div className="grid grid-cols-2 gap-2">
                 <div className="relative">
                   {sportType === 'natation' ? (
                     <>
+                      <input type="hidden" name="target_distance_km" value={targetDistanceKm} />
                       <input
                         type="number"
                         min={0}
                         step={1}
                         value={
-                          targetMode === 'time'
-                            ? showDisabledDistance && targetDistanceKm
-                              ? String(Math.round(Number(targetDistanceKm) * 1000))
-                              : ''
-                            : targetDistanceKm
-                              ? String(Math.round(Number(targetDistanceKm) * 1000))
-                              : ''
+                          targetDistanceKm ? String(Math.round(Number(targetDistanceKm) * 1000)) : ''
                         }
                         onChange={(e) =>
                           onTargetDistanceChange(
@@ -236,20 +200,8 @@ export const CoachWorkoutForm = memo(function CoachWorkoutForm({
                           )
                         }
                         onWheel={preventWheelNumberChange}
-                        placeholder={targetMode === 'time' ? '' : '1500'}
-                        disabled={targetMode === 'time'}
+                        placeholder="1500"
                         className={`${FORM_BASE_CLASSES} ${DISABLED_NUMBER_CLASSES} font-semibold pl-10 pr-10`}
-                      />
-                      <input
-                        type="hidden"
-                        name="target_distance_km"
-                        value={
-                          targetMode === 'distance'
-                            ? targetDistanceKm
-                            : showDisabledDistance
-                              ? targetDistanceKm
-                              : ''
-                        }
                       />
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <RulerIcon className="h-4 w-4 text-stone-400" />
@@ -265,11 +217,10 @@ export const CoachWorkoutForm = memo(function CoachWorkoutForm({
                         type="number"
                         min={0}
                         step={0.1}
-                        value={showDisabledDistance ? targetDistanceKm : targetMode === 'time' ? '' : targetDistanceKm}
+                        value={targetDistanceKm}
                         onChange={(e) => onTargetDistanceChange(e.target.value)}
                         onWheel={preventWheelNumberChange}
-                        placeholder={targetMode === 'time' ? '' : '14,3'}
-                        disabled={targetMode === 'time'}
+                        placeholder="14,3"
                         className={`${FORM_BASE_CLASSES} ${DISABLED_NUMBER_CLASSES} font-semibold pl-10 pr-10`}
                       />
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -287,11 +238,10 @@ export const CoachWorkoutForm = memo(function CoachWorkoutForm({
                     name="target_duration_minutes"
                     type="number"
                     min={1}
-                    value={showDisabledDuration ? targetDurationMinutes : targetMode === 'distance' ? '' : targetDurationMinutes}
+                    value={targetDurationMinutes}
                     onChange={(e) => onTargetDurationChange(e.target.value)}
                     onWheel={preventWheelNumberChange}
-                    placeholder={targetMode === 'distance' ? '' : '22'}
-                    disabled={targetMode === 'distance'}
+                    placeholder="22"
                     className={`${FORM_BASE_CLASSES} ${DISABLED_NUMBER_CLASSES} font-semibold pl-10 pr-12`}
                   />
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -300,29 +250,6 @@ export const CoachWorkoutForm = memo(function CoachWorkoutForm({
                   <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                     <span className="text-xs text-stone-400">{tWorkouts('form.durationUnit')}</span>
                   </div>
-                  <input
-                    type="hidden"
-                    name="target_duration_minutes"
-                    value={
-                      targetMode === 'time'
-                        ? targetDurationMinutes
-                        : showDisabledDuration
-                          ? targetDurationMinutes
-                          : ''
-                    }
-                  />
-                  <input
-                    type="hidden"
-                    name="target_distance_km"
-                    value={
-                      targetMode === 'distance'
-                        ? targetDistanceKm
-                        : showDisabledDistance
-                          ? targetDistanceKm
-                          : ''
-                    }
-                  />
-                  <input type="hidden" name="target_elevation_m" value={hasElevation ? targetElevationM : ''} />
                 </div>
 
                 {hasElevation ? (
@@ -345,7 +272,7 @@ export const CoachWorkoutForm = memo(function CoachWorkoutForm({
                     </div>
                   </div>
                 ) : (
-                  <div />
+                  <input type="hidden" name="target_elevation_m" value="" />
                 )}
 
                 <div className="relative">
@@ -408,4 +335,3 @@ export const CoachWorkoutForm = memo(function CoachWorkoutForm({
     </form>
   )
 })
-

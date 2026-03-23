@@ -11,10 +11,11 @@ import { LanguagePrefixTextarea } from '@/components/LanguagePrefixField'
 import { Modal } from '@/components/Modal'
 import { LogoutButton } from '@/components/LogoutButton'
 import { SportTileSelectable } from '@/components/SportTileSelectable'
+import { Segments } from '@/components/Segments'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { createClient } from '@/utils/supabase/client'
 import { updateProfile, checkCanDeleteAccount, deleteMyAccount, type ProfileFormState } from './actions'
-import type { Role, AthleteFacility } from '@/types/database'
+import type { Role, AthleteFacility, WorkoutPrimaryMetricBySport } from '@/types/database'
 import { compressProfileImage } from '@/utils/imageCompress'
 import { logger } from '@/lib/logger'
 import { AthleteFacilitiesSection } from './installations/AthleteFacilitiesSection'
@@ -51,6 +52,16 @@ type ProfileFormProps = {
 
   /** Installations utilisées (athlète uniquement). */
   initialFacilities?: AthleteFacility[]
+  /** Préférences coach : métrique principale course / vélo / natation. */
+  workoutPrimaryMetricBySport?: WorkoutPrimaryMetricBySport | null
+}
+
+function defaultPrimaryMetric(
+  prefs: WorkoutPrimaryMetricBySport | null | undefined,
+  key: 'course' | 'velo' | 'natation'
+): 'time' | 'distance' {
+  const v = prefs?.[key]
+  return v === 'time' || v === 'distance' ? v : 'distance'
 }
 
 export function ProfileForm({
@@ -71,11 +82,13 @@ export function ProfileForm({
   weeklyTargetHours = null,
   weeklyVolumeBySport = null,
   initialFacilities = [],
+  workoutPrimaryMetricBySport = null,
 }: ProfileFormProps) {
   const locale = useLocale()
   const effectiveInitialLocale = preferredLocaleProp === 'fr' || preferredLocaleProp === 'en' ? preferredLocaleProp : (locale === 'en' ? 'en' : 'fr')
   const tProfile = useTranslations('profile')
   const tSports = useTranslations('sports')
+  const tWorkouts = useTranslations('workouts')
   const tCommon = useTranslations('common')
   const router = useRouter()
   const coachedSportsOptions = useCoachedSportsOptions()
@@ -96,6 +109,14 @@ export function ProfileForm({
   const avatarInputRef = useRef<HTMLInputElement>(null)
   const hiddenAvatarUrlRef = useRef<HTMLInputElement>(null)
   const isCoach = role === 'coach'
+  const [unitCourse, setUnitCourse] = useState<'time' | 'distance'>(() => defaultPrimaryMetric(workoutPrimaryMetricBySport, 'course'))
+  const [unitVelo, setUnitVelo] = useState<'time' | 'distance'>(() => defaultPrimaryMetric(workoutPrimaryMetricBySport, 'velo'))
+  const [unitNatation, setUnitNatation] = useState<'time' | 'distance'>(() => defaultPrimaryMetric(workoutPrimaryMetricBySport, 'natation'))
+  useEffect(() => {
+    setUnitCourse(defaultPrimaryMetric(workoutPrimaryMetricBySport, 'course'))
+    setUnitVelo(defaultPrimaryMetric(workoutPrimaryMetricBySport, 'velo'))
+    setUnitNatation(defaultPrimaryMetric(workoutPrimaryMetricBySport, 'natation'))
+  }, [workoutPrimaryMetricBySport])
   const [presentationFrLength, setPresentationFrLength] = useState((presentationFr || '').length)
   const [presentationEnLength, setPresentationEnLength] = useState((presentationEn || '').length)
 
@@ -129,6 +150,9 @@ export function ProfileForm({
     weeklyCurrentHours: weeklyCurrentHours ?? '',
     weeklyTargetHours: weeklyTargetHours ?? '',
     weeklyVolumeBySport: JSON.stringify(weeklyVolumeBySport ?? {}),
+    workoutPrimaryMetricCourse: defaultPrimaryMetric(workoutPrimaryMetricBySport, 'course'),
+    workoutPrimaryMetricVelo: defaultPrimaryMetric(workoutPrimaryMetricBySport, 'velo'),
+    workoutPrimaryMetricNatation: defaultPrimaryMetric(workoutPrimaryMetricBySport, 'natation'),
   })
 
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
@@ -168,6 +192,9 @@ export function ProfileForm({
       const currentPresentationEn = (form.querySelector('[name="presentation_en"]') as HTMLTextAreaElement)?.value.trim() || ''
       if (currentPresentationFr !== initialValuesRef.current.presentationFr) return true
       if (currentPresentationEn !== initialValuesRef.current.presentationEn) return true
+      if (unitCourse !== initialValuesRef.current.workoutPrimaryMetricCourse) return true
+      if (unitVelo !== initialValuesRef.current.workoutPrimaryMetricVelo) return true
+      if (unitNatation !== initialValuesRef.current.workoutPrimaryMetricNatation) return true
     } else {
       const currentPracticedSports = Array.from(form.querySelectorAll<HTMLInputElement>('[name="practiced_sports"]:checked'))
         .map((cb) => cb.value)
@@ -206,7 +233,7 @@ export function ProfileForm({
     }
 
     return false
-  }, [isCoach, avatarUrlState])
+  }, [isCoach, avatarUrlState, unitCourse, unitVelo, unitNatation])
 
   // Mettre à jour l'état des modifications
   useEffect(() => {
@@ -326,6 +353,13 @@ export function ProfileForm({
           weeklyCurrentHours: currentWeeklyCurrent,
           weeklyTargetHours: currentWeeklyTarget,
           weeklyVolumeBySport: JSON.stringify(currentVolume),
+          ...(isCoach
+            ? {
+                workoutPrimaryMetricCourse: unitCourse,
+                workoutPrimaryMetricVelo: unitVelo,
+                workoutPrimaryMetricNatation: unitNatation,
+              }
+            : {}),
         }
         setHasUnsavedChanges(false)
       }
@@ -334,7 +368,7 @@ export function ProfileForm({
     if (state?.error) {
       setShowSavedFeedback(false)
     }
-  }, [saveFeedbackKey])
+  }, [saveFeedbackKey, isCoach, unitCourse, unitVelo, unitNatation])
 
   // Réinitialiser "Enregistré" dès qu'une nouvelle modification est détectée
   useEffect(() => {
@@ -632,8 +666,7 @@ export function ProfileForm({
                       defaultChecked={coachedSports.includes(opt.value)}
                     />
                   ))}
-                </div>
-              </>
+                </div>              </>
             ) : (
               <>
                 <h2 className="text-sm font-bold uppercase tracking-wider text-stone-700 mb-3">{tProfile('practicedSports')}</h2>
@@ -841,6 +874,62 @@ export function ProfileForm({
             </div>
           </div>
           )}
+          {isCoach && (
+          <div className="mb-5">
+            <h2 className="text-sm font-bold uppercase tracking-wider text-stone-700 mb-2">
+              {tProfile('workoutPrimaryMetricsSectionTitle')}
+            </h2>
+            <p className="text-xs text-stone-500 mb-3">{tProfile('workoutPrimaryMetricsIntro')}</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="rounded-xl border border-stone-200 bg-white p-3 flex items-center justify-between gap-3 border-l-4 border-l-palette-forest-dark">
+                <span className="text-sm font-semibold text-stone-800">{tSports('course')}</span>
+                <Segments
+                  name="workout_primary_metric_course"
+                  ariaLabel={tWorkouts('form.targetMode.time')}
+                  size="sm"
+                  value={unitCourse}
+                  onChange={(v) => setUnitCourse(v as 'time' | 'distance')}
+                  options={[
+                    { value: 'time', label: tWorkouts('form.targetMode.time') },
+                    { value: 'distance', label: tWorkouts('form.targetMode.distance') },
+                  ]}
+                />
+              </div>
+              <div className="rounded-xl border border-stone-200 bg-white p-3 flex items-center justify-between gap-3 border-l-4 border-l-palette-olive">
+                <span className="text-sm font-semibold text-stone-800">{tSports('velo')}</span>
+                <Segments
+                  name="workout_primary_metric_velo"
+                  ariaLabel={tWorkouts('form.targetMode.time')}
+                  size="sm"
+                  value={unitVelo}
+                  onChange={(v) => setUnitVelo(v as 'time' | 'distance')}
+                  options={[
+                    { value: 'time', label: tWorkouts('form.targetMode.time') },
+                    { value: 'distance', label: tWorkouts('form.targetMode.distance') },
+                  ]}
+                />
+              </div>
+              <div className="rounded-xl border border-stone-200 bg-white p-3 flex items-center justify-between gap-3 border-l-4 border-l-sky-500 sm:col-span-2 sm:flex-row sm:items-center sm:justify-between">
+                <span className="text-sm font-semibold text-stone-800">{tSports('natation')}</span>
+                <div className="w-full sm:max-w-xs">
+                  <Segments
+                    name="workout_primary_metric_natation"
+                    ariaLabel={tWorkouts('form.targetMode.time')}
+                    size="sm"
+                    value={unitNatation}
+                    onChange={(v) => setUnitNatation(v as 'time' | 'distance')}
+                    options={[
+                      { value: 'time', label: tWorkouts('form.targetMode.time') },
+                      { value: 'distance', label: tWorkouts('form.targetMode.distance') },
+                    ]}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          )}
+
+          
 
           {/* Danger Zone */}
           <div

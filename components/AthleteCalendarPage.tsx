@@ -3,7 +3,15 @@
 import { useTranslations } from 'next-intl'
 import { CalendarViewWithNavigation } from './CalendarViewWithNavigation'
 import { WeekSelector } from './WeekSelector'
-import type { Workout, Goal, ImportedActivity, ImportedActivityWeeklyTotal, WorkoutWeeklyTotal, AthleteAvailabilitySlot } from '@/types/database'
+import type {
+  Workout,
+  Goal,
+  ImportedActivity,
+  ImportedActivityWeeklyTotal,
+  WorkoutWeeklyTotal,
+  AthleteAvailabilitySlot,
+  WorkoutPrimaryMetricBySport,
+} from '@/types/database'
 
 type AthleteCalendarPageProps = {
   athleteId: string
@@ -16,6 +24,7 @@ type AthleteCalendarPageProps = {
   goals?: Goal[]
   canEdit: boolean
   pathToRevalidate: string
+  coachWorkoutPrimaryMetrics?: WorkoutPrimaryMetricBySport | null
 }
 
 export function AthleteCalendarPage({
@@ -29,6 +38,7 @@ export function AthleteCalendarPage({
   goals = [],
   canEdit,
   pathToRevalidate,
+  coachWorkoutPrimaryMetrics = null,
 }: AthleteCalendarPageProps) {
   const t = useTranslations('navigation')
   const tCommon = useTranslations('common')
@@ -46,6 +56,7 @@ export function AthleteCalendarPage({
         canEdit={canEdit}
         athleteView={true}
         pathToRevalidate={pathToRevalidate}
+        initialCoachWorkoutPrimaryMetrics={coachWorkoutPrimaryMetrics}
         hideBuiltInSelector={true}
         renderWeekSelector={({ dateRangeLabel, onNavigate, isAnimating, prevWeekLastDayLabel, nextWeekFirstDayLabel }) => (
           <header className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between md:h-20 px-4 md:px-6 lg:px-8 py-4 shrink-0 bg-white/80 backdrop-blur-md border-b border-stone-100 z-10">

@@ -16,6 +16,7 @@ import { getEffectiveWeeklyTotalsFait } from '@/app/[locale]/dashboard/workouts/
 import { getAvailabilityForDateRange } from '@/app/[locale]/dashboard/availability/actions'
 import { logger } from '@/lib/logger'
 import { requireCoachAthleteCalendarAccess } from '@/lib/authHelpers'
+import { parseWorkoutPrimaryMetricBySport } from '@/lib/workoutPrimaryMetric'
 
 type PageProps = { params: Promise<{ athleteId: string }> }
 
@@ -29,6 +30,13 @@ export default async function AthleteCalendarPage({ params }: PageProps) {
   }
 
   const { user, athleteProfile } = access
+
+  const coachPrefsResult = await supabase
+    .from('profiles')
+    .select('workout_primary_metric_by_sport')
+    .eq('user_id', user.id)
+    .single()
+  const coachWorkoutPrimaryMetrics = parseWorkoutPrimaryMetricBySport(coachPrefsResult.data?.workout_primary_metric_by_sport)
 
   const today = new Date()
   const currentMonday = getWeekMonday(today)
@@ -117,6 +125,7 @@ export default async function AthleteCalendarPage({ params }: PageProps) {
       goals={(goals ?? []) as Goal[]}
       canEdit={true}
       pathToRevalidate={`/dashboard/athletes/${athleteId}`}
+      coachWorkoutPrimaryMetrics={coachWorkoutPrimaryMetrics}
     />
   )
 }

@@ -52,7 +52,7 @@ export function Segments({
       {options.map((opt) => {
         const selected = value === opt.value
         return (
-          <label key={opt.value} className="flex-1 cursor-pointer flex items-center justify-center">
+          <label key={opt.value} className="relative flex-1 cursor-pointer flex items-center justify-center">
             <input
               type="radio"
               name={name}

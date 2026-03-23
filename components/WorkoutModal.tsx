@@ -17,7 +17,17 @@ import {
   type CommentFormState,
   type StatusCommentFormState,
 } from '@/app/[locale]/dashboard/workouts/actions'
-import type { AthleteFacility, SportType, Workout, WorkoutStatus, WorkoutTimeOfDay } from '@/types/database'
+import type {
+  AthleteFacility,
+  SportType,
+  Workout,
+  WorkoutStatus,
+  WorkoutTimeOfDay,
+  WorkoutPrimaryMetricBySport,
+} from '@/types/database'
+import { isCoachWorkoutPrimaryMetricsComplete } from '@/lib/workoutPrimaryMetric'
+import { saveCoachWorkoutPrimaryMetrics, type ProfileFormState } from '@/app/[locale]/dashboard/profile/actions'
+import { Segments } from '@/components/Segments'
 import { Modal } from '@/components/Modal'
 import { Button } from '@/components/Button'
 import { Input } from '@/components/Input'
@@ -56,6 +66,8 @@ type WorkoutModalProps = {
   workout?: Workout | null
   /** Installations athlète (coach) : bandeau horaires dans la modale création/édition */
   athleteFacilities?: AthleteFacility[]
+  /** Préférences unités coach (profil) — calendrier coach / athlète. */
+  coachWorkoutPrimaryMetrics?: WorkoutPrimaryMetricBySport | null
 }
 
 function SubmitButton({
@@ -133,6 +145,7 @@ export function WorkoutModal({
   athleteView = false,
   workout,
   athleteFacilities = [],
+  coachWorkoutPrimaryMetrics = null,
 }: WorkoutModalProps) {
   /** Fetch client (RLS) quand la modale coach s’ouvre — fiabilise les données si le SSR n’a rien retourné. */
   const [fetchedAthleteFacilities, setFetchedAthleteFacilities] = useState<AthleteFacility[] | null>(null)
@@ -144,7 +157,11 @@ export function WorkoutModal({
   const router = useRouter()
   // 🔧 FIX: Stocker le workout localement pour pouvoir le mettre à jour après sauvegarde du commentaire
   const [currentWorkout, setCurrentWorkout] = useState<Workout | null>(workout ?? null)
-  const workoutForm = useWorkoutFormReducer({ workout: currentWorkout, date })
+  const workoutForm = useWorkoutFormReducer({
+    workout: currentWorkout,
+    date,
+    coachPrimaryMetrics: coachWorkoutPrimaryMetrics,
+  })
   const {
     sportType,
     title,
@@ -202,6 +219,11 @@ export function WorkoutModal({
   /** Même design que la modale de modification : création ou édition modifiable (coach). */
   const coachFormNewLayout = canEdit && !athleteView && (!currentWorkout || coachCanEdit)
 
+  const showUnitsSetup =
+    coachFormNewLayout &&
+    !isEdit &&
+    !isCoachWorkoutPrimaryMetricsComplete(coachWorkoutPrimaryMetrics)
+
   /** US5 : séance en lecture seule (passée ou réalisée) — pas de formulaire ni boutons. */
   const coachReadOnly = canEdit && !athleteView && !!currentWorkout && !coachCanEdit
 
@@ -256,22 +278,35 @@ export function WorkoutModal({
   const hasElevation = sportType === 'course' || sportType === 'velo'
   const isTimeOnly = sportType === 'musculation'
 
+  const mandatoryMetricHint =
+    isTimeOnly || !hasTimeDistanceChoice
+      ? ''
+      : targetMode === 'distance'
+        ? tWorkouts('form.mandatoryMetricDistance')
+        : tWorkouts('form.mandatoryMetricTime')
+
   // Pour le champ désactivé : n'afficher une valeur que si les deux autres champs (temps ou distance + vitesse) sont remplis
   const paceFilled = (targetPace?.trim() ?? '') !== '' && Number(targetPace) > 0
   const timeFilled = (targetDurationMinutes?.trim() ?? '') !== '' && Number(targetDurationMinutes) > 0
   const distanceFilled = (targetDistanceKm?.trim() ?? '') !== '' && Number(targetDistanceKm) > 0
-  const showDisabledDistance = targetMode === 'time' && timeFilled && paceFilled
-  const showDisabledDuration = targetMode === 'distance' && distanceFilled && paceFilled
-
+  /** Formulaire athlète (toggle temps/distance) : champ désactivé affiche la valeur dérivée (temps+allure → distance, etc.). */
+  const showDisabledDistance = targetMode === 'time' && paceFilled && timeFilled
+  const showDisabledDuration = targetMode === 'distance' && paceFilled && distanceFilled
   const isValid =
     sportType &&
     title.trim() &&
     (isTimeOnly
       ? targetDurationMinutes.trim() !== '' && Number(targetDurationMinutes) > 0
-      : (targetMode === 'time'
-          ? targetDurationMinutes.trim() !== '' && Number(targetDurationMinutes) > 0
-          : targetDistanceKm.trim() !== '' && Number(targetDistanceKm) > 0) &&
-        paceFilled)
+      : !hasTimeDistanceChoice
+        ? true
+        : (() => {
+            const primaryDistance = targetMode === 'distance'
+            const primarySatisfied = primaryDistance
+              ? distanceFilled || (timeFilled && paceFilled)
+              : timeFilled || (distanceFilled && paceFilled)
+            const paceOrBoth = paceFilled || (timeFilled && distanceFilled)
+            return primarySatisfied && paceOrBoth
+          })())
 
   // Synchroniser currentWorkout avec le prop workout quand il change
   useEffect(() => {
@@ -313,6 +348,20 @@ export function WorkoutModal({
       setDeleteError(null)
     }
   }, [currentWorkout, isOpen])
+
+  const [unitsState, unitsAction, unitsPending] = useActionState(
+    saveCoachWorkoutPrimaryMetrics,
+    {} as ProfileFormState
+  )
+  const [unitCourse, setUnitCourse] = useState<'time' | 'distance'>('time')
+  const [unitVelo, setUnitVelo] = useState<'time' | 'distance'>('time')
+  const [unitNatation, setUnitNatation] = useState<'time' | 'distance'>('time')
+
+  useEffect(() => {
+    if (unitsState?.success) {
+      router.refresh()
+    }
+  }, [unitsState?.success, router])
 
   const [createState, createAction, createPending] = useActionState<WorkoutFormState, FormData>(
     (_, fd) => createWorkout(athleteId, pathToRevalidate, {}, fd),
@@ -657,7 +706,7 @@ export function WorkoutModal({
       titleId="workout-modal-title"
       contentClassName="px-0"
       footer={
-        canEdit && !coachReadOnly && (
+        canEdit && !coachReadOnly && !showUnitsSetup && (
           <div className="w-full">
             {state?.error && (
               <p className="text-sm text-palette-danger mb-3" role="alert">
@@ -853,45 +902,114 @@ export function WorkoutModal({
           </form>
         </>
       ) : coachFormNewLayout ? (
-      <CoachWorkoutForm
-        action={action}
-        canEdit={canEdit}
-        isEdit={isEdit}
-        currentWorkout={currentWorkout}
-        workoutStatus={(currentWorkout?.status ?? 'planned') as WorkoutStatus}
-        editableDate={editableDate}
-        sportType={sportType}
-        title={title}
-        description={description}
-        targetMode={targetMode}
-        targetDurationMinutes={targetDurationMinutes}
-        targetDistanceKm={targetDistanceKm}
-        targetElevationM={targetElevationM}
-        targetPace={targetPace}
-        showDisabledDistance={showDisabledDistance}
-        showDisabledDuration={showDisabledDuration}
-        hasTimeDistanceChoice={hasTimeDistanceChoice}
-        hasElevation={hasElevation}
-        isTimeOnly={isTimeOnly}
-        workoutSportTypes={WORKOUT_SPORT_TYPES}
-        onSportChange={(sport) => workoutForm.setValue('sportType', sport)}
-        onTitleChange={(value) => workoutForm.setValue('title', value)}
-        onDescriptionChange={(value) => workoutForm.setValue('description', value)}
-        onTargetModeChange={(mode) => workoutForm.setTargetMode(mode)}
-        onTargetDurationChange={(value) => workoutForm.setValue('targetDurationMinutes', value)}
-        onTargetDistanceChange={(value) => workoutForm.setValue('targetDistanceKm', value)}
-        onTargetElevationChange={(value) => workoutForm.setValue('targetElevationM', value)}
-        onTargetPaceChange={(value) => workoutForm.setValue('targetPace', value)}
-        timeOfDaySegment={timeOfDaySegment ?? ''}
-        onTimeOfDayChange={(value) =>
-          workoutForm.setValue('timeOfDaySegment', (value || null) as WorkoutTimeOfDay | null)
-        }
-        tWorkouts={tWorkouts}
-        onSubmit={() => {
-          isSubmittingRef.current = true
-          setIsSubmitting(true)
-        }}
-      />
+        showUnitsSetup ? (
+          <form
+            id="coach-units-form"
+            action={unitsAction}
+            className="flex flex-col flex-1 min-h-0 px-6 py-4 space-y-4"
+          >
+            <input type="hidden" name="locale" value={locale} />
+            <p className="text-sm text-stone-600">{tWorkouts('form.unitsSetupIntro')}</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div
+                className={`rounded-xl border border-stone-200 bg-white p-3 flex flex-col gap-2 border-l-4 border-l-palette-forest-dark`}
+              >
+                <span className="text-sm font-semibold text-stone-800">{tSports('course')}</span>
+                <Segments
+                  name="workout_primary_metric_course"
+                  ariaLabel={tWorkouts('form.targetMode.time')}
+                  size="sm"
+                  value={unitCourse}
+                  onChange={(v) => setUnitCourse(v as 'time' | 'distance')}
+                  options={[
+                    { value: 'time', label: tWorkouts('form.targetMode.time') },
+                    { value: 'distance', label: tWorkouts('form.targetMode.distance') },
+                  ]}
+                />
+              </div>
+              <div
+                className={`rounded-xl border border-stone-200 bg-white p-3 flex flex-col gap-2 border-l-4 border-l-palette-olive`}
+              >
+                <span className="text-sm font-semibold text-stone-800">{tSports('velo')}</span>
+                <Segments
+                  name="workout_primary_metric_velo"
+                  ariaLabel={tWorkouts('form.targetMode.time')}
+                  size="sm"
+                  value={unitVelo}
+                  onChange={(v) => setUnitVelo(v as 'time' | 'distance')}
+                  options={[
+                    { value: 'time', label: tWorkouts('form.targetMode.time') },
+                    { value: 'distance', label: tWorkouts('form.targetMode.distance') },
+                  ]}
+                />
+              </div>
+              <div
+                className={`rounded-xl border border-stone-200 bg-white p-3 flex flex-col gap-2 border-l-4 border-l-sky-600 sm:col-span-2 sm:flex-row sm:items-center sm:justify-between`}
+              >
+                <span className="text-sm font-semibold text-stone-800">{tSports('natation')}</span>
+                <div className="w-full sm:max-w-xs">
+                  <Segments
+                    name="workout_primary_metric_natation"
+                    ariaLabel={tWorkouts('form.targetMode.time')}
+                    size="sm"
+                    value={unitNatation}
+                    onChange={(v) => setUnitNatation(v as 'time' | 'distance')}
+                    options={[
+                      { value: 'time', label: tWorkouts('form.targetMode.time') },
+                      { value: 'distance', label: tWorkouts('form.targetMode.distance') },
+                    ]}
+                  />
+                </div>
+              </div>
+            </div>
+            <p className="text-xs text-stone-500">{tWorkouts('form.unitsSetupMuscuNote')}</p>
+            {unitsState?.error && (
+              <p className="text-sm text-palette-danger" role="alert">
+                {unitsState.error}
+              </p>
+            )}
+            <Button type="submit" variant="primaryDark" className="w-full" loading={unitsPending} loadingText={tCommon('saving')}>
+              {tWorkouts('form.saveUnits')}
+            </Button>
+          </form>
+        ) : (
+          <CoachWorkoutForm
+            action={action}
+            canEdit={canEdit}
+            isEdit={isEdit}
+            currentWorkout={currentWorkout}
+            workoutStatus={(currentWorkout?.status ?? 'planned') as WorkoutStatus}
+            editableDate={editableDate}
+            sportType={sportType}
+            title={title}
+            description={description}
+            targetDurationMinutes={targetDurationMinutes}
+            targetDistanceKm={targetDistanceKm}
+            targetElevationM={targetElevationM}
+            targetPace={targetPace}
+            hasCvNTargets={hasTimeDistanceChoice}
+            hasElevation={hasElevation}
+            isTimeOnly={isTimeOnly}
+            workoutSportTypes={WORKOUT_SPORT_TYPES}
+            mandatoryMetricHint={mandatoryMetricHint}
+            onSportChange={(sport) => workoutForm.setValue('sportType', sport)}
+            onTitleChange={(value) => workoutForm.setValue('title', value)}
+            onDescriptionChange={(value) => workoutForm.setValue('description', value)}
+            onTargetDurationChange={(value) => workoutForm.setValue('targetDurationMinutes', value)}
+            onTargetDistanceChange={(value) => workoutForm.setValue('targetDistanceKm', value)}
+            onTargetElevationChange={(value) => workoutForm.setValue('targetElevationM', value)}
+            onTargetPaceChange={(value) => workoutForm.setValue('targetPace', value)}
+            timeOfDaySegment={timeOfDaySegment ?? ''}
+            onTimeOfDayChange={(value) =>
+              workoutForm.setValue('timeOfDaySegment', (value || null) as WorkoutTimeOfDay | null)
+            }
+            tWorkouts={tWorkouts}
+            onSubmit={() => {
+              isSubmittingRef.current = true
+              setIsSubmitting(true)
+            }}
+          />
+        )
       ) : coachReadOnly && currentWorkout ? (
       /* US5 : modale coach lecture seule — titre = titre séance, sport dans l'en-tête (tuile pill) */
       <div className="flex flex-col flex-1 min-h-0 overflow-y-auto">

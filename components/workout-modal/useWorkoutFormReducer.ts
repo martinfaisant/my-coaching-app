@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useReducer, useRef } from 'react'
-import type { SportType, Workout, WorkoutTimeOfDay } from '@/types/database'
+import type { SportType, Workout, WorkoutTimeOfDay, WorkoutPrimaryMetricBySport } from '@/types/database'
+import { getWorkoutPrimaryMetricForSport } from '@/lib/workoutPrimaryMetric'
 
 type TargetMode = 'time' | 'distance'
 
@@ -19,13 +20,13 @@ type WorkoutFormValues = {
 type State = {
   values: WorkoutFormValues
   initial: WorkoutFormValues
-  /** Permet de skipper un clear auto-calc juste après init (équivalent workoutJustLoadedRef). */
   justLoaded: boolean
 }
 
 type InitPayload = {
   workout: Workout | null
   date: string
+  coachPrimaryMetrics: WorkoutPrimaryMetricBySport | null
 }
 
 type Action =
@@ -36,7 +37,16 @@ type Action =
   | { type: 'MARK_SAVED' }
   | { type: 'CLEAR_JUST_LOADED' }
 
-function normalizeFromWorkout(workout: Workout, fallbackDate: string): WorkoutFormValues {
+function modeForSport(sportType: SportType, coachPrimaryMetrics: WorkoutPrimaryMetricBySport | null): TargetMode {
+  if (sportType === 'musculation') return 'time'
+  return getWorkoutPrimaryMetricForSport(sportType, coachPrimaryMetrics) === 'distance' ? 'distance' : 'time'
+}
+
+function normalizeFromWorkout(
+  workout: Workout,
+  fallbackDate: string,
+  coachPrimaryMetrics: WorkoutPrimaryMetricBySport | null
+): WorkoutFormValues {
   const durationStr = workout.target_duration_minutes != null ? String(workout.target_duration_minutes) : ''
   const distanceStr = workout.target_distance_km != null ? String(workout.target_distance_km) : ''
   const elevationStr = workout.target_elevation_m != null ? String(workout.target_elevation_m) : ''
@@ -50,18 +60,18 @@ function normalizeFromWorkout(workout: Workout, fallbackDate: string): WorkoutFo
     targetDistanceKm: distanceStr,
     targetElevationM: elevationStr,
     targetPace: paceStr,
-    targetMode: workout.target_distance_km != null && workout.target_distance_km > 0 ? 'distance' : 'time',
+    targetMode: modeForSport(workout.sport_type, coachPrimaryMetrics),
     editableDate: workout.date ?? fallbackDate,
     timeOfDaySegment: workout.time_of_day ?? null,
   }
 }
 
-function defaultValues(date: string): WorkoutFormValues {
+function defaultValues(date: string, coachPrimaryMetrics: WorkoutPrimaryMetricBySport | null): WorkoutFormValues {
   return {
     sportType: 'course',
     title: '',
     description: '',
-    targetMode: 'time',
+    targetMode: modeForSport('course', coachPrimaryMetrics),
     targetDurationMinutes: '',
     targetDistanceKm: '',
     targetElevationM: '',
@@ -74,9 +84,10 @@ function defaultValues(date: string): WorkoutFormValues {
 function reducer(state: State, action: Action): State {
   switch (action.type) {
     case 'INIT': {
-      const values = action.payload.workout
-        ? normalizeFromWorkout(action.payload.workout, action.payload.date)
-        : defaultValues(action.payload.date)
+      const { workout, date, coachPrimaryMetrics } = action.payload
+      const values = workout
+        ? normalizeFromWorkout(workout, date, coachPrimaryMetrics)
+        : defaultValues(date, coachPrimaryMetrics)
       return { values, initial: values, justLoaded: true }
     }
     case 'SET_TARGET_MODE': {
@@ -98,8 +109,6 @@ function reducer(state: State, action: Action): State {
       const pace = paceOk ? Number(targetPace) : 0
       const isJustLoaded = state.justLoaded
 
-      // NOTE: on réplique le comportement existant : on ne remplit le champ calculé que si les 2 autres sont OK,
-      // et on évite de "clear" immédiatement après l'init.
       if (targetMode === 'distance') {
         if (targetDistanceKm && Number(targetDistanceKm) > 0 && paceOk) {
           if (sportType === 'course') {
@@ -194,35 +203,36 @@ function computeDirty(values: WorkoutFormValues, initial: WorkoutFormValues): bo
 export function useWorkoutFormReducer(args: {
   workout: Workout | null
   date: string
+  coachPrimaryMetrics: WorkoutPrimaryMetricBySport | null
 }) {
-  const { workout, date } = args
+  const { workout, date, coachPrimaryMetrics } = args
 
   const [state, dispatch] = useReducer(reducer, {
-    values: defaultValues(date),
-    initial: defaultValues(date),
+    values: defaultValues(date, coachPrimaryMetrics),
+    initial: defaultValues(date, coachPrimaryMetrics),
     justLoaded: false,
   })
 
-  const prevWorkoutIdRef = useRef<string | null>(null)
+  const prevInitKeyRef = useRef<string>('')
   useEffect(() => {
-    const nextId = workout?.id ?? null
-    if (prevWorkoutIdRef.current === nextId && state.initial.editableDate === date) return
-    prevWorkoutIdRef.current = nextId
-    dispatch({ type: 'INIT', payload: { workout, date } })
+    const key = `${workout?.id ?? 'new'}|${workout?.updated_at ?? ''}|${date}|${JSON.stringify(coachPrimaryMetrics)}`
+    if (prevInitKeyRef.current === key) return
+    prevInitKeyRef.current = key
+    dispatch({ type: 'INIT', payload: { workout, date, coachPrimaryMetrics } })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [workout?.id, date])
+  }, [workout?.id, workout?.updated_at, date, coachPrimaryMetrics])
 
   const hasTimeDistanceChoice =
     state.values.sportType === 'course' ||
     state.values.sportType === 'velo' ||
     state.values.sportType === 'natation'
 
-  // Règle actuelle : musculation => time only
   useEffect(() => {
-    if (state.values.sportType === 'musculation') {
-      dispatch({ type: 'SET_TARGET_MODE', mode: 'time' })
+    const mode = modeForSport(state.values.sportType, coachPrimaryMetrics)
+    if (mode !== state.values.targetMode) {
+      dispatch({ type: 'SET_TARGET_MODE', mode })
     }
-  }, [state.values.sportType])
+  }, [state.values.sportType, coachPrimaryMetrics, state.values.targetMode])
 
   useEffect(() => {
     dispatch({ type: 'AUTO_CALC_UPDATE', payload: { hasTimeDistanceChoice } })
@@ -247,4 +257,3 @@ export function useWorkoutFormReducer(args: {
       dispatch({ type: 'SET_VALUE', key, value }),
   }
 }
-

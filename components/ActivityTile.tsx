@@ -1,5 +1,6 @@
 import type { SportType } from '@/types/database'
 import { SPORT_ICONS, SPORT_CARD_STYLES } from '@/lib/sportStyles'
+import { getGoalColor, getGoalBadgeClass } from '@/lib/goalColor'
 
 type ActivityTileBaseProps = {
   /** Titre principal de l'activité */
@@ -32,10 +33,10 @@ type GoalTileProps = ActivityTileBaseProps & {
   type: 'goal'
   /** Distance de la course (en km) */
   distance: number
-  /** Si true, objectif principal (badge amber), sinon secondaire (badge sage) */
+  /** Si true, objectif principal (badge forest-dark), sinon secondaire (badge amber) */
   isPrimary: boolean
   /** Si true, affiche la bande grise (résultat) sans contour */
-  isResult?: boolean
+  isResult: boolean
 }
 
 export type ActivityTileProps = WorkoutTileProps | StravaActivityTileProps | GoalTileProps
@@ -156,8 +157,8 @@ export function ActivityTile(props: ActivityTileProps) {
   // Rendu objectif de course
   if (props.type === 'goal') {
     const { distance, isPrimary, isResult } = props
-    const borderColor = isResult ? 'border-l-stone-400' : (isPrimary ? 'border-l-palette-amber' : 'border-l-palette-sage')
-    const badgeColor = isPrimary ? 'text-palette-amber bg-white' : 'text-palette-sage bg-white'
+    const borderColor = getGoalColor(isPrimary, isResult)
+    const badgeColor = getGoalBadgeClass(isPrimary)
     const borderClasses = isResult ? 'border-0 border-l-4' : 'border border-l-4 border-stone-200'
 
     return (

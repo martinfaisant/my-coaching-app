@@ -12,6 +12,7 @@ import {
   formatGoalResultPlaceOrdinal,
 } from '@/lib/goalResultUtils'
 import { formatGoalDateBlock } from '@/lib/dateUtils'
+import { getGoalColor, getGoalBadgeClass } from '@/lib/goalColor'
 
 const MapIcon = ({ className = 'w-3.5 h-3.5' }: { className?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -65,12 +66,14 @@ export function RequestGoalsListModal({ isOpen, onClose, goals, title: titleOver
             const isPast = goal.date <= today
             const isPrimary = goal.is_primary
             const isResult = isPast
+            const borderColor = getGoalColor(isPrimary, isResult)
+            const badgeClass = getGoalBadgeClass(isPrimary)
             const dateBlock = formatGoalDateBlock(goal.date, localeTag)
 
             return (
               <TileCard
                 key={goal.id}
-                leftBorderColor={isResult ? 'stone' : isPrimary ? 'amber' : 'sage'}
+                leftBorderColor={isResult ? 'stone' : isPrimary ? 'forest' : 'amber'}
                 borderLeftOnly={isResult}
                 className={isPast ? 'opacity-75' : ''}
               >
@@ -84,15 +87,9 @@ export function RequestGoalsListModal({ isOpen, onClose, goals, title: titleOver
                       <h3 className={`text-base font-bold truncate ${isPast ? 'text-stone-700' : 'text-stone-900'}`}>
                         {goal.race_name}
                       </h3>
-                      {isPrimary ? (
-                        <span className="bg-white text-palette-amber text-[10px] font-bold px-2 py-0.5 rounded-full border border-palette-amber shrink-0">
-                          {tGoals('priority.primary')}
-                        </span>
-                      ) : (
-                        <span className="bg-white text-palette-sage text-[10px] font-bold px-2 py-0.5 rounded-full border border-palette-sage shrink-0">
-                          {tGoals('priority.secondary')}
-                        </span>
-                      )}
+                      <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border shrink-0 ${badgeClass}`}>
+                        {isPrimary ? tGoals('priority.primary') : tGoals('priority.secondary')}
+                      </span>
                     </div>
                     <div className="flex items-center gap-1 text-sm text-stone-500 font-medium flex-wrap">
                       <MapIcon className="w-3.5 h-3.5 text-stone-400 shrink-0" />

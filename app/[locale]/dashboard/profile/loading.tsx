@@ -2,7 +2,6 @@ import { DashboardPageShell } from '@/components/DashboardPageShell'
 
 export default function ProfileLoading() {
   return (
-    <div className="-mx-3 sm:mx-0">
       <DashboardPageShell contentClassName="!px-2 sm:!px-6 lg:!px-8">
         <div className="animate-pulse">
           <div className="rounded-2xl border border-stone-200 bg-section overflow-hidden">
@@ -37,6 +36,5 @@ export default function ProfileLoading() {
           </div>
         </div>
       </DashboardPageShell>
-    </div>
   )
 }
