@@ -76,6 +76,7 @@ export type ActivityTileProps = WorkoutTileProps | StravaActivityTileProps | Goa
  * <ActivityTile
  *   type="goal"
  *   isPrimary={true}
+ *   isResult={false}
  *   title="Marathon de Paris"
  *   distance={42.2}
  *   date="Dim. 7 avr."
