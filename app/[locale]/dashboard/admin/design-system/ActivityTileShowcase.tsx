@@ -131,6 +131,7 @@ export function ActivityTileShowcase() {
           <ActivityTile
             type="goal"
             isPrimary={true}
+            isResult={false}
             title="Marathon de Paris"
             distance={42.2}
             date="Dim. 7 avr."
@@ -143,6 +144,7 @@ export function ActivityTileShowcase() {
           <ActivityTile
             type="goal"
             isPrimary={false}
+            isResult={false}
             title="Semi-marathon de Lyon"
             distance={21.1}
             date="Sam. 23 mar."
@@ -155,6 +157,7 @@ export function ActivityTileShowcase() {
           <ActivityTile
             type="goal"
             isPrimary={true}
+            isResult={false}
             title="Ironman Nice"
             distance={180}
             date="Dim. 23 juin"
@@ -178,6 +181,7 @@ export function ActivityTileShowcase() {
           <ActivityTile
             type="goal"
             isPrimary={true}
+            isResult={false}
             title="Marathon de Paris"
             distance={42.2}
             date="Dim. 7 avr."
@@ -233,6 +237,7 @@ export function ActivityTileShowcase() {
           <ActivityTile
             type="goal"
             isPrimary={false}
+            isResult={false}
             title="10 km de Genève"
             distance={10}
             onClick={() => handleClick('minimal-3')}

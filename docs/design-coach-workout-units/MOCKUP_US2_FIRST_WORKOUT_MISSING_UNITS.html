@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>US2 — Première séance — Unités non renseignées</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { colors: {
+        'palette-forest-dark': '#627e59',
+        'palette-olive': '#8e9856',
+        'palette-sage': '#aaaa51',
+        'stone': { 50: '#fafaf9', 100: '#f5f5f4', 200: '#e7e5e4', 300: '#d6d3d1', 400: '#a8a29e', 500: '#78716c', 600: '#57534e', 700: '#44403c', 900: '#1c1917' }
+      }}}
+    }
+  </script>
+</head>
+<body class="bg-stone-800/90 min-h-screen p-4 flex items-start justify-center pt-8">
+  <div class="w-full max-w-lg">
+    <p class="text-xs text-stone-400 mb-3 max-w-lg">
+      <strong>US2</strong> — Première ouverture « Créer une séance » : unités non définies en profil. Blocage jusqu’à validation ; même grille 2 colonnes que US1. Non fonctionnel.
+    </p>
+
+    <div class="bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div class="px-5 py-4 border-b border-stone-200 flex justify-between items-center">
+        <span class="text-sm font-bold text-stone-900">Créer un entraînement</span>
+        <button type="button" class="text-stone-400 text-sm" aria-label="Fermer">✕</button>
+      </div>
+
+      <div class="overflow-y-auto p-5 space-y-4">
+        <div class="rounded-lg bg-amber-50 border border-amber-200 px-3 py-2 text-xs text-amber-900">
+          Définissez les unités obligatoires pour vos sports avant de poursuivre. Ces réglages seront enregistrés sur votre profil.
+        </div>
+
+        <h2 class="text-sm font-bold text-stone-900 uppercase tracking-wide">Unités des séances</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="rounded-xl border-l-4 border border-stone-200 bg-white p-3 flex flex-col gap-3 border-l-palette-forest-dark">
+            <div class="flex items-center gap-2">
+              <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-palette-forest-dark/10 text-palette-forest-dark text-xs font-bold">C</span>
+              <span class="text-sm font-semibold text-stone-800">Course</span>
+            </div>
+            <div class="flex bg-stone-100 rounded-lg border border-stone-200 p-1 gap-1">
+              <button type="button" class="flex-1 py-2 rounded-md text-xs font-medium bg-palette-forest-dark text-white">Temps</button>
+              <button type="button" class="flex-1 py-2 rounded-md text-xs font-medium bg-white border border-stone-200 text-stone-600">Distance</button>
+            </div>
+          </div>
+          <div class="rounded-xl border-l-4 border border-stone-200 bg-white p-3 flex flex-col gap-3 border-l-palette-olive">
+            <div class="flex items-center gap-2">
+              <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-palette-olive/20 text-palette-olive text-xs font-bold">V</span>
+              <span class="text-sm font-semibold text-stone-800">Vélo</span>
+            </div>
+            <div class="flex bg-stone-100 rounded-lg border border-stone-200 p-1 gap-1">
+              <button type="button" class="flex-1 py-2 rounded-md text-xs font-medium bg-white border border-stone-200 text-stone-600">Temps</button>
+              <button type="button" class="flex-1 py-2 rounded-md text-xs font-medium bg-palette-forest-dark text-white">Distance</button>
+            </div>
+          </div>
+          <div class="rounded-xl border-l-4 border border-stone-200 bg-white p-3 flex flex-col gap-3 border-l-sky-600 sm:col-span-2 sm:flex-row sm:items-center sm:justify-between">
+            <div class="flex items-center gap-2">
+              <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-sky-100 text-sky-700 text-xs font-bold">N</span>
+              <span class="text-sm font-semibold text-stone-800">Natation</span>
+            </div>
+            <div class="flex bg-stone-100 rounded-lg border border-stone-200 p-1 gap-1 w-full sm:w-64">
+              <button type="button" class="flex-1 py-2 rounded-md text-xs font-medium bg-white border border-stone-200 text-stone-600">Temps</button>
+              <button type="button" class="flex-1 py-2 rounded-md text-xs font-medium bg-palette-forest-dark text-white">Distance</button>
+            </div>
+          </div>
+        </div>
+        <p class="text-xs text-stone-500">Musculation : durée uniquement (rappel).</p>
+      </div>
+
+      <div class="border-t border-stone-200 p-4 flex gap-3">
+        <button type="button" class="flex-1 py-3 rounded-xl border border-stone-200 text-stone-700 text-sm font-semibold">Annuler</button>
+        <button type="button" class="flex-1 py-3 rounded-xl bg-palette-forest-dark text-white text-sm font-semibold">Enregistrer les unités</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -3,6 +3,12 @@ export type Role = 'athlete' | 'coach' | 'admin'
 /** Valeurs possibles pour "sports coachés" (Ma pratique) */
 export type CoachSport = 'course_route' | 'trail' | 'triathlon' | 'velo'
 
+/** Métrique obligatoire pour un sport d'entraînement (hors musculation = toujours temps). */
+export type WorkoutPrimaryMetric = 'time' | 'distance'
+
+/** Préférences coach : unité obligatoire par sport (sous-ensemble des sports séance). */
+export type WorkoutPrimaryMetricBySport = Partial<Record<'course' | 'velo' | 'natation', WorkoutPrimaryMetric>>
+
 export type Profile = {
   user_id: string
   email: string
@@ -31,6 +37,11 @@ export type Profile = {
   weekly_target_hours?: number | null
   /** Volume actuel par sport et par semaine : clés = sport (course, velo, …), valeurs = nombre (km, m ou h). */
   weekly_volume_by_sport?: Record<string, number> | null
+  /**
+   * Coach uniquement : métrique obligatoire pour la saisie des séances (course, vélo, natation).
+   * Clés : course | velo | natation ; valeurs : time | distance.
+   */
+  workout_primary_metric_by_sport?: WorkoutPrimaryMetricBySport | null
 }
 
 export type SportType = 'course' | 'musculation' | 'natation' | 'velo' | 'nordic_ski' | 'backcountry_ski' | 'ice_skating'

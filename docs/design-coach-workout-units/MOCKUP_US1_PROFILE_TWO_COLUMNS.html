@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>US1 — Profil coach — Unités obligatoires (grille 2 colonnes)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { colors: {
+        'palette-forest-dark': '#627e59',
+        'palette-olive': '#8e9856',
+        'palette-sage': '#aaaa51',
+        'stone': { 50: '#fafaf9', 100: '#f5f5f4', 200: '#e7e5e4', 300: '#d6d3d1', 400: '#a8a29e', 500: '#78716c', 600: '#57534e', 700: '#44403c', 900: '#1c1917' }
+      }}}
+    }
+  </script>
+</head>
+<body class="bg-stone-100 min-h-screen p-4 md:p-8">
+  <div class="max-w-3xl mx-auto">
+    <p class="text-xs text-stone-500 mb-4 max-w-2xl">
+      <strong>US1</strong> — Référence : section profil coach, sous « Sports coachés ». Grille <code class="bg-stone-200 px-1 rounded">grid-cols-2 gap-3</code>, même gabarit que les tuiles volumes athlète (<code class="bg-stone-200 px-1 rounded">rounded-xl border-l-4</code>). Non fonctionnel.
+    </p>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-stone-200 p-6 md:p-8">
+      <p class="text-xs font-semibold uppercase tracking-wider text-stone-700 mb-2">Mes informations</p>
+      <p class="text-sm text-stone-500 mb-6">Sous-titre coach…</p>
+
+      <h2 class="text-sm font-bold text-stone-900 uppercase tracking-wide mb-3">Sports coachés</h2>
+      <div class="flex flex-wrap gap-3 mb-8">
+        <span class="px-3 py-2 rounded-xl border-2 border-palette-forest-dark bg-palette-forest-dark/10 text-palette-forest-dark text-sm font-semibold">Course</span>
+        <span class="px-3 py-2 rounded-xl border-2 border-stone-200 text-stone-600 text-sm">Vélo</span>
+      </div>
+
+      <hr class="border-stone-100 my-5" />
+
+      <h2 class="text-sm font-bold text-stone-900 uppercase tracking-wide mb-1">Unités des séances planifiées</h2>
+      <p class="text-sm text-stone-500 mb-4">Définit la valeur obligatoire pour chaque sport. S’applique à toutes vos séances. Vous pouvez toujours saisir allure et temps ou distance ; l’unité choisie reste celle à renseigner en priorité.</p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <!-- Course -->
+        <div class="rounded-xl border-l-4 border border-stone-200 bg-white p-3 flex flex-col sm:flex-row sm:flex-wrap sm:items-center sm:justify-between gap-3 border-l-palette-forest-dark">
+          <div class="flex items-center gap-2 min-w-0">
+            <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-palette-forest-dark/10 text-palette-forest-dark text-xs font-bold">C</span>
+            <span class="text-sm font-semibold text-stone-800">Course</span>
+          </div>
+          <div class="flex bg-stone-100 rounded-lg border border-stone-200 p-1 gap-1 w-full sm:w-auto sm:min-w-[200px]">
+            <button type="button" class="flex-1 py-2 rounded-md text-xs font-medium bg-white border border-stone-200 text-stone-600">Temps</button>
+            <button type="button" class="flex-1 py-2 rounded-md text-xs font-medium bg-palette-forest-dark text-white shadow-sm border border-palette-forest-dark">Distance</button>
+          </div>
+        </div>
+        <!-- Vélo -->
+        <div class="rounded-xl border-l-4 border border-stone-200 bg-white p-3 flex flex-col sm:flex-row sm:flex-wrap sm:items-center sm:justify-between gap-3 border-l-palette-olive">
+          <div class="flex items-center gap-2 min-w-0">
+            <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-palette-olive/20 text-palette-olive text-xs font-bold">V</span>
+            <span class="text-sm font-semibold text-stone-800">Vélo</span>
+          </div>
+          <div class="flex bg-stone-100 rounded-lg border border-stone-200 p-1 gap-1 w-full sm:w-auto sm:min-w-[200px]">
+            <button type="button" class="flex-1 py-2 rounded-md text-xs font-medium bg-palette-forest-dark text-white shadow-sm border border-palette-forest-dark">Temps</button>
+            <button type="button" class="flex-1 py-2 rounded-md text-xs font-medium bg-white border border-stone-200 text-stone-600">Distance</button>
+          </div>
+        </div>
+        <!-- Natation -->
+        <div class="rounded-xl border-l-4 border border-stone-200 bg-white p-3 flex flex-col sm:flex-row sm:flex-wrap sm:items-center sm:justify-between gap-3 border-l-sky-600">
+          <div class="flex items-center gap-2 min-w-0">
+            <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-sky-100 text-sky-700 text-xs font-bold">N</span>
+            <span class="text-sm font-semibold text-stone-800">Natation</span>
+          </div>
+          <div class="flex bg-stone-100 rounded-lg border border-stone-200 p-1 gap-1 w-full sm:w-auto sm:min-w-[200px]">
+            <button type="button" class="flex-1 py-2 rounded-md text-xs font-medium bg-white border border-stone-200 text-stone-600">Temps</button>
+            <button type="button" class="flex-1 py-2 rounded-md text-xs font-medium bg-palette-forest-dark text-white shadow-sm border border-palette-forest-dark">Distance</button>
+          </div>
+        </div>
+        <!-- Musculation — info seule -->
+        <div class="rounded-xl border-l-4 border border-stone-200 bg-stone-50 p-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-l-stone-400">
+          <div class="flex items-center gap-2 min-w-0">
+            <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-stone-200 text-stone-600 text-xs font-bold">M</span>
+            <span class="text-sm font-semibold text-stone-800">Musculation</span>
+          </div>
+          <p class="text-xs text-stone-500 sm:text-right">Toujours en <strong class="text-stone-700">durée</strong> (non modifiable)</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

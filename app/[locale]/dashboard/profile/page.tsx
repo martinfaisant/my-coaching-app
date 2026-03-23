@@ -5,6 +5,7 @@ import { DashboardPageShell } from '@/components/DashboardPageShell'
 import { ProfileForm } from './ProfileForm'
 import { createClient } from '@/utils/supabase/server'
 import type { AthleteFacility } from '@/types/database'
+import { parseWorkoutPrimaryMetricBySport } from '@/lib/workoutPrimaryMetric'
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params
@@ -36,7 +37,6 @@ export default async function ProfilePage({ params }: { params: Promise<{ locale
   }
 
   return (
-    <div className="-mx-3 sm:mx-0">
       <DashboardPageShell contentClassName="!px-2 sm:!px-6 lg:!px-8">
       {isCoach ? (
         <ProfileForm
@@ -53,6 +53,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ locale
           presentationFr={current.profile.presentation_fr ?? ''}
           presentationEn={current.profile.presentation_en ?? ''}
           postalCode={current.profile.postal_code ?? ''}
+          workoutPrimaryMetricBySport={parseWorkoutPrimaryMetricBySport(current.profile.workout_primary_metric_by_sport)}
         />
       ) : (
         <ProfileForm
@@ -74,6 +75,5 @@ export default async function ProfilePage({ params }: { params: Promise<{ locale
         />
       )}
       </DashboardPageShell>
-    </div>
   )
 }

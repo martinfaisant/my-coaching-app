@@ -8,6 +8,7 @@ import type { Workout, Goal, ImportedActivity, ImportedActivityWeeklyTotal, Work
 import { getWeekMonday } from '@/lib/dateUtils'
 import { getEffectiveWeeklyTotalsFait } from '@/app/[locale]/dashboard/workouts/actions'
 import { getAvailabilityForDateRange } from '@/app/[locale]/dashboard/availability/actions'
+import { parseWorkoutPrimaryMetricBySport } from '@/lib/workoutPrimaryMetric'
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params
@@ -80,6 +81,16 @@ export default async function CalendarPage() {
   const initialWorkoutTotals = workoutTotalsResult.data ?? []
   const initialWeeklyTotals = effectiveFaitResult.weeklyTotals ?? []
 
+  let coachWorkoutPrimaryMetrics = null
+  if (current.profile.coach_id) {
+    const { data: coachProfile } = await supabase
+      .from('profiles')
+      .select('workout_primary_metric_by_sport')
+      .eq('user_id', current.profile.coach_id)
+      .single()
+    coachWorkoutPrimaryMetrics = parseWorkoutPrimaryMetricBySport(coachProfile?.workout_primary_metric_by_sport)
+  }
+
   return (
     <AthleteCalendarPage
       athleteId={current.id}
@@ -92,6 +103,7 @@ export default async function CalendarPage() {
       goals={(goals ?? []) as Goal[]}
       canEdit={false}
       pathToRevalidate="/dashboard/calendar"
+      coachWorkoutPrimaryMetrics={coachWorkoutPrimaryMetrics}
     />
   )
 }

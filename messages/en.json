@@ -380,7 +380,12 @@
       "timeOfDayUnspecified": "Unspecified",
       "timeOfDayMorning": "Morning",
       "timeOfDayNoon": "Noon",
-      "timeOfDayEvening": "Evening"
+      "timeOfDayEvening": "Evening",
+      "mandatoryMetricDistance": "Primary metric: distance — enter distance (or compute it from duration and pace).",
+      "mandatoryMetricTime": "Primary metric: time — enter duration (or compute it from distance and pace).",
+      "unitsSetupIntro": "Choose the primary unit for your running, cycling and swimming sessions. It applies to all your sessions and the weekly summary.",
+      "unitsSetupMuscuNote": "Strength sessions remain duration-based (minutes).",
+      "saveUnits": "Save units"
     },
     "calendar": {
       "morning": "Morning",
@@ -432,7 +437,11 @@
       "unauthorized": "Unauthorized.",
       "commentSaveFailed": "Unable to save the comment.",
       "notFound": "Workout not found.",
-      "deleteSuccess": "Workout deleted successfully."
+      "deleteSuccess": "Workout deleted successfully.",
+      "targetRequired": "Set a goal (time or distance depending on the sport).",
+      "paceRequired": "Pace (or speed) is required for this sport.",
+      "primaryMetricRequired": "Complete the primary metric (time or distance) or the fields needed to compute it.",
+      "workoutUnitsNotConfigured": "Configure session units in your coach profile before creating a workout."
     }
   },
   "goals": {
@@ -586,6 +595,8 @@
     "suffixKmPerWeek": "km/week",
     "suffixMPerWeek": "m/week",
     "suffixDPlusPerWeek": "D+/week",
+    "workoutPrimaryMetricsSectionTitle": "Session units (running, cycling, swimming)",
+    "workoutPrimaryMetricsIntro": "Choose whether you plan mainly by time or distance for each sport. Used for your sessions and the weekly summary.",
     "validation": {
       "saved": "Information saved.",
       "weeklyTargetInvalid": "Time to allocate must be a positive number (max 168 h).",
@@ -594,7 +605,8 @@
       "weeklyVolumeInvalid": "Volume must be a positive number.",
       "cannotDelete": "Deletion not possible. You must first terminate your contract with your athletes.",
       "deletionFailed": "Deletion impossible.",
-      "deletionError": "Error during deletion."
+      "deletionError": "Error during deletion.",
+      "workoutPrimaryMetricInvalid": "Invalid selection for session units (running, cycling, swimming)."
     }
   },
   "coach": {

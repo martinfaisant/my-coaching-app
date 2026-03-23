@@ -13,6 +13,7 @@ import { DatePickerPopup } from '@/components/DatePickerPopup'
 import { formatDateFr } from '@/lib/dateUtils'
 import { FORM_INPUT_HEIGHT, FORM_INPUT_TEXT_SIZE } from '@/lib/formStyles'
 import { saveGoalFull, type GoalFormState } from './actions'
+import { getGoalColor, getGoalBadgeClass } from '@/lib/goalColor'
 
 type GoalFullModalProps = {
   goal: Goal
@@ -50,7 +51,8 @@ export function GoalFullModal({
   const localeForPicker = locale === 'fr' ? 'fr-FR' : 'en-US'
   const today = new Date().toISOString().slice(0, 10)
   const canShowResultSection = goal.date <= today
-
+  const borderColor = getGoalColor(goal.is_primary, canShowResultSection)
+  const badgeClass = getGoalBadgeClass(goal.is_primary)
   useEffect(() => {
     if (!isOpen) return
     setDate(goal.date)
@@ -226,7 +228,7 @@ export function GoalFullModal({
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-stone-500 uppercase mb-2 ml-1">
+              <label className="block text-sm font-bold text-stone-500 uppercase mb-2 ml-1">
                 {tGoals('priority.label')}
               </label>
               <div className="grid grid-cols-2 gap-2">
@@ -239,10 +241,8 @@ export function GoalFullModal({
                     className="hidden peer"
                   />
                   <div
-                    className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg border text-[10px] font-bold transition-all ${
-                      goal.is_primary
-                        ? 'bg-white text-palette-amber border-palette-amber'
-                        : 'bg-white text-stone-400 border-stone-200 hover:border-stone-300'
+                    className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg border text-[20px] font-bold transition-all ${
+                      badgeClass
                     }`}
                   >
                     {tGoals('priority.primary')}
@@ -258,9 +258,7 @@ export function GoalFullModal({
                   />
                   <div
                     className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg border text-[10px] font-bold transition-all ${
-                      !goal.is_primary
-                        ? 'bg-white text-palette-sage border-palette-sage'
-                        : 'bg-white text-stone-400 border-stone-200 hover:border-stone-300'
+                      badgeClass
                     }`}
                   >
                     {tGoals('priority.secondary')}

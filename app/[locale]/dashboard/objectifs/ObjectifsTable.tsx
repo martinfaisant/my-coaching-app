@@ -14,6 +14,7 @@ import { getDaysUntil, formatDateFr, toDateStr, formatGoalDateBlock } from '@/li
 import { FORM_INPUT_HEIGHT, FORM_INPUT_TEXT_SIZE } from '@/lib/formStyles'
 import { hasGoalResult, formatGoalResultTime, formatGoalResultPlaceOrdinal, hasTargetTime, formatTargetTime } from '@/lib/goalResultUtils'
 import { GoalFullModal } from './GoalFullModal'
+import { getGoalColor, getGoalBadgeClass } from '@/lib/goalColor'
 
 
 type ObjectifsTableProps = {
@@ -239,6 +240,8 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
     goalsBySeason.get(year)!.push(goal)
   })
   
+  
+  
   // Trier les saisons de la plus loin dans le futur à la plus ancienne
   const seasons = Array.from(goalsBySeason.keys()).sort((a, b) => b - a)
 
@@ -268,11 +271,13 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
                   const isResult = goal.date <= today
                   const isPastOrToday = goal.date <= today
                   const hasResult = hasGoalResult(goal)
+                  const borderColor = getGoalColor(isPrimary, isResult)
+                  const badgeClass = getGoalBadgeClass(isPrimary)
 
                   return (
                     <TileCard
                       key={goal.id}
-                      leftBorderColor={isResult ? 'stone' : isPrimary ? 'amber' : 'sage'}
+                      leftBorderColor={borderColor}
                       borderLeftOnly={isResult}
                     >
                       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -288,15 +293,9 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
                               <h3 className="text-sm font-bold truncate text-stone-900">
                                 {goal.race_name}
                               </h3>
-                              {isPrimary ? (
-                                <span className="bg-white text-palette-amber text-[10px] font-semibold px-2 py-0.5 rounded-full border border-palette-amber shrink-0">
-                                  {tGoals('priority.primary')}
-                                </span>
-                              ) : (
-                                <span className="bg-white text-palette-sage text-[10px] font-semibold px-2 py-0.5 rounded-full border border-palette-sage shrink-0">
-                                  {tGoals('priority.secondary')}
-                                </span>
-                              )}
+                              <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border shrink-0 ${badgeClass}`}>
+                                {isPrimary ? tGoals('priority.primary') : tGoals('priority.secondary')}
+                              </span>
                             </div>
                             <div className="flex items-center gap-1 text-sm text-stone-500 font-medium flex-wrap">
                               <MapIcon className="w-3.5 h-3.5 text-stone-400 shrink-0" />
@@ -380,6 +379,7 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
       </div>
 
       {/* COLONNE DROITE : FORMULAIRE D'AJOUT (1/3) */}
+      
       <div className="xl:col-span-1">
         <form
           ref={formRef}
@@ -451,6 +451,7 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
             </div>
 
             {/* Type (Sélecteur Visuel) */}
+            
             <div>
               <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2 ml-1">{tGoals('priority.label')}</label>
               <div className="grid grid-cols-2 gap-2">
@@ -469,9 +470,9 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
                     }}
                     className="hidden peer"
                   />
-                  <div className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg border text-[10px] font-bold transition-all ${
+                  <div className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg border text-[14px] font-bold transition-all ${
                     priority === 'primary' 
-                      ? 'bg-white text-palette-amber border-palette-amber' 
+                      ? 'bg-white text-palette-forest-dark border-palette-forest-dark' 
                       : 'bg-white text-stone-400 border-stone-200 hover:border-stone-300'
                   }`}>
                     <span>{tGoals('priority.primary')}</span>
@@ -492,9 +493,9 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
                     }}
                     className="hidden peer"
                   />
-                  <div className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg border text-[10px] font-bold transition-all ${
+                  <div className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg border text-[14px] font-bold transition-all ${
                     priority === 'secondary' 
-                      ? 'bg-white text-palette-sage border-palette-sage' 
+                      ? 'bg-white text-palette-amber border-palette-amber' 
                       : 'bg-white text-stone-400 border-stone-200 hover:border-stone-300'
                   }`}>
                     <span>{tGoals('priority.secondary')}</span>
