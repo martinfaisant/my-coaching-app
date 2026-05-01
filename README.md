@@ -45,6 +45,10 @@ SUPABASE_SERVICE_ROLE_KEY=votre_cle_service_role
 STRAVA_CLIENT_ID=votre_client_id
 STRAVA_CLIENT_SECRET=votre_client_secret
 NEXT_PUBLIC_APP_URL=http://localhost:3000  # en production : https://mysportally.com
+
+# Cron Vercel : clôture des souscriptions à échéance (route /api/cron/process-expired-subscriptions)
+# Générer une valeur aléatoire ; même valeur dans Vercel (CRON_SECRET) pour les invocations planifiées.
+CRON_SECRET=votre_secret_aleatoire
 ```
 
 ### Lancer en développement
