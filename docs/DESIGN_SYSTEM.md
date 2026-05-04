@@ -1,7 +1,7 @@
 # 🎨 Design System
 
-**Version :** 1.24  
-**Dernière mise à jour :** 21 mars 2026 (`CoachReviewsModal` : liste des avis sur « Trouver mon coach »)
+**Version :** 1.26  
+**Dernière mise à jour :** 4 mai 2026 (`MonthSelector` ; §7 calendrier : mois civil étendu desktop, WeekSelector mobile)
 
 ---
 
@@ -40,6 +40,7 @@
    - [Dropdown](#dropdown)
    - [Segments](#segments)
    - [DatePickerPopup](#datepickerpopup)
+   - [MonthSelector](#monthselector)
    - [ChatAthleteListItem](#chatathletelistitem)
    - [ChatConversationSidebar](#chatconversationsidebar)
 4. [Icônes](#icônes)
@@ -1541,7 +1542,46 @@ import { DatePickerPopup } from '@/components/DatePickerPopup'
 
 - **Intégration dans WorkoutModal** : au clic sur le champ date (coach, séance modifiable), le calendrier s’ouvre en **popover** positionné sous le champ (pas une deuxième modale). Overlay transparent en z-[105], contenu en z-[110] ; fermeture par clic extérieur ou touche Escape.
 - **Dans une modale (ex. Ajouter objectif)** : ne pas utiliser d’overlay pleine page (pour garder le scroll de la modale). Rendre le popup en `createPortal` avec positionnement **dynamique** (clamp dans le viewport, flip au-dessus du champ si pas de place en dessous) ; fermeture au clic extérieur, Escape, scroll ou resize. Référence : `RequestGoalAddModal`, `ObjectifsTable`.
-- **Dropdown Mois** : 12 mois (libellés selon `locale`), filtrés par `minDate`/`maxDate`. Value = `"01"`..`"12"`. **Dropdown Année** : années courante − 4 à + 4 (9 ans), filtrées par min/max ; si la vue est hors plage (flèches), l'année affichée est ajoutée aux options. **Flèches** : style réduit (`p-1.5`, icône `w-4 h-4`). i18n : `chooseMonth`, `chooseYear`, `prevMonth`, `nextMonth`, `today`.l’
+- **Dropdown Mois** : 12 mois (libellés selon `locale`), filtrés par `minDate`/`maxDate`. Value = `"01"`..`"12"`. **Dropdown Année** : années courante − 4 à + 4 (9 ans), filtrées par min/max ; si la vue est hors plage (flèches), l'année affichée est ajoutée aux options. **Flèches** : style réduit (`p-1.5`, icône `w-4 h-4`). i18n : `chooseMonth`, `chooseYear`, `prevMonth`, `nextMonth`, `today`.
+
+---
+
+### MonthSelector
+
+**Fichier :** `components/MonthSelector.tsx`
+
+Barre compacte **mois précédent | libellé mois + année | mois suivant** pour le calendrier **desktop** (`md` et plus), à la place du sélecteur de semaine. Libellé via `Intl.DateTimeFormat` (mois long + année, première lettre en majuscule). Boutons `Button` variant `ghost`, `aria-label` passés en props (i18n côté parent : `calendar.prevMonth` / `calendar.nextMonth`). Désactivés pendant `isAnimating`. Style : fond `bg-stone-50`, bordure `border-stone-200`, chevrons `text-stone-500` / hover `text-palette-forest-dark`. Intégration : `CalendarViewWithNavigation` + `AthleteCalendarPage` / `CoachAthleteCalendarPage` (avec `WeekSelector` inchangé sur mobile).
+
+#### Props
+
+```typescript
+type MonthSelectorProps = {
+  year: number
+  monthIndex: number
+  onPrevMonth: () => void
+  onNextMonth: () => void
+  isAnimating: boolean
+  prevMonthAriaLabel: string
+  nextMonthAriaLabel: string
+}
+```
+
+#### Exemple
+
+```tsx
+import { MonthSelector } from '@/components/MonthSelector'
+
+<MonthSelector
+  year={calendarMonth.year}
+  monthIndex={calendarMonth.month}
+  onPrevMonth={() => onNavigateMonth(-1)}
+  onNextMonth={() => onNavigateMonth(1)}
+  isAnimating={isAnimating}
+  prevMonthAriaLabel={t('prevMonth')}
+  nextMonthAriaLabel={t('nextMonth')}
+/>
+```
+
 ---
 
 ### ChatAthleteListItem
@@ -1701,8 +1741,8 @@ Ce breakpoint `md` est le breakpoint de référence pour les bascules de layout 
 **Usages actuels documentés :**
 - **Top bar dashboard** : barre en haut (`DashboardTopBar`) — logo My Sport Ally à gauche, liens de navigation au centre (tablette/desktop, centrés), bloc Profil (avatar + nom) à droite. **Mobile :** titre de la page au centre, bouton hamburger à droite ; clic ouvre un **Drawer** à droite avec liste des liens, bloc Profil et Déconnexion. **Admin** : nav = Gestion des membres + Design System uniquement (pas « Mes athlètes »). Fichiers : `components/DashboardTopBar.tsx`, `components/DashboardNavLinks.tsx`, `components/Drawer.tsx`, `lib/dashboardNavConfig.ts`. **Pages dashboard** : `DashboardPageShell` fournit uniquement le padding de contenu — pas de titre en tête de page ni conteneur carte. Fichier : `components/DashboardPageShell.tsx`.
 - **Page « Mon profil »** (`/dashboard/profile`) : sur **mobile**, marges latérales réduites (wrapper `-mx-3` + `contentClassName` `!px-2 sm:!px-6 lg:!px-8` sur le shell) ; section Volumes hebdomadaires : grille **responsive** `grid-cols-1 sm:grid-cols-2` (1 colonne en dessous de `sm`, 2 colonnes à partir de `sm`) ; champs temps à allouer et volumes par sport : largeur `w-[6.5rem]`, padding droit réduit (pr-10 / pr-11 / pr-12) pour le suffixe. **Section Facilities Used :** cards en 2 blocs (adresse 1/3, horaires 2/3), table horaires compacte avec badge open/closed aligné ; modal add/edit en `size="2xl"` avec cartes jour bordées et fallback mobile (ligne 1 : jour + badge, ligne 2 : créneaux pleine largeur) pour éviter le débordement. Fichiers : `app/[locale]/dashboard/profile/page.tsx`, `ProfileForm.tsx`, `installations/*`.
-- **Calendrier (athlète + coach)** : sous `md`, en-tête sur 2 lignes + bloc totaux de la semaine (volume horaire total + barres par sport, identique au mode étendu desktop) + 1 semaine en stack ; à partir de `md`, layout desktop (3 semaines, grille 7 colonnes). **Structure du jour :** **disponibilités athlète** (tuiles Disponible/Indisponible) → objectifs → entraînements → Strava ; puis sections **Matin** / **Midi** / **Soir** pour les entraînements avec moment ; couleurs et icônes des tuiles entraînement = sport uniquement. **Tuiles disponibilité :** bordure fine (vert / orange), icône calendrier, libellé Disponible/Indisponible en `text-xs font-semibold` (sans `uppercase`) + plage horaire précédée d'une icône horloge (`ClockIcon`), ou note ; pas de récurrence. **Modales :** `AvailabilityModal` (création/édition : Segments type, date en en-tête, Début/Fin en Dropdown 15 min, Note ; athlète : bouton « + » sur jours futurs, clic tuile → édition avec Supprimer + Enregistrer) ; `AvailabilityDetailModal` (lecture seule coach : détail créneau, bouton Fermer). **Natation :** totaux et métadonnées en **mètres (m)** ; icône commentaire sur tuiles entraînement (`calendar.tile.athleteCommentLabel`). Détail : `Project_context.md` §4.5.
-- **Sélecteur de semaine (WeekSelector, calendrier)** : zone centrale à largeur fixe (80px sous `lg`, 150px à partir de `lg`) ; plage de dates sur une ligne à partir de `lg` (1024px), sur deux lignes sous `lg`. Boutons gauche/droite : largeur fixe 40px sous 400px, 80px à partir de 400px ; les dates « semaine précédente/suivante » dans les boutons sont affichées à partir de 400px et masquées en dessous pour que le sélecteur tienne sur les écrans étroits. Fichier : `components/WeekSelector.tsx`.
+- **Calendrier (athlète + coach)** : sous `md`, en-tête sur 2 lignes + **WeekSelector** + bloc totaux de la semaine (volume horaire total + barres par sport) + **1 semaine** en stack (inchangé ; archives `calendar-mobile-44`, `calendar-mobile-weekly-total`). À partir de `md`, **mois civil étendu** en **semaines ISO** (lundi–dimanche), jours hors mois en atténuation ; navigation **MonthSelector** ; une carte totaux par semaine ISO visible ; chargement = `getExtendedCalendarMonthGridBounds` + `fetchCalendarDataBundle`. Fichiers : `CalendarView.tsx`, `CalendarViewWithNavigation.tsx`, `MonthSelector.tsx`, `lib/dateUtils.ts`, `lib/calendarViewDayHeights.ts`. Récap produit : `docs/CALENDAR_MONTH_VIEW.md`. **Structure du jour :** **disponibilités athlète** (tuiles Disponible/Indisponible) → objectifs → entraînements → Strava ; puis sections **Matin** / **Midi** / **Soir** pour les entraînements avec moment ; couleurs et icônes des tuiles entraînement = sport uniquement. **Tuiles disponibilité :** bordure fine (vert / orange), icône calendrier, libellé Disponible/Indisponible en `text-xs font-semibold` (sans `uppercase`) + plage horaire précédée d'une icône horloge (`ClockIcon`), ou note ; pas de récurrence. **Modales :** `AvailabilityModal` (création/édition : Segments type, date en en-tête, Début/Fin en Dropdown 15 min, Note ; athlète : bouton « + » sur jours futurs, clic tuile → édition avec Supprimer + Enregistrer) ; `AvailabilityDetailModal` (lecture seule coach : détail créneau, bouton Fermer). **Natation :** totaux et métadonnées en **mètres (m)** ; icône commentaire sur tuiles entraînement (`calendar.tile.athleteCommentLabel`). Détail : `Project_context.md` §4.5.
+- **Sélecteur de semaine (WeekSelector, calendrier sous `md`)** : utilisé sous le breakpoint `md` sur les pages calendrier. Zone centrale à largeur fixe (80px sous `lg`, 150px à partir de `lg`) ; plage de dates sur une ligne à partir de `lg` (1024px), sur deux lignes sous `lg`. Boutons gauche/droite : largeur fixe 40px sous 400px, 80px à partir de 400px ; les dates « semaine précédente/suivante » dans les boutons sont affichées à partir de 400px et masquées en dessous pour que le sélecteur tienne sur les écrans étroits. Fichier : `components/WeekSelector.tsx`. À partir de `md`, le calendrier utilise **MonthSelector** (voir section MonthSelector).
 - **Chat coach (overlay)** : sous `md`, navigation mobile en 2 écrans (liste des conversations puis conversation avec bouton Retour) ; à partir de `md`, layout desktop avec sidebar + panneau conversation.
 - **Page « Trouver mon coach »** (`/dashboard/find-coach`, athlète sans coach) : page dédiée avec son propre skeleton (filtres + grille). Bloc Filtres avec recherche par nom ou prénom (temps réel), grille Sport coaché / Langue parlée en 2 colonnes à partir de `md` (768px) ; liste des tuiles : 1 colonne par défaut, 2 colonnes à partir de `md`, 3 colonnes à partir de `xl` (1280px). Fichiers : `app/[locale]/dashboard/find-coach/page.tsx`, `FindCoachSection.tsx`.
 - **Page « My offers »** (offres du coach) : 1 colonne en tout temps (toutes largeurs). Fichier : `app/[locale]/dashboard/profile/offers/OffersForm.tsx`.
@@ -1783,7 +1823,7 @@ Actuellement, utiliser un span custom :
 
 - **Tokens couleurs** : `tailwind.config.ts`, `app/globals.css`
 - **Styles formulaires** : `lib/formStyles.ts` (FORM_BASE_CLASSES, FORM_INPUT_TEXT_SIZE, FORM_INPUT_HEIGHT, etc.)
-- **Composants** : `components/Button.tsx`, `components/Input.tsx`, `components/PasswordInput.tsx`, `components/SearchInput.tsx`, `components/Textarea.tsx`, `components/Badge.tsx`, `components/Avatar.tsx`, `components/AvatarImage.tsx`, `components/SportTileSelectable.tsx`, `components/ActivityTile.tsx`, `components/Modal.tsx`, `components/CoachReviewsModal.tsx`, `components/workout-modal/WorkoutFacilityHoursStrip.tsx`, `components/AthleteFacilityDetails.tsx`, `components/CoachAthleteNotesSection.tsx`, `components/CoachAthleteNoteModal.tsx`, `components/DashboardPageShell.tsx`, `components/DashboardTopBar.tsx`, `components/Drawer.tsx`, `components/PublicHeader.tsx`, `components/EmailValidatedModal.tsx`, `components/HomeEmailConfirmedTrigger.tsx`, `components/Dropdown.tsx`, `components/Segments.tsx`, `components/DatePickerPopup.tsx`, `components/AvailabilityModal.tsx`, `components/AvailabilityDetailModal.tsx`, `components/ChatAthleteListItem.tsx`, `components/ChatConversationSidebar.tsx`
+- **Composants** : `components/Button.tsx`, `components/Input.tsx`, `components/PasswordInput.tsx`, `components/SearchInput.tsx`, `components/Textarea.tsx`, `components/Badge.tsx`, `components/Avatar.tsx`, `components/AvatarImage.tsx`, `components/SportTileSelectable.tsx`, `components/ActivityTile.tsx`, `components/Modal.tsx`, `components/CoachReviewsModal.tsx`, `components/workout-modal/WorkoutFacilityHoursStrip.tsx`, `components/AthleteFacilityDetails.tsx`, `components/CoachAthleteNotesSection.tsx`, `components/CoachAthleteNoteModal.tsx`, `components/DashboardPageShell.tsx`, `components/DashboardTopBar.tsx`, `components/Drawer.tsx`, `components/PublicHeader.tsx`, `components/EmailValidatedModal.tsx`, `components/HomeEmailConfirmedTrigger.tsx`, `components/Dropdown.tsx`, `components/Segments.tsx`, `components/DatePickerPopup.tsx`, `components/MonthSelector.tsx`, `components/CalendarView.tsx`, `components/CalendarViewWithNavigation.tsx`, `lib/calendarViewDayHeights.ts`, `components/AvailabilityModal.tsx`, `components/AvailabilityDetailModal.tsx`, `components/ChatAthleteListItem.tsx`, `components/ChatConversationSidebar.tsx`
 - **Page Mes athlètes (coach)** : `app/[locale]/dashboard/athletes/page.tsx` (bandeaux profil / offre publiée, erreur chargement liste), `CoachAthletesListWithFilter.tsx`, `PendingRequestTile.tsx`
 - **Sports** : `lib/sportStyles.ts`, `lib/sportsOptions.ts`, `components/SportIcons.tsx`
 - **Horaires modale workout (coach)** : `lib/workoutFacilityHours.ts` (filtre sport ↔ type d’installation, jour, tri alphabétique)

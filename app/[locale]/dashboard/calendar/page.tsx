@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
 import { AthleteCalendarPage } from '@/components/AthleteCalendarPage'
 import type { Workout, Goal, ImportedActivity, ImportedActivityWeeklyTotal, WorkoutWeeklyTotal, AthleteAvailabilitySlot } from '@/types/database'
-import { getWeekMonday } from '@/lib/dateUtils'
+import { getExtendedCalendarMonthGridBounds } from '@/lib/dateUtils'
 import { getEffectiveWeeklyTotalsFait } from '@/app/[locale]/dashboard/workouts/actions'
 import { getAvailabilityForDateRange } from '@/app/[locale]/dashboard/availability/actions'
 import { parseWorkoutPrimaryMetricBySport } from '@/lib/workoutPrimaryMetric'
@@ -27,21 +27,10 @@ export default async function CalendarPage() {
 
   const supabase = await createClient()
   const today = new Date()
-  const currentMonday = getWeekMonday(today)
-  // Charger 5 semaines : S-2, S-1, S, S+1, S+2
-  const startMonday = new Date(currentMonday)
-  startMonday.setDate(startMonday.getDate() - 14) // S-2
-  const endSunday = new Date(currentMonday)
-  endSunday.setDate(endSunday.getDate() + 14 + 6) // S+2
-  const startStr = startMonday.toISOString().slice(0, 10)
-  const endStr = endSunday.toISOString().slice(0, 10)
-  // Calculer les lundis des 5 semaines pour les totaux
-  const weekMondays: string[] = []
-  for (let offset = -2; offset <= 2; offset++) {
-    const weekMonday = new Date(currentMonday)
-    weekMonday.setDate(weekMonday.getDate() + offset * 7)
-    weekMondays.push(weekMonday.toISOString().slice(0, 10))
-  }
+  const { rangeStart: startStr, rangeEnd: endStr, weekStartDates: weekMondays } = getExtendedCalendarMonthGridBounds(
+    today.getFullYear(),
+    today.getMonth()
+  )
 
   const [workoutsResult, importedActivitiesResult, goalsResult, workoutTotalsResult, effectiveFaitResult, initialAvailabilities] = await Promise.all([
     supabase

@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 21 mars 2026 (**liste d’avis coach** sur Trouver mon coach — `CoachReviewsModal`, RPC **`get_coach_public_reviews`**, migration **063** ; correction **Échap** modale sur modale ; voir Changements récents)
+**Dernière mise à jour :** 4 mai 2026 (**vue mois calendrier** desktop — `docs/CALENDAR_MONTH_VIEW.md`, `Project_context.md` §4.5, `DESIGN_SYSTEM.md` §7 ; maquettes archivées `docs/archive/design-calendar-month-view/` ; voir Changements récents)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -18,19 +18,25 @@
 - **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), stack technique, **URL production https://mysportally.com**
 - **Utiliser pour :** Comprendre le projet, les features, les rôles, l'architecture globale
 - **Taille :** ~450 lignes
-- **Dernière mise à jour :** 21 mars 2026 (§4.3 Trouver mon coach : liste d’avis, RPC **063** ; §4.2.2 calendrier coach : Installations + Notes ; §5 `coach_ratings`)
+- **Dernière mise à jour :** 4 mai 2026 (§4.5 **Calendrier** : vue mois civil étendu desktop `md`+, WeekSelector mobile ; **MonthSelector** ; chargement `getExtendedCalendarMonthGridBounds` / `fetchCalendarDataBundle` ; objectifs non filtrés par plage ; précédent : §4.3 avis coach **063**, §4.2.2 Installations + Notes, §5 `coach_ratings`)
+
+### **docs/CALENDAR_MONTH_VIEW.md**
+- **Contenu :** Récap **vue mois** (desktop) vs **vue semaine** (mobile), règles semaines ISO / mois civil étendu, chargement données, liste des fichiers et tests unitaires, liens vers maquettes archivées
+- **Utiliser pour :** Cadrage produit/dev post-livraison sur le calendrier sans relire tout le code
+- **Taille :** ~90 lignes
+- **Dernière mise à jour :** 4 mai 2026
 
 ### **docs/DESIGN_SYSTEM.md** ⭐
-- **Contenu :** Tokens (couleurs, typo, espacements), composants (Button, Input, Badge, TileCard, DashboardPageShell, Modal, etc.), guidelines UI, exemples de code, §7 breakpoints (calendrier, chat, Trouver mon coach, My offers)
+- **Contenu :** Tokens (couleurs, typo, espacements), composants (Button, Input, Badge, TileCard, DashboardPageShell, Modal, **MonthSelector**, etc.), guidelines UI, exemples de code, §7 breakpoints (**calendrier** mois étendu desktop + WeekSelector mobile, chat, Trouver mon coach, My offers)
 - **Utiliser pour :** Créer ou modifier des composants UI, choisir des couleurs, appliquer le design system, règles responsive par page
-- **Taille :** ~850 lignes
-- **Dernière mise à jour :** 21 mars 2026 (`CoachReviewsModal` ; §7 Trouver mon coach ; précédent : `CoachAthleteNotesSection`, `WorkoutFacilityHoursStrip`…)
+- **Taille :** ~1850 lignes
+- **Dernière mise à jour :** 4 mai 2026 (§7 **Calendrier** : mois civil étendu, `MonthSelector` / `WeekSelector` ; Fichiers clés : `CalendarView`, `calendarViewDayHeights` ; précédent : `CoachReviewsModal`, `CoachAthleteNotesSection`…)
 
 ### **docs/I18N.md** ⭐
 - **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces, utilisation dans composants et server actions, **checklist pour nouvelles features** (toujours penser bilingue)
 - **Utiliser pour :** Toute nouvelle feature ou texte visible, ajout de clés de traduction, dépannage i18n
-- **Taille :** ~180 lignes
-- **Dernière mise à jour :** 21 mars 2026 (`findCoach.reviewsModal` ; précédent : `athletes`, `goals.validation`…)
+- **Taille :** ~190 lignes
+- **Dernière mise à jour :** 4 mai 2026 (`calendar.prevMonth` / `calendar.nextMonth` — MonthSelector ; précédent : `findCoach.reviewsModal`, `athletes`…)
 
 ### **docs/AUTH_EMAIL_TEMPLATES.md**
 - **Contenu :** Guide de configuration des emails d’auth Supabase (sujet, i18n FR/EN, variables, dépannage logo). **Les fichiers HTML des templates** (Confirm signup, puis Magic Link, Reset Password, etc.) sont dans **docs/email-templates/**.
@@ -214,6 +220,10 @@
 **Sélecteur de semaine calendrier (archivés 27 février 2026) :**
 - `docs/archive/design-week-selector-two-lines/` — DESIGN_WEEK_SELECTOR_TWO_LINES.md (contexte, 2 solutions), solution-1-two-lines-compact.html, solution-2-two-lines-hierarchy.html (mockups HTML).
 - **Raison :** Feature livrée ; sélecteur de semaine responsive (deux lignes sous md, une ligne à partir de md), largeurs fixes, dates dans les boutons à partir de 400px. Comportement décrit dans **Project_context.md §4.5** (Week selector) et **docs/DESIGN_SYSTEM.md** §7 (Sélecteur de semaine).
+
+**Vue mois calendrier desktop — maquettes designer (dossier archivé 4 mai 2026) :**
+- `docs/archive/design-calendar-month-view/` — `MOCKUP_US1_MONTH_SELECTOR.html`, `MOCKUP_US2_DESKTOP_MONTH_WEEKS.html`, `MOCKUP_US3_MOBILE_SCOPE.html` (périmètre mobile inchangé).
+- **Raison :** maquettes de référence pour la bascule **semaine → mois** sur `md`+ ; comportement livré décrit dans **`docs/CALENDAR_MONTH_VIEW.md`**, **Project_context.md §4.5**, **docs/DESIGN_SYSTEM.md** §7 et composant **MonthSelector**.
 
 **Statut de réalisation des séances (workout status) (archivés 27 février 2026) :**
 - `docs/archive/design-workout-status/` — DESIGN_WORKOUT_STATUS.md, USER_STORIES_WORKOUT_STATUS.md, SPEC_WORKOUT_STATUS.md, workout-status-mockup.html.

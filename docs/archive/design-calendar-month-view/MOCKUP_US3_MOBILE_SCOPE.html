@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>US3 — Mobile : périmètre inchangé (référence)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>body { font-family: ui-sans-serif, system-ui, sans-serif; }</style>
+</head>
+<body class="bg-stone-100 min-h-screen p-6 text-stone-800 max-w-xl mx-auto">
+  <h1 class="text-lg font-bold text-stone-900">Mobile — aucun changement de sélecteur ni de parcours</h1>
+  <p class="text-sm text-stone-600 mt-3">Décision PO (amendement) : pour la vue <strong>&lt; md</strong>, on <strong>ne modifie pas</strong> le sélecteur actuel ni le comportement global du calendrier mobile. Pas de <code>MonthSelector</code> en en-tête sur mobile ; pas de seconde rangée « semaine dans le mois » ; pas de swipe supplémentaire imposé par cette feature.</p>
+  <p class="text-sm text-stone-600 mt-3">Référence d’implémentation actuelle à conserver telle quelle :</p>
+  <ul class="list-disc pl-6 text-sm text-stone-700 mt-2 space-y-1">
+    <li><code>components/AthleteCalendarPage.tsx</code> — <code>WeekSelector</code> dans l’en-tête</li>
+    <li><code>components/CoachAthleteCalendarPage.tsx</code> — idem</li>
+    <li><code>components/WeekSelector.tsx</code></li>
+    <li><code>components/CalendarView.tsx</code> — branche <code>isMobileView</code> (breakpoint 767px)</li>
+    <li><code>components/CalendarViewWithNavigation.tsx</code> — navigation par semaine pour la vue mobile existante</li>
+  </ul>
+  <p class="text-sm text-stone-600 mt-4 border-t border-stone-200 pt-4">Le fichier précédent <code>MOCKUP_US3_MOBILE_WEEK_SWIPE.html</code> est <strong>obsolète</strong> (proposition non retenue pour le mobile).</p>
+  <p class="text-xs text-stone-500 mt-6">Mockup fonctionnel : l’application en viewport &lt; md sur les pages calendrier athlète et coach.</p>
+</body>
+</html>
