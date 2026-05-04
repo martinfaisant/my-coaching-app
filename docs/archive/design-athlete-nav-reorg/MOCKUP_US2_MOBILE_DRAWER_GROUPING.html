@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>US2 — Nav athlète mobile : drawer regroupé</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        colors: {
+          'palette-forest-dark': '#627e59',
+          'palette-olive': '#8e9856',
+          'palette-danger': '#c0564b',
+          'palette-danger-light': '#fdf2f1',
+        }
+      }}
+    }
+  </script>
+</head>
+<body class="bg-stone-100 text-stone-800 antialiased min-h-screen">
+  <div class="max-w-lg mx-auto py-8 px-4 space-y-8">
+    <header class="space-y-2">
+      <h1 class="text-xl font-bold text-stone-900">US2 — Drawer mobile (&lt; md)</h1>
+      <p class="text-sm text-stone-600">Mockup non fonctionnel. Même <strong>regroupement logique</strong> que le menu desktop : liens principaux en premier, puis bloc secondaire avec séparateurs, puis compte + déconnexion.</p>
+    </header>
+
+    <!-- Simule la barre mobile -->
+    <div class="rounded-xl border border-stone-200 bg-white shadow-sm overflow-hidden">
+      <div class="h-14 flex items-center px-4 border-b border-stone-200">
+        <span class="h-7 w-12 rounded bg-palette-forest-dark text-white text-[10px] flex items-center justify-center shrink-0">LOGO</span>
+        <span class="flex-1 text-center text-sm font-semibold text-stone-800 truncate px-2">Titre page courante</span>
+        <button type="button" class="p-2.5 rounded-xl text-stone-500 bg-stone-50" aria-label="Ouvrir le menu">☰</button>
+      </div>
+    </div>
+
+    <!-- Drawer ouvert — avec coach -->
+    <section class="space-y-2">
+      <h2 class="text-lg font-bold">État A — Drawer ouvert · avec coach</h2>
+      <p class="text-xs text-stone-500 mb-2">Structure cible (ordre vertical).</p>
+      <div class="rounded-xl border-2 border-palette-forest-dark/30 bg-white shadow-xl max-w-sm ml-auto min-h-[420px] flex flex-col">
+        <div class="flex justify-end p-4 border-b border-stone-200 bg-stone-50">
+          <button type="button" class="p-2 rounded-xl text-stone-500" aria-label="Fermer">✕</button>
+        </div>
+        <div class="flex-1 overflow-y-auto p-2 space-y-1">
+          <a href="#" class="flex items-center gap-3 px-3 py-3 rounded-xl font-medium bg-palette-forest-dark text-white">Mon calendrier</a>
+          <a href="#" class="flex items-center gap-3 px-3 py-3 rounded-xl font-medium text-stone-600 hover:bg-stone-50">Mes objectifs</a>
+          <hr class="border-stone-200 my-2" />
+          <a href="#" class="flex items-center gap-3 px-3 py-3 rounded-xl font-medium text-stone-600 hover:bg-stone-50">Mes appareils connectés</a>
+          <a href="#" class="flex items-center gap-3 px-3 py-3 rounded-xl font-medium text-stone-600 hover:bg-stone-50">Mon coach</a>
+          <a href="#" class="flex items-center gap-3 px-3 py-3 rounded-xl font-medium text-stone-600 hover:bg-stone-50">Mon historique de souscription</a>
+          <hr class="border-stone-200 my-2" />
+          <a href="#" class="flex items-center gap-3 px-3 py-3 rounded-xl border border-stone-100 bg-stone-50 font-medium text-stone-800">Mes informations</a>
+        </div>
+        <div class="border-t border-stone-200 p-2">
+          <button type="button" class="w-full text-left px-3 py-3 rounded-xl font-medium text-palette-danger hover:bg-palette-danger-light">Se déconnecter</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Drawer — sans coach -->
+    <section class="space-y-2">
+      <h2 class="text-lg font-bold">État B — Drawer ouvert · sans coach</h2>
+      <p class="text-xs text-stone-500 mb-2">« Trouver mon coach » dans la première section ; pas de « Mon coach » après le séparateur.</p>
+      <div class="rounded-xl border border-stone-200 bg-white shadow-xl max-w-sm ml-auto min-h-[400px] flex flex-col">
+        <div class="flex justify-end p-3 border-b bg-stone-50"><span class="text-stone-400 text-sm">Fermer</span></div>
+        <div class="p-2 space-y-1 flex-1">
+          <a href="#" class="flex px-3 py-3 rounded-xl font-medium bg-palette-forest-dark text-white">Trouver mon coach</a>
+          <a href="#" class="flex px-3 py-3 rounded-xl font-medium text-stone-600 hover:bg-stone-50">Mon calendrier</a>
+          <a href="#" class="flex px-3 py-3 rounded-xl font-medium text-stone-600 hover:bg-stone-50">Mes objectifs</a>
+          <hr class="border-stone-200 my-2" />
+          <a href="#" class="flex px-3 py-3 rounded-xl font-medium text-stone-600 hover:bg-stone-50">Mes appareils connectés</a>
+          <a href="#" class="flex px-3 py-3 rounded-xl font-medium text-stone-600 hover:bg-stone-50">Mon historique de souscription</a>
+          <hr class="border-stone-200 my-2" />
+          <a href="#" class="flex px-3 py-3 rounded-xl border border-stone-100 bg-stone-50 font-medium">Mes informations</a>
+        </div>
+        <div class="border-t p-2">
+          <button type="button" class="w-full text-left px-3 py-3 rounded-xl text-palette-danger hover:bg-palette-danger-light font-medium">Se déconnecter</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="rounded-xl bg-stone-50 border border-stone-200 p-4 text-sm space-y-2">
+      <h3 class="font-bold text-stone-900">Transitions</h3>
+      <ul class="list-disc pl-5 text-stone-600">
+        <li>Clic lien ou déconnexion → fermeture du drawer (comportement actuel à conserver).</li>
+        <li>Pas de titre de section dans le drawer : uniquement les <strong>séparateurs</strong> entre blocs (aligné desktop).</li>
+      </ul>
+    </section>
+  </div>
+</body>
+</html>

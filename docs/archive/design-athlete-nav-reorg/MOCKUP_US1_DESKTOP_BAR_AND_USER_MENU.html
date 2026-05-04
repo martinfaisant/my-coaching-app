@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>US1 — Nav athlète desktop : barre + menu compte</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        colors: {
+          'palette-forest-dark': '#627e59',
+          'palette-forest-darker': '#506648',
+          'palette-olive': '#8e9856',
+          'palette-danger': '#c0564b',
+          'palette-danger-light': '#fdf2f1',
+        }
+      }}
+    }
+  </script>
+</head>
+<body class="bg-stone-100 text-stone-800 antialiased min-h-screen">
+  <div class="max-w-6xl mx-auto py-8 px-4 space-y-12">
+    <header class="space-y-2">
+      <h1 class="text-2xl font-bold text-stone-900">US1 — Barre desktop (md+) athlète</h1>
+      <p class="text-sm text-stone-600">Mockup non fonctionnel. Référence visuelle pour <code>DashboardTopBar</code> : liens principaux <strong>centrés</strong> (comme aujourd’hui), trigger <strong>avatar + nom</strong> à droite, panneau menu avec <strong>séparateurs</strong> (bloc coaching / appareils → compte + déconnexion).</p>
+      <p class="text-xs text-stone-500"><strong>i18n (probable) :</strong> <code>navigation.*</code> existantes + nouvelle clé pour le libellé « Mes informations » (à confirmer en implémentation, ex. <code>myInformation</code>).</p>
+    </header>
+
+    <!-- ========== État A : avec coach, menu fermé ========== -->
+    <section class="space-y-3">
+      <h2 class="text-lg font-bold text-stone-900">État A — Athlète avec coach · menu fermé · onglet Calendrier actif</h2>
+      <p class="text-sm text-stone-600"><strong>Avant :</strong> barre complète. <strong>Action utilisateur :</strong> aucune. <strong>Après :</strong> inchangé.</p>
+      <div class="rounded-2xl border border-stone-200 bg-white shadow-sm overflow-hidden">
+        <div class="h-14 flex items-center gap-3 md:gap-4 px-4 md:px-5 lg:px-6 bg-white border-b border-stone-200">
+          <a href="#" class="flex items-center gap-2 shrink-0 min-w-0">
+            <span class="h-7 w-14 rounded bg-palette-forest-dark text-white text-xs font-bold flex items-center justify-center">LOGO</span>
+            <span class="text-base font-bold text-stone-800 hidden sm:inline truncate">My Sport Ally</span>
+          </a>
+          <nav class="hidden md:flex flex-1 items-center justify-center gap-1 min-w-0 overflow-x-auto py-1">
+            <a href="#" class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium whitespace-nowrap bg-palette-forest-dark text-white shadow-lg shadow-palette-forest-dark/20">Mon calendrier</a>
+            <a href="#" class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium whitespace-nowrap text-stone-600 hover:bg-stone-50 hover:text-palette-forest-dark">Mes objectifs</a>
+          </nav>
+          <button type="button" class="hidden md:flex items-center gap-2 px-2 md:px-3 py-1.5 rounded-xl border shrink-0 border-stone-100 bg-stone-50 hover:bg-white text-stone-800">
+            <span class="w-8 h-8 rounded-full bg-palette-olive flex items-center justify-center text-white text-xs font-bold">JD</span>
+            <span class="text-xs md:text-sm font-bold truncate max-w-[120px]">Jean Dupont</span>
+            <svg class="w-4 h-4 text-stone-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+          </button>
+        </div>
+        <div class="p-6 text-sm text-stone-500">Zone page (ex. calendrier).</div>
+      </div>
+    </section>
+
+    <!-- ========== État B : avec coach, menu ouvert ========== -->
+    <section class="space-y-3">
+      <h2 class="text-lg font-bold text-stone-900">État B — Athlète avec coach · menu ouvert</h2>
+      <p class="text-sm text-stone-600"><strong>Avant :</strong> menu fermé. <strong>Action :</strong> clic sur avatar + nom. <strong>Après :</strong> panneau visible sous le trigger, aligné au bord droit du trigger ; clic extérieur ou Escape ferme (comportement cible).</p>
+      <div class="rounded-2xl border border-stone-200 bg-white shadow-sm overflow-hidden">
+        <div class="h-14 flex items-center gap-3 md:gap-4 px-4 md:px-5 lg:px-6 bg-white border-b border-stone-200 relative">
+          <a href="#" class="flex items-center gap-2 shrink-0"><span class="h-7 w-14 rounded bg-palette-forest-dark text-white text-xs font-bold flex items-center justify-center">LOGO</span><span class="text-base font-bold hidden sm:inline">My Sport Ally</span></a>
+          <nav class="hidden md:flex flex-1 items-center justify-center gap-1 min-w-0">
+            <a href="#" class="px-3 py-2 rounded-xl text-sm font-medium text-stone-600 hover:bg-stone-50">Mon calendrier</a>
+            <a href="#" class="px-3 py-2 rounded-xl text-sm font-medium bg-palette-forest-dark text-white">Mes objectifs</a>
+          </nav>
+          <div class="hidden md:block relative shrink-0 ml-auto">
+            <button type="button" class="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-palette-forest-dark bg-palette-forest-dark text-white">
+              <span class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-xs font-bold">JD</span>
+              <span class="text-sm font-bold truncate max-w-[120px]">Jean Dupont</span>
+              <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" /></svg>
+            </button>
+            <!-- Panneau menu -->
+            <div class="absolute right-0 top-full mt-1 w-64 rounded-xl border border-stone-200 bg-white shadow-lg z-50 py-1 overflow-hidden">
+              <div class="py-1">
+                <a href="#" class="flex items-center gap-3 px-3 py-3 text-sm font-medium text-stone-700 hover:bg-stone-50">Mes appareils connectés</a>
+                <a href="#" class="flex items-center gap-3 px-3 py-3 text-sm font-medium text-stone-700 hover:bg-stone-50">Mon coach</a>
+                <a href="#" class="flex items-center gap-3 px-3 py-3 text-sm font-medium text-stone-700 hover:bg-stone-50">Mon historique de souscription</a>
+              </div>
+              <hr class="border-stone-200" />
+              <div class="py-1">
+                <a href="#" class="flex items-center gap-3 px-3 py-3 text-sm font-medium text-stone-700 hover:bg-stone-50">Mes informations</a>
+                <button type="button" class="flex w-full items-center gap-3 px-3 py-3 text-sm font-medium text-palette-danger hover:bg-palette-danger-light text-left rounded-none">Se déconnecter</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="p-6 text-sm text-stone-500">La ligne active du menu (devices / coach / history / profil) peut reprendre le style « actif » vert si la route courante correspond (recommandation UX).</div>
+      </div>
+    </section>
+
+    <!-- ========== État C : sans coach, barre principale avec Trouver mon coach ========== -->
+    <section class="space-y-3">
+      <h2 class="text-lg font-bold text-stone-900">État C — Athlète sans coach · barre principale</h2>
+      <p class="text-sm text-stone-600">« Trouver mon coach » dans la <strong>barre principale centrée</strong>, avant Mon calendrier. Dans le menu compte : <strong>pas de ligne « Mon coach »</strong> (masquée).</p>
+      <div class="rounded-2xl border border-stone-200 bg-white shadow-sm overflow-hidden">
+        <div class="h-14 flex items-center gap-3 px-4 bg-white border-b border-stone-200">
+          <span class="h-7 w-14 rounded bg-palette-forest-dark text-white text-xs flex items-center justify-center shrink-0">LOGO</span>
+          <nav class="hidden md:flex flex-1 items-center justify-center gap-1 min-w-0">
+            <a href="#" class="px-3 py-2 rounded-xl text-sm font-medium bg-palette-forest-dark text-white whitespace-nowrap">Trouver mon coach</a>
+            <a href="#" class="px-3 py-2 rounded-xl text-sm font-medium text-stone-600 hover:bg-stone-50 whitespace-nowrap">Mon calendrier</a>
+            <a href="#" class="px-3 py-2 rounded-xl text-sm font-medium text-stone-600 hover:bg-stone-50 whitespace-nowrap">Mes objectifs</a>
+          </nav>
+          <button type="button" class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl border border-stone-100 bg-stone-50 shrink-0">
+            <span class="w-8 h-8 rounded-full bg-palette-olive text-white text-xs flex items-center justify-center">M</span>
+            <span class="text-sm font-bold truncate max-w-[100px]">marie@…</span>
+            <svg class="w-4 h-4 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+          </button>
+        </div>
+        <div class="p-4 border-t border-stone-100 text-sm text-stone-600 space-y-2">
+          <p><strong>Menu ouvert (sans coach) :</strong> bloc 1 = Appareils + Historique uniquement ; séparateur ; Mes informations + Déconnexion.</p>
+          <div class="inline-block w-64 rounded-xl border border-stone-200 bg-white shadow py-1">
+            <a href="#" class="block px-3 py-3 text-sm font-medium hover:bg-stone-50">Mes appareils connectés</a>
+            <a href="#" class="block px-3 py-3 text-sm font-medium hover:bg-stone-50">Mon historique de souscription</a>
+            <hr class="border-stone-200" />
+            <a href="#" class="block px-3 py-3 text-sm font-medium hover:bg-stone-50">Mes informations</a>
+            <button type="button" class="block w-full text-left px-3 py-3 text-sm font-medium text-palette-danger hover:bg-palette-danger-light">Se déconnecter</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Transitions -->
+    <section class="rounded-xl bg-stone-50 border border-stone-200 p-4 text-sm space-y-2">
+      <h3 class="font-bold text-stone-900">Transitions fonctionnelles (utilisateur)</h3>
+      <ul class="list-disc pl-5 text-stone-600 space-y-1">
+        <li><strong>Fermeture menu :</strong> clic hors panneau, touche Escape, navigation après clic sur une entrée.</li>
+        <li><strong>Mes informations / Se déconnecter :</strong> même comportement que sur mobile (profil = route dashboard profil ; déconnexion = action existante).</li>
+        <li><strong>État focus clavier :</strong> contour visible sur trigger et items (accessibilité).</li>
+      </ul>
+    </section>
+  </div>
+</body>
+</html>

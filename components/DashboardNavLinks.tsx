@@ -14,6 +14,8 @@ type DashboardNavLinksProps = {
   centerOnDesktop?: boolean
   /** Classe sur le conteneur nav (ex. scrollbar-hide overflow-x-auto pour la barre). */
   className?: string
+  /** Après navigation (ex. fermer le drawer mobile). */
+  onItemClick?: () => void
 }
 
 export function DashboardNavLinks({
@@ -21,6 +23,7 @@ export function DashboardNavLinks({
   variant,
   centerOnDesktop = false,
   className = '',
+  onItemClick,
 }: DashboardNavLinksProps) {
   const t = useTranslations('navigation')
   const pathname = usePathname()
@@ -60,6 +63,7 @@ export function DashboardNavLinks({
             key={item.href}
             href={item.href}
             className={`${linkBase} ${active ? activeClass : inactiveClass}`}
+            onClick={() => onItemClick?.()}
           >
             {icon}
             <span>{t(item.i18nKey)}</span>

@@ -18,6 +18,7 @@ export type NavigationI18nKey =
   | 'devices'
   | 'myCoach'
   | 'subscriptionHistory'
+  | 'myInformation'
   | 'athletes'
   | 'offers'
   | 'subscriptions'
@@ -31,20 +32,43 @@ export type ProfileNavInput = {
   coach_id?: string | null
 }
 
+/** Lien « Mes informations » (page profil) — menu compte athlète. */
+export function getAthleteProfileNavItem(): NavItem {
+  return { href: '/dashboard/profile', i18nKey: 'myInformation' }
+}
+
+/** Liens centrés barre desktop + tête du drawer (athlète). */
+export function getAthletePrimaryNavItems(profile: ProfileNavInput): NavItem[] {
+  if (profile.role !== 'athlete') return []
+  const items: NavItem[] = []
+  if (!profile.coach_id) {
+    items.push({ href: '/dashboard/find-coach', i18nKey: 'findCoach' })
+  }
+  items.push({ href: '/dashboard/calendar', i18nKey: 'calendar' })
+  items.push({ href: '/dashboard/objectifs', i18nKey: 'goals' })
+  return items
+}
+
+/** Entrées secondaires menu compte / milieu drawer (sans la ligne profil). */
+export function getAthleteAccountNavItems(profile: ProfileNavInput): NavItem[] {
+  if (profile.role !== 'athlete') return []
+  const items: NavItem[] = [{ href: '/dashboard/devices', i18nKey: 'devices' }]
+  if (profile.coach_id) {
+    items.push({ href: '/dashboard/coach', i18nKey: 'myCoach' })
+  }
+  items.push({ href: '/dashboard/subscriptions/history', i18nKey: 'subscriptionHistory' })
+  return items
+}
+
+/** Fusion pour titre mobile et rétrocompat `getDashboardNavItems` athlète. */
+export function getAthleteNavItemsForPageTitle(profile: ProfileNavInput): NavItem[] {
+  if (profile.role !== 'athlete') return []
+  return [...getAthletePrimaryNavItems(profile), ...getAthleteAccountNavItems(profile)]
+}
+
 export function getDashboardNavItems(profile: ProfileNavInput): NavItem[] {
   if (profile.role === 'athlete') {
-    const items: NavItem[] = []
-    if (!profile.coach_id) {
-      items.push({ href: '/dashboard/find-coach', i18nKey: 'findCoach' })
-    }
-    items.push({ href: '/dashboard/calendar', i18nKey: 'calendar' })
-    items.push({ href: '/dashboard/objectifs', i18nKey: 'goals' })
-    items.push({ href: '/dashboard/devices', i18nKey: 'devices' })
-    if (profile.coach_id) {
-      items.push({ href: '/dashboard/coach', i18nKey: 'myCoach' })
-    }
-    items.push({ href: '/dashboard/subscriptions/history', i18nKey: 'subscriptionHistory' })
-    return items
+    return getAthleteNavItemsForPageTitle(profile)
   }
 
   if (profile.role === 'coach') {
@@ -65,7 +89,23 @@ export function getDashboardNavItems(profile: ProfileNavInput): NavItem[] {
   return []
 }
 
-/** Retourne true si pathname correspond à l'item (page courante). */
+/** Indique si la route courante correspond au menu compte (hors profil). */
+export function isAthleteAccountSectionActive(pathname: string, profile: ProfileNavInput): boolean {
+  if (profile.role !== 'athlete') return false
+  return getAthleteAccountNavItems(profile).some((item) => isNavItemActive(pathname, item))
+}
+
+/** Retourne true si le trigger menu compte doit apparaître « actif » (profil ou section compte). */
+export function isAthleteAccountMenuTriggerActive(
+  pathname: string,
+  profile: ProfileNavInput,
+): boolean {
+  if (profile.role !== 'athlete') return false
+  if (pathname === '/dashboard/profile') return true
+  return isAthleteAccountSectionActive(pathname, profile)
+}
+
+/** Retourne true si pathname correspond à l’item (page courante). */
 export function isNavItemActive(pathname: string, item: NavItem): boolean {
   if (item.exact === false) {
     return pathname === item.href || pathname.startsWith(item.href + '/')
@@ -73,16 +113,28 @@ export function isNavItemActive(pathname: string, item: NavItem): boolean {
   return pathname === item.href
 }
 
+type PageTitleProfileContext = Pick<ProfileNavInput, 'role'> | null | undefined
+
 /**
  * Retourne la clé i18n du titre de la page courante (namespace navigation).
  * Utilisé pour afficher le titre dans la barre sur mobile.
+ * @param profile — si athlète sur `/dashboard/profile`, titre = `myInformation`.
  */
-export function getPageTitleI18nKey(pathname: string, navItems: NavItem[]): NavigationI18nKey {
+export function getPageTitleI18nKey(
+  pathname: string,
+  navItems: NavItem[],
+  profile?: PageTitleProfileContext,
+): NavigationI18nKey {
+  if (pathname === '/dashboard/profile' && profile?.role === 'athlete') {
+    return 'myInformation'
+  }
   if (pathname === '/dashboard/profile') return 'profile'
   const active = navItems.find((item) => isNavItemActive(pathname, item))
   if (active) return active.i18nKey
   if (pathname.startsWith('/dashboard/athletes/')) return 'athletes'
-  if (pathname.endsWith('/admin/design-system') || pathname === '/dashboard/admin/design-system') return 'designSystem'
+  if (pathname.endsWith('/admin/design-system') || pathname === '/dashboard/admin/design-system') {
+    return 'designSystem'
+  }
   if (pathname === '/dashboard/admin/members') return 'members'
   return 'dashboard'
 }
