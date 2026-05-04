@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 4 mai 2026 (**vue mois calendrier** desktop — `docs/CALENDAR_MONTH_VIEW.md`, `Project_context.md` §4.5, `DESIGN_SYSTEM.md` §7 ; maquettes archivées `docs/archive/design-calendar-month-view/` ; voir Changements récents)
+**Dernière mise à jour :** 4 mai 2026 (**nav athlète** : menu compte + drawer regroupé — `AthleteAccountMenu`, `lib/dashboardNavConfig.ts`, maquettes `docs/archive/design-athlete-nav-reorg/` ; précédent : vue mois calendrier, `CALENDAR_MONTH_VIEW.md` ; voir Changements récents)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -18,7 +18,7 @@
 - **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), stack technique, **URL production https://mysportally.com**
 - **Utiliser pour :** Comprendre le projet, les features, les rôles, l'architecture globale
 - **Taille :** ~450 lignes
-- **Dernière mise à jour :** 4 mai 2026 (§4.5 **Calendrier** : vue mois civil étendu desktop `md`+, WeekSelector mobile ; **MonthSelector** ; chargement `getExtendedCalendarMonthGridBounds` / `fetchCalendarDataBundle` ; objectifs non filtrés par plage ; précédent : §4.3 avis coach **063**, §4.2.2 Installations + Notes, §5 `coach_ratings`)
+- **Dernière mise à jour :** 4 mai 2026 (§4.0 **Dashboard** : nav athlète menu compte + drawer regroupé ; précédent : §4.5 Calendrier vue mois civil étendu, `MonthSelector` / `WeekSelector`, chargement `getExtendedCalendarMonthGridBounds` / `fetchCalendarDataBundle` ; §4.3 avis coach **063**, §4.2.2 Installations + Notes, §5 `coach_ratings`)
 
 ### **docs/CALENDAR_MONTH_VIEW.md**
 - **Contenu :** Récap **vue mois** (desktop) vs **vue semaine** (mobile), règles semaines ISO / mois civil étendu, chargement données, liste des fichiers et tests unitaires, liens vers maquettes archivées
@@ -27,16 +27,16 @@
 - **Dernière mise à jour :** 4 mai 2026
 
 ### **docs/DESIGN_SYSTEM.md** ⭐
-- **Contenu :** Tokens (couleurs, typo, espacements), composants (Button, Input, Badge, TileCard, DashboardPageShell, Modal, **MonthSelector**, etc.), guidelines UI, exemples de code, §7 breakpoints (**calendrier** mois étendu desktop + WeekSelector mobile, chat, Trouver mon coach, My offers)
+- **Contenu :** Tokens (couleurs, typo, espacements), composants (Button, Input, Badge, TileCard, DashboardPageShell, **DashboardTopBar**, **AthleteAccountMenu**, Modal, **MonthSelector**, etc.), guidelines UI, exemples de code, §7 breakpoints (**calendrier** mois étendu desktop + WeekSelector mobile, chat, Trouver mon coach, My offers)
 - **Utiliser pour :** Créer ou modifier des composants UI, choisir des couleurs, appliquer le design system, règles responsive par page
 - **Taille :** ~1850 lignes
-- **Dernière mise à jour :** 4 mai 2026 (§7 **Calendrier** : mois civil étendu, `MonthSelector` / `WeekSelector` ; Fichiers clés : `CalendarView`, `calendarViewDayHeights` ; précédent : `CoachReviewsModal`, `CoachAthleteNotesSection`…)
+- **Dernière mise à jour :** 4 mai 2026 (**AthleteAccountMenu**, nav athlète § **DashboardTopBar** ; précédent : §7 Calendrier mois civil étendu, `MonthSelector` / `WeekSelector`, `CalendarView`…)
 
 ### **docs/I18N.md** ⭐
 - **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces, utilisation dans composants et server actions, **checklist pour nouvelles features** (toujours penser bilingue)
 - **Utiliser pour :** Toute nouvelle feature ou texte visible, ajout de clés de traduction, dépannage i18n
 - **Taille :** ~190 lignes
-- **Dernière mise à jour :** 4 mai 2026 (`calendar.prevMonth` / `calendar.nextMonth` — MonthSelector ; précédent : `findCoach.reviewsModal`, `athletes`…)
+- **Dernière mise à jour :** 4 mai 2026 (`navigation.myInformation`, `navigation.accountMenu` ; précédent : `calendar.prevMonth` / `calendar.nextMonth`, MonthSelector…)
 
 ### **docs/AUTH_EMAIL_TEMPLATES.md**
 - **Contenu :** Guide de configuration des emails d’auth Supabase (sujet, i18n FR/EN, variables, dépannage logo). **Les fichiers HTML des templates** (Confirm signup, puis Magic Link, Reset Password, etc.) sont dans **docs/email-templates/**.
@@ -273,6 +273,12 @@
 - `docs/archive/design-top-menu/MOCKUP_TOP_MENU.html`, `MOCKUP_CALENDAR_PAGE.html` — Mockups HTML (mobile, tablette, desktop, drawer).
 - **Raison :** Feature livrée ; sidebar remplacée par une barre en haut (logo, nav centrée tablette/desktop, profil à droite) ; mobile : titre de page au centre, hamburger à droite, drawer à droite avec liens + profil + déconnexion ; pages sans titre ni conteneur carte (DashboardPageShell = padding uniquement) ; admin : Gestion des membres sous `/dashboard/admin/members` (même design), nav admin = Gestion des membres + Design System uniquement (pas « Mes athlètes »). Comportement décrit dans **Project_context.md §4.0**, §3 Admin.
 
+**Réorganisation menu athlète (top bar + drawer) – archivés 4 mai 2026 :**
+- `docs/archive/design-athlete-nav-reorg/README.md` — Pointeur vers doc active et fichiers code.
+- `docs/archive/design-athlete-nav-reorg/MOCKUP_US1_DESKTOP_BAR_AND_USER_MENU.html` — Barre desktop : liens principaux centrés, menu compte (séparateurs, sans Mon coach si pas de coach).
+- `docs/archive/design-athlete-nav-reorg/MOCKUP_US2_MOBILE_DRAWER_GROUPING.html` — Drawer mobile : mêmes blocs + séparateurs.
+- **Raison :** Feature livrée ; athlète : liens principaux (Trouver mon coach si besoin, calendrier, objectifs) ; entrées **Appareils / Mon coach (si lié) / Historique souscriptions** dans le menu compte (desktop) ou après séparateur (drawer) ; **Mes informations** → profil ; **Déconnexion** aussi en desktop dans le menu. Implémentation : `AthleteAccountMenu`, `getAthletePrimaryNavItems` / `getAthleteAccountNavItems`, `getPageTitleI18nKey(..., profile)`, tests `lib/dashboardNavConfig.test.ts`. Comportement décrit dans **Project_context.md §4.0**, **docs/DESIGN_SYSTEM.md** (DashboardTopBar, AthleteAccountMenu), **docs/I18N.md** (`navigation.myInformation`, `navigation.accountMenu`).
+
 **Retour athlète après séance (workout feedback) (archivés 3 mars 2026) :**
 - `docs/archive/design-workout-feedback/` — DESIGN.md (besoin, échelles 1–5 / 1–10, Lucide, harmonisation visuelle), SPEC_ARCHITECTURE.md (migration 054, champs perceived_*), MOCKUP_WORKOUT_FEEDBACK_MODAL_A.html, MOCKUP_WORKOUT_FEEDBACK_MODAL_B.html.
 - **Raison :** Feature livrée ; athlète peut renseigner optionnellement (quand statut = Réalisé) : Comment vous êtes-vous senti ? (1–5), Intensité effort (1–10), Plaisir (1–5) ; icônes Lucide + libellés ; sauvegarde avec statut et commentaire ; coach voit le retour en lecture seule. Comportement décrit dans **Project_context.md §4.5** (Workouts), **docs/DESIGN_SYSTEM.md** (Modal / WorkoutModal), **docs/I18N.md** (workouts.feedback).
@@ -456,10 +462,15 @@
 
 **Fréquence de mise à jour :** À chaque ajout/suppression de documentation
 
-**Dernier scan :** 21 mars 2026  
-**Dernier nettoyage :** 21 mars 2026 (entrée Changements récents : liste avis coach)
+**Dernier scan :** 4 mai 2026  
+**Dernier nettoyage :** 4 mai 2026 (entrée Changements récents : nav athlète + archives mockups)
 
 ### Changements récents :
+
+✅ **4 mai 2026 – Navigation dashboard athlète (menu compte + drawer) – Mode Analyste :**
+- **Livraison :** Barre **md+** : liens principaux centrés (Trouver mon coach si pas de `coach_id`, Mon calendrier, Mes objectifs) ; à droite **`AthleteAccountMenu`** (avatar, nom, chevron) : appareils, Mon coach si lié, historique des souscriptions ; séparateur ; Mes informations (`/dashboard/profile`) ; déconnexion. **Drawer mobile athlète** : mêmes blocs avec `hr`, puis Mes informations, puis déconnexion. Coach/admin : inchangé (lien profil + drawer existant). Titres mobile : `getPageTitleI18nKey(pathname, navItems, profile)` ; profil athlète → clé **`myInformation`**. Tests : **`lib/dashboardNavConfig.test.ts`**.
+- **Doc :** `Project_context.md` §4.0 (dashboard top bar), `DOCS_INDEX.md` (entrée archives + en-tête), `docs/DESIGN_SYSTEM.md` (déjà à jour en livraison dev v1.27), `docs/I18N.md` (déjà à jour : `myInformation`, `accountMenu`).
+- **Archivage :** `docs/design-athlete-nav-reorg/` → **`docs/archive/design-athlete-nav-reorg/`** (`MOCKUP_US1_*.html`, `MOCKUP_US2_*.html`). Référence courante : **Project_context.md §4.0**, **docs/DESIGN_SYSTEM.md** § DashboardTopBar / AthleteAccountMenu.
 
 ✅ **21 mars 2026 – Liste d’avis coach (Trouver mon coach) – Mode Analyste :**
 - **Livraison :** Sur `/dashboard/find-coach`, clic sur **« (N avis) »** sur une tuile ou dans la **modale détail coach** → modale **`CoachReviewsModal`** (note, date, commentaire ; pas d’identité des noteurs). Données : RPC **`get_coach_public_reviews`** (migration **063**), server action `getCoachPublicReviews`. i18n : **`findCoach.reviewsModal`**. **Échap** : lorsque la liste est ouverte au-dessus de la modale détail, **fermeture de la liste uniquement** (ref `reviewsListOpenRef` dans `CoachDetailModal`).
