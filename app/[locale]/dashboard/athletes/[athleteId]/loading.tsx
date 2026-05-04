@@ -4,7 +4,7 @@ export default function AthleteCalendarLoading() {
   return (
     <DashboardPageShell>
       <div className="space-y-6 animate-pulse">
-      {/* Grille calendrier (3 semaines, 7 jours) */}
+      {/* Grille calendrier (squelette 3 semaines ; données = mois civil étendu, 4–6 semaines) */}
       <div className="rounded-xl border border-stone-200 bg-white overflow-hidden">
           <div className="grid grid-cols-7 border-b border-stone-200 bg-stone-50">
             {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map((day, i) => (

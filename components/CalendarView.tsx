@@ -180,7 +180,8 @@ const MountainIcon = () => (
   </svg>
 )
 
-import { getWeekMonday, toDateStr } from '@/lib/dateUtils'
+import { CALENDAR_VIEW_DAY_MIN_HEIGHT_CLASS } from '@/lib/calendarViewDayHeights'
+import { getWeekMonday, toDateStr, getExtendedCalendarMonthGridBounds } from '@/lib/dateUtils'
 
 // Day names will be dynamically loaded using translations
 
@@ -224,6 +225,10 @@ type CalendarViewProps = {
   athleteFacilities?: AthleteFacility[]
   /** Préférences coach (métrique principale C/V/N) — synthèse hebdo + validation séances */
   coachWorkoutPrimaryMetrics?: WorkoutPrimaryMetricBySport | null
+  /** Desktop : mois civil avec semaines complètes ; mobile : semaines centrées sur referenceMonday. */
+  calendarLayout?: 'month' | 'week'
+  /** Mois civil affiché (atténuation des jours hors mois) — avec calendarLayout === 'month'. */
+  civilMonth?: { year: number; month: number }
 }
 
 /** Icône cible avec badge 1 (objectif principal) ou 2 (secondaire). */
@@ -268,6 +273,8 @@ export function CalendarView({
   hideFirstWeekTitle = false,
   athleteFacilities = [],
   coachWorkoutPrimaryMetrics = null,
+  calendarLayout = 'week',
+  civilMonth,
 }: CalendarViewProps) {
   const locale = useLocale()
   const localeTag = locale === 'fr' ? 'fr-FR' : 'en-US'
@@ -346,48 +353,116 @@ export function CalendarView({
 
   const todayStr = toDateStr(new Date())
 
+  type CalendarDayCell = {
+    dateStr: string
+    label: string
+    dayName: string
+    shortDateLabel: string
+    isToday: boolean
+    isTomorrow: boolean
+    isPast: boolean
+    isInSelectedCivilMonth: boolean
+  }
+
+  type CalendarWeekRow = {
+    label: string
+    monthLabel: string
+    rangeLabel: string
+    isCurrentWeek: boolean
+    days: CalendarDayCell[]
+  }
+
   const { startMonday, weeks } = useMemo(() => {
     const today = new Date()
-    const baseMonday = referenceMonday ? getWeekMonday(referenceMonday) : getWeekMonday(today)
-    const startMonday = new Date(baseMonday)
-    startMonday.setDate(startMonday.getDate() - 7)
-
-    // Get month names based on locale
     const getMonthName = (monthIndex: number): string => {
       const date = new Date(2000, monthIndex, 1)
       return new Intl.DateTimeFormat(localeTag, { month: 'long' }).format(date)
     }
-    
+
     const getShortMonthName = (monthIndex: number): string => {
       const date = new Date(2000, monthIndex, 1)
       return new Intl.DateTimeFormat(localeTag, { month: 'short' }).format(date).replace('.', '')
     }
-    
-    const getDayNames = (): string[] => {
-      return [
-        tCalendar('days.mon'),
-        tCalendar('days.tue'),
-        tCalendar('days.wed'),
-        tCalendar('days.thu'),
-        tCalendar('days.fri'),
-        tCalendar('days.sat'),
-        tCalendar('days.sun'),
-      ]
-    }
-    
-    const DAY_NAMES = getDayNames()
-    
-    const weeks: { label: string; monthLabel: string; rangeLabel: string; isCurrentWeek: boolean; days: { dateStr: string; label: string; dayName: string; shortDateLabel: string; isToday: boolean; isTomorrow: boolean; isPast: boolean }[] }[] = []
-    
+
+    const DAY_NAMES = [
+      tCalendar('days.mon'),
+      tCalendar('days.tue'),
+      tCalendar('days.wed'),
+      tCalendar('days.thu'),
+      tCalendar('days.fri'),
+      tCalendar('days.sat'),
+      tCalendar('days.sun'),
+    ]
+
     const todayMonday = getWeekMonday(today)
     const weekRangeSeparator = tCalendar('weekRangeSeparator')
+    const todayStrLocal = toDateStr(today)
+    const tomorrowDate = new Date(today)
+    tomorrowDate.setDate(tomorrowDate.getDate() + 1)
+    const tomorrowStr = toDateStr(tomorrowDate)
+
+    const buildDays = (weekStart: Date, civil: { year: number; month: number } | undefined): CalendarDayCell[] => {
+      const days: CalendarDayCell[] = []
+      for (let d = 0; d < 7; d++) {
+        const day = new Date(weekStart)
+        day.setDate(day.getDate() + d)
+        const dateStr = toDateStr(day)
+        const isToday = todayStrLocal === dateStr
+        const isTomorrow = tomorrowStr === dateStr
+        const isPast = dateStr < todayStrLocal
+        const dayIndex = (day.getDay() + 6) % 7
+        const shortDateLabel = `${day.getDate()} ${getShortMonthName(day.getMonth())}`
+        const isInSelectedCivilMonth =
+          civil != null ? day.getFullYear() === civil.year && day.getMonth() === civil.month : true
+        days.push({
+          dateStr,
+          label: day.getDate().toString(),
+          dayName: DAY_NAMES[dayIndex] ?? '',
+          shortDateLabel,
+          isToday,
+          isTomorrow,
+          isPast,
+          isInSelectedCivilMonth,
+        })
+      }
+      return days
+    }
+
+    if (calendarLayout === 'month' && civilMonth != null) {
+      const { weekStartDates } = getExtendedCalendarMonthGridBounds(civilMonth.year, civilMonth.month)
+      const weeksOut: CalendarWeekRow[] = []
+      const gridStartMonday = new Date(weekStartDates[0]! + 'T12:00:00')
+      for (let wi = 0; wi < weekStartDates.length; wi++) {
+        const weekStart = new Date(weekStartDates[wi]! + 'T12:00:00')
+        const weekMonday = getWeekMonday(weekStart)
+        const monthLabel = getMonthName(weekStart.getMonth())
+        const firstDay = new Date(weekStart)
+        const lastDay = new Date(weekStart)
+        lastDay.setDate(lastDay.getDate() + 6)
+        const rangeLabel = `${firstDay.getDate()} ${getShortMonthName(firstDay.getMonth())}${weekRangeSeparator}${lastDay.getDate()} ${getShortMonthName(lastDay.getMonth())}`
+        weeksOut.push({
+          label: '',
+          monthLabel,
+          rangeLabel,
+          isCurrentWeek: weekMonday.getTime() === todayMonday.getTime(),
+          days: buildDays(weekStart, civilMonth),
+        })
+      }
+      return { startMonday: gridStartMonday, weeks: weeksOut }
+    }
+
+    const baseMonday = referenceMonday ? getWeekMonday(referenceMonday) : getWeekMonday(today)
+    const startMonday = new Date(baseMonday)
+    startMonday.setDate(startMonday.getDate() - 7)
+
+    const weeks: CalendarWeekRow[] = []
 
     for (let w = 0; w < 3; w++) {
       const weekStart = new Date(startMonday)
       weekStart.setDate(weekStart.getDate() + w * 7)
       const weekMonday = getWeekMonday(weekStart)
       const monthLabel = getMonthName(weekStart.getMonth())
-      
+
       const firstDay = new Date(weekStart)
       const lastDay = new Date(weekStart)
       lastDay.setDate(lastDay.getDate() + 6)
@@ -405,35 +480,17 @@ export function CalendarView({
         weekLabel = diffWeeks === 1 ? tCalendar('nextWeek') : tCalendar('inWeeks', { weeks: diffWeeks })
       }
 
-      const days: { dateStr: string; label: string; dayName: string; shortDateLabel: string; isToday: boolean; isTomorrow: boolean; isPast: boolean }[] = []
-      const todayStr = toDateStr(today)
-      const tomorrowDate = new Date(today)
-      tomorrowDate.setDate(tomorrowDate.getDate() + 1)
-      const tomorrowStr = toDateStr(tomorrowDate)
-      for (let d = 0; d < 7; d++) {
-        const day = new Date(weekStart)
-        day.setDate(day.getDate() + d)
-        const dateStr = toDateStr(day)
-        const isToday = todayStr === dateStr
-        const isTomorrow = tomorrowStr === dateStr
-        const isPast = dateStr < todayStr
-        const dayIndex = (day.getDay() + 6) % 7
-        const shortDateLabel = `${day.getDate()} ${getShortMonthName(day.getMonth())}`
-        days.push({
-          dateStr,
-          label: day.getDate().toString(),
-          dayName: DAY_NAMES[dayIndex],
-          shortDateLabel,
-          isToday,
-          isTomorrow,
-          isPast,
-        })
-      }
-      weeks.push({ label: weekLabel, monthLabel, rangeLabel, isCurrentWeek, days })
+      weeks.push({
+        label: weekLabel,
+        monthLabel,
+        rangeLabel,
+        isCurrentWeek,
+        days: buildDays(weekStart, undefined),
+      })
     }
 
     return { startMonday, weeks }
-  }, [referenceMonday, locale, localeTag, tCalendar])
+  }, [referenceMonday, locale, localeTag, tCalendar, calendarLayout, civilMonth])
 
   const workoutsByDate = useMemo(() => {
     const map: Record<string, Workout[]> = {}
@@ -504,8 +561,8 @@ export function CalendarView({
 
   /** Totaux prévus par semaine et par sport (depuis workout_weekly_totals précalculés). Distance en km pour course/vélo/natation, temps pour musculation. */
   const weekPrevuBySport = useMemo(() => {
-    if (!referenceMonday) return [EMPTY_FAIT, EMPTY_FAIT, EMPTY_FAIT]
-    
+    if (weeks.length === 0) return []
+
     return weeks.map((week) => {
       // Trouver le lundi de cette semaine
       const weekStartDate = new Date(week.days[0]!.dateStr + 'T12:00:00')
@@ -536,7 +593,7 @@ export function CalendarView({
       
       return bySport
     })
-  }, [weeks, workoutTotals, referenceMonday])
+  }, [weeks, workoutTotals])
 
   /** Totaux "fait" par semaine (depuis imported_activity_weekly_totals). */
   const weekFaitBySport = useMemo((): WeekFaitBySport[] => {
@@ -549,11 +606,11 @@ export function CalendarView({
         backcountry_ski: { minutes: 0, distanceKm: 0 },
         ice_skating: { minutes: 0, distanceKm: 0 },
       })
-    if (!referenceMonday) return [empty(), empty(), empty()]
-    return [0, 1, 2].map((wi) => {
-      const mon = new Date(referenceMonday)
-      mon.setDate(mon.getDate() + (wi - 1) * 7)
-      const weekStartStr = toDateStr(mon)
+    if (weeks.length === 0) return []
+    return weeks.map((week) => {
+      const weekStartDate = new Date(week.days[0]!.dateStr + 'T12:00:00')
+      const weekMonday = getWeekMonday(weekStartDate)
+      const weekStartStr = toDateStr(weekMonday)
       const rows = weeklyTotals.filter((t) => t.week_start === weekStartStr)
       const bySport: WeekFaitBySport = {
         course: { minutes: 0, distanceKm: 0 },
@@ -583,7 +640,7 @@ export function CalendarView({
         ice_skating: { minutes: Math.round(bySport.ice_skating.minutes), distanceKm: Math.round(bySport.ice_skating.distanceKm) },
       }
     })
-  }, [referenceMonday, weeklyTotals])
+  }, [weeks, weeklyTotals])
 
   const openDay = (dateStr: string, isPast: boolean) => {
     if (!canEdit || isPast) return
@@ -1010,7 +1067,7 @@ export function CalendarView({
                         <div
                           onClick={showAddInCondensed ? onAddClick : undefined}
                           role={showAddInCondensed ? 'button' : undefined}
-                          className={`min-h-20 p-3 flex flex-col gap-2 ${
+                          className={`${CALENDAR_VIEW_DAY_MIN_HEIGHT_CLASS.mobileCondensedDayBody} p-3 flex flex-col gap-2 ${
                             showAddInCondensed
                               ? 'border-2 border-dashed border-stone-300 justify-center items-center cursor-pointer hover:border-palette-forest-dark hover:bg-palette-forest-dark/5 transition-all'
                               : isEmpty
@@ -1262,15 +1319,17 @@ export function CalendarView({
       ) : (
       <div className="mt-0 space-y-0">
         {weeks.map((week, wi) => {
-          const isDetailed = wi === 1
+          const isMonthLayout = calendarLayout === 'month' && civilMonth != null
+          const isDetailed = isMonthLayout || wi === 1
           const isCondensed = !isDetailed
-          const sectionOpacity = wi === 0 ? 'opacity-75 hover:opacity-100 transition-opacity duration-300' : ''
+          const sectionOpacity =
+            !isMonthLayout && wi === 0 ? 'opacity-75 hover:opacity-100 transition-opacity duration-300' : ''
           return (
             <section
               key={wi}
-              className={`mb-8 ${sectionOpacity} ${wi === 1 ? 'mb-12' : ''} ${hideFirstWeekTitle && wi === 0 ? 'mt-1' : ''}`}
+              className={`mb-8 ${sectionOpacity} ${wi === 1 && !isMonthLayout ? 'mb-12' : ''} ${hideFirstWeekTitle && wi === 0 ? 'mt-1' : ''}`}
             >
-              {!(hideFirstWeekTitle && wi === 0) && (
+              {!(hideFirstWeekTitle && wi === 0) && !isMonthLayout && (
                 <div className={`flex items-center justify-between w-full gap-4 mb-3 ${isDetailed ? 'mb-4 mt-8' : ''}`}>
                   <div className="flex items-center gap-4 min-w-0">
                     {isDetailed ? (
@@ -1363,7 +1422,14 @@ export function CalendarView({
                   )}
                 </div>
               )}
-              {isDetailed && renderWeeklyTotalsCard(weekPrevuBySport[1]!, weekFaitBySport[1]!, weekFaitBySport[0]!)}
+              {isDetailed &&
+                weekPrevuBySport[wi] != null &&
+                weekFaitBySport[wi] != null &&
+                renderWeeklyTotalsCard(
+                  weekPrevuBySport[wi]!,
+                  weekFaitBySport[wi]!,
+                  wi > 0 ? weekFaitBySport[wi - 1]! : EMPTY_FAIT
+                )}
               <div className={`grid grid-cols-7 min-w-[800px] overflow-x-auto hide-scroll items-stretch ${isCondensed ? 'gap-x-2 gap-y-1' : isDetailed ? 'gap-3' : 'gap-2'}`}>
                 {isCondensed &&
                   <>
@@ -1371,7 +1437,7 @@ export function CalendarView({
                   {week.days.map((day) => (
                     <div
                       key={`head-${day.dateStr}`}
-                      className={`shrink-0 text-center pb-1 text-xs font-medium text-stone-500 ${day.isToday ? 'text-palette-forest-dark font-semibold' : ''}`}
+                      className={`shrink-0 text-center pb-1 text-xs font-medium text-stone-500 ${day.isToday ? 'text-palette-forest-dark font-semibold' : ''} ${!day.isInSelectedCivilMonth ? 'opacity-50' : ''}`}
                     >
                       <span className="uppercase">{day.dayName}.</span>
                       <span className={day.isToday ? ' font-bold' : ''}> {day.label}</span>
@@ -1391,21 +1457,23 @@ export function CalendarView({
                     const firstImported = firstEntry?.type === 'imported' ? firstEntry.item : undefined
                     const firstGoal = firstEntry?.type === 'goal' ? firstEntry.item : undefined
                     const isEmpty = !firstAvailability && !firstWorkout && !firstImported && !firstGoal
-                    const showAddInCondensed = (wi === 0 || wi === 2) && (canEdit || athleteView) && !day.isPast && isEmpty
-                    const showAddAtBottom = (wi === 0 || wi === 2) && (canEdit || athleteView) && !day.isPast && !isEmpty
+                    const showAddInCondensed =
+                      (isMonthLayout || wi === 0 || wi === 2) && (canEdit || athleteView) && !day.isPast && isEmpty
+                    const showAddAtBottom =
+                      (isMonthLayout || wi === 0 || wi === 2) && (canEdit || athleteView) && !day.isPast && !isEmpty
                     const onAddClickCondensed = () => athleteView ? openDayForAvailability(day.dateStr, day.isPast) : openDay(day.dateStr, day.isPast)
                     return (
                       <div
                         key={day.dateStr}
                         onClick={showAddInCondensed ? onAddClickCondensed : undefined}
                         role={showAddInCondensed ? 'button' : undefined}
-                        className={`min-h-24 rounded-lg border border-stone-200 p-1.5 flex flex-col ${
+                        className={`${CALENDAR_VIEW_DAY_MIN_HEIGHT_CLASS.desktopCondensedDayCell} rounded-lg border border-stone-200 p-1.5 flex flex-col ${
                           showAddInCondensed
                             ? 'border-2 border-dashed border-stone-300 justify-center items-center cursor-pointer hover:border-palette-forest-dark hover:bg-palette-forest-dark/5 transition-all group'
                             : isEmpty
                               ? 'bg-stone-100/50'
                               : 'bg-white shadow-sm'
-                        }`}
+                        } ${!day.isInSelectedCivilMonth ? 'opacity-50 bg-stone-50/80' : ''}`}
                       >
                         {showAddAtBottom ? (
                           <>
@@ -1506,7 +1574,7 @@ export function CalendarView({
                               })()}
                             </div>
                             )}
-                            {!showFullDayList && (wi === 0 || wi === 2) && dayExtraCount > 0 && (
+                            {!showFullDayList && (isMonthLayout || wi === 0 || wi === 2) && dayExtraCount > 0 && (
                               <div className="flex-1 min-h-0 flex items-center justify-center pt-1.5">
                                 <Button
                                   type="button"
@@ -1689,7 +1757,7 @@ export function CalendarView({
                                     </div>
                                   )
                                 })()}
-                                {!showFullDayList && (wi === 0 || wi === 2) && dayExtraCount > 0 && (
+                                {!showFullDayList && (isMonthLayout || wi === 0 || wi === 2) && dayExtraCount > 0 && (
                                   <Button
                                     type="button"
                                     variant="muted"
@@ -1731,7 +1799,10 @@ export function CalendarView({
                     const canAddWorkout = (canEdit || athleteView) && !day.isPast
                     const onAddClickDetailed = () => athleteView ? openDayForAvailability(day.dateStr, day.isPast) : openDay(day.dateStr, day.isPast)
                     return (
-                      <div key={day.dateStr} className="flex flex-col gap-2 min-h-0">
+                      <div
+                        key={day.dateStr}
+                        className={`flex flex-col gap-2 min-h-0 ${!day.isInSelectedCivilMonth ? 'opacity-50' : ''}`}
+                      >
                         <div
                           className={`shrink-0 text-center pb-2 border-b ${day.isToday ? 'border-b-2 border-palette-forest-dark' : 'border-stone-200'}`}
                         >
@@ -1743,7 +1814,7 @@ export function CalendarView({
                           </span>
                         </div>
                         <div
-                          className={`flex-1 min-h-[202px] rounded-xl border p-1.5 flex flex-col gap-3 overflow-y-auto ${
+                          className={`flex-1 ${CALENDAR_VIEW_DAY_MIN_HEIGHT_CLASS.desktopDetailedDayBody} rounded-xl border p-1.5 flex flex-col gap-3 overflow-y-auto ${
                             day.isToday
                               ? 'bg-palette-forest-dark/5 border-palette-forest-dark/30'
                               : hasContent
@@ -1875,7 +1946,7 @@ export function CalendarView({
                               )}
                             </>
                           ) : canAddWorkout ? (
-                            <div className="flex-1 flex items-center justify-center min-h-[126px]" onClick={(e) => { e.stopPropagation(); onAddClickDetailed() }} role="button" aria-label={athleteView ? tAvailability('addLabel') : tWorkouts('addWorkout')}>
+                            <div className={`flex-1 flex items-center justify-center ${CALENDAR_VIEW_DAY_MIN_HEIGHT_CLASS.desktopDetailedEmptyAddZone}`} onClick={(e) => { e.stopPropagation(); onAddClickDetailed() }} role="button" aria-label={athleteView ? tAvailability('addLabel') : tWorkouts('addWorkout')}>
                               <div className="w-10 h-10 rounded-full bg-white border border-stone-300 flex items-center justify-center text-stone-300 shadow-sm group-hover:text-white group-hover:bg-palette-forest-dark group-hover:border-palette-forest-dark transition-all transform group-hover:scale-110">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />

@@ -161,6 +161,30 @@ export function formatGoalDateBlock(dateStr: string, localeTag: string): { month
  * @param startDate - Date de début du cycle (string ISO ou Date)
  * @returns Date de fin du prochain cycle (début de journée en UTC)
  */
+/**
+ * Plage calendrier « mois civil » affichée en semaines ISO complètes :
+ * du lundi de la semaine qui contient le 1er du mois au dimanche de la semaine qui contient le dernier jour.
+ */
+export function getExtendedCalendarMonthGridBounds(
+  year: number,
+  monthIndex: number
+): { rangeStart: string; rangeEnd: string; weekStartDates: string[] } {
+  const first = new Date(year, monthIndex, 1)
+  first.setHours(12, 0, 0, 0)
+  const last = new Date(year, monthIndex + 1, 0)
+  last.setHours(12, 0, 0, 0)
+  const gridStart = getWeekMonday(first)
+  const lastMonday = getWeekMonday(last)
+  const gridEndSunday = addDays(lastMonday, 6)
+  const rangeStart = toDateStr(gridStart)
+  const rangeEnd = toDateStr(gridEndSunday)
+  const weekStartDates: string[] = []
+  for (let cur = new Date(gridStart); cur.getTime() <= gridEndSunday.getTime(); cur = addDays(cur, 7)) {
+    weekStartDates.push(toDateStr(cur))
+  }
+  return { rangeStart, rangeEnd, weekStartDates }
+}
+
 export function getNextMonthlyCycleEndDate(startDate: Date | string): Date {
   const start = typeof startDate === 'string' ? new Date(startDate) : startDate
   const dayOfMonth = start.getDate()

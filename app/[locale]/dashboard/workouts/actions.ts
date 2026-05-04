@@ -2,13 +2,22 @@
 
 import { createClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
-import type { Workout, ImportedActivityWeeklyTotal, SportType, WorkoutPrimaryMetricBySport } from '@/types/database'
+import type {
+  Workout,
+  ImportedActivity,
+  ImportedActivityWeeklyTotal,
+  SportType,
+  WorkoutPrimaryMetricBySport,
+  WorkoutWeeklyTotal,
+  AthleteAvailabilitySlot,
+} from '@/types/database'
 import { requireCoachOrAthleteAccess } from '@/lib/authHelpers'
 import { getWeekMonday, toDateStr } from '@/lib/dateUtils'
 import { validateWorkoutFormData } from '@/lib/workoutValidation'
 import { parseWorkoutPrimaryMetricBySport, isCoachWorkoutPrimaryMetricsComplete } from '@/lib/workoutPrimaryMetric'
 import { logger } from '@/lib/logger'
 import { getTranslations, getLocale } from 'next-intl/server'
+import { getAvailabilityForDateRange } from '@/app/[locale]/dashboard/availability/actions'
 
 export type WorkoutFormState = {
   error?: string
@@ -401,6 +410,62 @@ export async function getWorkoutWeeklyTotals(
 
   if (error) return { error: tErrors('supabaseGeneric'), workoutTotals: [] }
   return { workoutTotals: workoutTotals ?? [] }
+}
+
+/** Bundle calendrier (workouts, Strava, totaux, dispos) pour une plage [startDate, endDate] inclusive. */
+export async function fetchCalendarDataBundle(
+  athleteId: string,
+  rangeStart: string,
+  rangeEnd: string
+): Promise<{
+  error?: string
+  workouts: Workout[]
+  importedActivities: ImportedActivity[]
+  weeklyTotals: ImportedActivityWeeklyTotal[]
+  workoutTotals: WorkoutWeeklyTotal[]
+  availabilities: AthleteAvailabilitySlot[]
+}> {
+  const empty = (): {
+    workouts: Workout[]
+    importedActivities: ImportedActivity[]
+    weeklyTotals: ImportedActivityWeeklyTotal[]
+    workoutTotals: WorkoutWeeklyTotal[]
+    availabilities: AthleteAvailabilitySlot[]
+  } => ({
+    workouts: [],
+    importedActivities: [],
+    weeklyTotals: [],
+    workoutTotals: [],
+    availabilities: [],
+  })
+
+  const startMonday = toDateStr(getWeekMonday(rangeStart))
+  const endMonday = toDateStr(getWeekMonday(rangeEnd))
+
+  const [workoutsResult, importedResult, workoutTotalsResult, totalsResult, availabilitiesResult] = await Promise.all([
+    getWorkoutsForDateRange(athleteId, rangeStart, rangeEnd),
+    getImportedActivitiesForDateRange(athleteId, rangeStart, rangeEnd),
+    getWorkoutWeeklyTotals(athleteId, startMonday, endMonday),
+    getEffectiveWeeklyTotalsFait(athleteId, startMonday, endMonday),
+    getAvailabilityForDateRange(athleteId, rangeStart, rangeEnd),
+  ])
+
+  const err =
+    workoutsResult.error ??
+    importedResult.error ??
+    workoutTotalsResult.error ??
+    totalsResult.error
+  if (err) {
+    return { error: err, ...empty() }
+  }
+
+  return {
+    workouts: (workoutsResult.workouts ?? []) as Workout[],
+    importedActivities: (importedResult.importedActivities ?? []) as ImportedActivity[],
+    weeklyTotals: totalsResult.weeklyTotals ?? [],
+    workoutTotals: (workoutTotalsResult.workoutTotals ?? []) as WorkoutWeeklyTotal[],
+    availabilities: Array.isArray(availabilitiesResult) ? availabilitiesResult : [],
+  }
 }
 
 export async function saveWorkoutComment(

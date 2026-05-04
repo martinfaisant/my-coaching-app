@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>US2 — Desktop : semaines complètes du mois</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#2c3e2e',
+            'palette-olive': '#6b7c4a',
+          }
+        }
+      }
+    }
+  </script>
+  <style>body { font-family: ui-sans-serif, system-ui, sans-serif; }</style>
+</head>
+<body class="bg-stone-100 min-h-screen p-6">
+  <div class="max-w-[1100px] mx-auto space-y-6">
+    <header class="text-stone-800">
+      <h1 class="text-lg font-bold">US2 — Vue desktop (≥ md)</h1>
+      <p class="text-sm text-stone-600 mt-2">Empilement vertical de <strong>toutes les semaines</strong> (lun–dim) couvrant le mois sélectionné. <strong>Aucun</strong> titre du type « Il y a 3 semaines » ou « Semaine actuelle — … » entre les blocs. Chaque semaine = <strong>même</strong> carte synthèse (style semaine du milieu actuelle) + grille 7 jours <strong>mode détaillé</strong> (même densité / gap que la semaine centrale aujourd’hui).</p>
+    </header>
+
+    <!-- Semaine 1 : contient des jours hors mai -->
+    <section class="mb-10">
+      <p class="text-[11px] font-semibold text-palette-forest-dark uppercase tracking-wider mb-2">Mockup — Semaine 1 (27 avr. – 3 mai) <span class="text-stone-500 normal-case">· pas de titre utilisateur ici en prod</span></p>
+      <!-- Carte synthèse (raccourcie visuelle) -->
+      <div class="bg-white rounded-xl border border-stone-200 shadow-sm px-5 pt-3 pb-4 mb-4">
+        <div class="grid grid-cols-4 gap-4">
+          <div>
+            <div class="flex items-center gap-2 text-xs mb-2"><span class="text-palette-forest-dark font-semibold">Run</span></div>
+            <div class="w-full bg-stone-100 rounded-full h-1.5"><div class="h-full bg-palette-forest-dark rounded-full w-3/5 relative"><span class="absolute right-0 -top-3 text-[10px] font-bold text-palette-forest-dark">25 km</span></div></div>
+            <span class="text-[10px] text-stone-400 block text-right mt-3">11 km prévu</span>
+          </div>
+          <div>
+            <div class="text-xs text-palette-olive font-semibold mb-2">Vélo</div>
+            <div class="w-full bg-stone-100 rounded-full h-1.5"></div>
+            <span class="text-[10px] text-stone-400 block text-right mt-3">22' prévu</span>
+          </div>
+          <div><div class="text-xs text-stone-600 font-semibold mb-2">Muscu</div><div class="w-full bg-stone-100 rounded-full h-1.5"></div><span class="text-[10px] text-stone-400 block text-right mt-3">56' prévu</span></div>
+          <div><div class="text-xs text-cyan-600 font-semibold mb-2">Patin</div><div class="w-full bg-stone-100 rounded-full h-1.5"><div class="h-full bg-cyan-500 rounded-full w-full"></div></div><span class="text-[10px] text-cyan-600 font-bold block text-right mt-3">2 km</span></div>
+        </div>
+      </div>
+      <div class="grid grid-cols-7 gap-3 min-w-[800px]">
+        <!-- Jours hors mois (avril) : atténués -->
+        <div class="rounded-lg border border-stone-200 p-2 min-h-24 opacity-50 bg-stone-50">
+          <div class="text-xs text-stone-500 uppercase">lun.</div>
+          <div class="text-sm font-semibold text-stone-500">27</div>
+        </div>
+        <div class="rounded-lg border border-stone-200 p-2 min-h-24 opacity-50 bg-stone-50">
+          <div class="text-xs text-stone-500 uppercase">mar.</div>
+          <div class="text-sm font-semibold text-stone-500">28</div>
+        </div>
+        <div class="rounded-lg border border-stone-200 p-2 min-h-24 opacity-50 bg-stone-50">
+          <div class="text-xs text-stone-500 uppercase">mer.</div>
+          <div class="text-sm font-semibold text-stone-500">29</div>
+        </div>
+        <div class="rounded-lg border border-stone-200 p-2 min-h-24 opacity-50 bg-stone-50">
+          <div class="text-xs text-stone-500 uppercase">jeu.</div>
+          <div class="text-sm font-semibold text-stone-500">30</div>
+        </div>
+        <!-- 1er mai : dans le mois -->
+        <div class="rounded-lg border border-stone-200 bg-white shadow-sm p-2 min-h-24">
+          <div class="text-xs text-palette-forest-dark font-semibold uppercase">ven.</div>
+          <div class="text-sm font-bold text-stone-800">1</div>
+          <div class="mt-1 text-[10px] text-stone-400">tuiles jour…</div>
+        </div>
+        <div class="rounded-lg border border-stone-200 bg-white shadow-sm p-2 min-h-24">
+          <div class="text-xs text-stone-500 uppercase">sam.</div>
+          <div class="text-sm font-semibold text-stone-800">2</div>
+        </div>
+        <div class="rounded-lg border border-stone-200 bg-white shadow-sm p-2 min-h-24">
+          <div class="text-xs text-stone-500 uppercase">dim.</div>
+          <div class="text-sm font-semibold text-stone-800">3</div>
+        </div>
+      </div>
+      <p class="text-[11px] text-stone-600 mt-2"><strong>Règle atténuation :</strong> date &lt; 1er mai OU date &gt; 31 mai → opacité réduite (ex. 50 %) + fond légèrement stone (hors mois). Implémentation : tokens Tailwind du design system, pas de hex en dur en prod.</p>
+    </section>
+
+    <!-- Semaine 2 : entièrement dans le mois -->
+    <section class="mb-10">
+      <p class="text-[11px] font-semibold text-stone-500 uppercase tracking-wider mb-2">Mockup — Semaine 2 · même structure, pas de titre</p>
+      <div class="bg-white rounded-xl border border-stone-200 shadow-sm px-5 py-4 mb-4 text-sm text-stone-500 text-center">Carte synthèse (même composant / même grille que semaine 1)</div>
+      <div class="rounded-lg border border-stone-200 bg-white p-3 min-h-20 text-center text-sm text-stone-600">Grille 7 colonnes (4–10 mai) — toutes les cases à <strong>opacité pleine</strong> (jours entièrement dans mai)</div>
+    </section>
+
+    <section class="rounded-xl bg-stone-200/50 p-4 text-sm text-stone-700">
+      <h2 class="font-bold text-stone-900 mb-2">Cas à couvrir</h2>
+      <ul class="list-disc pl-5 space-y-1">
+        <li>Mois avec <strong>4, 5 ou 6</strong> lignes de semaines.</li>
+        <li>Dernière semaine : atténuer les jours après le dernier jour du mois (ex. 1–7 juin si mai se termine un samedi).</li>
+        <li>Pas de variante « condensée » pour certaines semaines : <strong>toutes</strong> au format détaillé + carte synthèse (si aucune donnée, comportement actuel de la carte vide / masquée).</li>
+      </ul>
+    </section>
+  </div>
+</body>
+</html>

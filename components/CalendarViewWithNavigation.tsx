@@ -1,10 +1,16 @@
 'use client'
 
-import { useState, useEffect, useRef, useTransition, useCallback } from 'react'
+import { useState, useEffect, useRef, useTransition, useCallback, useLayoutEffect } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
 import { Button } from './Button'
 import { CalendarView } from './CalendarView'
-import { getWorkoutsForDateRange, getImportedActivitiesForDateRange, getEffectiveWeeklyTotalsFait, getWorkoutWeeklyTotals } from '@/app/[locale]/dashboard/workouts/actions'
+import {
+  getWorkoutsForDateRange,
+  getImportedActivitiesForDateRange,
+  getEffectiveWeeklyTotalsFait,
+  getWorkoutWeeklyTotals,
+  fetchCalendarDataBundle,
+} from '@/app/[locale]/dashboard/workouts/actions'
 import { getAvailabilityForDateRange } from '@/app/[locale]/dashboard/availability/actions'
 import type {
   AthleteFacility,
@@ -16,7 +22,7 @@ import type {
   AthleteAvailabilitySlot,
   WorkoutPrimaryMetricBySport,
 } from '@/types/database'
-import { getWeekMonday, toDateStr } from '@/lib/dateUtils'
+import { getWeekMonday, toDateStr, getExtendedCalendarMonthGridBounds } from '@/lib/dateUtils'
 
 const SLIDE_DURATION_MS = 380
 /** Hauteur approximative d’une section « semaine » pour le glissement (px). */
@@ -56,15 +62,6 @@ function getNextWeekFirstDay(referenceMonday: Date): Date {
   return d
 }
 
-/** Retourne le lundi de la première et de la dernière des 3 semaines affichées. */
-function getThreeWeekMondays(referenceMonday: Date): { start: string; end: string } {
-  const first = new Date(referenceMonday)
-  first.setDate(first.getDate() - 7)
-  const last = new Date(referenceMonday)
-  last.setDate(last.getDate() + 7)
-  return { start: toDateStr(first), end: toDateStr(last) }
-}
-
 type CalendarViewWithNavigationProps = {
   athleteId: string
   athleteEmail: string
@@ -82,13 +79,14 @@ type CalendarViewWithNavigationProps = {
   title?: React.ReactNode
   /** Si fourni, le sélecteur de semaine sera rendu via cette fonction au lieu d'être dans le composant */
   renderWeekSelector?: (props: {
+    isMdUp: boolean
     dateRangeLabel: string
-    onNavigate: (offset: number) => void
+    onNavigateWeek: (offset: number) => void
     isAnimating: boolean
-    /** Dernier jour de la 1ère semaine (ex. "9 févr.") pour le chevron gauche */
     prevWeekLastDayLabel: string
-    /** Dernier jour de la 3e semaine (ex. "29 févr.") pour le chevron droit */
     nextWeekFirstDayLabel: string
+    calendarMonth: { year: number; month: number }
+    onNavigateMonth: (delta: number) => void
   }) => React.ReactNode
   /** Si true, n'affiche pas le sélecteur intégré (utilisé avec renderWeekSelector) */
   hideBuiltInSelector?: boolean
@@ -150,24 +148,40 @@ export function CalendarViewWithNavigation({
   const weekRangeSeparator = tCalendar('weekRangeSeparator')
   const today = new Date()
   const currentMonday = getWeekMonday(today)
+  const [isMdUp, setIsMdUp] = useState(false)
+  useLayoutEffect(() => {
+    const mq = window.matchMedia('(min-width: 768px)')
+    const fn = () => setIsMdUp(mq.matches)
+    fn()
+    mq.addEventListener('change', fn)
+    return () => mq.removeEventListener('change', fn)
+  }, [])
   const [referenceMonday, setReferenceMonday] = useState<Date>(currentMonday)
+  const [calendarMonth, setCalendarMonth] = useState<{ year: number; month: number }>(() => ({
+    year: today.getFullYear(),
+    month: today.getMonth(),
+  }))
   const [workouts, setWorkouts] = useState<Workout[]>(initialWorkouts)
   const [importedActivities, setImportedActivities] = useState<ImportedActivity[]>(initialImportedActivities)
   const [weeklyTotals, setWeeklyTotals] = useState<ImportedActivityWeeklyTotal[]>(initialWeeklyTotals)
   const [workoutTotals, setWorkoutTotals] = useState<WorkoutWeeklyTotal[]>(initialWorkoutTotals)
   const [availabilities, setAvailabilities] = useState<AthleteAvailabilitySlot[]>(initialAvailabilities)
-  const [loading, setLoading] = useState(false)
   // Tracker les semaines déjà chargées (set de lundis en string)
   // Utiliser useRef pour éviter les re-renders inutiles
-  const loadedWeeksRef = useRef<Set<string>>((() => {
-    const initialSet = new Set<string>()
-    // Initialement, on charge S-2, S-1, S, S+1, S+2
-    for (let offset = -2; offset <= 2; offset++) {
-      const weekMonday = getWeekMondayByOffset(currentMonday, offset)
-      initialSet.add(toDateStr(weekMonday))
-    }
-    return initialSet
-  })())
+  const loadedWeeksRef = useRef<Set<string>>(
+    (() => {
+      const initialSet = new Set<string>()
+      const { weekStartDates } = getExtendedCalendarMonthGridBounds(today.getFullYear(), today.getMonth())
+      for (const ws of weekStartDates) {
+        initialSet.add(ws)
+      }
+      for (let offset = -2; offset <= 2; offset++) {
+        const weekMonday = getWeekMondayByOffset(currentMonday, offset)
+        initialSet.add(toDateStr(weekMonday))
+      }
+      return initialSet
+    })()
+  )
   // Garder les données précédentes pendant le chargement/animation pour éviter le flickering
   const stableWeeklyTotalsRef = useRef<ImportedActivityWeeklyTotal[]>(initialWeeklyTotals)
   const stableWorkoutTotalsRef = useRef<WorkoutWeeklyTotal[]>(initialWorkoutTotals)
@@ -177,7 +191,7 @@ export function CalendarViewWithNavigation({
   const [slideDirection, setSlideDirection] = useState<'next' | 'prev'>('next')
   const [slideEnd, setSlideEnd] = useState(false)
   const animatingRef = useRef(false)
-  const [isPending, startTransition] = useTransition()
+  const [, startTransition] = useTransition()
 
   // Après router.refresh(), réinjecter les données serveur quand le contenu change. La clé inclut updated_at
   // pour que les modifications d'un entraînement (ex. durée) déclenchent bien la resync.
@@ -199,29 +213,31 @@ export function CalendarViewWithNavigation({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [serverDataKey, weeklyTotalsKey, availabilitiesKey])
 
-  // Chargement initial : 5 semaines (S-2 à S+2)
+  // Chargement initial client : mois civil courant étendu (aligné SSR) si données absentes
   useEffect(() => {
-    // Si on a déjà des données initiales, on considère que les 5 semaines sont chargées
     if (initialWorkouts.length > 0 || initialWeeklyTotals.length > 0) {
-      // Les semaines sont déjà marquées comme chargées dans l'initialisation de loadedWeeks
       return
     }
-    
-    const initialRange = getInitialFiveWeekRange(currentMonday)
-    const lastMondayStr = toDateStr(getWeekMondayByOffset(currentMonday, 2))
+
+    const { rangeStart, rangeEnd, weekStartDates } = getExtendedCalendarMonthGridBounds(
+      today.getFullYear(),
+      today.getMonth()
+    )
+    const startMondayStr = toDateStr(getWeekMonday(rangeStart))
+    const endMondayStr = toDateStr(getWeekMonday(rangeEnd))
     let cancelled = false
 
     const loadInitialData = async () => {
       const [workoutsResult, importedResult, workoutTotalsResult, totalsResult, availabilitiesResult] = await Promise.all([
-        getWorkoutsForDateRange(athleteId, initialRange.start, initialRange.end),
-        getImportedActivitiesForDateRange(athleteId, initialRange.start, initialRange.end),
-        getWorkoutWeeklyTotals(athleteId, initialRange.start, lastMondayStr),
-        getEffectiveWeeklyTotalsFait(athleteId, initialRange.start, lastMondayStr),
-        getAvailabilityForDateRange(athleteId, initialRange.start, initialRange.end),
+        getWorkoutsForDateRange(athleteId, rangeStart, rangeEnd),
+        getImportedActivitiesForDateRange(athleteId, rangeStart, rangeEnd),
+        getWorkoutWeeklyTotals(athleteId, startMondayStr, endMondayStr),
+        getEffectiveWeeklyTotalsFait(athleteId, startMondayStr, endMondayStr),
+        getAvailabilityForDateRange(athleteId, rangeStart, rangeEnd),
       ])
-      
+
       if (cancelled) return
-      
+
       startTransition(() => {
         if (!workoutsResult.error && workoutsResult.workouts) {
           setWorkouts(workoutsResult.workouts as Workout[])
@@ -241,24 +257,57 @@ export function CalendarViewWithNavigation({
         if (Array.isArray(availabilitiesResult)) {
           setAvailabilities(availabilitiesResult)
         }
-        
-        // Marquer les 5 semaines initiales comme chargées
-        for (let offset = -2; offset <= 2; offset++) {
-          const weekMonday = getWeekMondayByOffset(currentMonday, offset)
-          loadedWeeksRef.current.add(toDateStr(weekMonday))
+
+        for (const ws of weekStartDates) {
+          loadedWeeksRef.current.add(ws)
         }
       })
     }
-    
+
     loadInitialData()
-    
+
     return () => {
       cancelled = true
     }
-  }, [athleteId]) // Seulement au montage ou si athleteId change
+  }, [athleteId])
 
-  // Chargement paginé lors de la navigation
+  const prevCalendarMonthKeyRef = useRef<string | null>(null)
+  const monthRequestIdRef = useRef(0)
+
   useEffect(() => {
+    if (!isMdUp) return
+    const key = `${calendarMonth.year}-${calendarMonth.month}`
+    if (prevCalendarMonthKeyRef.current === null) {
+      prevCalendarMonthKeyRef.current = key
+      return
+    }
+    if (prevCalendarMonthKeyRef.current === key) return
+    prevCalendarMonthKeyRef.current = key
+
+    const requestId = ++monthRequestIdRef.current
+    const { rangeStart, rangeEnd } = getExtendedCalendarMonthGridBounds(calendarMonth.year, calendarMonth.month)
+
+    ;(async () => {
+      const bundle = await fetchCalendarDataBundle(athleteId, rangeStart, rangeEnd)
+      if (monthRequestIdRef.current !== requestId) return
+      if (bundle.error) return
+      startTransition(() => {
+        setWorkouts(bundle.workouts)
+        stableWorkoutsRef.current = bundle.workouts
+        setImportedActivities(bundle.importedActivities)
+        setWeeklyTotals(bundle.weeklyTotals)
+        stableWeeklyTotalsRef.current = bundle.weeklyTotals
+        setWorkoutTotals(bundle.workoutTotals)
+        stableWorkoutTotalsRef.current = bundle.workoutTotals
+        setAvailabilities(bundle.availabilities)
+      })
+    })()
+  }, [calendarMonth, isMdUp, athleteId])
+
+  // Chargement paginé lors de la navigation (vue semaine / mobile uniquement)
+  useEffect(() => {
+    if (isMdUp) return
+
     // Vérifier quelles semaines doivent être chargées (S-2, S-1, S, S+1, S+2)
     const requiredWeeks: string[] = []
     for (let offset = -2; offset <= 2; offset++) {
@@ -356,54 +405,71 @@ export function CalendarViewWithNavigation({
     loadMissingWeeks()
   }, [referenceMonday, athleteId])
 
-  const refetchWorkoutsAfterSave = useCallback(async (updatedWorkout?: Workout) => {
-    if (updatedWorkout) {
-      startTransition(() => {
-        setWorkouts(prev => {
-          const map = new Map(prev.map(w => [w.id, w]))
-          map.set(updatedWorkout.id, updatedWorkout)
-          const merged = Array.from(map.values())
-          stableWorkoutsRef.current = merged
-          return merged
-        })
-      })
-      const { start, end } = getInitialFiveWeekRange(referenceMonday)
-      const workoutTotalsResult = await getWorkoutWeeklyTotals(athleteId, start, end)
-      if (!workoutTotalsResult.error && workoutTotalsResult.workoutTotals) {
+  const getActiveCalendarRange = useCallback((): { start: string; end: string } => {
+    if (isMdUp) {
+      const { rangeStart, rangeEnd } = getExtendedCalendarMonthGridBounds(calendarMonth.year, calendarMonth.month)
+      return { start: rangeStart, end: rangeEnd }
+    }
+    return getInitialFiveWeekRange(referenceMonday)
+  }, [isMdUp, calendarMonth.year, calendarMonth.month, referenceMonday])
+
+  const refetchWorkoutsAfterSave = useCallback(
+    async (updatedWorkout?: Workout) => {
+      if (updatedWorkout) {
         startTransition(() => {
+          setWorkouts((prev) => {
+            const map = new Map(prev.map((w) => [w.id, w]))
+            map.set(updatedWorkout.id, updatedWorkout)
+            const merged = Array.from(map.values())
+            stableWorkoutsRef.current = merged
+            return merged
+          })
+        })
+        const r = getActiveCalendarRange()
+        const startM = toDateStr(getWeekMonday(r.start))
+        const endM = toDateStr(getWeekMonday(r.end))
+        const workoutTotalsResult = await getWorkoutWeeklyTotals(athleteId, startM, endM)
+        if (!workoutTotalsResult.error && workoutTotalsResult.workoutTotals) {
+          startTransition(() => {
+            const fresh = workoutTotalsResult.workoutTotals as WorkoutWeeklyTotal[]
+            setWorkoutTotals(fresh)
+            stableWorkoutTotalsRef.current = fresh
+          })
+        }
+        return
+      }
+      const r = getActiveCalendarRange()
+      const start = r.start
+      const end = r.end
+      const startM = toDateStr(getWeekMonday(start))
+      const endM = toDateStr(getWeekMonday(end))
+      const [workoutsResult, workoutTotalsResult] = await Promise.all([
+        getWorkoutsForDateRange(athleteId, start, end),
+        getWorkoutWeeklyTotals(athleteId, startM, endM),
+      ])
+      startTransition(() => {
+        if (!workoutsResult.error && workoutsResult.workouts) {
+          const fresh = workoutsResult.workouts as Workout[]
+          setWorkouts(fresh)
+          stableWorkoutsRef.current = fresh
+        }
+        if (!workoutTotalsResult.error && workoutTotalsResult.workoutTotals) {
           const fresh = workoutTotalsResult.workoutTotals as WorkoutWeeklyTotal[]
           setWorkoutTotals(fresh)
           stableWorkoutTotalsRef.current = fresh
-        })
-      }
-      return
-    }
-    const { start, end } = getInitialFiveWeekRange(referenceMonday)
-    const [workoutsResult, workoutTotalsResult] = await Promise.all([
-      getWorkoutsForDateRange(athleteId, start, end),
-      getWorkoutWeeklyTotals(athleteId, start, end),
-    ])
-    startTransition(() => {
-      if (!workoutsResult.error && workoutsResult.workouts) {
-        const fresh = workoutsResult.workouts as Workout[]
-        setWorkouts(fresh)
-        stableWorkoutsRef.current = fresh
-      }
-      if (!workoutTotalsResult.error && workoutTotalsResult.workoutTotals) {
-        const fresh = workoutTotalsResult.workoutTotals as WorkoutWeeklyTotal[]
-        setWorkoutTotals(fresh)
-        stableWorkoutTotalsRef.current = fresh
-      }
-    })
-  }, [referenceMonday, athleteId])
+        }
+      })
+    },
+    [athleteId, getActiveCalendarRange]
+  )
 
   const refetchAvailabilitiesAfterSave = useCallback(async () => {
-    const { start, end } = getInitialFiveWeekRange(referenceMonday)
-    const slots = await getAvailabilityForDateRange(athleteId, start, end)
+    const r = getActiveCalendarRange()
+    const slots = await getAvailabilityForDateRange(athleteId, r.start, r.end)
     startTransition(() => setAvailabilities(slots))
-  }, [referenceMonday, athleteId])
+  }, [athleteId, getActiveCalendarRange])
 
-  const handleNavigate = (weeksOffset: number) => {
+  const handleNavigateWeek = (weeksOffset: number) => {
     if (animatingRef.current) return
 
     const newRefMonday = new Date(referenceMonday)
@@ -414,6 +480,28 @@ export function CalendarViewWithNavigation({
     setSlideDirection(direction)
     setSlideEnd(false)
     setReferenceMonday(newRefMonday)
+    setIsAnimating(true)
+
+    requestAnimationFrame(() => {
+      setSlideEnd(true)
+    })
+    setTimeout(() => {
+      setIsAnimating(false)
+      setSlideEnd(false)
+      animatingRef.current = false
+    }, SLIDE_DURATION_MS)
+  }
+
+  const handleNavigateMonth = (delta: number) => {
+    if (animatingRef.current) return
+
+    const next = new Date(calendarMonth.year, calendarMonth.month + delta, 1)
+    const direction = delta > 0 ? 'next' : 'prev'
+
+    animatingRef.current = true
+    setSlideDirection(direction)
+    setSlideEnd(false)
+    setCalendarMonth({ year: next.getFullYear(), month: next.getMonth() })
     setIsAnimating(true)
 
     requestAnimationFrame(() => {
@@ -439,11 +527,14 @@ export function CalendarViewWithNavigation({
   }
 
   const weekSelectorProps = {
+    isMdUp,
     dateRangeLabel,
-    onNavigate: handleNavigate,
+    onNavigateWeek: handleNavigateWeek,
     isAnimating,
     prevWeekLastDayLabel: formatShortDate(getPreviousWeekLastDay(referenceMonday), locale),
     nextWeekFirstDayLabel: formatShortDate(getNextWeekFirstDay(referenceMonday), locale),
+    calendarMonth,
+    onNavigateMonth: handleNavigateMonth,
   }
 
   return (
@@ -474,7 +565,9 @@ export function CalendarViewWithNavigation({
                   athleteView={athleteView}
                   pathToRevalidate={pathToRevalidate}
                   referenceMonday={referenceMonday}
-                  onNavigate={handleNavigate}
+                  calendarLayout={isMdUp ? 'month' : 'week'}
+                  civilMonth={isMdUp ? calendarMonth : undefined}
+                  onNavigate={handleNavigateWeek}
                   onWorkoutSaved={refetchWorkoutsAfterSave}
                   onAvailabilitySaved={refetchAvailabilitiesAfterSave}
                   athleteFacilities={initialAthleteFacilities}
@@ -498,7 +591,7 @@ export function CalendarViewWithNavigation({
                 <Button
                   type="button"
                   variant="ghost"
-                  onClick={() => handleNavigate(-1)}
+                  onClick={() => handleNavigateWeek(-1)}
                   disabled={isAnimating}
                   className="p-1.5 min-h-10 hover:bg-white hover:text-palette-forest-dark text-stone-500 flex items-center gap-1.5"
                   aria-label={tCalendar('previousWeekButton')}
@@ -516,7 +609,7 @@ export function CalendarViewWithNavigation({
                 <Button
                   type="button"
                   variant="ghost"
-                  onClick={() => handleNavigate(1)}
+                  onClick={() => handleNavigateWeek(1)}
                   disabled={isAnimating}
                   className="p-1.5 min-h-10 hover:bg-white hover:text-palette-forest-dark text-stone-500 flex items-center gap-1.5"
                   aria-label={tCalendar('nextWeekButton')}
@@ -554,7 +647,9 @@ export function CalendarViewWithNavigation({
             athleteView={athleteView}
             pathToRevalidate={pathToRevalidate}
             referenceMonday={referenceMonday}
-            onNavigate={handleNavigate}
+            calendarLayout={isMdUp ? 'month' : 'week'}
+            civilMonth={isMdUp ? calendarMonth : undefined}
+            onNavigate={handleNavigateWeek}
             onWorkoutSaved={refetchWorkoutsAfterSave}
             onAvailabilitySaved={refetchAvailabilitiesAfterSave}
             athleteFacilities={initialAthleteFacilities}

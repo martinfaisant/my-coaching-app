@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl'
 import { CalendarViewWithNavigation } from './CalendarViewWithNavigation'
 import { WeekSelector } from './WeekSelector'
+import { MonthSelector } from './MonthSelector'
 import type {
   Workout,
   Goal,
@@ -42,6 +43,7 @@ export function AthleteCalendarPage({
 }: AthleteCalendarPageProps) {
   const t = useTranslations('navigation')
   const tCommon = useTranslations('common')
+  const tCalendar = useTranslations('calendar')
 
   return (
     <CalendarViewWithNavigation
@@ -58,7 +60,16 @@ export function AthleteCalendarPage({
         pathToRevalidate={pathToRevalidate}
         initialCoachWorkoutPrimaryMetrics={coachWorkoutPrimaryMetrics}
         hideBuiltInSelector={true}
-        renderWeekSelector={({ dateRangeLabel, onNavigate, isAnimating, prevWeekLastDayLabel, nextWeekFirstDayLabel }) => (
+        renderWeekSelector={({
+          isMdUp,
+          dateRangeLabel,
+          onNavigateWeek,
+          isAnimating,
+          prevWeekLastDayLabel,
+          nextWeekFirstDayLabel,
+          calendarMonth,
+          onNavigateMonth,
+        }) => (
           <header className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between md:h-20 px-4 md:px-6 lg:px-8 py-4 shrink-0 bg-white/80 backdrop-blur-md border-b border-stone-100 z-10">
             <h1 className="flex items-center gap-2 text-xl font-bold text-stone-800 shrink-0">
               <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-palette-forest-dark text-white shrink-0" aria-hidden>
@@ -73,15 +84,27 @@ export function AthleteCalendarPage({
               {t('calendar')}
             </h1>
             <div className="flex justify-center w-full md:w-auto md:flex-none">
-              <WeekSelector
-                dateRangeLabel={dateRangeLabel}
-                onNavigate={onNavigate}
-                isAnimating={isAnimating}
-                prevWeekLastDayLabel={prevWeekLastDayLabel}
-                nextWeekFirstDayLabel={nextWeekFirstDayLabel}
-                prevWeekAriaLabel={tCommon('weekPrevious')}
-                nextWeekAriaLabel={tCommon('weekNext')}
-              />
+              {isMdUp ? (
+                <MonthSelector
+                  year={calendarMonth.year}
+                  monthIndex={calendarMonth.month}
+                  onPrevMonth={() => onNavigateMonth(-1)}
+                  onNextMonth={() => onNavigateMonth(1)}
+                  isAnimating={isAnimating}
+                  prevMonthAriaLabel={tCalendar('prevMonth')}
+                  nextMonthAriaLabel={tCalendar('nextMonth')}
+                />
+              ) : (
+                <WeekSelector
+                  dateRangeLabel={dateRangeLabel}
+                  onNavigate={onNavigateWeek}
+                  isAnimating={isAnimating}
+                  prevWeekLastDayLabel={prevWeekLastDayLabel}
+                  nextWeekFirstDayLabel={nextWeekFirstDayLabel}
+                  prevWeekAriaLabel={tCommon('weekPrevious')}
+                  nextWeekAriaLabel={tCommon('weekNext')}
+                />
+              )}
             </div>
           </header>
         )}
