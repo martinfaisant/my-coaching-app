@@ -28,24 +28,29 @@ const LINK_ACTIVE =
   'bg-palette-forest-dark text-white shadow-lg shadow-palette-forest-dark/20'
 const LINK_INACTIVE = 'text-stone-600 hover:bg-stone-50 hover:text-palette-forest-dark'
 
-export function AthleteAccountMenu({
+export function AthleteAccountMenu(props: AthleteAccountMenuProps) {
+  const pathname = usePathname()
+  return <AthleteAccountMenuInner key={pathname} pathname={pathname} {...props} />
+}
+
+type AthleteAccountMenuInnerProps = AthleteAccountMenuProps & {
+  pathname: string
+}
+
+function AthleteAccountMenuInner({
   profile,
   displayName,
   profileLabel,
   initials,
-}: AthleteAccountMenuProps) {
+  pathname,
+}: AthleteAccountMenuInnerProps) {
   const t = useTranslations('navigation')
-  const pathname = usePathname()
   const menuId = useId()
   const [open, setOpen] = useState(false)
   const wrapRef = useRef<HTMLDivElement>(null)
   const accountItems = getAthleteAccountNavItems(profile)
   const profileItem = getAthleteProfileNavItem()
   const triggerActive = isAthleteAccountMenuTriggerActive(pathname, profile)
-
-  useEffect(() => {
-    setOpen(false)
-  }, [pathname])
 
   useEffect(() => {
     if (!open) return
