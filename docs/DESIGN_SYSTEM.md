@@ -1,7 +1,7 @@
 # 🎨 Design System
 
-**Version :** 1.27  
-**Dernière mise à jour :** 4 mai 2026 (`AthleteAccountMenu` ; nav athlète : menu compte desktop + drawer regroupé)
+**Version :** 1.28  
+**Dernière mise à jour :** 5 mai 2026 (`AthleteStatsVolumeChart`, skeletons stats, variables `--chart-*` pour Nivo)
 
 ---
 
@@ -44,6 +44,7 @@
    - [MonthSelector](#monthselector)
    - [ChatAthleteListItem](#chatathletelistitem)
    - [ChatConversationSidebar](#chatconversationsidebar)
+   - [AthleteStatsVolumeChart](#athletestatsvolumechart)
 4. [Icônes](#icônes)
 5. [Guidelines](#guidelines)
 6. [FAQ](#faq)
@@ -1680,6 +1681,18 @@ Référence : `docs/CHAT_COACH_START_CONVERSATION_DESIGN.md`, mockup états 2a e
 
 ---
 
+### AthleteStatsVolumeChart
+
+**Fichier :** `components/athlete/AthleteStatsVolumeChart.tsx`
+
+Graphique **volume réalisé** (Nivo `ResponsiveLine`, import client ; montage après première frame pour mesure). Plusieurs années = plusieurs lignes (`ATHLETE_STATS_LINE_COLORS`). **Pas de légende Nivo** sous le graphe. **Tranches verticales** (`enableSlices="x"`) : survol = `sliceTooltip`. **Encart permanent** sous le graphe : titre *Volume annuel* / *Annual volume*, liste des années avec **total sur l’année** (somme des points de la série selon la granularité), pastilles de couleur alignées sur les lignes (`athleteStats.sliceDetail.annualVolumeTitle`, `yearValue`, `panelAria`, `weekTooltip`).
+
+**Skeletons :** `components/athlete/AthleteStatsChartSkeleton.tsx` — `AthleteStatsChartPlotSkeleton` (zone courbe avec gouttière Y, quadrillage, courbes factices, axe X) pendant l’hydratation du graphique ; `AthleteStatsChartFullSkeleton` (+ message `statusMessage`, encart annuel factice à *n* lignes selon les années sélectionnées) lors du refetch sur la page stats.
+
+**Thème Nivo :** `lib/athleteStatsNivoTheme.ts` + variables `--chart-*` dans `app/globals.css` (quadrillage / axes / tooltip), sans hex dans le composant.
+
+---
+
 ## Icônes
 
 ### Sports
@@ -1849,6 +1862,7 @@ Actuellement, utiliser un span custom :
 - **Composants** : `components/Button.tsx`, `components/Input.tsx`, `components/PasswordInput.tsx`, `components/SearchInput.tsx`, `components/Textarea.tsx`, `components/Badge.tsx`, `components/Avatar.tsx`, `components/AvatarImage.tsx`, `components/SportTileSelectable.tsx`, `components/ActivityTile.tsx`, `components/Modal.tsx`, `components/CoachReviewsModal.tsx`, `components/workout-modal/WorkoutFacilityHoursStrip.tsx`, `components/AthleteFacilityDetails.tsx`, `components/CoachAthleteNotesSection.tsx`, `components/CoachAthleteNoteModal.tsx`, `components/DashboardPageShell.tsx`, `components/DashboardTopBar.tsx`, `components/AthleteAccountMenu.tsx`, `components/Drawer.tsx`, `components/PublicHeader.tsx`, `components/EmailValidatedModal.tsx`, `components/HomeEmailConfirmedTrigger.tsx`, `components/Dropdown.tsx`, `components/Segments.tsx`, `components/DatePickerPopup.tsx`, `components/MonthSelector.tsx`, `components/CalendarView.tsx`, `components/CalendarViewWithNavigation.tsx`, `lib/calendarViewDayHeights.ts`, `components/AvailabilityModal.tsx`, `components/AvailabilityDetailModal.tsx`, `components/ChatAthleteListItem.tsx`, `components/ChatConversationSidebar.tsx`
 - **Page Mes athlètes (coach)** : `app/[locale]/dashboard/athletes/page.tsx` (bandeaux profil / offre publiée, erreur chargement liste), `CoachAthletesListWithFilter.tsx`, `PendingRequestTile.tsx`
 - **Sports** : `lib/sportStyles.ts`, `lib/sportsOptions.ts`, `components/SportIcons.tsx`
+- **Stats athlète (Nivo)** : `lib/athleteStatsNivoTheme.ts`, `lib/athleteStatsColors.ts`, `components/athlete/AthleteStatsVolumeChart.tsx`
 - **Horaires modale workout (coach)** : `lib/workoutFacilityHours.ts` (filtre sport ↔ type d’installation, jour, tri alphabétique)
 - **Design system page** : `app/dashboard/admin/design-system/page.tsx`
 

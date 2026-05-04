@@ -18,6 +18,8 @@
     "test:e2e:headed": "playwright test --headed"
   },
   "dependencies": {
+    "@nivo/core": "^0.99.0",
+    "@nivo/line": "^0.99.0",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.94.0",
     "lucide-react": "^0.563.0",

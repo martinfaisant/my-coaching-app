@@ -15,6 +15,7 @@ export type NavigationI18nKey =
   | 'findCoach'
   | 'calendar'
   | 'goals'
+  | 'stats'
   | 'devices'
   | 'myCoach'
   | 'subscriptionHistory'
@@ -45,6 +46,7 @@ export function getAthletePrimaryNavItems(profile: ProfileNavInput): NavItem[] {
     items.push({ href: '/dashboard/find-coach', i18nKey: 'findCoach' })
   }
   items.push({ href: '/dashboard/calendar', i18nKey: 'calendar' })
+  items.push({ href: '/dashboard/stats', i18nKey: 'stats' })
   items.push({ href: '/dashboard/objectifs', i18nKey: 'goals' })
   return items
 }

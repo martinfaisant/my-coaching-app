@@ -18,6 +18,12 @@
   --palette-danger-light: #fdf2f1;
   --palette-danger-dark: #9e3b31;
   --palette-danger-darker: #7d3028;
+  /* Neutres graphiques stats (Nivo) — alignés sur l’échelle stone du dashboard */
+  --chart-grid-line: #e7e5e4;
+  --chart-axis-domain: #d6d3d1;
+  --chart-axis-tick: #57534e;
+  --chart-legend-text: #44403c;
+  --chart-tooltip-bg: #ffffff;
 }
 
 @theme inline {

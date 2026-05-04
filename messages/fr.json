@@ -100,6 +100,7 @@
   "navigation": {
     "findCoach": "Trouver mon coach",
     "calendar": "Mon calendrier",
+    "stats": "Statistiques",
     "goals": "Mes objectifs",
     "myCoach": "Mon Coach",
     "devices": "Mes appareils connectés",
@@ -115,6 +116,53 @@
     "collapseMenu": "Réduire le menu",
     "designSystem": "Design System",
     "members": "Gestion des membres"
+  },
+  "athleteStats": {
+    "title": "Statistiques",
+    "filters": {
+      "aria": "Filtres des graphiques",
+      "years": "Années civiles",
+      "maxYearsHint": "Vous pouvez comparer jusqu’à {max} années.",
+      "sport": "Sport",
+      "granularity": "Granularité",
+      "granularityWeek": "Semaine",
+      "granularityMonth": "Mois",
+      "metric": "Métrique",
+      "metricTime": "Temps",
+      "metricDistance": "Distance",
+      "metricElevation": "Dénivelé"
+    },
+    "chart": {
+      "sectionTitle": "Volume réalisé",
+      "loading": "Mise à jour des données…",
+      "empty": "Aucune donnée pour cette sélection.",
+      "emptyNoData": "Aucune donnée à afficher. Modifiez les filtres ou réessayez plus tard.",
+      "aria": "Graphique du volume réalisé par semaine ou par mois",
+      "xWeeks": "Semaine (index)",
+      "xMonths": "Mois",
+      "yAxisLegendTime": "Temps (h)",
+      "yAxisLegendDistanceKm": "Distance (km)",
+      "yAxisLegendDistanceM": "Distance (m)",
+      "yAxisLegendElevation": "Dénivelé (m)"
+    },
+    "sliceDetail": {
+      "weekTooltip": "Semaine {n}",
+      "annualVolumeTitle": "Volume annuel",
+      "yearValue": "Année {year}",
+      "panelAria": "Volume total réalisé par année civile"
+    },
+    "units": {
+      "hours": "h",
+      "km": "km",
+      "meters": "m",
+      "metersElevation": "m D+"
+    },
+    "errors": {
+      "athleteOnly": "Cette page est réservée aux athlètes.",
+      "yearsRequired": "Sélectionnez au moins une année.",
+      "invalidSport": "Sport invalide.",
+      "loadFailed": "Impossible de charger les statistiques."
+    }
   },
   "adminDesignSystem": {
     "intro": "Référence des tokens et composants. Priorité : utiliser ces tokens plutôt que des couleurs hex en dur.",
@@ -456,6 +504,8 @@
     "muscu": "Musculation",
     "triathlon": "Triathlon",
     "ski_fond": "Ski de fond",
+    "ski_randonnee": "Ski de randonnée",
+    "patinage_glace": "Patin à glace",
     "rando": "Randonnée",
     "trail": "Trail",
     "vtt": "VTT",
@@ -931,6 +981,7 @@
     "dashboardTitle": "Tableau de bord",
     "dashboardDescription": "Gérez vos entraînements, objectifs et coach",
     "calendarTitle": "Mon calendrier",
+    "statsTitle": "Statistiques",
     "goalsTitle": "Mes Objectifs",
     "profileTitle": "Mon profil",
     "devicesTitle": "Appareils connectés"

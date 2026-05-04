@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>US-STATS-01 — Volume réalisé (courbe)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config = { theme: { extend: { colors: { forest: '#627e59', olive: '#8e9856', sage: '#aaaa51' } } } }</script>
+</head>
+<body class="bg-stone-100 p-4">
+  <p class="text-xs text-stone-500 mb-3 max-w-3xl">
+    <strong>US-STATS-01</strong> — Un seul graphique : <strong>courbe</strong> du volume <strong>réalisé</strong> (« fait », règle anti-double comptage).
+    <strong>Un sport à la fois</strong> (changement de sport = autre série sur le même type de graphique).
+    <strong>Plusieurs années sélectionnées</strong> = <strong>autant de lignes</strong> (une couleur / légende par année civile). Axe X = semaines ou mois civils (filtre global granularité).
+  </p>
+
+  <article class="max-w-5xl mx-auto rounded-2xl border border-stone-200 bg-white p-4 shadow-sm">
+    <header class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
+      <div>
+        <h2 class="text-base font-bold text-stone-800">Volume réalisé</h2>
+        <p class="text-xs text-stone-600 mt-1">
+          Sport affiché : <strong class="text-stone-800">Course</strong>
+          <span class="text-stone-400">(sélecteur unique dans le bandeau filtres)</span>
+        </p>
+      </div>
+      <div class="flex flex-wrap gap-x-4 gap-y-1 text-xs">
+        <span class="flex items-center gap-1.5"><span class="w-3 h-0.5 rounded bg-forest" style="min-width:12px"></span> 2026</span>
+        <span class="flex items-center gap-1.5"><span class="w-3 h-0.5 rounded bg-olive" style="min-width:12px"></span> 2025</span>
+        <span class="flex items-center gap-1.5"><span class="w-3 h-0.5 rounded bg-sage" style="min-width:12px"></span> 2024</span>
+      </div>
+    </header>
+
+    <div class="relative h-56 md:h-72 border border-stone-100 rounded-xl bg-stone-50 px-3 pt-4 pb-8" role="img" aria-label="Courbes volume réalisé par semaine">
+      <svg class="w-full h-full" viewBox="0 0 400 120" preserveAspectRatio="none" aria-hidden="true">
+        <line x1="0" y1="100" x2="400" y2="100" stroke="#e7e5e4" stroke-width="1" />
+        <polyline fill="none" stroke="#627e59" stroke-width="2.5" points="0,85 80,70 160,75 240,45 320,50 400,35" />
+        <polyline fill="none" stroke="#8e9856" stroke-width="2.5" points="0,90 80,82 160,88 240,72 320,68 400,55" />
+        <polyline fill="none" stroke="#aaaa51" stroke-width="2.5" stroke-dasharray="6 4" points="0,95 80,88 160,92 240,85 320,80 400,70" />
+      </svg>
+      <div class="absolute bottom-1 left-3 right-3 flex justify-between text-[10px] text-stone-400">
+        <span>S1</span><span>S13</span><span>S26</span><span>S39</span><span>S52</span>
+      </div>
+    </div>
+    <p class="text-xs text-stone-500 mt-2">
+      Métrique (Temps / Distance / D+) : pilotée par le bandeau global. Pas de cumul « tous sports » sur ce graphique.
+    </p>
+  </article>
+
+  <section class="max-w-5xl mx-auto mt-4 text-xs text-stone-500 space-y-1">
+    <p><strong>États :</strong> chargement ; vide (aucune donnée pour ce sport sur les années cochées) ; erreur + retry.</p>
+    <p><strong>Accessibilité :</strong> couleurs lignes + motifs (pointillés) si plus de 3 années ; tableau synthèse optionnel <code>sr-only</code>.</p>
+  </section>
+</body>
+</html>
