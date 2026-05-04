@@ -1,0 +1,169 @@
+﻿2026-05-04T17:39:46.7513845Z ##[group]Run npm run lint
+2026-05-04T17:39:46.7514283Z [36;1mnpm run lint[0m
+2026-05-04T17:39:46.7537657Z shell: /usr/bin/bash -e {0}
+2026-05-04T17:39:46.7537908Z env:
+2026-05-04T17:39:46.7538539Z   NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
+2026-05-04T17:39:46.7538945Z   NEXT_PUBLIC_SUPABASE_ANON_KEY: anon-key
+2026-05-04T17:39:46.7539246Z   SUPABASE_SERVICE_ROLE_KEY: service-role-key
+2026-05-04T17:39:46.7539574Z   NEXT_PUBLIC_APP_URL: http://localhost:3000
+2026-05-04T17:39:46.7539890Z   NEXT_PUBLIC_SITE_URL: http://localhost:3000
+2026-05-04T17:39:46.7540155Z ##[endgroup]
+2026-05-04T17:39:46.8684836Z 
+2026-05-04T17:39:46.8685407Z > my-coaching-app@0.1.0 lint
+2026-05-04T17:39:46.8686027Z > eslint
+2026-05-04T17:39:46.8686250Z 
+2026-05-04T17:40:02.4407476Z 
+2026-05-04T17:40:02.4409057Z /home/runner/work/my-coaching-app/my-coaching-app/app/[locale]/dashboard/CoachAthleteTileWithModal.tsx
+2026-05-04T17:40:02.4439609Z ##[warning]  6:10  warning  'getFrozenTitleForLocale' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+2026-05-04T17:40:02.4448474Z 
+2026-05-04T17:40:02.4449107Z /home/runner/work/my-coaching-app/my-coaching-app/app/[locale]/dashboard/CoachSubscriptionDetailModal.tsx
+2026-05-04T17:40:02.4452473Z ##[warning]  88:13  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-05-04T17:40:02.4454334Z 
+2026-05-04T17:40:02.4454832Z /home/runner/work/my-coaching-app/my-coaching-app/app/[locale]/dashboard/FindCoachSection.tsx
+2026-05-04T17:40:02.4457049Z ##[warning]   46:7   warning  'PRESENTATION_LONG_THRESHOLD' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                   @typescript-eslint/no-unused-vars
+2026-05-04T17:40:02.4460323Z ##[warning]  153:9   warning  'practicedSportsOptions' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+2026-05-04T17:40:02.4464045Z ##[warning]  410:19  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-05-04T17:40:02.4467321Z ##[warning]  475:10  warning  'OfferSelectButton' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                      @typescript-eslint/no-unused-vars
+2026-05-04T17:40:02.4470749Z ##[warning]  515:77  warning  'requestId' is defined but never used. Allowed unused args must match /^_/u                                                                                                                                                                                                              @typescript-eslint/no-unused-vars
+2026-05-04T17:40:02.4474420Z ##[warning]  572:6   warning  React Hook useEffect has missing dependencies: 'displaySportsForVolume' and 'sports'. Either include them or remove the dependency array. You can also replace multiple useState variables with useReducer if 'setWeeklyVolumeInputs' needs the current value of 'sports'                react-hooks/exhaustive-deps
+2026-05-04T17:40:02.4478673Z ##[warning]  572:7   warning  React Hook useEffect has a complex expression in the dependency array. Extract it to a separate variable so it can be statically checked                                                                                                                                                 react-hooks/exhaustive-deps
+2026-05-04T17:40:02.4482101Z ##[warning]  585:9   warning  'getGridCols' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                   @typescript-eslint/no-unused-vars
+2026-05-04T17:40:02.4485050Z ##[warning]  726:9   warning  'formatPrice' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                   @typescript-eslint/no-unused-vars
+2026-05-04T17:40:02.4488134Z ##[warning]  732:9   warning  'getOfferBadge' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                 @typescript-eslint/no-unused-vars
+2026-05-04T17:40:02.4489536Z 
+2026-05-04T17:40:02.4490015Z /home/runner/work/my-coaching-app/my-coaching-app/app/[locale]/dashboard/RequestCoachButton.tsx
+2026-05-04T17:40:02.4491543Z ##[warning]  104:6  warning  React Hook useEffect has a missing dependency: 'closeModal'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+2026-05-04T17:40:02.4492674Z 
+2026-05-04T17:40:02.4493119Z /home/runner/work/my-coaching-app/my-coaching-app/app/[locale]/dashboard/RequestGoalsListModal.tsx
+2026-05-04T17:40:02.4494485Z ##[warning]  69:19  warning  'borderColor' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+2026-05-04T17:40:02.4495615Z 
+2026-05-04T17:40:02.4496153Z /home/runner/work/my-coaching-app/my-coaching-app/app/[locale]/dashboard/admin/design-system/ButtonShowcase.tsx
+2026-05-04T17:40:02.4497617Z ##[warning]  16:6  warning  'VariantId' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+2026-05-04T17:40:02.4498825Z 
+2026-05-04T17:40:02.4499280Z /home/runner/work/my-coaching-app/my-coaching-app/app/[locale]/dashboard/coach/CoachRatingForm.tsx
+2026-05-04T17:40:02.4500836Z ##[warning]  106:6  warning  React Hook useEffect has a missing dependency: 't'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+2026-05-04T17:40:02.4501941Z 
+2026-05-04T17:40:02.4502425Z /home/runner/work/my-coaching-app/my-coaching-app/app/[locale]/dashboard/devices/StravaDevicesSection.tsx
+2026-05-04T17:40:02.4504521Z ##[warning]  16:59  warning  'connection' is defined but never used. Allowed unused args must match /^_/u                                                                                                                                                                                                             @typescript-eslint/no-unused-vars
+2026-05-04T17:40:02.4508463Z ##[warning]  81:17  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-05-04T17:40:02.4510334Z 
+2026-05-04T17:40:02.4510777Z /home/runner/work/my-coaching-app/my-coaching-app/app/[locale]/dashboard/devices/page.tsx
+2026-05-04T17:40:02.4512433Z ##[warning]  19:9  warning  't' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+2026-05-04T17:40:02.4513441Z 
+2026-05-04T17:40:02.4513914Z /home/runner/work/my-coaching-app/my-coaching-app/app/[locale]/dashboard/objectifs/GoalFullModal.tsx
+2026-05-04T17:40:02.4515722Z ##[warning]  54:9  warning  'borderColor' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+2026-05-04T17:40:02.4516837Z 
+2026-05-04T17:40:02.4517328Z /home/runner/work/my-coaching-app/my-coaching-app/app/[locale]/dashboard/objectifs/ObjectifsTable.tsx
+2026-05-04T17:40:02.4518900Z ##[warning]   25:7  warning  'CrownIcon' is assigned a value but never used. Allowed unused vars must match /^_/u      @typescript-eslint/no-unused-vars
+2026-05-04T17:40:02.4520901Z ##[warning]   31:7  warning  'MedalIcon' is assigned a value but never used. Allowed unused vars must match /^_/u      @typescript-eslint/no-unused-vars
+2026-05-04T17:40:02.4522882Z ##[warning]   37:7  warning  'ZapIcon' is assigned a value but never used. Allowed unused vars must match /^_/u        @typescript-eslint/no-unused-vars
+2026-05-04T17:40:02.4524810Z ##[warning]   43:7  warning  'TrophyIcon' is assigned a value but never used. Allowed unused vars must match /^_/u     @typescript-eslint/no-unused-vars
+2026-05-04T17:40:02.4526756Z ##[warning]  250:9  warning  'daysUntilNext' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+2026-05-04T17:40:02.4527826Z 
+2026-05-04T17:40:02.4528466Z /home/runner/work/my-coaching-app/my-coaching-app/app/[locale]/dashboard/profile/ProfileForm.tsx
+2026-05-04T17:40:02.4530566Z ##[warning]    9:10  warning  'Textarea' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                               @typescript-eslint/no-unused-vars
+2026-05-04T17:40:02.4534046Z ##[warning]  371:6   warning  React Hook useEffect has missing dependencies: 'avatarUrlState', 'effectiveInitialLocale', 'isSubmitting', 'router', 'state?.error', and 'state?.success'. Either include them or remove the dependency array                                                                            react-hooks/exhaustive-deps
+2026-05-04T17:40:02.4537932Z ##[warning]  526:19  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-05-04T17:40:02.4539790Z 
+2026-05-04T17:40:02.4540254Z /home/runner/work/my-coaching-app/my-coaching-app/app/[locale]/dashboard/profile/offers/OffersForm.tsx
+2026-05-04T17:40:02.4542278Z ##[warning]  343:6  warning  React Hook useEffect has missing dependencies: 'isSubmitting', 'router', 'state?.error', and 'state?.success'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+2026-05-04T17:40:02.4543575Z 
+2026-05-04T17:40:02.4543998Z /home/runner/work/my-coaching-app/my-coaching-app/app/[locale]/dashboard/profile/page.tsx
+2026-05-04T17:40:02.4545226Z ##[warning]  20:45  warning  'params' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+2026-05-04T17:40:02.4546228Z 
+2026-05-04T17:40:02.4546784Z /home/runner/work/my-coaching-app/my-coaching-app/app/[locale]/dashboard/subscriptions/CoachSubscriptionsContent.tsx
+2026-05-04T17:40:02.4548759Z ##[warning]   7:35  warning  'getFrozenDescriptionForLocale' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+2026-05-04T17:40:02.4550937Z ##[warning]  52:9   warning  'tDetail' is assigned a value but never used. Allowed unused vars must match /^_/u               @typescript-eslint/no-unused-vars
+2026-05-04T17:40:02.4552269Z 
+2026-05-04T17:40:02.4552709Z /home/runner/work/my-coaching-app/my-coaching-app/app/[locale]/dashboard/subscriptions/page.tsx
+2026-05-04T17:40:02.4553998Z ##[warning]  25:9  warning  't' is assigned a value but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+2026-05-04T17:40:02.4556042Z ##[warning]  43:9  warning  'now' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+2026-05-04T17:40:02.4557039Z 
+2026-05-04T17:40:02.4557452Z /home/runner/work/my-coaching-app/my-coaching-app/app/[locale]/dashboard/workouts/actions.ts
+2026-05-04T17:40:02.4559049Z ##[warning]  301:17  warning  'tErrors' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+2026-05-04T17:40:02.4560107Z 
+2026-05-04T17:40:02.4560444Z /home/runner/work/my-coaching-app/my-coaching-app/app/[locale]/layout.tsx
+2026-05-04T17:40:02.4561607Z ##[warning]  22:9  warning  't' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+2026-05-04T17:40:02.4562562Z 
+2026-05-04T17:40:02.4562931Z /home/runner/work/my-coaching-app/my-coaching-app/app/[locale]/reset-password/actions.ts
+2026-05-04T17:40:02.4564234Z ##[warning]  4:10  warning  'redirect' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+2026-05-04T17:40:02.4565211Z 
+2026-05-04T17:40:02.4565583Z /home/runner/work/my-coaching-app/my-coaching-app/components/ActivityTile.tsx
+2026-05-04T17:40:02.4568507Z ##[warning]  133:9  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-05-04T17:40:02.4570248Z 
+2026-05-04T17:40:02.4570659Z /home/runner/work/my-coaching-app/my-coaching-app/components/AthleteAccountMenu.tsx
+2026-05-04T17:40:02.4571534Z   47:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+2026-05-04T17:40:02.4571953Z 
+2026-05-04T17:40:02.4573025Z Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+2026-05-04T17:40:02.4574182Z * Update external systems with the latest state from React.
+2026-05-04T17:40:02.4574975Z * Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+2026-05-04T17:40:02.4575450Z 
+2026-05-04T17:40:02.4576312Z Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+2026-05-04T17:40:02.4577059Z 
+2026-05-04T17:40:02.4577476Z /home/runner/work/my-coaching-app/my-coaching-app/components/AthleteAccountMenu.tsx:47:5
+2026-05-04T17:40:02.4578104Z   45 |
+2026-05-04T17:40:02.4578343Z   46 |   useEffect(() => {
+2026-05-04T17:40:02.4578694Z > 47 |     setOpen(false)
+2026-05-04T17:40:02.4579093Z      |     ^^^^^^^ Avoid calling setState() directly within an effect
+2026-05-04T17:40:02.4579459Z   48 |   }, [pathname])
+2026-05-04T17:40:02.4579681Z   49 |
+2026-05-04T17:40:02.4579982Z   50 |   useEffect(() => {  react-hooks/set-state-in-effect
+2026-05-04T17:40:02.4580251Z 
+2026-05-04T17:40:02.4580583Z /home/runner/work/my-coaching-app/my-coaching-app/components/AthleteTile.tsx
+2026-05-04T17:40:02.4583323Z ##[warning]  78:17  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-05-04T17:40:02.4585289Z 
+2026-05-04T17:40:02.4585676Z /home/runner/work/my-coaching-app/my-coaching-app/components/AvailabilityModal.tsx
+2026-05-04T17:40:02.4586907Z ##[warning]  161:5  warning  Expected an assignment or function call and instead saw an expression  @typescript-eslint/no-unused-expressions
+2026-05-04T17:40:02.4588532Z 
+2026-05-04T17:40:02.4588956Z /home/runner/work/my-coaching-app/my-coaching-app/components/AvatarImage.tsx
+2026-05-04T17:40:02.4591724Z ##[warning]  22:5  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-05-04T17:40:02.4593439Z 
+2026-05-04T17:40:02.4593804Z /home/runner/work/my-coaching-app/my-coaching-app/components/CalendarView.tsx
+2026-05-04T17:40:02.4595802Z ##[warning]   235:10   warning  'GoalTargetBadge' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+2026-05-04T17:40:02.4598788Z ##[warning]   269:3    warning  'onNavigate' is defined but never used. Allowed unused args must match /^_/u                                                                                                                                                                                                             @typescript-eslint/no-unused-vars
+2026-05-04T17:40:02.4601583Z ##[warning]   375:11   warning  'startMonday' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                   @typescript-eslint/no-unused-vars
+2026-05-04T17:40:02.4604540Z ##[warning]   493:6    warning  React Hook useMemo has an unnecessary dependency: 'locale'. Either exclude it or remove the dependency array                                                                                                                                                                             react-hooks/exhaustive-deps
+2026-05-04T17:40:02.4607402Z ##[warning]   600:11   warning  'empty' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+2026-05-04T17:40:02.4610441Z ##[warning]   735:11   warning  'target' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+2026-05-04T17:40:02.4614036Z ##[warning]  1125:49   warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-05-04T17:40:02.4618141Z ##[warning]  1189:41   warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-05-04T17:40:02.4622175Z ##[warning]  1286:41   warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-05-04T17:40:02.4626476Z ##[warning]  1497:302  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-05-04T17:40:02.4631163Z ##[warning]  1556:41   warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-05-04T17:40:02.4635174Z ##[warning]  1666:55   warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-05-04T17:40:02.4639359Z ##[warning]  1741:43   warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-05-04T17:40:02.4643371Z ##[warning]  1891:45   warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-05-04T17:40:02.4647406Z ##[warning]  2256:21   warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-05-04T17:40:02.4649267Z 
+2026-05-04T17:40:02.4649718Z /home/runner/work/my-coaching-app/my-coaching-app/components/CalendarViewWithNavigation.tsx
+2026-05-04T17:40:02.4651700Z ##[warning]  272:6  warning  React Hook useEffect has missing dependencies: 'initialWeeklyTotals.length', 'initialWorkouts.length', and 'today'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+2026-05-04T17:40:02.4654335Z ##[warning]  406:6  warning  React Hook useEffect has a missing dependency: 'isMdUp'. Either include it or remove the dependency array                                                               react-hooks/exhaustive-deps
+2026-05-04T17:40:02.4655522Z 
+2026-05-04T17:40:02.4655869Z /home/runner/work/my-coaching-app/my-coaching-app/components/CoachTile.tsx
+2026-05-04T17:40:02.4658700Z ##[warning]  88:17  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-05-04T17:40:02.4660412Z 
+2026-05-04T17:40:02.4660775Z /home/runner/work/my-coaching-app/my-coaching-app/components/LoginForm.tsx
+2026-05-04T17:40:02.4661978Z ##[warning]  36:9  warning  'tErrors' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+2026-05-04T17:40:02.4662990Z 
+2026-05-04T17:40:02.4663333Z /home/runner/work/my-coaching-app/my-coaching-app/components/WorkoutModal.tsx
+2026-05-04T17:40:02.4665605Z ##[warning]   35:10  warning  'Badge' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                @typescript-eslint/no-unused-vars
+2026-05-04T17:40:02.4669308Z ##[warning]   36:10  warning  'SportTileSelectable' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                  @typescript-eslint/no-unused-vars
+2026-05-04T17:40:02.4672593Z ##[warning]   40:29  warning  'FORM_LABEL_CLASSES' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                   @typescript-eslint/no-unused-vars
+2026-05-04T17:40:02.4675669Z ##[warning]   55:6   warning  'TargetMode' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                           @typescript-eslint/no-unused-vars
+2026-05-04T17:40:02.4678880Z ##[warning]  104:10  warning  'CommentSubmitButton' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                  @typescript-eslint/no-unused-vars
+2026-05-04T17:40:02.4681977Z ##[warning]  105:3   warning  'formState' is defined but never used. Allowed unused args must match /^_/u                                                                                                                                                                                                                                                                            @typescript-eslint/no-unused-vars
+2026-05-04T17:40:02.4685135Z ##[warning]  179:10  warning  'hasCommentChanged' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                           @typescript-eslint/no-unused-vars
+2026-05-04T17:40:02.4688463Z ##[warning]  180:10  warning  'showCommentSuccess' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                          @typescript-eslint/no-unused-vars
+2026-05-04T17:40:02.4692651Z ##[warning]  428:6   warning  React Hook useEffect has missing dependencies: 'isSubmitting', 'onClose', 'state?.error', 'state?.success', 'state.workout', and 'workoutForm'. Either include them or remove the dependency array. If 'onClose' changes too often, find the parent component that defines it and wrap that definition in useCallback                                  react-hooks/exhaustive-deps
+2026-05-04T17:40:02.4695138Z   436:5   warning  Unused eslint-disable directive (no problems were reported from 'react-hooks/exhaustive-deps')
+2026-05-04T17:40:02.4698127Z ##[warning]  440:24  warning  'commentAction' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                               @typescript-eslint/no-unused-vars
+2026-05-04T17:40:02.4702002Z ##[warning]  527:6   warning  React Hook useEffect has missing dependencies: 'commentPending', 'commentState?.error', and 'commentState?.success'. Either include them or remove the dependency array                                                                                                                                                                                react-hooks/exhaustive-deps
+2026-05-04T17:40:02.4706435Z ##[warning]  545:6   warning  React Hook useEffect has missing dependencies: 'onClose', 'statusCommentPending', 'statusCommentState?.error', 'statusCommentState?.success', and 'statusCommentState.workout'. Either include them or remove the dependency array. If 'onClose' changes too often, find the parent component that defines it and wrap that definition in useCallback  react-hooks/exhaustive-deps
+2026-05-04T17:40:02.4708786Z 
+2026-05-04T17:40:02.4709085Z /home/runner/work/my-coaching-app/my-coaching-app/proxy.ts
+2026-05-04T17:40:02.4710356Z ##[warning]  61:9  warning  'isPublicRoute' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+2026-05-04T17:40:02.4711413Z 
+2026-05-04T17:40:02.4711854Z ✖ 75 problems (1 error, 74 warnings)
+2026-05-04T17:40:02.4712330Z   0 errors and 1 warning potentially fixable with the `--fix` option.
+2026-05-04T17:40:02.4712637Z 
+2026-05-04T17:40:02.5262380Z ##[error]Process completed with exit code 1.

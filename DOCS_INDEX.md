@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 4 mai 2026 (**nav athlète** : menu compte + drawer regroupé — `AthleteAccountMenu`, `lib/dashboardNavConfig.ts`, maquettes `docs/archive/design-athlete-nav-reorg/` ; précédent : vue mois calendrier, `CALENDAR_MONTH_VIEW.md` ; voir Changements récents)
+**Dernière mise à jour :** 5 mai 2026 (**page Statistiques athlète livrée** : `/dashboard/stats`, Nivo volume réalisé, `Project_context.md` §4.2.3, **docs/DESIGN_SYSTEM.md**, **docs/I18N.md** ; libellés sports `ski_randonnee` / `patinage_glace` ; précédent : nav athlète menu compte + drawer, maquettes `docs/archive/design-athlete-nav-reorg/` ; stats — maquettes `docs/archive/design-athlete-stats/` ; voir Changements récents)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -12,13 +12,13 @@
 - **Contenu :** Setup projet, stack technique, quick start, structure du projet, **URL production https://mysportally.com**
 - **Utiliser pour :** Onboarding, démarrage rapide, vue d'ensemble technique
 - **Taille :** ~200 lignes
-- **Dernière mise à jour :** 24 février 2026
+- **Dernière mise à jour :** 5 mai 2026 (rôle Athlète : page Statistiques `/dashboard/stats`)
 
 ### **Project_context.md** ⭐
 - **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), stack technique, **URL production https://mysportally.com**
 - **Utiliser pour :** Comprendre le projet, les features, les rôles, l'architecture globale
 - **Taille :** ~450 lignes
-- **Dernière mise à jour :** 4 mai 2026 (§4.0 **Dashboard** : nav athlète menu compte + drawer regroupé ; précédent : §4.5 Calendrier vue mois civil étendu, `MonthSelector` / `WeekSelector`, chargement `getExtendedCalendarMonthGridBounds` / `fetchCalendarDataBundle` ; §4.3 avis coach **063**, §4.2.2 Installations + Notes, §5 `coach_ratings`)
+- **Dernière mise à jour :** 5 mai 2026 (§4.2.3 **Statistiques athlète** `/dashboard/stats` ; §4.0 Dashboard : entrée Statistiques + icône ; précédent : nav athlète menu compte + drawer ; §4.5 Calendrier vue mois ; §4.3 avis coach **063**, §4.2.2 Installations + Notes, §5 `coach_ratings`)
 
 ### **docs/CALENDAR_MONTH_VIEW.md**
 - **Contenu :** Récap **vue mois** (desktop) vs **vue semaine** (mobile), règles semaines ISO / mois civil étendu, chargement données, liste des fichiers et tests unitaires, liens vers maquettes archivées
@@ -27,16 +27,16 @@
 - **Dernière mise à jour :** 4 mai 2026
 
 ### **docs/DESIGN_SYSTEM.md** ⭐
-- **Contenu :** Tokens (couleurs, typo, espacements), composants (Button, Input, Badge, TileCard, DashboardPageShell, **DashboardTopBar**, **AthleteAccountMenu**, Modal, **MonthSelector**, etc.), guidelines UI, exemples de code, §7 breakpoints (**calendrier** mois étendu desktop + WeekSelector mobile, chat, Trouver mon coach, My offers)
+- **Contenu :** Tokens (couleurs, typo, espacements), composants (Button, Input, Badge, TileCard, DashboardPageShell, **DashboardTopBar**, **AthleteAccountMenu**, **AthleteStatsVolumeChart**, **AthleteStatsChartSkeleton**, Modal, **MonthSelector**, etc.), guidelines UI, exemples de code, §7 breakpoints (**calendrier** mois étendu desktop + WeekSelector mobile, chat, Trouver mon coach, My offers)
 - **Utiliser pour :** Créer ou modifier des composants UI, choisir des couleurs, appliquer le design system, règles responsive par page
 - **Taille :** ~1850 lignes
-- **Dernière mise à jour :** 4 mai 2026 (**AthleteAccountMenu**, nav athlète § **DashboardTopBar** ; précédent : §7 Calendrier mois civil étendu, `MonthSelector` / `WeekSelector`, `CalendarView`…)
+- **Dernière mise à jour :** 5 mai 2026 (stats athlète : Nivo, skeletons, `--chart-*` ; précédent : **AthleteAccountMenu**, nav athlète § **DashboardTopBar** ; §7 Calendrier…)
 
 ### **docs/I18N.md** ⭐
 - **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces, utilisation dans composants et server actions, **checklist pour nouvelles features** (toujours penser bilingue)
 - **Utiliser pour :** Toute nouvelle feature ou texte visible, ajout de clés de traduction, dépannage i18n
 - **Taille :** ~190 lignes
-- **Dernière mise à jour :** 4 mai 2026 (`navigation.myInformation`, `navigation.accountMenu` ; précédent : `calendar.prevMonth` / `calendar.nextMonth`, MonthSelector…)
+- **Dernière mise à jour :** 5 mai 2026 (`athleteStats.chart.yAxisLegend*`, `sports.ski_randonnee` / `sports.patinage_glace` ; précédent : `navigation.myInformation`, `navigation.accountMenu`…)
 
 ### **docs/AUTH_EMAIL_TEMPLATES.md**
 - **Contenu :** Guide de configuration des emails d’auth Supabase (sujet, i18n FR/EN, variables, dépannage logo). **Les fichiers HTML des templates** (Confirm signup, puis Magic Link, Reset Password, etc.) sont dans **docs/email-templates/**.
@@ -279,6 +279,11 @@
 - `docs/archive/design-athlete-nav-reorg/MOCKUP_US2_MOBILE_DRAWER_GROUPING.html` — Drawer mobile : mêmes blocs + séparateurs.
 - **Raison :** Feature livrée ; athlète : liens principaux (Trouver mon coach si besoin, calendrier, objectifs) ; entrées **Appareils / Mon coach (si lié) / Historique souscriptions** dans le menu compte (desktop) ou après séparateur (drawer) ; **Mes informations** → profil ; **Déconnexion** aussi en desktop dans le menu. Implémentation : `AthleteAccountMenu`, `getAthletePrimaryNavItems` / `getAthleteAccountNavItems`, `getPageTitleI18nKey(..., profile)`, tests `lib/dashboardNavConfig.test.ts`. Comportement décrit dans **Project_context.md §4.0**, **docs/DESIGN_SYSTEM.md** (DashboardTopBar, AthleteAccountMenu), **docs/I18N.md** (`navigation.myInformation`, `navigation.accountMenu`).
 
+**Page statistiques athlète (graphiques) — maquettes Designer 4 mai 2026 :**
+- `docs/archive/design-athlete-stats/README_DESIGN_ATHLETE_STATS.md` — Index des US et fichiers HTML.
+- `docs/archive/design-athlete-stats/us-00-page-nav-filtres.html` … `us-06-graph-ressenti-intensite.html` — Wireframes : nav entre Calendrier et Objectifs, filtres (années **multi** + sport **unique** + granularité + métrique), courbe **volume réalisé** (1 sport, N années = N lignes), plan vs réalisé, écart %, taux séances, timeline objectifs, ressenti/intensité.
+- **Statut :** **US-STATS-00 / US-STATS-01 (volume réalisé en courbes, filtres, nav)** livrés en produit (`/dashboard/stats`, `AthleteStatsPageClient`, `AthleteStatsVolumeChart`, `loadAthleteVolumeChartData`, encart volume annuel, skeletons, thème Nivo). Les US-STATS-02 à **06** restent **non implémentés** (maquettes uniquement). Comportement courant : **Project_context.md** §4.2.3, **docs/DESIGN_SYSTEM.md** (AthleteStatsVolumeChart), **docs/I18N.md** (`athleteStats`).
+
 **Retour athlète après séance (workout feedback) (archivés 3 mars 2026) :**
 - `docs/archive/design-workout-feedback/` — DESIGN.md (besoin, échelles 1–5 / 1–10, Lucide, harmonisation visuelle), SPEC_ARCHITECTURE.md (migration 054, champs perceived_*), MOCKUP_WORKOUT_FEEDBACK_MODAL_A.html, MOCKUP_WORKOUT_FEEDBACK_MODAL_B.html.
 - **Raison :** Feature livrée ; athlète peut renseigner optionnellement (quand statut = Réalisé) : Comment vous êtes-vous senti ? (1–5), Intensité effort (1–10), Plaisir (1–5) ; icônes Lucide + libellés ; sauvegarde avec statut et commentaire ; coach voit le retour en lecture seule. Comportement décrit dans **Project_context.md §4.5** (Workouts), **docs/DESIGN_SYSTEM.md** (Modal / WorkoutModal), **docs/I18N.md** (workouts.feedback).
@@ -462,10 +467,15 @@
 
 **Fréquence de mise à jour :** À chaque ajout/suppression de documentation
 
-**Dernier scan :** 4 mai 2026  
-**Dernier nettoyage :** 4 mai 2026 (entrée Changements récents : nav athlète + archives mockups)
+**Dernier scan :** 5 mai 2026  
+**Dernier nettoyage :** 5 mai 2026 (entrée Changements récents : page Statistiques athlète livrée)
 
 ### Changements récents :
+
+✅ **5 mai 2026 – Page Statistiques athlète (`/dashboard/stats`) – Mode Analyste :**
+- **Livraison (réf. code) :** route athlète uniquement ; nav principale entre calendrier et objectifs (`getAthletePrimaryNavItems`, icône `DashboardNavIcons`) ; graphique volume **réalisé** (Nivo `ResponsiveLine`) avec jusqu’à **3 années** civiles, un sport à la fois, granularité semaine/mois, métrique temps/distance/dénivelé ; données **`getEffectiveWeeklyTotalsFait`** (même règle « fait » que le calendrier) ; séries `lib/athleteStatsVolume.ts` ; refetch `loadAthleteVolumeChartData` ; encart **volume annuel** ; skeletons `AthleteStatsChartSkeleton` / `AthleteStatsChartFullSkeleton` ; thème `lib/athleteStatsNivoTheme.ts` + `app/globals.css` (`--chart-*`). Libellés sports : `SPORT_TRANSLATION_KEYS` (`ski_randonnee`, `patinage_glace`).
+- **Doc :** `Project_context.md` §4.2.3, §4.0 (nav), `docs/DESIGN_SYSTEM.md` (AthleteStatsVolumeChart, Fichiers clés), `docs/I18N.md` (`athleteStats`, `sports`), `DOCS_INDEX.md` (archives **design-athlete-stats** : US-00/01 livrés ; US-02–06 maquettes seulement), `.cursor/rules/project-core.mdc`, `README.md` (rôle Athlète).
+- **Archivage :** aucun déplacement ; maquettes déjà sous `docs/archive/design-athlete-stats/`.
 
 ✅ **4 mai 2026 – Navigation dashboard athlète (menu compte + drawer) – Mode Analyste :**
 - **Livraison :** Barre **md+** : liens principaux centrés (Trouver mon coach si pas de `coach_id`, Mon calendrier, Mes objectifs) ; à droite **`AthleteAccountMenu`** (avatar, nom, chevron) : appareils, Mon coach si lié, historique des souscriptions ; séparateur ; Mes informations (`/dashboard/profile`) ; déconnexion. **Drawer mobile athlète** : mêmes blocs avec `hr`, puis Mes informations, puis déconnexion. Coach/admin : inchangé (lien profil + drawer existant). Titres mobile : `getPageTitleI18nKey(pathname, navItems, profile)` ; profil athlète → clé **`myInformation`**. Tests : **`lib/dashboardNavConfig.test.ts`**.

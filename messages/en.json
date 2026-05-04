@@ -100,6 +100,7 @@
   "navigation": {
     "findCoach": "Find a coach",
     "calendar": "My calendar",
+    "stats": "Statistics",
     "goals": "My goals",
     "myCoach": "My Coach",
     "devices": "Connected devices",
@@ -115,6 +116,53 @@
     "collapseMenu": "Collapse menu",
     "designSystem": "Design System",
     "members": "Member management"
+  },
+  "athleteStats": {
+    "title": "Statistics",
+    "filters": {
+      "aria": "Chart filters",
+      "years": "Calendar years",
+      "maxYearsHint": "You can compare up to {max} years.",
+      "sport": "Sport",
+      "granularity": "Granularity",
+      "granularityWeek": "Week",
+      "granularityMonth": "Month",
+      "metric": "Metric",
+      "metricTime": "Time",
+      "metricDistance": "Distance",
+      "metricElevation": "Elevation gain"
+    },
+    "chart": {
+      "sectionTitle": "Completed volume",
+      "loading": "Updating data…",
+      "empty": "No data for this selection.",
+      "emptyNoData": "No data to display. Change the filters or try again later.",
+      "aria": "Chart of completed volume by week or month",
+      "xWeeks": "Week (index)",
+      "xMonths": "Month",
+      "yAxisLegendTime": "Time (h)",
+      "yAxisLegendDistanceKm": "Distance (km)",
+      "yAxisLegendDistanceM": "Distance (m)",
+      "yAxisLegendElevation": "Elevation (m)"
+    },
+    "sliceDetail": {
+      "weekTooltip": "Week {n}",
+      "annualVolumeTitle": "Annual volume",
+      "yearValue": "Year {year}",
+      "panelAria": "Total completed volume per calendar year"
+    },
+    "units": {
+      "hours": "h",
+      "km": "km",
+      "meters": "m",
+      "metersElevation": "m elevation"
+    },
+    "errors": {
+      "athleteOnly": "This page is for athletes only.",
+      "yearsRequired": "Select at least one year.",
+      "invalidSport": "Invalid sport.",
+      "loadFailed": "Could not load statistics."
+    }
   },
   "adminDesignSystem": {
     "intro": "Reference for tokens and components. Priority: use these tokens instead of hardcoded hex colors.",
@@ -331,6 +379,8 @@
     "muscu": "Strength Training",
     "triathlon": "Triathlon",
     "ski_fond": "Cross-country skiing",
+    "ski_randonnee": "Backcountry skiing",
+    "patinage_glace": "Ice skating",
     "rando": "Hiking",
     "trail": "Trail running",
     "vtt": "Mountain biking",
@@ -807,6 +857,7 @@
     "dashboardTitle": "Dashboard",
     "dashboardDescription": "Manage your workouts, goals and coach",
     "calendarTitle": "My calendar",
+    "statsTitle": "Statistics",
     "goalsTitle": "My Goals",
     "profileTitle": "My profile",
     "devicesTitle": "Connected devices"

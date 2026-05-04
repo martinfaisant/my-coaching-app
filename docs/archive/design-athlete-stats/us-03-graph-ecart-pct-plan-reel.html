@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>US-STATS-03 — Écart % plan / réel</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-stone-100 p-4">
+  <p class="text-xs text-stone-500 mb-3">US-STATS-03 — Dérivé plan vs réalisé : (Réalisé − Planifié) / Planifié × 100 ; semaine/mois sans plan → traitement « N/A » ou gris (à cadrer en archi).</p>
+
+  <article class="max-w-5xl mx-auto rounded-2xl border border-stone-200 bg-white p-4 shadow-sm">
+    <header class="mb-4">
+      <h2 class="text-base font-bold text-stone-800">Écart charge planifiée → réalisée</h2>
+      <p class="text-xs text-stone-500 mt-1">Heatmap (semaine × mois) ou barres centrées sur 0 : vert = sous le plan, rouge = au-dessus (tokens <code>palette-danger</code> / sage selon convention validée).</p>
+    </header>
+
+    <div class="overflow-x-auto rounded-xl border border-stone-100">
+      <table class="w-full text-[10px] border-collapse min-w-[280px]">
+        <thead><tr><th class="p-1 bg-stone-100"></th><th class="p-1 bg-stone-100">Jan</th><th class="p-1 bg-stone-100">Fév</th><th class="p-1 bg-stone-100">Mar</th></tr></thead>
+        <tbody>
+          <tr><td class="p-1 bg-stone-50 font-medium text-stone-600">S1–4</td><td class="p-2 bg-emerald-100 text-center">−8%</td><td class="p-2 bg-red-100 text-center">+12%</td><td class="p-2 bg-stone-100 text-center">—</td></tr>
+          <tr><td class="p-1 bg-stone-50 font-medium">S5–8</td><td class="p-2 bg-emerald-50 text-center">−2%</td><td class="p-2 bg-amber-50 text-center">+4%</td><td class="p-2 bg-red-50 text-center">+18%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="text-xs text-stone-500 mt-2">Alternative : barres horizontales par semaine avec 0 au centre.</p>
+  </article>
+</body>
+</html>

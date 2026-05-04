@@ -104,6 +104,7 @@ Voir [docs/DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md) pour tous les détails.
 - Chercher un coach et envoyer une demande (avec choix d’une offre ; l’offre est figée au moment de la demande) ; sur la page **Trouver mon coach**, consulter la **liste des avis** d’un coach (note et commentaire ; pas d’identité des noteurs)
 - Chatter avec les coachs liés par demande (`pending`/`accepted`) ; certaines conversations peuvent être en lecture seule selon le statut
 - Consulter son calendrier d'entraînement
+- Consulter ses **statistiques** de volume réalisé (`/dashboard/stats` : années, sport, courbe Nivo, même logique « fait » que le calendrier)
 - Gérer ses objectifs
 - Noter son coach
 - Synchroniser Strava
@@ -258,6 +259,6 @@ Pour toute question sur l'architecture ou les conventions, consulter :
 
 ---
 
-**Dernière mise à jour :** 23 février 2026  
+**Dernière mise à jour :** 5 mai 2026  
 **Version :** 1.0.0  
 **License :** MIT

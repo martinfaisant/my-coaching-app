@@ -1,0 +1,94 @@
+﻿2026-05-04T17:39:31.4256219Z ##[group]Run actions/checkout@v4
+2026-05-04T17:39:31.4257153Z with:
+2026-05-04T17:39:31.4257646Z   repository: martinfaisant/my-coaching-app
+2026-05-04T17:39:31.4258618Z   token: ***
+2026-05-04T17:39:31.4259036Z   ssh-strict: true
+2026-05-04T17:39:31.4259461Z   ssh-user: git
+2026-05-04T17:39:31.4259902Z   persist-credentials: true
+2026-05-04T17:39:31.4260385Z   clean: true
+2026-05-04T17:39:31.4260832Z   sparse-checkout-cone-mode: true
+2026-05-04T17:39:31.4261335Z   fetch-depth: 1
+2026-05-04T17:39:31.4261760Z   fetch-tags: false
+2026-05-04T17:39:31.4262180Z   show-progress: true
+2026-05-04T17:39:31.4262630Z   lfs: false
+2026-05-04T17:39:31.4263027Z   submodules: false
+2026-05-04T17:39:31.4263472Z   set-safe-directory: true
+2026-05-04T17:39:31.4264204Z env:
+2026-05-04T17:39:31.4264731Z   NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
+2026-05-04T17:39:31.4265401Z   NEXT_PUBLIC_SUPABASE_ANON_KEY: anon-key
+2026-05-04T17:39:31.4265986Z   SUPABASE_SERVICE_ROLE_KEY: service-role-key
+2026-05-04T17:39:31.4266650Z   NEXT_PUBLIC_APP_URL: http://localhost:3000
+2026-05-04T17:39:31.4267272Z   NEXT_PUBLIC_SITE_URL: http://localhost:3000
+2026-05-04T17:39:31.4267827Z ##[endgroup]
+2026-05-04T17:39:31.5381254Z Syncing repository: martinfaisant/my-coaching-app
+2026-05-04T17:39:31.5383211Z ##[group]Getting Git version info
+2026-05-04T17:39:31.5384086Z Working directory is '/home/runner/work/my-coaching-app/my-coaching-app'
+2026-05-04T17:39:31.5385194Z [command]/usr/bin/git version
+2026-05-04T17:39:31.5428230Z git version 2.53.0
+2026-05-04T17:39:31.5454539Z ##[endgroup]
+2026-05-04T17:39:31.5471680Z Temporarily overriding HOME='/home/runner/work/_temp/b60dd481-c91c-4737-86e4-d051996d0bed' before making global git config changes
+2026-05-04T17:39:31.5473214Z Adding repository directory to the temporary git global config as a safe directory
+2026-05-04T17:39:31.5477122Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/my-coaching-app/my-coaching-app
+2026-05-04T17:39:31.5508334Z Deleting the contents of '/home/runner/work/my-coaching-app/my-coaching-app'
+2026-05-04T17:39:31.5512166Z ##[group]Initializing the repository
+2026-05-04T17:39:31.5516152Z [command]/usr/bin/git init /home/runner/work/my-coaching-app/my-coaching-app
+2026-05-04T17:39:31.5620936Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-05-04T17:39:31.5622988Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-05-04T17:39:31.5624095Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-05-04T17:39:31.5624930Z hint: call:
+2026-05-04T17:39:31.5625327Z hint:
+2026-05-04T17:39:31.5625840Z hint: 	git config --global init.defaultBranch <name>
+2026-05-04T17:39:31.5626500Z hint:
+2026-05-04T17:39:31.5627513Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-05-04T17:39:31.5629194Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-05-04T17:39:31.5630035Z hint:
+2026-05-04T17:39:31.5630579Z hint: 	git branch -m <name>
+2026-05-04T17:39:31.5631156Z hint:
+2026-05-04T17:39:31.5631832Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-05-04T17:39:31.5633459Z Initialized empty Git repository in /home/runner/work/my-coaching-app/my-coaching-app/.git/
+2026-05-04T17:39:31.5635346Z [command]/usr/bin/git remote add origin https://github.com/martinfaisant/my-coaching-app
+2026-05-04T17:39:31.5662529Z ##[endgroup]
+2026-05-04T17:39:31.5663338Z ##[group]Disabling automatic garbage collection
+2026-05-04T17:39:31.5666355Z [command]/usr/bin/git config --local gc.auto 0
+2026-05-04T17:39:31.5694443Z ##[endgroup]
+2026-05-04T17:39:31.5695193Z ##[group]Setting up auth
+2026-05-04T17:39:31.5701229Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-05-04T17:39:31.5731257Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-05-04T17:39:31.6019923Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-05-04T17:39:31.6051537Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-05-04T17:39:31.6266039Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-05-04T17:39:31.6295808Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-05-04T17:39:31.6538666Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-05-04T17:39:31.6574257Z ##[endgroup]
+2026-05-04T17:39:31.6575055Z ##[group]Fetching the repository
+2026-05-04T17:39:31.6587021Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +7b47a83fec301f88c3b40f23fc5d1c8725f3f560:refs/remotes/pull/79/merge
+2026-05-04T17:39:32.0005749Z From https://github.com/martinfaisant/my-coaching-app
+2026-05-04T17:39:32.0007756Z  * [new ref]         7b47a83fec301f88c3b40f23fc5d1c8725f3f560 -> pull/79/merge
+2026-05-04T17:39:32.0035285Z ##[endgroup]
+2026-05-04T17:39:32.0036377Z ##[group]Determining the checkout info
+2026-05-04T17:39:32.0037947Z ##[endgroup]
+2026-05-04T17:39:32.0042784Z [command]/usr/bin/git sparse-checkout disable
+2026-05-04T17:39:32.0080855Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-05-04T17:39:32.0106547Z ##[group]Checking out the ref
+2026-05-04T17:39:32.0110451Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/79/merge
+2026-05-04T17:39:32.0522837Z Note: switching to 'refs/remotes/pull/79/merge'.
+2026-05-04T17:39:32.0524099Z 
+2026-05-04T17:39:32.0525124Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-05-04T17:39:32.0527417Z changes and commit them, and you can discard any commits you make in this
+2026-05-04T17:39:32.0529477Z state without impacting any branches by switching back to a branch.
+2026-05-04T17:39:32.0530814Z 
+2026-05-04T17:39:32.0531532Z If you want to create a new branch to retain commits you create, you may
+2026-05-04T17:39:32.0533573Z do so (now or later) by using -c with the switch command. Example:
+2026-05-04T17:39:32.0534443Z 
+2026-05-04T17:39:32.0534789Z   git switch -c <new-branch-name>
+2026-05-04T17:39:32.0535378Z 
+2026-05-04T17:39:32.0535702Z Or undo this operation with:
+2026-05-04T17:39:32.0536415Z 
+2026-05-04T17:39:32.0536721Z   git switch -
+2026-05-04T17:39:32.0537132Z 
+2026-05-04T17:39:32.0537832Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-05-04T17:39:32.0539238Z 
+2026-05-04T17:39:32.0540436Z HEAD is now at 7b47a83 Merge 90b9a3a6840617600526690cfd6f0f988de93326 into 3851582414b5115248c9c56592351ce716140471
+2026-05-04T17:39:32.0544537Z ##[endgroup]
+2026-05-04T17:39:32.0573308Z [command]/usr/bin/git log -1 --format=%H
+2026-05-04T17:39:32.0596082Z 7b47a83fec301f88c3b40f23fc5d1c8725f3f560

@@ -15,16 +15,18 @@ const athleteNoCoach = { role: 'athlete' as const, coach_id: null as string | nu
 const athleteWithCoach = { role: 'athlete' as const, coach_id: 'c1' }
 
 describe('getAthletePrimaryNavItems', () => {
-  it('sans coach : Trouver mon coach, calendrier, objectifs', () => {
+  it('sans coach : Trouver mon coach, calendrier, statistiques, objectifs', () => {
     expect(getAthletePrimaryNavItems(athleteNoCoach).map((i) => i.i18nKey)).toEqual([
       'findCoach',
       'calendar',
+      'stats',
       'goals',
     ])
   })
-  it('avec coach : calendrier et objectifs uniquement', () => {
+  it('avec coach : calendrier, statistiques, objectifs', () => {
     expect(getAthletePrimaryNavItems(athleteWithCoach).map((i) => i.i18nKey)).toEqual([
       'calendar',
+      'stats',
       'goals',
     ])
   })
@@ -54,6 +56,7 @@ describe('getAthleteNavItemsForPageTitle / getDashboardNavItems athlete', () => 
     const merged = getAthleteNavItemsForPageTitle(athleteWithCoach)
     expect(merged.map((i) => i.href)).toEqual([
       '/dashboard/calendar',
+      '/dashboard/stats',
       '/dashboard/objectifs',
       '/dashboard/devices',
       '/dashboard/coach',
@@ -67,6 +70,7 @@ describe('getAthleteNavItemsForPageTitle / getDashboardNavItems athlete', () => 
     expect(merged.map((i) => i.i18nKey)).toEqual([
       'findCoach',
       'calendar',
+      'stats',
       'goals',
       'devices',
       'subscriptionHistory',
