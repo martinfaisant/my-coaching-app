@@ -548,6 +548,10 @@ Mettre à jour la documentation projet après livraison du Développeur, aligner
 - S’appuyer sur `DOCS_INDEX.md` pour la liste des documents actifs et archives.
 - Utiliser la liste des fichiers modifiés fournie par le Développeur pour cibler les mises à jour.
 - Le rôle Analyste n’intervient qu’après verdict Reviewer Tech compatible avec la suite du flux.
+- Vérifier que les pages légales restent à jour par rapport aux nouvelles features :
+  - `app/[locale]/privacy` (Politique de confidentialité)
+  - `app/[locale]/terms` (Conditions d’utilisation)
+  - Si une mise à jour est nécessaire : **proposer les modifications au PO** (avec justification et impact) et **ne les appliquer qu’après validation explicite du PO**.
 - Mettre à jour uniquement les documents réellement impactés, notamment selon le cas :
   - `README.md`
   - `Project_context.md`

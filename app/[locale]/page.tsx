@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
 import { createClient } from '@/utils/supabase/server'
@@ -50,6 +51,9 @@ export default async function Home({ params, searchParams }: HomePageProps) {
   }
 
   const t = await getTranslations('landing')
+
+  const termsPath = locale === 'en' ? '/en/terms' : '/terms'
+  const privacyPath = locale === 'en' ? '/en/privacy' : '/privacy'
   
   const FEATURES = [
     {
@@ -373,7 +377,21 @@ export default async function Home({ params, searchParams }: HomePageProps) {
       {/* Footer */}
       <footer className="border-t border-stone-200 bg-stone-50 py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center text-stone-600">
+          <div className="text-center text-stone-600 space-y-3">
+            <div className="flex items-center justify-center gap-6 text-sm">
+              <Link
+                href={privacyPath}
+                className="underline underline-offset-4 hover:text-stone-900"
+              >
+                {t('footer.privacyLink')}
+              </Link>
+              <Link
+                href={termsPath}
+                className="underline underline-offset-4 hover:text-stone-900"
+              >
+                {t('footer.termsLink')}
+              </Link>
+            </div>
             <p className="text-sm">
               © {new Date().getFullYear()} My Sport Ally. {t('footer.copyright')}
             </p>

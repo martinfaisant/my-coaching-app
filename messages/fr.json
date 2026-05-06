@@ -984,7 +984,9 @@
     "statsTitle": "Statistiques",
     "goalsTitle": "Mes Objectifs",
     "profileTitle": "Mon profil",
-    "devicesTitle": "Appareils connectés"
+    "devicesTitle": "Appareils connectés",
+    "termsTitle": "Conditions d’utilisation",
+    "privacyTitle": "Politique de confidentialité"
   },
   "landing": {
     "hero": {
@@ -1072,7 +1074,141 @@
       "subtitle": "Rejoignez des centaines d'athlètes qui progressent chaque jour avec My Sport Ally"
     },
     "footer": {
-      "copyright": "Tous droits réservés."
+      "copyright": "Tous droits réservés.",
+      "privacyLink": "Politique de confidentialité",
+      "termsLink": "Conditions d’utilisation"
+    }
+  },
+  "legal": {
+    "common": {
+      "lastUpdated": "Dernière mise à jour : {date}",
+      "lastUpdatedFull": "Dernière mise à jour : 6 mai 2026"
+    },
+    "terms": {
+      "title": "Conditions d’utilisation",
+      "sections": {
+        "acceptance": {
+          "title": "1. ACCEPTATION DES CONDITIONS",
+          "p1": "En accédant ou en utilisant le site mysportally.com (la « Plateforme »), vous acceptez d’être lié par les présentes Conditions d’utilisation. Si vous n’acceptez pas ces conditions, vous ne devez pas utiliser la Plateforme."
+        },
+        "eligibility": {
+          "title": "2. ÉLIGIBILITÉ",
+          "p1": "Vous devez avoir au moins 18 ans pour créer un compte. En utilisant la Plateforme, vous garantissez que vous avez la capacité juridique de contracter."
+        },
+        "role": {
+          "title": "3. DESCRIPTION ET RÔLE DE MYSPORTALLY",
+          "p1": "Mysportally est une plateforme technologique facilitant la mise en relation entre des coachs sportifs (« Coachs ») et des utilisateurs (« Athlètes »).",
+          "p2": "Mysportally agit uniquement en tant qu'intermédiaire technologique. Nous ne sommes pas un fournisseur de services de coaching, une agence de placement, ni un employeur. Nous ne validons pas les certifications, les compétences ou l'identité des Coachs."
+        },
+        "independence": {
+          "title": "4. INDÉPENDANCE DES INTERVENANTS",
+          "p1": "Les Coachs sont des entrepreneurs indépendants utilisant la Plateforme comme outil. Mysportally n'exerce aucun contrôle sur la qualité, la sécurité, la légalité ou l'exactitude des programmes fournis par les Coachs. Toute entente entre un Coach et un Athlète est strictement privée ; Mysportally n'est pas partie à cette relation."
+        },
+        "payments": {
+          "title": "5. PAIEMENTS ET ABONNEMENTS",
+          "li1": "Transactions Coach-Athlète : Mysportally ne gère aucun paiement entre les Coachs et les Athlètes. Les transactions sont effectuées hors plateforme sous la responsabilité exclusive des utilisateurs.",
+          "li2": "Abonnement Coach : L’accès aux services pour les Coachs est payant (mensuel ou annuel).",
+          "li3": "Résiliation : Les abonnements mensuels sont résiliables en tout temps pour la fin de la période facturée. Les abonnements annuels constituent un engagement ferme pour la durée totale.",
+          "li4": "Remboursement : Aucun remboursement n'est accordé, sauf disposition légale impérative."
+        },
+        "medical": {
+          "title": "6. AVERTISSEMENT MÉDICAL ET SANTÉ (IMPORTANT)",
+          "p1": "Mysportally ne fournit aucun avis médical.",
+          "li1": "L'utilisation de programmes d'entraînement comporte des risques de blessures physiques.",
+          "li2": "L'Athlète reconnaît qu'il participe à ces activités volontairement et à ses propres risques.",
+          "li3": "Il est fortement recommandé de consulter un médecin avant de commencer tout programme d'entraînement. En utilisant la Plateforme, vous confirmez être en bonne santé physique pour pratiquer les activités proposées."
+        },
+        "liability": {
+          "title": "7. LIMITATION DE RESPONSABILITÉ",
+          "p1": "Dans la pleine mesure permise par la loi, Mysportally, ses dirigeants et employés ne pourront être tenus responsables de :",
+          "li1": "Toute blessure physique, décès ou dommage à la santé.",
+          "li2": "Tout dommage indirect, punitif ou consécutif découlant de l'utilisation de la Plateforme.",
+          "li3": "Toute inexactitude des données provenant de services tiers (ex: Strava).",
+          "p2": "Plafond de responsabilité : En tout état de cause, la responsabilité totale de Mysportally envers vous ne pourra excéder le montant total que vous avez payé à Mysportally au cours des 12 derniers mois."
+        },
+        "indemnification": {
+          "title": "8. INDEMNISATION",
+          "p1": "Vous acceptez d'indemniser et de dégager de toute responsabilité Mysportally en cas de réclamation, perte ou demande (y compris les frais d'avocat) découlant de votre violation des présentes conditions ou de votre utilisation de la Plateforme."
+        },
+        "ip": {
+          "title": "9. PROPRIÉTÉ INTELLECTUELLE",
+          "li1": "Plateforme : Le design, le code, la marque et les logos de Mysportally sont notre propriété exclusive.",
+          "li2": "Contenu Utilisateur : Les Coachs conservent leurs droits sur leurs programmes. Toutefois, vous nous accordez une licence mondiale, non exclusive et gratuite pour héberger, stocker et afficher ce contenu afin de fournir le service."
+        },
+        "prohibited": {
+          "title": "10. COMPORTEMENTS INTERDITS",
+          "li1": "Utiliser la Plateforme à des fins illégales ou frauduleuses.",
+          "li2": "Extraire des données (scraping) sans autorisation.",
+          "li3": "Tenter de nuire à l'intégrité technique de la Plateforme."
+        },
+        "law": {
+          "title": "11. DROIT APPLICABLE ET MÉDIATION",
+          "p1": "Les présentes conditions sont régies par les lois du Québec et du Canada. En cas de litige, les parties s'engagent à tenter de résoudre le différend par voie de médiation avant de s'adresser aux tribunaux compétents du district judiciaire de Montréal ou de Québec."
+        }
+      }
+    },
+    "privacy": {
+      "title": "Politique de confidentialité",
+      "sections": {
+        "commitment": {
+          "title": "1. NOTRE ENGAGEMENT",
+          "p1": "Mysportally s’engage à protéger la vie privée de ses utilisateurs conformément à la Loi 25 (Québec) et aux meilleures pratiques de l’industrie."
+        },
+        "dataCollected": {
+          "title": "2. DONNÉES COLLECTÉES",
+          "li1": "Données d’identification : nom, prénom, adresse courriel.",
+          "li2": "Données d’entraînement : profil sportif, objectifs, séances planifiées et interactions entre Coach et Athlète (ex. messagerie).",
+          "li3": "Données d’activité via services tiers (ex. Strava) : avec votre consentement explicite, nous pouvons importer des données d’activité (ex. distance, durée, GPS, fréquence cardiaque si disponible). Ces données peuvent être considérées comme sensibles.",
+          "li4": "Données techniques : informations transmises par votre appareil et votre navigateur lors de l’accès au site (ex. adresse IP, type de navigateur, dates/heure de requêtes). Elles peuvent être traitées via nos fournisseurs techniques (hébergement, authentification) pour des besoins de sécurité, de fonctionnement et de diagnostic, notamment pour maintenir votre session."
+        },
+        "useOfData": {
+          "title": "3. UTILISATION DES DONNÉES",
+          "li1": "Fournir et maintenir le service Mysportally.",
+          "li2": "Permettre aux Coachs de suivre les progrès des Athlètes.",
+          "li3": "Améliorer l'expérience utilisateur et les fonctionnalités techniques.",
+          "li4": "Communiquer avec vous concernant votre compte."
+        },
+        "consent": {
+          "title": "4. CONSENTEMENT ET DONNÉES SENSIBLES",
+          "p1": "En connectant un service tiers (ex. Strava), vous donnez votre consentement exprès au traitement de vos données d’activité. Vous pouvez retirer ce consentement à tout moment en déconnectant le service dans vos paramètres, ce qui entraînera l'arrêt de l'importation de nouvelles données."
+        },
+        "sharing": {
+          "title": "5. PARTAGE ET DIVULGATION",
+          "p1": "Nous ne vendons jamais vos données personnelles. Le partage est limité à :",
+          "li1": "Votre Coach : pour l'exécution du service.",
+          "li2": "Fournisseurs techniques nécessaires au fonctionnement du site (hébergement, authentification, base de données).",
+          "li3": "Obligations légales : si la loi l'exige."
+        },
+        "retention": {
+          "title": "6. CONSERVATION ET TRANSFERT HORS QUÉBEC",
+          "p1": "Vos données sont conservées aussi longtemps que votre compte est actif. Vos renseignements personnels peuvent être stockés sur des serveurs situés à l'extérieur de la province de Québec (ex. Canada ou États-Unis), ce que vous acceptez par les présentes."
+        },
+        "security": {
+          "title": "7. SÉCURITÉ",
+          "p1": "Nous appliquons des mesures de sécurité physiques, techniques et administratives (chiffrement, accès restreint) pour protéger vos données contre tout accès non autorisé ou fuite."
+        },
+        "rights": {
+          "title": "8. VOS DROITS (LOI 25)",
+          "li1": "Droit d'accès et de rectification de vos données.",
+          "li2": "Droit à l'effacement (suppression de votre compte).",
+          "li3": "Droit à la portabilité de vos données.",
+          "li4": "Droit de retirer votre consentement à tout moment."
+        },
+        "officer": {
+          "title": "9. RESPONSABLE DE LA PROTECTION DES RENSEIGNEMENTS PERSONNELS",
+          "p1": "Pour exercer vos droits ou pour toute question, contactez notre responsable :",
+          "p2": "Martin Faisant",
+          "p3": "📧 martin.faisant@mysportally.com"
+        },
+        "incidents": {
+          "title": "10. INCIDENTS DE CONFIDENTIALITÉ",
+          "p1": "En cas de fuite de données ou d'incident de confidentialité présentant un risque de préjudice sérieux, Mysportally s'engage à aviser la Commission d'accès à l'information du Québec ainsi que les utilisateurs concernés, conformément à la loi."
+        },
+        "cookies": {
+          "title": "11. TÉMOINS (COOKIES)",
+          "p1": "Nous utilisons des témoins strictement nécessaires au fonctionnement du service, notamment pour maintenir votre session active et sécuriser certaines fonctionnalités (ex. connexion à un service tiers comme Strava). Vous pouvez configurer votre navigateur pour refuser les témoins, mais cela peut empêcher l’authentification et limiter certaines fonctionnalités."
+        }
+      }
     }
   },
   "offers": {

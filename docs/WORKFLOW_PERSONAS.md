@@ -194,6 +194,10 @@ Cela garantit que la page Design System reste la référence à jour pour toute 
 - Aligner les documents sur l'implémentation (features, modèle de données, conventions).
 - Faire le ménage : archiver les docs devenus obsolètes, supprimer les redondances.
 - Tenir à jour l'index de la documentation (**DOCS_INDEX.md**).
+- Vérifier que les **pages légales** restent cohérentes et à jour après chaque évolution produit :
+  - `/[locale]/privacy` — Politique de confidentialité
+  - `/[locale]/terms` — Conditions d’utilisation
+  - Si une mise à jour est nécessaire : **proposer les modifications au PO** (avec justification et impact) et **n’appliquer qu’après validation explicite du PO**.
 
 ### Référence obligatoire
 
