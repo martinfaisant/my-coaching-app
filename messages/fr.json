@@ -70,6 +70,13 @@
     "setNewPasswordButton": "Définir le nouveau mot de passe",
     "emailValidatedTitle": "Email validé",
     "emailValidatedMessage": "Vous pouvez vous connecter.",
+    "legalConsent": {
+      "aria": "Acceptation des conditions d’utilisation et de la politique de confidentialité",
+      "prefix": "J’accepte les",
+      "terms": "Conditions d’utilisation",
+      "and": "et la",
+      "privacy": "Politique de confidentialité"
+    },
     "errors": {
       "notAuthenticated": "Non connecté.",
       "accessDenied": "Accès refusé.",
@@ -95,6 +102,8 @@
       "signupGenericError": "Une erreur s'est produite lors de la création de votre compte.",
       "accountExistsLoginMessage": "Un compte existe déjà avec cet email. Connectez-vous avec votre mot de passe.",
       "emailNotConfirmed": "Votre adresse email n'a pas encore été confirmée. Vous devriez avoir reçu un email de confirmation ; consultez votre boîte mail (et les spams). Si vous ne l'avez pas reçu, vous pouvez en redemander un en recommençant le processus de création de compte (réinscrivez-vous avec la même adresse)."
+      ,
+      "termsRequired": "Veuillez accepter les conditions pour créer un compte."
     }
   },
   "navigation": {

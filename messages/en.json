@@ -70,6 +70,13 @@
     "setNewPasswordButton": "Set new password",
     "emailValidatedTitle": "Email verified",
     "emailValidatedMessage": "You can now log in.",
+    "legalConsent": {
+      "aria": "Acceptance of the terms of use and the privacy policy",
+      "prefix": "I accept the",
+      "terms": "Terms of Use",
+      "and": "and the",
+      "privacy": "Privacy Policy"
+    },
     "errors": {
       "notAuthenticated": "Not authenticated.",
       "accessDenied": "Access denied.",
@@ -94,7 +101,8 @@
       "emailNotConfirmed": "Your email address has not been confirmed yet. You should have received a confirmation email—please check your inbox (and spam folder). If you didn't receive it, you can request a new one by going through the sign-up process again (sign up again with the same email address).",
       "emailRequiredOnly": "Email is required.",
       "sessionExpiredReset": "Session expired. Please start the reset process again.",
-      "passwordUpdatedSuccess": "Password updated successfully. You will be connected automatically."
+      "passwordUpdatedSuccess": "Password updated successfully. You will be connected automatically.",
+      "termsRequired": "Please accept the terms to create an account."
     }
   },
   "navigation": {

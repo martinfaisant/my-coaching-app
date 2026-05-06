@@ -73,12 +73,17 @@ export async function signup(
   const email = formData.get('email') as string
   const password = formData.get('password') as string
   const roleRaw = formData.get('role') as string
+  const termsAcceptedRaw = formData.get('termsAccepted') as string | null
 
   const locale = await getLocale()
   const t = await getTranslations({ locale, namespace: 'auth.errors' })
 
   if (!email?.trim() || !password) {
     return { error: t('emailRequired') }
+  }
+
+  if (termsAcceptedRaw !== 'true') {
+    return { error: t('termsRequired') }
   }
 
   if (password.length < 6) {

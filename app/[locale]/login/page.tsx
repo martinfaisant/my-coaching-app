@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useActionState, Suspense } from 'react'
+import { useState, useActionState, Suspense, useEffect } from 'react'
+import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { login, signup, type LoginState, type SignupState } from './actions'
 import { Button } from '@/components/Button'
 import { Input } from '@/components/Input'
@@ -13,6 +14,8 @@ type SignupRole = 'athlete' | 'coach'
 
 function LoginPageContent() {
   const t = useTranslations('auth')
+  const tErrors = useTranslations('auth.errors')
+  const locale = useLocale()
   const searchParams = useSearchParams()
   const confirmationFailed =
     searchParams.get('error') === 'confirmation_failed'
@@ -20,6 +23,15 @@ function LoginPageContent() {
   const [loginState, loginAction] = useActionState<LoginState, FormData>(login, {})
   const [signupState, signupAction] = useActionState<SignupState, FormData>(signup, {})
   const [signupRole, setSignupRole] = useState<SignupRole>('athlete')
+  const [termsAccepted, setTermsAccepted] = useState(false)
+  const [termsError, setTermsError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!signupState?.error) return
+    if (signupState.error === tErrors('termsRequired')) {
+      setTermsError(signupState.error)
+    }
+  }, [signupState?.error, tErrors])
 
   const showSignupSuccess =
     Boolean(signupState?.success && signupState?.successType)
@@ -27,6 +39,9 @@ function LoginPageContent() {
     signupState?.successType === 'emailResent'
       ? t('successTitleEmailResent')
       : t('successTitleAccountCreated')
+
+  const termsHref = locale === 'en' ? '/en/terms' : '/terms'
+  const privacyHref = locale === 'en' ? '/en/privacy' : '/privacy'
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-stone-50 to-stone-200 p-4">
@@ -117,7 +132,15 @@ function LoginPageContent() {
                 <p className="text-xs text-stone-500">{t('successCheckSpam')}</p>
               </div>
             ) : (
-              <form action={signupAction} className="space-y-5">
+              <form
+                action={signupAction}
+                className="space-y-5"
+                onSubmit={(e) => {
+                  if (termsAccepted) return
+                  e.preventDefault()
+                  setTermsError(tErrors('termsRequired'))
+                }}
+              >
                 <p className="text-sm font-medium text-stone-700">
                   {t('createAccount')}
                 </p>
@@ -186,8 +209,54 @@ function LoginPageContent() {
                   placeholder={t('passwordPlaceholder')}
                   className="rounded-xl"
                 />
+                <input type="hidden" name="termsAccepted" value={termsAccepted ? 'true' : 'false'} />
+                <div
+                  className={`rounded-xl border px-4 py-3 ${
+                    termsError ? 'border-palette-danger bg-palette-danger-light/40' : 'border-stone-200 bg-white'
+                  }`}
+                  aria-label={t('legalConsent.aria')}
+                >
+                  <div className="flex items-start gap-3">
+                    <input
+                      id="signup-termsAccepted"
+                      type="checkbox"
+                      checked={termsAccepted}
+                      onChange={(e) => {
+                        setTermsAccepted(e.target.checked)
+                        if (e.target.checked) setTermsError(null)
+                      }}
+                      className="mt-1 h-4 w-4 rounded border-stone-300 text-palette-forest-dark focus:ring-palette-forest-dark"
+                      aria-describedby={termsError ? 'signup-termsAccepted-error' : undefined}
+                    />
+                    <label htmlFor="signup-termsAccepted" className="text-sm text-stone-600 leading-relaxed">
+                      {t('legalConsent.prefix')}{' '}
+                      <Link
+                        href={termsHref}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="underline underline-offset-4 text-palette-forest-dark hover:text-palette-olive font-medium"
+                      >
+                        {t('legalConsent.terms')}
+                      </Link>{' '}
+                      {t('legalConsent.and')}{' '}
+                      <Link
+                        href={privacyHref}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="underline underline-offset-4 text-palette-forest-dark hover:text-palette-olive font-medium"
+                      >
+                        {t('legalConsent.privacy')}
+                      </Link>.
+                    </label>
+                  </div>
+                  {termsError && (
+                    <p id="signup-termsAccepted-error" className="mt-2 text-sm text-palette-danger" role="alert">
+                      {termsError}
+                    </p>
+                  )}
+                </div>
                 {signupState?.error && (
-                  <p className="text-sm text-red-600" role="alert">
+                  <p className={FORM_ERROR_TEXT_CLASSES} role="alert">
                     {signupState.error}
                   </p>
                 )}
