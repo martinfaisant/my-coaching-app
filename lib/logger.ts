@@ -5,13 +5,14 @@
  */
 
 const isDevelopment = process.env.NODE_ENV === 'development'
+const forceLogs = process.env.DEBUG_LOGGING === 'true' || process.env.DEBUG_CRON_AUTH === 'true'
 
 /**
  * Log une erreur avec contexte optionnel.
  * En production, vous pouvez envoyer à un service de monitoring (Sentry, LogRocket, etc.).
  */
 function error(message: string, error?: unknown, context?: Record<string, unknown>): void {
-  if (isDevelopment) {
+  if (isDevelopment || forceLogs) {
     console.error(`[ERROR] ${message}`, error, context)
   }
   // TODO: En production, envoyer à Sentry ou autre service de monitoring
@@ -24,7 +25,7 @@ function error(message: string, error?: unknown, context?: Record<string, unknow
  * Log un avertissement avec contexte optionnel.
  */
 function warn(message: string, data?: unknown): void {
-  if (isDevelopment) {
+  if (isDevelopment || forceLogs) {
     console.warn(`[WARN] ${message}`, data)
   }
 }
@@ -33,7 +34,7 @@ function warn(message: string, data?: unknown): void {
  * Log une information avec contexte optionnel.
  */
 function info(message: string, data?: unknown): void {
-  if (isDevelopment) {
+  if (isDevelopment || forceLogs) {
     console.log(`[INFO] ${message}`, data)
   }
 }
@@ -42,7 +43,7 @@ function info(message: string, data?: unknown): void {
  * Log de debug (uniquement en développement).
  */
 function debug(message: string, data?: unknown): void {
-  if (isDevelopment) {
+  if (isDevelopment || forceLogs) {
     console.debug(`[DEBUG] ${message}`, data)
   }
 }

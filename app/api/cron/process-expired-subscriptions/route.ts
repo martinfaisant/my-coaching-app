@@ -14,6 +14,16 @@ function isAuthorized(request: NextRequest): boolean {
  * Sécurisé par CRON_SECRET (header Authorization: Bearer …), aligné sur Vercel Cron.
  */
 export async function GET(request: NextRequest) {
+  if (process.env.DEBUG_CRON_AUTH === 'true') {
+    const auth = request.headers.get('authorization')
+    logger.info('process-expired-subscriptions: auth debug', {
+      receivedAuthorization: auth,
+      expectedAuthorization: `Bearer ${process.env.CRON_SECRET ?? ''}`,
+      hasCronSecret: Boolean(process.env.CRON_SECRET),
+      vercelEnv: process.env.VERCEL_ENV ?? null,
+    })
+  }
+
   if (!isAuthorized(request)) {
     logger.warn('process-expired-subscriptions: unauthorized or missing CRON_SECRET')
     return NextResponse.json({ ok: false, error: 'unauthorized' }, { status: 401 })
