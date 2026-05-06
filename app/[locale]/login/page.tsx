@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useActionState, Suspense, useEffect } from 'react'
+import { useState, useActionState, Suspense } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useTranslations, useLocale } from 'next-intl'
@@ -26,12 +26,9 @@ function LoginPageContent() {
   const [termsAccepted, setTermsAccepted] = useState(false)
   const [termsError, setTermsError] = useState<string | null>(null)
 
-  useEffect(() => {
-    if (!signupState?.error) return
-    if (signupState.error === tErrors('termsRequired')) {
-      setTermsError(signupState.error)
-    }
-  }, [signupState?.error, tErrors])
+  const serverTermsError =
+    signupState?.error === tErrors('termsRequired') ? signupState.error : null
+  const displayedTermsError = termsError ?? serverTermsError
 
   const showSignupSuccess =
     Boolean(signupState?.success && signupState?.successType)
@@ -212,7 +209,9 @@ function LoginPageContent() {
                 <input type="hidden" name="termsAccepted" value={termsAccepted ? 'true' : 'false'} />
                 <div
                   className={`rounded-xl border px-4 py-3 ${
-                    termsError ? 'border-palette-danger bg-palette-danger-light/40' : 'border-stone-200 bg-white'
+                    displayedTermsError
+                      ? 'border-palette-danger bg-palette-danger-light/40'
+                      : 'border-stone-200 bg-white'
                   }`}
                   aria-label={t('legalConsent.aria')}
                 >
@@ -226,7 +225,7 @@ function LoginPageContent() {
                         if (e.target.checked) setTermsError(null)
                       }}
                       className="mt-1 h-4 w-4 rounded border-stone-300 text-palette-forest-dark focus:ring-palette-forest-dark"
-                      aria-describedby={termsError ? 'signup-termsAccepted-error' : undefined}
+                      aria-describedby={displayedTermsError ? 'signup-termsAccepted-error' : undefined}
                     />
                     <label htmlFor="signup-termsAccepted" className="text-sm text-stone-600 leading-relaxed">
                       {t('legalConsent.prefix')}{' '}
@@ -249,13 +248,13 @@ function LoginPageContent() {
                       </Link>.
                     </label>
                   </div>
-                  {termsError && (
+                  {displayedTermsError && (
                     <p id="signup-termsAccepted-error" className="mt-2 text-sm text-palette-danger" role="alert">
-                      {termsError}
+                      {displayedTermsError}
                     </p>
                   )}
                 </div>
-                {signupState?.error && (
+                {signupState?.error && !serverTermsError && (
                   <p className={FORM_ERROR_TEXT_CLASSES} role="alert">
                     {signupState.error}
                   </p>

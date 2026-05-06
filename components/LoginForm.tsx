@@ -38,6 +38,9 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
   const tErrors = useTranslations('auth.errors')
   const [termsAccepted, setTermsAccepted] = useState(false)
   const [termsError, setTermsError] = useState<string | null>(null)
+  const serverTermsError =
+    signupState?.error === tErrors('termsRequired') ? signupState.error : null
+  const displayedTermsError = termsError ?? serverTermsError
 
   // Pré-remplir l'email quand on bascule vers le mode login
   useEffect(() => {
@@ -45,14 +48,6 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
       emailInputRef.current.value = prefilledEmail
     }
   }, [mode, prefilledEmail])
-
-  useEffect(() => {
-    if (mode !== 'signup') return
-    if (!signupState?.error) return
-    if (signupState.error === tErrors('termsRequired')) {
-      setTermsError(signupState.error)
-    }
-  }, [mode, signupState?.error, tErrors])
 
   const termsHref = locale === 'en' ? '/en/terms' : '/terms'
   const privacyHref = locale === 'en' ? '/en/privacy' : '/privacy'
@@ -329,7 +324,9 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
         <input type="hidden" name="termsAccepted" value={termsAccepted ? 'true' : 'false'} />
         <div
           className={`rounded-xl border px-4 py-3 ${
-            termsError ? 'border-palette-danger bg-palette-danger-light/40' : 'border-stone-200 bg-white'
+            displayedTermsError
+              ? 'border-palette-danger bg-palette-danger-light/40'
+              : 'border-stone-200 bg-white'
           }`}
           aria-label={t('legalConsent.aria')}
         >
@@ -343,7 +340,7 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
                 if (e.target.checked) setTermsError(null)
               }}
               className="mt-1 h-4 w-4 rounded border-stone-300 text-palette-forest-dark focus:ring-palette-forest-dark"
-              aria-describedby={termsError ? 'modal-termsAccepted-error' : undefined}
+              aria-describedby={displayedTermsError ? 'modal-termsAccepted-error' : undefined}
             />
             <label htmlFor="modal-termsAccepted" className="text-sm text-stone-600 leading-relaxed">
               {t('legalConsent.prefix')}{' '}
@@ -366,14 +363,14 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
               </Link>.
             </label>
           </div>
-          {termsError && (
+          {displayedTermsError && (
             <p id="modal-termsAccepted-error" className="mt-2 text-sm text-palette-danger" role="alert">
-              {termsError}
+              {displayedTermsError}
             </p>
           )}
         </div>
 
-        {signupState?.error && (
+        {signupState?.error && !serverTermsError && (
           <p className={FORM_ERROR_TEXT_CLASSES} role="alert">
             {signupState.error}
             {signupState.userExists && signupState.existingEmail && onModeChange && (
