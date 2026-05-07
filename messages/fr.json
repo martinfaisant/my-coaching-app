@@ -125,7 +125,11 @@
     "collapseMenu": "Réduire le menu",
     "designSystem": "Design System",
     "members": "Gestion des membres",
-    "contactUs": "Contactez-nous"
+    "contactUs": "Contactez-nous",
+    "publicHome": "Accueil",
+    "publicPrivacy": "Politique de confidentialité",
+    "publicTerms": "Conditions d'utilisation",
+    "resetPasswordPage": "Réinitialiser le mot de passe"
   },
   "athleteStats": {
     "title": "Statistiques",
@@ -1003,7 +1007,6 @@
   "contact": {
     "title": "Nous contacter",
     "intro": "Décrivez votre demande. Nous vous répondrons à l’adresse e-mail indiquée.",
-    "introLoggedIn": "Vos informations de profil sont préremplies ; vous pouvez les modifier si besoin.",
     "labels": {
       "firstName": "Prénom",
       "lastName": "Nom",

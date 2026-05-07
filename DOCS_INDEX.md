@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 6 mai 2026 (**formulaire contact public** : `Project_context.md` §4.11, persistance + Resend, maquettes `docs/archive/design-contact-public-form/`, **docs/I18N.md** `contact.errors` ; précédent : page Statistiques athlète `/dashboard/stats` ; voir Changements récents)
+**Dernière mise à jour :** 7 mai 2026 (**en-tête marketing connecté** : `PublicOrDashboardHeader`, `DashboardTopBar` sticky sur pages publiques ; `Project_context.md` §4.0 / §4.1 ; **docs/DESIGN_SYSTEM.md** ; précédent : formulaire contact public §4.11 ; voir Changements récents)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -18,7 +18,7 @@
 - **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), stack technique, **URL production https://mysportally.com**
 - **Utiliser pour :** Comprendre le projet, les features, les rôles, l'architecture globale
 - **Taille :** ~450 lignes
-- **Dernière mise à jour :** 6 mai 2026 (§4.11 **Formulaire contact public** `/contact`, RPC **066**–**067**, Resend ; §4.2.3 Statistiques athlète ; §4.0 Dashboard ; §4.5 Calendrier ; §5 `contact_submissions` / `contact_submission_counters`)
+- **Dernière mise à jour :** 7 mai 2026 (§4.0 **en-tête public / marketing** : `PublicOrDashboardHeader`, `DashboardTopBar` sticky ; §4.1 reset-password ; §4.11 Formulaire contact ; §4.2.3 Statistiques ; §4.5 Calendrier ; §5 `contact_submissions` / `contact_submission_counters`)
 
 ### **docs/CALENDAR_MONTH_VIEW.md**
 - **Contenu :** Récap **vue mois** (desktop) vs **vue semaine** (mobile), règles semaines ISO / mois civil étendu, chargement données, liste des fichiers et tests unitaires, liens vers maquettes archivées
@@ -30,13 +30,13 @@
 - **Contenu :** Tokens (couleurs, typo, espacements), composants (Button, Input, Badge, TileCard, DashboardPageShell, **DashboardTopBar**, **AthleteAccountMenu**, **AthleteStatsVolumeChart**, **AthleteStatsChartSkeleton**, Modal, **MonthSelector**, etc.), guidelines UI, exemples de code, §7 breakpoints (**calendrier** mois étendu desktop + WeekSelector mobile, chat, Trouver mon coach, My offers)
 - **Utiliser pour :** Créer ou modifier des composants UI, choisir des couleurs, appliquer le design system, règles responsive par page
 - **Taille :** ~1850 lignes
-- **Dernière mise à jour :** 6 mai 2026 (**ContactForm**, § ContactForm + contraintes `contactFormConstraints` ; stats athlète Nivo ; **AthleteAccountMenu** ; §7 Calendrier…)
+- **Dernière mise à jour :** 7 mai 2026 (**PublicOrDashboardHeader**, **DashboardTopBar** sticky + bordure ; § PublicHeader ; **ContactForm** ; stats athlète Nivo ; **AthleteAccountMenu** ; §7 Calendrier…)
 
 ### **docs/I18N.md** ⭐
 - **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces, utilisation dans composants et server actions, **checklist pour nouvelles features** (toujours penser bilingue)
 - **Utiliser pour :** Toute nouvelle feature ou texte visible, ajout de clés de traduction, dépannage i18n
 - **Taille :** ~190 lignes
-- **Dernière mise à jour :** 6 mai 2026 (namespace **`contact`** / **`contact.errors`** : clés *TooLong*, `emailNotifyUnavailable` ; précédent : `athleteStats.*`, `navigation.accountMenu`…)
+- **Dernière mise à jour :** 7 mai 2026 (`navigation` : **publicHome**, **publicPrivacy**, **publicTerms**, **resetPasswordPage** ; résumé LanguageSwitcher visiteur vs bandeau dashboard ; précédent : **`contact`**, `athleteStats`…)
 
 ### **docs/AUTH_EMAIL_TEMPLATES.md**
 - **Contenu :** Guide de configuration des emails d’auth Supabase (sujet, i18n FR/EN, variables, dépannage logo). **Les fichiers HTML des templates** (Confirm signup, puis Magic Link, Reset Password, etc.) sont dans **docs/email-templates/**.
@@ -471,10 +471,16 @@
 
 **Fréquence de mise à jour :** À chaque ajout/suppression de documentation
 
-**Dernier scan :** 6 mai 2026  
-**Dernier nettoyage :** 6 mai 2026 (entrée Changements récents : formulaire contact public)
+**Dernier scan :** 7 mai 2026  
+**Dernier nettoyage :** 7 mai 2026 (entrée Changements récents : en-tête marketing connecté)
 
 ### Changements récents :
+
+✅ **7 mai 2026 – En-tête marketing / légal pour utilisateurs connectés – Mode Analyste :**
+- **Livraison (réf. code) :** sur l’**accueil**, **contact**, **politique de confidentialité**, **CGU** et **réinitialisation mot de passe**, **`PublicOrDashboardHeader`** affiche la barre **dashboard** (`DashboardTopBar`, navigation et menus selon le rôle) lorsqu’une **session** est active, et **`PublicHeader`** pour les **visiteurs**. **`DashboardTopBar`** est **sticky** (`top-0`, `z-50`, bordure basse) pour un défilement cohérent avec le header public. Titres **mobile** sur ces routes : clés **`navigation.publicHome`**, **`publicPrivacy`**, **`publicTerms`**, **`resetPasswordPage`**, **`contactUs`** pour `/contact` ; logique dans **`getPageTitleI18nKey`** (`lib/dashboardNavConfig.ts`).
+- **Doc :** `Project_context.md` §4.0 (paragraphe public / marketing / legal header), §4.1 (password reset), `docs/DESIGN_SYSTEM.md` § **PublicOrDashboardHeader**, § **DashboardTopBar**, § **PublicHeader**, `docs/I18N.md` (en-tête + tableau `navigation`), `DOCS_INDEX.md`.
+- **Archivage :** aucun.
+- **Pages légales / confidentialité :** aucune modification de fond des textes juridiques (changement **UI** uniquement).
 
 ✅ **6 mai 2026 – Formulaire contact public (`/contact`) – Mode Analyste :**
 - **Livraison (réf. besoin initial) :** page publique pour **contacter le support** (visiteurs et connectés) : prénom, nom, e-mail, téléphone optionnel, **motif** (liste), message ; référence **MSA-YYYY-NNNNNN** après enregistrement ; e-mail support via **API Resend** (`RESEND_API_KEY`) avec Reply-To visiteur ; persistance **`contact_submissions`** + compteur annuel, RPC **`insert_contact_submission`** (migrations **066**–**067**, client admin `SUPABASE_SECRET_KEY`). Entrées : footer landing, menus compte athlète/coach, drawer. Validation **vide / trop long** distincte (`lib/contactFormConstraints.ts`, `contact.errors.*`).

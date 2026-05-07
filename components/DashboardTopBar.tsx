@@ -62,7 +62,7 @@ export function DashboardTopBar({ profile }: DashboardTopBarProps) {
 
   return (
     <>
-      <header className="h-14 flex items-center gap-3 md:gap-4 px-4 md:px-5 lg:px-6 bg-white shrink-0 z-30">
+      <header className="sticky top-0 z-50 flex h-14 shrink-0 items-center gap-3 border-b border-stone-200 bg-white px-4 md:gap-4 md:px-5 lg:px-6">
         <Link
           href="/dashboard"
           className="flex items-center gap-2 shrink-0 min-w-0"

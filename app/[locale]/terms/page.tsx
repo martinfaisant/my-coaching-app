@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
-import { PublicHeader } from '@/components/PublicHeader'
+import { PublicOrDashboardHeader } from '@/components/PublicOrDashboardHeader'
 
 type TermsPageProps = {
   params: Promise<{ locale: string }>
@@ -23,7 +23,7 @@ export default async function TermsPage({ params }: TermsPageProps) {
 
   return (
     <div className="min-h-screen bg-background">
-      <PublicHeader />
+      <PublicOrDashboardHeader />
 
       <main className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-14">
         <header className="mb-10">
