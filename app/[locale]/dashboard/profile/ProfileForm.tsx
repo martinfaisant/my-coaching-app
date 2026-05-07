@@ -22,8 +22,18 @@ import { AthleteFacilitiesSection } from './installations/AthleteFacilitiesSecti
 
 import { LANGUAGES_OPTIONS } from '@/lib/sportsOptions'
 import { useCoachedSportsOptions, usePracticedSportsOptions } from '@/lib/hooks/useSportsOptions'
-import { getWeeklyVolumeDisplaySports, PRACTICED_SPORTS_DISPLAY_ORDER, SPORT_ICONS, SPORT_CARD_STYLES, SPORT_TRANSLATION_KEYS, getWeeklyVolumeUnit } from '@/lib/sportStyles'
-import type { SportType } from '@/lib/sportStyles'
+import {
+  getWeeklyVolumeDisplaySports,
+  getWeeklyVolumeTileElevationFormFieldName,
+  getWeeklyVolumeTileElevationJsonKey,
+  legacyWeeklyVolumeTileElevationValue,
+  practicedSportsNeedCourseElevationField,
+  SPORT_ICONS,
+  SPORT_CARD_STYLES,
+  SPORT_TRANSLATION_KEYS,
+  getWeeklyVolumeUnit,
+} from '@/lib/sportStyles'
+import type { SportType, WeeklyVolumeTileKey } from '@/lib/sportStyles'
 
 type ProfileFormProps = {
   email: string
@@ -58,7 +68,15 @@ type ProfileFormProps = {
 
 function defaultPrimaryMetric(
   prefs: WorkoutPrimaryMetricBySport | null | undefined,
-  key: 'course' | 'velo' | 'natation'
+  key:
+    | 'course'
+    | 'trail'
+    | 'velo'
+    | 'natation'
+    | 'nordic_ski'
+    | 'backcountry_ski'
+    | 'ice_skating'
+    | 'randonnee'
 ): 'time' | 'distance' {
   const v = prefs?.[key]
   return v === 'time' || v === 'distance' ? v : 'distance'
@@ -110,12 +128,24 @@ export function ProfileForm({
   const hiddenAvatarUrlRef = useRef<HTMLInputElement>(null)
   const isCoach = role === 'coach'
   const [unitCourse, setUnitCourse] = useState<'time' | 'distance'>(() => defaultPrimaryMetric(workoutPrimaryMetricBySport, 'course'))
+  const [unitTrail, setUnitTrail] = useState<'time' | 'distance'>(() => defaultPrimaryMetric(workoutPrimaryMetricBySport, 'trail'))
   const [unitVelo, setUnitVelo] = useState<'time' | 'distance'>(() => defaultPrimaryMetric(workoutPrimaryMetricBySport, 'velo'))
   const [unitNatation, setUnitNatation] = useState<'time' | 'distance'>(() => defaultPrimaryMetric(workoutPrimaryMetricBySport, 'natation'))
   useEffect(() => {
     setUnitCourse(defaultPrimaryMetric(workoutPrimaryMetricBySport, 'course'))
+    setUnitTrail(defaultPrimaryMetric(workoutPrimaryMetricBySport, 'trail'))
     setUnitVelo(defaultPrimaryMetric(workoutPrimaryMetricBySport, 'velo'))
     setUnitNatation(defaultPrimaryMetric(workoutPrimaryMetricBySport, 'natation'))
+  }, [workoutPrimaryMetricBySport])
+  const [unitNordicSki, setUnitNordicSki] = useState<'time' | 'distance'>(() => defaultPrimaryMetric(workoutPrimaryMetricBySport, 'nordic_ski'))
+  const [unitBackcountrySki, setUnitBackcountrySki] = useState<'time' | 'distance'>(() => defaultPrimaryMetric(workoutPrimaryMetricBySport, 'backcountry_ski'))
+  const [unitIceSkating, setUnitIceSkating] = useState<'time' | 'distance'>(() => defaultPrimaryMetric(workoutPrimaryMetricBySport, 'ice_skating'))
+  const [unitRandonnee, setUnitRandonnee] = useState<'time' | 'distance'>(() => defaultPrimaryMetric(workoutPrimaryMetricBySport, 'randonnee'))
+  useEffect(() => {
+    setUnitNordicSki(defaultPrimaryMetric(workoutPrimaryMetricBySport, 'nordic_ski'))
+    setUnitBackcountrySki(defaultPrimaryMetric(workoutPrimaryMetricBySport, 'backcountry_ski'))
+    setUnitIceSkating(defaultPrimaryMetric(workoutPrimaryMetricBySport, 'ice_skating'))
+    setUnitRandonnee(defaultPrimaryMetric(workoutPrimaryMetricBySport, 'randonnee'))
   }, [workoutPrimaryMetricBySport])
   const [presentationFrLength, setPresentationFrLength] = useState((presentationFr || '').length)
   const [presentationEnLength, setPresentationEnLength] = useState((presentationEn || '').length)
@@ -151,8 +181,13 @@ export function ProfileForm({
     weeklyTargetHours: weeklyTargetHours ?? '',
     weeklyVolumeBySport: JSON.stringify(weeklyVolumeBySport ?? {}),
     workoutPrimaryMetricCourse: defaultPrimaryMetric(workoutPrimaryMetricBySport, 'course'),
+    workoutPrimaryMetricTrail: defaultPrimaryMetric(workoutPrimaryMetricBySport, 'trail'),
     workoutPrimaryMetricVelo: defaultPrimaryMetric(workoutPrimaryMetricBySport, 'velo'),
     workoutPrimaryMetricNatation: defaultPrimaryMetric(workoutPrimaryMetricBySport, 'natation'),
+    workoutPrimaryMetricNordicSki: defaultPrimaryMetric(workoutPrimaryMetricBySport, 'nordic_ski'),
+    workoutPrimaryMetricBackcountrySki: defaultPrimaryMetric(workoutPrimaryMetricBySport, 'backcountry_ski'),
+    workoutPrimaryMetricIceSkating: defaultPrimaryMetric(workoutPrimaryMetricBySport, 'ice_skating'),
+    workoutPrimaryMetricRandonnee: defaultPrimaryMetric(workoutPrimaryMetricBySport, 'randonnee'),
   })
 
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
@@ -193,8 +228,13 @@ export function ProfileForm({
       if (currentPresentationFr !== initialValuesRef.current.presentationFr) return true
       if (currentPresentationEn !== initialValuesRef.current.presentationEn) return true
       if (unitCourse !== initialValuesRef.current.workoutPrimaryMetricCourse) return true
+      if (unitTrail !== initialValuesRef.current.workoutPrimaryMetricTrail) return true
       if (unitVelo !== initialValuesRef.current.workoutPrimaryMetricVelo) return true
       if (unitNatation !== initialValuesRef.current.workoutPrimaryMetricNatation) return true
+      if (unitNordicSki !== initialValuesRef.current.workoutPrimaryMetricNordicSki) return true
+      if (unitBackcountrySki !== initialValuesRef.current.workoutPrimaryMetricBackcountrySki) return true
+      if (unitIceSkating !== initialValuesRef.current.workoutPrimaryMetricIceSkating) return true
+      if (unitRandonnee !== initialValuesRef.current.workoutPrimaryMetricRandonnee) return true
     } else {
       const currentPracticedSports = Array.from(form.querySelectorAll<HTMLInputElement>('[name="practiced_sports"]:checked'))
         .map((cb) => cb.value)
@@ -206,10 +246,7 @@ export function ProfileForm({
       const currentWeeklyTarget = (form.querySelector('[name="weekly_target_hours"]') as HTMLInputElement)?.value.trim() ?? ''
       if (currentWeeklyTarget !== String(initialValuesRef.current.weeklyTargetHours)) return true
 
-      const expandedForVolume = currentPracticedSports.flatMap((s) =>
-        s === 'triathlon' ? ['course', 'velo', 'natation'] : [s]
-      )
-      const volumeDisplayList = PRACTICED_SPORTS_DISPLAY_ORDER.filter((s) => expandedForVolume.includes(s))
+      const volumeDisplayList = getWeeklyVolumeDisplaySports(currentPracticedSports)
       const currentVolume: Record<string, number> = {}
       volumeDisplayList.forEach((sport) => {
         const el = form.querySelector(`[name="weekly_volume_${sport}"]`) as HTMLInputElement
@@ -220,7 +257,7 @@ export function ProfileForm({
         }
       })
       const initialVolume = JSON.parse(initialValuesRef.current.weeklyVolumeBySport) as Record<string, number>
-      if (currentPracticedSports.includes('trail')) {
+      if (practicedSportsNeedCourseElevationField(currentPracticedSports)) {
         const el = form.querySelector('[name="weekly_volume_course_elevation_m"]') as HTMLInputElement
         const v = el?.value.trim() ?? ''
         const parsed = v !== '' ? parseFloat(v.replace(',', '.')) : NaN
@@ -228,12 +265,38 @@ export function ProfileForm({
         if (String(currentElevation ?? '') !== String(initialVolume.course_elevation_m ?? '')) return true
       }
       for (const sport of volumeDisplayList) {
+        const elevKey = getWeeklyVolumeTileElevationJsonKey(sport)
+        if (elevKey) {
+          const el = form.querySelector(`[name="weekly_volume_${elevKey}"]`) as HTMLInputElement
+          const v = el?.value.trim() ?? ''
+          const parsed = v !== '' ? parseFloat(v.replace(',', '.')) : NaN
+          const currentElev = !Number.isNaN(parsed) ? parsed : undefined
+          const initialElev = legacyWeeklyVolumeTileElevationValue(
+            sport,
+            initialVolume,
+            initialValuesRef.current.practicedSports,
+          )
+          if (String(currentElev ?? '') !== String(initialElev ?? '')) return true
+        }
+      }
+      for (const sport of volumeDisplayList) {
         if (String(currentVolume[sport] ?? '') !== String(initialVolume[sport] ?? '')) return true
       }
     }
 
     return false
-  }, [isCoach, avatarUrlState, unitCourse, unitVelo, unitNatation])
+  }, [
+    isCoach,
+    avatarUrlState,
+    unitCourse,
+    unitTrail,
+    unitVelo,
+    unitNatation,
+    unitNordicSki,
+    unitBackcountrySki,
+    unitIceSkating,
+    unitRandonnee,
+  ])
 
   // Mettre à jour l'état des modifications
   useEffect(() => {
@@ -316,10 +379,7 @@ export function ProfileForm({
         const currentPresentationEn = (form.querySelector('[name="presentation_en"]') as HTMLTextAreaElement)?.value.trim() || ''
         const currentWeeklyCurrent = (form.querySelector('[name="weekly_current_hours"]') as HTMLInputElement)?.value.trim() ?? ''
         const currentWeeklyTarget = (form.querySelector('[name="weekly_target_hours"]') as HTMLInputElement)?.value.trim() ?? ''
-        const expandedForVolume = currentPracticedSports.flatMap((s) =>
-          s === 'triathlon' ? ['course', 'velo', 'natation'] : [s]
-        )
-        const volumeDisplayList = PRACTICED_SPORTS_DISPLAY_ORDER.filter((s) => expandedForVolume.includes(s))
+        const volumeDisplayList = getWeeklyVolumeDisplaySports(currentPracticedSports)
         const currentVolume: Record<string, number> = {}
         volumeDisplayList.forEach((sport) => {
           const el = form.querySelector(`[name="weekly_volume_${sport}"]`) as HTMLInputElement
@@ -329,12 +389,22 @@ export function ProfileForm({
             if (!Number.isNaN(parsed)) currentVolume[sport] = parsed
           }
         })
-        if (currentPracticedSports.includes('trail')) {
+        if (practicedSportsNeedCourseElevationField(currentPracticedSports)) {
           const el = form.querySelector('[name="weekly_volume_course_elevation_m"]') as HTMLInputElement
           const v = el?.value.trim() ?? ''
           if (v !== '') {
             const parsed = parseFloat(v.replace(',', '.'))
             if (!Number.isNaN(parsed)) currentVolume.course_elevation_m = parsed
+          }
+        }
+        for (const sport of volumeDisplayList) {
+          const elevKey = getWeeklyVolumeTileElevationJsonKey(sport)
+          if (!elevKey) continue
+          const el = form.querySelector(`[name="weekly_volume_${elevKey}"]`) as HTMLInputElement
+          const v = el?.value.trim() ?? ''
+          if (v !== '') {
+            const parsed = parseFloat(v.replace(',', '.'))
+            if (!Number.isNaN(parsed)) currentVolume[elevKey] = parsed
           }
         }
         initialValuesRef.current = {
@@ -356,8 +426,13 @@ export function ProfileForm({
           ...(isCoach
             ? {
                 workoutPrimaryMetricCourse: unitCourse,
+                workoutPrimaryMetricTrail: unitTrail,
                 workoutPrimaryMetricVelo: unitVelo,
                 workoutPrimaryMetricNatation: unitNatation,
+                workoutPrimaryMetricNordicSki: unitNordicSki,
+                workoutPrimaryMetricBackcountrySki: unitBackcountrySki,
+                workoutPrimaryMetricIceSkating: unitIceSkating,
+                workoutPrimaryMetricRandonnee: unitRandonnee,
               }
             : {}),
         }
@@ -368,7 +443,17 @@ export function ProfileForm({
     if (state?.error) {
       setShowSavedFeedback(false)
     }
-  }, [saveFeedbackKey, isCoach, unitCourse, unitVelo, unitNatation])
+  }, [
+    saveFeedbackKey,
+    isCoach,
+    unitCourse,
+    unitVelo,
+    unitNatation,
+    unitNordicSki,
+    unitBackcountrySki,
+    unitIceSkating,
+    unitRandonnee,
+  ])
 
   // Réinitialiser "Enregistré" dès qu'une nouvelle modification est détectée
   useEffect(() => {
@@ -750,7 +835,15 @@ export function ProfileForm({
                         const suffixKey = unit === 'km' ? 'suffixKmPerWeek' : unit === 'm' ? 'suffixMPerWeek' : 'suffixHoursPerWeek'
                         const value = weeklyVolumeBySport?.[sport]
                         const defaultValue = value != null ? String(value) : ''
-                        const showCourseElevation = sport === 'course' && selectedPracticedSports.includes('trail')
+                        const showCourseElevation =
+                          sport === 'course' && practicedSportsNeedCourseElevationField(selectedPracticedSports)
+                        const tileElevField = getWeeklyVolumeTileElevationFormFieldName(sport as WeeklyVolumeTileKey)
+                        const tileElevDisplay = legacyWeeklyVolumeTileElevationValue(
+                          sport as WeeklyVolumeTileKey,
+                          weeklyVolumeBySport ?? undefined,
+                          selectedPracticedSports,
+                        )
+                        const tileElevDefault = tileElevDisplay != null ? String(tileElevDisplay) : ''
                         const elevationValue = weeklyVolumeBySport?.course_elevation_m
                         const elevationDefault = elevationValue != null ? String(elevationValue) : ''
                         return (
@@ -787,6 +880,21 @@ export function ProfileForm({
                                     name="weekly_volume_course_elevation_m"
                                     inputMode="decimal"
                                     defaultValue={elevationDefault}
+                                    placeholder="500"
+                                    className="w-full pl-3 pr-12 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition"
+                                  />
+                                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 text-xs pointer-events-none whitespace-nowrap">
+                                    {tProfile('suffixDPlusPerWeek')}
+                                  </span>
+                                </div>
+                              )}
+                              {tileElevField && (
+                                <div className="relative w-[6.5rem] shrink-0">
+                                  <input
+                                    type="text"
+                                    name={tileElevField}
+                                    inputMode="decimal"
+                                    defaultValue={tileElevDefault}
                                     placeholder="500"
                                     className="w-full pl-3 pr-12 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition"
                                   />
@@ -895,6 +1003,20 @@ export function ProfileForm({
                   ]}
                 />
               </div>
+              <div className="rounded-xl border border-stone-200 bg-white p-3 flex items-center justify-between gap-3 border-l-4 border-l-palette-gold">
+                <span className="text-sm font-semibold text-stone-800">{tSports('trail')}</span>
+                <Segments
+                  name="workout_primary_metric_trail"
+                  ariaLabel={tWorkouts('form.targetMode.time')}
+                  size="sm"
+                  value={unitTrail}
+                  onChange={(v) => setUnitTrail(v as 'time' | 'distance')}
+                  options={[
+                    { value: 'time', label: tWorkouts('form.targetMode.time') },
+                    { value: 'distance', label: tWorkouts('form.targetMode.distance') },
+                  ]}
+                />
+              </div>
               <div className="rounded-xl border border-stone-200 bg-white p-3 flex items-center justify-between gap-3 border-l-4 border-l-palette-olive">
                 <span className="text-sm font-semibold text-stone-800">{tSports('velo')}</span>
                 <Segments
@@ -924,6 +1046,63 @@ export function ProfileForm({
                     ]}
                   />
                 </div>
+              </div>
+
+              <div className="rounded-xl border border-stone-200 bg-white p-3 flex items-center justify-between gap-3 border-l-4 border-l-palette-gold">
+                <span className="text-sm font-semibold text-stone-800">{tSports('ski_fond')}</span>
+                <Segments
+                  name="workout_primary_metric_nordic_ski"
+                  ariaLabel={tWorkouts('form.targetMode.time')}
+                  size="sm"
+                  value={unitNordicSki}
+                  onChange={(v) => setUnitNordicSki(v as 'time' | 'distance')}
+                  options={[
+                    { value: 'time', label: tWorkouts('form.targetMode.time') },
+                    { value: 'distance', label: tWorkouts('form.targetMode.distance') },
+                  ]}
+                />
+              </div>
+              <div className="rounded-xl border border-stone-200 bg-white p-3 flex items-center justify-between gap-3 border-l-4 border-l-palette-gold">
+                <span className="text-sm font-semibold text-stone-800">{tSports('ski_randonnee')}</span>
+                <Segments
+                  name="workout_primary_metric_backcountry_ski"
+                  ariaLabel={tWorkouts('form.targetMode.time')}
+                  size="sm"
+                  value={unitBackcountrySki}
+                  onChange={(v) => setUnitBackcountrySki(v as 'time' | 'distance')}
+                  options={[
+                    { value: 'time', label: tWorkouts('form.targetMode.time') },
+                    { value: 'distance', label: tWorkouts('form.targetMode.distance') },
+                  ]}
+                />
+              </div>
+              <div className="rounded-xl border border-stone-200 bg-white p-3 flex items-center justify-between gap-3 border-l-4 border-l-palette-sage">
+                <span className="text-sm font-semibold text-stone-800">{tSports('patinage_glace')}</span>
+                <Segments
+                  name="workout_primary_metric_ice_skating"
+                  ariaLabel={tWorkouts('form.targetMode.time')}
+                  size="sm"
+                  value={unitIceSkating}
+                  onChange={(v) => setUnitIceSkating(v as 'time' | 'distance')}
+                  options={[
+                    { value: 'time', label: tWorkouts('form.targetMode.time') },
+                    { value: 'distance', label: tWorkouts('form.targetMode.distance') },
+                  ]}
+                />
+              </div>
+              <div className="rounded-xl border border-stone-200 bg-white p-3 flex items-center justify-between gap-3 border-l-4 border-l-palette-sage">
+                <span className="text-sm font-semibold text-stone-800">{tSports('rando')}</span>
+                <Segments
+                  name="workout_primary_metric_randonnee"
+                  ariaLabel={tWorkouts('form.targetMode.time')}
+                  size="sm"
+                  value={unitRandonnee}
+                  onChange={(v) => setUnitRandonnee(v as 'time' | 'distance')}
+                  options={[
+                    { value: 'time', label: tWorkouts('form.targetMode.time') },
+                    { value: 'distance', label: tWorkouts('form.targetMode.distance') },
+                  ]}
+                />
               </div>
             </div>
           </div>

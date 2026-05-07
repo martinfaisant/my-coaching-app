@@ -72,7 +72,7 @@ BEGIN
   v_first_name := v_first_names[1];
   v_last_name := v_last_names[1];
   v_full_name := v_first_name || ' ' || v_last_name;
-  v_coached_sports := ARRAY['course_route','trail','velo'];
+  v_coached_sports := ARRAY['course','trail','velo'];
   v_languages := ARRAY['fr','en'];
   v_presentation := v_presentations_long[1];
   v_postal_code := v_postal_codes[1];
@@ -92,18 +92,18 @@ BEGIN
     v_sport_combo_idx := 1 + (i-1) % 12;
     v_lang_combo_idx := 1 + (i-1) % 10;
     CASE v_sport_combo_idx
-      WHEN 1 THEN v_coached_sports := ARRAY['course_route'];
+      WHEN 1 THEN v_coached_sports := ARRAY['course'];
       WHEN 2 THEN v_coached_sports := ARRAY['velo'];
-      WHEN 3 THEN v_coached_sports := ARRAY['course_route','trail'];
-      WHEN 4 THEN v_coached_sports := ARRAY['course_route','velo'];
+      WHEN 3 THEN v_coached_sports := ARRAY['course','trail'];
+      WHEN 4 THEN v_coached_sports := ARRAY['course','velo'];
       WHEN 5 THEN v_coached_sports := ARRAY['trail'];
       WHEN 6 THEN v_coached_sports := ARRAY['triathlon'];
-      WHEN 7 THEN v_coached_sports := ARRAY['course_route','triathlon'];
+      WHEN 7 THEN v_coached_sports := ARRAY['course','triathlon'];
       WHEN 8 THEN v_coached_sports := ARRAY['velo','triathlon'];
-      WHEN 9 THEN v_coached_sports := ARRAY['course_route','trail','velo'];
-      WHEN 10 THEN v_coached_sports := ARRAY['course_route','trail','triathlon'];
+      WHEN 9 THEN v_coached_sports := ARRAY['course','trail','velo'];
+      WHEN 10 THEN v_coached_sports := ARRAY['course','trail','triathlon'];
       WHEN 11 THEN v_coached_sports := ARRAY['velo','trail'];
-      ELSE v_coached_sports := ARRAY['course_route','velo','triathlon'];
+      ELSE v_coached_sports := ARRAY['course','velo','triathlon'];
     END CASE;
     CASE v_lang_combo_idx
       WHEN 1 THEN v_languages := ARRAY['fr'];

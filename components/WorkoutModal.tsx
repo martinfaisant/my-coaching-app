@@ -45,9 +45,12 @@ import { DatePickerPopover } from '@/components/workout-modal/DatePickerPopover'
 import { CoachWorkoutForm } from '@/components/workout-modal/CoachWorkoutForm'
 import { WorkoutFacilityHoursStrip } from '@/components/workout-modal/WorkoutFacilityHoursStrip'
 import { getWorkoutFacilityDisplayLines } from '@/lib/workoutFacilityHours'
-
-/** Sports pour entraînement (sous-ensemble du calendrier). */
-const WORKOUT_SPORT_TYPES: SportType[] = ['course', 'velo', 'natation', 'musculation']
+import {
+  PERSISTED_WORKOUT_SPORT_TYPES,
+  workoutHasElevationField,
+  workoutHasTimeDistanceTargets,
+  workoutPaceIsRunningStyle,
+} from '@/lib/sportsRegistry'
 
 const FEELING_ICONS_READONLY = [Angry, Frown, Meh, Smile, Laugh] as const
 
@@ -204,7 +207,7 @@ export function WorkoutModal({
   const hasUnsavedChanges = workoutForm.hasUnsavedChanges
 
   const isEdit = !!currentWorkout
-  const hasTimeDistanceChoice = sportType === 'course' || sportType === 'velo' || sportType === 'natation'
+  const hasTimeDistanceChoice = workoutHasTimeDistanceTargets(sportType)
 
   /** Date dans le futur (aujourd'hui ou après) pour condition modale coach modifiable (US4). */
   const isDateInFuture = (dateStr: string) => dateStr >= toDateStr(new Date())
@@ -275,8 +278,8 @@ export function WorkoutModal({
     }
     return map[s]
   }
-  const hasElevation = sportType === 'course' || sportType === 'velo'
-  const isTimeOnly = sportType === 'musculation'
+  const hasElevation = workoutHasElevationField(sportType)
+  const isTimeOnly = sportType === 'musculation' || sportType === 'triathlon'
 
   const mandatoryMetricHint =
     isTimeOnly || !hasTimeDistanceChoice
@@ -354,8 +357,13 @@ export function WorkoutModal({
     {} as ProfileFormState
   )
   const [unitCourse, setUnitCourse] = useState<'time' | 'distance'>('time')
+  const [unitTrail, setUnitTrail] = useState<'time' | 'distance'>('time')
   const [unitVelo, setUnitVelo] = useState<'time' | 'distance'>('time')
   const [unitNatation, setUnitNatation] = useState<'time' | 'distance'>('time')
+  const [unitNordicSki, setUnitNordicSki] = useState<'time' | 'distance'>('time')
+  const [unitBackcountrySki, setUnitBackcountrySki] = useState<'time' | 'distance'>('time')
+  const [unitIceSkating, setUnitIceSkating] = useState<'time' | 'distance'>('time')
+  const [unitRandonnee, setUnitRandonnee] = useState<'time' | 'distance'>('time')
 
   useEffect(() => {
     if (unitsState?.success) {
@@ -927,6 +935,20 @@ export function WorkoutModal({
                   ]}
                 />
               </div>
+              <div className={`rounded-xl border border-stone-200 bg-white p-3 flex flex-col gap-2 border-l-4 border-l-palette-gold`}>
+                <span className="text-sm font-semibold text-stone-800">{tSports('trail')}</span>
+                <Segments
+                  name="workout_primary_metric_trail"
+                  ariaLabel={tWorkouts('form.targetMode.time')}
+                  size="sm"
+                  value={unitTrail}
+                  onChange={(v) => setUnitTrail(v as 'time' | 'distance')}
+                  options={[
+                    { value: 'time', label: tWorkouts('form.targetMode.time') },
+                    { value: 'distance', label: tWorkouts('form.targetMode.distance') },
+                  ]}
+                />
+              </div>
               <div
                 className={`rounded-xl border border-stone-200 bg-white p-3 flex flex-col gap-2 border-l-4 border-l-palette-olive`}
               >
@@ -961,6 +983,63 @@ export function WorkoutModal({
                   />
                 </div>
               </div>
+
+              <div className="rounded-xl border border-stone-200 bg-white p-3 flex flex-col gap-2 border-l-4 border-l-palette-gold">
+                <span className="text-sm font-semibold text-stone-800">{tSports('ski_fond')}</span>
+                <Segments
+                  name="workout_primary_metric_nordic_ski"
+                  ariaLabel={tWorkouts('form.targetMode.time')}
+                  size="sm"
+                  value={unitNordicSki}
+                  onChange={(v) => setUnitNordicSki(v as 'time' | 'distance')}
+                  options={[
+                    { value: 'time', label: tWorkouts('form.targetMode.time') },
+                    { value: 'distance', label: tWorkouts('form.targetMode.distance') },
+                  ]}
+                />
+              </div>
+              <div className="rounded-xl border border-stone-200 bg-white p-3 flex flex-col gap-2 border-l-4 border-l-palette-gold">
+                <span className="text-sm font-semibold text-stone-800">{tSports('ski_randonnee')}</span>
+                <Segments
+                  name="workout_primary_metric_backcountry_ski"
+                  ariaLabel={tWorkouts('form.targetMode.time')}
+                  size="sm"
+                  value={unitBackcountrySki}
+                  onChange={(v) => setUnitBackcountrySki(v as 'time' | 'distance')}
+                  options={[
+                    { value: 'time', label: tWorkouts('form.targetMode.time') },
+                    { value: 'distance', label: tWorkouts('form.targetMode.distance') },
+                  ]}
+                />
+              </div>
+              <div className="rounded-xl border border-stone-200 bg-white p-3 flex flex-col gap-2 border-l-4 border-l-palette-sage">
+                <span className="text-sm font-semibold text-stone-800">{tSports('patinage_glace')}</span>
+                <Segments
+                  name="workout_primary_metric_ice_skating"
+                  ariaLabel={tWorkouts('form.targetMode.time')}
+                  size="sm"
+                  value={unitIceSkating}
+                  onChange={(v) => setUnitIceSkating(v as 'time' | 'distance')}
+                  options={[
+                    { value: 'time', label: tWorkouts('form.targetMode.time') },
+                    { value: 'distance', label: tWorkouts('form.targetMode.distance') },
+                  ]}
+                />
+              </div>
+              <div className="rounded-xl border border-stone-200 bg-white p-3 flex flex-col gap-2 border-l-4 border-l-palette-sage">
+                <span className="text-sm font-semibold text-stone-800">{tSports('rando')}</span>
+                <Segments
+                  name="workout_primary_metric_randonnee"
+                  ariaLabel={tWorkouts('form.targetMode.time')}
+                  size="sm"
+                  value={unitRandonnee}
+                  onChange={(v) => setUnitRandonnee(v as 'time' | 'distance')}
+                  options={[
+                    { value: 'time', label: tWorkouts('form.targetMode.time') },
+                    { value: 'distance', label: tWorkouts('form.targetMode.distance') },
+                  ]}
+                />
+              </div>
             </div>
             <p className="text-xs text-stone-500">{tWorkouts('form.unitsSetupMuscuNote')}</p>
             {unitsState?.error && (
@@ -990,7 +1069,7 @@ export function WorkoutModal({
             hasCvNTargets={hasTimeDistanceChoice}
             hasElevation={hasElevation}
             isTimeOnly={isTimeOnly}
-            workoutSportTypes={WORKOUT_SPORT_TYPES}
+            workoutSportTypes={[...PERSISTED_WORKOUT_SPORT_TYPES]}
             mandatoryMetricHint={mandatoryMetricHint}
             onSportChange={(sport) => workoutForm.setValue('sportType', sport)}
             onTitleChange={(value) => workoutForm.setValue('title', value)}
@@ -1058,7 +1137,7 @@ export function WorkoutModal({
                 <>
                   <span className="inline-flex items-center gap-1">
                     <LightningIcon className="h-4 w-4 text-stone-400" />
-                    {currentWorkout.sport_type === 'course'
+                    {workoutPaceIsRunningStyle(currentWorkout.sport_type)
                       ? `${currentWorkout.target_pace} min/km`
                       : currentWorkout.sport_type === 'velo'
                         ? `${Math.round(currentWorkout.target_pace)} km/h`
@@ -1175,8 +1254,8 @@ export function WorkoutModal({
             )}
             <input type="hidden" name="sport_type" value={sportType} />
             {canEdit ? (
-              <div className="grid grid-cols-4 gap-2" role="group" aria-label={tWorkouts('form.sportType')}>
-                {WORKOUT_SPORT_TYPES.map((sport) => {
+              <div className="flex flex-wrap gap-2" role="group" aria-label={tWorkouts('form.sportType')}>
+                {PERSISTED_WORKOUT_SPORT_TYPES.map((sport) => {
                   const selected = sportType === sport
                   const Icon = SPORT_ICONS[sport as keyof typeof SPORT_ICONS]
                   const translationKey = SPORT_TRANSLATION_KEYS[sport as keyof typeof SPORT_TRANSLATION_KEYS]
@@ -1393,13 +1472,23 @@ export function WorkoutModal({
                             value={targetPace}
                             onChange={(e) => workoutForm.setValue('targetPace', e.target.value)}
                             onWheel={preventWheelNumberChange}
-                            placeholder={sportType === 'course' ? '5.0' : sportType === 'velo' ? '39' : '2.0'}
+                            placeholder={
+                              workoutPaceIsRunningStyle(sportType)
+                                ? '5.0'
+                                : sportType === 'velo'
+                                  ? '39'
+                                  : '2.0'
+                            }
                             title={tCommon('paceRequiredHint')}
                             className="w-full border border-stone-300 rounded-lg py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition-all bg-white text-stone-900 placeholder-stone-300 font-semibold pr-16"
                           />
                           <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                             <span className="text-stone-400 text-xs font-normal">
-                              {sportType === 'course' ? tWorkouts('form.paceUnitRunning') : sportType === 'velo' ? tWorkouts('form.paceUnitCycling') : tWorkouts('form.paceUnitSwimming')}
+                              {workoutPaceIsRunningStyle(sportType)
+                                ? tWorkouts('form.paceUnitRunning')
+                                : sportType === 'velo'
+                                  ? tWorkouts('form.paceUnitCycling')
+                                  : tWorkouts('form.paceUnitSwimming')}
                             </span>
                           </div>
                         </div>

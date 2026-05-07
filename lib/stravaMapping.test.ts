@@ -31,6 +31,22 @@ describe('stravaMapping', () => {
     expect(mapStravaTypeToSportType('ice skate')).toBe('ice_skating')
   })
 
+  it('maps hike and walk to randonnee', () => {
+    expect(mapStravaTypeToSportType('Hike')).toBe('randonnee')
+    expect(mapStravaTypeToSportType('Walk')).toBe('randonnee')
+  })
+
+  it('maps trail run types to trail', () => {
+    expect(mapStravaTypeToSportType('TrailRun')).toBe('trail')
+    expect(mapStravaTypeToSportType('trail run')).toBe('trail')
+    expect(mapStravaTypeToSportType('trail_run')).toBe('trail')
+  })
+
+  it('maps triathlon types', () => {
+    expect(mapStravaTypeToSportType('Triathlon')).toBe('triathlon')
+    expect(mapStravaTypeToSportType('virtualtriathlon')).toBe('triathlon')
+  })
+
   it('defaults to course for unknown types', () => {
     expect(mapStravaTypeToSportType('SomethingElse')).toBe('course')
   })

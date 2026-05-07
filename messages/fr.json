@@ -785,6 +785,7 @@
     "suffixKmPerWeek": "km/sem.",
     "suffixMPerWeek": "m/sem.",
     "suffixDPlusPerWeek": "D+/sem.",
+    "weeklyElevationWithoutCourseTile": "Dénivelé (ski, rando…)",
     "workoutPrimaryMetricsSectionTitle": "Unités des séances (course, vélo, natation)",
     "workoutPrimaryMetricsIntro": "Indiquez si vous planifiez d’abord en temps ou en distance pour chaque sport. Utilisé pour vos séances et la synthèse hebdomadaire.",
     "validation": {
@@ -925,6 +926,8 @@
       "nordicSkiDistanceCompletedPlanned": "Ski de fond : distance faite / prévue",
       "backcountrySkiDistanceCompletedPlanned": "Ski de randonnée : distance faite / prévue",
       "iceSkatingDistanceCompletedPlanned": "Patin à glace : distance faite / prévue",
+      "hikingDistanceCompletedPlanned": "Randonnée : distance faite / prévue",
+      "triathlonTimeCompletedPlanned": "Triathlon : temps réalisé / prévu",
       "sportLabels": {
         "run": "Run",
         "cycling": "Vélo",
@@ -932,7 +935,9 @@
         "strength": "Muscu",
         "nordicSki": "Ski de fond",
         "backcountrySki": "Ski Rando",
-        "iceSkating": "Patin"
+        "iceSkating": "Patin",
+        "hiking": "Rando",
+        "triathlon": "Triathlon"
       }
     },
     "modals": {

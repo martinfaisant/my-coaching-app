@@ -80,7 +80,7 @@ COMMENT ON COLUMN public.profiles.weekly_volume_by_sport IS 'Volume actuel par s
 ## 5. Logique métier
 
 - **Unité par sport (affichage suffixe + validation) :**
-  - Course (course, course_route, trail, randonnée) → **km**
+  - Course (course, trail, randonnée) → **km**
   - Vélo → **km**
   - Natation → **m**
   - Musculation → **h**

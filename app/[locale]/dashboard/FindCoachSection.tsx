@@ -14,8 +14,17 @@ import { SearchInput } from '@/components/SearchInput'
 import { SportTileSelectable } from '@/components/SportTileSelectable'
 import { createCoachRequest } from './actions'
 import { LANGUAGES_OPTIONS } from '@/lib/sportsOptions'
-import { getWeeklyVolumeDisplaySports, getWeeklyVolumeUnit, SPORT_ICONS, SPORT_CARD_STYLES, SPORT_TRANSLATION_KEYS } from '@/lib/sportStyles'
-import type { SportType } from '@/lib/sportStyles'
+import {
+  getWeeklyVolumeDisplaySports,
+  getWeeklyVolumeTileElevationJsonKey,
+  getWeeklyVolumeUnit,
+  legacyWeeklyVolumeTileElevationValue,
+  practicedSportsNeedCourseElevationField,
+  SPORT_ICONS,
+  SPORT_CARD_STYLES,
+  SPORT_TRANSLATION_KEYS,
+} from '@/lib/sportStyles'
+import type { SportType, WeeklyVolumeTileKey } from '@/lib/sportStyles'
 import { useCoachedSportsOptions, usePracticedSportsOptions } from '@/lib/hooks/useSportsOptions'
 import { useRouter } from 'next/navigation'
 import { getInitials } from '@/lib/stringUtils'
@@ -548,8 +557,17 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
     for (const sport of list) {
       const v = initialWeeklyVolumeBySport?.[sport]
       init[sport] = v != null ? String(v) : ''
+      const elevKey = getWeeklyVolumeTileElevationJsonKey(sport)
+      if (elevKey) {
+        const ev = legacyWeeklyVolumeTileElevationValue(
+          sport,
+          initialWeeklyVolumeBySport ?? undefined,
+          initialPracticedSports ?? [],
+        )
+        init[elevKey] = ev != null ? String(ev) : ''
+      }
     }
-    if ((initialPracticedSports ?? []).includes('trail')) {
+    if (practicedSportsNeedCourseElevationField(initialPracticedSports ?? [])) {
       const v = initialWeeklyVolumeBySport?.course_elevation_m
       init.course_elevation_m = v != null ? String(v) : ''
     }
@@ -563,10 +581,23 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
   useEffect(() => {
     setWeeklyVolumeInputs((prev) => {
       const next = { ...prev }
+      const allowedKeys = new Set<string>()
       for (const sport of displaySportsForVolume) {
+        allowedKeys.add(sport)
         if (!(sport in next)) next[sport] = ''
+        const elevKey = getWeeklyVolumeTileElevationJsonKey(sport)
+        if (elevKey) {
+          allowedKeys.add(elevKey)
+          if (!(elevKey in next)) next[elevKey] = ''
+        }
       }
-      if (sports.includes('trail') && !('course_elevation_m' in next)) next.course_elevation_m = ''
+      if (practicedSportsNeedCourseElevationField(sports)) {
+        allowedKeys.add('course_elevation_m')
+        if (!('course_elevation_m' in next)) next.course_elevation_m = ''
+      }
+      for (const k of Object.keys(next)) {
+        if (!allowedKeys.has(k)) delete next[k]
+      }
       return next
     })
   }, [sports.join(',')])
@@ -634,7 +665,7 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
       }
       volumeBySport[sport] = Math.round(val * 100) / 100
     }
-    if (sports.includes('trail')) {
+    if (practicedSportsNeedCourseElevationField(sports)) {
       const raw = (weeklyVolumeInputs.course_elevation_m ?? '').trim().replace(',', '.')
       const val = raw === '' ? NaN : parseFloat(raw)
       if (Number.isNaN(val) || val < 0 || val > 50000) {
@@ -642,6 +673,17 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
         return
       }
       volumeBySport.course_elevation_m = Math.round(val * 100) / 100
+    }
+    for (const sport of displaySportsForVolume) {
+      const elevKey = getWeeklyVolumeTileElevationJsonKey(sport)
+      if (!elevKey) continue
+      const raw = (weeklyVolumeInputs[elevKey] ?? '').trim().replace(',', '.')
+      const val = raw === '' ? NaN : parseFloat(raw)
+      if (Number.isNaN(val) || val < 0 || val > 50000) {
+        setError(tCoachReq('requireWeeklyTargetAndVolume'))
+        return
+      }
+      volumeBySport[elevKey] = Math.round(val * 100) / 100
     }
     setError(null)
     setIsSubmitting(true)
@@ -692,13 +734,21 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
       const n = parseFloat(raw)
       return !Number.isNaN(n) && n >= 0
     }) &&
-    (!sports.includes('trail') ||
+    (!practicedSportsNeedCourseElevationField(sports) ||
       (() => {
         const raw = (weeklyVolumeInputs.course_elevation_m ?? '').trim().replace(',', '.')
         if (raw === '') return false
         const n = parseFloat(raw)
         return !Number.isNaN(n) && n >= 0 && n <= 50000
-      })())
+      })()) &&
+    displaySportsForVolume.every((s) => {
+      const elevKey = getWeeklyVolumeTileElevationJsonKey(s)
+      if (!elevKey) return true
+      const raw = (weeklyVolumeInputs[elevKey] ?? '').trim().replace(',', '.')
+      if (raw === '') return false
+      const n = parseFloat(raw)
+      return !Number.isNaN(n) && n >= 0 && n <= 50000
+    })
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -1002,7 +1052,9 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
                                   const unit = getWeeklyVolumeUnit(sport)
                                   const suffixKey =
                                     unit === 'km' ? 'suffixKmPerWeek' : unit === 'm' ? 'suffixMPerWeek' : 'suffixHoursPerWeek'
-                                  const showCourseElevation = sport === 'course' && sports.includes('trail')
+                                  const showCourseElevation =
+                                    sport === 'course' && practicedSportsNeedCourseElevationField(sports)
+                                  const elevKey = getWeeklyVolumeTileElevationJsonKey(sport as WeeklyVolumeTileKey)
                                   return (
                                     <div
                                       key={sport}
@@ -1037,6 +1089,21 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
                                               inputMode="decimal"
                                               value={weeklyVolumeInputs.course_elevation_m ?? ''}
                                               onChange={(e) => setVolumeInput('course_elevation_m', e.target.value)}
+                                              placeholder="500"
+                                              className="w-full pl-3 pr-12 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition"
+                                            />
+                                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 text-xs pointer-events-none whitespace-nowrap">
+                                              {tProfile('suffixDPlusPerWeek')}
+                                            </span>
+                                          </div>
+                                        )}
+                                        {elevKey && (
+                                          <div className="relative w-[6.5rem] shrink-0">
+                                            <input
+                                              type="text"
+                                              inputMode="decimal"
+                                              value={weeklyVolumeInputs[elevKey] ?? ''}
+                                              onChange={(e) => setVolumeInput(elevKey, e.target.value)}
                                               placeholder="500"
                                               className="w-full pl-3 pr-12 py-2 rounded-lg border border-stone-300 bg-white text-stone-900 text-sm placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition"
                                             />

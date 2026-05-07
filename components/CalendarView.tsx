@@ -11,6 +11,7 @@ import { AvailabilityModal } from './AvailabilityModal'
 import { AvailabilityDetailModal } from './AvailabilityDetailModal'
 import { Modal } from './Modal'
 import { SPORT_ICONS, SPORT_CARD_STYLES, SPORT_TRANSLATION_KEYS } from '@/lib/sportStyles'
+import { workoutPaceIsRunningStyle } from '@/lib/sportsRegistry'
 import { ActivityTile } from './ActivityTile'
 import type {
   AthleteFacility,
@@ -35,6 +36,8 @@ const StrengthIcon = SPORT_ICONS.musculation
 const NordicSkiIcon = SPORT_ICONS.nordic_ski
 const BackcountrySkiIcon = SPORT_ICONS.backcountry_ski
 const IceSkatingIcon = SPORT_ICONS.ice_skating
+const HikeIcon = SPORT_ICONS.randonnee
+const TriathlonWeekIcon = SPORT_ICONS.triathlon
 
 /** Distance natation en mètres (arrondi au mètre près). */
 function swimmingDistanceM(km: number): number {
@@ -52,8 +55,7 @@ function formatDuration(minutes: number): string {
 /** Formate la vitesse selon le type de sport. */
 function formatPace(pace: number | null | undefined, sportType: SportType): string {
   if (!pace || pace <= 0) return ''
-  if (sportType === 'course') {
-    // min/km
+  if (workoutPaceIsRunningStyle(sportType)) {
     return `${pace.toFixed(1)} min/km`
   } else if (sportType === 'velo') {
     // km/h
@@ -247,12 +249,15 @@ function GoalTargetBadge({ isPrimary, title }: { isPrimary: boolean; title: stri
 
 const EMPTY_FAIT: WeekFaitBySport = {
   course: { minutes: 0, distanceKm: 0 },
+  trail: { minutes: 0, distanceKm: 0 },
   velo: { minutes: 0, distanceKm: 0 },
   natation: { minutes: 0, distanceKm: 0 },
   musculation: { minutes: 0, distanceKm: 0 },
   nordic_ski: { minutes: 0, distanceKm: 0 },
   backcountry_ski: { minutes: 0, distanceKm: 0 },
   ice_skating: { minutes: 0, distanceKm: 0 },
+  randonnee: { minutes: 0, distanceKm: 0 },
+  triathlon: { minutes: 0, distanceKm: 0 },
 }
 
 export function CalendarView({
@@ -574,12 +579,15 @@ export function CalendarView({
       
       const bySport: Record<SportType, { minutes: number; distanceKm: number }> = {
         course: { minutes: 0, distanceKm: 0 },
+        trail: { minutes: 0, distanceKm: 0 },
         velo: { minutes: 0, distanceKm: 0 },
         natation: { minutes: 0, distanceKm: 0 },
         musculation: { minutes: 0, distanceKm: 0 },
         nordic_ski: { minutes: 0, distanceKm: 0 },
         backcountry_ski: { minutes: 0, distanceKm: 0 },
         ice_skating: { minutes: 0, distanceKm: 0 },
+        randonnee: { minutes: 0, distanceKm: 0 },
+        triathlon: { minutes: 0, distanceKm: 0 },
       }
       
       for (const total of totalsForWeek) {
@@ -599,13 +607,16 @@ export function CalendarView({
   const weekFaitBySport = useMemo((): WeekFaitBySport[] => {
     const empty = (): WeekFaitBySport => ({
       course: { minutes: 0, distanceKm: 0 },
+      trail: { minutes: 0, distanceKm: 0 },
       velo: { minutes: 0, distanceKm: 0 },
-        natation: { minutes: 0, distanceKm: 0 },
-        musculation: { minutes: 0, distanceKm: 0 },
-        nordic_ski: { minutes: 0, distanceKm: 0 },
-        backcountry_ski: { minutes: 0, distanceKm: 0 },
-        ice_skating: { minutes: 0, distanceKm: 0 },
-      })
+      natation: { minutes: 0, distanceKm: 0 },
+      musculation: { minutes: 0, distanceKm: 0 },
+      nordic_ski: { minutes: 0, distanceKm: 0 },
+      backcountry_ski: { minutes: 0, distanceKm: 0 },
+      ice_skating: { minutes: 0, distanceKm: 0 },
+      randonnee: { minutes: 0, distanceKm: 0 },
+      triathlon: { minutes: 0, distanceKm: 0 },
+    })
     if (weeks.length === 0) return []
     return weeks.map((week) => {
       const weekStartDate = new Date(week.days[0]!.dateStr + 'T12:00:00')
@@ -614,12 +625,15 @@ export function CalendarView({
       const rows = weeklyTotals.filter((t) => t.week_start === weekStartStr)
       const bySport: WeekFaitBySport = {
         course: { minutes: 0, distanceKm: 0 },
+        trail: { minutes: 0, distanceKm: 0 },
         velo: { minutes: 0, distanceKm: 0 },
         natation: { minutes: 0, distanceKm: 0 },
         musculation: { minutes: 0, distanceKm: 0 },
         nordic_ski: { minutes: 0, distanceKm: 0 },
         backcountry_ski: { minutes: 0, distanceKm: 0 },
         ice_skating: { minutes: 0, distanceKm: 0 },
+        randonnee: { minutes: 0, distanceKm: 0 },
+        triathlon: { minutes: 0, distanceKm: 0 },
       }
       for (const r of rows) {
         const distKm = (r.total_distance_m ?? 0) / 1000
@@ -632,12 +646,15 @@ export function CalendarView({
       // Arrondir les totaux à l'entier (sauf natation.distanceKm, gardé en décimal pour affichage en m)
       return {
         course: { minutes: Math.round(bySport.course.minutes), distanceKm: Math.round(bySport.course.distanceKm) },
+        trail: { minutes: Math.round(bySport.trail.minutes), distanceKm: Math.round(bySport.trail.distanceKm) },
         velo: { minutes: Math.round(bySport.velo.minutes), distanceKm: Math.round(bySport.velo.distanceKm) },
         natation: { minutes: Math.round(bySport.natation.minutes), distanceKm: bySport.natation.distanceKm },
         musculation: { minutes: Math.round(bySport.musculation.minutes), distanceKm: Math.round(bySport.musculation.distanceKm) },
         nordic_ski: { minutes: Math.round(bySport.nordic_ski.minutes), distanceKm: Math.round(bySport.nordic_ski.distanceKm) },
         backcountry_ski: { minutes: Math.round(bySport.backcountry_ski.minutes), distanceKm: Math.round(bySport.backcountry_ski.distanceKm) },
         ice_skating: { minutes: Math.round(bySport.ice_skating.minutes), distanceKm: Math.round(bySport.ice_skating.distanceKm) },
+        randonnee: { minutes: Math.round(bySport.randonnee.minutes), distanceKm: Math.round(bySport.randonnee.distanceKm) },
+        triathlon: { minutes: Math.round(bySport.triathlon.minutes), distanceKm: Math.round(bySport.triathlon.distanceKm) },
       }
     })
   }, [weeks, weeklyTotals])
@@ -982,6 +999,8 @@ export function CalendarView({
       { key: 'nordic_ski' as const, Icon: NordicSkiIcon, color: 'text-palette-sage', bg: 'bg-palette-sage', label: tCalendar('weekly.sportLabels.nordicSki'), prevuVal: prevu?.nordic_ski?.distanceKm ?? 0, faitVal: fait?.nordic_ski?.distanceKm ?? 0, useTime: false, useMeters: false },
       { key: 'backcountry_ski' as const, Icon: BackcountrySkiIcon, color: 'text-palette-gold', bg: 'bg-palette-gold', label: tCalendar('weekly.sportLabels.backcountrySki'), prevuVal: prevu?.backcountry_ski?.distanceKm ?? 0, faitVal: fait?.backcountry_ski?.distanceKm ?? 0, useTime: false, useMeters: false },
       { key: 'ice_skating' as const, Icon: IceSkatingIcon, color: 'text-cyan-600', bg: 'bg-cyan-500', label: tCalendar('weekly.sportLabels.iceSkating'), prevuVal: prevu?.ice_skating?.distanceKm ?? 0, faitVal: fait?.ice_skating?.distanceKm ?? 0, useTime: false, useMeters: false },
+      { key: 'randonnee' as const, Icon: HikeIcon, color: 'text-palette-sage', bg: 'bg-palette-sage', label: tCalendar('weekly.sportLabels.hiking'), prevuVal: prevu?.randonnee?.distanceKm ?? 0, faitVal: fait?.randonnee?.distanceKm ?? 0, useTime: false, useMeters: false },
+      { key: 'triathlon' as const, Icon: TriathlonWeekIcon, color: 'text-palette-amber', bg: 'bg-palette-amber', label: tCalendar('weekly.sportLabels.triathlon'), prevuVal: prevu?.triathlon?.minutes ?? 0, faitVal: fait?.triathlon?.minutes ?? 0, useTime: true, useMeters: false },
     ].filter((s) => s.prevuVal > 0 || s.faitVal > 0)
     const hasAnyTotals = sports.length > 0
     if (!hasAnyTotals) return null
@@ -1413,6 +1432,18 @@ export function CalendarView({
                               <span className="flex items-center gap-1.5 text-cyan-600" title={tCalendar('weekly.iceSkatingDistanceCompletedPlanned')}>
                                 <IceSkatingIcon className="w-3.5 h-3.5" />
                                 {formatDist(fait?.ice_skating?.distanceKm ?? 0)} km / {formatDist(prevu?.ice_skating?.distanceKm ?? 0)} km
+                              </span>
+                            ) : null}
+                            {(prevu?.randonnee?.distanceKm ?? 0) > 0 || (fait?.randonnee?.distanceKm ?? 0) > 0 ? (
+                              <span className="flex items-center gap-1.5 text-palette-sage" title={tCalendar('weekly.hikingDistanceCompletedPlanned')}>
+                                <HikeIcon className="w-3.5 h-3.5" />
+                                {formatDist(fait?.randonnee?.distanceKm ?? 0)} km / {formatDist(prevu?.randonnee?.distanceKm ?? 0)} km
+                              </span>
+                            ) : null}
+                            {(prevu?.triathlon?.minutes ?? 0) > 0 || (fait?.triathlon?.minutes ?? 0) > 0 ? (
+                              <span className="flex items-center gap-1.5 text-palette-amber" title={tCalendar('weekly.triathlonTimeCompletedPlanned')}>
+                                <TriathlonWeekIcon className="w-3.5 h-3.5" />
+                                {formatDuration(fait?.triathlon?.minutes ?? 0)} / {formatDuration(prevu?.triathlon?.minutes ?? 0)}
                               </span>
                             ) : null}
                           </>

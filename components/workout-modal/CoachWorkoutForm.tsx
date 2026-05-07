@@ -7,6 +7,7 @@ import { Input } from '@/components/Input'
 import { Textarea } from '@/components/Textarea'
 import { ClockIcon, LightningIcon, MountainIcon, RulerIcon } from '@/components/workout-modal/icons'
 import { FORM_BASE_CLASSES, FORM_LABEL_CLASSES, TEXTAREA_SPECIFIC_CLASSES } from '@/lib/formStyles'
+import { workoutPaceIsRunningStyle } from '@/lib/sportsRegistry'
 
 type Props = {
   action: (formData: FormData) => void
@@ -284,14 +285,16 @@ export const CoachWorkoutForm = memo(function CoachWorkoutForm({
                     value={targetPace}
                     onChange={(e) => onTargetPaceChange(e.target.value)}
                     onWheel={preventWheelNumberChange}
-                    placeholder={sportType === 'course' ? '5.0' : sportType === 'velo' ? '39' : '2.0'}
+                    placeholder={
+                      workoutPaceIsRunningStyle(sportType) ? '5.0' : sportType === 'velo' ? '39' : '2.0'
+                    }
                     className={`${FORM_BASE_CLASSES} ${DISABLED_NUMBER_CLASSES} font-semibold pl-10 pr-16`}
                   />
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <LightningIcon className="h-4 w-4 text-stone-400" />
                   </div>
                   <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-xs text-stone-400">
-                    {sportType === 'course'
+                    {workoutPaceIsRunningStyle(sportType)
                       ? tWorkouts('form.paceUnitRunning')
                       : sportType === 'velo'
                         ? tWorkouts('form.paceUnitCycling')

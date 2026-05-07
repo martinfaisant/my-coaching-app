@@ -58,7 +58,7 @@ Avoid:
 - Send coaching request (with offer selection)
 - Access training calendar (workouts assigned by coach)
 - Track workouts (mark complete, add comments)
-- Open **Statistics** (`/dashboard/stats`): compare up to **3 calendar years** of **completed volume** (« fait ») for one sport at a time (filters: sport from `ATHLETE_STATS_SPORT_OPTIONS`, week/month granularity, time / distance / elevation); line chart (Nivo) + **annual total** panel; data from `getEffectiveWeeklyTotalsFait` (same rules as calendar « fait »)
+- Open **Statistics** (`/dashboard/stats`): compare up to **3 calendar years** of **completed volume** (« fait ») for one sport at a time (filters: **sport options = persisted sports that have data in the selected period** (derived from `PERSISTED_WORKOUT_SPORT_TYPES` filtered by `getEffectiveWeeklyTotalsFait` totals), week/month granularity, time / distance / elevation); line chart (Nivo) + **annual total** panel; data from `getEffectiveWeeklyTotalsFait` (same rules as calendar « fait »)
 - Manage goals (races, dates)
 - Manage training facilities used (type, address, opening hours)
 - Chat with coach (1-to-1)
@@ -141,7 +141,7 @@ The dashboard uses a **top bar** (logo My Sport Ally left, nav links center on t
 
 - Name, photo (avatar)
 - Bio (presentation)
-- Specialties / sports coached (course_route, trail, triathlon, velo)
+- Specialties / sports coached (course, trail, triathlon, velo)
 - Languages (fr, en, es, de, it, pt, nl, zh)
 - Postal code
 - Offers (title, description, price, type)
@@ -207,7 +207,7 @@ On the **Mon profil** page (`/dashboard/profile`), the athlete can manage a sect
 
 - **Role:** athlete only; non-athletes are redirected from the route.
 - **Navigation:** primary item between **Calendar** and **Goals** (`getAthletePrimaryNavItems` in `lib/dashboardNavConfig.ts`); label and metadata i18n `navigation.stats`, `metadata.statsTitle`. Top bar / drawer icon: `components/DashboardNavIcons.tsx` (`/dashboard/stats`).
-- **Data:** server uses `getEffectiveWeeklyTotalsFait(athleteId, startDate, endDate)` (same « fait » pipeline as calendar: Strava imports + completed workouts minus same-day same-type double-count). Client refetch via `loadAthleteVolumeChartData` (`app/[locale]/dashboard/stats/actions.ts`). Series built in `lib/athleteStatsVolume.ts` (`buildWeeklyVolumeSeries` / `buildMonthlyVolumeSeries`, `normalizeYears`, `ATHLETE_STATS_SPORT_OPTIONS`). Default sport from profile: `defaultSportFromProfile(practiced_sports)`.
+- **Data:** server uses `getEffectiveWeeklyTotalsFait(athleteId, startDate, endDate)` (same « fait » pipeline as calendar: Strava imports + completed workouts minus same-day same-type double-count). Client refetch via `loadAthleteVolumeChartData` (`app/[locale]/dashboard/stats/actions.ts`). Series built in `lib/athleteStatsVolume.ts` (`buildWeeklyVolumeSeries` / `buildMonthlyVolumeSeries`, `normalizeYears`). **Sport filter options** come from `getStatsAvailableSportsFromWeeklyTotals(weeklyTotals)` (persisted sports from `PERSISTED_WORKOUT_SPORT_TYPES` filtered to those with non-zero totals on the selected period). Default sport from profile: `defaultSportFromProfile(practiced_sports)` (then resolved to the first available sport if needed).
 - **UI:** `AthleteStatsPageClient` — filters (years checkboxes max 3, sport `Dropdown`, granularity and metric `Segments`), loading skeleton `AthleteStatsChartFullSkeleton` on refetch (serialized request generation + `setError(null)` at refresh start). Chart: `AthleteStatsVolumeChart` (Nivo `ResponsiveLine`), no Nivo bottom legend; permanent panel **Annual volume** (sum per selected year); Y-axis legend strings `athleteStats.chart.yAxisLegend*` (e.g. Time (h), Distance (km/m)); slice hover tooltip `athleteStats.sliceDetail.weekTooltip`. Chart theme: `lib/athleteStatsNivoTheme.ts` + CSS variables `--chart-*` in `app/globals.css`. Skeletons: `components/athlete/AthleteStatsChartSkeleton.tsx`.
 - **Sport labels (global):** `SPORT_TRANSLATION_KEYS` in `lib/sportStyles.ts` maps `nordic_ski` → `sports.ski_fond`, `backcountry_ski` → `sports.ski_randonnee`, `ice_skating` → `sports.patinage_glace` (distinct FR/EN strings in `messages/*/sports`).
 - **References:** `docs/DESIGN_SYSTEM.md` (AthleteStatsVolumeChart, skeletons, Nivo theme), `docs/I18N.md` (`athleteStats`, `sports`), archived wireframes `docs/archive/design-athlete-stats/`.

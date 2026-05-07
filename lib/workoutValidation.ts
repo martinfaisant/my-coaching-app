@@ -1,6 +1,7 @@
 import type { SportType, WorkoutTimeOfDay, WorkoutPrimaryMetric, WorkoutPrimaryMetricBySport } from '@/types/database'
 import { computeDistanceKmFromDurationPace, computeDurationMinutesFromDistancePace } from '@/lib/workoutTargetMath'
 import { getWorkoutPrimaryMetricForSport, isCoachWorkoutPrimaryMetricsComplete } from '@/lib/workoutPrimaryMetric'
+import { isPersistedWorkoutSportType } from '@/lib/sportsRegistry'
 
 const VALID_TIME_OF_DAY: WorkoutTimeOfDay[] = ['morning', 'noon', 'evening']
 
@@ -60,16 +61,7 @@ export function validateWorkoutFormData(
     }
   }
 
-  const validSports: SportType[] = [
-    'course',
-    'velo',
-    'natation',
-    'musculation',
-    'nordic_ski',
-    'backcountry_ski',
-    'ice_skating',
-  ]
-  if (!validSports.includes(sportType)) {
+  if (!isPersistedWorkoutSportType(sportType)) {
     return {
       error: 'Type de sport invalide.',
       errorCode: WORKOUT_VALIDATION_ERROR_CODES.INVALID_SPORT,
@@ -81,7 +73,7 @@ export function validateWorkoutFormData(
   const prefs = options?.primaryMetricBySport
   const useCoachPrimary =
     prefs != null &&
-    (sportType === 'course' || sportType === 'velo' || sportType === 'natation')
+    (sportType === 'course' || sportType === 'trail' || sportType === 'velo' || sportType === 'natation')
 
   if (useCoachPrimary) {
     if (!isCoachWorkoutPrimaryMetricsComplete(prefs)) {
@@ -137,7 +129,17 @@ export function validateWorkoutFormData(
     }
   }
 
-  if (['course', 'velo', 'natation'].includes(sportType) && (target_pace == null || target_pace <= 0)) {
+  const paceRequiredSports: SportType[] = [
+    'course',
+    'trail',
+    'velo',
+    'natation',
+    'ice_skating',
+    'nordic_ski',
+    'backcountry_ski',
+    'randonnee',
+  ]
+  if (paceRequiredSports.includes(sportType) && (target_pace == null || target_pace <= 0)) {
     const hasDur =
       target_duration_minutes != null &&
       target_duration_minutes !== undefined &&
@@ -174,7 +176,7 @@ export function validateWorkoutFormData(
 }
 
 function resolveCvNTargetsWithCoachPrimary(
-  sportType: 'course' | 'velo' | 'natation',
+  sportType: 'course' | 'trail' | 'velo' | 'natation',
   primary: WorkoutPrimaryMetric,
   durationRaw: string,
   distanceRaw: string,
@@ -255,7 +257,7 @@ function parseWorkoutTargetParams(
   const validDistance = distance != null && !Number.isNaN(distance) && distance > 0
   const validElevation = elevation != null && !Number.isNaN(elevation) && elevation >= 0
 
-  if (sportType === 'musculation') {
+  if (sportType === 'musculation' || sportType === 'triathlon') {
     return {
       target_duration_minutes: validDuration ? duration : null,
       target_distance_km: null,
@@ -271,7 +273,14 @@ function parseWorkoutTargetParams(
     }
   }
 
-  if (sportType === 'course' || sportType === 'velo') {
+  if (
+    sportType === 'course' ||
+    sportType === 'velo' ||
+    sportType === 'ice_skating' ||
+    sportType === 'nordic_ski' ||
+    sportType === 'backcountry_ski' ||
+    sportType === 'randonnee'
+  ) {
     const hasDuration = validDuration
     const hasDistance = validDistance
     return {

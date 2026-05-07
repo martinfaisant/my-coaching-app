@@ -7,6 +7,9 @@ import type { SportType } from '@/types/database'
 
 export function mapStravaTypeToSportType(stravaType: string): SportType {
   const t = (stravaType || '').toLowerCase()
+  if (t.includes('triathlon')) return 'triathlon'
+  if (t.includes('hike') || t.includes('walk')) return 'randonnee'
+  if (t.includes('trailrun') || t.includes('trail run') || t.includes('trail_run') || (t.includes('trail') && t.includes('run'))) return 'trail'
   if (t.includes('run') || t.includes('virtualrun')) return 'course'
   if (t.includes('ride') || t.includes('virtualride') || t.includes('ebike') || t.includes('velomobile')) return 'velo'
   if (t.includes('swim')) return 'natation'

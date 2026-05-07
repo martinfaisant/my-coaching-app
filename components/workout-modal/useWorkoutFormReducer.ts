@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useReducer, useRef } from 'react'
 import type { SportType, Workout, WorkoutTimeOfDay, WorkoutPrimaryMetricBySport } from '@/types/database'
 import { getWorkoutPrimaryMetricForSport } from '@/lib/workoutPrimaryMetric'
+import { workoutHasTimeDistanceTargets } from '@/lib/sportsRegistry'
 
 type TargetMode = 'time' | 'distance'
 
@@ -111,7 +112,14 @@ function reducer(state: State, action: Action): State {
 
       if (targetMode === 'distance') {
         if (targetDistanceKm && Number(targetDistanceKm) > 0 && paceOk) {
-          if (sportType === 'course') {
+          if (
+            sportType === 'course' ||
+            sportType === 'trail' ||
+            sportType === 'ice_skating' ||
+            sportType === 'nordic_ski' ||
+            sportType === 'backcountry_ski' ||
+            sportType === 'randonnee'
+          ) {
             const distance = Number(targetDistanceKm)
             return {
               ...state,
@@ -141,7 +149,14 @@ function reducer(state: State, action: Action): State {
         }
       } else {
         if (targetDurationMinutes && Number(targetDurationMinutes) > 0 && paceOk) {
-          if (sportType === 'course') {
+          if (
+            sportType === 'course' ||
+            sportType === 'trail' ||
+            sportType === 'ice_skating' ||
+            sportType === 'nordic_ski' ||
+            sportType === 'backcountry_ski' ||
+            sportType === 'randonnee'
+          ) {
             const duration = Number(targetDurationMinutes)
             return {
               ...state,
@@ -222,10 +237,7 @@ export function useWorkoutFormReducer(args: {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [workout?.id, workout?.updated_at, date, coachPrimaryMetrics])
 
-  const hasTimeDistanceChoice =
-    state.values.sportType === 'course' ||
-    state.values.sportType === 'velo' ||
-    state.values.sportType === 'natation'
+  const hasTimeDistanceChoice = workoutHasTimeDistanceTargets(state.values.sportType)
 
   useEffect(() => {
     const mode = modeForSport(state.values.sportType, coachPrimaryMetrics)

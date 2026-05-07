@@ -5,7 +5,12 @@ import { revalidatePath } from 'next/cache'
 import { getTranslations } from 'next-intl/server'
 import { COACHED_SPORTS_VALUES, PRACTICED_SPORTS_VALUES } from '@/lib/sportsOptions'
 import { requireUserWithProfile, requireUser } from '@/lib/authHelpers'
-import { getWeeklyVolumeUnit } from '@/lib/sportStyles'
+import {
+  getWeeklyVolumeDisplaySports,
+  getWeeklyVolumeTileElevationJsonKey,
+  getWeeklyVolumeUnit,
+  practicedSportsNeedCourseElevationField,
+} from '@/lib/sportStyles'
 import type { WorkoutPrimaryMetricBySport } from '@/types/database'
 import { isCoachWorkoutPrimaryMetricsComplete } from '@/lib/workoutPrimaryMetric'
 
@@ -77,17 +82,32 @@ export async function updateProfile(
     payload.presentation_en = presentationEn
 
     const mc = (formData.get('workout_primary_metric_course') as string)?.trim()
+    const mt = (formData.get('workout_primary_metric_trail') as string)?.trim()
     const mv = (formData.get('workout_primary_metric_velo') as string)?.trim()
     const mn = (formData.get('workout_primary_metric_natation') as string)?.trim()
+    const mns = (formData.get('workout_primary_metric_nordic_ski') as string)?.trim()
+    const mbs = (formData.get('workout_primary_metric_backcountry_ski') as string)?.trim()
+    const mis = (formData.get('workout_primary_metric_ice_skating') as string)?.trim()
+    const mr = (formData.get('workout_primary_metric_randonnee') as string)?.trim()
     if (
       (mc === 'time' || mc === 'distance') &&
+      (mt === 'time' || mt === 'distance') &&
       (mv === 'time' || mv === 'distance') &&
-      (mn === 'time' || mn === 'distance')
+      (mn === 'time' || mn === 'distance') &&
+      (mns === 'time' || mns === 'distance') &&
+      (mbs === 'time' || mbs === 'distance') &&
+      (mis === 'time' || mis === 'distance') &&
+      (mr === 'time' || mr === 'distance')
     ) {
       const workout_primary_metric_by_sport: WorkoutPrimaryMetricBySport = {
         course: mc,
+        trail: mt,
         velo: mv,
         natation: mn,
+        nordic_ski: mns,
+        backcountry_ski: mbs,
+        ice_skating: mis,
+        randonnee: mr,
       }
       if (isCoachWorkoutPrimaryMetricsComplete(workout_primary_metric_by_sport)) {
         payload.workout_primary_metric_by_sport = workout_primary_metric_by_sport
@@ -138,12 +158,8 @@ export async function updateProfile(
       payload.weekly_target_hours = null
     }
 
-    // Volume par sport : triathlon → course, vélo, natation (même logique qu’en front)
-    const displaySportsOrder = ['course', 'velo', 'natation', 'musculation', 'trail', 'triathlon'] as const
-    const expandedForVolume = practicedSports.flatMap((s) =>
-      s === 'triathlon' ? ['course', 'velo', 'natation'] : [s]
-    )
-    const volumeDisplayList = displaySportsOrder.filter((s) => expandedForVolume.includes(s))
+    // Volume par sport : même logique que `getWeeklyVolumeDisplaySports` (profil / demande)
+    const volumeDisplayList = getWeeklyVolumeDisplaySports(practicedSports)
     const volumeBySport: Record<string, number> = {}
     for (const sport of volumeDisplayList) {
       const raw = (formData.get(`weekly_volume_${sport}`) as string)?.trim() ?? ''
@@ -161,7 +177,7 @@ export async function updateProfile(
       }
       volumeBySport[sport] = Math.round(parsed * 100) / 100
     }
-    if (practicedSports.includes('trail')) {
+    if (practicedSportsNeedCourseElevationField(practicedSports)) {
       const elevationRaw = (formData.get('weekly_volume_course_elevation_m') as string)?.trim() ?? ''
       if (elevationRaw !== '') {
         const parsed = parseFloat(elevationRaw.replace(',', '.'))
@@ -170,6 +186,19 @@ export async function updateProfile(
           return { error: tErr('weeklyVolumeInvalid') }
         }
         volumeBySport.course_elevation_m = Math.round(parsed * 100) / 100
+      }
+    }
+    for (const sport of volumeDisplayList) {
+      const elevKey = getWeeklyVolumeTileElevationJsonKey(sport)
+      if (!elevKey) continue
+      const elevationRaw = (formData.get(`weekly_volume_${elevKey}`) as string)?.trim() ?? ''
+      if (elevationRaw !== '') {
+        const parsed = parseFloat(elevationRaw.replace(',', '.'))
+        if (Number.isNaN(parsed) || parsed < 0 || parsed > 50000) {
+          const tErr = await getTranslations({ locale, namespace: 'profile.validation' })
+          return { error: tErr('weeklyVolumeInvalid') }
+        }
+        volumeBySport[elevKey] = Math.round(parsed * 100) / 100
       }
     }
     payload.weekly_volume_by_sport = volumeBySport
@@ -202,19 +231,34 @@ export async function saveCoachWorkoutPrimaryMetrics(
   }
 
   const mc = (formData.get('workout_primary_metric_course') as string)?.trim()
+  const mt = (formData.get('workout_primary_metric_trail') as string)?.trim()
   const mv = (formData.get('workout_primary_metric_velo') as string)?.trim()
   const mn = (formData.get('workout_primary_metric_natation') as string)?.trim()
+  const mns = (formData.get('workout_primary_metric_nordic_ski') as string)?.trim()
+  const mbs = (formData.get('workout_primary_metric_backcountry_ski') as string)?.trim()
+  const mis = (formData.get('workout_primary_metric_ice_skating') as string)?.trim()
+  const mr = (formData.get('workout_primary_metric_randonnee') as string)?.trim()
   if (
     (mc !== 'time' && mc !== 'distance') ||
+    (mt !== 'time' && mt !== 'distance') ||
     (mv !== 'time' && mv !== 'distance') ||
-    (mn !== 'time' && mn !== 'distance')
+    (mn !== 'time' && mn !== 'distance') ||
+    (mns !== 'time' && mns !== 'distance') ||
+    (mbs !== 'time' && mbs !== 'distance') ||
+    (mis !== 'time' && mis !== 'distance') ||
+    (mr !== 'time' && mr !== 'distance')
   ) {
     return { error: t('workoutPrimaryMetricInvalid') }
   }
   const workout_primary_metric_by_sport: WorkoutPrimaryMetricBySport = {
     course: mc,
+    trail: mt,
     velo: mv,
     natation: mn,
+    nordic_ski: mns,
+    backcountry_ski: mbs,
+    ice_skating: mis,
+    randonnee: mr,
   }
   if (!isCoachWorkoutPrimaryMetricsComplete(workout_primary_metric_by_sport)) {
     return { error: t('workoutPrimaryMetricInvalid') }

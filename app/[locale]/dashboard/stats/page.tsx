@@ -5,6 +5,7 @@ import { getCurrentUserWithProfile } from '@/utils/auth'
 import {
   defaultSportFromProfile,
   buildWeeklyVolumeSeries,
+  getStatsAvailableSportsFromWeeklyTotals,
   normalizeYears,
   type AthleteStatsGranularity,
   type AthleteStatsMetric,
@@ -45,11 +46,16 @@ export default async function AthleteStatsPage() {
 
   let initialPayload = null
   if (!faitError && weeklyTotals) {
+    const availableSports = getStatsAvailableSportsFromWeeklyTotals(weeklyTotals)
+    const resolvedSport: SportType = availableSports.includes(defaultSport as SportType)
+      ? (defaultSport as SportType)
+      : availableSports[0]!
     initialPayload = {
-      series: buildWeeklyVolumeSeries(weeklyTotals, initialYears, defaultSport as SportType, metric),
+      series: buildWeeklyVolumeSeries(weeklyTotals, initialYears, resolvedSport, metric),
       years: initialYears,
       granularity,
       metric,
+      availableSports,
     }
   }
 

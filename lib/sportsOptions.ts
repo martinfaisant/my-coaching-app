@@ -7,10 +7,27 @@
  * - usePracticedSportsOptions() for practiced sports with translated labels
  */
 
-export const COACHED_SPORTS_VALUES = ['course_route', 'trail', 'triathlon', 'velo'] as const
-export const PRACTICED_SPORTS_VALUES = ['course', 'velo', 'natation', 'musculation', 'trail', 'triathlon'] as const
+import { PERSISTED_WORKOUT_SPORT_TYPES, type PersistedWorkoutSportType } from '@/lib/sportsRegistry'
 
-export type CoachedSportValue = (typeof COACHED_SPORTS_VALUES)[number]
+/**
+ * Sports coachés : liste unifiée avec les sports persistés en BDD (`sport_type`).
+ * Objectif : un seul référentiel (mêmes sports que la création de séances).
+ */
+export const COACHED_SPORTS_VALUES = PERSISTED_WORKOUT_SPORT_TYPES
+export const PRACTICED_SPORTS_VALUES = [
+  'course',
+  'velo',
+  'natation',
+  'musculation',
+  'trail',
+  'randonnee',
+  'nordic_ski',
+  'backcountry_ski',
+  'ice_skating',
+  'triathlon',
+] as const
+
+export type CoachedSportValue = PersistedWorkoutSportType
 export type PracticedSportValue = (typeof PRACTICED_SPORTS_VALUES)[number]
 
 export const LANGUAGES_OPTIONS = [

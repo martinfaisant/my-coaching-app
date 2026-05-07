@@ -13,11 +13,11 @@ import {
   IconIceSkating,
   IconMountain,
   IconPersonHiking,
+  IconTriathlon,
 } from '@/components/SportIcons'
 
 export type SportType =
   | 'course'
-  | 'course_route'
   | 'velo'
   | 'natation'
   | 'musculation'
@@ -35,7 +35,6 @@ export type SportType =
  */
 export const SPORT_TRANSLATION_KEYS: Record<SportType, string> = {
   course: 'course',
-  course_route: 'course',
   velo: 'velo',
   natation: 'natation',
   musculation: 'muscu',
@@ -49,7 +48,6 @@ export const SPORT_TRANSLATION_KEYS: Record<SportType, string> = {
 
 export const SPORT_ICONS: Record<SportType, ComponentType<{ className?: string }>> = {
   course: IconRunning,
-  course_route: IconRunning,
   velo: IconBiking,
   natation: IconSwimming,
   musculation: IconDumbbell,
@@ -58,7 +56,7 @@ export const SPORT_ICONS: Record<SportType, ComponentType<{ className?: string }
   ice_skating: IconIceSkating,
   trail: IconMountain,
   randonnee: IconPersonHiking,
-  triathlon: IconSwimming,
+  triathlon: IconTriathlon,
 }
 
 /** Styles pour les cartes du calendrier (WorkoutCard, ActivityCard) */
@@ -67,11 +65,6 @@ export const SPORT_CARD_STYLES: Record<
   { borderLeft: string; badge: string; badgeBg: string }
 > = {
   course: {
-    borderLeft: 'border-l-palette-forest-dark',
-    badge: 'text-palette-forest-dark',
-    badgeBg: 'bg-palette-forest-dark/10',
-  },
-  course_route: {
     borderLeft: 'border-l-palette-forest-dark',
     badge: 'text-palette-forest-dark',
     badgeBg: 'bg-palette-forest-dark/10',
@@ -133,11 +126,6 @@ export const SPORT_BADGE_STYLES: Record<
     text: 'text-palette-forest-dark',
     border: 'border-palette-forest-dark',
   },
-  course_route: {
-    bg: 'bg-white',
-    text: 'text-palette-forest-dark',
-    border: 'border-palette-forest-dark',
-  },
   velo: {
     bg: 'bg-white',
     text: 'text-palette-olive',
@@ -195,7 +183,19 @@ export type PracticedSportKey =
   | 'natation'
   | 'musculation'
   | 'trail'
+  | 'nordic_ski'
+  | 'backcountry_ski'
+  | 'ice_skating'
+  | 'randonnee'
   | 'triathlon'
+
+/**
+ * D+ hebdo sur la tuile Course : uniquement si « Trail » est coché (pas de tuile volume trail dédiée).
+ * Randonnée / skis : D+ sur leur tuile via `getWeeklyVolumeTileElevationJsonKey`.
+ */
+export function practicedSportsNeedCourseElevationField(practicedSports: string[]): boolean {
+  return practicedSports.includes('trail')
+}
 
 /**
  * Retourne l'unité de volume hebdomadaire pour un sport pratiqué.
@@ -206,6 +206,10 @@ export function getWeeklyVolumeUnit(sport: string): WeeklyVolumeUnit {
     case 'course':
     case 'trail':
     case 'velo':
+    case 'nordic_ski':
+    case 'backcountry_ski':
+    case 'ice_skating':
+    case 'randonnee':
       return 'km'
     case 'natation':
       return 'm'
@@ -219,7 +223,7 @@ export function getWeeklyVolumeUnit(sport: string): WeeklyVolumeUnit {
 
 /**
  * Ordre d'affichage des sports pratiqués (profil).
- * Note: `trail` n'a pas de tuile volume dédiée (D+ dans Course) mais reste un sport sélectionnable.
+ * Trail n’a pas de tuile volume dédiée (volume course + D+ sur la tuile Course) ; rando / skis ont une tuile km + D+ dédiée.
  */
 export const PRACTICED_SPORTS_DISPLAY_ORDER: PracticedSportKey[] = [
   'course',
@@ -227,26 +231,80 @@ export const PRACTICED_SPORTS_DISPLAY_ORDER: PracticedSportKey[] = [
   'natation',
   'musculation',
   'trail',
+  'randonnee',
+  'nordic_ski',
+  'backcountry_ski',
+  'ice_skating',
   'triathlon',
 ]
 
-export type WeeklyVolumeBySportKey =
+/** Clés `weekly_volume_by_sport` affichées comme tuile de saisie volume (hors triathlon agrégé). */
+export type WeeklyVolumeTileKey =
   | 'course'
   | 'velo'
   | 'natation'
   | 'musculation'
+  | 'ice_skating'
+  | 'nordic_ski'
+  | 'backcountry_ski'
+  | 'randonnee'
+
+/** Clé JSON dans `weekly_volume_by_sport` pour le D+ d'une tuile km dédiée (rando, skis). */
+export const WEEKLY_VOLUME_TILE_ELEVATION_JSON_KEYS: Partial<Record<WeeklyVolumeTileKey, string>> = {
+  randonnee: 'randonnee_elevation_m',
+  nordic_ski: 'nordic_ski_elevation_m',
+  backcountry_ski: 'backcountry_ski_elevation_m',
+}
+
+export function getWeeklyVolumeTileElevationJsonKey(tileSport: WeeklyVolumeTileKey): string | null {
+  return WEEKLY_VOLUME_TILE_ELEVATION_JSON_KEYS[tileSport] ?? null
+}
+
+/** Nom du champ HTML (ex. `weekly_volume_randonnee_elevation_m`). */
+export function getWeeklyVolumeTileElevationFormFieldName(tileSport: WeeklyVolumeTileKey): string | null {
+  const k = getWeeklyVolumeTileElevationJsonKey(tileSport)
+  return k ? `weekly_volume_${k}` : null
+}
+
+/** Lecture affichage : migrer l’ancien stockage D+ rando/ski dans `course_elevation_m` (avant clés dédiées). */
+export function legacyWeeklyVolumeTileElevationValue(
+  tileSport: WeeklyVolumeTileKey,
+  vol: Record<string, number> | null | undefined,
+  practicedSports: string[],
+): number | undefined {
+  const jsonKey = getWeeklyVolumeTileElevationJsonKey(tileSport)
+  if (!jsonKey || !vol) return undefined
+  const direct = vol[jsonKey]
+  if (direct != null && !Number.isNaN(Number(direct))) return Number(direct)
+  if (!practicedSports.includes('trail') && vol.course_elevation_m != null) {
+    if (tileSport === 'randonnee' || tileSport === 'nordic_ski' || tileSport === 'backcountry_ski') {
+      return Number(vol.course_elevation_m)
+    }
+  }
+  return undefined
+}
+
+export type WeeklyVolumeBySportKey =
+  | WeeklyVolumeTileKey
   | 'trail'
   | 'course_elevation_m'
+  | 'randonnee_elevation_m'
+  | 'nordic_ski_elevation_m'
+  | 'backcountry_ski_elevation_m'
 
 /**
  * Ordre d'affichage des entrées `weekly_volume_by_sport` (lecture seule coach/demandes).
- * `course_elevation_m` est affiché comme D+ associé à la tuile Course (pas comme une ligne séparée).
+ * `course_elevation_m` = D+ trail sur la tuile Course ; `*_elevation_m` = D+ sur la tuile du sport concerné.
  */
 export const WEEKLY_VOLUME_DISPLAY_ORDER: WeeklyVolumeBySportKey[] = [
   'course',
   'velo',
   'natation',
   'musculation',
+  'ice_skating',
+  'nordic_ski',
+  'backcountry_ski',
+  'randonnee',
   'trail',
   'course_elevation_m',
 ]
@@ -267,21 +325,33 @@ export function getSportTranslationKey(value: string): string | null {
 /**
  * Liste des sports à afficher dans la section "Volumes hebdomadaires" du profil.
  * - triathlon => course + vélo + natation
- * - trail => pas de tuile dédiée (D+ dans course), donc on affiche course au minimum
+ * - trail => tuile Course (km) + D+ (`course_elevation_m`) ; rando / ski fond / ski rando => tuile km + D+ (`*_elevation_m`)
+ * - ice_skating => tuile km dédiée
  */
-export function getWeeklyVolumeDisplaySports(practicedSports: string[]): Array<'course' | 'velo' | 'natation' | 'musculation'> {
-  const set = new Set(practicedSports)
-  const isTriathlon = set.has('triathlon')
+export function getWeeklyVolumeDisplaySports(practicedSports: string[]): WeeklyVolumeTileKey[] {
+  const base: WeeklyVolumeTileKey[] = [
+    'course',
+    'velo',
+    'natation',
+    'musculation',
+    'ice_skating',
+    'nordic_ski',
+    'backcountry_ski',
+    'randonnee',
+  ]
 
-  // Sous-ensemble affichable en tuiles volume
-  const base: Array<'course' | 'velo' | 'natation' | 'musculation'> = ['course', 'velo', 'natation', 'musculation']
+  const virtual = new Set(practicedSports)
+  // Triathlon => afficher au moins Course/Vélo/Natation, sans masquer les autres sports sélectionnés.
+  if (virtual.has('triathlon')) {
+    virtual.add('course')
+    virtual.add('velo')
+    virtual.add('natation')
+  }
+  if (virtual.has('trail')) {
+    virtual.add('course')
+  }
 
-  if (isTriathlon) return ['course', 'velo', 'natation']
-
-  // Trail : utilise la tuile course (avec champ D+ en plus)
-  if (set.has('trail')) set.add('course')
-
-  return base.filter((s) => set.has(s))
+  return base.filter((k) => virtual.has(k))
 }
 
 /**

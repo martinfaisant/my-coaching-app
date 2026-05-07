@@ -17,7 +17,7 @@ const SELECTED_CLASSES =
 
 type SportTileSelectableProps =
   | {
-      /** Valeur du sport (ex. course_route, trail, velo) */
+      /** Valeur du sport (ex. course, trail, velo) */
       value: string
       /** Mode formulaire : nom du champ et checked par défaut */
       name: string

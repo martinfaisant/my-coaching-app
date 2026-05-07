@@ -1,8 +1,8 @@
 /**
  * Agrégation volume réalisé (« fait ») pour la page statistiques athlète.
  */
-import type { ImportedActivityWeeklyTotal } from '@/types/database'
-import type { SportType } from '@/types/database'
+import type { ImportedActivityWeeklyTotal, SportType } from '@/types/database'
+import { PERSISTED_WORKOUT_SPORT_TYPES } from '@/lib/sportsRegistry'
 import { getWeekMonday, toDateStr } from '@/lib/dateUtils'
 
 export type AthleteStatsMetric = 'time' | 'distance' | 'elevation'
@@ -135,24 +135,33 @@ export function normalizeYears(years: number[]): number[] {
   return u.slice(0, 3)
 }
 
-export const ATHLETE_STATS_SPORT_OPTIONS: readonly SportType[] = [
-  'course',
-  'velo',
-  'natation',
-  'musculation',
-  'nordic_ski',
-  'backcountry_ski',
-  'ice_skating',
-] as const
-
 export function defaultSportFromProfile(practicedSports: string[] | null | undefined): SportType {
   const list = practicedSports ?? []
-  const mapTrail: Record<string, SportType> = { trail: 'course' }
-  for (const key of ATHLETE_STATS_SPORT_OPTIONS) {
+  for (const key of PERSISTED_WORKOUT_SPORT_TYPES) {
     if (list.includes(key)) return key
   }
-  for (const [alias, target] of Object.entries(mapTrail)) {
-    if (list.includes(alias)) return target
-  }
   return 'course'
+}
+
+/**
+ * Sports disponibles dans les stats sur une période donnée = sports persistés
+ * qui ont au moins un total non nul (temps, distance ou D+).
+ *
+ * Note : si aucun total n'existe, on retombe sur `['course']` pour garder
+ * une UI stable (dropdown non vide), tout en affichant une série vide.
+ */
+export function getStatsAvailableSportsFromWeeklyTotals(
+  weeklyTotals: ImportedActivityWeeklyTotal[],
+): SportType[] {
+  const hasData = (sport: SportType) =>
+    weeklyTotals.some(
+      (row) =>
+        row.sport_type === sport &&
+        ((row.total_moving_time_seconds ?? 0) > 0 ||
+          (row.total_distance_m ?? 0) > 0 ||
+          (row.total_elevation_m ?? 0) > 0),
+    )
+
+  const available = PERSISTED_WORKOUT_SPORT_TYPES.filter(hasData)
+  return available.length > 0 ? [...available] : ['course']
 }
