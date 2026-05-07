@@ -57,6 +57,11 @@ export function AthleteStatsPageClient({
   )
   const statsFetchGenerationRef = useRef(0)
 
+  const effectiveSport = useMemo(() => {
+    if (availableSports.length === 0) return defaultSport
+    return availableSports.includes(sport) ? sport : availableSports[0]!
+  }, [availableSports, defaultSport, sport])
+
   const sportOptions = useMemo(
     () =>
       availableSports.map((s) => ({
@@ -72,7 +77,7 @@ export function AthleteStatsPageClient({
     setError(null)
     void loadAthleteVolumeChartData({
       years,
-      sport,
+      sport: effectiveSport,
       granularity,
       metric,
       locale,
@@ -96,14 +101,7 @@ export function AthleteStatsPageClient({
         setPayload(null)
         setPending(false)
       })
-  }, [years, sport, granularity, metric, locale, t])
-
-  useEffect(() => {
-    if (availableSports.length === 0) return
-    if (!availableSports.includes(sport)) {
-      setSport(availableSports[0]!)
-    }
-  }, [availableSports, sport])
+  }, [years, effectiveSport, granularity, metric, locale, t])
 
   const skipNextRefresh = useRef(true)
   useEffect(() => {
@@ -119,7 +117,7 @@ export function AthleteStatsPageClient({
       cancelled = true
       cancelAnimationFrame(frame)
     }
-  }, [years, sport, granularity, metric, locale, refresh])
+  }, [years, effectiveSport, granularity, metric, locale, refresh])
 
   const toggleYear = (y: number) => {
     setYears((prev) => {
@@ -182,7 +180,7 @@ export function AthleteStatsPageClient({
                   label={t('filters.sport')}
                   labelClassName="!text-xs !font-semibold uppercase tracking-wide !text-stone-500"
                   options={sportOptions}
-                  value={sport}
+                  value={effectiveSport}
                   onChange={(v) => setSport(v as SportType)}
                   ariaLabel={t('filters.sport')}
                 />
@@ -244,7 +242,7 @@ export function AthleteStatsPageClient({
                 series={payload.series}
                 granularity={payload.granularity}
                 metric={payload.metric}
-                sport={sport}
+                sport={effectiveSport}
               />
             ) : !error ? (
               <div className="rounded-xl border border-dashed border-stone-300 bg-stone-50 px-4 py-12 text-center text-sm text-stone-600">

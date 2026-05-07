@@ -338,7 +338,7 @@ function AthleteSentRequestDetailModalInner({
                       const sportKey = sport as SportType
                       const style = SPORT_CARD_STYLES[sportKey] ?? SPORT_CARD_STYLES.course
                       const elevKey = getWeeklyVolumeTileElevationJsonKey(sport as WeeklyVolumeTileKey)
-                      let elevationValue =
+                      const elevationValue =
                         sport === 'course'
                           ? (vol['course_elevation_m'] ?? undefined)
                           : elevKey != null
