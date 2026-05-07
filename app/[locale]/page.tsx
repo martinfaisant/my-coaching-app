@@ -5,7 +5,7 @@ import { getTranslations } from 'next-intl/server'
 import { createClient } from '@/utils/supabase/server'
 import { AuthButtons } from '@/components/AuthButtons'
 import { HomeEmailConfirmedTrigger } from '@/components/HomeEmailConfirmedTrigger'
-import { PublicHeader } from '@/components/PublicHeader'
+import { PublicOrDashboardHeader } from '@/components/PublicOrDashboardHeader'
 import {
   Calendar,
   MessageCircle,
@@ -125,7 +125,7 @@ export default async function Home({ params, searchParams }: HomePageProps) {
   return (
     <div className="min-h-screen bg-background">
       <HomeEmailConfirmedTrigger showEmailConfirmedModal={emailConfirmed} />
-      <PublicHeader />
+      <PublicOrDashboardHeader />
 
       <main>
         {/* Hero Section */}

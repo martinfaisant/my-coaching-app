@@ -37,6 +37,7 @@
   - [AthleteAccountMenu](#athleteaccountmenu)
   - [CoachAccountMenu](#coachaccountmenu)
   - [Drawer](#drawer)
+   - [PublicOrDashboardHeader](#publicordashboardheader)
    - [PublicHeader](#publicheader)
    - [ContactForm](#contactform)
    - [LanguageSwitcher](#languageswitcher)
@@ -1321,6 +1322,8 @@ export default function Page() {
 
 Top bar du dashboard.
 
+**Bandeau :** `sticky top-0 z-50`, hauteur `h-14`, fond blanc, `border-b border-stone-200` — même logique de persistance au défilement que `PublicHeader` lorsque la barre est utilisée sur des pages à scroll long (ex. pages marketing avec `PublicOrDashboardHeader`).
+
 #### Comportement attendu
 
 - **Desktop / tablette** : logo à gauche, navigation centrée, à droite selon le rôle :
@@ -1400,13 +1403,30 @@ import { Drawer } from '@/components/Drawer'
 
 ---
 
+### PublicOrDashboardHeader
+
+**Fichier :** `components/PublicOrDashboardHeader.tsx`
+
+Composant **serveur** : si session active (`getOptionalUserWithProfile`), rendu de `DashboardTopBar` (même barre que le dashboard) ; sinon `PublicHeader`. Utilisé sur l’accueil, contact, politique de confidentialité, CGU et réinitialisation mot de passe.
+
+```tsx
+import { PublicOrDashboardHeader } from '@/components/PublicOrDashboardHeader'
+
+<div className="min-h-screen flex flex-col">
+  <PublicOrDashboardHeader />
+  <main className="flex-1">...</main>
+</div>
+```
+
+---
+
 ### PublicHeader
 
 **Fichier :** `components/PublicHeader.tsx`
 
-En-tête public partagé pour les pages non connectées : page d'accueil, réinitialisation mot de passe. Structure identique sur toutes ces pages : logo My Sport Ally (lien vers `/`), LanguageSwitcher, séparateur vertical, AuthButtons (Se connecter, Créer un compte). Classes : `sticky top-0 z-50 border-b border-stone-200 bg-background/95 backdrop-blur-md`, conteneur `max-w-7xl h-16`.
+En-tête public pour **visiteurs** : logo My Sport Ally (lien vers `/`), LanguageSwitcher, séparateur vertical, AuthButtons (Se connecter, Créer un compte). Classes : `sticky top-0 z-50 border-b border-stone-200 bg-background/95 backdrop-blur-md`, conteneur `max-w-7xl h-16`.
 
-**Usage :** Page d'accueil (`app/[locale]/page.tsx`), page reset-password (`app/[locale]/reset-password/page.tsx`). La **page Contact** (`app/[locale]/contact/page.tsx`) réutilise le même `PublicHeader`. Référence design archivée : `docs/archive/design-reset-password-header/DESIGN_RESET_PASSWORD_HEADER.md`.
+**Usage :** Rendu indirectement via `PublicOrDashboardHeader` sur les pages marketing ; ne pas l’utiliser seul sur ces routes sauf cas exceptionnel. Référence design archivée : `docs/archive/design-reset-password-header/DESIGN_RESET_PASSWORD_HEADER.md`.
 
 ```tsx
 import { PublicHeader } from '@/components/PublicHeader'
@@ -1888,7 +1908,7 @@ Actuellement, utiliser un span custom :
 
 - **Tokens couleurs** : `tailwind.config.ts`, `app/globals.css`
 - **Styles formulaires** : `lib/formStyles.ts` (FORM_BASE_CLASSES, FORM_INPUT_TEXT_SIZE, FORM_INPUT_HEIGHT, etc.)
-- **Composants** : `components/Button.tsx`, `components/Input.tsx`, `components/PasswordInput.tsx`, `components/SearchInput.tsx`, `components/Textarea.tsx`, `components/Badge.tsx`, `components/Avatar.tsx`, `components/AvatarImage.tsx`, `components/SportTileSelectable.tsx`, `components/ActivityTile.tsx`, `components/Modal.tsx`, `components/CoachReviewsModal.tsx`, `components/workout-modal/WorkoutFacilityHoursStrip.tsx`, `components/AthleteFacilityDetails.tsx`, `components/CoachAthleteNotesSection.tsx`, `components/CoachAthleteNoteModal.tsx`, `components/DashboardPageShell.tsx`, `components/DashboardTopBar.tsx`, `components/AthleteAccountMenu.tsx`, `components/CoachAccountMenu.tsx`, `components/ContactForm.tsx`, `components/Drawer.tsx`, `components/PublicHeader.tsx`, `components/EmailValidatedModal.tsx`, `components/HomeEmailConfirmedTrigger.tsx`, `components/Dropdown.tsx`, `components/Segments.tsx`, `components/DatePickerPopup.tsx`, `components/MonthSelector.tsx`, `components/CalendarView.tsx`, `components/CalendarViewWithNavigation.tsx`, `lib/calendarViewDayHeights.ts`, `components/AvailabilityModal.tsx`, `components/AvailabilityDetailModal.tsx`, `components/ChatAthleteListItem.tsx`, `components/ChatConversationSidebar.tsx`
+- **Composants** : `components/Button.tsx`, `components/Input.tsx`, `components/PasswordInput.tsx`, `components/SearchInput.tsx`, `components/Textarea.tsx`, `components/Badge.tsx`, `components/Avatar.tsx`, `components/AvatarImage.tsx`, `components/SportTileSelectable.tsx`, `components/ActivityTile.tsx`, `components/Modal.tsx`, `components/CoachReviewsModal.tsx`, `components/workout-modal/WorkoutFacilityHoursStrip.tsx`, `components/AthleteFacilityDetails.tsx`, `components/CoachAthleteNotesSection.tsx`, `components/CoachAthleteNoteModal.tsx`, `components/DashboardPageShell.tsx`, `components/DashboardTopBar.tsx`, `components/AthleteAccountMenu.tsx`, `components/CoachAccountMenu.tsx`, `components/ContactForm.tsx`, `components/Drawer.tsx`, `components/PublicOrDashboardHeader.tsx`, `components/PublicHeader.tsx`, `components/EmailValidatedModal.tsx`, `components/HomeEmailConfirmedTrigger.tsx`, `components/Dropdown.tsx`, `components/Segments.tsx`, `components/DatePickerPopup.tsx`, `components/MonthSelector.tsx`, `components/CalendarView.tsx`, `components/CalendarViewWithNavigation.tsx`, `lib/calendarViewDayHeights.ts`, `components/AvailabilityModal.tsx`, `components/AvailabilityDetailModal.tsx`, `components/ChatAthleteListItem.tsx`, `components/ChatConversationSidebar.tsx`
 - **Page Mes athlètes (coach)** : `app/[locale]/dashboard/athletes/page.tsx` (bandeaux profil / offre publiée, erreur chargement liste), `CoachAthletesListWithFilter.tsx`, `PendingRequestTile.tsx`
 - **Sports** : `lib/sportStyles.ts`, `lib/sportsOptions.ts`, `components/SportIcons.tsx`
 - **Stats athlète (Nivo)** : `lib/athleteStatsNivoTheme.ts`, `lib/athleteStatsColors.ts`, `components/athlete/AthleteStatsVolumeChart.tsx`

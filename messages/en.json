@@ -124,7 +124,11 @@
     "collapseMenu": "Collapse menu",
     "designSystem": "Design System",
     "members": "Member management",
-    "contactUs": "Contact us"
+    "contactUs": "Contact us",
+    "publicHome": "Home",
+    "publicPrivacy": "Privacy Policy",
+    "publicTerms": "Terms of Use",
+    "resetPasswordPage": "Reset password"
   },
   "athleteStats": {
     "title": "Statistics",
@@ -878,7 +882,6 @@
   "contact": {
     "title": "Contact us",
     "intro": "Describe your request. We will reply to the email address you provide.",
-    "introLoggedIn": "Your profile details are pre-filled; you can edit them if needed.",
     "labels": {
       "firstName": "First name",
       "lastName": "Last name",

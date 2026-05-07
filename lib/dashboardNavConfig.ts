@@ -28,6 +28,10 @@ export type NavigationI18nKey =
   | 'profile'
   | 'dashboard'
   | 'contactUs'
+  | 'publicHome'
+  | 'publicPrivacy'
+  | 'publicTerms'
+  | 'resetPasswordPage'
 
 export type ProfileNavInput = {
   role: string
@@ -142,6 +146,13 @@ export function getPageTitleI18nKey(
     return 'myInformation'
   }
   if (pathname === '/dashboard/profile') return 'profile'
+
+  if (pathname === '/') return 'publicHome'
+  if (pathname === '/contact') return 'contactUs'
+  if (pathname === '/privacy') return 'publicPrivacy'
+  if (pathname === '/terms') return 'publicTerms'
+  if (pathname === '/reset-password') return 'resetPasswordPage'
+
   const active = navItems.find((item) => isNavItemActive(pathname, item))
   if (active) return active.i18nKey
   if (pathname.startsWith('/dashboard/athletes/')) return 'athletes'
