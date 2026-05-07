@@ -786,7 +786,7 @@
     "suffixMPerWeek": "m/sem.",
     "suffixDPlusPerWeek": "D+/sem.",
     "weeklyElevationWithoutCourseTile": "Dénivelé (ski, rando…)",
-    "workoutPrimaryMetricsSectionTitle": "Unités des séances (course, vélo, natation)",
+    "workoutPrimaryMetricsSectionTitle": "Unités des séances",
     "workoutPrimaryMetricsIntro": "Indiquez si vous planifiez d’abord en temps ou en distance pour chaque sport. Utilisé pour vos séances et la synthèse hebdomadaire.",
     "validation": {
       "saved": "Informations enregistrées.",

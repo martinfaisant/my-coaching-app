@@ -1031,21 +1031,19 @@ export function ProfileForm({
                   ]}
                 />
               </div>
-              <div className="rounded-xl border border-stone-200 bg-white p-3 flex items-center justify-between gap-3 border-l-4 border-l-sky-500 sm:col-span-2 sm:flex-row sm:items-center sm:justify-between">
+              <div className="rounded-xl border border-stone-200 bg-white p-3 flex items-center justify-between gap-3 border-l-4 border-l-sky-500">
                 <span className="text-sm font-semibold text-stone-800">{tSports('natation')}</span>
-                <div className="w-full sm:max-w-xs">
-                  <Segments
-                    name="workout_primary_metric_natation"
-                    ariaLabel={tWorkouts('form.targetMode.time')}
-                    size="sm"
-                    value={unitNatation}
-                    onChange={(v) => setUnitNatation(v as 'time' | 'distance')}
-                    options={[
-                      { value: 'time', label: tWorkouts('form.targetMode.time') },
-                      { value: 'distance', label: tWorkouts('form.targetMode.distance') },
-                    ]}
-                  />
-                </div>
+                <Segments
+                  name="workout_primary_metric_natation"
+                  ariaLabel={tWorkouts('form.targetMode.time')}
+                  size="sm"
+                  value={unitNatation}
+                  onChange={(v) => setUnitNatation(v as 'time' | 'distance')}
+                  options={[
+                    { value: 'time', label: tWorkouts('form.targetMode.time') },
+                    { value: 'distance', label: tWorkouts('form.targetMode.distance') },
+                  ]}
+                />
               </div>
 
               <div className="rounded-xl border border-stone-200 bg-white p-3 flex items-center justify-between gap-3 border-l-4 border-l-palette-gold">
