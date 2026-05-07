@@ -54,6 +54,7 @@ export default async function Home({ params, searchParams }: HomePageProps) {
 
   const termsPath = locale === 'en' ? '/en/terms' : '/terms'
   const privacyPath = locale === 'en' ? '/en/privacy' : '/privacy'
+  const contactPath = locale === 'en' ? '/en/contact' : '/contact'
   
   const FEATURES = [
     {
@@ -378,7 +379,7 @@ export default async function Home({ params, searchParams }: HomePageProps) {
       <footer className="border-t border-stone-200 bg-stone-50 py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center text-stone-600 space-y-3">
-            <div className="flex items-center justify-center gap-6 text-sm">
+            <div className="flex flex-wrap items-center justify-center gap-6 text-sm">
               <Link
                 href={privacyPath}
                 className="underline underline-offset-4 hover:text-stone-900"
@@ -390,6 +391,12 @@ export default async function Home({ params, searchParams }: HomePageProps) {
                 className="underline underline-offset-4 hover:text-stone-900"
               >
                 {t('footer.termsLink')}
+              </Link>
+              <Link
+                href={contactPath}
+                className="underline underline-offset-4 hover:text-stone-900"
+              >
+                {t('footer.contactLink')}
               </Link>
             </div>
             <p className="text-sm">

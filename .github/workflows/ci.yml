@@ -17,7 +17,7 @@ jobs:
       # A remplacer par de vrais secrets uniquement si nécessaire (ex: build qui exige Supabase).
       NEXT_PUBLIC_SUPABASE_URL: "https://example.supabase.co"
       NEXT_PUBLIC_SUPABASE_ANON_KEY: "anon-key"
-      SUPABASE_SERVICE_ROLE_KEY: "service-role-key"
+      SUPABASE_SECRET_KEY: "service-role-key"
       NEXT_PUBLIC_APP_URL: "http://localhost:3000"
       NEXT_PUBLIC_SITE_URL: "http://localhost:3000"
     steps:

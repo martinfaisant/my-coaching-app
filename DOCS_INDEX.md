@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 5 mai 2026 (**page Statistiques athlète livrée** : `/dashboard/stats`, Nivo volume réalisé, `Project_context.md` §4.2.3, **docs/DESIGN_SYSTEM.md**, **docs/I18N.md** ; libellés sports `ski_randonnee` / `patinage_glace` ; précédent : nav athlète menu compte + drawer, maquettes `docs/archive/design-athlete-nav-reorg/` ; stats — maquettes `docs/archive/design-athlete-stats/` ; voir Changements récents)
+**Dernière mise à jour :** 6 mai 2026 (**formulaire contact public** : `Project_context.md` §4.11, persistance + Resend, maquettes `docs/archive/design-contact-public-form/`, **docs/I18N.md** `contact.errors` ; précédent : page Statistiques athlète `/dashboard/stats` ; voir Changements récents)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -12,13 +12,13 @@
 - **Contenu :** Setup projet, stack technique, quick start, structure du projet, **URL production https://mysportally.com**
 - **Utiliser pour :** Onboarding, démarrage rapide, vue d'ensemble technique
 - **Taille :** ~200 lignes
-- **Dernière mise à jour :** 5 mai 2026 (rôle Athlète : page Statistiques `/dashboard/stats`)
+- **Dernière mise à jour :** 6 mai 2026 (page **Contact** publique, Resend, description produit)
 
 ### **Project_context.md** ⭐
 - **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), stack technique, **URL production https://mysportally.com**
 - **Utiliser pour :** Comprendre le projet, les features, les rôles, l'architecture globale
 - **Taille :** ~450 lignes
-- **Dernière mise à jour :** 5 mai 2026 (§4.2.3 **Statistiques athlète** `/dashboard/stats` ; §4.0 Dashboard : entrée Statistiques + icône ; précédent : nav athlète menu compte + drawer ; §4.5 Calendrier vue mois ; §4.3 avis coach **063**, §4.2.2 Installations + Notes, §5 `coach_ratings`)
+- **Dernière mise à jour :** 6 mai 2026 (§4.11 **Formulaire contact public** `/contact`, RPC **066**–**067**, Resend ; §4.2.3 Statistiques athlète ; §4.0 Dashboard ; §4.5 Calendrier ; §5 `contact_submissions` / `contact_submission_counters`)
 
 ### **docs/CALENDAR_MONTH_VIEW.md**
 - **Contenu :** Récap **vue mois** (desktop) vs **vue semaine** (mobile), règles semaines ISO / mois civil étendu, chargement données, liste des fichiers et tests unitaires, liens vers maquettes archivées
@@ -30,13 +30,13 @@
 - **Contenu :** Tokens (couleurs, typo, espacements), composants (Button, Input, Badge, TileCard, DashboardPageShell, **DashboardTopBar**, **AthleteAccountMenu**, **AthleteStatsVolumeChart**, **AthleteStatsChartSkeleton**, Modal, **MonthSelector**, etc.), guidelines UI, exemples de code, §7 breakpoints (**calendrier** mois étendu desktop + WeekSelector mobile, chat, Trouver mon coach, My offers)
 - **Utiliser pour :** Créer ou modifier des composants UI, choisir des couleurs, appliquer le design system, règles responsive par page
 - **Taille :** ~1850 lignes
-- **Dernière mise à jour :** 5 mai 2026 (stats athlète : Nivo, skeletons, `--chart-*` ; précédent : **AthleteAccountMenu**, nav athlète § **DashboardTopBar** ; §7 Calendrier…)
+- **Dernière mise à jour :** 6 mai 2026 (**ContactForm**, § ContactForm + contraintes `contactFormConstraints` ; stats athlète Nivo ; **AthleteAccountMenu** ; §7 Calendrier…)
 
 ### **docs/I18N.md** ⭐
 - **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces, utilisation dans composants et server actions, **checklist pour nouvelles features** (toujours penser bilingue)
 - **Utiliser pour :** Toute nouvelle feature ou texte visible, ajout de clés de traduction, dépannage i18n
 - **Taille :** ~190 lignes
-- **Dernière mise à jour :** 5 mai 2026 (`athleteStats.chart.yAxisLegend*`, `sports.ski_randonnee` / `sports.patinage_glace` ; précédent : `navigation.myInformation`, `navigation.accountMenu`…)
+- **Dernière mise à jour :** 6 mai 2026 (namespace **`contact`** / **`contact.errors`** : clés *TooLong*, `emailNotifyUnavailable` ; précédent : `athleteStats.*`, `navigation.accountMenu`…)
 
 ### **docs/AUTH_EMAIL_TEMPLATES.md**
 - **Contenu :** Guide de configuration des emails d’auth Supabase (sujet, i18n FR/EN, variables, dépannage logo). **Les fichiers HTML des templates** (Confirm signup, puis Magic Link, Reset Password, etc.) sont dans **docs/email-templates/**.
@@ -114,6 +114,10 @@
 
 > La majorité des documents d'audit/refactoring historiques sont archivés dans `docs/archive/`.  
 > L’état courant canonique est dans **`docs/ENGINEERING_STATUS_REFAC_AUDIT.md`**.
+
+**Formulaire contact public (maquettes HTML, archivées 6 mai 2026) :**
+- `docs/archive/design-contact-public-form/` — `us1-contact-page.html`, `us2-landing-footer-contact.html`, `us3-athlete-account-menu-contact.html`, `us4-coach-account-menu-contact.html`, `README.md`
+- **Raison :** feature livrée ; comportement et données décrits dans **Project_context.md §4.11**, **README.md** (Resend), **DEPLOYMENT_NOTES.md** (migrations 066–067).
 
 ### Documents archivés (historique — liste ci-dessous)
 
@@ -467,10 +471,15 @@
 
 **Fréquence de mise à jour :** À chaque ajout/suppression de documentation
 
-**Dernier scan :** 5 mai 2026  
-**Dernier nettoyage :** 5 mai 2026 (entrée Changements récents : page Statistiques athlète livrée)
+**Dernier scan :** 6 mai 2026  
+**Dernier nettoyage :** 6 mai 2026 (entrée Changements récents : formulaire contact public)
 
 ### Changements récents :
+
+✅ **6 mai 2026 – Formulaire contact public (`/contact`) – Mode Analyste :**
+- **Livraison (réf. besoin initial) :** page publique pour **contacter le support** (visiteurs et connectés) : prénom, nom, e-mail, téléphone optionnel, **motif** (liste), message ; référence **MSA-YYYY-NNNNNN** après enregistrement ; e-mail support via **API Resend** (`RESEND_API_KEY`) avec Reply-To visiteur ; persistance **`contact_submissions`** + compteur annuel, RPC **`insert_contact_submission`** (migrations **066**–**067**, client admin `SUPABASE_SECRET_KEY`). Entrées : footer landing, menus compte athlète/coach, drawer. Validation **vide / trop long** distincte (`lib/contactFormConstraints.ts`, `contact.errors.*`).
+- **Doc :** `Project_context.md` §4.11 et §5 (`contact_submissions`, `contact_submission_counters`), `README.md` + `DEPLOYMENT_NOTES.md` (env + migrations), `docs/DESIGN_SYSTEM.md` § **ContactForm**, `docs/I18N.md` (table `contact`), `DOCS_INDEX.md` (archives **design-contact-public-form**).
+- **Archivage :** maquettes HTML `docs/design/contact/` → **`docs/archive/design-contact-public-form/`** (fichiers auparavent non versionnés + `README.md` d’index).
 
 ✅ **5 mai 2026 – Page Statistiques athlète (`/dashboard/stats`) – Mode Analyste :**
 - **Livraison (réf. code) :** route athlète uniquement ; nav principale entre calendrier et objectifs (`getAthletePrimaryNavItems`, icône `DashboardNavIcons`) ; graphique volume **réalisé** (Nivo `ResponsiveLine`) avec jusqu’à **3 années** civiles, un sport à la fois, granularité semaine/mois, métrique temps/distance/dénivelé ; données **`getEffectiveWeeklyTotalsFait`** (même règle « fait » que le calendrier) ; séries `lib/athleteStatsVolume.ts` ; refetch `loadAthleteVolumeChartData` ; encart **volume annuel** ; skeletons `AthleteStatsChartSkeleton` / `AthleteStatsChartFullSkeleton` ; thème `lib/athleteStatsNivoTheme.ts` + `app/globals.css` (`--chart-*`). Libellés sports : `SPORT_TRANSLATION_KEYS` (`ski_randonnee`, `patinage_glace`).

@@ -27,6 +27,7 @@ export type NavigationI18nKey =
   | 'designSystem'
   | 'profile'
   | 'dashboard'
+  | 'contactUs'
 
 export type ProfileNavInput = {
   role: string
@@ -36,6 +37,11 @@ export type ProfileNavInput = {
 /** Lien « Mes informations » (page profil) — menu compte athlète. */
 export function getAthleteProfileNavItem(): NavItem {
   return { href: '/dashboard/profile', i18nKey: 'myInformation' }
+}
+
+/** Lien page contact public (menu compte athlète / coach). */
+export function getContactPublicNavItem(): NavItem {
+  return { href: '/contact', i18nKey: 'contactUs' }
 }
 
 /** Liens centrés barre desktop + tête du drawer (athlète). */
@@ -105,6 +111,11 @@ export function isAthleteAccountMenuTriggerActive(
   if (profile.role !== 'athlete') return false
   if (pathname === '/dashboard/profile') return true
   return isAthleteAccountSectionActive(pathname, profile)
+}
+
+/** Trigger menu compte coach : profil ou page contact (liens du menu). */
+export function isCoachAccountMenuTriggerActive(pathname: string): boolean {
+  return pathname === '/dashboard/profile' || pathname === '/contact'
 }
 
 /** Retourne true si pathname correspond à l’item (page courante). */
