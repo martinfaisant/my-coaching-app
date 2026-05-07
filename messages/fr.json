@@ -557,6 +557,8 @@
       "description": "Description (facultatif)",
       "descriptionPlaceholder": "Détails de la séance...",
       "sessionGoals": "OBJECTIFS DE LA SÉANCE",
+      "sessionGoalsMandatoryTime": "Objectif de la séance — Temps obligatoire",
+      "sessionGoalsMandatoryDistance": "Objectif de la séance — Distance obligatoire",
       "targetMode": {
         "time": "Temps",
         "distance": "Distance"
@@ -634,8 +636,10 @@
       "unauthorized": "Non autorisé.",
       "commentSaveFailed": "Impossible d'enregistrer le commentaire.",
       "targetRequired": "Indiquez un objectif (temps ou distance selon le sport).",
+      "durationRequiredForSport": "Indiquez une durée pour ce sport.",
       "paceRequired": "La vitesse (allure ou km/h) est obligatoire pour ce sport.",
-      "primaryMetricRequired": "Complétez la métrique principale (temps ou distance) ou les champs permettant de la calculer.",
+      "primaryMetricDistanceRequired": "Indiquez une distance.",
+      "primaryMetricTimeRequired": "Indiquez une durée.",
       "workoutUnitsNotConfigured": "Configurez les unités des séances (profil coach) avant de créer une séance."
     }
   },

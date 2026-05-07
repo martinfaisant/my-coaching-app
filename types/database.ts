@@ -26,7 +26,9 @@ export type WorkoutPrimaryMetricBySport = Partial<
     | 'nordic_ski'
     | 'backcountry_ski'
     | 'ice_skating'
-    | 'randonnee',
+    | 'randonnee'
+    | 'triathlon'
+    | 'canot',
     WorkoutPrimaryMetric
   >
 >

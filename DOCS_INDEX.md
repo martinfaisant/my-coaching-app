@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 7 mai 2026 (**en-tête marketing connecté** : `PublicOrDashboardHeader`, `DashboardTopBar` sticky sur pages publiques ; `Project_context.md` §4.0 / §4.1 ; **docs/DESIGN_SYSTEM.md** ; précédent : formulaire contact public §4.11 ; voir Changements récents)
+**Dernière mise à jour :** 7 mai 2026 (**docs/I18N.md** + **Project_context.md** §4.5 : validation séance coach `workouts.validation` / objectifs formulaire ; précédent : en-tête marketing connecté, etc.)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -18,7 +18,7 @@
 - **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), stack technique, **URL production https://mysportally.com**
 - **Utiliser pour :** Comprendre le projet, les features, les rôles, l'architecture globale
 - **Taille :** ~450 lignes
-- **Dernière mise à jour :** 7 mai 2026 (§4.0 **en-tête public / marketing** ; §4.2 sports coachés/pratiqués ; §4.5 **sports supportés workouts** ; §4.11 Formulaire contact ; §5 `contact_submissions` / `contact_submission_counters`)
+- **Dernière mise à jour :** 7 mai 2026 (§4.5 **formulaire séance coach** : auto-calcul objectifs + validation serveur `workouts.validation` ; précédent : §4.0 en-tête public, §4.2 sports, §4.5 sports workouts, §4.11 contact…)
 
 ### **docs/CALENDAR_MONTH_VIEW.md**
 - **Contenu :** Récap **vue mois** (desktop) vs **vue semaine** (mobile), règles semaines ISO / mois civil étendu, chargement données, liste des fichiers et tests unitaires, liens vers maquettes archivées
@@ -36,7 +36,7 @@
 - **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces, utilisation dans composants et server actions, **checklist pour nouvelles features** (toujours penser bilingue)
 - **Utiliser pour :** Toute nouvelle feature ou texte visible, ajout de clés de traduction, dépannage i18n
 - **Taille :** ~190 lignes
-- **Dernière mise à jour :** 7 mai 2026 (`navigation` : **publicHome**, **publicPrivacy**, **publicTerms**, **resetPasswordPage** ; résumé LanguageSwitcher visiteur vs bandeau dashboard ; précédent : **`contact`**, `athleteStats`…)
+- **Dernière mise à jour :** 7 mai 2026 (`workouts.validation` : codes erreur création/édition séance coach, `translateWorkoutFormValidationError` ; précédent : `navigation.publicHome`…)
 
 ### **docs/AUTH_EMAIL_TEMPLATES.md**
 - **Contenu :** Guide de configuration des emails d’auth Supabase (sujet, i18n FR/EN, variables, dépannage logo). **Les fichiers HTML des templates** (Confirm signup, puis Magic Link, Reset Password, etc.) sont dans **docs/email-templates/**.

@@ -7,7 +7,7 @@ import { Input } from '@/components/Input'
 import { Textarea } from '@/components/Textarea'
 import { ClockIcon, LightningIcon, MountainIcon, RulerIcon } from '@/components/workout-modal/icons'
 import { FORM_BASE_CLASSES, FORM_LABEL_CLASSES, TEXTAREA_SPECIFIC_CLASSES } from '@/lib/formStyles'
-import { workoutPaceIsRunningStyle } from '@/lib/sportsRegistry'
+import { workoutHasPaceField, workoutPaceIsRunningStyle } from '@/lib/sportsRegistry'
 
 type Props = {
   action: (formData: FormData) => void
@@ -20,6 +20,8 @@ type Props = {
   sportType: SportType
   title: string
   description: string
+  /** Coach : métrique primaire (temps vs distance) selon profil. */
+  targetMode: 'time' | 'distance'
   targetDurationMinutes: string
   targetDistanceKm: string
   targetElevationM: string
@@ -28,8 +30,6 @@ type Props = {
   hasElevation: boolean
   isTimeOnly: boolean
   workoutSportTypes: SportType[]
-  /** Ligne d’aide sous « Objectifs de séance » (métrique obligatoire selon profil coach). */
-  mandatoryMetricHint: string
   onSportChange: (sport: SportType) => void
   onTitleChange: (value: string) => void
   onDescriptionChange: (value: string) => void
@@ -67,6 +67,7 @@ export const CoachWorkoutForm = memo(function CoachWorkoutForm({
   sportType,
   title,
   description,
+  targetMode,
   targetDurationMinutes,
   targetDistanceKm,
   targetElevationM,
@@ -75,7 +76,6 @@ export const CoachWorkoutForm = memo(function CoachWorkoutForm({
   hasElevation,
   isTimeOnly,
   workoutSportTypes,
-  mandatoryMetricHint,
   onSportChange,
   onTitleChange,
   onDescriptionChange,
@@ -88,6 +88,8 @@ export const CoachWorkoutForm = memo(function CoachWorkoutForm({
   tWorkouts,
   onSubmit,
 }: Props) {
+  const paceVisible = workoutHasPaceField(sportType)
+  const paceIsCycling = sportType === 'velo' || sportType === 'triathlon'
   return (
     <form id="workout-form" action={action} className="flex flex-col flex-1 min-h-0" onSubmit={onSubmit}>
       <input type="hidden" name="date" value={editableDate} />
@@ -149,11 +151,14 @@ export const CoachWorkoutForm = memo(function CoachWorkoutForm({
           <div className="bg-stone-50 p-4 rounded-xl border border-stone-100">
             <div className="flex flex-col gap-1 mb-3">
               <div className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
-                {tWorkouts('form.sessionGoals')}
+                {isTimeOnly
+                  ? tWorkouts('form.sessionGoalsMandatoryTime')
+                  : hasCvNTargets
+                    ? targetMode === 'distance'
+                      ? tWorkouts('form.sessionGoalsMandatoryDistance')
+                      : tWorkouts('form.sessionGoalsMandatoryTime')
+                    : tWorkouts('form.sessionGoals')}
               </div>
-              {mandatoryMetricHint ? (
-                <p className="text-[10px] text-stone-500 leading-snug">{mandatoryMetricHint}</p>
-              ) : null}
             </div>
 
             {isTimeOnly && (
@@ -183,74 +188,172 @@ export const CoachWorkoutForm = memo(function CoachWorkoutForm({
             )}
 
             {hasCvNTargets && (
-              <div className="grid grid-cols-2 gap-2">
-                <div className="relative">
-                  {sportType === 'natation' ? (
-                    <>
-                      <input type="hidden" name="target_distance_km" value={targetDistanceKm} />
-                      <input
-                        type="number"
-                        min={0}
-                        step={1}
-                        value={
-                          targetDistanceKm ? String(Math.round(Number(targetDistanceKm) * 1000)) : ''
-                        }
-                        onChange={(e) =>
-                          onTargetDistanceChange(
-                            e.target.value ? String(Number(e.target.value) / 1000) : ''
-                          )
-                        }
-                        onWheel={preventWheelNumberChange}
-                        placeholder="1500"
-                        className={`${FORM_BASE_CLASSES} ${DISABLED_NUMBER_CLASSES} font-semibold pl-10 pr-10`}
-                      />
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <RulerIcon className="h-4 w-4 text-stone-400" />
-                      </div>
-                      <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-xs text-stone-400">
-                        m
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <input
-                        name="target_distance_km"
-                        type="number"
-                        min={0}
-                        step={0.1}
-                        value={targetDistanceKm}
-                        onChange={(e) => onTargetDistanceChange(e.target.value)}
-                        onWheel={preventWheelNumberChange}
-                        placeholder="14,3"
-                        className={`${FORM_BASE_CLASSES} ${DISABLED_NUMBER_CLASSES} font-semibold pl-10 pr-10`}
-                      />
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <RulerIcon className="h-4 w-4 text-stone-400" />
-                      </div>
-                      <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-xs text-stone-400">
-                        km
-                      </div>
-                    </>
-                  )}
-                </div>
+              <div className="space-y-3">
+                {/* Champ primaire en premier (plein largeur) */}
+                {targetMode === 'distance' ? (
+                  <div className="relative">
+                    {sportType === 'natation' ? (
+                      <>
+                        <input type="hidden" name="target_distance_km" value={targetDistanceKm} />
+                        <input
+                          type="number"
+                          min={0}
+                          step={1}
+                          autoFocus
+                          value={targetDistanceKm ? String(Math.round(Number(targetDistanceKm) * 1000)) : ''}
+                          onChange={(e) =>
+                            onTargetDistanceChange(e.target.value ? String(Number(e.target.value) / 1000) : '')
+                          }
+                          onWheel={preventWheelNumberChange}
+                          placeholder="1500"
+                          className={`${FORM_BASE_CLASSES} ${DISABLED_NUMBER_CLASSES} font-semibold pl-10 pr-10 border-stone-400`}
+                        />
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                          <RulerIcon className="h-4 w-4 text-stone-600" />
+                        </div>
+                        <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-xs text-stone-600 font-medium">
+                          m
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <input
+                          name="target_distance_km"
+                          type="number"
+                          min={0}
+                          step={0.1}
+                          autoFocus
+                          value={targetDistanceKm}
+                          onChange={(e) => onTargetDistanceChange(e.target.value)}
+                          onWheel={preventWheelNumberChange}
+                          placeholder="14,3"
+                          className={`${FORM_BASE_CLASSES} ${DISABLED_NUMBER_CLASSES} font-semibold pl-10 pr-10 border-stone-400`}
+                        />
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                          <RulerIcon className="h-4 w-4 text-stone-600" />
+                        </div>
+                        <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-xs text-stone-600 font-medium">
+                          km
+                        </div>
+                      </>
+                    )}
+                  </div>
+                ) : (
+                  <div className="relative">
+                    <input
+                      name="target_duration_minutes"
+                      type="number"
+                      min={1}
+                      autoFocus
+                      value={targetDurationMinutes}
+                      onChange={(e) => onTargetDurationChange(e.target.value)}
+                      onWheel={preventWheelNumberChange}
+                      placeholder="22"
+                      className={`${FORM_BASE_CLASSES} ${DISABLED_NUMBER_CLASSES} font-semibold pl-10 pr-12 border-stone-400`}
+                    />
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <ClockIcon className="h-4 w-4 text-stone-600" />
+                    </div>
+                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                      <span className="text-xs text-stone-600 font-medium">{tWorkouts('form.durationUnit')}</span>
+                    </div>
+                  </div>
+                )}
 
-                <div className="relative">
-                  <input
-                    name="target_duration_minutes"
-                    type="number"
-                    min={1}
-                    value={targetDurationMinutes}
-                    onChange={(e) => onTargetDurationChange(e.target.value)}
-                    onWheel={preventWheelNumberChange}
-                    placeholder="22"
-                    className={`${FORM_BASE_CLASSES} ${DISABLED_NUMBER_CLASSES} font-semibold pl-10 pr-12`}
-                  />
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <ClockIcon className="h-4 w-4 text-stone-400" />
-                  </div>
-                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                    <span className="text-xs text-stone-400">{tWorkouts('form.durationUnit')}</span>
-                  </div>
+                {/* Options */}
+                <div className="grid grid-cols-2 gap-2">
+                  {targetMode === 'distance' ? (
+                    <div className="relative">
+                      <input
+                        name="target_duration_minutes"
+                        type="number"
+                        min={1}
+                        value={targetDurationMinutes}
+                        onChange={(e) => onTargetDurationChange(e.target.value)}
+                        onWheel={preventWheelNumberChange}
+                        placeholder="22"
+                        className={`${FORM_BASE_CLASSES} ${DISABLED_NUMBER_CLASSES} font-semibold pl-10 pr-12`}
+                      />
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <ClockIcon className="h-4 w-4 text-stone-500" />
+                      </div>
+                      <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                        <span className="text-xs text-stone-500">{tWorkouts('form.durationUnit')}</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="relative">
+                      {sportType === 'natation' ? (
+                        <>
+                          <input type="hidden" name="target_distance_km" value={targetDistanceKm} />
+                          <input
+                            type="number"
+                            min={0}
+                            step={1}
+                            value={targetDistanceKm ? String(Math.round(Number(targetDistanceKm) * 1000)) : ''}
+                            onChange={(e) =>
+                              onTargetDistanceChange(e.target.value ? String(Number(e.target.value) / 1000) : '')
+                            }
+                            onWheel={preventWheelNumberChange}
+                            placeholder="1500"
+                            className={`${FORM_BASE_CLASSES} ${DISABLED_NUMBER_CLASSES} font-semibold pl-10 pr-10`}
+                          />
+                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <RulerIcon className="h-4 w-4 text-stone-500" />
+                          </div>
+                          <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-xs text-stone-500">
+                            m
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <input
+                            name="target_distance_km"
+                            type="number"
+                            min={0}
+                            step={0.1}
+                            value={targetDistanceKm}
+                            onChange={(e) => onTargetDistanceChange(e.target.value)}
+                            onWheel={preventWheelNumberChange}
+                            placeholder="14,3"
+                            className={`${FORM_BASE_CLASSES} ${DISABLED_NUMBER_CLASSES} font-semibold pl-10 pr-10`}
+                          />
+                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <RulerIcon className="h-4 w-4 text-stone-500" />
+                          </div>
+                          <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-xs text-stone-500">
+                            km
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  )}
+
+                  {paceVisible ? (
+                    <div className="relative col-span-2 sm:col-span-1">
+                      <input
+                        name="target_pace"
+                        type="number"
+                        min={0}
+                        step={paceIsCycling ? 1 : 0.1}
+                        value={targetPace}
+                        onChange={(e) => onTargetPaceChange(e.target.value)}
+                        onWheel={preventWheelNumberChange}
+                        placeholder={workoutPaceIsRunningStyle(sportType) ? '5.0' : paceIsCycling ? '39' : '2.0'}
+                        className={`${FORM_BASE_CLASSES} ${DISABLED_NUMBER_CLASSES} font-semibold pl-10 pr-16`}
+                      />
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <LightningIcon className="h-4 w-4 text-stone-500" />
+                      </div>
+                      <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-xs text-stone-500">
+                        {workoutPaceIsRunningStyle(sportType)
+                          ? tWorkouts('form.paceUnitRunning')
+                          : paceIsCycling
+                            ? tWorkouts('form.paceUnitCycling')
+                            : tWorkouts('form.paceUnitSwimming')}
+                      </div>
+                    </div>
+                  ) : null}
                 </div>
 
                 {hasElevation ? (
@@ -266,41 +369,15 @@ export const CoachWorkoutForm = memo(function CoachWorkoutForm({
                       className={`${FORM_BASE_CLASSES} ${DISABLED_NUMBER_CLASSES} font-semibold pl-10 pr-14`}
                     />
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <MountainIcon className="h-4 w-4 text-stone-400" />
+                      <MountainIcon className="h-4 w-4 text-stone-500" />
                     </div>
                     <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                      <span className="text-xs text-stone-400">{tWorkouts('form.elevationUnit')}</span>
+                      <span className="text-xs text-stone-500">{tWorkouts('form.elevationUnit')}</span>
                     </div>
                   </div>
                 ) : (
                   <input type="hidden" name="target_elevation_m" value="" />
                 )}
-
-                <div className="relative">
-                  <input
-                    name="target_pace"
-                    type="number"
-                    min={0}
-                    step={sportType === 'velo' ? 1 : 0.1}
-                    value={targetPace}
-                    onChange={(e) => onTargetPaceChange(e.target.value)}
-                    onWheel={preventWheelNumberChange}
-                    placeholder={
-                      workoutPaceIsRunningStyle(sportType) ? '5.0' : sportType === 'velo' ? '39' : '2.0'
-                    }
-                    className={`${FORM_BASE_CLASSES} ${DISABLED_NUMBER_CLASSES} font-semibold pl-10 pr-16`}
-                  />
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <LightningIcon className="h-4 w-4 text-stone-400" />
-                  </div>
-                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-xs text-stone-400">
-                    {workoutPaceIsRunningStyle(sportType)
-                      ? tWorkouts('form.paceUnitRunning')
-                      : sportType === 'velo'
-                        ? tWorkouts('form.paceUnitCycling')
-                        : tWorkouts('form.paceUnitSwimming')}
-                  </div>
-                </div>
               </div>
             )}
 

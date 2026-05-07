@@ -19,6 +19,8 @@ const completePrefs: WorkoutPrimaryMetricBySport = {
   backcountry_ski: 'distance',
   ice_skating: 'distance',
   randonnee: 'distance',
+  triathlon: 'distance',
+  canot: 'distance',
 }
 
 describe('validateWorkoutFormData — options primaryMetricBySport', () => {
@@ -74,6 +76,8 @@ describe('validateWorkoutFormData — options primaryMetricBySport', () => {
       backcountry_ski: 'distance',
       ice_skating: 'distance',
       randonnee: 'distance',
+      triathlon: 'distance',
+      canot: 'distance',
     }
     const r = validateWorkoutFormData(fd, { primaryMetricBySport: prefs })
     expect('data' in r).toBe(true)

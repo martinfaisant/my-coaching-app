@@ -13,7 +13,7 @@ import type {
 } from '@/types/database'
 import { requireCoachOrAthleteAccess } from '@/lib/authHelpers'
 import { getWeekMonday, toDateStr } from '@/lib/dateUtils'
-import { validateWorkoutFormData } from '@/lib/workoutValidation'
+import { translateWorkoutFormValidationError, validateWorkoutFormData } from '@/lib/workoutValidation'
 import { parseWorkoutPrimaryMetricBySport, isCoachWorkoutPrimaryMetricsComplete } from '@/lib/workoutPrimaryMetric'
 import { logger } from '@/lib/logger'
 import { getTranslations, getLocale } from 'next-intl/server'
@@ -58,7 +58,9 @@ export async function createWorkout(
   }
 
   const validation = validateWorkoutFormData(formData, { primaryMetricBySport: prefsCoach })
-  if ('error' in validation) return validation
+  if ('error' in validation) {
+    return { error: translateWorkoutFormValidationError(validation, t) }
+  }
 
   const {
     date,
@@ -127,7 +129,9 @@ export async function updateWorkout(
   }
 
   const validation = validateWorkoutFormData(formData, { primaryMetricBySport: prefsCoach })
-  if ('error' in validation) return validation
+  if ('error' in validation) {
+    return { error: translateWorkoutFormValidationError(validation, t) }
+  }
 
   const {
     date,

@@ -89,6 +89,8 @@ export async function updateProfile(
     const mbs = (formData.get('workout_primary_metric_backcountry_ski') as string)?.trim()
     const mis = (formData.get('workout_primary_metric_ice_skating') as string)?.trim()
     const mr = (formData.get('workout_primary_metric_randonnee') as string)?.trim()
+    const mtri = (formData.get('workout_primary_metric_triathlon') as string)?.trim()
+    const mcan = (formData.get('workout_primary_metric_canot') as string)?.trim()
     if (
       (mc === 'time' || mc === 'distance') &&
       (mt === 'time' || mt === 'distance') &&
@@ -97,7 +99,9 @@ export async function updateProfile(
       (mns === 'time' || mns === 'distance') &&
       (mbs === 'time' || mbs === 'distance') &&
       (mis === 'time' || mis === 'distance') &&
-      (mr === 'time' || mr === 'distance')
+      (mr === 'time' || mr === 'distance') &&
+      (mtri === 'time' || mtri === 'distance') &&
+      (mcan === 'time' || mcan === 'distance')
     ) {
       const workout_primary_metric_by_sport: WorkoutPrimaryMetricBySport = {
         course: mc,
@@ -108,6 +112,8 @@ export async function updateProfile(
         backcountry_ski: mbs,
         ice_skating: mis,
         randonnee: mr,
+        triathlon: mtri,
+        canot: mcan,
       }
       if (isCoachWorkoutPrimaryMetricsComplete(workout_primary_metric_by_sport)) {
         payload.workout_primary_metric_by_sport = workout_primary_metric_by_sport
@@ -238,6 +244,8 @@ export async function saveCoachWorkoutPrimaryMetrics(
   const mbs = (formData.get('workout_primary_metric_backcountry_ski') as string)?.trim()
   const mis = (formData.get('workout_primary_metric_ice_skating') as string)?.trim()
   const mr = (formData.get('workout_primary_metric_randonnee') as string)?.trim()
+  const mtri = (formData.get('workout_primary_metric_triathlon') as string)?.trim()
+  const mcan = (formData.get('workout_primary_metric_canot') as string)?.trim()
   if (
     (mc !== 'time' && mc !== 'distance') ||
     (mt !== 'time' && mt !== 'distance') ||
@@ -246,7 +254,9 @@ export async function saveCoachWorkoutPrimaryMetrics(
     (mns !== 'time' && mns !== 'distance') ||
     (mbs !== 'time' && mbs !== 'distance') ||
     (mis !== 'time' && mis !== 'distance') ||
-    (mr !== 'time' && mr !== 'distance')
+    (mr !== 'time' && mr !== 'distance') ||
+    (mtri !== 'time' && mtri !== 'distance') ||
+    (mcan !== 'time' && mcan !== 'distance')
   ) {
     return { error: t('workoutPrimaryMetricInvalid') }
   }
@@ -259,6 +269,8 @@ export async function saveCoachWorkoutPrimaryMetrics(
     backcountry_ski: mbs,
     ice_skating: mis,
     randonnee: mr,
+    triathlon: mtri,
+    canot: mcan,
   }
   if (!isCoachWorkoutPrimaryMetricsComplete(workout_primary_metric_by_sport)) {
     return { error: t('workoutPrimaryMetricInvalid') }
