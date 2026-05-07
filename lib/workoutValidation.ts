@@ -1,5 +1,4 @@
 import type { SportType, WorkoutTimeOfDay, WorkoutPrimaryMetric, WorkoutPrimaryMetricBySport } from '@/types/database'
-import { computeDistanceKmFromDurationPace, computeDurationMinutesFromDistancePace } from '@/lib/workoutTargetMath'
 import { getWorkoutPrimaryMetricForSport, isCoachWorkoutPrimaryMetricsComplete } from '@/lib/workoutPrimaryMetric'
 import { isPersistedWorkoutSportType, workoutIsTimeOnlySport } from '@/lib/sportsRegistry'
 
@@ -13,10 +12,21 @@ export const WORKOUT_VALIDATION_ERROR_CODES = {
   ALL_FIELDS_REQUIRED: 'allFieldsRequired',
   INVALID_SPORT: 'invalidSport',
   TARGET_REQUIRED: 'targetRequired',
+  DURATION_REQUIRED_FOR_SPORT: 'durationRequiredForSport',
   PACE_REQUIRED: 'paceRequired',
-  PRIMARY_METRIC_REQUIRED: 'primaryMetricRequired',
+  PRIMARY_METRIC_DISTANCE_REQUIRED: 'primaryMetricDistanceRequired',
+  PRIMARY_METRIC_TIME_REQUIRED: 'primaryMetricTimeRequired',
   WORKOUT_UNITS_NOT_CONFIGURED: 'workoutUnitsNotConfigured',
 } as const
+
+export type WorkoutValidationMessageKey =
+  (typeof WORKOUT_VALIDATION_ERROR_CODES)[keyof typeof WORKOUT_VALIDATION_ERROR_CODES]
+
+/** Erreur de validation formulaire séance : message technique (logs) + clé i18n `workouts.validation`. */
+export type WorkoutFormValidationError = {
+  error: string
+  errorCode: WorkoutValidationMessageKey
+}
 
 export type ValidateWorkoutFormOptions = {
   /** Préférences coach ; si C/V/N et défini, applique la métrique obligatoire + résolution allure. */
@@ -31,7 +41,7 @@ export function validateWorkoutFormData(
   formData: FormData,
   options?: ValidateWorkoutFormOptions
 ):
-  | { error: string; errorCode?: string }
+  | WorkoutFormValidationError
   | {
       data: {
         date: string
@@ -73,7 +83,16 @@ export function validateWorkoutFormData(
   const prefs = options?.primaryMetricBySport
   const useCoachPrimary =
     prefs != null &&
-    (sportType === 'course' || sportType === 'trail' || sportType === 'velo' || sportType === 'natation')
+    (sportType === 'course' ||
+      sportType === 'trail' ||
+      sportType === 'velo' ||
+      sportType === 'natation' ||
+      sportType === 'ice_skating' ||
+      sportType === 'nordic_ski' ||
+      sportType === 'backcountry_ski' ||
+      sportType === 'randonnee' ||
+      sportType === 'triathlon' ||
+      sportType === 'canot')
 
   if (useCoachPrimary) {
     if (!isCoachWorkoutPrimaryMetricsComplete(prefs)) {
@@ -83,17 +102,9 @@ export function validateWorkoutFormData(
       }
     }
     const primary = getWorkoutPrimaryMetricForSport(sportType, prefs) as WorkoutPrimaryMetric
-    const resolved = resolveCvNTargetsWithCoachPrimary(
-      sportType,
-      primary,
-      durationRaw,
-      distanceRaw,
-      elevationRaw,
-      target_pace
-    )
-    if ('error' in resolved) {
-      return resolved
-    }
+
+    const resolved = resolveTargetsWithCoachPrimary(sportType, primary, durationRaw, distanceRaw, elevationRaw)
+    if ('error' in resolved) return resolved
     const timeOfDayRaw = (formData.get('time_of_day') as string)?.trim() ?? ''
     const time_of_day: WorkoutTimeOfDay | null =
       timeOfDayRaw && VALID_TIME_OF_DAY.includes(timeOfDayRaw as WorkoutTimeOfDay)
@@ -125,7 +136,7 @@ export function validateWorkoutFormData(
   if (workoutIsTimeOnlySport(sportType) && !(target_duration_minutes != null && target_duration_minutes > 0)) {
     return {
       error: 'Indiquez une durée pour ce sport.',
-      errorCode: WORKOUT_VALIDATION_ERROR_CODES.TARGET_REQUIRED,
+      errorCode: WORKOUT_VALIDATION_ERROR_CODES.DURATION_REQUIRED_FOR_SPORT,
     }
   }
 
@@ -136,6 +147,9 @@ export function validateWorkoutFormData(
     }
   }
 
+  // Hors cas "coach primary metric": conserver la règle historique :
+  // si une seule des deux métriques (temps/distance) est fournie sur certains sports,
+  // alors l'allure/vitesse est nécessaire pour éviter une séance "incomplète".
   const paceRequiredSports: SportType[] = [
     'course',
     'trail',
@@ -145,7 +159,6 @@ export function validateWorkoutFormData(
     'nordic_ski',
     'backcountry_ski',
     'randonnee',
-    'canot',
   ]
   if (paceRequiredSports.includes(sportType) && (target_pace == null || target_pace <= 0)) {
     const hasDur =
@@ -183,15 +196,14 @@ export function validateWorkoutFormData(
   }
 }
 
-function resolveCvNTargetsWithCoachPrimary(
-  sportType: 'course' | 'trail' | 'velo' | 'natation',
+function resolveTargetsWithCoachPrimary(
+  sportType: SportType,
   primary: WorkoutPrimaryMetric,
   durationRaw: string,
   distanceRaw: string,
-  elevationRaw: string,
-  pace: number | null
+  elevationRaw: string
 ):
-  | { error: string; errorCode: string }
+  | WorkoutFormValidationError
   | {
       target_duration_minutes: number | null | undefined
       target_distance_km: number | null | undefined
@@ -204,47 +216,30 @@ function resolveCvNTargetsWithCoachPrimary(
   const validDistance = distance != null && !Number.isNaN(distance) && distance > 0
   const validElevation = elevation != null && !Number.isNaN(elevation) && elevation >= 0
 
-  let dMin: number | null = validDuration ? duration : null
-  let dKm: number | null = validDistance ? distance : null
+  const dMin: number | null = validDuration ? duration : null
+  const dKm: number | null = validDistance ? distance : null
 
-  const p = pace != null && pace > 0 ? pace : null
-
-  if (primary === 'distance') {
-    if (dKm == null && dMin != null && p != null) {
-      dKm = computeDistanceKmFromDurationPace(sportType, dMin, p)
-    }
-  } else {
-    if (dMin == null && dKm != null && p != null) {
-      dMin = computeDurationMinutesFromDistancePace(sportType, dKm, p)
-    }
-  }
-
+  // Coach : la métrique primaire doit être explicitement renseignée (pas calculée).
   if (primary === 'distance' && (dKm == null || dKm <= 0)) {
     return {
-      error: 'Indiquez une distance ou des éléments permettant de la calculer.',
-      errorCode: WORKOUT_VALIDATION_ERROR_CODES.PRIMARY_METRIC_REQUIRED,
+      error: 'Indiquez une distance.',
+      errorCode: WORKOUT_VALIDATION_ERROR_CODES.PRIMARY_METRIC_DISTANCE_REQUIRED,
     }
   }
   if (primary === 'time' && (dMin == null || dMin <= 0)) {
     return {
-      error: 'Indiquez une durée ou des éléments permettant de la calculer.',
-      errorCode: WORKOUT_VALIDATION_ERROR_CODES.PRIMARY_METRIC_REQUIRED,
-    }
-  }
-
-  const hasPace = p != null
-  const hasBoth = dMin != null && dMin > 0 && dKm != null && dKm > 0
-  if (!hasPace && !hasBoth) {
-    return {
-      error: 'La vitesse (allure ou km/h) est obligatoire pour ce sport.',
-      errorCode: WORKOUT_VALIDATION_ERROR_CODES.PACE_REQUIRED,
+      error: 'Indiquez une durée.',
+      errorCode: WORKOUT_VALIDATION_ERROR_CODES.PRIMARY_METRIC_TIME_REQUIRED,
     }
   }
 
   return {
     target_duration_minutes: dMin ?? undefined,
     target_distance_km: dKm ?? undefined,
-    target_elevation_m: sportType === 'course' || sportType === 'velo' ? (validElevation ? elevation : null) : null,
+    target_elevation_m:
+      sportType === 'course' || sportType === 'trail' || sportType === 'velo' || sportType === 'ice_skating' || sportType === 'nordic_ski' || sportType === 'backcountry_ski' || sportType === 'randonnee'
+        ? (validElevation ? elevation : null)
+        : null,
   }
 }
 
@@ -303,4 +298,12 @@ function parseWorkoutTargetParams(
     target_distance_km: validDistance ? distance : null,
     target_elevation_m: validElevation ? elevation : null,
   }
+}
+
+/** Message utilisateur : `getTranslations({ namespace: 'workouts.validation' })`. */
+export function translateWorkoutFormValidationError(
+  err: WorkoutFormValidationError,
+  translate: (key: WorkoutValidationMessageKey) => string
+): string {
+  return translate(err.errorCode)
 }

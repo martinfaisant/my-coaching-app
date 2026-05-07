@@ -431,6 +431,8 @@
       "description": "Description (optional)",
       "descriptionPlaceholder": "Session details...",
       "sessionGoals": "SESSION GOALS",
+      "sessionGoalsMandatoryTime": "Session goal — Time required",
+      "sessionGoalsMandatoryDistance": "Session goal — Distance required",
       "targetMode": {
         "time": "Time",
         "distance": "Distance"
@@ -509,8 +511,10 @@
       "notFound": "Workout not found.",
       "deleteSuccess": "Workout deleted successfully.",
       "targetRequired": "Set a goal (time or distance depending on the sport).",
+      "durationRequiredForSport": "Enter a duration for this sport.",
       "paceRequired": "Pace (or speed) is required for this sport.",
-      "primaryMetricRequired": "Complete the primary metric (time or distance) or the fields needed to compute it.",
+      "primaryMetricDistanceRequired": "Enter a distance.",
+      "primaryMetricTimeRequired": "Enter a duration.",
       "workoutUnitsNotConfigured": "Configure session units in your coach profile before creating a workout."
     }
   },

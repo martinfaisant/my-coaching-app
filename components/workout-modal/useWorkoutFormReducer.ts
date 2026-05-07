@@ -1,7 +1,12 @@
 import { useEffect, useMemo, useReducer, useRef } from 'react'
 import type { SportType, Workout, WorkoutTimeOfDay, WorkoutPrimaryMetricBySport } from '@/types/database'
 import { getWorkoutPrimaryMetricForSport } from '@/lib/workoutPrimaryMetric'
-import { workoutHasTimeDistanceTargets } from '@/lib/sportsRegistry'
+import { workoutHasPaceField, workoutHasTimeDistanceTargets } from '@/lib/sportsRegistry'
+import {
+  computeDistanceKmFromDurationPace,
+  computeDurationMinutesFromDistancePace,
+  computePaceFromDurationAndDistance,
+} from '@/lib/workoutTargetMath'
 
 type TargetMode = 'time' | 'distance'
 
@@ -18,10 +23,14 @@ type WorkoutFormValues = {
   timeOfDaySegment: WorkoutTimeOfDay | null
 }
 
+type LastMetricEdit = 'pace' | 'duration' | 'distance' | null
+
 type State = {
   values: WorkoutFormValues
   initial: WorkoutFormValues
   justLoaded: boolean
+  /** Dernier champ objectif modifié par l’utilisateur (pour ne pas écraser durée/distance quand on ajuste l’allure implicite). */
+  lastMetricEdit: LastMetricEdit
 }
 
 type InitPayload = {
@@ -82,6 +91,20 @@ function defaultValues(date: string, coachPrimaryMetrics: WorkoutPrimaryMetricBy
   }
 }
 
+function formatPaceForForm(sportType: SportType, pace: number): string {
+  if (sportType === 'velo' || sportType === 'canot' || sportType === 'triathlon') {
+    return String(Math.round(pace))
+  }
+  return String(Number(pace.toFixed(1)))
+}
+
+function paceNearlyMatchesComputed(sportType: SportType, stored: number, computed: number): boolean {
+  if (sportType === 'velo' || sportType === 'canot' || sportType === 'triathlon') {
+    return Math.abs(stored - computed) < 0.51
+  }
+  return Math.abs(stored - computed) < 0.051
+}
+
 function reducer(state: State, action: Action): State {
   switch (action.type) {
     case 'INIT': {
@@ -89,14 +112,19 @@ function reducer(state: State, action: Action): State {
       const values = workout
         ? normalizeFromWorkout(workout, date, coachPrimaryMetrics)
         : defaultValues(date, coachPrimaryMetrics)
-      return { values, initial: values, justLoaded: true }
+      return { values, initial: values, justLoaded: true, lastMetricEdit: null }
     }
     case 'SET_TARGET_MODE': {
-      return { ...state, values: { ...state.values, targetMode: action.mode } }
+      return { ...state, lastMetricEdit: null, values: { ...state.values, targetMode: action.mode } }
     }
     case 'SET_VALUE': {
+      let lastMetricEdit: LastMetricEdit = state.lastMetricEdit
+      if (action.key === 'targetPace') lastMetricEdit = 'pace'
+      else if (action.key === 'targetDurationMinutes') lastMetricEdit = 'duration'
+      else if (action.key === 'targetDistanceKm') lastMetricEdit = 'distance'
       return {
         ...state,
+        lastMetricEdit,
         values: { ...state.values, [action.key]: action.value } as WorkoutFormValues,
       }
     }
@@ -106,99 +134,112 @@ function reducer(state: State, action: Action): State {
 
       const { sportType, targetMode, targetPace, targetDistanceKm, targetDurationMinutes } = state.values
 
-      const paceOk = targetPace && Number(targetPace) > 0
-      const pace = paceOk ? Number(targetPace) : 0
+      const paceNum = Number(targetPace)
+      const paceOk = (targetPace?.trim() ?? '') !== '' && paceNum > 0
       const isJustLoaded = state.justLoaded
 
+      const durParsed = targetDurationMinutes ? parseInt(targetDurationMinutes, 10) : NaN
+      const distParsed = targetDistanceKm ? parseFloat(targetDistanceKm) : NaN
+      const durOk = Number.isFinite(durParsed) && durParsed > 0
+      const distOk = Number.isFinite(distParsed) && distParsed > 0
+
+      /**
+       * Durée + distance renseignées :
+       * — si l’utilisateur vient de modifier l’allure : recalcul du champ secondaire (non prioritaire) ;
+       * — sinon : on réaligne l’allure sur le couple temps+distance (évite d’écraser durée/distance après édition).
+       */
+      if (workoutHasPaceField(sportType) && durOk && distOk) {
+        const computedPace = computePaceFromDurationAndDistance(sportType, durParsed, distParsed)
+        if (computedPace == null) return state
+
+        const userClearedPace = state.lastMetricEdit === 'pace' && !paceOk
+        if (userClearedPace) {
+          return { ...state, justLoaded: false }
+        }
+
+        if (!paceOk) {
+          return {
+            ...state,
+            justLoaded: false,
+            lastMetricEdit: null,
+            values: { ...state.values, targetPace: formatPaceForForm(sportType, computedPace) },
+          }
+        }
+        if (paceNearlyMatchesComputed(sportType, paceNum, computedPace)) {
+          return {
+            ...state,
+            justLoaded: false,
+            lastMetricEdit: null,
+            values: { ...state.values, targetPace: formatPaceForForm(sportType, computedPace) },
+          }
+        }
+        if (state.lastMetricEdit === 'pace') {
+          if (targetMode === 'distance') {
+            const newDur = computeDurationMinutesFromDistancePace(sportType, distParsed, paceNum)
+            if (newDur != null) {
+              return {
+                ...state,
+                justLoaded: false,
+                lastMetricEdit: null,
+                values: { ...state.values, targetDurationMinutes: String(newDur) },
+              }
+            }
+          } else {
+            const newDist = computeDistanceKmFromDurationPace(sportType, durParsed, paceNum)
+            if (newDist != null) {
+              return {
+                ...state,
+                justLoaded: false,
+                lastMetricEdit: null,
+                values: { ...state.values, targetDistanceKm: String(newDist) },
+              }
+            }
+          }
+          return state
+        }
+        return {
+          ...state,
+          justLoaded: false,
+          lastMetricEdit: null,
+          values: { ...state.values, targetPace: formatPaceForForm(sportType, computedPace) },
+        }
+      }
+
       if (targetMode === 'distance') {
-        if (targetDistanceKm && Number(targetDistanceKm) > 0 && paceOk) {
-          if (
-            sportType === 'course' ||
-            sportType === 'trail' ||
-            sportType === 'ice_skating' ||
-            sportType === 'nordic_ski' ||
-            sportType === 'backcountry_ski' ||
-            sportType === 'randonnee'
-          ) {
-            const distance = Number(targetDistanceKm)
-            return {
-              ...state,
-              justLoaded: false,
-              values: { ...state.values, targetDurationMinutes: String(Math.round(distance * pace)) },
+        if (distOk && paceOk) {
+          // Ne pas recalculer la durée si l’utilisateur vient de vider ce champ (sinon la saisie est immédiatement réinjectée).
+          const userClearedDuration = state.lastMetricEdit === 'duration' && !durOk
+          if (!userClearedDuration) {
+            const newDur = computeDurationMinutesFromDistancePace(sportType, distParsed, paceNum)
+            if (newDur != null) {
+              return {
+                ...state,
+                justLoaded: false,
+                values: { ...state.values, targetDurationMinutes: String(newDur) },
+              }
             }
+          } else {
+            return { ...state, justLoaded: false }
           }
-          if (sportType === 'velo') {
-            const distance = Number(targetDistanceKm)
-            const durationMinutes = (distance / pace) * 60
-            return {
-              ...state,
-              justLoaded: false,
-              values: { ...state.values, targetDurationMinutes: String(Math.round(durationMinutes)) },
-            }
-          }
-          if (sportType === 'canot') {
-            const distance = Number(targetDistanceKm)
-            const durationMinutes = (distance / pace) * 60
-            return {
-              ...state,
-              justLoaded: false,
-              values: { ...state.values, targetDurationMinutes: String(Math.round(durationMinutes)) },
-            }
-          }
-          if (sportType === 'natation') {
-            const distanceM = Number(targetDistanceKm) * 1000
-            return {
-              ...state,
-              justLoaded: false,
-              values: { ...state.values, targetDurationMinutes: String(Math.round((distanceM / 100) * pace)) },
-            }
-          }
-        } else if (!isJustLoaded && (!targetDistanceKm || !paceOk)) {
+        } else if (!isJustLoaded && (!distOk || !paceOk)) {
           return { ...state, values: { ...state.values, targetDurationMinutes: '' } }
         }
       } else {
-        if (targetDurationMinutes && Number(targetDurationMinutes) > 0 && paceOk) {
-          if (
-            sportType === 'course' ||
-            sportType === 'trail' ||
-            sportType === 'ice_skating' ||
-            sportType === 'nordic_ski' ||
-            sportType === 'backcountry_ski' ||
-            sportType === 'randonnee'
-          ) {
-            const duration = Number(targetDurationMinutes)
-            return {
-              ...state,
-              justLoaded: false,
-              values: { ...state.values, targetDistanceKm: (duration / pace).toFixed(2) },
+        if (durOk && paceOk) {
+          const userClearedDistance = state.lastMetricEdit === 'distance' && !distOk
+          if (!userClearedDistance) {
+            const newDist = computeDistanceKmFromDurationPace(sportType, durParsed, paceNum)
+            if (newDist != null) {
+              return {
+                ...state,
+                justLoaded: false,
+                values: { ...state.values, targetDistanceKm: String(newDist) },
+              }
             }
+          } else {
+            return { ...state, justLoaded: false }
           }
-          if (sportType === 'velo') {
-            const durationMinutes = Number(targetDurationMinutes)
-            return {
-              ...state,
-              justLoaded: false,
-              values: { ...state.values, targetDistanceKm: ((durationMinutes / 60) * pace).toFixed(2) },
-            }
-          }
-          if (sportType === 'canot') {
-            const durationMinutes = Number(targetDurationMinutes)
-            return {
-              ...state,
-              justLoaded: false,
-              values: { ...state.values, targetDistanceKm: ((durationMinutes / 60) * pace).toFixed(2) },
-            }
-          }
-          if (sportType === 'natation') {
-            const duration = Number(targetDurationMinutes)
-            const distanceKm = ((duration / pace) * 100) / 1000
-            return {
-              ...state,
-              justLoaded: false,
-              values: { ...state.values, targetDistanceKm: distanceKm.toFixed(3) },
-            }
-          }
-        } else if (!isJustLoaded && (!targetDurationMinutes || !paceOk)) {
+        } else if (!isJustLoaded && (!durOk || !paceOk)) {
           return { ...state, values: { ...state.values, targetDistanceKm: '' } }
         }
       }
@@ -206,7 +247,7 @@ function reducer(state: State, action: Action): State {
       return state
     }
     case 'MARK_SAVED': {
-      return { ...state, initial: state.values }
+      return { ...state, initial: state.values, lastMetricEdit: null }
     }
     case 'CLEAR_JUST_LOADED': {
       if (!state.justLoaded) return state
@@ -243,6 +284,7 @@ export function useWorkoutFormReducer(args: {
     values: defaultValues(date, coachPrimaryMetrics),
     initial: defaultValues(date, coachPrimaryMetrics),
     justLoaded: false,
+    lastMetricEdit: null,
   })
 
   const prevInitKeyRef = useRef<string>('')

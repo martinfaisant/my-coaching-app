@@ -33,7 +33,6 @@ export function isPersistedWorkoutSportType(s: string): s is SportType {
 export function workoutIsTimeOnlySport(sportType: SportType): boolean {
   return (
     sportType === 'musculation' ||
-    sportType === 'triathlon' ||
     sportType === 'escalade' ||
     sportType === 'meditation' ||
     sportType === 'surf' ||
@@ -70,5 +69,20 @@ export function workoutPaceIsRunningStyle(sportType: SportType): boolean {
     sportType === 'nordic_ski' ||
     sportType === 'backcountry_ski' ||
     sportType === 'randonnee'
+  )
+}
+
+/** Afficher le champ allure/vitesse (objectif). */
+export function workoutHasPaceField(sportType: SportType): boolean {
+  return (
+    sportType === 'course' ||
+    sportType === 'trail' ||
+    sportType === 'velo' ||
+    sportType === 'natation' ||
+    sportType === 'ice_skating' ||
+    sportType === 'nordic_ski' ||
+    sportType === 'backcountry_ski' ||
+    sportType === 'randonnee' ||
+    sportType === 'triathlon'
   )
 }

@@ -9,6 +9,8 @@ const REQUIRED_KEYS = [
   'backcountry_ski',
   'ice_skating',
   'randonnee',
+  'triathlon',
+  'canot',
 ] as const
 
 /** True si toutes les préférences obligatoires sont renseignées (time ou distance). */
@@ -51,7 +53,9 @@ export function getWorkoutPrimaryMetricForSport(
     sportType === 'nordic_ski' ||
     sportType === 'backcountry_ski' ||
     sportType === 'ice_skating' ||
-    sportType === 'randonnee'
+    sportType === 'randonnee' ||
+    sportType === 'triathlon' ||
+    sportType === 'canot'
   ) {
     const m = prefs?.[sportType]
     if (m === 'distance' || m === 'time') return m

@@ -77,6 +77,8 @@ function defaultPrimaryMetric(
     | 'backcountry_ski'
     | 'ice_skating'
     | 'randonnee'
+    | 'triathlon'
+    | 'canot'
 ): 'time' | 'distance' {
   const v = prefs?.[key]
   return v === 'time' || v === 'distance' ? v : 'distance'
@@ -141,11 +143,15 @@ export function ProfileForm({
   const [unitBackcountrySki, setUnitBackcountrySki] = useState<'time' | 'distance'>(() => defaultPrimaryMetric(workoutPrimaryMetricBySport, 'backcountry_ski'))
   const [unitIceSkating, setUnitIceSkating] = useState<'time' | 'distance'>(() => defaultPrimaryMetric(workoutPrimaryMetricBySport, 'ice_skating'))
   const [unitRandonnee, setUnitRandonnee] = useState<'time' | 'distance'>(() => defaultPrimaryMetric(workoutPrimaryMetricBySport, 'randonnee'))
+  const [unitTriathlon, setUnitTriathlon] = useState<'time' | 'distance'>(() => defaultPrimaryMetric(workoutPrimaryMetricBySport, 'triathlon'))
+  const [unitCanot, setUnitCanot] = useState<'time' | 'distance'>(() => defaultPrimaryMetric(workoutPrimaryMetricBySport, 'canot'))
   useEffect(() => {
     setUnitNordicSki(defaultPrimaryMetric(workoutPrimaryMetricBySport, 'nordic_ski'))
     setUnitBackcountrySki(defaultPrimaryMetric(workoutPrimaryMetricBySport, 'backcountry_ski'))
     setUnitIceSkating(defaultPrimaryMetric(workoutPrimaryMetricBySport, 'ice_skating'))
     setUnitRandonnee(defaultPrimaryMetric(workoutPrimaryMetricBySport, 'randonnee'))
+    setUnitTriathlon(defaultPrimaryMetric(workoutPrimaryMetricBySport, 'triathlon'))
+    setUnitCanot(defaultPrimaryMetric(workoutPrimaryMetricBySport, 'canot'))
   }, [workoutPrimaryMetricBySport])
   const [presentationFrLength, setPresentationFrLength] = useState((presentationFr || '').length)
   const [presentationEnLength, setPresentationEnLength] = useState((presentationEn || '').length)
@@ -188,6 +194,8 @@ export function ProfileForm({
     workoutPrimaryMetricBackcountrySki: defaultPrimaryMetric(workoutPrimaryMetricBySport, 'backcountry_ski'),
     workoutPrimaryMetricIceSkating: defaultPrimaryMetric(workoutPrimaryMetricBySport, 'ice_skating'),
     workoutPrimaryMetricRandonnee: defaultPrimaryMetric(workoutPrimaryMetricBySport, 'randonnee'),
+    workoutPrimaryMetricTriathlon: defaultPrimaryMetric(workoutPrimaryMetricBySport, 'triathlon'),
+    workoutPrimaryMetricCanot: defaultPrimaryMetric(workoutPrimaryMetricBySport, 'canot'),
   })
 
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
@@ -235,6 +243,8 @@ export function ProfileForm({
       if (unitBackcountrySki !== initialValuesRef.current.workoutPrimaryMetricBackcountrySki) return true
       if (unitIceSkating !== initialValuesRef.current.workoutPrimaryMetricIceSkating) return true
       if (unitRandonnee !== initialValuesRef.current.workoutPrimaryMetricRandonnee) return true
+      if (unitTriathlon !== initialValuesRef.current.workoutPrimaryMetricTriathlon) return true
+      if (unitCanot !== initialValuesRef.current.workoutPrimaryMetricCanot) return true
     } else {
       const currentPracticedSports = Array.from(form.querySelectorAll<HTMLInputElement>('[name="practiced_sports"]:checked'))
         .map((cb) => cb.value)
@@ -1039,6 +1049,36 @@ export function ProfileForm({
                   size="sm"
                   value={unitNatation}
                   onChange={(v) => setUnitNatation(v as 'time' | 'distance')}
+                  options={[
+                    { value: 'time', label: tWorkouts('form.targetMode.time') },
+                    { value: 'distance', label: tWorkouts('form.targetMode.distance') },
+                  ]}
+                />
+              </div>
+
+              <div className="rounded-xl border border-stone-200 bg-white p-3 flex items-center justify-between gap-3 border-l-4 border-l-stone-500">
+                <span className="text-sm font-semibold text-stone-800">{tSports('triathlon')}</span>
+                <Segments
+                  name="workout_primary_metric_triathlon"
+                  ariaLabel={tWorkouts('form.targetMode.time')}
+                  size="sm"
+                  value={unitTriathlon}
+                  onChange={(v) => setUnitTriathlon(v as 'time' | 'distance')}
+                  options={[
+                    { value: 'time', label: tWorkouts('form.targetMode.time') },
+                    { value: 'distance', label: tWorkouts('form.targetMode.distance') },
+                  ]}
+                />
+              </div>
+
+              <div className="rounded-xl border border-stone-200 bg-white p-3 flex items-center justify-between gap-3 border-l-4 border-l-palette-amber">
+                <span className="text-sm font-semibold text-stone-800">{tSports('canot')}</span>
+                <Segments
+                  name="workout_primary_metric_canot"
+                  ariaLabel={tWorkouts('form.targetMode.time')}
+                  size="sm"
+                  value={unitCanot}
+                  onChange={(v) => setUnitCanot(v as 'time' | 'distance')}
                   options={[
                     { value: 'time', label: tWorkouts('form.targetMode.time') },
                     { value: 'distance', label: tWorkouts('form.targetMode.distance') },
