@@ -11,6 +11,8 @@ My Sport Ally est une marketplace + plateforme de coaching permettant aux athlè
 - Communiquer avec leur coach via messagerie intégrée
 - Synchroniser leurs activités Strava
 
+Les **visiteurs et utilisateurs** peuvent contacter le support via la page publique **Contact** (`/contact`), avec accusé de réception (référence MSA) et notification e-mail côté équipe (voir variables Resend ci-dessous).
+
 ## 🚀 Quick Start
 
 ### Prérequis
@@ -39,7 +41,16 @@ cp .env.example .env.local
 # Supabase
 NEXT_PUBLIC_SUPABASE_URL=https://votre-projet.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=votre_cle_publique
-SUPABASE_SERVICE_ROLE_KEY=votre_cle_service_role
+# Secret « service_role » (dashboard Supabase → API) — nom préféré côté app :
+SUPABASE_SECRET_KEY=votre_cle_service_role
+# Alternative acceptée : SUPABASE_SERVICE_ROLE_KEY (même valeur)
+
+# Resend — formulaire contact (envoi vers support@mysportally.com, Reply-To = e-mail visiteur)
+# Obligatoire : nom exact RESEND_API_KEY (sans guillemets superflus). Alias toléré : RESEND_KEY.
+RESEND_API_KEY=re_xxxxxxxx
+# Optionnel : surcharger destinataire / expéditeur (défauts : support@mysportally.com, no-reply@mysportally.com)
+# CONTACT_SUPPORT_TO=support@mysportally.com
+# CONTACT_EMAIL_FROM=My Sport Ally <no-reply@mysportally.com>
 
 # Strava (optionnel - pour import d'activités)
 STRAVA_CLIENT_ID=votre_client_id
@@ -50,6 +61,12 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000  # en production : https://mysportally
 # Générer une valeur aléatoire ; même valeur dans Vercel (CRON_SECRET) pour les invocations planifiées.
 CRON_SECRET=votre_secret_aleatoire
 ```
+
+### Resend (formulaire contact)
+
+- L’adresse d’expéditeur (**From**, défaut `no-reply@mysportally.com`) doit correspondre à un **domaine vérifié** dans le dashboard Resend. Sinon l’API refuse l’envoi (souvent HTTP 403) : tu peux ne rien voir côté « Emails » comme envoi réussi.
+- **Tests sans domaine** : utiliser par exemple `CONTACT_EMAIL_FROM=My Sport Ally <onboarding@resend.dev>` et, si ton compte est en mode test, un **To** autorisé (souvent ton propre e-mail), via `CONTACT_SUPPORT_TO=...`.
+- En développement, un échec Resend est journalisé côté serveur sous `Resend contact email failed` (statut HTTP + extrait de la réponse dans l’erreur).
 
 ### Lancer en développement
 

@@ -5,14 +5,18 @@ import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { Link, usePathname } from '@/i18n/navigation'
 import { AthleteAccountMenu } from '@/components/AthleteAccountMenu'
+import { CoachAccountMenu } from '@/components/CoachAccountMenu'
+import { getNavIcon } from '@/components/DashboardNavIcons'
 import { AvatarImage } from '@/components/AvatarImage'
 import { getDisplayName } from '@/lib/displayName'
 import {
   getAthleteAccountNavItems,
   getAthletePrimaryNavItems,
   getAthleteProfileNavItem,
+  getContactPublicNavItem,
   getDashboardNavItems,
   getPageTitleI18nKey,
+  isNavItemActive,
 } from '@/lib/dashboardNavConfig'
 import { getInitials } from '@/lib/stringUtils'
 import { DashboardNavLinks } from '@/components/DashboardNavLinks'
@@ -34,10 +38,18 @@ export function DashboardTopBar({ profile }: DashboardTopBarProps) {
   const athletePrimary = isAthlete ? getAthletePrimaryNavItems(profile) : navItems
   const athleteAccount = isAthlete ? getAthleteAccountNavItems(profile) : []
   const athleteProfileItem = isAthlete ? [getAthleteProfileNavItem()] : []
+  const contactPublicItem = getContactPublicNavItem()
 
   const displayName = getDisplayName(profile, '')
   const initials = getInitials(displayName)
   const isProfilePage = pathname === '/dashboard/profile'
+  /** Même base que `DashboardNavLinks` variant list (pas de text-sm : hérite du texte du layout). */
+  const contactDrawerLinkBase =
+    'flex items-center gap-3 px-3 py-3 rounded-xl font-medium transition-all duration-300 group shrink-0'
+  const contactDrawerActive =
+    'bg-palette-forest-dark text-white shadow-lg shadow-palette-forest-dark/20'
+  const contactDrawerInactive =
+    'text-stone-600 hover:bg-stone-50 hover:text-palette-forest-dark'
   const isEmail = displayName.includes('@')
   const maxLength = isEmail ? 14 : 18
   const profileLabel =
@@ -110,6 +122,21 @@ export function DashboardTopBar({ profile }: DashboardTopBarProps) {
                 initials={initials}
               />
             </>
+          ) : profile.role === 'coach' ? (
+            <>
+              <DashboardNavLinks
+                items={navItems}
+                variant="inline"
+                centerOnDesktop
+                className="flex-1 min-w-0"
+              />
+              <CoachAccountMenu
+                profile={profile}
+                displayName={displayName}
+                profileLabel={profileLabel}
+                initials={initials}
+              />
+            </>
           ) : (
             <>
               <DashboardNavLinks
@@ -172,6 +199,19 @@ export function DashboardTopBar({ profile }: DashboardTopBarProps) {
                   onItemClick={closeDrawer}
                 />
                 <hr className="border-stone-200 mx-2 my-2" />
+                <Link
+                  href={contactPublicItem.href}
+                  onClick={closeDrawer}
+                  className={`${contactDrawerLinkBase} mx-2 ${
+                    isNavItemActive(pathname, contactPublicItem)
+                      ? contactDrawerActive
+                      : contactDrawerInactive
+                  }`}
+                >
+                  {getNavIcon(contactPublicItem)}
+                  <span>{t(contactPublicItem.i18nKey)}</span>
+                </Link>
+                <hr className="border-stone-200 mx-2 my-2" />
                 <DashboardNavLinks
                   items={athleteProfileItem}
                   variant="list"
@@ -202,6 +242,20 @@ export function DashboardTopBar({ profile }: DashboardTopBarProps) {
                       <p className="text-xs text-stone-500">{t('profile')}</p>
                     </div>
                   </Link>
+                  {profile.role === 'coach' ? (
+                    <Link
+                      href={contactPublicItem.href}
+                      onClick={closeDrawer}
+                      className={`${contactDrawerLinkBase} ${
+                        isNavItemActive(pathname, contactPublicItem)
+                          ? contactDrawerActive
+                          : contactDrawerInactive
+                      }`}
+                    >
+                      {getNavIcon(contactPublicItem)}
+                      <span>{t(contactPublicItem.i18nKey)}</span>
+                    </Link>
+                  ) : null}
                   <hr className="border-stone-200 my-2" />
                   <div className="px-3 py-2">
                     <LogoutButton className="w-full justify-start gap-3 rounded-xl font-medium !py-3 hover:bg-palette-danger-light" />

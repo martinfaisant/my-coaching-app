@@ -124,6 +124,7 @@ The dashboard uses a **top bar** (logo My Sport Ally left, nav links center on t
 
 - Email/password (Supabase Auth)
 - Role selection at signup (athlete or coach)
+- **Legal consent at signup**: creating an account requires accepting the **Terms of Use** and **Privacy Policy** via a mandatory checkbox (modale and page login). The two documents are accessible via links that open in a **new tab** (`/terms`, `/privacy`).
 - Confirmation email (Supabase template) : bilingue FR/EN via metadata locale au signup ; en-tête avec logo et nom « My Sport Ally ». Voir `docs/AUTH_EMAIL_TEMPLATES.md`.
 - **Signup success (modale et page login)** : après création de compte, écran succès dédié sans formulaire (titre + message selon le cas) : **nouveau compte** (« Compte créé », inviter à confirmer l’email) ou **email de confirmation renvoyé** (compte existant non validé, message avec email). **Compte existant déjà validé** : bascule sur la vue Connexion dans la même modale/page avec message d’information et email pré-rempli. Backend distingue via `data.user.identities` (vide = email renvoyé) ; pas d’insert profil si email renvoyé.
 - **Email confirmation landing** : après clic sur « Confirmer mon email » dans l’email, le callback auth redirige vers la **page d’accueil** `/[locale]/?emailConfirmed=1` (locale depuis user_metadata). Si une session est déjà créée → redirection vers le dashboard. Sinon, la page d’accueil affiche une **modale « Email validé »** (Option B) avec message et formulaire de connexion (email, mot de passe, Se connecter) ; connexion réussie → fermeture modale et redirection dashboard. En cas d’erreur du callback (lien expiré ou déjà utilisé) → redirection vers `/[locale]/login?error=confirmation_failed` avec message d’erreur. Composants : `EmailValidatedModal`, `HomeEmailConfirmedTrigger` ; voir `docs/DESIGN_SYSTEM.md` § EmailValidatedModal.
@@ -385,6 +386,22 @@ Athletes filter coaches by:
 
 ---
 
+### 4.11 Public contact form ✅
+
+**Besoin produit :** permettre à tout visiteur (et aux utilisateurs connectés) d’**écrire au support** sans passer par le chat coach : saisie des coordonnées, **motif** (liste définie), **message**, téléphone optionnel ; accusé avec **référence unique** `MSA-YYYY-NNNNNN`.
+
+**Routes :** `/contact` et `/en/contact` (`app/[locale]/contact/page.tsx`). **Entrées UI :** lien « Contact » / « Contactez-nous » depuis le **footer** de la landing, les **menus compte** athlète et coach (`DashboardTopBar`), et le **drawer** mobile (voir `docs/DESIGN_SYSTEM.md`, `lib/dashboardNavConfig.ts`).
+
+**Comportement :** formulaire client `components/ContactForm.tsx` (`useActionState`, honeypot `website`, locale cachée `_locale`) ; préremplissage nom / prénom / e-mail si session + profil (`getOptionalUserWithProfile`). **Validation** alignée client/serveur : plafonds partagés dans `lib/contactFormConstraints.ts` (prénom/nom 100 car., message 10 000, e-mail 320, téléphone tronqué côté serveur) ; messages d’erreur distincts **vide** vs **trop long** (`contact.errors.*`). Envoi désactivé tant que le formulaire n’est pas valide.
+
+**Persistance :** tables `contact_submission_counters` (séquence par année civile UTC) et `contact_submissions` ; insertion uniquement via RPC **`insert_contact_submission`** (migrations **066** puis **067** — `RETURN QUERY` explicite, normalisation téléphone). RLS activée **sans policy** : pas d’accès direct anonyme ; l’app utilise **`createAdminClient()`** (`SUPABASE_SECRET_KEY` ou `SUPABASE_SERVICE_ROLE_KEY`).
+
+**E-mail :** envoi via **API Resend** depuis le serveur (`lib/contactSupportEmail.ts`), **pas** via les templates Supabase Auth : variable **`RESEND_API_KEY`** (alias toléré `RESEND_KEY`) ; `CONTACT_EMAIL_FROM` / `CONTACT_SUPPORT_TO` optionnels ; **Reply-To** = e-mail du formulaire. En cas d’échec d’envoi après insert, message dédié (`emailSendFailed` / `emailNotifyUnavailable` si clé absente). Champ `email_delivered_at` mis à jour après envoi réussi.
+
+**Références design :** maquettes archivées `docs/archive/design-contact-public-form/` (anciennement `docs/design/contact/`).
+
+---
+
 ## 5. Data Model (Current)
 
 **Main entities:**
@@ -403,6 +420,8 @@ Athletes filter coaches by:
 | `conversations` | 1-to-1 coach–athlete. Includes `request_id` (source `coach_requests` row) used to determine chat write access lifecycle. Participants can update `request_id` to the latest writable request (RLS policy `conversations_update_participant`). |
 | `chat_messages` | Messages in a conversation |
 | `coach_ratings` | Athlete rating + comment for coach (1–5, comment optional; **unique** `(athlete_id, coach_id)`). **RLS :** athlète lit/écrit **sa** ligne ; coach lit **ses** notes reçues. **Affichage public (autres athlètes) :** pas de SELECT direct ; agrégats via RPC **`get_coach_rating_stats`** ; liste des avis via RPC **`get_coach_public_reviews`** (migration **063**, sans colonne `athlete_id` dans le résultat). |
+| `contact_submission_counters` | Compteur annuel pour références formulaire contact (`year` PK, `last_seq`). Utilisé par la RPC **`insert_contact_submission`** uniquement. Migration **066**. |
+| `contact_submissions` | Messages du formulaire contact public : `reference` unique (`MSA-YYYY-NNNNNN`), `locale` (`fr` \| `en`), identité, e-mail, téléphone optionnel, `reason_key`, `message`, `user_id` optionnel (`auth.users`), `email_delivered_at`. **RLS** activée, aucune policy : écriture via RPC **`insert_contact_submission`** (**SECURITY DEFINER**, **GRANT EXECUTE** à `service_role` uniquement). Migrations **066**–**067**. |
 | `athlete_connected_services` | Strava OAuth tokens |
 | `imported_activities` | Activities from Strava |
 | `workout_weekly_totals` | Precomputed weekly totals (planned) |

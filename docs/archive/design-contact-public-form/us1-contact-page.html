@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>US1 — Page Contact (dropdown motif, bouton désactivé si incomplet)</title>
+    <style>
+      :root {
+        --bg: #fafaf9;
+        --card: #ffffff;
+        --text: #0c0a09;
+        --muted: #57534e;
+        --border: #e7e5e4;
+        --primary: #627e59;
+        --primary-dark: #506648;
+        --danger: #c0564b;
+        --danger-soft: #fdf2f1;
+        --success-soft: rgba(98, 126, 89, 0.12);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.45;
+      }
+      .hint {
+        font-size: 12px;
+        color: var(--muted);
+        margin: 0 0 20px;
+      }
+      .block {
+        margin: 32px 0;
+        padding: 24px;
+        background: var(--card);
+        border: 1px dashed var(--border);
+        border-radius: 16px;
+      }
+      .block h2 {
+        margin: 0 0 8px;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--muted);
+      }
+      .mock-header {
+        height: 56px;
+        border-bottom: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.95);
+        display: flex;
+        align-items: center;
+        padding: 0 20px;
+        font-weight: 700;
+        color: var(--text);
+      }
+      .page {
+        max-width: 42rem;
+        margin: 0 auto;
+        padding: 48px 20px 64px;
+      }
+      h1 {
+        margin: 0 0 8px;
+        font-size: 28px;
+      }
+      .intro {
+        margin: 0 0 24px;
+        color: var(--muted);
+        font-size: 15px;
+      }
+      .form-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+      }
+      .row2 {
+        display: grid;
+        gap: 16px;
+      }
+      @media (min-width: 768px) {
+        .row2 {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      label {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 6px;
+        color: #44403c;
+      }
+      .optional {
+        font-weight: 400;
+        color: var(--muted);
+      }
+      input,
+      textarea,
+      select {
+        width: 100%;
+        padding: 12px 14px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        font-size: 15px;
+        background: #fff;
+      }
+      select {
+        cursor: default;
+        appearance: auto;
+      }
+      input:disabled {
+        background: #f5f5f4;
+        color: var(--muted);
+      }
+      textarea {
+        min-height: 140px;
+        resize: vertical;
+      }
+      .field {
+        margin-bottom: 18px;
+      }
+      .err {
+        font-size: 12px;
+        color: var(--danger);
+        margin-top: 4px;
+      }
+      .field.err-input input,
+      .field.err-input textarea,
+      .field.err-input select {
+        border-color: var(--danger);
+        background: var(--danger-soft);
+      }
+      .btn {
+        width: 100%;
+        padding: 14px 20px;
+        border: 0;
+        border-radius: 12px;
+        background: var(--primary);
+        color: #fff;
+        font-weight: 600;
+        font-size: 15px;
+        cursor: default;
+      }
+      .btn:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+      }
+      .btn:hover:not(:disabled) {
+        background: var(--primary-dark);
+      }
+      .btn-note {
+        font-size: 12px;
+        color: var(--muted);
+        margin: 8px 0 0;
+      }
+      .success-panel {
+        background: var(--success-soft);
+        border: 1px solid rgba(98, 126, 89, 0.35);
+        border-radius: 12px;
+        padding: 20px;
+        margin-top: 20px;
+      }
+      .success-panel strong {
+        display: block;
+        font-size: 18px;
+        margin-bottom: 8px;
+        color: var(--primary-dark);
+      }
+      .ref {
+        font-family: ui-monospace, monospace;
+        font-size: 16px;
+        letter-spacing: 0.02em;
+      }
+    </style>
+  </head>
+  <body>
+    <p class="hint">
+      Mockup non fonctionnel — US1. <strong>Motif</strong> : liste déroulante (composant <code>Dropdown</code> du design system
+      en implémentation, comportement équivalent). <strong>Envoyer</strong> : désactivé tant que le formulaire n’est pas
+      « complet » (voir État A vs B). i18n FR/EN, envoi serveur, numéro côté backend.
+    </p>
+
+    <!-- État A — incomplet : bouton désactivé -->
+    <div class="block">
+      <h2>État A — Formulaire incomplet (bouton Envoyer désactivé)</h2>
+      <p class="hint" style="margin: 0 0 16px">
+        Règle produit : désactivé si l’un des champs obligatoires est vide (après trim) : nom, prénom, e-mail, motif (pas la
+        valeur placeholder), message — ou si l’e-mail n’est pas au format valide (validation minimale côté client
+        recommandée pour éviter un envoi inutile). Téléphone facultatif, ignoré pour l’activation.
+      </p>
+      <div class="mock-header">PublicHeader (logo, auth, langue)</div>
+      <div class="page">
+        <h1>Nous contacter</h1>
+        <p class="intro">Décrivez votre demande. Nous vous répondons à l’adresse e-mail indiquée.</p>
+        <div class="form-card">
+          <div class="row2">
+            <div class="field">
+              <label for="a-nom">Nom</label>
+              <input id="a-nom" type="text" autocomplete="family-name" value="" />
+            </div>
+            <div class="field">
+              <label for="a-prenom">Prénom</label>
+              <input id="a-prenom" type="text" autocomplete="given-name" value="" />
+            </div>
+          </div>
+          <div class="field">
+            <label for="a-email">E-mail</label>
+            <input id="a-email" type="email" autocomplete="email" value="" />
+          </div>
+          <div class="field">
+            <label for="a-tel">Téléphone <span class="optional">(facultatif)</span></label>
+            <input id="a-tel" type="tel" autocomplete="tel" />
+          </div>
+          <div class="field">
+            <label for="a-motif">Motif</label>
+            <select id="a-motif" aria-label="Motif de la demande">
+              <option value="">Sélectionner un motif…</option>
+              <option value="general">Question générale / renseignement</option>
+              <option value="account_billing">Compte, abonnement ou facturation</option>
+              <option value="technical">Problème technique</option>
+              <option value="coach_athlete">Relation coach / athlète</option>
+              <option value="safety_moderation">Signalement</option>
+              <option value="privacy_rights">Données personnelles / droits</option>
+              <option value="partnership_press">Partenariat, presse, professionnel</option>
+              <option value="product_feedback">Suggestion d’amélioration produit</option>
+              <option value="other">Autre</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="a-msg">Message</label>
+            <textarea id="a-msg"></textarea>
+          </div>
+          <button type="button" class="btn" disabled>Envoyer</button>
+          <p class="btn-note">Le bouton reste grisé jusqu’à ce que tous les champs obligatoires soient valides.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- État B — complet : bouton actif -->
+    <div class="block">
+      <h2>État B — Formulaire complet (bouton activé)</h2>
+      <div class="mock-header">PublicHeader</div>
+      <div class="page">
+        <h1>Nous contacter</h1>
+        <p class="intro">Exemple : visiteur ou champs saisis manuellement.</p>
+        <div class="form-card">
+          <div class="row2">
+            <div class="field">
+              <label>Nom</label>
+              <input type="text" value="Dupont" />
+            </div>
+            <div class="field">
+              <label>Prénom</label>
+              <input type="text" value="Camille" />
+            </div>
+          </div>
+          <div class="field">
+            <label>E-mail</label>
+            <input type="email" value="camille.dupont@email.com" />
+          </div>
+          <div class="field">
+            <label>Téléphone <span class="optional">(facultatif)</span></label>
+            <input type="tel" placeholder="" />
+          </div>
+          <div class="field">
+            <label>Motif</label>
+            <select>
+              <option value="">Sélectionner un motif…</option>
+              <option value="product_feedback" selected>Suggestion d’amélioration produit</option>
+              <option value="other">Autre</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Message</label>
+            <textarea>Il serait utile de…</textarea>
+          </div>
+          <button type="button" class="btn">Envoyer</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- État B2 — connecté prérempli, encore incomplet si motif / message vides -->
+    <div class="block">
+      <h2>État B2 — Connecté prérempli mais motif non choisi → bouton désactivé</h2>
+      <div class="form-card" style="margin: 0">
+        <div class="row2">
+          <div class="field">
+            <label>Nom</label>
+            <input type="text" value="Dupont" />
+          </div>
+          <div class="field">
+            <label>Prénom</label>
+            <input type="text" value="Camille" />
+          </div>
+        </div>
+        <div class="field">
+          <label>E-mail</label>
+          <input type="email" value="camille.dupont@email.com" />
+        </div>
+        <div class="field">
+          <label>Motif</label>
+          <select>
+            <option value="" selected>Sélectionner un motif…</option>
+            <option value="general">…</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Message</label>
+          <textarea></textarea>
+        </div>
+        <button type="button" class="btn" disabled>Envoyer</button>
+      </div>
+    </div>
+
+    <!-- État C — erreurs après soumission ou validation -->
+    <div class="block">
+      <h2>État C — Erreurs (ex. e-mail invalide, motif non sélectionné après action)</h2>
+      <div class="form-card" style="margin: 0">
+        <div class="field err-input">
+          <label>E-mail</label>
+          <input type="text" value="pas-un-email" />
+          <div class="err">Veuillez saisir une adresse e-mail valide.</div>
+        </div>
+        <div class="field err-input">
+          <label>Motif</label>
+          <select>
+            <option value="" selected>Sélectionner un motif…</option>
+          </select>
+          <div class="err">Veuillez sélectionner un motif.</div>
+        </div>
+        <div class="field">
+          <label>Message</label>
+          <textarea>Un texte</textarea>
+        </div>
+        <button type="button" class="btn" disabled>Envoyer</button>
+        <p class="btn-note">Tant que l’e-mail est invalide ou le motif absent, le bouton reste désactivé (cohérent avec la règle « complet »).</p>
+      </div>
+    </div>
+
+    <!-- État D — envoi en cours -->
+    <div class="block">
+      <h2>État D — Envoi en cours (bouton désactivé, libellé « Envoi en cours… »)</h2>
+      <button type="button" class="btn" disabled>Envoi en cours…</button>
+    </div>
+
+    <!-- État E — succès -->
+    <div class="block">
+      <h2>État E — Succès (numéro affiché)</h2>
+      <div class="mock-header">PublicHeader</div>
+      <div class="page">
+        <h1>Nous contacter</h1>
+        <div class="success-panel">
+          <strong>Demande enregistrée</strong>
+          <p style="margin: 0 0 8px">
+            Votre message a bien été envoyé. Conservez ce numéro pour vos échanges avec le support :
+          </p>
+          <p class="ref">MSA-2026-000042</p>
+          <p style="margin: 12px 0 0; font-size: 14px; color: var(--muted)">
+            Nous vous répondrons à l’adresse e-mail indiquée dans le formulaire.
+          </p>
+        </div>
+        <p class="intro" style="margin-top: 24px">
+          (Option produit : lien « Envoyer un autre message » — à trancher en implémentation.)
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

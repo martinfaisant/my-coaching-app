@@ -70,6 +70,13 @@
     "setNewPasswordButton": "Définir le nouveau mot de passe",
     "emailValidatedTitle": "Email validé",
     "emailValidatedMessage": "Vous pouvez vous connecter.",
+    "legalConsent": {
+      "aria": "Acceptation des conditions d’utilisation et de la politique de confidentialité",
+      "prefix": "J’accepte les",
+      "terms": "Conditions d’utilisation",
+      "and": "et la",
+      "privacy": "Politique de confidentialité"
+    },
     "errors": {
       "notAuthenticated": "Non connecté.",
       "accessDenied": "Accès refusé.",
@@ -95,6 +102,8 @@
       "signupGenericError": "Une erreur s'est produite lors de la création de votre compte.",
       "accountExistsLoginMessage": "Un compte existe déjà avec cet email. Connectez-vous avec votre mot de passe.",
       "emailNotConfirmed": "Votre adresse email n'a pas encore été confirmée. Vous devriez avoir reçu un email de confirmation ; consultez votre boîte mail (et les spams). Si vous ne l'avez pas reçu, vous pouvez en redemander un en recommençant le processus de création de compte (réinscrivez-vous avec la même adresse)."
+      ,
+      "termsRequired": "Veuillez accepter les conditions pour créer un compte."
     }
   },
   "navigation": {
@@ -115,7 +124,8 @@
     "openMenu": "Ouvrir le menu",
     "collapseMenu": "Réduire le menu",
     "designSystem": "Design System",
-    "members": "Gestion des membres"
+    "members": "Gestion des membres",
+    "contactUs": "Contactez-nous"
   },
   "athleteStats": {
     "title": "Statistiques",
@@ -986,7 +996,55 @@
     "profileTitle": "Mon profil",
     "devicesTitle": "Appareils connectés",
     "termsTitle": "Conditions d’utilisation",
-    "privacyTitle": "Politique de confidentialité"
+    "privacyTitle": "Politique de confidentialité",
+    "contactTitle": "Contact",
+    "contactDescription": "Contactez l’équipe My Sport Ally : formulaire de demande et support."
+  },
+  "contact": {
+    "title": "Nous contacter",
+    "intro": "Décrivez votre demande. Nous vous répondrons à l’adresse e-mail indiquée.",
+    "introLoggedIn": "Vos informations de profil sont préremplies ; vous pouvez les modifier si besoin.",
+    "labels": {
+      "firstName": "Prénom",
+      "lastName": "Nom",
+      "email": "E-mail",
+      "phone": "Téléphone (facultatif)",
+      "reason": "Motif",
+      "message": "Message"
+    },
+    "reasonPlaceholder": "Sélectionner un motif…",
+    "reasons": {
+      "general": "Question générale / renseignement",
+      "account_billing": "Compte, abonnement ou facturation",
+      "technical": "Problème technique",
+      "coach_athlete": "Relation coach / athlète",
+      "safety_moderation": "Signalement",
+      "privacy_rights": "Données personnelles / droits",
+      "partnership_press": "Partenariat, presse, professionnel",
+      "product_feedback": "Suggestion d’amélioration produit",
+      "other": "Autre"
+    },
+    "submit": "Envoyer",
+    "submitting": "Envoi en cours…",
+    "privacyConsentNotice": "En soumettant ce formulaire, vous consentez à ce que My Sport Ally utilise vos renseignements pour répondre à votre demande. Pour plus de détails, consultez notre <privacy>Politique de confidentialité</privacy>.",
+    "success": {
+      "title": "Demande enregistrée",
+      "body": "Votre message a bien été envoyé. Conservez ce numéro pour vos échanges avec le support :",
+      "replyHint": "Nous vous répondrons à l’adresse e-mail indiquée dans le formulaire."
+    },
+    "errors": {
+      "firstNameInvalid": "Veuillez saisir un prénom valide.",
+      "firstNameTooLong": "Le prénom ne peut pas dépasser {max} caractères.",
+      "lastNameInvalid": "Veuillez saisir un nom valide.",
+      "lastNameTooLong": "Le nom ne peut pas dépasser {max} caractères.",
+      "emailInvalid": "Veuillez saisir une adresse e-mail valide.",
+      "reasonInvalid": "Veuillez sélectionner un motif.",
+      "messageInvalid": "Veuillez saisir un message.",
+      "messageTooLong": "Le message ne peut pas dépasser {max} caractères.",
+      "submitFailed": "L’envoi a échoué. Réessayez dans quelques instants.",
+      "emailNotifyUnavailable": "Votre demande a été enregistrée, mais l’alerte e-mail vers notre équipe n’est pas disponible (configuration serveur). Réessayez plus tard ou contactez le support par un autre moyen.",
+      "emailSendFailed": "Votre demande a été enregistrée mais l’e-mail n’a pas pu être envoyé. Réessayez plus tard ou contactez le support par un autre moyen."
+    }
   },
   "landing": {
     "hero": {
@@ -1076,7 +1134,8 @@
     "footer": {
       "copyright": "Tous droits réservés.",
       "privacyLink": "Politique de confidentialité",
-      "termsLink": "Conditions d’utilisation"
+      "termsLink": "Conditions d’utilisation",
+      "contactLink": "Contact"
     }
   },
   "legal": {
@@ -1149,6 +1208,7 @@
     },
     "privacy": {
       "title": "Politique de confidentialité",
+      "lastUpdatedFull": "Dernière mise à jour : 7 mai 2026",
       "sections": {
         "commitment": {
           "title": "1. NOTRE ENGAGEMENT",
@@ -1159,25 +1219,29 @@
           "li1": "Données d’identification : nom, prénom, adresse courriel.",
           "li2": "Données d’entraînement : profil sportif, objectifs, séances planifiées et interactions entre Coach et Athlète (ex. messagerie).",
           "li3": "Données d’activité via services tiers (ex. Strava) : avec votre consentement explicite, nous pouvons importer des données d’activité (ex. distance, durée, GPS, fréquence cardiaque si disponible). Ces données peuvent être considérées comme sensibles.",
-          "li4": "Données techniques : informations transmises par votre appareil et votre navigateur lors de l’accès au site (ex. adresse IP, type de navigateur, dates/heure de requêtes). Elles peuvent être traitées via nos fournisseurs techniques (hébergement, authentification) pour des besoins de sécurité, de fonctionnement et de diagnostic, notamment pour maintenir votre session."
+          "li4": "Données techniques : informations transmises par votre appareil et votre navigateur lors de l’accès au site (ex. adresse IP, type de navigateur, dates/heure de requêtes). Elles peuvent être traitées via nos fournisseurs techniques (hébergement, authentification) pour des besoins de sécurité, de fonctionnement et de diagnostic, notamment pour maintenir votre session.",
+          "li5": "Formulaire Contact (page dédiée, avec ou sans compte) : prénom, nom, adresse courriel, numéro de téléphone le cas échéant, motif de la demande, contenu du message ; attribution d’une référence de suivi ; si vous êtes connecté, un identifiant de compte peut être associé à la demande."
         },
         "useOfData": {
           "title": "3. UTILISATION DES DONNÉES",
           "li1": "Fournir et maintenir le service Mysportally.",
           "li2": "Permettre aux Coachs de suivre les progrès des Athlètes.",
           "li3": "Améliorer l'expérience utilisateur et les fonctionnalités techniques.",
-          "li4": "Communiquer avec vous concernant votre compte."
+          "li4": "Communiquer avec vous concernant votre compte.",
+          "li5": "Traiter et répondre aux demandes adressées au support via le formulaire Contact, y compris par courriel, et conserver ces demandes le temps nécessaire à leur traitement et au suivi du service client."
         },
         "consent": {
           "title": "4. CONSENTEMENT ET DONNÉES SENSIBLES",
-          "p1": "En connectant un service tiers (ex. Strava), vous donnez votre consentement exprès au traitement de vos données d’activité. Vous pouvez retirer ce consentement à tout moment en déconnectant le service dans vos paramètres, ce qui entraînera l'arrêt de l'importation de nouvelles données."
+          "p1": "En connectant un service tiers (ex. Strava), vous donnez votre consentement exprès au traitement de vos données d’activité. Vous pouvez retirer ce consentement à tout moment en déconnectant le service dans vos paramètres, ce qui entraînera l'arrêt de l'importation de nouvelles données.",
+          "p2": "Pour le formulaire Contact, la soumission vaut consentement au traitement des renseignements fournis aux fins de réponse à votre demande, dans les limites décrites aux sections 2 et 3."
         },
         "sharing": {
           "title": "5. PARTAGE ET DIVULGATION",
           "p1": "Nous ne vendons jamais vos données personnelles. Le partage est limité à :",
           "li1": "Votre Coach : pour l'exécution du service.",
           "li2": "Fournisseurs techniques nécessaires au fonctionnement du site (hébergement, authentification, base de données).",
-          "li3": "Obligations légales : si la loi l'exige."
+          "li3": "Obligations légales : si la loi l'exige.",
+          "li4": "Prestataires d’envoi de courriels transactionnels, lorsque nécessaire pour transmettre une demande du formulaire Contact à notre équipe, dans la limite du traitement de cette demande."
         },
         "retention": {
           "title": "6. CONSERVATION ET TRANSFERT HORS QUÉBEC",

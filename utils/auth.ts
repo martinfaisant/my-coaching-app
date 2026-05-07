@@ -56,6 +56,14 @@ const getCachedUserAndProfile = cache(async (): Promise<CurrentUserWithProfile |
   }
 })
 
+/**
+ * Utilisateur connecté + profil, ou null (sans redirection).
+ * Pour pages publiques (ex. contact) qui préremplissent le formulaire.
+ */
+export async function getOptionalUserWithProfile(): Promise<CurrentUserWithProfile | null> {
+  return getCachedUserAndProfile()
+}
+
 async function getLocaleFromAcceptLanguageHeader(): Promise<'en' | 'fr'> {
   const acceptLanguage = (await headers()).get('accept-language') ?? ''
   return acceptLanguage.toLowerCase().includes('en') ? 'en' : 'fr'

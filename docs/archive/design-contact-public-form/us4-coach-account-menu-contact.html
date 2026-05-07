@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>US4 — Coach : menu compte (profil, contact, déconnexion)</title>
+    <style>
+      :root {
+        --border: #e7e5e4;
+        --primary: #627e59;
+        --text: #292524;
+        --muted: #78716c;
+      }
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, sans-serif;
+        background: #f5f5f4;
+        padding: 20px;
+      }
+      .hint {
+        font-size: 12px;
+        color: var(--muted);
+        max-width: 720px;
+        margin-bottom: 24px;
+      }
+      h2 {
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--muted);
+        margin: 24px 0 12px;
+      }
+      .bar {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 12px;
+        max-width: 900px;
+      }
+      .nav-placeholder {
+        flex: 1;
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .trigger {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border: 1px solid #f5f5f4;
+        border-radius: 12px;
+        background: #fafaf9;
+        font-weight: 700;
+        font-size: 13px;
+        cursor: default;
+      }
+      .avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 999px;
+        background: var(--primary);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+      }
+      .menu {
+        margin-top: 8px;
+        max-width: 18rem;
+        margin-left: auto;
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+      }
+      .item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 14px;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text);
+      }
+      .item:hover {
+        background: #fafaf9;
+      }
+      .item.active {
+        background: var(--primary);
+        color: #fff;
+      }
+      .item.contact {
+        color: var(--primary);
+      }
+      .item.contact:hover {
+        background: rgba(98, 126, 89, 0.08);
+      }
+      hr {
+        border: 0;
+        border-top: 1px solid var(--border);
+        margin: 0;
+      }
+      .logout {
+        color: #c0564b;
+      }
+      .drawer {
+        max-width: 360px;
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        overflow: hidden;
+        margin-top: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <p class="hint">
+      US4 — Aujourd’hui le coach a un lien profil direct dans la barre. Cible : même pattern que l’athlète — trigger
+      avatar + nom + chevron, panneau avec <strong>Mes informations</strong> (ou libellé équivalent profil),
+      <strong>Contactez-nous</strong>, puis <strong>Déconnexion</strong>. La zone nav centrale (Mes athlètes, offres,
+      souscriptions) ne change pas. État actif du trigger si route profil ou section « compte » (à définir avec l’architecte).
+    </p>
+
+    <h2>Desktop — barre + menu coach</h2>
+    <div class="bar">
+      <span class="nav-placeholder">[ Mes athlètes · Mon offre · Souscriptions ]</span>
+      <div>
+        <div class="trigger"><span class="avatar">ML</span> Marie L. ▾</div>
+        <div class="menu">
+          <div class="item">Mes informations</div>
+          <div class="item contact">✉ Contactez-nous</div>
+          <hr />
+          <div class="item logout">Se déconnecter</div>
+        </div>
+      </div>
+    </div>
+
+    <h2>Desktop — entrée profil active (exemple)</h2>
+    <div class="menu" style="margin-top: 16px; max-width: 18rem">
+      <div class="item active">Mes informations</div>
+      <div class="item contact">Contactez-nous</div>
+      <hr />
+      <div class="item logout">Se déconnecter</div>
+    </div>
+
+    <h2>Mobile — extrait drawer coach (fin de liste)</h2>
+    <div class="drawer">
+      <div class="item">… (Mes athlètes, offres, souscriptions)</div>
+      <hr />
+      <div class="item">Mes informations</div>
+      <div class="item contact">Contactez-nous</div>
+      <hr />
+      <div class="item logout">Se déconnecter</div>
+    </div>
+  </body>
+</html>

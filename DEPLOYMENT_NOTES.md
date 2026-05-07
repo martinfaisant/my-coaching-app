@@ -4,6 +4,13 @@
 
 ---
 
+## Formulaire contact (production)
+
+- **Migrations Supabase :** appliquer **`066_contact_submissions.sql`** puis **`067_contact_submissions_rpc_fix.sql`** (ordre des fichiers dans `supabase/migrations/`).
+- **Variables d’environnement (Vercel / hôte) :** `SUPABASE_SECRET_KEY` (ou `SUPABASE_SERVICE_ROLE_KEY`), **`RESEND_API_KEY`** (envoi e-mail support depuis l’app — distinct de la config SMTP Supabase Auth) ; optionnellement `CONTACT_EMAIL_FROM`, `CONTACT_SUPPORT_TO`. Domaine d’expéditeur **From** doit être **vérifié dans Resend** (voir `README.md` section Resend).
+
+---
+
 ## Nouveaux sports (nordic ski, backcountry ski, patin à glace)
 
 ## Commit créé

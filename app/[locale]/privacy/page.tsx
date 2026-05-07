@@ -31,7 +31,7 @@ export default async function PrivacyPage({ params }: PrivacyPageProps) {
             {t('privacy.title')}
           </h1>
           <p className="mt-2 text-sm text-stone-600">
-            {t('common.lastUpdatedFull')}
+            {t('privacy.lastUpdatedFull')}
           </p>
         </header>
 
@@ -52,6 +52,7 @@ export default async function PrivacyPage({ params }: PrivacyPageProps) {
               <li>{t('privacy.sections.dataCollected.li2')}</li>
               <li>{t('privacy.sections.dataCollected.li3')}</li>
               <li>{t('privacy.sections.dataCollected.li4')}</li>
+              <li>{t('privacy.sections.dataCollected.li5')}</li>
             </ul>
           </section>
 
@@ -64,6 +65,7 @@ export default async function PrivacyPage({ params }: PrivacyPageProps) {
               <li>{t('privacy.sections.useOfData.li2')}</li>
               <li>{t('privacy.sections.useOfData.li3')}</li>
               <li>{t('privacy.sections.useOfData.li4')}</li>
+              <li>{t('privacy.sections.useOfData.li5')}</li>
             </ul>
           </section>
 
@@ -72,6 +74,7 @@ export default async function PrivacyPage({ params }: PrivacyPageProps) {
               {t('privacy.sections.consent.title')}
             </h2>
             <p className="leading-relaxed">{t('privacy.sections.consent.p1')}</p>
+            <p className="leading-relaxed">{t('privacy.sections.consent.p2')}</p>
           </section>
 
           <section className="space-y-3">
@@ -83,6 +86,7 @@ export default async function PrivacyPage({ params }: PrivacyPageProps) {
               <li>{t('privacy.sections.sharing.li1')}</li>
               <li>{t('privacy.sections.sharing.li2')}</li>
               <li>{t('privacy.sections.sharing.li3')}</li>
+              <li>{t('privacy.sections.sharing.li4')}</li>
             </ul>
           </section>
 

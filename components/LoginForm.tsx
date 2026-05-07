@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useActionState, useEffect, useRef } from 'react'
-import { useTranslations } from 'next-intl'
+import Link from 'next/link'
+import { useTranslations, useLocale } from 'next-intl'
 import {
   login,
   signup,
@@ -27,6 +28,7 @@ type LoginFormProps = {
 export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
   const t = useTranslations('auth')
   const tCommon = useTranslations('common')
+  const locale = useLocale()
   const [loginState, loginAction] = useActionState<LoginState, FormData>(login, {})
   const [signupState, signupAction] = useActionState<SignupState, FormData>(signup, {})
   const [signupRole, setSignupRole] = useState<SignupRole>('athlete')
@@ -34,6 +36,11 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
   const [prefilledEmail, setPrefilledEmail] = useState<string>('')
   const emailInputRef = useRef<HTMLInputElement>(null)
   const tErrors = useTranslations('auth.errors')
+  const [termsAccepted, setTermsAccepted] = useState(false)
+  const [termsError, setTermsError] = useState<string | null>(null)
+  const serverTermsError =
+    signupState?.error === tErrors('termsRequired') ? signupState.error : null
+  const displayedTermsError = termsError ?? serverTermsError
 
   // Pré-remplir l'email quand on bascule vers le mode login
   useEffect(() => {
@@ -41,6 +48,9 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
       emailInputRef.current.value = prefilledEmail
     }
   }, [mode, prefilledEmail])
+
+  const termsHref = locale === 'en' ? '/en/terms' : '/terms'
+  const privacyHref = locale === 'en' ? '/en/privacy' : '/privacy'
 
   if (mode === 'login' && showForgotPassword) {
     return (
@@ -238,7 +248,15 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
         {t('chooseProfile')}
       </p>
 
-      <form action={signupAction} className="space-y-5">
+      <form
+        action={signupAction}
+        className="space-y-5"
+        onSubmit={(e) => {
+          if (termsAccepted) return
+          e.preventDefault()
+          setTermsError(tErrors('termsRequired'))
+        }}
+      >
         <div>
           <span className="block text-sm font-medium text-stone-700 mb-3">
             {t('signupAs')}
@@ -302,7 +320,57 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
           minLength={6}
           placeholder={t('passwordPlaceholder')}
         />
-        {signupState?.error && (
+
+        <input type="hidden" name="termsAccepted" value={termsAccepted ? 'true' : 'false'} />
+        <div
+          className={`rounded-xl border px-4 py-3 ${
+            displayedTermsError
+              ? 'border-palette-danger bg-palette-danger-light/40'
+              : 'border-stone-200 bg-white'
+          }`}
+          aria-label={t('legalConsent.aria')}
+        >
+          <div className="flex items-start gap-3">
+            <input
+              id="modal-termsAccepted"
+              type="checkbox"
+              checked={termsAccepted}
+              onChange={(e) => {
+                setTermsAccepted(e.target.checked)
+                if (e.target.checked) setTermsError(null)
+              }}
+              className="mt-1 h-4 w-4 rounded border-stone-300 text-palette-forest-dark focus:ring-palette-forest-dark"
+              aria-describedby={displayedTermsError ? 'modal-termsAccepted-error' : undefined}
+            />
+            <label htmlFor="modal-termsAccepted" className="text-sm text-stone-600 leading-relaxed">
+              {t('legalConsent.prefix')}{' '}
+              <Link
+                href={termsHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline underline-offset-4 text-palette-forest-dark hover:text-palette-olive font-medium"
+              >
+                {t('legalConsent.terms')}
+              </Link>{' '}
+              {t('legalConsent.and')}{' '}
+              <Link
+                href={privacyHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline underline-offset-4 text-palette-forest-dark hover:text-palette-olive font-medium"
+              >
+                {t('legalConsent.privacy')}
+              </Link>.
+            </label>
+          </div>
+          {displayedTermsError && (
+            <p id="modal-termsAccepted-error" className="mt-2 text-sm text-palette-danger" role="alert">
+              {displayedTermsError}
+            </p>
+          )}
+        </div>
+
+        {signupState?.error && !serverTermsError && (
           <p className={FORM_ERROR_TEXT_CLASSES} role="alert">
             {signupState.error}
             {signupState.userExists && signupState.existingEmail && onModeChange && (

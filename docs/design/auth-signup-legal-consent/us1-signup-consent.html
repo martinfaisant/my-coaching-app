@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>US1 — Inscription : consentement CGU + confidentialité (nouvel onglet)</title>
+    <style>
+      :root {
+        --bg: #f5f5f4;
+        --card: #ffffff;
+        --text: #0c0a09;
+        --muted: #78716c;
+        --border: #e7e5e4;
+        --primary: #1f3a2a;
+        --primary-soft: rgba(31, 58, 42, 0.08);
+        --danger: #b91c1c;
+        --danger-soft: rgba(185, 28, 28, 0.08);
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji",
+          "Segoe UI Emoji";
+        background: linear-gradient(135deg, #fafaf9, #e7e5e4);
+        color: var(--text);
+      }
+      .overlay {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+      }
+      .modal {
+        width: 100%;
+        max-width: 480px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+        overflow: hidden;
+      }
+      .modalHeader {
+        padding: 18px 20px;
+        background: rgba(250, 250, 249, 0.7);
+        border-bottom: 1px solid var(--border);
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: start;
+        gap: 12px;
+      }
+      .title {
+        margin: 0;
+        font-size: 22px;
+        font-weight: 700;
+        text-align: center;
+      }
+      .closeBtn {
+        justify-self: end;
+        border: 0;
+        background: transparent;
+        padding: 6px 8px;
+        color: var(--muted);
+        font-size: 14px;
+        cursor: default;
+      }
+      .subtitle {
+        margin: 0 0 16px;
+        font-size: 13px;
+        color: var(--muted);
+        text-align: center;
+      }
+      .content { padding: 18px 20px 20px; }
+      .field { margin: 0 0 12px; }
+      .label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #44403c; }
+      .input {
+        width: 100%;
+        padding: 12px 12px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        font-size: 14px;
+      }
+      .roles {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+      .roleCard {
+        border: 2px solid var(--border);
+        border-radius: 14px;
+        padding: 12px;
+        background: #fff;
+      }
+      .roleCard.selected {
+        border-color: var(--primary);
+        background: var(--primary-soft);
+      }
+      .roleTitle { font-weight: 700; margin: 0 0 2px; }
+      .roleDesc { margin: 0; font-size: 12px; color: var(--muted); }
+      .consentRow {
+        display: grid;
+        grid-template-columns: 18px 1fr;
+        gap: 10px;
+        align-items: start;
+        padding: 10px 12px;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        background: #fff;
+      }
+      .consentRow.error {
+        border-color: var(--danger);
+        background: var(--danger-soft);
+      }
+      .checkbox {
+        width: 18px;
+        height: 18px;
+        margin-top: 2px;
+      }
+      .consentText {
+        font-size: 13px;
+        color: #57534e;
+        line-height: 1.35;
+      }
+      .linkLike {
+        color: var(--primary);
+        text-decoration: underline;
+        text-underline-offset: 3px;
+        cursor: default;
+        font-weight: 600;
+      }
+      .newTabHint {
+        display: inline-block;
+        margin-left: 6px;
+        font-size: 12px;
+        color: var(--muted);
+        font-weight: 600;
+      }
+      .helperError {
+        margin: 8px 0 0;
+        font-size: 12px;
+        color: var(--danger);
+        font-weight: 600;
+      }
+      .primaryBtn {
+        width: 100%;
+        padding: 12px 14px;
+        border-radius: 14px;
+        border: 0;
+        background: var(--primary);
+        color: #fff;
+        font-weight: 700;
+        font-size: 14px;
+        cursor: default;
+        margin-top: 12px;
+      }
+      .note {
+        margin: 14px 0 0;
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .variants {
+        max-width: 980px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 18px;
+      }
+      @media (min-width: 980px) {
+        .variants { grid-template-columns: 1fr 1fr; align-items: start; }
+      }
+      .variantTitle {
+        margin: 0 0 8px;
+        font-size: 13px;
+        color: #44403c;
+        font-weight: 700;
+      }
+      .frame { padding: 0; }
+    </style>
+  </head>
+  <body>
+    <div class="overlay">
+      <div class="variants">
+        <div class="frame">
+          <p class="variantTitle">État nominal (checkbox présente, non cochée)</p>
+          <div class="modal" role="dialog" aria-modal="true" aria-labelledby="t1">
+            <div class="modalHeader">
+              <div></div>
+              <h1 class="title" id="t1">Créer un compte</h1>
+              <button class="closeBtn" aria-label="Fermer">✕</button>
+            </div>
+            <div class="content">
+              <p class="subtitle">Choisissez votre profil puis renseignez vos informations</p>
+              <div class="roles" aria-label="Choix profil">
+                <div class="roleCard selected">
+                  <p class="roleTitle">Athlète</p>
+                  <p class="roleDesc">Suivi d'entraînement</p>
+                </div>
+                <div class="roleCard">
+                  <p class="roleTitle">Coach</p>
+                  <p class="roleDesc">Accompagner des athlètes</p>
+                </div>
+              </div>
+              <div class="field">
+                <label class="label">Email</label>
+                <input class="input" value="vous@exemple.com" />
+              </div>
+              <div class="field">
+                <label class="label">Mot de passe (min. 6 caractères)</label>
+                <input class="input" value="••••••••" />
+              </div>
+
+              <div class="consentRow" aria-label="Consentement CGU et confidentialité">
+                <input class="checkbox" type="checkbox" aria-label="J’accepte les CGU et la politique de confidentialité" />
+                <div class="consentText">
+                  J’accepte les
+                  <span class="linkLike">Conditions d’utilisation</span><span class="newTabHint">(nouvel onglet)</span>
+                  et la
+                  <span class="linkLike">Politique de confidentialité</span><span class="newTabHint">(nouvel onglet)</span>.
+                </div>
+              </div>
+
+              <button class="primaryBtn">Créer un compte</button>
+              <p class="note">Comportement attendu: chaque lien ouvre la page correspondante dans un nouvel onglet.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="frame">
+          <p class="variantTitle">État erreur (soumission sans checkbox)</p>
+          <div class="modal" role="dialog" aria-modal="true" aria-labelledby="t2">
+            <div class="modalHeader">
+              <div></div>
+              <h1 class="title" id="t2">Créer un compte</h1>
+              <button class="closeBtn" aria-label="Fermer">✕</button>
+            </div>
+            <div class="content">
+              <p class="subtitle">Choisissez votre profil puis renseignez vos informations</p>
+              <div class="roles" aria-label="Choix profil">
+                <div class="roleCard selected">
+                  <p class="roleTitle">Athlète</p>
+                  <p class="roleDesc">Suivi d'entraînement</p>
+                </div>
+                <div class="roleCard">
+                  <p class="roleTitle">Coach</p>
+                  <p class="roleDesc">Accompagner des athlètes</p>
+                </div>
+              </div>
+              <div class="field">
+                <label class="label">Email</label>
+                <input class="input" value="vous@exemple.com" />
+              </div>
+              <div class="field">
+                <label class="label">Mot de passe (min. 6 caractères)</label>
+                <input class="input" value="••••••••" />
+              </div>
+
+              <div class="consentRow error" aria-label="Consentement requis">
+                <input class="checkbox" type="checkbox" aria-label="J’accepte les CGU et la politique de confidentialité" />
+                <div class="consentText">
+                  J’accepte les
+                  <span class="linkLike">Conditions d’utilisation</span><span class="newTabHint">(nouvel onglet)</span>
+                  et la
+                  <span class="linkLike">Politique de confidentialité</span><span class="newTabHint">(nouvel onglet)</span>.
+                  <p class="helperError" role="alert">Veuillez accepter les conditions pour créer un compte.</p>
+                </div>
+              </div>
+
+              <button class="primaryBtn">Créer un compte</button>
+              <p class="note">Comportement attendu: focus/scroll au bloc consentement + erreur visible.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+

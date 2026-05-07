@@ -7,17 +7,15 @@ import { AvatarImage } from '@/components/AvatarImage'
 import { LogoutButton } from '@/components/LogoutButton'
 import { getNavIcon } from '@/components/DashboardNavIcons'
 import {
-  getAthleteAccountNavItems,
   getAthleteProfileNavItem,
   getContactPublicNavItem,
-  isAthleteAccountMenuTriggerActive,
+  isCoachAccountMenuTriggerActive,
   isNavItemActive,
 } from '@/lib/dashboardNavConfig'
-import type { ProfileNavInput } from '@/lib/dashboardNavConfig'
 import type { Profile } from '@/types/database'
 
-type AthleteAccountMenuProps = {
-  profile: ProfileNavInput & Pick<Profile, 'avatar_url'>
+type CoachAccountMenuProps = {
+  profile: Pick<Profile, 'avatar_url'>
   displayName: string
   profileLabel: string
   initials: string
@@ -29,30 +27,41 @@ const LINK_ACTIVE =
   'bg-palette-forest-dark text-white shadow-lg shadow-palette-forest-dark/20'
 const LINK_INACTIVE = 'text-stone-600 hover:bg-stone-50 hover:text-palette-forest-dark'
 
-export function AthleteAccountMenu(props: AthleteAccountMenuProps) {
+export function CoachAccountMenu({
+  profile,
+  displayName,
+  profileLabel,
+  initials,
+}: CoachAccountMenuProps) {
   const pathname = usePathname()
-  return <AthleteAccountMenuInner key={pathname} pathname={pathname} {...props} />
+  return (
+    <CoachAccountMenuInner
+      key={pathname}
+      pathname={pathname}
+      profile={profile}
+      displayName={displayName}
+      profileLabel={profileLabel}
+      initials={initials}
+    />
+  )
 }
 
-type AthleteAccountMenuInnerProps = AthleteAccountMenuProps & {
-  pathname: string
-}
+type CoachAccountMenuInnerProps = CoachAccountMenuProps & { pathname: string }
 
-function AthleteAccountMenuInner({
+function CoachAccountMenuInner({
   profile,
   displayName,
   profileLabel,
   initials,
   pathname,
-}: AthleteAccountMenuInnerProps) {
+}: CoachAccountMenuInnerProps) {
   const t = useTranslations('navigation')
   const menuId = useId()
   const [open, setOpen] = useState(false)
   const wrapRef = useRef<HTMLDivElement>(null)
-  const accountItems = getAthleteAccountNavItems(profile)
-  const contactItem = getContactPublicNavItem()
   const profileItem = getAthleteProfileNavItem()
-  const triggerActive = isAthleteAccountMenuTriggerActive(pathname, profile)
+  const contactItem = getContactPublicNavItem()
+  const triggerActive = isCoachAccountMenuTriggerActive(pathname)
 
   useEffect(() => {
     if (!open) return
@@ -115,25 +124,17 @@ function AthleteAccountMenuInner({
           className="absolute right-0 top-full z-40 mt-1 min-w-[16rem] max-w-[min(18rem,calc(100vw-2rem))] rounded-xl border border-stone-200 bg-white py-1 shadow-lg"
         >
           <div className="py-1" role="none">
-            {accountItems.map((item) => {
-              const active = isNavItemActive(pathname, item)
-              const icon = getNavIcon(item)
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  role="menuitem"
-                  className={`${LINK_ROW} ${active ? LINK_ACTIVE : LINK_INACTIVE}`}
-                  onClick={() => setOpen(false)}
-                >
-                  {icon}
-                  <span>{t(item.i18nKey)}</span>
-                </Link>
-              )
-            })}
-          </div>
-          <hr className="border-stone-200" role="separator" />
-          <div className="py-1" role="none">
+            <Link
+              href={profileItem.href}
+              role="menuitem"
+              className={`${LINK_ROW} ${
+                isNavItemActive(pathname, profileItem) ? LINK_ACTIVE : LINK_INACTIVE
+              }`}
+              onClick={() => setOpen(false)}
+            >
+              {getNavIcon(profileItem)}
+              <span>{t(profileItem.i18nKey)}</span>
+            </Link>
             <Link
               href={contactItem.href}
               role="menuitem"
@@ -147,21 +148,8 @@ function AthleteAccountMenuInner({
             </Link>
           </div>
           <hr className="border-stone-200" role="separator" />
-          <div className="py-1" role="none">
-            <Link
-              href={profileItem.href}
-              role="menuitem"
-              className={`${LINK_ROW} ${
-                isNavItemActive(pathname, profileItem) ? LINK_ACTIVE : LINK_INACTIVE
-              }`}
-              onClick={() => setOpen(false)}
-            >
-              {getNavIcon(profileItem)}
-              <span>{t(profileItem.i18nKey)}</span>
-            </Link>
-            <div className="px-2 pb-2 pt-1" role="none">
-              <LogoutButton className="w-full justify-start gap-3 rounded-xl font-medium !py-3 hover:bg-palette-danger-light" />
-            </div>
+          <div className="px-2 pb-2 pt-1" role="none">
+            <LogoutButton className="w-full justify-start gap-3 rounded-xl font-medium !py-3 hover:bg-palette-danger-light" />
           </div>
         </div>
       ) : null}

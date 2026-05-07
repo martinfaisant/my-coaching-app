@@ -70,6 +70,13 @@
     "setNewPasswordButton": "Set new password",
     "emailValidatedTitle": "Email verified",
     "emailValidatedMessage": "You can now log in.",
+    "legalConsent": {
+      "aria": "Acceptance of the terms of use and the privacy policy",
+      "prefix": "I accept the",
+      "terms": "Terms of Use",
+      "and": "and the",
+      "privacy": "Privacy Policy"
+    },
     "errors": {
       "notAuthenticated": "Not authenticated.",
       "accessDenied": "Access denied.",
@@ -94,7 +101,8 @@
       "emailNotConfirmed": "Your email address has not been confirmed yet. You should have received a confirmation email—please check your inbox (and spam folder). If you didn't receive it, you can request a new one by going through the sign-up process again (sign up again with the same email address).",
       "emailRequiredOnly": "Email is required.",
       "sessionExpiredReset": "Session expired. Please start the reset process again.",
-      "passwordUpdatedSuccess": "Password updated successfully. You will be connected automatically."
+      "passwordUpdatedSuccess": "Password updated successfully. You will be connected automatically.",
+      "termsRequired": "Please accept the terms to create an account."
     }
   },
   "navigation": {
@@ -115,7 +123,8 @@
     "openMenu": "Open menu",
     "collapseMenu": "Collapse menu",
     "designSystem": "Design System",
-    "members": "Member management"
+    "members": "Member management",
+    "contactUs": "Contact us"
   },
   "athleteStats": {
     "title": "Statistics",
@@ -862,7 +871,55 @@
     "profileTitle": "My profile",
     "devicesTitle": "Connected devices",
     "termsTitle": "Terms of Use",
-    "privacyTitle": "Privacy Policy"
+    "privacyTitle": "Privacy Policy",
+    "contactTitle": "Contact",
+    "contactDescription": "Contact the My Sport Ally team: support request form."
+  },
+  "contact": {
+    "title": "Contact us",
+    "intro": "Describe your request. We will reply to the email address you provide.",
+    "introLoggedIn": "Your profile details are pre-filled; you can edit them if needed.",
+    "labels": {
+      "firstName": "First name",
+      "lastName": "Last name",
+      "email": "Email",
+      "phone": "Phone (optional)",
+      "reason": "Reason",
+      "message": "Message"
+    },
+    "reasonPlaceholder": "Select a reason…",
+    "reasons": {
+      "general": "General question / information",
+      "account_billing": "Account, subscription or billing",
+      "technical": "Technical issue",
+      "coach_athlete": "Coach / athlete relationship",
+      "safety_moderation": "Report content or behaviour",
+      "privacy_rights": "Personal data / rights",
+      "partnership_press": "Partnership, press, business",
+      "product_feedback": "Product improvement suggestion",
+      "other": "Other"
+    },
+    "submit": "Send",
+    "submitting": "Sending…",
+    "privacyConsentNotice": "By submitting this form, you consent to My Sport Ally using your information to respond to your request. For more details, see our <privacy>Privacy Policy</privacy>.",
+    "success": {
+      "title": "Request recorded",
+      "body": "Your message has been sent. Keep this reference for any follow-up with support:",
+      "replyHint": "We will reply to the email address you entered in the form."
+    },
+    "errors": {
+      "firstNameInvalid": "Please enter a valid first name.",
+      "firstNameTooLong": "First name cannot exceed {max} characters.",
+      "lastNameInvalid": "Please enter a valid last name.",
+      "lastNameTooLong": "Last name cannot exceed {max} characters.",
+      "emailInvalid": "Please enter a valid email address.",
+      "reasonInvalid": "Please select a reason.",
+      "messageInvalid": "Please enter a message.",
+      "messageTooLong": "Message cannot exceed {max} characters.",
+      "submitFailed": "Something went wrong. Please try again in a moment.",
+      "emailNotifyUnavailable": "Your request was saved, but email notification to our team is not available yet (server configuration). Please try again later or reach support another way.",
+      "emailSendFailed": "Your request was saved but the email could not be sent. Try again later or reach support another way."
+    }
   },
   "landing": {
     "hero": {
@@ -952,7 +1009,8 @@
     "footer": {
       "copyright": "All rights reserved.",
       "privacyLink": "Privacy Policy",
-      "termsLink": "Terms of Use"
+      "termsLink": "Terms of Use",
+      "contactLink": "Contact"
     }
   },
   "legal": {
@@ -1025,6 +1083,7 @@
     },
     "privacy": {
       "title": "Privacy Policy",
+      "lastUpdatedFull": "Last updated: May 7, 2026",
       "sections": {
         "commitment": {
           "title": "1. OUR COMMITMENT",
@@ -1035,25 +1094,29 @@
           "li1": "Identification Data: first name, last name, email address.",
           "li2": "Training Data: athletic profile, goals, planned workouts and interactions between Coach and Athlete (e.g., messaging).",
           "li3": "Activity data via third-party services (e.g., Strava): with your explicit consent, we may import activity data (e.g., distance, duration, GPS, heart rate if available). This data may be considered sensitive.",
-          "li4": "Technical Data: information sent by your device and browser when you access the website (e.g., IP address, browser type, request timestamps). It may be processed through our technical providers (hosting, authentication) for security, operations and troubleshooting purposes, including maintaining your session."
+          "li4": "Technical Data: information sent by your device and browser when you access the website (e.g., IP address, browser type, request timestamps). It may be processed through our technical providers (hosting, authentication) for security, operations and troubleshooting purposes, including maintaining your session.",
+          "li5": "Contact form (dedicated page, with or without an account): first name, last name, email address, phone number if provided, reason for contact, message content; assignment of a tracking reference; if you are signed in, an account identifier may be linked to the request."
         },
         "useOfData": {
           "title": "3. USE OF DATA",
           "li1": "Provide and maintain the Mysportally service.",
           "li2": "Enable Coaches to track Athlete progress.",
           "li3": "Improve user experience and technical functionality.",
-          "li4": "Communicate with you regarding your account."
+          "li4": "Communicate with you regarding your account.",
+          "li5": "Process and respond to support requests submitted through the Contact form, including by email, and retain those requests for as long as needed to handle them and for customer support follow-up."
         },
         "consent": {
           "title": "4. CONSENT AND SENSITIVE DATA",
-          "p1": "By connecting a third-party service (e.g., Strava), you provide your express consent to the processing of your activity data. You may withdraw this consent at any time by disconnecting the service in your settings, which will stop importing new data."
+          "p1": "By connecting a third-party service (e.g., Strava), you provide your express consent to the processing of your activity data. You may withdraw this consent at any time by disconnecting the service in your settings, which will stop importing new data.",
+          "p2": "For the Contact form, submitting the form constitutes consent to process the information you provide for the purpose of responding to your request, within the limits described in Sections 2 and 3."
         },
         "sharing": {
           "title": "5. SHARING AND DISCLOSURE",
           "p1": "We never sell your personal data. Sharing is limited to:",
           "li1": "Your Coach: for the execution of the service.",
           "li2": "Technical providers required to operate the website (hosting, authentication, database).",
-          "li3": "Legal obligations: if required by law."
+          "li3": "Legal obligations: if required by law.",
+          "li4": "Transactional email delivery providers when needed to route a Contact form request to our team, strictly as required to process that request."
         },
         "retention": {
           "title": "6. RETENTION AND CROSS-BORDER TRANSFERS",
