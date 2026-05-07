@@ -141,7 +141,7 @@ The dashboard uses a **top bar** (logo My Sport Ally left, nav links center on t
 
 - Name, photo (avatar)
 - Bio (presentation)
-- Specialties / sports coached (course, trail, triathlon, velo)
+- Specialties / sports coached: course, trail, triathlon, vélo, natation, musculation, ski nordique, ski de randonnée, patin à glace, escalade, méditation, canot, surf, golf, yoga
 - Languages (fr, en, es, de, it, pt, nl, zh)
 - Postal code
 - Offers (title, description, price, type)
@@ -159,12 +159,12 @@ The dashboard uses a **top bar** (logo My Sport Ally left, nav links center on t
 On the **Mon profil** page (`/dashboard/profile`), the athlete can edit:
 
 - Name, avatar, postal code
-- **Sports pratiqués** (practiced sports): course, vélo, natation, musculation, trail, triathlon (tiles, multi-select)
+- **Sports pratiqués** (practiced sports): course, vélo, natation, musculation, trail, triathlon, ski nordique, ski de randonnée, patin à glace, escalade, méditation, canot, surf, golf, yoga (tiles, multi-select)
 
 **Volumes hebdomadaires** (section title; visible only when the athlete has at least one practiced sport):
 
 - **Volume actuel** and **Volume maximum** : two global values in **hours** (e.g. 6 and 10 h/sem.), in a **two-column layout** (same as the sport volume tiles). Saved in `profiles.weekly_current_hours` and `profiles.weekly_target_hours`. Both required when the section is shown; validation 0–168 h (no rule that current ≤ max).
-- **Volume actuel par sport et par semaine** : one value per sport (manual entry), units: **km** (course, vélo), **m** (natation), **h** (musculation, triathlon). Stored in `profiles.weekly_volume_by_sport` (JSONB: keys = sport, values = number).
+- **Volume actuel par sport et par semaine** : one value per sport (manual entry), units: **km** (course, vélo, ski nordique, ski de randonnée, patin à glace), **m** (natation), **h** (musculation, triathlon, escalade, méditation, canot, surf, golf, yoga). Stored in `profiles.weekly_volume_by_sport` (JSONB: keys = sport, values = number).
 - **Triathlon** : when selected, the volume section shows **three tiles** (Course, Vélo, Natation) instead of one “Triathlon” tile; volumes are stored under `course`, `velo`, `natation`.
 - **Trail** : no separate volume tile; when trail is selected, the **Course** tile gains an extra field **D+/sem.** (elevation gain per week in m), stored in `weekly_volume_by_sport.course_elevation_m`.
 - Tiles and fields update **dynamically** when the athlete selects or deselects practiced sports (controlled checkboxes). Save uses the existing « Enregistrer » button; validation (positive values, caps) is server-side.
@@ -278,7 +278,17 @@ Athletes filter coaches by:
   - Athlete: `athlete_comment`, `athlete_comment_at`
   - **Retour athlète (optionnel):** `perceived_feeling` (1–5), `perceived_intensity` (1–10), `perceived_pleasure` (1–5). Only the athlete can set these; coach sees them read-only. Saved with status and comment via `saveWorkoutStatusAndComment`. Migration 054.
 
-**Sport types:** course, musculation, natation, velo, nordic_ski, backcountry_ski, ice_skating
+**Sports supportés (workouts) :**
+
+- **Temps uniquement (durée obligatoire, pas de distance, pas d’allure)** : musculation, triathlon, escalade, méditation, surf, golf, yoga
+- **Temps + distance** : course, vélo, natation, trail, ski nordique, ski de randonnée, patin à glace, **canot**
+  - **D+ (dénivelé)** : uniquement course/trail (champ D+ affiché/stocké), **pas** pour canot
+  - **Allure / vitesse** :
+    - course/trail : allure type “running” (min/km)
+    - vélo **et canot** : vitesse type “cycling” (km/h)
+    - surf : pas d’allure (temps uniquement)
+
+**Sport types:** course, musculation, natation, velo, nordic_ski, backcountry_ski, ice_skating, trail, triathlon, escalade, meditation, canot, surf, golf, yoga
 
 **Athlete can:**
 

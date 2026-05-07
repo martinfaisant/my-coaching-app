@@ -18,7 +18,7 @@
 - **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), stack technique, **URL production https://mysportally.com**
 - **Utiliser pour :** Comprendre le projet, les features, les rôles, l'architecture globale
 - **Taille :** ~450 lignes
-- **Dernière mise à jour :** 7 mai 2026 (§4.0 **en-tête public / marketing** : `PublicOrDashboardHeader`, `DashboardTopBar` sticky ; §4.1 reset-password ; §4.11 Formulaire contact ; §4.2.3 Statistiques ; §4.5 Calendrier ; §5 `contact_submissions` / `contact_submission_counters`)
+- **Dernière mise à jour :** 7 mai 2026 (§4.0 **en-tête public / marketing** ; §4.2 sports coachés/pratiqués ; §4.5 **sports supportés workouts** ; §4.11 Formulaire contact ; §5 `contact_submissions` / `contact_submission_counters`)
 
 ### **docs/CALENDAR_MONTH_VIEW.md**
 - **Contenu :** Récap **vue mois** (desktop) vs **vue semaine** (mobile), règles semaines ISO / mois civil étendu, chargement données, liste des fichiers et tests unitaires, liens vers maquettes archivées
@@ -30,7 +30,7 @@
 - **Contenu :** Tokens (couleurs, typo, espacements), composants (Button, Input, Badge, TileCard, DashboardPageShell, **DashboardTopBar**, **AthleteAccountMenu**, **AthleteStatsVolumeChart**, **AthleteStatsChartSkeleton**, Modal, **MonthSelector**, etc.), guidelines UI, exemples de code, §7 breakpoints (**calendrier** mois étendu desktop + WeekSelector mobile, chat, Trouver mon coach, My offers)
 - **Utiliser pour :** Créer ou modifier des composants UI, choisir des couleurs, appliquer le design system, règles responsive par page
 - **Taille :** ~1850 lignes
-- **Dernière mise à jour :** 7 mai 2026 (**PublicOrDashboardHeader**, **DashboardTopBar** sticky + bordure ; § PublicHeader ; **ContactForm** ; stats athlète Nivo ; **AthleteAccountMenu** ; §7 Calendrier…)
+- **Dernière mise à jour :** 7 mai 2026 (couleurs sports + nouveaux sports ; section `Badge` alignée sur `lib/sportStyles.ts` ; précédent : headers publics, ContactForm, stats athlète)
 
 ### **docs/I18N.md** ⭐
 - **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces, utilisation dans composants et server actions, **checklist pour nouvelles features** (toujours penser bilingue)

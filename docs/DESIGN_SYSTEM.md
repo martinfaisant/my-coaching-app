@@ -1,7 +1,7 @@
 # 🎨 Design System
 
 **Version :** 1.30  
-**Dernière mise à jour :** 6 mai 2026 (`ContactForm` : contraintes partagées `lib/contactFormConstraints.ts`, erreurs vide / trop long ; `CoachAccountMenu`, page `contact`)
+**Dernière mise à jour :** 7 mai 2026 (mise à jour couleurs sports + nouveaux sports ; section `Badge` alignée sur `lib/sportStyles.ts`)
 
 ---
 
@@ -104,18 +104,27 @@ Toutes les couleurs sont définies dans `tailwind.config.ts` et `app/globals.css
 
 #### Sports (couleurs spécifiques)
 
+> Source de vérité : `lib/sportStyles.ts` (`SPORT_CARD_STYLES` / `SPORT_BADGE_STYLES`).  
+> Ce tableau est un repère “design”, pas une liste exhaustive ni contractuelle.
+
 | Sport | Couleur | Token |
 |-------|---------|-------|
 | Course | Forest | `palette-forest-dark` |
-| Vélo | Olive | `palette-olive` |
+| Vélo | Gold | `palette-gold` |
 | Natation | Sky | `sky-50`, `sky-700`, `sky-500` |
 | Musculation | Stone | `stone-100`, `stone-600` |
-| Trail | Gold | `palette-gold` |
+| Trail | Olive | `palette-olive` |
 | Randonnée | Sage | `palette-sage` |
 | Triathlon | Amber | `palette-amber` |
-| Ski nordique | Sage | `palette-sage` |
-| Ski de randonnée | Gold | `palette-gold` |
-| Patin à glace | Cyan | `cyan-50`, `cyan-700` |
+| Ski nordique | Indigo | `indigo-400`, `indigo-700` |
+| Ski de randonnée | Cyan | `cyan-600`, `cyan-700` |
+| Patin à glace | Slate | `slate-300`, `slate-600` |
+| Escalade | Stone | `stone-600` |
+| Méditation | Violet | `violet-200` |
+| Canot | Cyan | `cyan-800` |
+| Surf | Orange | `orange-400` |
+| Golf | Teal | `teal-700` |
+| Yoga | Violet | `violet-400` |
 
 ---
 
@@ -586,7 +595,9 @@ type TextareaProps = {
 ```typescript
 type BadgeProps = {
   variant?: 'default' | 'primary' | 'success' | 'warning'
-  sport?: 'course' | 'velo' | 'natation' | 'musculation' | 'trail' | 'randonnee' | 'triathlon' | 'nordic_ski' | 'backcountry_ski' | 'ice_skating'
+  // Sport badges are fully driven by `lib/sportStyles.ts`.
+  // The component also normalizes legacy/alias values (e.g. older DB values).
+  sport?: string
   children?: React.ReactNode
   className?: string
 }
@@ -620,9 +631,18 @@ Tous les sports ont une icône SVG dédiée (définie dans `components/SportIcon
 - Musculation (`IconDumbbell`)
 - Trail (`IconMountain`)
 - Randonnée (`IconPersonHiking`)
+- Triathlon (`IconTriathlon`)
 - Ski nordique (`IconNordicSki`)
 - Ski de randonnée (`IconBackcountrySki`)
 - Patin à glace (`IconIceSkating`)
+- Escalade (`IconClimb`)
+- Méditation (`IconMeditation`)
+- Canot (`IconCanoe`)
+- Surf (`IconSurf`)
+- Golf (`IconGolf`)
+- Yoga (`IconYoga`)
+
+**Règle :** Pour afficher un sport, utiliser `<Badge sport="..." />` (ou `SportTileSelectable`) et laisser `Badge` résoudre le label, l’icône et les couleurs via `lib/sportStyles.ts` (`SPORT_TRANSLATION_KEYS`, `SPORT_ICONS`, `SPORT_BADGE_STYLES`, `normalizeSportType`).
 
 ---
 

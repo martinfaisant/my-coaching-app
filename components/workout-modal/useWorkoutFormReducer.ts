@@ -136,6 +136,15 @@ function reducer(state: State, action: Action): State {
               values: { ...state.values, targetDurationMinutes: String(Math.round(durationMinutes)) },
             }
           }
+          if (sportType === 'canot') {
+            const distance = Number(targetDistanceKm)
+            const durationMinutes = (distance / pace) * 60
+            return {
+              ...state,
+              justLoaded: false,
+              values: { ...state.values, targetDurationMinutes: String(Math.round(durationMinutes)) },
+            }
+          }
           if (sportType === 'natation') {
             const distanceM = Number(targetDistanceKm) * 1000
             return {
@@ -165,6 +174,14 @@ function reducer(state: State, action: Action): State {
             }
           }
           if (sportType === 'velo') {
+            const durationMinutes = Number(targetDurationMinutes)
+            return {
+              ...state,
+              justLoaded: false,
+              values: { ...state.values, targetDistanceKm: ((durationMinutes / 60) * pace).toFixed(2) },
+            }
+          }
+          if (sportType === 'canot') {
             const durationMinutes = Number(targetDurationMinutes)
             return {
               ...state,

@@ -397,6 +397,11 @@
     "rando": "Hiking",
     "trail": "Trail running",
     "vtt": "Mountain biking",
+    "escalade": "Climbing",
+    "meditation": "Meditation",
+    "canot": "Canoeing",
+    "surf": "Surfing",
+    "golf": "Golf",
     "yoga": "Yoga",
     "autre": "Other"
   },
@@ -661,7 +666,7 @@
     "suffixMPerWeek": "m/week",
     "suffixDPlusPerWeek": "D+/week",
     "weeklyElevationWithoutCourseTile": "Elevation (ski, hiking…)",
-    "workoutPrimaryMetricsSectionTitle": "Session units (running, cycling, swimming)",
+    "workoutPrimaryMetricsSectionTitle": "Session units",
     "workoutPrimaryMetricsIntro": "Choose whether you plan mainly by time or distance for each sport. Used for your sessions and the weekly summary.",
     "validation": {
       "saved": "Information saved.",

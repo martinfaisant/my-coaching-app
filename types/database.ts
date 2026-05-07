@@ -1,7 +1,17 @@
 export type Role = 'athlete' | 'coach' | 'admin'
 
 /** Valeurs possibles pour "sports coachés" (profil coach). */
-export type CoachSport = 'course' | 'trail' | 'triathlon' | 'velo'
+export type CoachSport =
+  | 'course'
+  | 'trail'
+  | 'triathlon'
+  | 'velo'
+  | 'escalade'
+  | 'meditation'
+  | 'canot'
+  | 'surf'
+  | 'golf'
+  | 'yoga'
 
 /** Métrique obligatoire pour un sport d'entraînement (hors musculation = toujours temps). */
 export type WorkoutPrimaryMetric = 'time' | 'distance'
@@ -67,6 +77,12 @@ export type SportType =
   | 'ice_skating'
   | 'randonnee'
   | 'triathlon'
+  | 'escalade'
+  | 'meditation'
+  | 'canot'
+  | 'surf'
+  | 'golf'
+  | 'yoga'
 
 /** Types d'installations utilisées par l'athlète. */
 export type FacilityType = 'piscine' | 'salle' | 'stade' | 'autre'
