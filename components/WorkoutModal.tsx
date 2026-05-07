@@ -50,6 +50,7 @@ import {
   workoutHasElevationField,
   workoutHasTimeDistanceTargets,
   workoutPaceIsRunningStyle,
+  workoutIsTimeOnlySport,
 } from '@/lib/sportsRegistry'
 
 const FEELING_ICONS_READONLY = [Angry, Frown, Meh, Smile, Laugh] as const
@@ -279,7 +280,7 @@ export function WorkoutModal({
     return map[s]
   }
   const hasElevation = workoutHasElevationField(sportType)
-  const isTimeOnly = sportType === 'musculation' || sportType === 'triathlon'
+  const isTimeOnly = workoutIsTimeOnlySport(sportType)
 
   const mandatoryMetricHint =
     isTimeOnly || !hasTimeDistanceChoice
@@ -301,7 +302,7 @@ export function WorkoutModal({
     (isTimeOnly
       ? targetDurationMinutes.trim() !== '' && Number(targetDurationMinutes) > 0
       : !hasTimeDistanceChoice
-        ? true
+        ? targetDurationMinutes.trim() !== '' && Number(targetDurationMinutes) > 0
         : (() => {
             const primaryDistance = targetMode === 'distance'
             const primarySatisfied = primaryDistance

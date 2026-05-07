@@ -6,7 +6,7 @@
  * Pour les sports : utiliser sport="course" (etc.) pour icône + couleur alignés calendrier.
  */
 import type { SportType } from '@/lib/sportStyles'
-import { isSportType, SPORT_ICONS, SPORT_BADGE_STYLES } from '@/lib/sportStyles'
+import { normalizeSportType, SPORT_ICONS, SPORT_BADGE_STYLES } from '@/lib/sportStyles'
 import { useSportLabel } from '@/lib/hooks/useSportLabel'
 
 const BADGE_STYLES = {
@@ -30,7 +30,7 @@ export type BadgeVariant = keyof typeof BADGE_STYLES | SportBadgeVariant
 export type BadgeProps = {
   variant?: BadgeVariant
   /** Sport (calendrier) : affiche icône + label avec couleurs alignées. Prioritaire sur variant/children. */
-  sport?: SportType
+  sport?: SportType | string
   children?: React.ReactNode
   className?: string
 }
@@ -43,19 +43,19 @@ export function Badge({
 }: BadgeProps) {
   const getSportLabel = useSportLabel()
   
-  const resolvedSport =
+  const resolvedSportRaw =
     sport ??
     (() => {
       if (typeof variant === 'string' && variant.startsWith('sport-')) {
-        const v = variant.slice('sport-'.length)
-        return isSportType(v) ? (v as SportType) : null
+        return variant.slice('sport-'.length)
       }
       return null
     })()
+  const resolvedSport = resolvedSportRaw ? normalizeSportType(String(resolvedSportRaw)) : null
   if (resolvedSport && resolvedSport in SPORT_BADGE_STYLES) {
-    const styles = SPORT_BADGE_STYLES[resolvedSport as SportType]
-    const Icon = SPORT_ICONS[resolvedSport as SportType]
-    const label = children ?? getSportLabel(resolvedSport as SportType)
+    const styles = SPORT_BADGE_STYLES[resolvedSport]
+    const Icon = SPORT_ICONS[resolvedSport]
+    const label = children ?? getSportLabel(resolvedSport)
     const baseClasses =
       'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border'
     const classes = `${baseClasses} ${styles.bg} ${styles.text} ${styles.border} ${className}`.trim()

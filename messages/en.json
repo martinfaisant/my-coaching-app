@@ -397,6 +397,11 @@
     "rando": "Hiking",
     "trail": "Trail running",
     "vtt": "Mountain biking",
+    "escalade": "Climbing",
+    "meditation": "Meditation",
+    "canot": "Canoeing",
+    "surf": "Surfing",
+    "golf": "Golf",
     "yoga": "Yoga",
     "autre": "Other"
   },

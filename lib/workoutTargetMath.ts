@@ -16,6 +16,10 @@ export function computeDurationMinutesFromDistancePace(
   if (sportType === 'velo') {
     return Math.round((distanceKm / pace) * 60)
   }
+  if (sportType === 'canot') {
+    // Canot: vitesse type vélo (km/h)
+    return Math.round((distanceKm / pace) * 60)
+  }
   if (sportType === 'natation') {
     const distanceM = distanceKm * 1000
     return Math.round((distanceM / 100) * pace)
@@ -37,6 +41,10 @@ export function computeDistanceKmFromDurationPace(
     return Number((durationMinutes / pace).toFixed(2))
   }
   if (sportType === 'velo') {
+    return Number(((durationMinutes / 60) * pace).toFixed(2))
+  }
+  if (sportType === 'canot') {
+    // Canot: vitesse type vélo (km/h)
     return Number(((durationMinutes / 60) * pace).toFixed(2))
   }
   if (sportType === 'natation') {

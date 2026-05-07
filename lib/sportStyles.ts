@@ -1,6 +1,6 @@
 /**
  * Configuration partagée : icônes et couleurs par sport.
- * Aligné avec le calendrier (CalendarView) — Run forest, Vélo olive, Nage sky, Muscu stone, etc.
+ * Aligné avec le calendrier (CalendarView) — Run forest, Vélo gold, Nage sky, Muscu stone, etc.
  */
 import type { ComponentType } from 'react'
 import {
@@ -14,6 +14,12 @@ import {
   IconMountain,
   IconPersonHiking,
   IconTriathlon,
+  IconClimb,
+  IconMeditation,
+  IconCanoe,
+  IconSurf,
+  IconGolf,
+  IconYoga,
 } from '@/components/SportIcons'
 
 export type SportType =
@@ -27,6 +33,12 @@ export type SportType =
   | 'trail'
   | 'randonnee'
   | 'triathlon'
+  | 'escalade'
+  | 'meditation'
+  | 'canot'
+  | 'surf'
+  | 'golf'
+  | 'yoga'
 
 /**
  * Translation keys for sport labels.
@@ -44,6 +56,12 @@ export const SPORT_TRANSLATION_KEYS: Record<SportType, string> = {
   trail: 'trail',
   randonnee: 'rando',
   triathlon: 'triathlon',
+  escalade: 'escalade',
+  meditation: 'meditation',
+  canot: 'canot',
+  surf: 'surf',
+  golf: 'golf',
+  yoga: 'yoga',
 }
 
 export const SPORT_ICONS: Record<SportType, ComponentType<{ className?: string }>> = {
@@ -57,6 +75,12 @@ export const SPORT_ICONS: Record<SportType, ComponentType<{ className?: string }
   trail: IconMountain,
   randonnee: IconPersonHiking,
   triathlon: IconTriathlon,
+  escalade: IconClimb,
+  meditation: IconMeditation,
+  canot: IconCanoe,
+  surf: IconSurf,
+  golf: IconGolf,
+  yoga: IconYoga,
 }
 
 /** Styles pour les cartes du calendrier (WorkoutCard, ActivityCard) */
@@ -70,9 +94,9 @@ export const SPORT_CARD_STYLES: Record<
     badgeBg: 'bg-palette-forest-dark/10',
   },
   velo: {
-    borderLeft: 'border-l-palette-olive',
-    badge: 'text-palette-olive',
-    badgeBg: 'bg-palette-olive/10',
+    borderLeft: 'border-l-palette-gold',
+    badge: 'text-palette-gold',
+    badgeBg: 'bg-palette-gold/10',
   },
   natation: {
     borderLeft: 'border-l-sky-500',
@@ -85,24 +109,24 @@ export const SPORT_CARD_STYLES: Record<
     badgeBg: 'bg-stone-100',
   },
   nordic_ski: {
-    borderLeft: 'border-l-palette-sage',
-    badge: 'text-palette-sage',
-    badgeBg: 'bg-palette-sage/10',
+    borderLeft: 'border-l-indigo-400',
+    badge: 'text-indigo-700',
+    badgeBg: 'bg-indigo-50',
   },
   backcountry_ski: {
-    borderLeft: 'border-l-palette-gold',
-    badge: 'text-palette-gold',
-    badgeBg: 'bg-palette-gold/10',
-  },
-  ice_skating: {
     borderLeft: 'border-l-cyan-600',
     badge: 'text-cyan-700',
     badgeBg: 'bg-cyan-50',
   },
+  ice_skating: {
+    borderLeft: 'border-l-slate-300',
+    badge: 'text-slate-600',
+    badgeBg: 'bg-slate-100',
+  },
   trail: {
-    borderLeft: 'border-l-palette-gold',
-    badge: 'text-palette-gold',
-    badgeBg: 'bg-palette-gold/10',
+    borderLeft: 'border-l-palette-olive',
+    badge: 'text-palette-olive',
+    badgeBg: 'bg-palette-olive/10',
   },
   randonnee: {
     borderLeft: 'border-l-palette-sage',
@@ -113,6 +137,36 @@ export const SPORT_CARD_STYLES: Record<
     borderLeft: 'border-l-palette-amber',
     badge: 'text-palette-amber',
     badgeBg: 'bg-palette-amber/10',
+  },
+  escalade: {
+    borderLeft: 'border-l-stone-600',
+    badge: 'text-stone-700',
+    badgeBg: 'bg-stone-100',
+  },
+  meditation: {
+    borderLeft: 'border-l-violet-200',
+    badge: 'text-violet-600',
+    badgeBg: 'bg-violet-50',
+  },
+  canot: {
+    borderLeft: 'border-l-cyan-800',
+    badge: 'text-cyan-900',
+    badgeBg: 'bg-cyan-50',
+  },
+  surf: {
+    borderLeft: 'border-l-orange-400',
+    badge: 'text-orange-700',
+    badgeBg: 'bg-orange-50',
+  },
+  golf: {
+    borderLeft: 'border-l-teal-700',
+    badge: 'text-teal-800',
+    badgeBg: 'bg-teal-50',
+  },
+  yoga: {
+    borderLeft: 'border-l-violet-400',
+    badge: 'text-violet-700',
+    badgeBg: 'bg-violet-50',
   },
 }
 
@@ -128,8 +182,8 @@ export const SPORT_BADGE_STYLES: Record<
   },
   velo: {
     bg: 'bg-white',
-    text: 'text-palette-olive',
-    border: 'border-palette-olive',
+    text: 'text-palette-gold',
+    border: 'border-palette-gold',
   },
   natation: {
     bg: 'bg-white',
@@ -143,23 +197,23 @@ export const SPORT_BADGE_STYLES: Record<
   },
   nordic_ski: {
     bg: 'bg-white',
-    text: 'text-palette-sage',
-    border: 'border-palette-sage',
+    text: 'text-indigo-700',
+    border: 'border-indigo-400',
   },
   backcountry_ski: {
-    bg: 'bg-white',
-    text: 'text-palette-gold',
-    border: 'border-palette-gold',
-  },
-  ice_skating: {
     bg: 'bg-white',
     text: 'text-cyan-700',
     border: 'border-cyan-600',
   },
+  ice_skating: {
+    bg: 'bg-white',
+    text: 'text-slate-600',
+    border: 'border-slate-300',
+  },
   trail: {
     bg: 'bg-white',
-    text: 'text-palette-gold',
-    border: 'border-palette-gold',
+    text: 'text-palette-olive',
+    border: 'border-palette-olive',
   },
   randonnee: {
     bg: 'bg-white',
@@ -170,6 +224,36 @@ export const SPORT_BADGE_STYLES: Record<
     bg: 'bg-white',
     text: 'text-palette-amber',
     border: 'border-palette-amber',
+  },
+  escalade: {
+    bg: 'bg-white',
+    text: 'text-stone-700',
+    border: 'border-stone-600',
+  },
+  meditation: {
+    bg: 'bg-white',
+    text: 'text-violet-600',
+    border: 'border-violet-200',
+  },
+  canot: {
+    bg: 'bg-white',
+    text: 'text-cyan-900',
+    border: 'border-cyan-800',
+  },
+  surf: {
+    bg: 'bg-white',
+    text: 'text-orange-700',
+    border: 'border-orange-400',
+  },
+  golf: {
+    bg: 'bg-white',
+    text: 'text-teal-800',
+    border: 'border-teal-700',
+  },
+  yoga: {
+    bg: 'bg-white',
+    text: 'text-violet-700',
+    border: 'border-violet-400',
   },
 }
 
@@ -188,6 +272,12 @@ export type PracticedSportKey =
   | 'ice_skating'
   | 'randonnee'
   | 'triathlon'
+  | 'escalade'
+  | 'meditation'
+  | 'canot'
+  | 'surf'
+  | 'golf'
+  | 'yoga'
 
 /**
  * D+ hebdo sur la tuile Course : uniquement si « Trail » est coché (pas de tuile volume trail dédiée).
@@ -215,6 +305,12 @@ export function getWeeklyVolumeUnit(sport: string): WeeklyVolumeUnit {
       return 'm'
     case 'musculation':
     case 'triathlon':
+    case 'escalade':
+    case 'meditation':
+    case 'canot':
+    case 'surf':
+    case 'golf':
+    case 'yoga':
       return 'h'
     default:
       return 'km'
@@ -230,6 +326,12 @@ export const PRACTICED_SPORTS_DISPLAY_ORDER: PracticedSportKey[] = [
   'velo',
   'natation',
   'musculation',
+  'yoga',
+  'meditation',
+  'escalade',
+  'surf',
+  'golf',
+  'canot',
   'trail',
   'randonnee',
   'nordic_ski',
@@ -244,6 +346,12 @@ export type WeeklyVolumeTileKey =
   | 'velo'
   | 'natation'
   | 'musculation'
+  | 'escalade'
+  | 'meditation'
+  | 'canot'
+  | 'surf'
+  | 'golf'
+  | 'yoga'
   | 'ice_skating'
   | 'nordic_ski'
   | 'backcountry_ski'
@@ -301,6 +409,12 @@ export const WEEKLY_VOLUME_DISPLAY_ORDER: WeeklyVolumeBySportKey[] = [
   'velo',
   'natation',
   'musculation',
+  'escalade',
+  'meditation',
+  'canot',
+  'surf',
+  'golf',
+  'yoga',
   'ice_skating',
   'nordic_ski',
   'backcountry_ski',
@@ -315,11 +429,31 @@ export function isSportType(value: string): value is SportType {
 }
 
 /**
+ * Normalise une valeur de sport (legacy / i18n keys) vers un SportType canonique.
+ * Utile pour l'affichage (badges) quand des données historiques contiennent d'anciennes valeurs.
+ */
+export function normalizeSportType(value: string): SportType | null {
+  const v = (value ?? '').trim()
+  if (!v) return null
+  if (isSportType(v)) return v
+  const legacy: Partial<Record<string, SportType>> = {
+    muscu: 'musculation',
+    ski_fond: 'nordic_ski',
+    ski_randonnee: 'backcountry_ski',
+    patinage_glace: 'ice_skating',
+    rando: 'randonnee',
+    course_route: 'course',
+  }
+  return legacy[v] ?? null
+}
+
+/**
  * Retourne la clé de traduction (namespace `sports`) si le sport est connu,
  * sinon `null` (le caller peut alors fallback sur la valeur brute).
  */
 export function getSportTranslationKey(value: string): string | null {
-  return isSportType(value) ? SPORT_TRANSLATION_KEYS[value] : null
+  const normalized = normalizeSportType(value)
+  return normalized ? SPORT_TRANSLATION_KEYS[normalized] : null
 }
 
 /**
@@ -334,6 +468,12 @@ export function getWeeklyVolumeDisplaySports(practicedSports: string[]): WeeklyV
     'velo',
     'natation',
     'musculation',
+    'escalade',
+    'meditation',
+    'canot',
+    'surf',
+    'golf',
+    'yoga',
     'ice_skating',
     'nordic_ski',
     'backcountry_ski',

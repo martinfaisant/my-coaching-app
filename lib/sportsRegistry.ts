@@ -15,6 +15,12 @@ export const PERSISTED_WORKOUT_SPORT_TYPES = [
   'ice_skating',
   'randonnee',
   'triathlon',
+  'escalade',
+  'meditation',
+  'canot',
+  'surf',
+  'golf',
+  'yoga',
 ] as const satisfies readonly SportType[]
 
 export type PersistedWorkoutSportType = (typeof PERSISTED_WORKOUT_SPORT_TYPES)[number]
@@ -23,9 +29,23 @@ export function isPersistedWorkoutSportType(s: string): s is SportType {
   return (PERSISTED_WORKOUT_SPORT_TYPES as readonly string[]).includes(s)
 }
 
+/** Sports "temps uniquement" : objectif = durée (pas de distance / pas de D+). */
+export function workoutIsTimeOnlySport(sportType: SportType): boolean {
+  return (
+    sportType === 'musculation' ||
+    sportType === 'triathlon' ||
+    sportType === 'escalade' ||
+    sportType === 'meditation' ||
+    sportType === 'surf' ||
+    sportType === 'golf' ||
+    sportType === 'yoga'
+  )
+}
+
 /** Séance : objectifs temps / distance + allure (hors musculation / triathlon = temps seul). */
 export function workoutHasTimeDistanceTargets(sportType: SportType): boolean {
-  return sportType !== 'musculation' && sportType !== 'triathlon'
+  if (workoutIsTimeOnlySport(sportType)) return false
+  return true
 }
 
 /** Champ D+ facultatif (course, vélo, glace, skis). */

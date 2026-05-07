@@ -57,7 +57,7 @@ function formatPace(pace: number | null | undefined, sportType: SportType): stri
   if (!pace || pace <= 0) return ''
   if (workoutPaceIsRunningStyle(sportType)) {
     return `${pace.toFixed(1)} min/km`
-  } else if (sportType === 'velo') {
+  } else if (sportType === 'velo' || sportType === 'canot') {
     // km/h
     return `${Math.round(pace)} km/h`
   } else if (sportType === 'natation') {
@@ -258,6 +258,12 @@ const EMPTY_FAIT: WeekFaitBySport = {
   ice_skating: { minutes: 0, distanceKm: 0 },
   randonnee: { minutes: 0, distanceKm: 0 },
   triathlon: { minutes: 0, distanceKm: 0 },
+  escalade: { minutes: 0, distanceKm: 0 },
+  meditation: { minutes: 0, distanceKm: 0 },
+  canot: { minutes: 0, distanceKm: 0 },
+  surf: { minutes: 0, distanceKm: 0 },
+  golf: { minutes: 0, distanceKm: 0 },
+  yoga: { minutes: 0, distanceKm: 0 },
 }
 
 export function CalendarView({
@@ -588,6 +594,12 @@ export function CalendarView({
         ice_skating: { minutes: 0, distanceKm: 0 },
         randonnee: { minutes: 0, distanceKm: 0 },
         triathlon: { minutes: 0, distanceKm: 0 },
+        escalade: { minutes: 0, distanceKm: 0 },
+        meditation: { minutes: 0, distanceKm: 0 },
+        canot: { minutes: 0, distanceKm: 0 },
+        surf: { minutes: 0, distanceKm: 0 },
+        golf: { minutes: 0, distanceKm: 0 },
+        yoga: { minutes: 0, distanceKm: 0 },
       }
       
       for (const total of totalsForWeek) {
@@ -616,6 +628,12 @@ export function CalendarView({
       ice_skating: { minutes: 0, distanceKm: 0 },
       randonnee: { minutes: 0, distanceKm: 0 },
       triathlon: { minutes: 0, distanceKm: 0 },
+      escalade: { minutes: 0, distanceKm: 0 },
+      meditation: { minutes: 0, distanceKm: 0 },
+      canot: { minutes: 0, distanceKm: 0 },
+      surf: { minutes: 0, distanceKm: 0 },
+      golf: { minutes: 0, distanceKm: 0 },
+      yoga: { minutes: 0, distanceKm: 0 },
     })
     if (weeks.length === 0) return []
     return weeks.map((week) => {
@@ -634,6 +652,12 @@ export function CalendarView({
         ice_skating: { minutes: 0, distanceKm: 0 },
         randonnee: { minutes: 0, distanceKm: 0 },
         triathlon: { minutes: 0, distanceKm: 0 },
+        escalade: { minutes: 0, distanceKm: 0 },
+        meditation: { minutes: 0, distanceKm: 0 },
+        canot: { minutes: 0, distanceKm: 0 },
+        surf: { minutes: 0, distanceKm: 0 },
+        golf: { minutes: 0, distanceKm: 0 },
+        yoga: { minutes: 0, distanceKm: 0 },
       }
       for (const r of rows) {
         const distKm = (r.total_distance_m ?? 0) / 1000
@@ -655,6 +679,12 @@ export function CalendarView({
         ice_skating: { minutes: Math.round(bySport.ice_skating.minutes), distanceKm: Math.round(bySport.ice_skating.distanceKm) },
         randonnee: { minutes: Math.round(bySport.randonnee.minutes), distanceKm: Math.round(bySport.randonnee.distanceKm) },
         triathlon: { minutes: Math.round(bySport.triathlon.minutes), distanceKm: Math.round(bySport.triathlon.distanceKm) },
+        escalade: { minutes: Math.round(bySport.escalade.minutes), distanceKm: Math.round(bySport.escalade.distanceKm) },
+        meditation: { minutes: Math.round(bySport.meditation.minutes), distanceKm: Math.round(bySport.meditation.distanceKm) },
+        canot: { minutes: Math.round(bySport.canot.minutes), distanceKm: Math.round(bySport.canot.distanceKm) },
+        surf: { minutes: Math.round(bySport.surf.minutes), distanceKm: Math.round(bySport.surf.distanceKm) },
+        golf: { minutes: Math.round(bySport.golf.minutes), distanceKm: Math.round(bySport.golf.distanceKm) },
+        yoga: { minutes: Math.round(bySport.yoga.minutes), distanceKm: Math.round(bySport.yoga.distanceKm) },
       }
     })
   }, [weeks, weeklyTotals])
@@ -976,8 +1006,8 @@ export function CalendarView({
       {
         key: 'velo' as const,
         Icon: BikeIcon,
-        color: 'text-palette-olive',
-        bg: 'bg-palette-olive',
+        color: 'text-palette-gold',
+        bg: 'bg-palette-gold',
         label: tCalendar('weekly.sportLabels.cycling'),
         prevuVal: vMet === 'time' ? (prevu?.velo?.minutes ?? 0) : (prevu?.velo?.distanceKm ?? 0),
         faitVal: vMet === 'time' ? (fait?.velo?.minutes ?? 0) : (fait?.velo?.distanceKm ?? 0),
@@ -996,9 +1026,9 @@ export function CalendarView({
         useMeters: nMet === 'distance',
       },
       { key: 'musculation' as const, Icon: StrengthIcon, color: 'text-stone-600', bg: 'bg-stone-500', label: tCalendar('weekly.sportLabels.strength'), prevuVal: prevu?.musculation?.minutes ?? 0, faitVal: fait?.musculation?.minutes ?? 0, useTime: true, useMeters: false },
-      { key: 'nordic_ski' as const, Icon: NordicSkiIcon, color: 'text-palette-sage', bg: 'bg-palette-sage', label: tCalendar('weekly.sportLabels.nordicSki'), prevuVal: prevu?.nordic_ski?.distanceKm ?? 0, faitVal: fait?.nordic_ski?.distanceKm ?? 0, useTime: false, useMeters: false },
-      { key: 'backcountry_ski' as const, Icon: BackcountrySkiIcon, color: 'text-palette-gold', bg: 'bg-palette-gold', label: tCalendar('weekly.sportLabels.backcountrySki'), prevuVal: prevu?.backcountry_ski?.distanceKm ?? 0, faitVal: fait?.backcountry_ski?.distanceKm ?? 0, useTime: false, useMeters: false },
-      { key: 'ice_skating' as const, Icon: IceSkatingIcon, color: 'text-cyan-600', bg: 'bg-cyan-500', label: tCalendar('weekly.sportLabels.iceSkating'), prevuVal: prevu?.ice_skating?.distanceKm ?? 0, faitVal: fait?.ice_skating?.distanceKm ?? 0, useTime: false, useMeters: false },
+      { key: 'nordic_ski' as const, Icon: NordicSkiIcon, color: 'text-indigo-700', bg: 'bg-indigo-400', label: tCalendar('weekly.sportLabels.nordicSki'), prevuVal: prevu?.nordic_ski?.distanceKm ?? 0, faitVal: fait?.nordic_ski?.distanceKm ?? 0, useTime: false, useMeters: false },
+      { key: 'backcountry_ski' as const, Icon: BackcountrySkiIcon, color: 'text-cyan-700', bg: 'bg-cyan-600', label: tCalendar('weekly.sportLabels.backcountrySki'), prevuVal: prevu?.backcountry_ski?.distanceKm ?? 0, faitVal: fait?.backcountry_ski?.distanceKm ?? 0, useTime: false, useMeters: false },
+      { key: 'ice_skating' as const, Icon: IceSkatingIcon, color: 'text-slate-600', bg: 'bg-slate-300', label: tCalendar('weekly.sportLabels.iceSkating'), prevuVal: prevu?.ice_skating?.distanceKm ?? 0, faitVal: fait?.ice_skating?.distanceKm ?? 0, useTime: false, useMeters: false },
       { key: 'randonnee' as const, Icon: HikeIcon, color: 'text-palette-sage', bg: 'bg-palette-sage', label: tCalendar('weekly.sportLabels.hiking'), prevuVal: prevu?.randonnee?.distanceKm ?? 0, faitVal: fait?.randonnee?.distanceKm ?? 0, useTime: false, useMeters: false },
       { key: 'triathlon' as const, Icon: TriathlonWeekIcon, color: 'text-palette-amber', bg: 'bg-palette-amber', label: tCalendar('weekly.sportLabels.triathlon'), prevuVal: prevu?.triathlon?.minutes ?? 0, faitVal: fait?.triathlon?.minutes ?? 0, useTime: true, useMeters: false },
     ].filter((s) => s.prevuVal > 0 || s.faitVal > 0)

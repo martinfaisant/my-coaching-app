@@ -1,7 +1,7 @@
 import type { SportType, WorkoutTimeOfDay, WorkoutPrimaryMetric, WorkoutPrimaryMetricBySport } from '@/types/database'
 import { computeDistanceKmFromDurationPace, computeDurationMinutesFromDistancePace } from '@/lib/workoutTargetMath'
 import { getWorkoutPrimaryMetricForSport, isCoachWorkoutPrimaryMetricsComplete } from '@/lib/workoutPrimaryMetric'
-import { isPersistedWorkoutSportType } from '@/lib/sportsRegistry'
+import { isPersistedWorkoutSportType, workoutIsTimeOnlySport } from '@/lib/sportsRegistry'
 
 const VALID_TIME_OF_DAY: WorkoutTimeOfDay[] = ['morning', 'noon', 'evening']
 
@@ -122,6 +122,13 @@ export function validateWorkoutFormData(
     elevationRaw
   )
 
+  if (workoutIsTimeOnlySport(sportType) && !(target_duration_minutes != null && target_duration_minutes > 0)) {
+    return {
+      error: 'Indiquez une durée pour ce sport.',
+      errorCode: WORKOUT_VALIDATION_ERROR_CODES.TARGET_REQUIRED,
+    }
+  }
+
   if (target_duration_minutes === undefined && target_distance_km === undefined) {
     return {
       error: 'Indiquez un objectif (temps ou distance selon le sport).',
@@ -138,6 +145,7 @@ export function validateWorkoutFormData(
     'nordic_ski',
     'backcountry_ski',
     'randonnee',
+    'canot',
   ]
   if (paceRequiredSports.includes(sportType) && (target_pace == null || target_pace <= 0)) {
     const hasDur =
@@ -257,7 +265,7 @@ function parseWorkoutTargetParams(
   const validDistance = distance != null && !Number.isNaN(distance) && distance > 0
   const validElevation = elevation != null && !Number.isNaN(elevation) && elevation >= 0
 
-  if (sportType === 'musculation' || sportType === 'triathlon') {
+  if (workoutIsTimeOnlySport(sportType)) {
     return {
       target_duration_minutes: validDuration ? duration : null,
       target_distance_km: null,
