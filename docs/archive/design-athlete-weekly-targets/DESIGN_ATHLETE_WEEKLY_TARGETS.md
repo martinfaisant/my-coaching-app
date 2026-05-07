@@ -48,7 +48,7 @@ Il n’existe pas aujourd’hui de section « objectifs / volume par sport » da
 - **Ordre :** La section apparaît **juste après « Sports pratiqués »**.
 - **Volume actuel — saisie manuelle** par l’athlète (pas de calcul automatique), **par sport**.
 - **Volume actuel — unités par sport :**
-  - **Course à pied** (course, course_route, trail, randonnée) : **km**.
+  - **Course à pied** (course, trail, randonnée) : **km**.
   - **Vélo** : **km**.
   - **Natation** : **m** (mètres).
   - **Musculation** : **volume horaire uniquement** (temps en h), pas de distance.

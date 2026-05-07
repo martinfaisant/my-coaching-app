@@ -7,7 +7,7 @@ import { COACHED_SPORTS_VALUES, PRACTICED_SPORTS_VALUES } from '@/lib/sportsOpti
  * 
  * @example
  * const options = useCoachedSportsOptions()
- * // [{ value: 'course_route', label: 'Course à pied' }, ...]
+ * // [{ value: 'course', label: 'Course' }, ...]
  */
 export function useCoachedSportsOptions() {
   const getSportLabel = useSportLabel()

@@ -9,7 +9,6 @@ import { AthleteStatsVolumeChart } from '@/components/athlete/AthleteStatsVolume
 import { AthleteStatsChartFullSkeleton } from '@/components/athlete/AthleteStatsChartSkeleton'
 import { loadAthleteVolumeChartData, type AthleteVolumeChartPayload } from '@/app/[locale]/dashboard/stats/actions'
 import {
-  ATHLETE_STATS_SPORT_OPTIONS,
   type AthleteStatsGranularity,
   type AthleteStatsMetric,
 } from '@/lib/athleteStatsVolume'
@@ -53,15 +52,18 @@ export function AthleteStatsPageClient({
   const [payload, setPayload] = useState<AthleteVolumeChartPayload | null>(initialPayload)
   const [error, setError] = useState<string | null>(initialError)
   const [pending, setPending] = useState(false)
+  const [availableSports, setAvailableSports] = useState<SportType[]>(
+    initialPayload?.availableSports?.length ? [...initialPayload.availableSports] : [defaultSport],
+  )
   const statsFetchGenerationRef = useRef(0)
 
   const sportOptions = useMemo(
     () =>
-      ATHLETE_STATS_SPORT_OPTIONS.map((s) => ({
+      availableSports.map((s) => ({
         value: s,
         label: tSports(SPORT_TRANSLATION_KEYS[s] as 'course'),
       })),
-    [tSports],
+    [availableSports, tSports],
   )
 
   const refresh = useCallback(() => {
@@ -83,6 +85,7 @@ export function AthleteStatsPageClient({
         } else {
           setError(null)
           setPayload(result.data)
+          setAvailableSports(result.data.availableSports)
         }
         setPending(false)
       })
@@ -94,6 +97,13 @@ export function AthleteStatsPageClient({
         setPending(false)
       })
   }, [years, sport, granularity, metric, locale, t])
+
+  useEffect(() => {
+    if (availableSports.length === 0) return
+    if (!availableSports.includes(sport)) {
+      setSport(availableSports[0]!)
+    }
+  }, [availableSports, sport])
 
   const skipNextRefresh = useRef(true)
   useEffect(() => {

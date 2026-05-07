@@ -7,7 +7,12 @@ import { logger } from '@/lib/logger'
 import { getTranslations, getLocale } from 'next-intl/server'
 import { getFrozenTitleForLocale } from '@/lib/frozenOfferI18n'
 import { getDisplayName } from '@/lib/displayName'
-import { getWeeklyVolumeDisplaySports, getWeeklyVolumeUnit } from '@/lib/sportStyles'
+import {
+  getWeeklyVolumeDisplaySports,
+  getWeeklyVolumeTileElevationJsonKey,
+  getWeeklyVolumeUnit,
+  practicedSportsNeedCourseElevationField,
+} from '@/lib/sportStyles'
 
 export type SetCoachResult = { error?: string }
 export type CoachRequestResult = { error?: string }
@@ -80,12 +85,21 @@ export async function createCoachRequest(
       if (num > max) return { error: t('weeklyVolumeInvalid') }
       volumeBySport[sport] = num
     }
-    if (sports.includes('trail')) {
+    if (practicedSportsNeedCourseElevationField(sports)) {
       const elev = rawVolume['course_elevation_m']
       if (elev == null || Number.isNaN(Number(elev)) || Number(elev) < 0 || Number(elev) > 50000) {
         return { error: t('requireWeeklyTargetAndVolume') }
       }
       volumeBySport.course_elevation_m = Math.round(Number(elev) * 100) / 100
+    }
+    for (const sport of volumeDisplayList) {
+      const elevKey = getWeeklyVolumeTileElevationJsonKey(sport)
+      if (!elevKey) continue
+      const elev = rawVolume[elevKey]
+      if (elev == null || Number.isNaN(Number(elev)) || Number(elev) < 0 || Number(elev) > 50000) {
+        return { error: t('requireWeeklyTargetAndVolume') }
+      }
+      volumeBySport[elevKey] = Math.round(Number(elev) * 100) / 100
     }
 
     const { data: coach } = await supabase

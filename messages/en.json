@@ -660,6 +660,7 @@
     "suffixKmPerWeek": "km/week",
     "suffixMPerWeek": "m/week",
     "suffixDPlusPerWeek": "D+/week",
+    "weeklyElevationWithoutCourseTile": "Elevation (ski, hiking…)",
     "workoutPrimaryMetricsSectionTitle": "Session units (running, cycling, swimming)",
     "workoutPrimaryMetricsIntro": "Choose whether you plan mainly by time or distance for each sport. Used for your sessions and the weekly summary.",
     "validation": {
@@ -800,6 +801,8 @@
       "nordicSkiDistanceCompletedPlanned": "Nordic skiing: distance completed / planned",
       "backcountrySkiDistanceCompletedPlanned": "Backcountry skiing: distance completed / planned",
       "iceSkatingDistanceCompletedPlanned": "Ice skating: distance completed / planned",
+      "hikingDistanceCompletedPlanned": "Hiking: distance completed / planned",
+      "triathlonTimeCompletedPlanned": "Triathlon: time completed / planned",
       "sportLabels": {
         "run": "Run",
         "cycling": "Cycling",
@@ -807,7 +810,9 @@
         "strength": "Strength",
         "nordicSki": "Nordic Ski",
         "backcountrySki": "Backcountry Ski",
-        "iceSkating": "Ice Skating"
+        "iceSkating": "Ice Skating",
+        "hiking": "Hiking",
+        "triathlon": "Triathlon"
       }
     },
     "modals": {

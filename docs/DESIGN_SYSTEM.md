@@ -701,9 +701,9 @@ type SportTileSelectableProps =
 // Mode formulaire (soumission avec FormData)
 <form>
   <SportTileSelectable 
-    value="course_route" 
+    value="course" 
     name="coached_sports"
-    defaultChecked={coachedSports.includes('course_route')}
+    defaultChecked={coachedSports.includes('course')}
   />
   <SportTileSelectable 
     value="velo" 
@@ -722,9 +722,9 @@ const toggleSport = (sport: string) => {
 }
 
 <SportTileSelectable 
-  value="course_route"
-  selected={selectedSports.includes('course_route')}
-  onChange={() => toggleSport('course_route')}
+  value="course"
+  selected={selectedSports.includes('course')}
+  onChange={() => toggleSport('course')}
 />
 ```
 
@@ -1735,6 +1735,8 @@ Référence : `docs/CHAT_COACH_START_CONVERSATION_DESIGN.md`, mockup états 2a e
 **Fichier :** `components/athlete/AthleteStatsVolumeChart.tsx`
 
 Graphique **volume réalisé** (Nivo `ResponsiveLine`, import client ; montage après première frame pour mesure). Plusieurs années = plusieurs lignes (`ATHLETE_STATS_LINE_COLORS`). **Pas de légende Nivo** sous le graphe. **Tranches verticales** (`enableSlices="x"`) : survol = `sliceTooltip`. **Encart permanent** sous le graphe : titre *Volume annuel* / *Annual volume*, liste des années avec **total sur l’année** (somme des points de la série selon la granularité), pastilles de couleur alignées sur les lignes (`athleteStats.sliceDetail.annualVolumeTitle`, `yearValue`, `panelAria`, `weekTooltip`).
+
+**Filtre sport (page `/dashboard/stats`) :** la liste d’options est **dynamique** : uniquement les sports persistés qui ont des données sur la période sélectionnée (totaux « fait » non nuls). La liste est dérivée du registre (`PERSISTED_WORKOUT_SPORT_TYPES`) filtré par les totaux (`getStatsAvailableSportsFromWeeklyTotals`).
 
 **Skeletons :** `components/athlete/AthleteStatsChartSkeleton.tsx` — `AthleteStatsChartPlotSkeleton` (zone courbe avec gouttière Y, quadrillage, courbes factices, axe X) pendant l’hydratation du graphique ; `AthleteStatsChartFullSkeleton` (+ message `statusMessage`, encart annuel factice à *n* lignes selon les années sélectionnées) lors du refetch sur la page stats.
 

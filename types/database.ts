@@ -1,13 +1,25 @@
 export type Role = 'athlete' | 'coach' | 'admin'
 
-/** Valeurs possibles pour "sports coachés" (Ma pratique) */
-export type CoachSport = 'course_route' | 'trail' | 'triathlon' | 'velo'
+/** Valeurs possibles pour "sports coachés" (profil coach). */
+export type CoachSport = 'course' | 'trail' | 'triathlon' | 'velo'
 
 /** Métrique obligatoire pour un sport d'entraînement (hors musculation = toujours temps). */
 export type WorkoutPrimaryMetric = 'time' | 'distance'
 
 /** Préférences coach : unité obligatoire par sport (sous-ensemble des sports séance). */
-export type WorkoutPrimaryMetricBySport = Partial<Record<'course' | 'velo' | 'natation', WorkoutPrimaryMetric>>
+export type WorkoutPrimaryMetricBySport = Partial<
+  Record<
+    | 'course'
+    | 'trail'
+    | 'velo'
+    | 'natation'
+    | 'nordic_ski'
+    | 'backcountry_ski'
+    | 'ice_skating'
+    | 'randonnee',
+    WorkoutPrimaryMetric
+  >
+>
 
 export type Profile = {
   user_id: string
@@ -27,7 +39,7 @@ export type Profile = {
   presentation_en?: string | null
   avatar_url?: string | null
   postal_code?: string | null
-  /** Sport(s) pratiqué(s) par l'athlète (course, velo, natation, musculation). */
+  /** Sport(s) pratiqué(s) par l'athlète (voir `PRACTICED_SPORTS_VALUES` dans lib/sportsOptions). */
   practiced_sports?: string[] | null
   /** Langue d'affichage préférée (fr/en). Utilisée sur tout le site quand l'utilisateur est connecté. */
   preferred_locale?: string | null
@@ -44,7 +56,17 @@ export type Profile = {
   workout_primary_metric_by_sport?: WorkoutPrimaryMetricBySport | null
 }
 
-export type SportType = 'course' | 'musculation' | 'natation' | 'velo' | 'nordic_ski' | 'backcountry_ski' | 'ice_skating'
+export type SportType =
+  | 'course'
+  | 'trail'
+  | 'musculation'
+  | 'natation'
+  | 'velo'
+  | 'nordic_ski'
+  | 'backcountry_ski'
+  | 'ice_skating'
+  | 'randonnee'
+  | 'triathlon'
 
 /** Types d'installations utilisées par l'athlète. */
 export type FacilityType = 'piscine' | 'salle' | 'stade' | 'autre'

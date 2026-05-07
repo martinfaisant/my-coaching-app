@@ -11,8 +11,17 @@ import { TileCard } from '@/components/TileCard'
 import { getCoachRequestDetail, type CoachRequestDetail } from './actions'
 import { getFrozenTitleForLocale, getFrozenDescriptionForLocale } from '@/lib/frozenOfferI18n'
 import { formatDateFr, formatGoalDateBlock } from '@/lib/dateUtils'
-import { getSportTranslationKey, getWeeklyVolumeUnit, isSportType, SPORT_ICONS, SPORT_CARD_STYLES, WEEKLY_VOLUME_DISPLAY_ORDER } from '@/lib/sportStyles'
-import type { SportType } from '@/lib/sportStyles'
+import {
+  getSportTranslationKey,
+  getWeeklyVolumeTileElevationJsonKey,
+  getWeeklyVolumeUnit,
+  isSportType,
+  legacyWeeklyVolumeTileElevationValue,
+  SPORT_ICONS,
+  SPORT_CARD_STYLES,
+  WEEKLY_VOLUME_DISPLAY_ORDER,
+} from '@/lib/sportStyles'
+import type { SportType, WeeklyVolumeTileKey } from '@/lib/sportStyles'
 import type { Goal } from '@/types/database'
 import { RequestGoalsListModal } from '@/app/[locale]/dashboard/RequestGoalsListModal'
 import {
@@ -316,6 +325,7 @@ function AthleteSentRequestDetailModalInner({
                     elevationValue?: number
                   }[] = []
                   if (vol && typeof vol === 'object') {
+                    const practicedForLegacy = parseSports(detail.sport_practiced)
                     for (const sport of WEEKLY_VOLUME_DISPLAY_ORDER) {
                       if (sport === 'course_elevation_m') continue
                       const v = vol[sport]
@@ -327,7 +337,13 @@ function AthleteSentRequestDetailModalInner({
                       const sportLabel = translationKey ? tSports(translationKey as 'course') : sport
                       const sportKey = sport as SportType
                       const style = SPORT_CARD_STYLES[sportKey] ?? SPORT_CARD_STYLES.course
-                      const elevationValue = sport === 'course' ? vol['course_elevation_m'] ?? undefined : undefined
+                      const elevKey = getWeeklyVolumeTileElevationJsonKey(sport as WeeklyVolumeTileKey)
+                      let elevationValue =
+                        sport === 'course'
+                          ? (vol['course_elevation_m'] ?? undefined)
+                          : elevKey != null
+                            ? legacyWeeklyVolumeTileElevationValue(sport as WeeklyVolumeTileKey, vol, practicedForLegacy)
+                            : undefined
                       volumeEntries.push({ key: sport, sportLabel, value: v, suffix, style, elevationValue })
                     }
                   }

@@ -12,8 +12,13 @@ function makeForm(entries: Record<string, string>) {
 
 const completePrefs: WorkoutPrimaryMetricBySport = {
   course: 'distance',
+  trail: 'distance',
   velo: 'distance',
   natation: 'distance',
+  nordic_ski: 'distance',
+  backcountry_ski: 'distance',
+  ice_skating: 'distance',
+  randonnee: 'distance',
 }
 
 describe('validateWorkoutFormData — options primaryMetricBySport', () => {
@@ -62,8 +67,13 @@ describe('validateWorkoutFormData — options primaryMetricBySport', () => {
     })
     const prefs: WorkoutPrimaryMetricBySport = {
       course: 'time',
+      trail: 'distance',
       velo: 'distance',
       natation: 'distance',
+      nordic_ski: 'distance',
+      backcountry_ski: 'distance',
+      ice_skating: 'distance',
+      randonnee: 'distance',
     }
     const r = validateWorkoutFormData(fd, { primaryMetricBySport: prefs })
     expect('data' in r).toBe(true)

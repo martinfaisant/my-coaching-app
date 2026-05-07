@@ -5,13 +5,14 @@ import { getTranslations } from 'next-intl/server'
 import { requireUser, getProfile } from '@/lib/authHelpers'
 import { getEffectiveWeeklyTotalsFait } from '@/app/[locale]/dashboard/workouts/actions'
 import type { SportType } from '@/types/database'
+import { isPersistedWorkoutSportType } from '@/lib/sportsRegistry'
 import { createError, createSuccess, type ApiResult } from '@/lib/errors'
 import {
   type AthleteStatsGranularity,
   type AthleteStatsMetric,
-  ATHLETE_STATS_SPORT_OPTIONS,
   buildMonthlyVolumeSeries,
   buildWeeklyVolumeSeries,
+  getStatsAvailableSportsFromWeeklyTotals,
   normalizeYears,
   type VolumeChartSeries,
 } from '@/lib/athleteStatsVolume'
@@ -22,10 +23,7 @@ export type AthleteVolumeChartPayload = {
   years: number[]
   granularity: AthleteStatsGranularity
   metric: AthleteStatsMetric
-}
-
-function isSportTypeStats(value: string): value is SportType {
-  return (ATHLETE_STATS_SPORT_OPTIONS as readonly string[]).includes(value)
+  availableSports: SportType[]
 }
 
 /**
@@ -64,7 +62,7 @@ export async function loadAthleteVolumeChartData(input: {
     return createError(tStats('errors.yearsRequired'), 'VALIDATION_ERROR')
   }
 
-  if (!isSportTypeStats(input.sport)) {
+  if (!isPersistedWorkoutSportType(input.sport)) {
     return createError(tStats('errors.invalidSport'), 'VALIDATION_ERROR')
   }
   const sport: SportType = input.sport
@@ -81,16 +79,20 @@ export async function loadAthleteVolumeChartData(input: {
       return createError(tStats('errors.loadFailed'))
     }
 
+    const availableSports = getStatsAvailableSportsFromWeeklyTotals(weeklyTotals)
+    const resolvedSport: SportType = availableSports.includes(sport) ? sport : availableSports[0]!
+
     const series =
       granularity === 'week'
-        ? buildWeeklyVolumeSeries(weeklyTotals, years, sport, metric)
-        : buildMonthlyVolumeSeries(weeklyTotals, years, sport, metric)
+        ? buildWeeklyVolumeSeries(weeklyTotals, years, resolvedSport, metric)
+        : buildMonthlyVolumeSeries(weeklyTotals, years, resolvedSport, metric)
 
     return createSuccess({
       series,
       years,
       granularity,
       metric,
+      availableSports,
     })
   } catch (e) {
     logger.error('loadAthleteVolumeChartData', e instanceof Error ? e : new Error(String(e)))

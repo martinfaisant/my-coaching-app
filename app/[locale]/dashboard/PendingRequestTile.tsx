@@ -10,8 +10,16 @@ import { Modal } from '@/components/Modal'
 import { TileCard } from '@/components/TileCard'
 import { useOpenChat } from '@/contexts/OpenChatContext'
 import { getInitials } from '@/lib/stringUtils'
-import { getSportTranslationKey, getWeeklyVolumeUnit, SPORT_CARD_STYLES, SPORT_ICONS, WEEKLY_VOLUME_DISPLAY_ORDER } from '@/lib/sportStyles'
-import type { SportType } from '@/lib/sportStyles'
+import {
+  getSportTranslationKey,
+  getWeeklyVolumeTileElevationJsonKey,
+  getWeeklyVolumeUnit,
+  legacyWeeklyVolumeTileElevationValue,
+  SPORT_CARD_STYLES,
+  SPORT_ICONS,
+  WEEKLY_VOLUME_DISPLAY_ORDER,
+} from '@/lib/sportStyles'
+import type { SportType, WeeklyVolumeTileKey } from '@/lib/sportStyles'
 import { respondToCoachRequest } from '@/app/[locale]/dashboard/actions'
 import type { PendingRequestWithAthlete } from '@/app/[locale]/dashboard/actions'
 import type { Goal } from '@/types/database'
@@ -128,7 +136,13 @@ export function PendingRequestTile({ request, goals = [] }: PendingRequestTilePr
       const sportLabel = translationKey ? tSports(translationKey as 'course') : sport
       const sportKey = sport as SportType
       const style = SPORT_CARD_STYLES[sportKey] ?? SPORT_CARD_STYLES.course
-      const elevationValue = sport === 'course' ? vol['course_elevation_m'] ?? undefined : undefined
+      const elevKey = getWeeklyVolumeTileElevationJsonKey(sport as WeeklyVolumeTileKey)
+      let elevationValue =
+        sport === 'course'
+          ? (vol['course_elevation_m'] ?? undefined)
+          : elevKey != null
+            ? legacyWeeklyVolumeTileElevationValue(sport as WeeklyVolumeTileKey, vol, sportValues)
+            : undefined
       volumeEntries.push({ key: sport, sportLabel, value: v, suffix, style, elevationValue })
     }
   }

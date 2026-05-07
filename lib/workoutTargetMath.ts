@@ -10,7 +10,7 @@ export function computeDurationMinutesFromDistancePace(
   pace: number
 ): number | null {
   if (!Number.isFinite(distanceKm) || distanceKm <= 0 || !Number.isFinite(pace) || pace <= 0) return null
-  if (sportType === 'course') {
+  if (sportType === 'course' || sportType === 'trail') {
     return Math.round(distanceKm * pace)
   }
   if (sportType === 'velo') {
@@ -33,7 +33,7 @@ export function computeDistanceKmFromDurationPace(
 ): number | null {
   if (!Number.isFinite(durationMinutes) || durationMinutes <= 0 || !Number.isFinite(pace) || pace <= 0)
     return null
-  if (sportType === 'course') {
+  if (sportType === 'course' || sportType === 'trail') {
     return Number((durationMinutes / pace).toFixed(2))
   }
   if (sportType === 'velo') {
