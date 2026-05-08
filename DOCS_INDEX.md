@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 8 mai 2026 (**Refonte modale workout** : cartes « Objectif vs Réalisé » hero + chip delta mm:ss + commentaire athlète intégré + tuiles & picker feedback colorés selon valeur + badge sport entête réduit ; nouveaux composants `WorkoutTargetActualCards`, `WorkoutFeedbackSummary`, helpers `lib/workoutFormatting.ts` + `lib/workoutFeedbackColors.ts` ; **docs/DESIGN_SYSTEM.md**, **Project_context.md** §4.5, **docs/I18N.md** mis à jour ; archivage `docs/design-workout-modal-revamp/` ; précédent : `workouts.validation` / objectifs formulaire séance coach…)
+**Dernière mise à jour :** 8 mai 2026 (**Tuiles entraînement calendrier** : métriques **réalisées** sur la grille jour quand `completed` — `getCalendarWorkoutTileMetrics` ; **canot** dans `workoutHasPaceField` (vitesse km/h) ; **Project_context.md** §4.5, **docs/CALENDAR_MONTH_VIEW.md**, **docs/DESIGN_SYSTEM.md** §7, **project-core.mdc** ; précédent : refonte modale workout, archivage `docs/design-workout-modal-revamp/`…)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -18,7 +18,7 @@
 - **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), stack technique, **URL production https://mysportally.com**
 - **Utiliser pour :** Comprendre le projet, les features, les rôles, l'architecture globale
 - **Taille :** ~450 lignes
-- **Dernière mise à jour :** 7 mai 2026 (§4.5 **formulaire séance coach** : auto-calcul objectifs + validation serveur `workouts.validation` ; précédent : §4.0 en-tête public, §4.2 sports, §4.5 sports workouts, §4.11 contact…)
+- **Dernière mise à jour :** 8 mai 2026 (§4.5 **tuiles calendrier** : affichage réalisé en grille si `completed` + **canot** / `workoutHasPaceField` ; précédent : formulaire séance coach, §4.0 en-tête public…)
 
 ### **docs/CALENDAR_MONTH_VIEW.md**
 - **Contenu :** Récap **vue mois** (desktop) vs **vue semaine** (mobile), règles semaines ISO / mois civil étendu, chargement données, liste des fichiers et tests unitaires, liens vers maquettes archivées
@@ -30,7 +30,7 @@
 - **Contenu :** Tokens (couleurs, typo, espacements), composants (Button, Input, Badge, TileCard, DashboardPageShell, **DashboardTopBar**, **AthleteAccountMenu**, **AthleteStatsVolumeChart**, **AthleteStatsChartSkeleton**, Modal, **MonthSelector**, etc.), guidelines UI, exemples de code, §7 breakpoints (**calendrier** mois étendu desktop + WeekSelector mobile, chat, Trouver mon coach, My offers)
 - **Utiliser pour :** Créer ou modifier des composants UI, choisir des couleurs, appliquer le design system, règles responsive par page
 - **Taille :** ~1850 lignes
-- **Dernière mise à jour :** 7 mai 2026 (couleurs sports + nouveaux sports ; section `Badge` alignée sur `lib/sportStyles.ts` ; précédent : headers publics, ContactForm, stats athlète)
+- **Dernière mise à jour :** 8 mai 2026 (§7 calendrier : tuiles entraînement — affichage réalisé si séance complétée ; précédent : couleurs sports, `Badge`…)
 
 ### **docs/I18N.md** ⭐
 - **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces, utilisation dans composants et server actions, **checklist pour nouvelles features** (toujours penser bilingue)

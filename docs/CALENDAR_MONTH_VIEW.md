@@ -1,6 +1,6 @@
 # Calendrier — vue mois (desktop) et vue semaine (mobile)
 
-**Dernière mise à jour :** 4 mai 2026 — aligné sur l’implémentation (`CalendarView`, `CalendarViewWithNavigation`, pages calendrier).
+**Dernière mise à jour :** 8 mai 2026 — aligné sur l’implémentation (`CalendarView`, `CalendarViewWithNavigation`, pages calendrier).
 
 ## Besoin produit (rappel)
 
@@ -17,6 +17,7 @@
 
 - **i18n :** `calendar.prevMonth`, `calendar.nextMonth` (aria des chevrons), `calendar.weekRangeSeparator` (mobile).
 - **Hauteurs min. des cellules jour (desktop / mobile condensé) :** constantes Tailwind centralisées dans `lib/calendarViewDayHeights.ts` (tests dans `lib/calendarViewDayHeights.test.ts`).
+- **Tuiles entraînement (grille jour, compacte ou détaillée) :** si la séance est **`completed`**, la rangée durée / distance / allure (ou vitesse km/h pour vélo, triathlon, **canot**) / D+ affiche uniquement les métriques **`actual_*`** présentes (pas de repli sur les cibles) ; l’allure ou la vitesse réalisée est dérivée quand durée et distance réelles le permettent (`getCalendarWorkoutTileMetrics` dans `lib/workoutFormatting.ts`). Sinon (`planned`, `not_completed`) : affichage des **objectifs** comme avant. La modale au clic et les `ActivityTile` de la liste « Activités du jour » ne suivent pas cette règle (voir **Project_context.md** §4.5).
 
 ## Données et chargement
 
@@ -28,7 +29,7 @@
 
 | Rôle | Fichier |
 |------|---------|
-| Grille + modes condensé / détaillé | `components/CalendarView.tsx` |
+| Grille + modes condensé / détaillé + métriques tuile séance | `components/CalendarView.tsx`, `lib/workoutFormatting.ts` (`getCalendarWorkoutTileMetrics`) |
 | Navigation, `matchMedia` md, refetch mois | `components/CalendarViewWithNavigation.tsx` |
 | Sélecteur mois | `components/MonthSelector.tsx` |
 | Pages shell athlète / coach | `components/AthleteCalendarPage.tsx`, `components/CoachAthleteCalendarPage.tsx` |

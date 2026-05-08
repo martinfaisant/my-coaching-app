@@ -263,6 +263,7 @@ if ('error' in result) return result
 ## Entraînements (workouts) – Statut, retour athlète et total « fait »
 
 - **Statut :** `workouts.status` = `planned` | `completed` | `not_completed` (défaut `planned`). Seul l’athlète peut modifier le statut (avec commentaire) via `saveWorkoutStatusAndComment`.
+- **Tuiles calendrier (grille jour, `CalendarView`) :** si `status = completed`, la rangée métriques de la tuile entraînement affiche uniquement les **`actual_*`** disponibles (pas de repli sur les cibles) ; allure ou vitesse (ex. **km/h** pour vélo / triathlon / **canot**) dérivée si durée et distance réelles le permettent — `getCalendarWorkoutTileMetrics` (`lib/workoutFormatting.ts`), `workoutHasPaceField` + `computeActualPace` (`lib/sportsRegistry.ts`). Sinon affichage des objectifs. La modale séance au clic ne change pas pour cette règle.
 - **Total « fait » :** Affichage = activités importées Strava + séances `completed`, **moins** le volume des séances réalisées qui ont une activité importée **même jour et même type** (éviter double comptage). Mapping Strava → type app : `lib/stravaMapping.ts` ; serveur : `getEffectiveWeeklyTotalsFait`.
 - **Retour athlète (optionnel) :** Quand le statut = `completed`, l'athlète peut renseigner `perceived_feeling` (1–5), `perceived_intensity` (1–10), `perceived_pleasure` (1–5) ; sauvegarde avec statut et commentaire ; le coach voit le retour en lecture seule (WorkoutModal). i18n : `workouts.feedback`.
 - **Référence :** `Project_context.md` §4.5 (Workouts, Total « fait »).

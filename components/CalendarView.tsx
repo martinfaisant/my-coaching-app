@@ -12,6 +12,7 @@ import { AvailabilityDetailModal } from './AvailabilityDetailModal'
 import { Modal } from './Modal'
 import { SPORT_ICONS, SPORT_CARD_STYLES, SPORT_TRANSLATION_KEYS } from '@/lib/sportStyles'
 import { workoutPaceIsRunningStyle } from '@/lib/sportsRegistry'
+import { getCalendarWorkoutTileMetrics } from '@/lib/workoutFormatting'
 import { ActivityTile } from './ActivityTile'
 import type {
   AthleteFacility,
@@ -461,6 +462,7 @@ export function CalendarView({
         const firstDay = new Date(weekStart)
         const lastDay = new Date(weekStart)
         lastDay.setDate(lastDay.getDate() + 6)
+        
         const rangeLabel = `${firstDay.getDate()} ${getShortMonthName(firstDay.getMonth())}${weekRangeSeparator}${lastDay.getDate()} ${getShortMonthName(lastDay.getMonth())}`
         weeksOut.push({
           label: '',
@@ -790,13 +792,10 @@ export function CalendarView({
 
   const renderCompactCard = (w: Workout, dateStr: string) => {
     const style = SPORT_CARD_STYLES[w.sport_type]
-    const target = formatWorkoutTarget(w)
     const SportIcon = SPORT_ICONS[w.sport_type]
-    const hasDuration = w.target_duration_minutes != null && w.target_duration_minutes > 0
-    const hasDistance = w.target_distance_km != null && w.target_distance_km > 0
-    const hasPace = w.target_pace != null && w.target_pace > 0
-    const hasElevation = w.target_elevation_m != null && w.target_elevation_m > 0
-    const paceStr = formatPace(w.target_pace, w.sport_type)
+    const tile = getCalendarWorkoutTileMetrics(w)
+    const { hasDuration, hasDistance, hasPace, hasElevation } = tile
+    const paceStr = formatPace(tile.paceForDisplay, w.sport_type)
     const showCommentIcon = hasAthleteComment(w)
     const athleteCommentLabel = tCalendar('tile.athleteCommentLabel')
     const status = (w as Workout).status ?? 'planned'
@@ -826,7 +825,7 @@ export function CalendarView({
               <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <span>{formatDuration(Math.round(w.target_duration_minutes!))}</span>
+              <span>{formatDuration(tile.durationMinutes!)}</span>
             </div>
           )}
           {hasDistance && (
@@ -842,8 +841,8 @@ export function CalendarView({
                 </svg>
                 <span>
                   {w.sport_type === 'natation' 
-                    ? `${Math.round(w.target_distance_km! * 1000)} m`
-                    : `${Math.round(w.target_distance_km!)} km`}
+                    ? `${Math.round(tile.distanceKm! * 1000)} m`
+                    : `${Math.round(tile.distanceKm!)} km`}
                 </span>
               </div>
             </>
@@ -866,7 +865,7 @@ export function CalendarView({
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                 </svg>
-                <span>{w.target_elevation_m}m D+</span>
+                <span>{Math.round(tile.elevationM!)}m D+</span>
               </div>
             </>
           )}
@@ -895,10 +894,9 @@ export function CalendarView({
     const style = SPORT_CARD_STYLES[w.sport_type]
     const target = formatWorkoutTarget(w)
     const SportIcon = SPORT_ICONS[w.sport_type]
-    const hasDuration = w.target_duration_minutes != null && w.target_duration_minutes > 0
-    const hasDistance = w.target_distance_km != null && w.target_distance_km > 0
-    const hasPace = w.target_pace != null && w.target_pace > 0
-    const paceStr = formatPace(w.target_pace, w.sport_type)
+    const tile = getCalendarWorkoutTileMetrics(w)
+    const { hasDuration, hasDistance, hasPace, hasElevation } = tile
+    const paceStr = formatPace(tile.paceForDisplay, w.sport_type)
     const showCommentIcon = hasAthleteComment(w)
     const athleteCommentLabel = tCalendar('tile.athleteCommentLabel')
     const status = (w as Workout).status ?? 'planned'
@@ -928,7 +926,7 @@ export function CalendarView({
               <svg xmlns="http://www.w3.org/2000/svg" className="h-2.5 w-2.5 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <span>{formatDuration(Math.round(w.target_duration_minutes!))}</span>
+              <span>{formatDuration(tile.durationMinutes!)}</span>
             </div>
           )}
           {hasDistance && (
@@ -944,8 +942,8 @@ export function CalendarView({
                 </svg>
                 <span>
                   {w.sport_type === 'natation' 
-                    ? `${Math.round(w.target_distance_km! * 1000)} m`
-                    : `${Math.round(w.target_distance_km!)} km`}
+                    ? `${Math.round(tile.distanceKm! * 1000)} m`
+                    : `${Math.round(tile.distanceKm!)} km`}
                 </span>
               </div>
             </>
@@ -961,7 +959,18 @@ export function CalendarView({
               </div>
             </>
           )}
-          {target.secondary && (hasDuration || hasDistance || hasPace) && (
+          {tile.mode === 'completed' && hasElevation && (
+            <>
+              {(hasDuration || hasDistance || hasPace) && <div className="w-px h-3 bg-stone-300" />}
+              <div className="flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-2.5 w-2.5 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
+                <span>{Math.round(tile.elevationM!)}m D+</span>
+              </div>
+            </>
+          )}
+          {tile.mode !== 'completed' && target.secondary && (hasDuration || hasDistance || hasPace) && (
             <>
               <div className="w-px h-3 bg-stone-300" />
               <div className="flex items-center gap-1">
@@ -974,7 +983,11 @@ export function CalendarView({
           )}
           {showCommentIcon && (
             <>
-              {(hasDuration || hasDistance || hasPace || target.secondary) && <div className="w-px h-3 bg-stone-300" />}
+              {(hasDuration ||
+                hasDistance ||
+                hasPace ||
+                (tile.mode === 'completed' && hasElevation) ||
+                (tile.mode !== 'completed' && target.secondary)) && <div className="w-px h-3 bg-stone-300" />}
               <div className="flex items-center gap-1" title={athleteCommentLabel} aria-label={athleteCommentLabel}>
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-2.5 w-2.5 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                   <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
@@ -982,9 +995,12 @@ export function CalendarView({
               </div>
             </>
           )}
-          {(hasDuration || hasDistance || hasPace || target.secondary || showCommentIcon) && (
-            <div className="w-px h-3 bg-stone-300" aria-hidden />
-          )}
+          {(hasDuration ||
+            hasDistance ||
+            hasPace ||
+            (tile.mode === 'completed' && hasElevation) ||
+            (tile.mode !== 'completed' && target.secondary) ||
+            showCommentIcon) && <div className="w-px h-3 bg-stone-300" aria-hidden />}
           <span className={`shrink-0 px-1.5 py-0.5 text-[10px] font-semibold ${statusBadge.className}`} aria-label={statusBadge.label}>
             {statusBadge.label}
           </span>
