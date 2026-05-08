@@ -430,7 +430,7 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
       >
         <input type="hidden" name="_locale" value={locale} />
         <input type="hidden" name="_save_slot" value="" />
-        <header className="h-20 flex items-center justify-between px-6 lg:px-8 shrink-0 bg-white border-b border-stone-100">
+        <header className="h-20 flex items-center justify-between shrink-0 bg-white border-b border-stone-100">
           <h1 className="text-base font-bold uppercase tracking-wider text-stone-700">{t('title')}</h1>
           <Button
             type="submit"
@@ -448,7 +448,7 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
         </header>
 
         {/* CONTENU (GRILLE D'OFFRES) */}
-        <div className="flex-1 min-h-0 overflow-y-auto px-6 lg:px-8 py-4">
+        <div className="flex-1 min-h-0 overflow-y-auto py-4">
           {state?.error && (
             <div
               className={`mb-6 ${FORM_ERROR_BOX_CLASSES}`}

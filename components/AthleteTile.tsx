@@ -121,31 +121,31 @@ export function AthleteTile({
 
         {/* Contenu: objectif + planifié (grille 2 colonnes, comme la tuile actuelle mais dans le même style carte) */}
         <div className="grid grid-cols-2 gap-4 text-sm flex-1">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-stone-500">{nextGoalLabel}</p>
-            <p className="text-stone-900 mt-0.5">
-              {nextGoal ? `${nextGoal.date} · ${nextGoal.raceName}` : noGoalLabel}
-            </p>
-          </div>
-          <div>
+        <div>
             <p className="text-xs font-bold uppercase tracking-wider text-stone-500">{plannedUntilLabel}</p>
-            <p className="text-stone-900 font-semibold mt-0.5 text-sm">
+            <p className="text-stone-900 mt-0.5 text-sm">
               {plannedUntil ?? '—'}
             </p>
             <div className="flex items-center gap-1 mt-0.5">
               <span
                 className={`w-1.5 h-1.5 rounded-full shrink-0 ${
-                  isUpToDate ? 'bg-emerald-500' : 'bg-red-400'
+                  isUpToDate ? 'bg-palette-forest-darker' : 'bg-palette-danger'
                 }`}
               />
               <span
                 className={`text-[10px] font-medium ${
-                  isUpToDate ? 'text-stone-500' : 'text-red-400'
+                  isUpToDate ? 'text-palette-forest-darker' : 'text-palette-danger'
                 }`}
               >
                 {isUpToDate ? upToDateLabel : lateLabel}
               </span>
             </div>
+          </div>
+          <div>
+            <p className="text-xs font-bold uppercase tracking-wider text-stone-500">{nextGoalLabel}</p>
+            <p className="text-stone-900 mt-0.5">
+              {nextGoal ? `${nextGoal.date} · ${nextGoal.raceName}` : noGoalLabel}
+            </p>
           </div>
         </div>
       </div>
