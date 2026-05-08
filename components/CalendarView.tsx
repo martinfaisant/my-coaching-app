@@ -1051,7 +1051,7 @@ export function CalendarView({
     const hasAnyTotals = sports.length > 0
     if (!hasAnyTotals) return null
     return (
-      <div className="bg-white rounded-xl border border-stone-200 shadow-sm px-5 pt-3 pb-5 mb-6">
+      <div className="bg-white rounded-xl border border-stone-200 shadow-sm px-5 pt-1 pb-5 mb-6">
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4">
           {sports.map(({ key, Icon, color, bg, label, prevuVal, faitVal, useTime, useMeters }) => {
             const barPct = prevuVal > 0 ? Math.min(100, Math.round((faitVal / prevuVal) * 100)) : (faitVal > 0 ? 100 : 0)
