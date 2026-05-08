@@ -1096,7 +1096,65 @@ type ModalProps = {
 }
 ```
 
-**Usage avancé :** La modale entraînement (`WorkoutModal`) utilise la taille `workout` (644px), `iconRaw` et `titleWrap`. **Création et édition coach :** date à gauche (sans titre ni icône check), badge statut à droite ; corps : Sport, titre, **Moment de la journée** (segments Non précisé | Matin | Midi | Soir, même style que Temps/Distance), objectifs, description. **Retour athlète (statut = Réalisé) :** section « Retour athlète » avec trois échelles optionnelles : ressenti (1–5, icônes Lucide Angry/Frown/Meh/Smile/Laugh + libellés), intensité effort (1–10 segments), plaisir (1–5, mêmes icônes + libellés) ; même largeur totale par ligne (`flex w-full`, `flex-1 min-w-0` sur chaque choix). **Lecture seule** (athlète / coach passé) : tuile pill du sport + titre de la séance à gauche (titre peut passer sur deux lignes sur petit écran), badge statut à droite ; corps : date (+ « · Matin » etc. si moment renseigné), objectifs, description ; si feedback renseigné, section Retour athlète (icônes + libellés ou X/10). Styles formulaires : `lib/formStyles.ts`.
+**Usage avancé :** La modale entraînement (`WorkoutModal`) utilise la taille `workout` (644px), `iconRaw` et `titleWrap`. **Création et édition coach :** date à gauche (sans titre ni icône check), badge statut à droite ; corps : Sport, titre, **Moment de la journée** (segments Non précisé | Matin | Midi | Soir, même style que Temps/Distance), objectifs, description. **Athlète (saisie + preview) et coach lecture seule :** corps construit autour de **`WorkoutTargetActualCards`** (deux cartes côte-à-côte Objectif vs Réalisé hero) suivi de **`WorkoutFeedbackSummary`** (3 tuiles feedback distribuées full-width). Tuile sport en en-tête : taille **`text-xs`**, icône **`w-3 h-3`**, padding **`px-3 py-1.5`**, gap **`gap-1.5`** (réduction ~15 % par rapport au pattern initial pour ne pas surcharger l'en-tête). **Athlète (saisie) :** section feedback `WorkoutFeedbackSection` (statut = Réalisé) — trois échelles optionnelles avec **couleurs sémantiques par valeur** issues de `lib/workoutFeedbackColors.ts` (voir ci-dessous). **Lecture seule** (athlète / coach passé) : tuile pill du sport + titre de la séance à gauche (titre peut passer sur deux lignes sur petit écran), badge statut à droite ; pas de form ni boutons. Styles formulaires : `lib/formStyles.ts`.
+
+### WorkoutTargetActualCards
+
+**Fichier :** `components/workout-modal/WorkoutTargetActualCards.tsx`
+
+Deux cartes responsive côte-à-côte (`grid-cols-1 md:grid-cols-2`) qui résument l'**Objectif** (planifié) et le **Réalisé** (saisi par l'athlète) d'une séance. Utilisé dans `AthleteWorkoutModalView` (avec live preview) et `CoachReadOnlyWorkoutModalView` (lecture seule).
+
+**Carte Objectif** (light, `bg-stone-50`) : header `Target` icon + titre, lignes `min-h-7` durée / distance / allure / D+ selon sport, description en bas avec séparateur `pt-4 border-t border-stone-200 mt-4` si présente. Layout interne : `space-y-3.5` quand la carte Réalisé est visible, sinon `grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3.5` pour aérer.
+
+**Carte Réalisé hero** (dark, `bg-palette-forest-dark`, ombre `shadow-palette-forest-dark/20`, icône `Trophy` opacité 10 % en background) : header `CheckCircle2` + titre, lignes `min-h-7` valeur en `text-xl font-black` blanc + chip delta optionnelle (`±M:SS/km`, `±N km/h`, `±N,N km`, `±N min`) ; **commentaire athlète** intégré en bas avec séparateur `border-white/20` si métriques au-dessus. La carte est rendue dès qu'il y a au moins une métrique réalisée **ou** un commentaire athlète.
+
+**Format des deltas** (centralisé dans `lib/workoutFormatting.ts`, testé via Vitest) :
+- Durée : `±NhMM` ou `±N min`
+- Distance : `±N,N km` (ou `±N m` natation)
+- Allure (course / trail) : `±M:SS/km` (format mm:ss aligné sur la valeur affichée `4:55 min/km`)
+- Allure (natation) : `±M:SS/100m`
+- Vitesse (vélo / triathlon / canot) : `±N,N km/h`
+- D+ : `±N m`
+- Tolérance : delta `null` (chip masquée) si écart négligeable après arrondi.
+
+**Props :**
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `workout` | `Workout` | Données séance (targets + actuals + sport + status). |
+| `liveActual` | `LiveActualMetrics` (optionnel) | Override des `actual_*` pour le live preview athlète. |
+| `athleteComment` | `string \| null` (optionnel) | Affiché en bas de la card Réalisé (lecture seule). Non passé côté athlète saisie. |
+| `locale` | `'fr' \| 'en'` | Locale d'affichage (formatage nombres). |
+| `tWorkouts` | `(key: string) => string` | Fonction de traduction pour le namespace `workouts`. |
+
+### WorkoutFeedbackSummary
+
+**Fichier :** `components/workout-modal/WorkoutFeedbackSummary.tsx`
+
+Trois tuiles read-only (Ressenti / Intensité RPE / Plaisir) **distribuées full-width** (`flex flex-col sm:flex-row gap-6`, chaque enfant en `flex-1 min-w-0`). Chaque tuile : `w-12 h-12 rounded-xl border` colorée selon la valeur via `lib/workoutFeedbackColors.ts` (voir Feedback colors), avec icône Lucide (Angry → Laugh pour 1–5) ou nombre (intensité 1–10) à gauche, label texte à droite. Composant entièrement masqué si les trois feedbacks sont `null`.
+
+### WorkoutFeedbackSection (athlète, picker)
+
+**Fichier :** `components/workout-modal/WorkoutFeedbackSection.tsx`
+
+Picker athlète pour la saisie des trois feedbacks (statut = Réalisé). Trois rangées `flex w-full gap-2`. Boutons sélectionnés colorés via `lib/workoutFeedbackColors.ts` :
+- Feeling / Pleasure : `border-2` + fond léger (`FEELING_PICKER_SELECTED_BG`), icône + label colorés (`FEELING_PICKER_SELECTED_TEXT`) — couleur miroir de la tuile read-only correspondante.
+- Intensité (10 cases) : fond plein saturé + texte blanc (`INTENSITY_PICKER_SELECTED`) pour lisibilité immédiate dans une rangée compacte.
+
+Boutons non sélectionnés : neutres `border-stone-200 bg-white text-stone-500/600` (interaction au hover : `bg-stone-50`).
+
+### Feedback colors — `lib/workoutFeedbackColors.ts`
+
+**Source unique de vérité** pour les couleurs sémantiques des feedbacks (Ressenti, Intensité RPE, Plaisir). Mutualisée entre la tuile read-only coach (`WorkoutFeedbackSummary`) et le picker athlète (`WorkoutFeedbackSection`).
+
+Records statiques (classes Tailwind écrites en clair pour JIT) :
+- `FEELING_TILE_CLASSES` (1–5) : tuile read-only — bg/text/border léger, dégradé 1 = `palette-danger` → 5 = `palette-forest-dark`.
+- `INTENSITY_TILE_CLASSES` (1–10) : tuile read-only — dégradé 1–2 = `palette-forest-dark`, 3–4 = `palette-sage`, 5–7 = `palette-amber` (5 = orange exact), 8–10 = `palette-danger`.
+- `FEELING_PICKER_SELECTED_BG` (1–5) : picker sélectionné — `border-palette-X bg-palette-X/10-20`.
+- `FEELING_PICKER_SELECTED_TEXT` (1–5) : couleur icône + label sélectionnés.
+- `INTENSITY_PICKER_SELECTED` (1–10) : picker sélectionné — fond plein `bg-palette-X text-white`.
+
+Toutes les classes utilisent les tokens `palette-*` du design system (`palette-forest-dark`, `palette-sage`, `palette-amber`, `palette-danger`). Aucun hex.
 
 #### Exemples
 
@@ -1930,11 +1988,12 @@ Actuellement, utiliser un span custom :
 
 - **Tokens couleurs** : `tailwind.config.ts`, `app/globals.css`
 - **Styles formulaires** : `lib/formStyles.ts` (FORM_BASE_CLASSES, FORM_INPUT_TEXT_SIZE, FORM_INPUT_HEIGHT, etc.)
-- **Composants** : `components/Button.tsx`, `components/Input.tsx`, `components/PasswordInput.tsx`, `components/SearchInput.tsx`, `components/Textarea.tsx`, `components/Badge.tsx`, `components/Avatar.tsx`, `components/AvatarImage.tsx`, `components/SportTileSelectable.tsx`, `components/ActivityTile.tsx`, `components/Modal.tsx`, `components/CoachReviewsModal.tsx`, `components/workout-modal/WorkoutFacilityHoursStrip.tsx`, `components/AthleteFacilityDetails.tsx`, `components/CoachAthleteNotesSection.tsx`, `components/CoachAthleteNoteModal.tsx`, `components/DashboardPageShell.tsx`, `components/DashboardTopBar.tsx`, `components/AthleteAccountMenu.tsx`, `components/CoachAccountMenu.tsx`, `components/ContactForm.tsx`, `components/Drawer.tsx`, `components/PublicOrDashboardHeader.tsx`, `components/PublicHeader.tsx`, `components/EmailValidatedModal.tsx`, `components/HomeEmailConfirmedTrigger.tsx`, `components/Dropdown.tsx`, `components/Segments.tsx`, `components/DatePickerPopup.tsx`, `components/MonthSelector.tsx`, `components/CalendarView.tsx`, `components/CalendarViewWithNavigation.tsx`, `lib/calendarViewDayHeights.ts`, `components/AvailabilityModal.tsx`, `components/AvailabilityDetailModal.tsx`, `components/ChatAthleteListItem.tsx`, `components/ChatConversationSidebar.tsx`
+- **Composants** : `components/Button.tsx`, `components/Input.tsx`, `components/PasswordInput.tsx`, `components/SearchInput.tsx`, `components/Textarea.tsx`, `components/Badge.tsx`, `components/Avatar.tsx`, `components/AvatarImage.tsx`, `components/SportTileSelectable.tsx`, `components/ActivityTile.tsx`, `components/Modal.tsx`, `components/CoachReviewsModal.tsx`, `components/workout-modal/WorkoutFacilityHoursStrip.tsx`, `components/workout-modal/WorkoutTargetActualCards.tsx`, `components/workout-modal/WorkoutFeedbackSummary.tsx`, `components/workout-modal/WorkoutFeedbackSection.tsx`, `components/AthleteFacilityDetails.tsx`, `components/CoachAthleteNotesSection.tsx`, `components/CoachAthleteNoteModal.tsx`, `components/DashboardPageShell.tsx`, `components/DashboardTopBar.tsx`, `components/AthleteAccountMenu.tsx`, `components/CoachAccountMenu.tsx`, `components/ContactForm.tsx`, `components/Drawer.tsx`, `components/PublicOrDashboardHeader.tsx`, `components/PublicHeader.tsx`, `components/EmailValidatedModal.tsx`, `components/HomeEmailConfirmedTrigger.tsx`, `components/Dropdown.tsx`, `components/Segments.tsx`, `components/DatePickerPopup.tsx`, `components/MonthSelector.tsx`, `components/CalendarView.tsx`, `components/CalendarViewWithNavigation.tsx`, `lib/calendarViewDayHeights.ts`, `components/AvailabilityModal.tsx`, `components/AvailabilityDetailModal.tsx`, `components/ChatAthleteListItem.tsx`, `components/ChatConversationSidebar.tsx`
 - **Page Mes athlètes (coach)** : `app/[locale]/dashboard/athletes/page.tsx` (bandeaux profil / offre publiée, erreur chargement liste), `CoachAthletesListWithFilter.tsx`, `PendingRequestTile.tsx`
 - **Sports** : `lib/sportStyles.ts`, `lib/sportsOptions.ts`, `components/SportIcons.tsx`
 - **Stats athlète (Nivo)** : `lib/athleteStatsNivoTheme.ts`, `lib/athleteStatsColors.ts`, `components/athlete/AthleteStatsVolumeChart.tsx`
 - **Horaires modale workout (coach)** : `lib/workoutFacilityHours.ts` (filtre sport ↔ type d’installation, jour, tri alphabétique)
+- **Modale workout — formats & couleurs** : `lib/workoutFormatting.ts` (format absolu et delta des métriques workout — durée, distance, allure mm:ss, vitesse km/h, dénivelé ; tests Vitest `lib/workoutFormatting.test.ts`), `lib/workoutFeedbackColors.ts` (dégradé sémantique tuiles + picker feedback : Ressenti / Intensité RPE / Plaisir)
 - **Design system page** : `app/dashboard/admin/design-system/page.tsx`
 
 ### Évolutions futures

@@ -729,10 +729,10 @@ export function WorkoutModal({
         const label = sport in SPORT_TRANSLATION_KEYS ? tSports(SPORT_TRANSLATION_KEYS[sport as keyof typeof SPORT_TRANSLATION_KEYS]) : currentWorkout.sport_type
         return (
           <span
-            className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border-2 ${borderClass} ${styles.bg} ${styles.text} text-sm font-medium shrink-0 shadow-[0_4px_6px_-1px_rgba(98,126,89,0.2)]`}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border-2 ${borderClass} ${styles.bg} ${styles.text} text-xs font-medium shrink-0 shadow-[0_4px_6px_-1px_rgba(98,126,89,0.2)]`}
             aria-hidden
           >
-            <Icon className="w-3.5 h-3.5 shrink-0" aria-hidden />
+            <Icon className="w-3 h-3 shrink-0" aria-hidden />
             <span>{label}</span>
           </span>
         )
@@ -932,7 +932,6 @@ export function WorkoutModal({
         workout={currentWorkout}
         locale={locale}
         tWorkouts={tWorkouts}
-        coachWorkoutPrimaryMetrics={coachWorkoutPrimaryMetrics}
       />
       ) : (
       <form

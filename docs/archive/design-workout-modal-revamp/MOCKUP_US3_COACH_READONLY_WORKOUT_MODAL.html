@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>US3 — Modale coach lecture seule (refonte complète)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              palette: {
+                'forest-dark': '#627e59',
+                'forest-darker': '#3d5037',
+                gold: '#c5a35a',
+                amber: '#e2b66b',
+              },
+              stone: {
+                50: '#fafaf9',
+                100: '#f5f5f4',
+                200: '#e7e5e4',
+                300: '#d6d3d1',
+                400: '#a8a29e',
+                500: '#78716c',
+                600: '#57534e',
+                700: '#44403c',
+                800: '#292524',
+                900: '#1c1917',
+              },
+            },
+          },
+        },
+      }
+    </script>
+    <style> body { font-family: ui-sans-serif, system-ui, -apple-system, sans-serif; } </style>
+  </head>
+
+  <body class="bg-stone-200 min-h-screen p-6">
+    <div class="max-w-4xl mx-auto space-y-12">
+      <header>
+        <h1 class="text-2xl font-bold text-stone-900">US3 — Modale coach lecture seule</h1>
+        <p class="text-sm text-stone-600 mt-1">
+          Refonte de <code>CoachReadOnlyWorkoutModalView</code>. Apparaît quand le coach ouvre une séance déjà passée
+          ou réalisée d'un de ses athlètes. Lecture seule. <strong>Ajoute le bloc Réalisé</strong> aujourd'hui absent
+          (manque produit). En-tête conservé : pill sport + titre + badge statut.
+        </p>
+      </header>
+
+      <!-- =================== ÉTAT A — Réalisé complet (cas nominal) =================== -->
+      <section class="space-y-3">
+        <h2 class="text-base font-bold text-stone-800">État A — Séance Réalisée, métriques + feedback + commentaire</h2>
+        <p class="text-xs text-stone-500">Cas nominal. Tout est affiché : Objectif/Réalisé (US1) + Feedback Summary (US2) + Commentaire athlète.</p>
+
+        <!-- Modal -->
+        <div class="bg-white rounded-2xl shadow-2xl overflow-hidden border border-stone-200">
+          <!-- Header (existant, conservé) -->
+          <div class="px-6 py-5 border-b border-stone-100 flex items-center justify-between bg-white">
+            <div class="flex items-center gap-3 min-w-0">
+              <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border-2 border-palette-forest-dark/30 bg-palette-forest-dark/10 text-palette-forest-dark text-xs font-medium shrink-0">
+                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>
+                <span>Course</span>
+              </span>
+              <h2 class="text-lg font-bold text-stone-800 tracking-tight truncate">Sortie tempo</h2>
+            </div>
+            <div class="flex items-center gap-3 shrink-0">
+              <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-palette-forest-dark/15 text-palette-forest-dark">Réalisé</span>
+              <button class="text-stone-400 hover:text-stone-600 transition-colors" aria-label="Fermer">
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Body -->
+          <div class="p-6 space-y-6">
+            <!-- Date (label uppercase) -->
+            <p class="text-xs font-bold text-stone-400 uppercase tracking-widest">Mer. 26 Mars 2026 · Matin</p>
+
+            <!-- Objectif / Réalisé (US1) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- Objectif -->
+              <div class="bg-stone-50 rounded-2xl p-6 border border-stone-100">
+                <div class="flex items-center gap-2 mb-4 text-stone-400">
+                  <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></svg>
+                  <span class="text-[10px] font-bold uppercase tracking-[0.2em]">Objectif Session</span>
+                </div>
+                <div class="space-y-3.5">
+                  <div class="flex items-center justify-between"><span class="text-sm text-stone-500">Temps prévu</span><span class="font-bold text-stone-800">1h12</span></div>
+                  <div class="flex items-center justify-between"><span class="text-sm text-stone-500">Distance</span><span class="font-bold text-stone-800">14,2 km</span></div>
+                  <div class="flex items-center justify-between"><span class="text-sm text-stone-500">Allure</span><span class="font-bold text-stone-800">5:00 min/km</span></div>
+                  <div class="flex items-center justify-between"><span class="text-sm text-stone-500">D+</span><span class="font-bold text-stone-800">200 m</span></div>
+                  <div class="pt-3 border-t border-stone-200 mt-1">
+                    <p class="text-xs text-stone-500 italic leading-relaxed">"Tempo soutenu en deuxième partie, allure marathon. Profite des descentes."</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Réalisé hero -->
+              <div class="bg-palette-forest-dark rounded-2xl p-6 text-white shadow-xl shadow-palette-forest-dark/20 relative overflow-hidden">
+                <div class="absolute -right-4 -top-4 opacity-10" aria-hidden>
+                  <svg class="h-20 w-20 rotate-12" viewBox="0 0 24 24" fill="currentColor"><path d="M5 4h14a1 1 0 011 1v3a4 4 0 01-4 4h-1a5 5 0 01-3 4.58V19h2a1 1 0 010 2H10a1 1 0 010-2h2v-2.42A5 5 0 019 12H8a4 4 0 01-4-4V5a1 1 0 011-1zm0 2v2a2 2 0 002 2V6H5zm14 0h-2v4a2 2 0 002-2V6z"/></svg>
+                </div>
+                <div class="flex items-center gap-2 mb-4 text-white/60 relative z-10">
+                  <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                  <span class="text-[10px] font-bold uppercase tracking-[0.2em]">Réalisé</span>
+                </div>
+                <div class="space-y-3.5 relative z-10">
+                  <div class="flex items-center justify-between gap-3">
+                    <span class="text-sm text-white/70">Temps total</span>
+                    <div class="flex items-center gap-2"><span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/10 text-white/80">−1 min</span><span class="font-black text-xl">1h11</span></div>
+                  </div>
+                  <div class="flex items-center justify-between gap-3">
+                    <span class="text-sm text-white/70">Distance</span>
+                    <div class="flex items-center gap-2"><span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/10 text-white/80">+0,1 km</span><span class="font-black text-xl">14,3 km</span></div>
+                  </div>
+                  <div class="flex items-center justify-between gap-3">
+                    <span class="text-sm text-white/70">Allure moy.</span>
+                    <div class="flex items-center gap-2"><span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/10 text-white/80">−5" min/km</span><span class="font-black text-xl">4:55<span class="text-xs ml-1">min/km</span></span></div>
+                  </div>
+                  <div class="flex items-center justify-between gap-3">
+                    <span class="text-sm text-white/70">D+</span>
+                    <div class="flex items-center gap-2"><span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/10 text-white/80">+12 m</span><span class="font-black text-xl">212 m</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Feedback Summary (US2) -->
+            <div class="border-t border-stone-100 pt-6">
+              <div class="flex flex-wrap gap-x-12 gap-y-6">
+                <div>
+                  <h4 class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-3">Ressenti</h4>
+                  <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 flex items-center justify-center bg-palette-forest-dark/10 text-palette-forest-dark rounded-xl border border-palette-forest-dark/20">
+                      <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+                    </div>
+                    <span class="font-bold text-stone-700 text-lg">Plutôt bien</span>
+                  </div>
+                </div>
+                <div>
+                  <h4 class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-3">Intensité (RPE)</h4>
+                  <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 flex items-center justify-center bg-stone-100 text-stone-800 rounded-xl border border-stone-200 font-black text-xl">7</div>
+                    <span class="font-medium text-stone-500 text-lg">/ 10</span>
+                  </div>
+                </div>
+                <div>
+                  <h4 class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-3">Plaisir</h4>
+                  <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 flex items-center justify-center bg-palette-forest-dark/10 text-palette-forest-dark rounded-xl border border-palette-forest-dark/20">
+                      <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M18 13a6 6 0 01-6 5 6 6 0 01-6-5h12z"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+                    </div>
+                    <span class="font-bold text-stone-700 text-lg">Très bien</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Commentaire athlète -->
+            <div class="border-t border-stone-100 pt-6 flex gap-4 items-start">
+              <div class="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center text-stone-400 shrink-0">
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              </div>
+              <div class="flex-1 min-w-0">
+                <h4 class="text-sm font-bold text-stone-800 mb-1">Commentaire de l'athlète</h4>
+                <p class="text-stone-500 text-sm italic leading-relaxed">"Sensations top sur la deuxième partie. Genou droit un peu raide au démarrage mais ça passe."</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================== ÉTAT B — Non réalisée =================== -->
+      <section class="space-y-3">
+        <h2 class="text-base font-bold text-stone-800">État B — Séance <em>Non réalisée</em></h2>
+        <p class="text-xs text-stone-500">Carte Réalisé <strong>masquée</strong> (PO décision Q4). Feedback masqué (pas saisi par l'athlète). Commentaire affiché si présent.</p>
+
+        <div class="bg-white rounded-2xl shadow-2xl overflow-hidden border border-stone-200">
+          <div class="px-6 py-5 border-b border-stone-100 flex items-center justify-between bg-white">
+            <div class="flex items-center gap-3 min-w-0">
+              <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border-2 border-palette-forest-dark/30 bg-palette-forest-dark/10 text-palette-forest-dark text-xs font-medium shrink-0">
+                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>
+                <span>Course</span>
+              </span>
+              <h2 class="text-lg font-bold text-stone-800 truncate">Sortie longue</h2>
+            </div>
+            <div class="flex items-center gap-3 shrink-0">
+              <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-palette-amber/20 text-stone-700">Non réalisé</span>
+              <button class="text-stone-400 hover:text-stone-600" aria-label="Fermer"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+            </div>
+          </div>
+
+          <div class="p-6 space-y-6">
+            <p class="text-xs font-bold text-stone-400 uppercase tracking-widest">Dim. 23 Mars 2026 · Matin</p>
+
+            <div class="grid grid-cols-1 gap-4">
+              <div class="bg-stone-50 rounded-2xl p-6 border border-stone-100">
+                <div class="flex items-center gap-2 mb-4 text-stone-400">
+                  <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></svg>
+                  <span class="text-[10px] font-bold uppercase tracking-[0.2em]">Objectif Session</span>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  <div class="flex items-center justify-between"><span class="text-sm text-stone-500">Temps prévu</span><span class="font-bold text-stone-800">2h00</span></div>
+                  <div class="flex items-center justify-between"><span class="text-sm text-stone-500">Distance</span><span class="font-bold text-stone-800">22 km</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="border-t border-stone-100 pt-6 flex gap-4 items-start">
+              <div class="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center text-stone-400 shrink-0">
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              </div>
+              <div class="flex-1">
+                <h4 class="text-sm font-bold text-stone-800 mb-1">Commentaire de l'athlète</h4>
+                <p class="text-stone-500 text-sm italic">"Mal au mollet, j'ai préféré laisser tomber pour pas aggraver."</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================== ÉTAT C — Réalisée sans actual_* ni feedback ni commentaire =================== -->
+      <section class="space-y-3">
+        <h2 class="text-base font-bold text-stone-800">État C — Réalisée (statut completed) sans <code>actual_*</code>, sans feedback, sans commentaire</h2>
+        <p class="text-xs text-stone-500">Carte Réalisé masquée (Q2). Feedback masqué. Commentaire masqué. Seule la carte Objectif est visible.</p>
+
+        <div class="bg-white rounded-2xl shadow-2xl overflow-hidden border border-stone-200">
+          <div class="px-6 py-5 border-b border-stone-100 flex items-center justify-between bg-white">
+            <div class="flex items-center gap-3 min-w-0">
+              <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border-2 border-palette-forest-dark/30 bg-palette-forest-dark/10 text-palette-forest-dark text-xs font-medium shrink-0">
+                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>
+                <span>Course</span>
+              </span>
+              <h2 class="text-lg font-bold text-stone-800 truncate">Footing récup</h2>
+            </div>
+            <div class="flex items-center gap-3 shrink-0">
+              <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-palette-forest-dark/15 text-palette-forest-dark">Réalisé</span>
+              <button class="text-stone-400 hover:text-stone-600"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+            </div>
+          </div>
+
+          <div class="p-6 space-y-6">
+            <p class="text-xs font-bold text-stone-400 uppercase tracking-widest">Lun. 24 Mars 2026</p>
+
+            <div class="grid grid-cols-1 gap-4">
+              <div class="bg-stone-50 rounded-2xl p-6 border border-stone-100">
+                <div class="flex items-center gap-2 mb-4 text-stone-400">
+                  <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></svg>
+                  <span class="text-[10px] font-bold uppercase tracking-[0.2em]">Objectif Session</span>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span class="text-sm text-stone-500">Temps prévu</span>
+                  <span class="font-bold text-stone-800">40 min</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================== ÉTAT D — Mobile =================== -->
+      <section class="space-y-3">
+        <h2 class="text-base font-bold text-stone-800">État D — Mobile (&lt; md) — cas nominal compressé</h2>
+        <p class="text-xs text-stone-500">Cartes Objectif/Réalisé empilées. Feedback en colonne unique. En-tête compact.</p>
+
+        <div class="max-w-md">
+          <div class="bg-white rounded-2xl shadow-2xl overflow-hidden border border-stone-200">
+            <div class="px-5 py-4 border-b border-stone-100 flex items-start justify-between gap-3">
+              <div class="flex flex-col gap-1.5 min-w-0">
+                <span class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full border-2 border-palette-forest-dark/30 bg-palette-forest-dark/10 text-palette-forest-dark text-xs font-medium w-fit">
+                  <svg class="h-3 w-3" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>
+                  <span>Course</span>
+                </span>
+                <h2 class="text-base font-bold text-stone-800 break-words leading-tight">Sortie tempo</h2>
+              </div>
+              <div class="flex flex-col items-end gap-2 shrink-0">
+                <button><svg class="h-5 w-5 text-stone-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-palette-forest-dark/15 text-palette-forest-dark whitespace-nowrap">Réalisé</span>
+              </div>
+            </div>
+
+            <div class="p-5 space-y-5">
+              <p class="text-[10px] font-bold text-stone-400 uppercase tracking-widest">Mer. 26 Mars 2026 · Matin</p>
+
+              <div class="grid grid-cols-1 gap-3">
+                <div class="bg-stone-50 rounded-2xl p-5 border border-stone-100">
+                  <div class="flex items-center gap-2 mb-3 text-stone-400">
+                    <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></svg>
+                    <span class="text-[10px] font-bold uppercase tracking-[0.2em]">Objectif Session</span>
+                  </div>
+                  <div class="space-y-3">
+                    <div class="flex items-center justify-between"><span class="text-sm text-stone-500">Temps prévu</span><span class="font-bold text-stone-800">1h12</span></div>
+                    <div class="flex items-center justify-between"><span class="text-sm text-stone-500">Distance</span><span class="font-bold text-stone-800">14,2 km</span></div>
+                    <div class="flex items-center justify-between"><span class="text-sm text-stone-500">Allure</span><span class="font-bold text-stone-800">5:00 min/km</span></div>
+                  </div>
+                </div>
+
+                <div class="bg-palette-forest-dark rounded-2xl p-5 text-white shadow-xl shadow-palette-forest-dark/20">
+                  <div class="flex items-center gap-2 mb-3 text-white/60">
+                    <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    <span class="text-[10px] font-bold uppercase tracking-[0.2em]">Réalisé</span>
+                  </div>
+                  <div class="space-y-3">
+                    <div class="flex items-center justify-between gap-2"><span class="text-sm text-white/70">Temps</span><div class="flex items-center gap-2"><span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/10 text-white/80">−1 min</span><span class="font-black text-base">1h11</span></div></div>
+                    <div class="flex items-center justify-between gap-2"><span class="text-sm text-white/70">Distance</span><div class="flex items-center gap-2"><span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/10 text-white/80">+0,1 km</span><span class="font-black text-base">14,3 km</span></div></div>
+                    <div class="flex items-center justify-between gap-2"><span class="text-sm text-white/70">Allure</span><span class="font-black text-base">4:55<span class="text-xs ml-1">min/km</span></span></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="border-t border-stone-100 pt-5 flex flex-col gap-4">
+                <div>
+                  <h4 class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Ressenti</h4>
+                  <div class="flex items-center gap-3">
+                    <div class="w-11 h-11 flex items-center justify-center bg-palette-forest-dark/10 text-palette-forest-dark rounded-xl border border-palette-forest-dark/20">
+                      <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+                    </div>
+                    <span class="font-bold text-stone-700 text-base">Plutôt bien</span>
+                  </div>
+                </div>
+                <div>
+                  <h4 class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Intensité (RPE)</h4>
+                  <div class="flex items-center gap-3">
+                    <div class="w-11 h-11 flex items-center justify-center bg-stone-100 text-stone-800 rounded-xl border border-stone-200 font-black text-lg">7</div>
+                    <span class="font-medium text-stone-500 text-base">/ 10</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="border-t border-stone-100 pt-5 flex gap-3 items-start">
+                <div class="w-9 h-9 rounded-full bg-stone-100 flex items-center justify-center text-stone-400 shrink-0">
+                  <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <h4 class="text-sm font-bold text-stone-800 mb-1">Commentaire</h4>
+                  <p class="text-stone-500 text-sm italic">"Sensations top sur la deuxième partie."</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================== TRANSITIONS =================== -->
+      <section class="space-y-2 pt-6 border-t border-stone-300">
+        <h2 class="text-base font-bold text-stone-800">Transitions fonctionnelles couvertes par US3</h2>
+        <ul class="text-sm text-stone-700 list-disc pl-6 space-y-1">
+          <li>Coach ouvre une séance Réalisée d'un athlète → modale s'ouvre, États A, C affichés selon données disponibles.</li>
+          <li>Coach ouvre une séance Non réalisée → État B (carte Réalisé masquée).</li>
+          <li>Lecture seule stricte : aucun bouton d'édition, aucune saisie. Fermeture via X uniquement.</li>
+          <li>Si l'athlète édite ses actual_* / feedback / commentaire pendant la session coach → la modale ne se met pas à jour automatiquement (rafraîchissement à la prochaine ouverture).</li>
+        </ul>
+      </section>
+    </div>
+  </body>
+</html>
