@@ -569,7 +569,7 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
                           name={`offer_${index}_title_en`}
                           type="text"
                           defaultValue={(offer as { title_en?: string })?.title_en ?? ''}
-                          placeholder={t('offerTitlePlaceholder')}
+                          placeholder={t('offerTitlePlaceholderEn')}
                           onInput={triggerUnsavedCheck}
                         />
                         <LanguagePrefixInput
@@ -578,7 +578,7 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
                           name={`offer_${index}_title_fr`}
                           type="text"
                           defaultValue={(offer as { title_fr?: string })?.title_fr ?? ''}
-                          placeholder={t('offerTitlePlaceholder')}
+                          placeholder={t('offerTitlePlaceholderFr')}
                           onInput={triggerUnsavedCheck}
                         />
                       </div>
@@ -594,7 +594,7 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
                           name={`offer_${index}_description_en`}
                           rows={3}
                           defaultValue={(offer as { description_en?: string })?.description_en ?? ''}
-                          placeholder={t('descriptionPlaceholder')}
+                          placeholder={t('descriptionPlaceholderEn')}
                           onInput={triggerUnsavedCheck}
                         />
                         <LanguagePrefixTextarea
@@ -603,7 +603,7 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
                           name={`offer_${index}_description_fr`}
                           rows={3}
                           defaultValue={(offer as { description_fr?: string })?.description_fr ?? ''}
-                          placeholder={t('descriptionPlaceholder')}
+                          placeholder={t('descriptionPlaceholderFr')}
                           onInput={triggerUnsavedCheck}
                         />
                       </div>

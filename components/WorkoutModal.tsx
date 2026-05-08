@@ -777,18 +777,7 @@ export function WorkoutModal({
               {/* Objectifs de la séance : métriques avec icônes tuiles + ligne horizontale + description (sans label "Description") */}
               <div className="bg-stone-50 p-4 rounded-xl border border-stone-100">
                 <div className="text-xs font-semibold text-stone-500 uppercase tracking-wider mb-3">
-                  {(() => {
-                    const st = currentWorkout.sport_type
-                    if (!workoutHasTimeDistanceTargets(st)) {
-                      return workoutIsTimeOnlySport(st)
-                        ? tWorkouts('form.sessionGoalsMandatoryTime')
-                        : tWorkouts('form.sessionGoals')
-                    }
-                    const m = getWorkoutPrimaryMetricForSport(st, coachWorkoutPrimaryMetrics)
-                    return m === 'distance'
-                      ? tWorkouts('form.sessionGoalsMandatoryDistance')
-                      : tWorkouts('form.sessionGoalsMandatoryTime')
-                  })()}
+                  {tWorkouts('form.sessionGoals')}
                 </div>
                 <div className="flex items-center gap-2 flex-wrap text-sm text-stone-700">
                   {currentWorkout.target_duration_minutes != null && currentWorkout.target_duration_minutes > 0 && (
@@ -824,12 +813,12 @@ export function WorkoutModal({
                     <>
                       <span className="inline-flex items-center gap-1">
                         <LightningIcon className="h-4 w-4 text-stone-400" />
-                        {currentWorkout.sport_type === 'course'
-                          ? `${currentWorkout.target_pace} min/km`
+                        {workoutPaceIsRunningStyle(currentWorkout.sport_type)
+                          ? `${currentWorkout.target_pace} ${tWorkouts('form.paceUnitRunning')}`
                           : currentWorkout.sport_type === 'velo'
-                            ? `${Math.round(currentWorkout.target_pace)} km/h`
+                            ? `${Math.round(currentWorkout.target_pace)} ${tWorkouts('form.paceUnitCycling')}`
                             : currentWorkout.sport_type === 'natation'
-                              ? `${currentWorkout.target_pace} min/100m`
+                              ? `${currentWorkout.target_pace} ${tWorkouts('form.paceUnitSwimming')}`
                               : `${currentWorkout.target_pace}`}
                       </span>
                       {currentWorkout.target_elevation_m != null && currentWorkout.target_elevation_m > 0 ? (
@@ -1195,11 +1184,11 @@ export function WorkoutModal({
                   <span className="inline-flex items-center gap-1">
                     <LightningIcon className="h-4 w-4 text-stone-400" />
                     {workoutPaceIsRunningStyle(currentWorkout.sport_type)
-                      ? `${currentWorkout.target_pace} min/km`
+                      ? `${currentWorkout.target_pace} ${tWorkouts('form.paceUnitRunning')}`
                       : currentWorkout.sport_type === 'velo'
-                        ? `${Math.round(currentWorkout.target_pace)} km/h`
+                        ? `${Math.round(currentWorkout.target_pace)} ${tWorkouts('form.paceUnitCycling')}`
                         : currentWorkout.sport_type === 'natation'
-                          ? `${currentWorkout.target_pace} min/100m`
+                          ? `${currentWorkout.target_pace} ${tWorkouts('form.paceUnitSwimming')}`
                           : `${currentWorkout.target_pace}`}
                   </span>
                   {currentWorkout.target_elevation_m != null && currentWorkout.target_elevation_m > 0 ? (
@@ -1356,13 +1345,7 @@ export function WorkoutModal({
               {/* En-tête avec titre et toggle */}
               <div className="flex items-center justify-between mb-3">
                 <div className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
-                  {hasTimeDistanceChoice
-                    ? targetMode === 'distance'
-                      ? tWorkouts('form.sessionGoalsMandatoryDistance')
-                      : tWorkouts('form.sessionGoalsMandatoryTime')
-                    : isTimeOnly
-                      ? tWorkouts('form.sessionGoalsMandatoryTime')
-                      : tWorkouts('form.sessionGoals')}
+                  {tWorkouts('form.sessionGoals')}
                 </div>
                 {canEdit && hasTimeDistanceChoice && (
                   <div className="flex bg-stone-200 p-0.5 rounded-lg">
