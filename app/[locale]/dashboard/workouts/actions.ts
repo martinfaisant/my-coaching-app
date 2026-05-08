@@ -325,7 +325,9 @@ export async function getEffectiveWeeklyTotalsFait(
       .order('sport_type'),
     supabase
       .from('workouts')
-      .select('id, date, sport_type, target_duration_minutes, target_distance_km, target_elevation_m')
+      .select(
+        'id, date, sport_type, target_duration_minutes, target_distance_km, target_elevation_m, actual_duration_minutes, actual_distance_km, actual_elevation_m'
+      )
       .eq('athlete_id', athleteId)
       .eq('status', 'completed')
       .gte('date', startDate)
@@ -359,9 +361,17 @@ export async function getEffectiveWeeklyTotalsFait(
     if (importedByDateAndSport.has(`${w.date}:${w.sport_type}`)) continue
     const weekStart = toDateStr(getWeekMonday(w.date))
     if (weekStart < startDate || weekStart > endDate) continue
-    const durationSec = Math.round((Number(w.target_duration_minutes) || 0) * 60)
-    const distanceM = Math.round((Number(w.target_distance_km) || 0) * 1000)
-    const elevationM = Math.round(Number(w.target_elevation_m) || 0)
+    // "Fait" : préférer les valeurs réellement réalisées, fallback historique sur `target_*`.
+    const durationMin =
+      w.actual_duration_minutes != null ? Number(w.actual_duration_minutes) : Number(w.target_duration_minutes)
+    const distanceKm =
+      w.actual_distance_km != null ? Number(w.actual_distance_km) : Number(w.target_distance_km)
+    const elevationMRaw =
+      w.actual_elevation_m != null ? Number(w.actual_elevation_m) : Number(w.target_elevation_m)
+
+    const durationSec = Math.round((Number.isFinite(durationMin) ? durationMin : 0) * 60)
+    const distanceM = Math.round((Number.isFinite(distanceKm) ? distanceKm : 0) * 1000)
+    const elevationM = Math.round(Number.isFinite(elevationMRaw) ? elevationMRaw : 0)
     const k = key(weekStart, w.sport_type)
     const cur = byKey.get(k) ?? { time: 0, distance: 0, elevation: 0 }
     byKey.set(k, {
@@ -535,6 +545,24 @@ function parseOptionalInt(
   return n
 }
 
+function parseOptionalNonNegativeInt(value: FormDataEntryValue | null): number | null {
+  if (value == null || value === '') return null
+  const s = String(value).trim()
+  if (s === '') return null
+  const n = Number(s)
+  if (!Number.isInteger(n) || n < 0) return null
+  return n
+}
+
+function parseOptionalNonNegativeNumber(value: FormDataEntryValue | null): number | null {
+  if (value == null || value === '') return null
+  const s = String(value).trim()
+  if (s === '') return null
+  const n = Number(s)
+  if (!Number.isFinite(n) || n < 0) return null
+  return n
+}
+
 export type StatusCommentFormState = CommentFormState & { workout?: Workout }
 
 /** Mise à jour statut + commentaire par l'athlète uniquement (US1). */
@@ -570,6 +598,76 @@ export async function saveWorkoutStatusAndComment(
   const perceivedIntensity = parseOptionalInt(rawIntensity, 1, 10)
   const perceivedPleasure = parseOptionalInt(rawPleasure, 1, 5)
 
+  // Métriques "réalisé" : visibles/obligatoires selon objectifs coach (target_* non NULL).
+  // On lit les target_* via un SELECT RLS (athlète sur sa séance).
+  const { data: existingWorkout, error: existingError } = await supabase
+    .from('workouts')
+    .select(
+      'id, athlete_id, target_duration_minutes, target_distance_km, target_elevation_m, actual_duration_minutes, actual_distance_km, actual_elevation_m'
+    )
+    .eq('id', workoutId)
+    .eq('athlete_id', athleteId)
+    .single()
+
+  if (existingError || !existingWorkout) {
+    logger.error('[saveWorkoutStatusAndComment] Impossible de lire workout (RLS?)', existingError ?? undefined, {
+      workoutId,
+      athleteId,
+    })
+    return { error: tErrors('supabaseGeneric') }
+  }
+
+  const targetDuration = existingWorkout.target_duration_minutes as number | null | undefined
+  const targetDistanceKm = existingWorkout.target_distance_km as number | null | undefined
+  const targetElevationM = existingWorkout.target_elevation_m as number | null | undefined
+
+  // Appliquer la règle produit :
+  // - si target_* est NULL => actual_* forcé à NULL (athlète ne peut pas renseigner).
+  // - si target_* non NULL et status=completed => actual_* requis (non NULL + valide).
+  // - si status=not_completed => effacer (NULL).
+  // - si status=planned => conserver tel quel (ne pas modifier).
+  const durationAllowed = targetDuration !== null && targetDuration !== undefined
+  const distanceAllowed = targetDistanceKm !== null && targetDistanceKm !== undefined
+  const elevationAllowed = targetElevationM !== null && targetElevationM !== undefined
+
+  const shouldClearActuals = status === 'not_completed'
+  const shouldRequireActuals = status === 'completed'
+
+  const existingActualDuration = existingWorkout.actual_duration_minutes as number | null | undefined
+  const existingActualDistanceKm = existingWorkout.actual_distance_km as number | null | undefined
+  const existingActualElevationM = existingWorkout.actual_elevation_m as number | null | undefined
+
+  const durationRaw = formData.get('actual_duration_minutes')
+  const distanceKmRaw = formData.get('actual_distance_km')
+  const elevationRaw = formData.get('actual_elevation_m')
+
+  // Valeurs brutes (null si vide ou invalide).
+  const parsedActualDuration = parseOptionalNonNegativeInt(durationRaw)
+  const parsedActualDistanceKm = parseOptionalNonNegativeNumber(distanceKmRaw)
+  const parsedActualElevation = parseOptionalNonNegativeInt(elevationRaw)
+
+  const actual_duration_minutes = status === 'planned'
+    ? (existingActualDuration ?? null)
+    : shouldClearActuals || !durationAllowed
+      ? null
+      : parsedActualDuration
+  const actual_distance_km = status === 'planned'
+    ? (existingActualDistanceKm ?? null)
+    : shouldClearActuals || !distanceAllowed
+      ? null
+      : parsedActualDistanceKm
+  const actual_elevation_m = status === 'planned'
+    ? (existingActualElevationM ?? null)
+    : shouldClearActuals || !elevationAllowed
+      ? null
+      : parsedActualElevation
+
+  if (shouldRequireActuals) {
+    if (durationAllowed && actual_duration_minutes == null) return { error: t('actualDurationRequired') }
+    if (distanceAllowed && actual_distance_km == null) return { error: t('actualDistanceRequired') }
+    if (elevationAllowed && actual_elevation_m == null) return { error: t('actualElevationRequired') }
+  }
+
   const { data, error } = await supabase
     .from('workouts')
     .update({
@@ -579,6 +677,9 @@ export async function saveWorkoutStatusAndComment(
       perceived_feeling: perceivedFeeling ?? null,
       perceived_intensity: perceivedIntensity ?? null,
       perceived_pleasure: perceivedPleasure ?? null,
+      actual_duration_minutes,
+      actual_distance_km,
+      actual_elevation_m,
     })
     .eq('id', workoutId)
     .eq('athlete_id', athleteId)

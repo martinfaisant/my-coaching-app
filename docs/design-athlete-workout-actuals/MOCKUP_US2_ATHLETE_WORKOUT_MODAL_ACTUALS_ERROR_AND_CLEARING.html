@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>US2 — Modale séance (athlète) — Erreurs + effacement au passage “Non réalisé”</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              'palette-forest-dark': '#627e59',
+              'palette-danger': { dark: '#b91c1c' },
+              stone: {
+                50: '#fafaf9',
+                100: '#f5f5f4',
+                200: '#e7e5e4',
+                300: '#d6d3d1',
+                400: '#a8a29e',
+                500: '#78716c',
+                600: '#57534e',
+                700: '#44403c',
+                900: '#1c1917',
+              },
+            },
+          },
+        },
+      }
+    </script>
+  </head>
+
+  <body class="bg-stone-800/90 min-h-screen p-4 flex items-start justify-center pt-8">
+    <div class="w-full max-w-lg space-y-6">
+      <p class="text-xs text-stone-400">
+        <strong>US2</strong> — Validation : un champ “Réalisé” est <strong>affiché</strong> uniquement si l’objectif coach
+        correspondant est renseigné. Dans ce cas, il est <strong>obligatoire</strong> et doit être <strong>valide</strong>.
+        Au passage au statut <strong>Non réalisé</strong>, les valeurs “Réalisé” sont <strong>effacées</strong> et le bloc n’est
+        <strong>plus visible</strong> (on garde le commentaire). Non fonctionnel.
+      </p>
+
+      <!-- ÉTAT 1 — Statut = Réalisé, coach a renseigné distance => distance visible et obligatoire ; erreur si invalide -->
+      <div class="bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
+        <div class="px-5 py-4 border-b border-stone-200">
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-bold text-stone-900">Sortie tempo</span>
+            <span class="text-xs font-semibold px-2 py-1 rounded-full bg-stone-100 text-stone-600">Course</span>
+          </div>
+          <p class="text-xs text-stone-500 mt-1">mer. 26 mars 2026</p>
+        </div>
+
+        <div class="overflow-y-auto p-5 space-y-5">
+          <!-- Statut -->
+          <div>
+            <div class="text-[10px] font-semibold text-stone-500 uppercase tracking-wider mb-2">Statut</div>
+            <div class="flex bg-stone-200 p-0.5 rounded-lg">
+              <button class="flex-1 px-3 py-2 text-xs font-medium rounded-md text-stone-600 hover:bg-stone-50">Planifié</button>
+              <button class="flex-1 px-3 py-2 text-xs font-medium rounded-md bg-palette-forest-dark text-white shadow-sm">Réalisé</button>
+              <button class="flex-1 px-3 py-2 text-xs font-medium rounded-md text-stone-600 hover:bg-stone-50">Non réalisé</button>
+            </div>
+          </div>
+
+          <!-- Section Réalisé — erreurs inline (distance seule) -->
+          <div class="bg-white rounded-xl border border-red-200 p-4">
+            <div class="text-sm font-bold text-stone-900">Réalisé</div>
+
+            <div class="mt-3 grid grid-cols-1 gap-2">
+              <div>
+                <label class="block text-[10px] text-palette-danger-dark mb-1 font-semibold">Distance réalisée *</label>
+                <div class="relative">
+                  <span class="absolute left-3 top-1/2 -translate-y-1/2 text-palette-danger-dark">
+                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M4 20h16M6 4h12v16H6z" />
+                      <path d="M10 8h4M10 12h4M10 16h4" />
+                    </svg>
+                  </span>
+                  <input
+                    type="text"
+                    value="-5"
+                    class="w-full rounded-lg border-2 border-red-300 bg-white py-2 px-3 pl-10 pr-12 text-sm font-semibold text-stone-900 outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent"
+                  />
+                  <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-palette-danger-dark font-medium">km</span>
+                </div>
+                <p class="text-[10px] text-palette-danger-dark mt-1">Saisissez une distance valide.</p>
+              </div>
+
+              <div>
+                <label class="block text-[10px] text-stone-600 mb-1 font-semibold">D+ réalisé *</label>
+                <div class="relative">
+                  <span class="absolute left-3 top-1/2 -translate-y-1/2 text-stone-500">
+                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                    </svg>
+                  </span>
+                  <input
+                    type="text"
+                    value="200"
+                    class="w-full rounded-lg border border-stone-300 bg-white py-2 px-3 pl-10 pr-14 text-sm font-semibold text-stone-900 outline-none"
+                  />
+                  <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-stone-500">m</span>
+                </div>
+                <p class="text-[10px] text-stone-500 mt-1">Affiché uniquement si objectif D+ coach présent.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="border-t border-stone-200 p-4">
+          <button
+            type="button"
+            class="w-full py-3 rounded-xl bg-palette-forest-dark text-white text-sm font-semibold opacity-70 cursor-not-allowed"
+          >
+            Enregistrer
+          </button>
+          <p class="text-[10px] text-stone-500 mt-2">
+            Règle UI : bouton désactivé si une erreur de validation est visible.
+          </p>
+        </div>
+      </div>
+
+      <!-- ÉTAT 2 — Transition : l’athlète passe à “Non réalisé” => valeurs “Réalisé” effacées et bloc non affiché -->
+      <div class="bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
+        <div class="px-5 py-4 border-b border-stone-200">
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-bold text-stone-900">Sortie tempo</span>
+            <span class="text-xs font-semibold px-2 py-1 rounded-full bg-stone-100 text-stone-600">Course</span>
+          </div>
+          <p class="text-xs text-stone-500 mt-1">mer. 26 mars 2026</p>
+        </div>
+
+        <div class="overflow-y-auto p-5 space-y-5">
+          <div>
+            <div class="text-[10px] font-semibold text-stone-500 uppercase tracking-wider mb-2">Statut</div>
+            <div class="flex bg-stone-200 p-0.5 rounded-lg">
+              <button class="flex-1 px-3 py-2 text-xs font-medium rounded-md text-stone-600 hover:bg-stone-50">Planifié</button>
+              <button class="flex-1 px-3 py-2 text-xs font-medium rounded-md text-stone-600 hover:bg-stone-50">Réalisé</button>
+              <button class="flex-1 px-3 py-2 text-xs font-medium rounded-md bg-palette-forest-dark text-white shadow-sm">Non réalisé</button>
+            </div>
+          </div>
+
+          <!-- Commentaire uniquement (bloc “Réalisé” masqué en Non réalisé) -->
+          <div>
+            <label class="block text-[10px] font-semibold text-stone-500 uppercase tracking-wider mb-2">Commentaire (optionnel)</label>
+            <div class="rounded-lg border border-stone-300 bg-white p-3 text-sm text-stone-700">
+              —
+            </div>
+            <p class="text-[10px] text-stone-500 mt-2">
+              Note : en statut “Non réalisé”, le bloc “Réalisé” n’est pas visible et les valeurs précédentes sont effacées.
+            </p>
+          </div>
+
+          <div class="text-xs text-stone-500">
+            Transition attendue :
+            <ul class="list-disc pl-5 mt-1 space-y-1">
+              <li>Avant : statut = “Réalisé” + champs renseignés.</li>
+              <li>Action : l’athlète clique “Non réalisé”.</li>
+              <li>Après : valeurs “Réalisé” effacées + bloc “Réalisé” masqué (commentaire visible).</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="border-t border-stone-200 p-4">
+          <button type="button" class="w-full py-3 rounded-xl bg-palette-forest-dark text-white text-sm font-semibold">
+            Enregistrer
+          </button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+

@@ -275,6 +275,9 @@ Athletes filter coaches by:
   - **Status:** `status` = `planned` | `completed` | `not_completed` (planifié / réalisé / non réalisé). Default at creation: `planned`. Only the athlete can change status (with comment) via `saveWorkoutStatusAndComment`.
   - **Moment de la journée (optionnel):** `time_of_day` = `null` | `'morning'` | `'noon'` | `'evening'` (Non précisé / Matin / Midi / Soir). Coach can set it in create/edit modal via a segment control; used to structure the calendar day view by sections.
   - Targets: `target_duration_minutes`, `target_distance_km`, `target_elevation_m`, `target_pace`
+  - **Réalisé (métriques saisies par l’athlète):** `actual_duration_minutes`, `actual_distance_km`, `actual_elevation_m` (migration 072). Les objectifs coach `target_*` sont toujours conservés.
+    - **Règle UI/validation:** chaque champ “réalisé” est **affiché uniquement** si le champ `target_*` correspondant est **non NULL** (y compris `0`) ; dans ce cas il est **obligatoire** lorsque `status = 'completed'`. Si `target_*` est `NULL`, l’athlète ne peut pas renseigner la métrique (et le serveur force `actual_* = NULL`).
+    - **Statut Non réalisé:** si `status = 'not_completed'`, les champs `actual_*` sont effacés (remis à `NULL`).
   - Athlete: `athlete_comment`, `athlete_comment_at`
   - **Retour athlète (optionnel):** `perceived_feeling` (1–5), `perceived_intensity` (1–10), `perceived_pleasure` (1–5). Only the athlete can set these; coach sees them read-only. Saved with status and comment via `saveWorkoutStatusAndComment`. Migration 054.
 
@@ -307,6 +310,7 @@ Athletes filter coaches by:
 - See weekly totals per sport and planning status (“Planifié jusqu’au”, “En retard”)
 
 **Total « fait » (US6):** Weekly totals « fait » = imported Strava activities + sessions with `status = 'completed'`, **minus** the volume of completed sessions that have an imported activity **same day and same sport type** (no double-counting). Mapping: `lib/stravaMapping.ts`. Server: `getEffectiveWeeklyTotalsFait(athleteId, startDate, endDate)` used by calendar and athlete pages.
+  - Pour les séances `completed` sans activité importée (même jour/même sport), le calcul utilise en priorité les métriques **réalisées** `actual_*` (fallback historique possible sur `target_*` pour les anciennes séances).
 
 **Unités d’affichage (calendrier et totaux hebdomadaires) :** Pour la **natation**, les distances sont affichées en **mètres (m)** et arrondies au mètre près (pas en km). Pour les autres sports à distance (course, vélo, ski, patin), l’unité reste le **km**.
 

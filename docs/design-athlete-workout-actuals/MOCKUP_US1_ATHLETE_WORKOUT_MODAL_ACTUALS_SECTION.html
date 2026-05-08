@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>US1 — Modale séance (athlète) — Saisie “Réalisé” (temps/distance/D+)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              'palette-forest-dark': '#627e59',
+              'palette-danger': { dark: '#b91c1c' },
+              stone: {
+                50: '#fafaf9',
+                100: '#f5f5f4',
+                200: '#e7e5e4',
+                300: '#d6d3d1',
+                400: '#a8a29e',
+                500: '#78716c',
+                600: '#57534e',
+                700: '#44403c',
+                900: '#1c1917',
+              },
+            },
+          },
+        },
+      }
+    </script>
+  </head>
+
+  <body class="bg-stone-800/90 min-h-screen p-4 flex items-start justify-center pt-8">
+    <div class="w-full max-w-lg space-y-6">
+      <p class="text-xs text-stone-400">
+        <strong>US1</strong> — Athlète : quand le statut est <strong>Réalisé</strong>, afficher une section
+        <strong>Réalisé</strong> permettant de saisir les métriques réellement réalisées.
+        Règle : chaque champ est <strong>affiché uniquement</strong> si le coach l’a renseigné en objectif, et il est alors
+        <strong>obligatoire</strong>. Les champs affichés sont <strong>préremplis</strong> par les valeurs planifiées. Non fonctionnel.
+      </p>
+
+      <!-- ÉTAT 1 — Statut = Réalisé, coach a renseigné temps+distance+D+ => 3 champs visibles et obligatoires (course) -->
+      <div class="bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
+        <!-- Header -->
+        <div class="px-5 py-4 border-b border-stone-200">
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-bold text-stone-900">Sortie tempo</span>
+            <span class="text-xs font-semibold px-2 py-1 rounded-full bg-stone-100 text-stone-600">Course</span>
+          </div>
+          <p class="text-xs text-stone-500 mt-1">mer. 26 mars 2026 · matin</p>
+        </div>
+
+        <!-- Content -->
+        <div class="overflow-y-auto p-5 space-y-5">
+          <!-- Bloc objectifs (rappel, lecture seule) -->
+          <div class="bg-stone-50 p-4 rounded-xl border border-stone-100">
+            <div class="text-[10px] font-semibold text-stone-500 uppercase tracking-wider mb-2">Objectifs</div>
+            <div class="flex flex-wrap gap-2 text-sm text-stone-700">
+              <span class="inline-flex items-center gap-1">
+                <!-- clock -->
+                <svg class="h-4 w-4 text-stone-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="9"></circle>
+                  <path d="M12 7v6l4 2"></path>
+                </svg>
+                72 min
+              </span>
+              <span class="text-stone-300">·</span>
+              <span class="inline-flex items-center gap-1">
+                <!-- ruler -->
+                <svg class="h-4 w-4 text-stone-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 20h16M6 4h12v16H6z" />
+                  <path d="M10 8h4M10 12h4M10 16h4" />
+                </svg>
+                14,2 km
+              </span>
+              <span class="text-stone-300">·</span>
+              <span class="inline-flex items-center gap-1">
+                <!-- mountain -->
+                <svg class="h-4 w-4 text-stone-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
+                200 m D+
+              </span>
+            </div>
+          </div>
+
+          <!-- Statut -->
+          <div>
+            <div class="text-[10px] font-semibold text-stone-500 uppercase tracking-wider mb-2">Statut</div>
+            <div class="flex bg-stone-200 p-0.5 rounded-lg">
+              <button class="flex-1 px-3 py-2 text-xs font-medium rounded-md text-stone-600 hover:bg-stone-50">Planifié</button>
+              <button class="flex-1 px-3 py-2 text-xs font-medium rounded-md bg-palette-forest-dark text-white shadow-sm">Réalisé</button>
+              <button class="flex-1 px-3 py-2 text-xs font-medium rounded-md text-stone-600 hover:bg-stone-50">Non réalisé</button>
+            </div>
+          </div>
+
+          <!-- Section Réalisé (champs obligatoires car présents côté objectifs) -->
+          <div class="bg-white rounded-xl border border-stone-200 p-4">
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <div class="text-sm font-bold text-stone-900">Réalisé</div>
+              </div>
+            </div>
+
+            <div class="mt-3 grid grid-cols-1 md:grid-cols-2 gap-2">
+              <!-- Temps réalisé -->
+              <div>
+                <label class="block text-[10px] text-stone-600 mb-1 font-semibold">Temps réalisé *</label>
+                <div class="relative">
+                  <span class="absolute left-3 top-1/2 -translate-y-1/2 text-stone-500">
+                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="9"></circle>
+                      <path d="M12 7v6l4 2"></path>
+                    </svg>
+                  </span>
+                  <input
+                    type="text"
+                    value="72"
+                    class="w-full rounded-lg border border-stone-300 bg-white py-2 px-3 pl-10 pr-12 text-sm font-semibold text-stone-900 outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent"
+                  />
+                  <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-stone-500">min</span>
+                </div>
+              </div>
+
+              <!-- Distance réalisée -->
+              <div>
+                <label class="block text-[10px] text-stone-600 mb-1 font-semibold">Distance réalisée *</label>
+                <div class="relative">
+                  <span class="absolute left-3 top-1/2 -translate-y-1/2 text-stone-500">
+                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M4 20h16M6 4h12v16H6z" />
+                      <path d="M10 8h4M10 12h4M10 16h4" />
+                    </svg>
+                  </span>
+                  <input
+                    type="text"
+                    value="14,2"
+                    class="w-full rounded-lg border border-stone-300 bg-white py-2 px-3 pl-10 pr-12 text-sm font-semibold text-stone-900 outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent"
+                  />
+                  <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-stone-500">km</span>
+                </div>
+              </div>
+
+              <!-- D+ réalisé -->
+              <div class="md:col-span-2">
+                <label class="block text-[10px] text-stone-600 mb-1 font-semibold">D+ réalisé *</label>
+                <div class="relative">
+                  <span class="absolute left-3 top-1/2 -translate-y-1/2 text-stone-500">
+                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                    </svg>
+                  </span>
+                  <input
+                    type="text"
+                    value="200"
+                    class="w-full rounded-lg border border-stone-300 bg-white py-2 px-3 pl-10 pr-14 text-sm font-semibold text-stone-900 outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent"
+                  />
+                  <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-stone-500">m</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Feedback (existant, juste pour contexte) -->
+          <div class="bg-stone-50 p-4 rounded-xl border border-stone-100">
+            <div class="text-[10px] font-semibold text-stone-500 uppercase tracking-wider mb-2">Retour (optionnel)</div>
+            <div class="text-sm text-stone-600">Ressenti · Intensité · Plaisir</div>
+          </div>
+
+          <!-- Commentaire -->
+          <div>
+            <label class="block text-[10px] font-semibold text-stone-500 uppercase tracking-wider mb-2">Commentaire (optionnel)</label>
+            <div class="rounded-lg border border-stone-300 bg-white p-3 text-sm text-stone-700">
+              Séance difficile dans la montée, mais bonnes sensations.
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="border-t border-stone-200 p-4">
+          <button type="button" class="w-full py-3 rounded-xl bg-palette-forest-dark text-white text-sm font-semibold">
+            Enregistrer
+          </button>
+          <p class="text-[10px] text-stone-500 mt-2">
+            Note produit : si une activité Strava existe (même sport/même jour), elle reste prioritaire pour le total réalisé.
+          </p>
+        </div>
+      </div>
+
+      <!-- ÉTAT 2 — Natation : distance en mètres (réalisé prérempli) -->
+      <div class="bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
+        <div class="px-5 py-4 border-b border-stone-200">
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-bold text-stone-900">Natation endurance</span>
+            <span class="text-xs font-semibold px-2 py-1 rounded-full bg-stone-100 text-stone-600">Natation</span>
+          </div>
+          <p class="text-xs text-stone-500 mt-1">ven. 28 mars 2026 · midi</p>
+        </div>
+        <div class="overflow-y-auto p-5 space-y-5">
+          <div class="bg-white rounded-xl border border-stone-200 p-4">
+            <div class="text-sm font-bold text-stone-900">Réalisé</div>
+            <p class="text-xs text-stone-500 mt-0.5">Distance en mètres pour la natation. Champs affichés = objectifs coach.</p>
+            <div class="mt-3 grid grid-cols-1 md:grid-cols-2 gap-2">
+              <div>
+                <label class="block text-[10px] text-stone-600 mb-1 font-semibold">Temps réalisé *</label>
+                <div class="relative">
+                  <span class="absolute left-3 top-1/2 -translate-y-1/2 text-stone-500">
+                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="9"></circle>
+                      <path d="M12 7v6l4 2"></path>
+                    </svg>
+                  </span>
+                  <input type="text" value="35" class="w-full rounded-lg border border-stone-300 bg-white py-2 px-3 pl-10 pr-12 text-sm font-semibold text-stone-900 outline-none" />
+                  <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-stone-500">min</span>
+                </div>
+              </div>
+              <div>
+                <label class="block text-[10px] text-stone-600 mb-1 font-semibold">Distance réalisée *</label>
+                <div class="relative">
+                  <span class="absolute left-3 top-1/2 -translate-y-1/2 text-stone-500">
+                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M4 20h16M6 4h12v16H6z" />
+                      <path d="M10 8h4M10 12h4M10 16h4" />
+                    </svg>
+                  </span>
+                  <input type="text" value="1500" class="w-full rounded-lg border border-stone-300 bg-white py-2 px-3 pl-10 pr-12 text-sm font-semibold text-stone-900 outline-none" />
+                  <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-stone-500">m</span>
+                </div>
+              </div>
+              <div class="md:col-span-2">
+                <div class="text-[10px] text-stone-400">D+ non affiché pour la natation (pas d’objectif D+).</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="border-t border-stone-200 p-4">
+          <button type="button" class="w-full py-3 rounded-xl bg-palette-forest-dark text-white text-sm font-semibold">Enregistrer</button>
+        </div>
+      </div>
+
+      <!-- ÉTAT 3 — Musculation : coach a renseigné uniquement temps => 1 champ visible et obligatoire -->
+      <div class="bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
+        <div class="px-5 py-4 border-b border-stone-200">
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-bold text-stone-900">Renfo bas du corps</span>
+            <span class="text-xs font-semibold px-2 py-1 rounded-full bg-stone-100 text-stone-600">Musculation</span>
+          </div>
+          <p class="text-xs text-stone-500 mt-1">lun. 31 mars 2026 · soir</p>
+        </div>
+        <div class="overflow-y-auto p-5 space-y-5">
+          <div class="bg-white rounded-xl border border-stone-200 p-4">
+            <div class="text-sm font-bold text-stone-900">Réalisé</div>
+            <p class="text-xs text-stone-500 mt-0.5">Pour la musculation, seule la durée est concernée (si objectif coach).</p>
+            <div class="mt-3">
+              <label class="block text-[10px] text-stone-600 mb-1 font-semibold">Temps réalisé *</label>
+              <div class="relative">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-stone-500">
+                  <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="9"></circle>
+                    <path d="M12 7v6l4 2"></path>
+                  </svg>
+                </span>
+                <input type="text" value="45" class="w-full rounded-lg border border-stone-300 bg-white py-2 px-3 pl-10 pr-12 text-sm font-semibold text-stone-900 outline-none" />
+                <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-stone-500">min</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="border-t border-stone-200 p-4">
+          <button type="button" class="w-full py-3 rounded-xl bg-palette-forest-dark text-white text-sm font-semibold">Enregistrer</button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+

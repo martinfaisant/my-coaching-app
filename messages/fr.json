@@ -625,6 +625,11 @@
       },
       "notSet": "Non renseigné"
     },
+    "actual": {
+      "durationLabel": "Temps réalisé",
+      "distanceLabel": "Distance réalisée",
+      "elevationLabel": "D+ réalisé"
+    },
     "validation": {
       "allFieldsRequired": "Tous les champs sont obligatoires.",
       "invalidSport": "Type de sport invalide.",
@@ -640,7 +645,10 @@
       "paceRequired": "La vitesse (allure ou km/h) est obligatoire pour ce sport.",
       "primaryMetricDistanceRequired": "Indiquez une distance.",
       "primaryMetricTimeRequired": "Indiquez une durée.",
-      "workoutUnitsNotConfigured": "Configurez les unités des séances (profil coach) avant de créer une séance."
+      "workoutUnitsNotConfigured": "Configurez les unités des séances (profil coach) avant de créer une séance.",
+      "actualDurationRequired": "Indiquez un temps réalisé.",
+      "actualDistanceRequired": "Indiquez une distance réalisée.",
+      "actualElevationRequired": "Indiquez un dénivelé réalisé."
     }
   },
   "goals": {
