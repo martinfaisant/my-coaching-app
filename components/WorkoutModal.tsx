@@ -53,6 +53,9 @@ import { WorkoutFeedbackSection } from '@/components/workout-modal/WorkoutFeedba
 import { DatePickerPopover } from '@/components/workout-modal/DatePickerPopover'
 import { CoachWorkoutForm } from '@/components/workout-modal/CoachWorkoutForm'
 import { WorkoutFacilityHoursStrip } from '@/components/workout-modal/WorkoutFacilityHoursStrip'
+import { CoachReadOnlyWorkoutModalView } from '@/components/workout-modal/views/CoachReadOnlyWorkoutModalView'
+import { CoachUnitsSetupView } from '@/components/workout-modal/views/CoachUnitsSetupView'
+import { AthleteWorkoutModalView } from '@/components/workout-modal/views/AthleteWorkoutModalView'
 import { getWorkoutFacilityDisplayLines } from '@/lib/workoutFacilityHours'
 import {
   PERSISTED_WORKOUT_SPORT_TYPES,
@@ -234,7 +237,7 @@ export function WorkoutModal({
     !athleteView &&
     !!currentWorkout &&
     isDateInFuture(currentWorkout.date) &&
-    (currentWorkout.status ?? 'planned') !== 'completed'
+    (currentWorkout.status ?? 'planned') === 'planned'
 
   /** Même design que la modale de modification : création ou édition modifiable (coach). */
   const coachFormNewLayout = canEdit && !athleteView && (!currentWorkout || coachCanEdit)
@@ -606,6 +609,16 @@ export function WorkoutModal({
     if (statusCommentState?.error) setShowStatusCommentSuccess(false)
   }, [statusCommentFeedbackKey])
 
+  const athleteSaveDisabled =
+    statusSegment === initialStatusRef.current &&
+    commentText.trim() === initialCommentRef.current.trim() &&
+    perceivedFeeling === initialFeelingRef.current &&
+    perceivedIntensity === initialIntensityRef.current &&
+    perceivedPleasure === initialPleasureRef.current &&
+    actualDurationMinutes.trim() === initialActualDurationRef.current.trim() &&
+    actualDistanceKm.trim() === initialActualDistanceRef.current.trim() &&
+    actualElevationM.trim() === initialActualElevationRef.current.trim()
+
   const handleClose = useCallback(() => {
     onClose()
   }, [onClose])
@@ -813,467 +826,68 @@ export function WorkoutModal({
       }
     >
       {athleteView && currentWorkout ? (
-        <>
-          <div className="flex flex-col flex-1 min-h-0 overflow-y-auto">
-            <div className="px-6 py-4 space-y-5">
-              {/* Date seule — sport dans l'en-tête (tuile pill) ; moment si renseigné (US4) */}
-              <p className="text-sm font-medium text-stone-600">
-                {formatDateFr(date, true, locale === 'fr' ? 'fr-FR' : 'en-US')}
-                {currentWorkout.time_of_day ? ` · ${currentWorkout.time_of_day === 'morning' ? tWorkouts('form.timeOfDayMorning') : currentWorkout.time_of_day === 'noon' ? tWorkouts('form.timeOfDayNoon') : tWorkouts('form.timeOfDayEvening')}` : ''}
-              </p>
-              {/* Objectifs de la séance : métriques avec icônes tuiles + ligne horizontale + description (sans label "Description") */}
-              <div className="bg-stone-50 p-4 rounded-xl border border-stone-100">
-                <div className="text-xs font-semibold text-stone-500 uppercase tracking-wider mb-3">
-                  {tWorkouts('form.sessionGoals')}
-                </div>
-                <div className="flex items-center gap-2 flex-wrap text-sm text-stone-700">
-                  {currentWorkout.target_duration_minutes != null && currentWorkout.target_duration_minutes > 0 && (
-                    <>
-                      <span className="inline-flex items-center gap-1">
-                        <ClockIcon className="h-4 w-4 text-stone-400" />
-                        {currentWorkout.target_duration_minutes >= 60
-                          ? `${Math.floor(currentWorkout.target_duration_minutes / 60)}h${String(currentWorkout.target_duration_minutes % 60).padStart(2, '0')}`
-                          : `${currentWorkout.target_duration_minutes} min`}
-                      </span>
-                      {(currentWorkout.target_distance_km != null && currentWorkout.target_distance_km > 0) ||
-                        (currentWorkout.target_pace != null && currentWorkout.target_pace > 0) ||
-                        (currentWorkout.target_elevation_m != null && currentWorkout.target_elevation_m > 0) ? (
-                        <span className="text-stone-300">·</span>
-                      ) : null}
-                    </>
-                  )}
-                  {currentWorkout.target_distance_km != null && currentWorkout.target_distance_km > 0 && (
-                    <>
-                      <span className="inline-flex items-center gap-1">
-                        <RulerIcon className="h-4 w-4 text-stone-400" />
-                        {currentWorkout.sport_type === 'natation'
-                          ? `${Math.round(currentWorkout.target_distance_km * 1000)} m`
-                          : `${Number(currentWorkout.target_distance_km) % 1 === 0 ? currentWorkout.target_distance_km : (currentWorkout.target_distance_km as number).toFixed(1)} km`}
-                      </span>
-                      {(currentWorkout.target_pace != null && currentWorkout.target_pace > 0) ||
-                        (currentWorkout.target_elevation_m != null && currentWorkout.target_elevation_m > 0) ? (
-                        <span className="text-stone-300">·</span>
-                      ) : null}
-                    </>
-                  )}
-                  {currentWorkout.target_pace != null && currentWorkout.target_pace > 0 && (
-                    <>
-                      <span className="inline-flex items-center gap-1">
-                        <LightningIcon className="h-4 w-4 text-stone-400" />
-                        {workoutPaceIsRunningStyle(currentWorkout.sport_type)
-                          ? `${currentWorkout.target_pace} ${tWorkouts('form.paceUnitRunning')}`
-                          : currentWorkout.sport_type === 'velo'
-                            ? `${Math.round(currentWorkout.target_pace)} ${tWorkouts('form.paceUnitCycling')}`
-                            : currentWorkout.sport_type === 'natation'
-                              ? `${currentWorkout.target_pace} ${tWorkouts('form.paceUnitSwimming')}`
-                              : `${currentWorkout.target_pace}`}
-                      </span>
-                      {currentWorkout.target_elevation_m != null && currentWorkout.target_elevation_m > 0 ? (
-                        <span className="text-stone-300">·</span>
-                      ) : null}
-                    </>
-                  )}
-                  {currentWorkout.target_elevation_m != null && currentWorkout.target_elevation_m > 0 && (
-                    <span className="inline-flex items-center gap-1">
-                      <MountainIcon className="h-4 w-4 text-stone-400" />
-                      {currentWorkout.target_elevation_m} m D+
-                    </span>
-                  )}
-                </div>
-                {currentWorkout.description?.trim() && (
-                  <>
-                    <hr className="my-3 border-stone-200" />
-                    <p className="text-sm text-stone-600 whitespace-pre-wrap">{currentWorkout.description.trim()}</p>
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
-          {/* Section retour : statut + feedback (ressenti, intensité, plaisir) + commentaire */}
-          <form
-            action={statusCommentAction}
-            className="px-6 py-4 border-t border-stone-100 space-y-4"
-          >
-            <input type="hidden" name="status" value={statusSegment} />
-            <input type="hidden" name="perceived_feeling" value={perceivedFeeling ?? ''} />
-            <input type="hidden" name="perceived_intensity" value={perceivedIntensity ?? ''} />
-            <input type="hidden" name="perceived_pleasure" value={perceivedPleasure ?? ''} />
-            <div className="flex bg-stone-200 p-0.5 rounded-lg" role="group" aria-label={tWorkouts('status.ariaLabel')}>
-              {(['planned', 'completed', 'not_completed'] as const).map((value) => (
-                <button
-                  key={value}
-                  type="button"
-                  onClick={() => {
-                    setStatusSegment(value)
-                    if (value === 'not_completed') {
-                      // UI : le bloc "Réalisé" disparaît ; les valeurs seront effacées côté serveur.
-                      setActualDurationMinutes('')
-                      setActualDistanceKm('')
-                      setActualElevationM('')
-                    }
-                  }}
-                  className={`flex-1 px-3 py-2 text-xs font-medium rounded-md transition ${
-                    statusSegment === value
-                      ? 'bg-palette-forest-dark text-white shadow-sm'
-                      : 'text-stone-600 hover:bg-stone-50'
-                  }`}
-                >
-                  {tWorkouts(`status.${value}`)}
-                </button>
-              ))}
-            </div>
-            {statusSegment === 'completed' && (
-              <>
-                {(() => {
-                  // Règle produit : target_* NULL => champ masqué / target_* non NULL (même 0) => visible + obligatoire.
-                  const showDuration = currentWorkout.target_duration_minutes != null
-                  const showDistance = currentWorkout.target_distance_km != null
-                  const showElevation = currentWorkout.target_elevation_m != null
-                  const isSwim = currentWorkout.sport_type === 'natation'
-
-                  const durationValid =
-                    !showDuration || (actualDurationMinutes.trim() !== '' && Number(actualDurationMinutes) >= 0)
-                  const distanceValid = !showDistance
-                    ? true
-                    : isSwim
-                      ? actualDistanceKm.trim() !== '' && Number(actualDistanceKm) >= 0 // state = km; UI shows meters
-                      : actualDistanceKm.trim() !== '' && Number(actualDistanceKm) >= 0
-                  const elevationValid =
-                    !showElevation || (actualElevationM.trim() !== '' && Number(actualElevationM) >= 0)
-
-                  return showDuration || showDistance || showElevation ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        {showDuration && (
-                          <div>
-                            <label className="block text-sm font-medium text-stone-700 mb-2">
-                              {tWorkouts('actual.durationLabel')}
-                            </label>
-                            <div className="relative">
-                              <input
-                                name="actual_duration_minutes"
-                                type="number"
-                                min={0}
-                                value={actualDurationMinutes}
-                                onChange={(e) => setActualDurationMinutes(e.target.value)}
-                                onWheel={preventWheelNumberChange}
-                                className={`w-full border rounded-lg py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition-all bg-white text-stone-900 placeholder-stone-300 font-semibold pr-12 ${
-                                  durationValid ? 'border-stone-300' : 'border-palette-danger'
-                                }`}
-                                aria-invalid={!durationValid}
-                              />
-                              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                <span className="text-stone-400 text-xs font-normal">{tWorkouts('form.durationUnit')}</span>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-
-                        {showDistance && (
-                          <div>
-                            <label className="block text-sm font-medium text-stone-700 mb-2">
-                              {tWorkouts('actual.distanceLabel')}
-                            </label>
-                            <div className="relative">
-                              {isSwim ? (
-                                <>
-                                  <input
-                                    type="number"
-                                    min={0}
-                                    value={
-                                      actualDistanceKm.trim() === ''
-                                        ? ''
-                                        : String(Math.round(Number(actualDistanceKm) * 1000))
-                                    }
-                                    onChange={(e) => {
-                                      const meters = e.target.value.trim()
-                                      setActualDistanceKm(meters === '' ? '' : String(Number(meters) / 1000))
-                                    }}
-                                    onWheel={preventWheelNumberChange}
-                                    className={`w-full border rounded-lg py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition-all bg-white text-stone-900 placeholder-stone-300 font-semibold pr-12 ${
-                                      distanceValid ? 'border-stone-300' : 'border-palette-danger'
-                                    }`}
-                                    aria-invalid={!distanceValid}
-                                  />
-                                  <input name="actual_distance_km" type="hidden" value={actualDistanceKm} />
-                                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                    <span className="text-stone-400 text-xs font-normal">{tWorkouts('form.distanceUnit')}</span>
-                                  </div>
-                                </>
-                              ) : (
-                                <>
-                                  <input
-                                    name="actual_distance_km"
-                                    type="number"
-                                    min={0}
-                                    step={0.1}
-                                    value={actualDistanceKm}
-                                    onChange={(e) => setActualDistanceKm(e.target.value)}
-                                    onWheel={preventWheelNumberChange}
-                                    className={`w-full border rounded-lg py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition-all bg-white text-stone-900 placeholder-stone-300 font-semibold pr-12 ${
-                                      distanceValid ? 'border-stone-300' : 'border-palette-danger'
-                                    }`}
-                                    aria-invalid={!distanceValid}
-                                  />
-                                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                    <span className="text-stone-400 text-xs font-normal">{tWorkouts('form.distanceUnitKm')}</span>
-                                  </div>
-                                </>
-                              )}
-                            </div>
-                          </div>
-                        )}
-
-                        {showElevation && (
-                          <div className="sm:col-span-2">
-                            <label className="block text-sm font-medium text-stone-700 mb-2">
-                              {tWorkouts('actual.elevationLabel')}
-                            </label>
-                            <div className="relative">
-                              <input
-                                name="actual_elevation_m"
-                                type="number"
-                                min={0}
-                                value={actualElevationM}
-                                onChange={(e) => setActualElevationM(e.target.value)}
-                                onWheel={preventWheelNumberChange}
-                                className={`w-full border rounded-lg py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition-all bg-white text-stone-900 placeholder-stone-300 font-semibold pr-14 ${
-                                  elevationValid ? 'border-stone-300' : 'border-palette-danger'
-                                }`}
-                                aria-invalid={!elevationValid}
-                              />
-                              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                <span className="text-stone-400 text-xs font-normal">{tWorkouts('form.distanceUnit')}</span>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                   
-                  ) : null
-                })()}
-
-                <WorkoutFeedbackSection
-                  perceivedFeeling={perceivedFeeling}
-                  perceivedIntensity={perceivedIntensity}
-                  perceivedPleasure={perceivedPleasure}
-                  onFeelingChange={setPerceivedFeeling}
-                  onIntensityChange={setPerceivedIntensity}
-                  onPleasureChange={setPerceivedPleasure}
-                  tWorkouts={tWorkouts}
-                />
-              </>
-            )}
-            <Textarea
-              name="comment"
-              value={commentText}
-              onChange={(e) => {
-                setCommentText(e.target.value)
-                setHasCommentChanged(e.target.value.trim() !== initialCommentRef.current.trim())
-              }}
-              rows={3}
-              placeholder={tWorkouts('comments.placeholderForCoach')}
-              className={`${FORM_BASE_CLASSES} ${TEXTAREA_SPECIFIC_CLASSES} min-h-[80px]`}
-              aria-label={tWorkouts('comments.ariaLabel')}
-            />
-            {statusCommentState?.error && (
-              <p className="text-sm text-palette-danger" role="alert">
-                {statusCommentState.error}
-              </p>
-            )}
-            <Button
-              type="submit"
-              variant="primaryDark"
-              disabled={
-                (statusSegment === initialStatusRef.current &&
-                  commentText.trim() === initialCommentRef.current.trim() &&
-                  perceivedFeeling === initialFeelingRef.current &&
-                  perceivedIntensity === initialIntensityRef.current &&
-                  perceivedPleasure === initialPleasureRef.current &&
-                  actualDurationMinutes.trim() === initialActualDurationRef.current.trim() &&
-                  actualDistanceKm.trim() === initialActualDistanceRef.current.trim() &&
-                  actualElevationM.trim() === initialActualElevationRef.current.trim()) ||
-                statusCommentPending
-              }
-              loading={statusCommentPending}
-              loadingText={tCommon('saving')}
-              success={showStatusCommentSuccess}
-              successText={tCommon('saved')}
-              className="w-full"
-            >
-              {tCommon('save')}
-            </Button>
-          </form>
-        </>
+        <AthleteWorkoutModalView
+          date={date}
+          locale={locale}
+          workout={currentWorkout}
+          tWorkouts={tWorkouts}
+          tCommon={tCommon}
+          statusCommentAction={statusCommentAction}
+          statusCommentPending={statusCommentPending}
+          statusCommentState={statusCommentState}
+          statusSegment={statusSegment}
+          setStatusSegment={setStatusSegment}
+          perceivedFeeling={perceivedFeeling}
+          perceivedIntensity={perceivedIntensity}
+          perceivedPleasure={perceivedPleasure}
+          setPerceivedFeeling={setPerceivedFeeling}
+          setPerceivedIntensity={setPerceivedIntensity}
+          setPerceivedPleasure={setPerceivedPleasure}
+          actualDurationMinutes={actualDurationMinutes}
+          setActualDurationMinutes={setActualDurationMinutes}
+          actualDistanceKm={actualDistanceKm}
+          setActualDistanceKm={setActualDistanceKm}
+          actualElevationM={actualElevationM}
+          setActualElevationM={setActualElevationM}
+          commentText={commentText}
+          setCommentText={setCommentText}
+          setHasCommentChanged={setHasCommentChanged}
+          initialComment={initialCommentRef.current}
+          showStatusCommentSuccess={showStatusCommentSuccess}
+          statusSaveDisabled={athleteSaveDisabled}
+          preventWheelNumberChange={preventWheelNumberChange}
+        />
       ) : coachFormNewLayout ? (
         showUnitsSetup ? (
-          <form
-            id="coach-units-form"
-            action={unitsAction}
-            className="flex flex-col flex-1 min-h-0 px-6 py-4 space-y-4"
-          >
-            <input type="hidden" name="locale" value={locale} />
-            <p className="text-sm text-stone-600">{tWorkouts('form.unitsSetupIntro')}</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className={`rounded-xl border border-stone-200 bg-white p-3 flex flex-col gap-2 border-l-4 ${SPORT_CARD_STYLES.course.borderLeft}`}>
-                <span className="text-sm font-semibold text-stone-800">{tSports('course')}</span>
-                <Segments
-                  name="workout_primary_metric_course"
-                  ariaLabel={tWorkouts('form.targetMode.time')}
-                  size="sm"
-                  value={unitCourse}
-                  onChange={(v) => setUnitCourse(v as 'time' | 'distance')}
-                  options={[
-                    { value: 'time', label: tWorkouts('form.targetMode.time') },
-                    { value: 'distance', label: tWorkouts('form.targetMode.distance') },
-                  ]}
-                />
-              </div>
-
-              <div className={`rounded-xl border border-stone-200 bg-white p-3 flex flex-col gap-2 border-l-4 ${SPORT_CARD_STYLES.trail.borderLeft}`}>
-                <span className="text-sm font-semibold text-stone-800">{tSports('trail')}</span>
-                <Segments
-                  name="workout_primary_metric_trail"
-                  ariaLabel={tWorkouts('form.targetMode.time')}
-                  size="sm"
-                  value={unitTrail}
-                  onChange={(v) => setUnitTrail(v as 'time' | 'distance')}
-                  options={[
-                    { value: 'time', label: tWorkouts('form.targetMode.time') },
-                    { value: 'distance', label: tWorkouts('form.targetMode.distance') },
-                  ]}
-                />
-              </div>
-
-              <div className={`rounded-xl border border-stone-200 bg-white p-3 flex flex-col gap-2 border-l-4 ${SPORT_CARD_STYLES.velo.borderLeft}`}>
-                <span className="text-sm font-semibold text-stone-800">{tSports('velo')}</span>
-                <Segments
-                  name="workout_primary_metric_velo"
-                  ariaLabel={tWorkouts('form.targetMode.time')}
-                  size="sm"
-                  value={unitVelo}
-                  onChange={(v) => setUnitVelo(v as 'time' | 'distance')}
-                  options={[
-                    { value: 'time', label: tWorkouts('form.targetMode.time') },
-                    { value: 'distance', label: tWorkouts('form.targetMode.distance') },
-                  ]}
-                />
-              </div>
-
-              <div className={`rounded-xl border border-stone-200 bg-white p-3 flex flex-col gap-2 border-l-4 ${SPORT_CARD_STYLES.natation.borderLeft}`}>
-                <span className="text-sm font-semibold text-stone-800">{tSports('natation')}</span>
-                <Segments
-                  name="workout_primary_metric_natation"
-                  ariaLabel={tWorkouts('form.targetMode.time')}
-                  size="sm"
-                  value={unitNatation}
-                  onChange={(v) => setUnitNatation(v as 'time' | 'distance')}
-                  options={[
-                    { value: 'time', label: tWorkouts('form.targetMode.time') },
-                    { value: 'distance', label: tWorkouts('form.targetMode.distance') },
-                  ]}
-                />
-              </div>
-
-              <div className={`rounded-xl border border-stone-200 bg-white p-3 flex flex-col gap-2 border-l-4 ${SPORT_CARD_STYLES.triathlon.borderLeft}`}>
-                <span className="text-sm font-semibold text-stone-800">{tSports('triathlon')}</span>
-                <Segments
-                  name="workout_primary_metric_triathlon"
-                  ariaLabel={tWorkouts('form.targetMode.time')}
-                  size="sm"
-                  value={unitTriathlon}
-                  onChange={(v) => setUnitTriathlon(v as 'time' | 'distance')}
-                  options={[
-                    { value: 'time', label: tWorkouts('form.targetMode.time') },
-                    { value: 'distance', label: tWorkouts('form.targetMode.distance') },
-                  ]}
-                />
-              </div>
-
-              <div className={`rounded-xl border border-stone-200 bg-white p-3 flex flex-col gap-2 border-l-4 ${SPORT_CARD_STYLES.canot.borderLeft}`}>
-                <span className="text-sm font-semibold text-stone-800">{tSports('canot')}</span>
-                <Segments
-                  name="workout_primary_metric_canot"
-                  ariaLabel={tWorkouts('form.targetMode.time')}
-                  size="sm"
-                  value={unitCanot}
-                  onChange={(v) => setUnitCanot(v as 'time' | 'distance')}
-                  options={[
-                    { value: 'time', label: tWorkouts('form.targetMode.time') },
-                    { value: 'distance', label: tWorkouts('form.targetMode.distance') },
-                  ]}
-                />
-              </div>
-
-              <div className={`rounded-xl border border-stone-200 bg-white p-3 flex flex-col gap-2 border-l-4 ${SPORT_CARD_STYLES.nordic_ski.borderLeft}`}>
-                <span className="text-sm font-semibold text-stone-800">{tSports('ski_fond')}</span>
-                <Segments
-                  name="workout_primary_metric_nordic_ski"
-                  ariaLabel={tWorkouts('form.targetMode.time')}
-                  size="sm"
-                  value={unitNordicSki}
-                  onChange={(v) => setUnitNordicSki(v as 'time' | 'distance')}
-                  options={[
-                    { value: 'time', label: tWorkouts('form.targetMode.time') },
-                    { value: 'distance', label: tWorkouts('form.targetMode.distance') },
-                  ]}
-                />
-              </div>
-
-              <div className={`rounded-xl border border-stone-200 bg-white p-3 flex flex-col gap-2 border-l-4 ${SPORT_CARD_STYLES.backcountry_ski.borderLeft}`}>
-                <span className="text-sm font-semibold text-stone-800">{tSports('ski_randonnee')}</span>
-                <Segments
-                  name="workout_primary_metric_backcountry_ski"
-                  ariaLabel={tWorkouts('form.targetMode.time')}
-                  size="sm"
-                  value={unitBackcountrySki}
-                  onChange={(v) => setUnitBackcountrySki(v as 'time' | 'distance')}
-                  options={[
-                    { value: 'time', label: tWorkouts('form.targetMode.time') },
-                    { value: 'distance', label: tWorkouts('form.targetMode.distance') },
-                  ]}
-                />
-              </div>
-
-              <div className={`rounded-xl border border-stone-200 bg-white p-3 flex flex-col gap-2 border-l-4 ${SPORT_CARD_STYLES.ice_skating.borderLeft}`}>
-                <span className="text-sm font-semibold text-stone-800">{tSports('patinage_glace')}</span>
-                <Segments
-                  name="workout_primary_metric_ice_skating"
-                  ariaLabel={tWorkouts('form.targetMode.time')}
-                  size="sm"
-                  value={unitIceSkating}
-                  onChange={(v) => setUnitIceSkating(v as 'time' | 'distance')}
-                  options={[
-                    { value: 'time', label: tWorkouts('form.targetMode.time') },
-                    { value: 'distance', label: tWorkouts('form.targetMode.distance') },
-                  ]}
-                />
-              </div>
-
-              <div className={`rounded-xl border border-stone-200 bg-white p-3 flex flex-col gap-2 border-l-4 ${SPORT_CARD_STYLES.randonnee.borderLeft}`}>
-                <span className="text-sm font-semibold text-stone-800">{tSports('rando')}</span>
-                <Segments
-                  name="workout_primary_metric_randonnee"
-                  ariaLabel={tWorkouts('form.targetMode.time')}
-                  size="sm"
-                  value={unitRandonnee}
-                  onChange={(v) => setUnitRandonnee(v as 'time' | 'distance')}
-                  options={[
-                    { value: 'time', label: tWorkouts('form.targetMode.time') },
-                    { value: 'distance', label: tWorkouts('form.targetMode.distance') },
-                  ]}
-                />
-              </div>
-            </div>
-            <p className="text-xs text-stone-500">{tWorkouts('form.unitsSetupMuscuNote')}</p>
-            {unitsState?.error && (
-              <p className="text-sm text-palette-danger" role="alert">
-                {unitsState.error}
-              </p>
-            )}
-            <Button type="submit" variant="primaryDark" className="w-full" loading={unitsPending} loadingText={tCommon('saving')}>
-              {tWorkouts('form.saveUnits')}
-            </Button>
-          </form>
+          <CoachUnitsSetupView
+            locale={locale}
+            tWorkouts={tWorkouts}
+            tSports={tSports}
+            tCommon={tCommon}
+            unitsAction={unitsAction}
+            unitsPending={unitsPending}
+            unitsState={unitsState}
+            unitCourse={unitCourse}
+            setUnitCourse={setUnitCourse}
+            unitTrail={unitTrail}
+            setUnitTrail={setUnitTrail}
+            unitVelo={unitVelo}
+            setUnitVelo={setUnitVelo}
+            unitNatation={unitNatation}
+            setUnitNatation={setUnitNatation}
+            unitTriathlon={unitTriathlon}
+            setUnitTriathlon={setUnitTriathlon}
+            unitCanot={unitCanot}
+            setUnitCanot={setUnitCanot}
+            unitNordicSki={unitNordicSki}
+            setUnitNordicSki={setUnitNordicSki}
+            unitBackcountrySki={unitBackcountrySki}
+            setUnitBackcountrySki={setUnitBackcountrySki}
+            unitIceSkating={unitIceSkating}
+            setUnitIceSkating={setUnitIceSkating}
+            unitRandonnee={unitRandonnee}
+            setUnitRandonnee={setUnitRandonnee}
+          />
         ) : (
           <CoachWorkoutForm
             action={action}
@@ -1314,149 +928,12 @@ export function WorkoutModal({
         )
       ) : coachReadOnly && currentWorkout ? (
       /* US5 : modale coach lecture seule — titre = titre séance, sport dans l'en-tête (tuile pill) */
-      <div className="flex flex-col flex-1 min-h-0 overflow-y-auto">
-        <div className="px-6 py-4 space-y-5">
-          {/* Date seule — sport dans l'en-tête ; moment si renseigné (US4) */}
-          <p className="text-sm font-medium text-stone-600">
-            {formatDateFr(currentWorkout.date, true, locale === 'fr' ? 'fr-FR' : 'en-US')}
-            {currentWorkout.time_of_day ? ` · ${currentWorkout.time_of_day === 'morning' ? tWorkouts('form.timeOfDayMorning') : currentWorkout.time_of_day === 'noon' ? tWorkouts('form.timeOfDayNoon') : tWorkouts('form.timeOfDayEvening')}` : ''}
-          </p>
-          {/* Objectifs de la séance : métriques avec icônes + ligne horizontale + description */}
-          <div className="bg-stone-50 p-4 rounded-xl border border-stone-100">
-            <div className="text-xs font-semibold text-stone-500 uppercase tracking-wider mb-3">
-              {(() => {
-                const st = currentWorkout.sport_type
-                if (!workoutHasTimeDistanceTargets(st)) {
-                  return workoutIsTimeOnlySport(st)
-                    ? tWorkouts('form.sessionGoalsMandatoryTime')
-                    : tWorkouts('form.sessionGoals')
-                }
-                const m = getWorkoutPrimaryMetricForSport(st, coachWorkoutPrimaryMetrics)
-                return m === 'distance'
-                  ? tWorkouts('form.sessionGoalsMandatoryDistance')
-                  : tWorkouts('form.sessionGoalsMandatoryTime')
-              })()}
-            </div>
-            <div className="flex items-center gap-2 flex-wrap text-sm text-stone-700">
-              {currentWorkout.target_duration_minutes != null && currentWorkout.target_duration_minutes > 0 && (
-                <>
-                  <span className="inline-flex items-center gap-1">
-                    <ClockIcon className="h-4 w-4 text-stone-400" />
-                    {currentWorkout.target_duration_minutes >= 60
-                      ? `${Math.floor(currentWorkout.target_duration_minutes / 60)}h${String(currentWorkout.target_duration_minutes % 60).padStart(2, '0')}`
-                      : `${currentWorkout.target_duration_minutes} min`}
-                  </span>
-                  {(currentWorkout.target_distance_km != null && currentWorkout.target_distance_km > 0) ||
-                    (currentWorkout.target_pace != null && currentWorkout.target_pace > 0) ||
-                    (currentWorkout.target_elevation_m != null && currentWorkout.target_elevation_m > 0) ? (
-                    <span className="text-stone-300">·</span>
-                  ) : null}
-                </>
-              )}
-              {currentWorkout.target_distance_km != null && currentWorkout.target_distance_km > 0 && (
-                <>
-                  <span className="inline-flex items-center gap-1">
-                    <RulerIcon className="h-4 w-4 text-stone-400" />
-                    {currentWorkout.sport_type === 'natation'
-                      ? `${Math.round(currentWorkout.target_distance_km * 1000)} m`
-                      : `${Number(currentWorkout.target_distance_km) % 1 === 0 ? currentWorkout.target_distance_km : (currentWorkout.target_distance_km as number).toFixed(1)} km`}
-                  </span>
-                  {(currentWorkout.target_pace != null && currentWorkout.target_pace > 0) ||
-                    (currentWorkout.target_elevation_m != null && currentWorkout.target_elevation_m > 0) ? (
-                    <span className="text-stone-300">·</span>
-                  ) : null}
-                </>
-              )}
-              {currentWorkout.target_pace != null && currentWorkout.target_pace > 0 && (
-                <>
-                  <span className="inline-flex items-center gap-1">
-                    <LightningIcon className="h-4 w-4 text-stone-400" />
-                    {workoutPaceIsRunningStyle(currentWorkout.sport_type)
-                      ? `${currentWorkout.target_pace} ${tWorkouts('form.paceUnitRunning')}`
-                      : currentWorkout.sport_type === 'velo'
-                        ? `${Math.round(currentWorkout.target_pace)} ${tWorkouts('form.paceUnitCycling')}`
-                        : currentWorkout.sport_type === 'natation'
-                          ? `${currentWorkout.target_pace} ${tWorkouts('form.paceUnitSwimming')}`
-                          : `${currentWorkout.target_pace}`}
-                  </span>
-                  {currentWorkout.target_elevation_m != null && currentWorkout.target_elevation_m > 0 ? (
-                    <span className="text-stone-300">·</span>
-                  ) : null}
-                </>
-              )}
-              {currentWorkout.target_elevation_m != null && currentWorkout.target_elevation_m > 0 && (
-                <span className="inline-flex items-center gap-1">
-                  <MountainIcon className="h-4 w-4 text-stone-400" />
-                  {currentWorkout.target_elevation_m} m D+
-                </span>
-              )}
-            </div>
-            {currentWorkout.description?.trim() ? (
-              <>
-                <hr className="my-3 border-stone-200" />
-                <p className="text-sm text-stone-600 whitespace-pre-wrap">{currentWorkout.description.trim()}</p>
-              </>
-            ) : null}
-          </div>
-          {/* Retour athlète (ressenti, intensité, plaisir) — lecture seule coach */}
-          {(currentWorkout.perceived_feeling != null || currentWorkout.perceived_intensity != null || currentWorkout.perceived_pleasure != null) && (
-            <div className="border-t border-stone-200 pt-4 space-y-3">
-              <h3 className="text-sm font-bold uppercase tracking-wider text-stone-700">
-                {tWorkouts('feedback.sectionTitle')}
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
-                <div className="flex items-center gap-2">
-                  {currentWorkout.perceived_feeling != null && currentWorkout.perceived_feeling >= 1 && currentWorkout.perceived_feeling <= 5 ? (
-                    <>
-                      {(() => {
-                        const Icon = FEELING_ICONS_READONLY[currentWorkout.perceived_feeling - 1]
-                        return <Icon className="h-5 w-5 text-stone-600 shrink-0" strokeWidth={2} aria-hidden />
-                      })()}
-                      <span className="text-stone-700">{tWorkouts(`feedback.feelingScale.${currentWorkout.perceived_feeling}` as 'feedback.feelingScale.1')}</span>
-                    </>
-                  ) : (
-                    <span className="text-stone-500">{tWorkouts('feedback.notSet')}</span>
-                  )}
-                </div>
-                <div className="flex items-center gap-2">
-                  {currentWorkout.perceived_intensity != null && currentWorkout.perceived_intensity >= 1 && currentWorkout.perceived_intensity <= 10 ? (
-                    <span className="text-stone-700">{tWorkouts('feedback.intensityLabel')} {currentWorkout.perceived_intensity}/10</span>
-                  ) : (
-                    <span className="text-stone-500">{tWorkouts('feedback.notSet')}</span>
-                  )}
-                </div>
-                <div className="flex items-center gap-2">
-                  {currentWorkout.perceived_pleasure != null && currentWorkout.perceived_pleasure >= 1 && currentWorkout.perceived_pleasure <= 5 ? (
-                    <>
-                      {(() => {
-                        const Icon = FEELING_ICONS_READONLY[currentWorkout.perceived_pleasure - 1]
-                        return <Icon className="h-5 w-5 text-stone-600 shrink-0" strokeWidth={2} aria-hidden />
-                      })()}
-                      <span className="text-stone-700">{tWorkouts(`feedback.pleasureScale.${currentWorkout.perceived_pleasure}` as 'feedback.pleasureScale.1')}</span>
-                    </>
-                  ) : (
-                    <span className="text-stone-500">{tWorkouts('feedback.notSet')}</span>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
-          {/* Commentaire de l'athlète */}
-          <div className="border-t border-stone-200 pt-4">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="p-2 bg-stone-200/80 rounded-full text-stone-600">
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-bold text-stone-900">{tWorkouts('comments.athleteComment')}</h3>
-            </div>
-            <p className="text-sm text-stone-600">
-              {currentWorkout.athlete_comment?.trim() ? currentWorkout.athlete_comment : tWorkouts('comments.noComment')}
-            </p>
-          </div>
-        </div>
-      </div>
+      <CoachReadOnlyWorkoutModalView
+        workout={currentWorkout}
+        locale={locale}
+        tWorkouts={tWorkouts}
+        coachWorkoutPrimaryMetrics={coachWorkoutPrimaryMetrics}
+      />
       ) : (
       <form
         id="workout-form"
