@@ -455,8 +455,7 @@
       "timeOfDayEvening": "Evening",
       "mandatoryMetricDistance": "Primary metric: distance — enter distance (or compute it from duration and pace).",
       "mandatoryMetricTime": "Primary metric: time — enter duration (or compute it from distance and pace).",
-      "unitsSetupIntro": "Choose the primary unit for your running, cycling and swimming sessions. It applies to all your sessions and the weekly summary.",
-      "unitsSetupMuscuNote": "Strength sessions remain duration-based (minutes).",
+      "unitsSetupIntro": "Choose the primary unit for your coaching sessions.",
       "saveUnits": "Save units"
     },
     "calendar": {
