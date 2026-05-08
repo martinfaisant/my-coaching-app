@@ -499,6 +499,11 @@
       },
       "notSet": "Not set"
     },
+    "actual": {
+      "durationLabel": "Completed time",
+      "distanceLabel": "Completed distance",
+      "elevationLabel": "Completed elevation"
+    },
     "validation": {
       "allFieldsRequired": "All fields are required.",
       "invalidSport": "Invalid sport type.",
@@ -515,7 +520,10 @@
       "paceRequired": "Pace (or speed) is required for this sport.",
       "primaryMetricDistanceRequired": "Enter a distance.",
       "primaryMetricTimeRequired": "Enter a duration.",
-      "workoutUnitsNotConfigured": "Configure session units in your coach profile before creating a workout."
+      "workoutUnitsNotConfigured": "Configure session units in your coach profile before creating a workout.",
+      "actualDurationRequired": "Enter completed time.",
+      "actualDistanceRequired": "Enter completed distance.",
+      "actualElevationRequired": "Enter completed elevation."
     }
   },
   "goals": {

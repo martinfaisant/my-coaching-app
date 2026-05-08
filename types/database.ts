@@ -181,6 +181,12 @@ export type Workout = {
   target_distance_km?: number | null
   /** Dénivelé en m (facultatif, course / vélo). */
   target_elevation_m?: number | null
+  /** Réalisé en minutes (temps) — saisi par l'athlète. Présent uniquement si objectif coach non NULL. */
+  actual_duration_minutes?: number | null
+  /** Réalisé en km (distance) — saisi par l'athlète. Présent uniquement si objectif coach non NULL. */
+  actual_distance_km?: number | null
+  /** Réalisé en m (dénivelé) — saisi par l'athlète. Présent uniquement si objectif coach non NULL. */
+  actual_elevation_m?: number | null
   /** Vitesse/allure pour calcul automatique. Course: min/km, Vélo: km/h, Natation: min/100m */
   target_pace?: number | null
   athlete_comment?: string | null

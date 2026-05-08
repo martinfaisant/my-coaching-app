@@ -1051,23 +1051,24 @@ export function CalendarView({
     const hasAnyTotals = sports.length > 0
     if (!hasAnyTotals) return null
     return (
-      <div className="bg-white rounded-xl border border-stone-200 shadow-sm px-5 pt-3 pb-5 mb-6">
+      <div className="bg-white rounded-xl border border-stone-200 shadow-sm px-5 pt-1 pb-5 mb-6">
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4">
           {sports.map(({ key, Icon, color, bg, label, prevuVal, faitVal, useTime, useMeters }) => {
             const barPct = prevuVal > 0 ? Math.min(100, Math.round((faitVal / prevuVal) * 100)) : (faitVal > 0 ? 100 : 0)
             const prevuDisplay = useTime ? formatDuration(Math.round(prevuVal)) : useMeters ? (prevuVal > 0 ? `${swimmingDistanceM(prevuVal)} m` : '—') : (prevuVal > 0 ? `${Math.round(prevuVal)} km` : '—')
             const faitDisplay = useTime ? formatDuration(Math.round(faitVal)) : useMeters ? (faitVal > 0 ? `${swimmingDistanceM(faitVal)} m` : '0 m') : (faitVal > 0 ? `${Math.round(faitVal)} km` : '0 km')
+            const stickLeft = barPct <= 12
             return (
               <div key={key} className="flex flex-col">
-                <div className="flex items-center gap-2 text-xs mb-2 min-h-7">
+                <div className="flex items-center gap-2 text-xs mb-1 min-h-7">
                   <Icon className={`w-4 h-4 ${color} shrink-0`} />
                   <span className={`font-semibold ${color} leading-tight`}>{label}</span>
                 </div>
-                <div className="relative w-full mt-2">
+                <div className="relative w-full mt-1.5">
                   <div className="w-full bg-stone-100 rounded-full h-1.5 relative">
                     {faitVal > 0 && (
                       <div className={`h-full ${bg} rounded-full transition-all relative overflow-visible`} style={{ width: `${barPct}%` }}>
-                        <span className={`absolute right-0 top-0 translate-y-[-100%] text-[10px] ${color} font-bold whitespace-nowrap`} style={{ maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>
+                        <span className={`absolute top-0 translate-y-[-100%] text-[10px] ${color} font-bold whitespace-nowrap ${stickLeft ? 'left-0' : 'right-0 '}`} style={{ overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>
                           {faitDisplay}
                         </span>
                       </div>

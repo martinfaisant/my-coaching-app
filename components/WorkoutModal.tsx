@@ -201,6 +201,13 @@ export function WorkoutModal({
   const initialFeelingRef = useRef<number | null>(null)
   const initialIntensityRef = useRef<number | null>(null)
   const initialPleasureRef = useRef<number | null>(null)
+  /** Métriques réalisées (athlète) — saisie conditionnelle selon objectifs coach (target_* non NULL). */
+  const [actualDurationMinutes, setActualDurationMinutes] = useState<string>('') // minutes
+  const [actualDistanceKm, setActualDistanceKm] = useState<string>('') // km (m côté UI natation)
+  const [actualElevationM, setActualElevationM] = useState<string>('') // m
+  const initialActualDurationRef = useRef<string>('')
+  const initialActualDistanceRef = useRef<string>('')
+  const initialActualElevationRef = useRef<string>('')
   const previousCommentPendingRef = useRef(false)
   const [deleteLoading, setDeleteLoading] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
@@ -339,6 +346,39 @@ export function WorkoutModal({
       initialFeelingRef.current = feeling
       initialIntensityRef.current = intensity
       initialPleasureRef.current = pleasure
+
+      // Préremplissage "réalisé" :
+      // - si actual_* existe : utiliser ces valeurs
+      // - sinon, si target_* non NULL : préremplir avec target_* (y compris 0)
+      const targetDuration = currentWorkout.target_duration_minutes
+      const targetDistance = currentWorkout.target_distance_km
+      const targetElevation = currentWorkout.target_elevation_m
+
+      const initialActualDuration =
+        currentWorkout.actual_duration_minutes != null
+          ? String(currentWorkout.actual_duration_minutes)
+          : targetDuration != null
+            ? String(targetDuration)
+            : ''
+      const initialActualDistance =
+        currentWorkout.actual_distance_km != null
+          ? String(currentWorkout.actual_distance_km)
+          : targetDistance != null
+            ? String(targetDistance)
+            : ''
+      const initialActualElevation =
+        currentWorkout.actual_elevation_m != null
+          ? String(currentWorkout.actual_elevation_m)
+          : targetElevation != null
+            ? String(targetElevation)
+            : ''
+
+      setActualDurationMinutes(initialActualDuration)
+      setActualDistanceKm(initialActualDistance)
+      setActualElevationM(initialActualElevation)
+      initialActualDurationRef.current = initialActualDuration
+      initialActualDistanceRef.current = initialActualDistance
+      initialActualElevationRef.current = initialActualElevation
     } else {
       setCommentText('')
       initialCommentRef.current = ''
@@ -351,6 +391,13 @@ export function WorkoutModal({
       initialFeelingRef.current = null
       initialIntensityRef.current = null
       initialPleasureRef.current = null
+
+      setActualDurationMinutes('')
+      setActualDistanceKm('')
+      setActualElevationM('')
+      initialActualDurationRef.current = ''
+      initialActualDistanceRef.current = ''
+      initialActualElevationRef.current = ''
     }
     if (!isOpen) {
       setDeleteError(null)
@@ -856,7 +903,15 @@ export function WorkoutModal({
                 <button
                   key={value}
                   type="button"
-                  onClick={() => setStatusSegment(value)}
+                  onClick={() => {
+                    setStatusSegment(value)
+                    if (value === 'not_completed') {
+                      // UI : le bloc "Réalisé" disparaît ; les valeurs seront effacées côté serveur.
+                      setActualDurationMinutes('')
+                      setActualDistanceKm('')
+                      setActualElevationM('')
+                    }
+                  }}
                   className={`flex-1 px-3 py-2 text-xs font-medium rounded-md transition ${
                     statusSegment === value
                       ? 'bg-palette-forest-dark text-white shadow-sm'
@@ -868,15 +923,145 @@ export function WorkoutModal({
               ))}
             </div>
             {statusSegment === 'completed' && (
-              <WorkoutFeedbackSection
-                perceivedFeeling={perceivedFeeling}
-                perceivedIntensity={perceivedIntensity}
-                perceivedPleasure={perceivedPleasure}
-                onFeelingChange={setPerceivedFeeling}
-                onIntensityChange={setPerceivedIntensity}
-                onPleasureChange={setPerceivedPleasure}
-                tWorkouts={tWorkouts}
-              />
+              <>
+                {(() => {
+                  // Règle produit : target_* NULL => champ masqué / target_* non NULL (même 0) => visible + obligatoire.
+                  const showDuration = currentWorkout.target_duration_minutes != null
+                  const showDistance = currentWorkout.target_distance_km != null
+                  const showElevation = currentWorkout.target_elevation_m != null
+                  const isSwim = currentWorkout.sport_type === 'natation'
+
+                  const durationValid =
+                    !showDuration || (actualDurationMinutes.trim() !== '' && Number(actualDurationMinutes) >= 0)
+                  const distanceValid = !showDistance
+                    ? true
+                    : isSwim
+                      ? actualDistanceKm.trim() !== '' && Number(actualDistanceKm) >= 0 // state = km; UI shows meters
+                      : actualDistanceKm.trim() !== '' && Number(actualDistanceKm) >= 0
+                  const elevationValid =
+                    !showElevation || (actualElevationM.trim() !== '' && Number(actualElevationM) >= 0)
+
+                  return showDuration || showDistance || showElevation ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {showDuration && (
+                          <div>
+                            <label className="block text-sm font-medium text-stone-700 mb-2">
+                              {tWorkouts('actual.durationLabel')}
+                            </label>
+                            <div className="relative">
+                              <input
+                                name="actual_duration_minutes"
+                                type="number"
+                                min={0}
+                                value={actualDurationMinutes}
+                                onChange={(e) => setActualDurationMinutes(e.target.value)}
+                                onWheel={preventWheelNumberChange}
+                                className={`w-full border rounded-lg py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition-all bg-white text-stone-900 placeholder-stone-300 font-semibold pr-12 ${
+                                  durationValid ? 'border-stone-300' : 'border-palette-danger'
+                                }`}
+                                aria-invalid={!durationValid}
+                              />
+                              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <span className="text-stone-400 text-xs font-normal">{tWorkouts('form.durationUnit')}</span>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {showDistance && (
+                          <div>
+                            <label className="block text-sm font-medium text-stone-700 mb-2">
+                              {tWorkouts('actual.distanceLabel')}
+                            </label>
+                            <div className="relative">
+                              {isSwim ? (
+                                <>
+                                  <input
+                                    type="number"
+                                    min={0}
+                                    value={
+                                      actualDistanceKm.trim() === ''
+                                        ? ''
+                                        : String(Math.round(Number(actualDistanceKm) * 1000))
+                                    }
+                                    onChange={(e) => {
+                                      const meters = e.target.value.trim()
+                                      setActualDistanceKm(meters === '' ? '' : String(Number(meters) / 1000))
+                                    }}
+                                    onWheel={preventWheelNumberChange}
+                                    className={`w-full border rounded-lg py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition-all bg-white text-stone-900 placeholder-stone-300 font-semibold pr-12 ${
+                                      distanceValid ? 'border-stone-300' : 'border-palette-danger'
+                                    }`}
+                                    aria-invalid={!distanceValid}
+                                  />
+                                  <input name="actual_distance_km" type="hidden" value={actualDistanceKm} />
+                                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                    <span className="text-stone-400 text-xs font-normal">{tWorkouts('form.distanceUnit')}</span>
+                                  </div>
+                                </>
+                              ) : (
+                                <>
+                                  <input
+                                    name="actual_distance_km"
+                                    type="number"
+                                    min={0}
+                                    step={0.1}
+                                    value={actualDistanceKm}
+                                    onChange={(e) => setActualDistanceKm(e.target.value)}
+                                    onWheel={preventWheelNumberChange}
+                                    className={`w-full border rounded-lg py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition-all bg-white text-stone-900 placeholder-stone-300 font-semibold pr-12 ${
+                                      distanceValid ? 'border-stone-300' : 'border-palette-danger'
+                                    }`}
+                                    aria-invalid={!distanceValid}
+                                  />
+                                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                    <span className="text-stone-400 text-xs font-normal">{tWorkouts('form.distanceUnitKm')}</span>
+                                  </div>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        {showElevation && (
+                          <div className="sm:col-span-2">
+                            <label className="block text-sm font-medium text-stone-700 mb-2">
+                              {tWorkouts('actual.elevationLabel')}
+                            </label>
+                            <div className="relative">
+                              <input
+                                name="actual_elevation_m"
+                                type="number"
+                                min={0}
+                                value={actualElevationM}
+                                onChange={(e) => setActualElevationM(e.target.value)}
+                                onWheel={preventWheelNumberChange}
+                                className={`w-full border rounded-lg py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition-all bg-white text-stone-900 placeholder-stone-300 font-semibold pr-14 ${
+                                  elevationValid ? 'border-stone-300' : 'border-palette-danger'
+                                }`}
+                                aria-invalid={!elevationValid}
+                              />
+                              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <span className="text-stone-400 text-xs font-normal">{tWorkouts('form.distanceUnit')}</span>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                   
+                  ) : null
+                })()}
+
+                <WorkoutFeedbackSection
+                  perceivedFeeling={perceivedFeeling}
+                  perceivedIntensity={perceivedIntensity}
+                  perceivedPleasure={perceivedPleasure}
+                  onFeelingChange={setPerceivedFeeling}
+                  onIntensityChange={setPerceivedIntensity}
+                  onPleasureChange={setPerceivedPleasure}
+                  tWorkouts={tWorkouts}
+                />
+              </>
             )}
             <Textarea
               name="comment"
@@ -903,7 +1088,10 @@ export function WorkoutModal({
                   commentText.trim() === initialCommentRef.current.trim() &&
                   perceivedFeeling === initialFeelingRef.current &&
                   perceivedIntensity === initialIntensityRef.current &&
-                  perceivedPleasure === initialPleasureRef.current) ||
+                  perceivedPleasure === initialPleasureRef.current &&
+                  actualDurationMinutes.trim() === initialActualDurationRef.current.trim() &&
+                  actualDistanceKm.trim() === initialActualDistanceRef.current.trim() &&
+                  actualElevationM.trim() === initialActualElevationRef.current.trim()) ||
                 statusCommentPending
               }
               loading={statusCommentPending}

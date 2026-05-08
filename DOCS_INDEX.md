@@ -654,6 +654,11 @@
 - **Mises à jour doc :** Project_context.md §4.5 (structure, Athlete/Coach, Total « fait »), §5 (workouts.status), docs/DESIGN_SYSTEM.md (Modal, WorkoutModal), docs/I18N.md (workouts).
 - **Archivage :** `docs/design-workout-status/` → `docs/archive/design-workout-status/` (DESIGN, USER_STORIES, SPEC, mockup). Référence courante : **Project_context.md §4.5**, **docs/DESIGN_SYSTEM.md**, **docs/I18N.md**.
 
+✅ **8 mai 2026 – Saisie athlète des métriques “réalisé” (workout actuals) – Mode Analyste :**
+- **Livraison :** Dans la modale séance (vue athlète), quand le statut est **Réalisé**, l’athlète saisit les métriques **réelles** (temps/distance/D+) utilisées pour le total « fait » (priorité Strava inchangée). Les champs sont affichés/obligatoires uniquement si le coach a renseigné la cible correspondante (target non NULL, y compris 0). Si l’athlète passe à **Non réalisé**, les valeurs “réalisé” sont effacées.
+- **Fichiers :** `supabase/migrations/072_workout_actual_metrics.sql`, `types/database.ts`, `app/[locale]/dashboard/workouts/actions.ts` (`saveWorkoutStatusAndComment`, `getEffectiveWeeklyTotalsFait`), `components/WorkoutModal.tsx`, `messages/fr.json`, `messages/en.json`.
+- **Doc :** `Project_context.md` §4.5 (Workouts, champs `actual_*`, règles, total « fait »).
+
 ✅ **27 février 2026 – Sélecteur de semaine calendrier (Mode Analyste) :**
 - **Livraison :** Sélecteur de semaine (WeekSelector) responsive : plage de dates sur une ligne à partir de `md` (768px), sur deux lignes en dessous ; largeurs fixes (zone centrale 80px / 150px, boutons 40px / 80px) pour que la longueur ne varie pas au changement de semaine ; dates « précédente/suivante » dans les boutons affichées à partir de 400px, masquées en dessous pour tenir sur les écrans étroits.
 - **Fichiers :** `components/WeekSelector.tsx`.
