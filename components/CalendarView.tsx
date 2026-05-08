@@ -305,7 +305,7 @@ export function CalendarView({
   const tWorkouts = useTranslations('workouts')
   const tGoals = useTranslations('goals')
 
-  /** Libellé et classes du badge statut (US2). Aligné mockup : Planifié neutre, Réalisé vert forest, Non réalisé amber ; texte en gras. */
+  /** Libellé et classes du badge statut (US2). Planifié neutre, Réalisé vert forest, Non réalisé danger-light / texte danger-darker ; texte en gras. */
   const getStatusBadge = (status: WorkoutStatus) => {
     const key = status === 'planned' ? 'status.planned' : status === 'completed' ? 'status.completed' : 'status.not_completed'
     const label = tWorkouts(key)
@@ -313,7 +313,7 @@ export function CalendarView({
       status === 'completed'
         ? 'rounded-full bg-palette-forest-dark/15 text-palette-forest-dark font-semibold'
         : status === 'not_completed'
-          ? 'rounded-full bg-palette-amber/20 text-stone-600 font-semibold'
+          ? 'rounded-full bg-palette-danger-light text-palette-danger-darker font-semibold'
           : 'rounded-full bg-stone-100 text-stone-500 font-semibold'
     return { label, className }
   }

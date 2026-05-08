@@ -294,7 +294,7 @@ export function WorkoutModal({
     const map: Record<WorkoutStatus, { label: string; className: string }> = {
       planned: { label: tWorkouts('status.planned'), className: 'bg-stone-100 text-stone-500' },
       completed: { label: tWorkouts('status.completed'), className: 'bg-palette-forest-dark/15 text-palette-forest-dark' },
-      not_completed: { label: tWorkouts('status.not_completed'), className: 'bg-palette-amber/20 text-stone-600' },
+      not_completed: { label: tWorkouts('status.not_completed'), className: 'bg-palette-danger-light text-palette-danger-darker' },
     }
     return map[s]
   }
