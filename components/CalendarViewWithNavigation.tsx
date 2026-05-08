@@ -83,8 +83,6 @@ type CalendarViewWithNavigationProps = {
     dateRangeLabel: string
     onNavigateWeek: (offset: number) => void
     isAnimating: boolean
-    prevWeekLastDayLabel: string
-    nextWeekFirstDayLabel: string
     calendarMonth: { year: number; month: number }
     onNavigateMonth: (delta: number) => void
   }) => React.ReactNode
@@ -531,8 +529,6 @@ export function CalendarViewWithNavigation({
     dateRangeLabel,
     onNavigateWeek: handleNavigateWeek,
     isAnimating,
-    prevWeekLastDayLabel: formatShortDate(getPreviousWeekLastDay(referenceMonday), locale),
-    nextWeekFirstDayLabel: formatShortDate(getNextWeekFirstDay(referenceMonday), locale),
     calendarMonth,
     onNavigateMonth: handleNavigateMonth,
   }

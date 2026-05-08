@@ -7,10 +7,6 @@ type WeekSelectorProps = {
   dateRangeLabel: string
   onNavigate: (offset: number) => void
   isAnimating: boolean
-  /** Dernier jour de la 1ère semaine (ex. "9 févr.") affiché à droite du chevron gauche */
-  prevWeekLastDayLabel?: string
-  /** Dernier jour de la 3e semaine (ex. "29 févr.") affiché à droite du chevron droit */
-  nextWeekFirstDayLabel?: string
   /** Aria-label for previous week button (passed from parent to avoid useTranslations in this component). */
   prevWeekAriaLabel?: string
   /** Aria-label for next week button (passed from parent to avoid useTranslations in this component). */
@@ -21,8 +17,6 @@ export function WeekSelector({
   dateRangeLabel,
   onNavigate,
   isAnimating,
-  prevWeekLastDayLabel,
-  nextWeekFirstDayLabel,
   prevWeekAriaLabel = 'Semaine précédente',
   nextWeekAriaLabel = 'Semaine suivante',
 }: WeekSelectorProps) {
@@ -53,9 +47,6 @@ export function WeekSelector({
           <path d="m15 18-7-7 7-7" />
         </svg>
         {/* Masqué en dessous de 400px pour que le sélecteur tienne sur les écrans étroits. */}
-        {prevWeekLastDayLabel != null && prevWeekLastDayLabel !== '' && (
-          <span className="text-xs text-stone-600 truncate max-w-[52px] hidden min-[400px]:inline">{prevWeekLastDayLabel}</span>
-        )}
       </Button>
       {/* Largeur fixe pour que la longueur du sélecteur ne varie pas au changement de semaine. */}
       <div className="w-[80px] lg:w-[150px] px-1 lg:px-2 py-0.5 flex flex-col lg:flex-row items-center justify-center text-center select-none shrink-0">
@@ -77,10 +68,6 @@ export function WeekSelector({
         className="p-1.5 min-h-10 w-10 min-[400px]:w-[80px] min-[400px]:justify-center hover:bg-white text-stone-500 hover:text-palette-forest-dark shadow-sm flex items-center gap-1.5 shrink-0"
         aria-label={nextWeekAriaLabel}
       >
-        {/* Masqué en dessous de 400px pour que le sélecteur tienne sur les écrans étroits. */}
-        {nextWeekFirstDayLabel != null && nextWeekFirstDayLabel !== '' && (
-          <span className="text-xs text-stone-600 truncate max-w-[52px] hidden min-[400px]:inline">{nextWeekFirstDayLabel}</span>
-        )}
         <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="m9 18 6-6-6-6" />
         </svg>

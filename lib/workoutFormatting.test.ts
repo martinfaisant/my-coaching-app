@@ -11,6 +11,7 @@ import {
   formatElevationDelta,
   formatPaceDelta,
   formatPaceValue,
+  getCalendarWorkoutTileMetrics,
   getEffectiveActualMetrics,
   shouldShowActualCard,
 } from './workoutFormatting'
@@ -264,5 +265,121 @@ describe('computeActualPace', () => {
     expect(computeActualPace('course', 30, null)).toBeNull()
     expect(computeActualPace('course', 0, 5)).toBeNull()
     expect(computeActualPace('course', 30, 0)).toBeNull()
+  })
+})
+
+describe('getCalendarWorkoutTileMetrics', () => {
+  it('planned : reprend les target_*', () => {
+    const w = makeWorkout({
+      status: 'planned',
+      target_duration_minutes: 45,
+      target_distance_km: 10,
+      target_elevation_m: 100,
+      target_pace: 4.5,
+    })
+    const m = getCalendarWorkoutTileMetrics(w)
+    expect(m.mode).toBe('planned')
+    expect(m.hasDuration).toBe(true)
+    expect(m.hasDistance).toBe(true)
+    expect(m.hasPace).toBe(true)
+    expect(m.hasElevation).toBe(true)
+    expect(m.durationMinutes).toBe(45)
+    expect(m.distanceKm).toBe(10)
+    expect(m.elevationM).toBe(100)
+    expect(m.paceForDisplay).toBe(4.5)
+  })
+
+  it('not_completed : comme prévu (pas le réalisé)', () => {
+    const w = makeWorkout({
+      status: 'not_completed',
+      target_duration_minutes: 40,
+      actual_duration_minutes: 35,
+    })
+    const m = getCalendarWorkoutTileMetrics(w)
+    expect(m.mode).toBe('planned')
+    expect(m.durationMinutes).toBe(40)
+  })
+
+  it('completed sans actual_* : rien à afficher', () => {
+    const m = getCalendarWorkoutTileMetrics(
+      makeWorkout({
+        status: 'completed',
+        target_duration_minutes: 60,
+        target_distance_km: 12,
+      })
+    )
+    expect(m.mode).toBe('completed')
+    expect(m.hasDuration).toBe(false)
+    expect(m.hasDistance).toBe(false)
+    expect(m.hasPace).toBe(false)
+    expect(m.hasElevation).toBe(false)
+  })
+
+  it('completed partiel : uniquement durée', () => {
+    const m = getCalendarWorkoutTileMetrics(
+      makeWorkout({
+        status: 'completed',
+        target_duration_minutes: 60,
+        target_distance_km: 12,
+        actual_duration_minutes: 55,
+      })
+    )
+    expect(m.hasDuration).toBe(true)
+    expect(m.hasDistance).toBe(false)
+    expect(m.hasPace).toBe(false)
+    expect(m.durationMinutes).toBe(55)
+  })
+
+  it('completed durée + distance course : allure dérivée', () => {
+    const m = getCalendarWorkoutTileMetrics(
+      makeWorkout({
+        status: 'completed',
+        sport_type: 'course',
+        actual_duration_minutes: 50,
+        actual_distance_km: 10,
+      })
+    )
+    expect(m.hasPace).toBe(true)
+    expect(m.paceForDisplay).toBe(5)
+  })
+
+  it('completed : D+ réel', () => {
+    const m = getCalendarWorkoutTileMetrics(
+      makeWorkout({
+        status: 'completed',
+        actual_elevation_m: 180,
+      })
+    )
+    expect(m.hasElevation).toBe(true)
+    expect(m.elevationM).toBe(180)
+  })
+
+  it('musculation completed avec durée + distance : pas d’allure (champ non applicable)', () => {
+    const m = getCalendarWorkoutTileMetrics(
+      makeWorkout({
+        status: 'completed',
+        sport_type: 'musculation',
+        actual_duration_minutes: 45,
+        actual_distance_km: 5,
+      })
+    )
+    expect(m.hasDuration).toBe(true)
+    expect(m.hasDistance).toBe(true)
+    expect(m.hasPace).toBe(false)
+    expect(m.paceForDisplay).toBeNull()
+  })
+
+  it('canot completed : vitesse dérivée km/h (comme vélo), pas min/km', () => {
+    const m = getCalendarWorkoutTileMetrics(
+      makeWorkout({
+        status: 'completed',
+        sport_type: 'canot',
+        actual_duration_minutes: 60,
+        actual_distance_km: 10,
+      })
+    )
+    expect(m.hasPace).toBe(true)
+    // (10 km / 60 min) * 60 = 10 km/h
+    expect(m.paceForDisplay).toBe(10)
   })
 })

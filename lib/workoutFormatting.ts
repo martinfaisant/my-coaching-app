@@ -88,6 +88,84 @@ export function computeActualPace(
   return computePaceFromDurationAndDistance(sportType, durationMinutes, distanceKm)
 }
 
+/**
+ * Métriques pour les tuiles entraînement dans la grille calendrier uniquement.
+ * - `planned` / `not_completed` : prévu (`target_*`, `target_pace`).
+ * - `completed` : réalisé uniquement (`actual_*`) ; allure affichée seulement si dérivable (durée + distance).
+ */
+export type CalendarWorkoutTileMetrics = {
+  mode: 'planned' | 'completed'
+  hasDuration: boolean
+  hasDistance: boolean
+  hasPace: boolean
+  hasElevation: boolean
+  durationMinutes: number | null
+  distanceKm: number | null
+  elevationM: number | null
+  /** Valeur passée à l’UI d’allure (min/km, km/h ou min/100m selon sport). */
+  paceForDisplay: number | null
+}
+
+export function getCalendarWorkoutTileMetrics(
+  workout: Pick<
+    Workout,
+    | 'status'
+    | 'sport_type'
+    | 'target_duration_minutes'
+    | 'target_distance_km'
+    | 'target_elevation_m'
+    | 'target_pace'
+    | 'actual_duration_minutes'
+    | 'actual_distance_km'
+    | 'actual_elevation_m'
+  >
+): CalendarWorkoutTileMetrics {
+  const status = workout.status ?? 'planned'
+  if (status !== 'completed') {
+    const hasDuration = workout.target_duration_minutes != null && workout.target_duration_minutes > 0
+    const hasDistance = workout.target_distance_km != null && workout.target_distance_km > 0
+    const hasPace = workout.target_pace != null && workout.target_pace > 0
+    const hasElevation = workout.target_elevation_m != null && workout.target_elevation_m > 0
+    return {
+      mode: 'planned',
+      hasDuration,
+      hasDistance,
+      hasPace,
+      hasElevation,
+      durationMinutes: hasDuration ? Math.round(Number(workout.target_duration_minutes)) : null,
+      distanceKm: hasDistance ? Number(workout.target_distance_km) : null,
+      elevationM: hasElevation ? Number(workout.target_elevation_m) : null,
+      paceForDisplay: hasPace ? Number(workout.target_pace) : null,
+    }
+  }
+
+  const ad = normalizeNullableNumber(workout.actual_duration_minutes)
+  const ak = normalizeNullableNumber(workout.actual_distance_km)
+  const ae = normalizeNullableNumber(workout.actual_elevation_m)
+
+  const hasDuration = ad !== null && ad > 0
+  const hasDistance = ak !== null && ak > 0
+  const hasElevation = ae !== null && ae > 0
+
+  const paceComputed =
+    workoutHasPaceField(workout.sport_type) && hasDuration && hasDistance
+      ? computeActualPace(workout.sport_type, ad, ak)
+      : null
+  const hasPace = paceComputed != null && paceComputed > 0
+
+  return {
+    mode: 'completed',
+    hasDuration,
+    hasDistance,
+    hasPace,
+    hasElevation,
+    durationMinutes: hasDuration ? Math.round(ad) : null,
+    distanceKm: hasDistance ? ak : null,
+    elevationM: hasElevation ? ae : null,
+    paceForDisplay: hasPace ? paceComputed : null,
+  }
+}
+
 // ─────────────────────────────────────────────────────────────────────────
 // Formats absolus
 // ─────────────────────────────────────────────────────────────────────────

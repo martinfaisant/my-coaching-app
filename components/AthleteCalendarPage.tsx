@@ -65,8 +65,6 @@ export function AthleteCalendarPage({
           dateRangeLabel,
           onNavigateWeek,
           isAnimating,
-          prevWeekLastDayLabel,
-          nextWeekFirstDayLabel,
           calendarMonth,
           onNavigateMonth,
         }) => (
@@ -99,8 +97,6 @@ export function AthleteCalendarPage({
                   dateRangeLabel={dateRangeLabel}
                   onNavigate={onNavigateWeek}
                   isAnimating={isAnimating}
-                  prevWeekLastDayLabel={prevWeekLastDayLabel}
-                  nextWeekFirstDayLabel={nextWeekFirstDayLabel}
                   prevWeekAriaLabel={tCommon('weekPrevious')}
                   nextWeekAriaLabel={tCommon('weekNext')}
                 />

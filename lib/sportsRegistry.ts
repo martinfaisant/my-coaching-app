@@ -72,12 +72,16 @@ export function workoutPaceIsRunningStyle(sportType: SportType): boolean {
   )
 }
 
-/** Afficher le champ allure/vitesse (objectif). */
+/**
+ * Afficher le champ allure/vitesse (objectif).
+ * Aligné sur `computePaceFromDurationAndDistance` : le canot suit le modèle vélo (km/h), pas min/km.
+ */
 export function workoutHasPaceField(sportType: SportType): boolean {
   return (
     sportType === 'course' ||
     sportType === 'trail' ||
     sportType === 'velo' ||
+    sportType === 'canot' ||
     sportType === 'natation' ||
     sportType === 'ice_skating' ||
     sportType === 'nordic_ski' ||
