@@ -1,6 +1,12 @@
 import { memo } from 'react'
 import { Angry, Frown, Laugh, Meh, Smile } from 'lucide-react'
 
+import {
+  FEELING_PICKER_SELECTED_BG,
+  FEELING_PICKER_SELECTED_TEXT,
+  INTENSITY_PICKER_SELECTED,
+} from '@/lib/workoutFeedbackColors'
+
 const FEELING_ICONS = [Angry, Frown, Meh, Smile, Laugh] as const
 const FEELING_VALUES = [1, 2, 3, 4, 5] as const
 const INTENSITY_VALUES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] as const
@@ -35,6 +41,8 @@ export const WorkoutFeedbackSection = memo(function WorkoutFeedbackSection({
           {FEELING_VALUES.map((value, idx) => {
             const Icon = FEELING_ICONS[idx]
             const selected = perceivedFeeling === value
+            const selectedBg = FEELING_PICKER_SELECTED_BG[value]
+            const selectedText = FEELING_PICKER_SELECTED_TEXT[value]
             return (
               <button
                 key={value}
@@ -44,20 +52,18 @@ export const WorkoutFeedbackSection = memo(function WorkoutFeedbackSection({
                 aria-pressed={selected}
                 className={`flex-1 min-w-0 flex flex-col items-center justify-center gap-1.5 p-2 rounded-xl border-2 transition shrink-0 ${
                   selected
-                    ? 'border-palette-forest-dark bg-palette-forest-dark/10'
+                    ? selectedBg
                     : 'border-stone-200 bg-white hover:bg-stone-50'
                 }`}
               >
                 <Icon
-                  className={`h-7 w-7 shrink-0 ${
-                    selected ? 'text-palette-forest-dark' : 'text-stone-500'
-                  }`}
+                  className={`h-7 w-7 shrink-0 ${selected ? selectedText : 'text-stone-500'}`}
                   strokeWidth={2}
                   aria-hidden
                 />
                 <span
                   className={`text-xs font-medium text-center leading-tight line-clamp-2 ${
-                    selected ? 'text-palette-forest-dark' : 'text-stone-600'
+                    selected ? selectedText : 'text-stone-600'
                   }`}
                 >
                   {tWorkouts(`feedback.feelingScale.${value}`)}
@@ -75,6 +81,7 @@ export const WorkoutFeedbackSection = memo(function WorkoutFeedbackSection({
         <div className="flex w-full gap-2" role="group" aria-label={tWorkouts('feedback.intensityLabel')}>
           {INTENSITY_VALUES.map((value) => {
             const selected = perceivedIntensity === value
+            const selectedClasses = INTENSITY_PICKER_SELECTED[value]
             return (
               <button
                 key={value}
@@ -83,7 +90,7 @@ export const WorkoutFeedbackSection = memo(function WorkoutFeedbackSection({
                 aria-pressed={selected}
                 className={`flex-1 min-w-0 flex items-center justify-center h-10 rounded-lg text-xs font-semibold border transition ${
                   selected
-                    ? 'border-palette-forest-dark bg-palette-forest-dark text-white'
+                    ? selectedClasses
                     : 'border-stone-200 bg-white text-stone-500 hover:bg-stone-50'
                 }`}
               >
@@ -102,6 +109,8 @@ export const WorkoutFeedbackSection = memo(function WorkoutFeedbackSection({
           {FEELING_VALUES.map((value, idx) => {
             const Icon = FEELING_ICONS[idx]
             const selected = perceivedPleasure === value
+            const selectedBg = FEELING_PICKER_SELECTED_BG[value]
+            const selectedText = FEELING_PICKER_SELECTED_TEXT[value]
             return (
               <button
                 key={value}
@@ -111,20 +120,18 @@ export const WorkoutFeedbackSection = memo(function WorkoutFeedbackSection({
                 aria-pressed={selected}
                 className={`flex-1 min-w-0 flex flex-col items-center justify-center gap-1.5 p-2 rounded-xl border-2 transition shrink-0 ${
                   selected
-                    ? 'border-palette-forest-dark bg-palette-forest-dark/10'
+                    ? selectedBg
                     : 'border-stone-200 bg-white hover:bg-stone-50'
                 }`}
               >
                 <Icon
-                  className={`h-7 w-7 shrink-0 ${
-                    selected ? 'text-palette-forest-dark' : 'text-stone-500'
-                  }`}
+                  className={`h-7 w-7 shrink-0 ${selected ? selectedText : 'text-stone-500'}`}
                   strokeWidth={2}
                   aria-hidden
                 />
                 <span
                   className={`text-xs font-medium text-center leading-tight line-clamp-2 ${
-                    selected ? 'text-palette-forest-dark' : 'text-stone-600'
+                    selected ? selectedText : 'text-stone-600'
                   }`}
                 >
                   {tWorkouts(`feedback.pleasureScale.${value}`)}

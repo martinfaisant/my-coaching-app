@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>US2 — Composant WorkoutFeedbackSummary (lecture seule)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              palette: {
+                'forest-dark': '#627e59',
+                gold: '#c5a35a',
+                amber: '#e2b66b',
+              },
+              stone: {
+                50: '#fafaf9',
+                100: '#f5f5f4',
+                200: '#e7e5e4',
+                300: '#d6d3d1',
+                400: '#a8a29e',
+                500: '#78716c',
+                600: '#57534e',
+                700: '#44403c',
+                800: '#292524',
+              },
+            },
+          },
+        },
+      }
+    </script>
+  </head>
+
+  <body class="bg-stone-200 min-h-screen p-6 font-sans">
+    <div class="max-w-4xl mx-auto space-y-12">
+      <header>
+        <h1 class="text-2xl font-bold text-stone-900">US2 — WorkoutFeedbackSummary (lecture seule)</h1>
+        <p class="text-sm text-stone-600 mt-1">
+          Stat cards horizontales pour <strong>Ressenti</strong>, <strong>Intensité (RPE)</strong> et <strong>Plaisir</strong>.
+          Visible si au moins un champ <code>perceived_*</code> non NULL. À utiliser dans la modale coach lecture seule.
+          Le mode édition reste géré par <code>WorkoutFeedbackSection</code> existant (athlète qui saisit).
+        </p>
+      </header>
+
+      <!-- =================== ÉTAT A — Feedback complet =================== -->
+      <section class="space-y-3">
+        <h2 class="text-base font-bold text-stone-800">État A — Feedback complet (Ressenti + RPE + Plaisir)</h2>
+        <p class="text-xs text-stone-500">Layout flex-wrap gap-8 (md+) ; séparé du bloc précédent par <code>border-t border-stone-100 pt-6</code>.</p>
+
+        <div class="bg-white rounded-2xl border border-stone-200 p-6">
+          <div class="flex flex-wrap gap-x-12 gap-y-6">
+            <!-- Ressenti -->
+            <div>
+              <h4 class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-3">Ressenti</h4>
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 flex items-center justify-center bg-palette-forest-dark/10 text-palette-forest-dark rounded-xl border border-palette-forest-dark/20">
+                  <!-- Smile (lucide) -->
+                  <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+                </div>
+                <span class="font-bold text-stone-700 text-lg">Plutôt bien</span>
+              </div>
+            </div>
+
+            <!-- RPE -->
+            <div>
+              <h4 class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-3">Intensité (RPE)</h4>
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 flex items-center justify-center bg-stone-100 text-stone-800 rounded-xl border border-stone-200 font-black text-xl">7</div>
+                <span class="font-medium text-stone-500 text-lg">/ 10</span>
+              </div>
+            </div>
+
+            <!-- Plaisir -->
+            <div>
+              <h4 class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-3">Plaisir</h4>
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 flex items-center justify-center bg-palette-forest-dark/10 text-palette-forest-dark rounded-xl border border-palette-forest-dark/20">
+                  <!-- Laugh -->
+                  <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M18 13a6 6 0 01-6 5 6 6 0 01-6-5h12z"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+                </div>
+                <span class="font-bold text-stone-700 text-lg">Très bien</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================== ÉTAT B — Feedback partiel =================== -->
+      <section class="space-y-3">
+        <h2 class="text-base font-bold text-stone-800">État B — Feedback partiel (Ressenti seul)</h2>
+        <p class="text-xs text-stone-500">Les champs non renseignés sont <strong>masqués</strong>. Pas de placeholder « Non renseigné » (réduction du bruit visuel).</p>
+
+        <div class="bg-white rounded-2xl border border-stone-200 p-6">
+          <div class="flex flex-wrap gap-x-12 gap-y-6">
+            <div>
+              <h4 class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-3">Ressenti</h4>
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 flex items-center justify-center bg-stone-100 text-stone-600 rounded-xl border border-stone-200">
+                  <!-- Meh -->
+                  <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="8" y1="15" x2="16" y2="15"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+                </div>
+                <span class="font-bold text-stone-700 text-lg">Neutre</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================== ÉTAT C — Mobile (1 col empilé) =================== -->
+      <section class="space-y-3">
+        <h2 class="text-base font-bold text-stone-800">État C — Mobile (&lt; sm) : stat cards empilées</h2>
+        <p class="text-xs text-stone-500">Sur petit écran, <code>gap-y-4</code>, chaque stat occupe une ligne complète.</p>
+
+        <div class="max-w-sm">
+          <div class="bg-white rounded-2xl border border-stone-200 p-5">
+            <div class="flex flex-col gap-4">
+              <div>
+                <h4 class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Ressenti</h4>
+                <div class="flex items-center gap-3">
+                  <div class="w-11 h-11 flex items-center justify-center bg-palette-forest-dark/10 text-palette-forest-dark rounded-xl border border-palette-forest-dark/20">
+                    <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+                  </div>
+                  <span class="font-bold text-stone-700 text-base">Plutôt bien</span>
+                </div>
+              </div>
+              <div>
+                <h4 class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Intensité (RPE)</h4>
+                <div class="flex items-center gap-3">
+                  <div class="w-11 h-11 flex items-center justify-center bg-stone-100 text-stone-800 rounded-xl border border-stone-200 font-black text-lg">7</div>
+                  <span class="font-medium text-stone-500 text-base">/ 10</span>
+                </div>
+              </div>
+              <div>
+                <h4 class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Plaisir</h4>
+                <div class="flex items-center gap-3">
+                  <div class="w-11 h-11 flex items-center justify-center bg-palette-forest-dark/10 text-palette-forest-dark rounded-xl border border-palette-forest-dark/20">
+                    <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M18 13a6 6 0 01-6 5 6 6 0 01-6-5h12z"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+                  </div>
+                  <span class="font-bold text-stone-700 text-base">Très bien</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================== ÉTAT D — Aucun feedback =================== -->
+      <section class="space-y-3">
+        <h2 class="text-base font-bold text-stone-800">État D — Aucun <code>perceived_*</code> renseigné</h2>
+        <p class="text-xs text-stone-500">Le composant entier est <strong>masqué</strong>. Pas de placeholder.</p>
+        <div class="text-xs text-stone-400 italic">[Composant non rendu]</div>
+      </section>
+
+      <!-- =================== Légende couleurs tuile =================== -->
+      <section class="space-y-2 pt-6 border-t border-stone-300">
+        <h2 class="text-base font-bold text-stone-800">Légende couleur des tuiles (à valider)</h2>
+        <p class="text-sm text-stone-700">
+          Hypothèse : <strong>positif</strong> (4–5) → <code>bg-palette-forest-dark/10 text-palette-forest-dark border-palette-forest-dark/20</code>.
+          <strong>Neutre</strong> (3) → <code>bg-stone-100 text-stone-600 border-stone-200</code>.
+          <strong>Négatif</strong> (1–2) → <code>bg-stone-100 text-stone-700 border-stone-300</code> (pas de rouge, on évite le jugement de valeur).
+          RPE : toujours neutre stone (chiffre). À confirmer en Phase Architecte.
+        </p>
+      </section>
+
+      <!-- =================== Transitions =================== -->
+      <section class="space-y-2 pt-4">
+        <h2 class="text-base font-bold text-stone-800">Transitions couvertes par US2</h2>
+        <ul class="text-sm text-stone-700 list-disc pl-6 space-y-1">
+          <li>État D → État B : un seul perceived_* renseigné côté athlète → composant apparaît avec un seul item.</li>
+          <li>État B → État A : athlète complète les autres champs → 3 items affichés.</li>
+          <li>État A → État D : tous les perceived_* effacés (passage au statut Non réalisé qui efface les feedbacks ?) → composant disparaît. <em>À confirmer si le passage à <code>not_completed</code> efface aussi les feedbacks.</em></li>
+        </ul>
+      </section>
+    </div>
+  </body>
+</html>

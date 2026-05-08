@@ -629,6 +629,24 @@
       "distanceLabel": "Distance réalisée",
       "elevationLabel": "D+ réalisé"
     },
+    "summary": {
+      "targetTitle": "Objectif Session",
+      "actualTitle": "Réalisé",
+      "targetDurationLabel": "Temps prévu",
+      "actualDurationLabel": "Temps total",
+      "distanceLabel": "Distance",
+      "paceLabel": "Allure",
+      "actualPaceLabel": "Allure",
+      "speedLabel": "Vitesse",
+      "actualSpeedLabel": "Vitesse moy.",
+      "elevationLabel": "D+",
+      "feedback": {
+        "feelingLabel": "Ressenti",
+        "intensityLabel": "Intensité (RPE)",
+        "intensityScale": "/ 10",
+        "pleasureLabel": "Plaisir"
+      }
+    },
     "validation": {
       "allFieldsRequired": "Tous les champs sont obligatoires.",
       "invalidSport": "Type de sport invalide.",
