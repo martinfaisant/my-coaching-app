@@ -999,7 +999,9 @@ export function ProfileForm({
             </h2>
             <p className="text-xs text-stone-500 mb-3">{tProfile('workoutPrimaryMetricsIntro')}</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="rounded-xl border border-stone-200 bg-white p-3 flex items-center justify-between gap-3 border-l-4 border-l-palette-forest-dark">
+              <div
+                className={`rounded-xl border border-stone-200 bg-white p-3 flex items-center justify-between gap-3 border-l-4 ${SPORT_CARD_STYLES.course.borderLeft}`}
+              >
                 <span className="text-sm font-semibold text-stone-800">{tSports('course')}</span>
                 <Segments
                   name="workout_primary_metric_course"
@@ -1013,7 +1015,9 @@ export function ProfileForm({
                   ]}
                 />
               </div>
-              <div className="rounded-xl border border-stone-200 bg-white p-3 flex items-center justify-between gap-3 border-l-4 border-l-palette-gold">
+              <div
+                className={`rounded-xl border border-stone-200 bg-white p-3 flex items-center justify-between gap-3 border-l-4 ${SPORT_CARD_STYLES.trail.borderLeft}`}
+              >
                 <span className="text-sm font-semibold text-stone-800">{tSports('trail')}</span>
                 <Segments
                   name="workout_primary_metric_trail"
@@ -1027,7 +1031,9 @@ export function ProfileForm({
                   ]}
                 />
               </div>
-              <div className="rounded-xl border border-stone-200 bg-white p-3 flex items-center justify-between gap-3 border-l-4 border-l-palette-olive">
+              <div
+                className={`rounded-xl border border-stone-200 bg-white p-3 flex items-center justify-between gap-3 border-l-4 ${SPORT_CARD_STYLES.velo.borderLeft}`}
+              >
                 <span className="text-sm font-semibold text-stone-800">{tSports('velo')}</span>
                 <Segments
                   name="workout_primary_metric_velo"
@@ -1041,7 +1047,9 @@ export function ProfileForm({
                   ]}
                 />
               </div>
-              <div className="rounded-xl border border-stone-200 bg-white p-3 flex items-center justify-between gap-3 border-l-4 border-l-sky-500">
+              <div
+                className={`rounded-xl border border-stone-200 bg-white p-3 flex items-center justify-between gap-3 border-l-4 ${SPORT_CARD_STYLES.natation.borderLeft}`}
+              >
                 <span className="text-sm font-semibold text-stone-800">{tSports('natation')}</span>
                 <Segments
                   name="workout_primary_metric_natation"
@@ -1056,7 +1064,9 @@ export function ProfileForm({
                 />
               </div>
 
-              <div className="rounded-xl border border-stone-200 bg-white p-3 flex items-center justify-between gap-3 border-l-4 border-l-stone-500">
+              <div
+                className={`rounded-xl border border-stone-200 bg-white p-3 flex items-center justify-between gap-3 border-l-4 ${SPORT_CARD_STYLES.triathlon.borderLeft}`}
+              >
                 <span className="text-sm font-semibold text-stone-800">{tSports('triathlon')}</span>
                 <Segments
                   name="workout_primary_metric_triathlon"
@@ -1071,7 +1081,9 @@ export function ProfileForm({
                 />
               </div>
 
-              <div className="rounded-xl border border-stone-200 bg-white p-3 flex items-center justify-between gap-3 border-l-4 border-l-palette-amber">
+              <div
+                className={`rounded-xl border border-stone-200 bg-white p-3 flex items-center justify-between gap-3 border-l-4 ${SPORT_CARD_STYLES.canot.borderLeft}`}
+              >
                 <span className="text-sm font-semibold text-stone-800">{tSports('canot')}</span>
                 <Segments
                   name="workout_primary_metric_canot"
@@ -1086,7 +1098,9 @@ export function ProfileForm({
                 />
               </div>
 
-              <div className="rounded-xl border border-stone-200 bg-white p-3 flex items-center justify-between gap-3 border-l-4 border-l-palette-gold">
+              <div
+                className={`rounded-xl border border-stone-200 bg-white p-3 flex items-center justify-between gap-3 border-l-4 ${SPORT_CARD_STYLES.nordic_ski.borderLeft}`}
+              >
                 <span className="text-sm font-semibold text-stone-800">{tSports('ski_fond')}</span>
                 <Segments
                   name="workout_primary_metric_nordic_ski"
@@ -1100,7 +1114,9 @@ export function ProfileForm({
                   ]}
                 />
               </div>
-              <div className="rounded-xl border border-stone-200 bg-white p-3 flex items-center justify-between gap-3 border-l-4 border-l-palette-gold">
+              <div
+                className={`rounded-xl border border-stone-200 bg-white p-3 flex items-center justify-between gap-3 border-l-4 ${SPORT_CARD_STYLES.backcountry_ski.borderLeft}`}
+              >
                 <span className="text-sm font-semibold text-stone-800">{tSports('ski_randonnee')}</span>
                 <Segments
                   name="workout_primary_metric_backcountry_ski"
@@ -1114,7 +1130,9 @@ export function ProfileForm({
                   ]}
                 />
               </div>
-              <div className="rounded-xl border border-stone-200 bg-white p-3 flex items-center justify-between gap-3 border-l-4 border-l-palette-sage">
+              <div
+                className={`rounded-xl border border-stone-200 bg-white p-3 flex items-center justify-between gap-3 border-l-4 ${SPORT_CARD_STYLES.ice_skating.borderLeft}`}
+              >
                 <span className="text-sm font-semibold text-stone-800">{tSports('patinage_glace')}</span>
                 <Segments
                   name="workout_primary_metric_ice_skating"
@@ -1128,7 +1146,9 @@ export function ProfileForm({
                   ]}
                 />
               </div>
-              <div className="rounded-xl border border-stone-200 bg-white p-3 flex items-center justify-between gap-3 border-l-4 border-l-palette-sage">
+              <div
+                className={`rounded-xl border border-stone-200 bg-white p-3 flex items-center justify-between gap-3 border-l-4 ${SPORT_CARD_STYLES.randonnee.borderLeft}`}
+              >
                 <span className="text-sm font-semibold text-stone-800">{tSports('rando')}</span>
                 <Segments
                   name="workout_primary_metric_randonnee"
