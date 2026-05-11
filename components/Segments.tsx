@@ -1,8 +1,8 @@
 'use client'
 
 /**
- * Groupe de choix par segments (style offres coach : / Mois | Unique | Gratuit).
- * Réutilisable pour tout choix exclusif 2 à N options (type dispo/indispo, récurrence, etc.).
+ * Groupe de choix par segments (offres coach, dispo, récurrence, onglets calendrier coach, etc.).
+ * Conteneur blanc + bordure ; survol inactif aligné sur la nav dashboard (`hover:bg-stone-50` + `hover:text-palette-forest-dark`).
  */
 import type { ReactNode } from 'react'
 
@@ -22,15 +22,22 @@ export type SegmentsProps = {
   name: string
   /** Label pour le groupe (accessibilité). */
   ariaLabel?: string
-  /** Taille : md = py-2 text-sm (défaut, offres), sm = py-1.5 text-xs (bloc récurrence). */
-  size?: 'sm' | 'md'
+  /**
+   * sm = text-xs (récurrence, petits blocs)
+   * md = text-sm, min-h 42px (défaut, offres, stats)
+   * lg = text-base font-bold (onglets sous calendrier coach : icône + libellé)
+   */
+  size?: 'sm' | 'md' | 'lg'
   /** Classes additionnelles sur le conteneur. */
   className?: string
 }
 
 const SELECTED_CLASS =
   'bg-palette-forest-dark text-white border border-palette-forest-dark shadow-[0_2px_4px_-1px_rgba(98,126,89,0.25)]'
-const UNSELECTED_CLASS = 'bg-white text-stone-600 border border-stone-200 hover:border-palette-forest-dark'
+const UNSELECTED_CLASS =
+  'bg-white text-stone-600 border border-stone-200 hover:bg-stone-50 hover:text-palette-forest-dark'
+
+const FOCUS_RING_INNER = 'peer-focus-visible:ring-2 peer-focus-visible:ring-palette-forest-dark peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-white'
 
 export function Segments({
   options,
@@ -41,31 +48,34 @@ export function Segments({
   size = 'md',
   className = '',
 }: SegmentsProps) {
-  const isSm = size === 'sm'
-  const containerClass = `flex bg-stone-100 rounded-lg border border-stone-200 items-center ${isSm ? 'gap-2 p-1.5' : 'gap-1 p-1 min-h-[42px]'} ${className}`.trim()
-  const optionInnerClass = isSm
-    ? 'w-full px-4 py-2 rounded-md text-xs font-medium select-none transition-all text-center flex items-center justify-center min-h-[36px] whitespace-normal sm:whitespace-nowrap leading-tight'
-    : 'w-full py-2 rounded-md text-sm font-medium select-none transition-all text-center flex items-center justify-center min-h-[42px] whitespace-normal sm:whitespace-nowrap leading-tight'
+  const containerClass =
+    `flex min-w-0 rounded-lg border border-white bg-white items-center ${size === 'sm' ? 'gap-2 p-1.5' : 'gap-1 p-0.5'} ${size === 'md' ? 'min-h-[42px]' : ''} ${className}`.trim()
+
+  const optionInnerClass =
+    size === 'sm'
+      ? `w-full px-4 py-2 rounded-md text-xs font-medium select-none transition-colors text-center flex items-center justify-center min-h-[36px] whitespace-normal sm:whitespace-nowrap leading-tight ${FOCUS_RING_INNER}`
+      : size === 'lg'
+        ? `w-full min-w-0 flex-1 px-3 py-2.5 rounded-md text-base font-bold select-none transition-colors flex items-center justify-center gap-2 whitespace-normal sm:whitespace-nowrap ${FOCUS_RING_INNER}`
+        : `w-full py-2 rounded-md text-sm font-medium select-none transition-colors text-center flex items-center justify-center min-h-[42px] whitespace-normal sm:whitespace-nowrap leading-tight ${FOCUS_RING_INNER}`
 
   return (
     <div className={containerClass} role="group" aria-label={ariaLabel}>
       {options.map((opt) => {
         const selected = value === opt.value
         return (
-          <label key={opt.value} className="relative flex-1 cursor-pointer flex items-center justify-center">
+          <label
+            key={opt.value === '' ? '__empty' : opt.value}
+            className="relative flex min-w-0 flex-1 cursor-pointer items-center justify-center"
+          >
             <input
               type="radio"
               name={name}
               value={opt.value}
               checked={selected}
               onChange={() => onChange(opt.value)}
-              className="sr-only"
+              className="peer sr-only"
             />
-            <div
-              className={`${optionInnerClass} ${selected ? SELECTED_CLASS : UNSELECTED_CLASS}`}
-            >
-              {opt.label}
-            </div>
+            <div className={`${optionInnerClass} ${selected ? SELECTED_CLASS : UNSELECTED_CLASS}`}>{opt.label}</div>
           </label>
         )
       })}

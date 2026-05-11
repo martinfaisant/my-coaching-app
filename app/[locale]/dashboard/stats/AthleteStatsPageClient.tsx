@@ -193,6 +193,7 @@ export function AthleteStatsPageClient({
                   name="granularity"
                   ariaLabel={t('filters.granularity')}
                   size="sm"
+                  className="w-full"
                   value={granularity}
                   onChange={(v) => setGranularity(v as AthleteStatsGranularity)}
                   options={[
@@ -209,6 +210,7 @@ export function AthleteStatsPageClient({
                   name="metric"
                   ariaLabel={t('filters.metric')}
                   size="sm"
+                  className="w-full"
                   value={metric}
                   onChange={(v) => setMetric(v as AthleteStatsMetric)}
                   options={[

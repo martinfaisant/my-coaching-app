@@ -5,6 +5,7 @@ import type { useTranslations } from 'next-intl'
 
 import type { StatusCommentFormState } from '@/app/[locale]/dashboard/workouts/actions'
 import { Button } from '@/components/Button'
+import { Segments } from '@/components/Segments'
 import { Textarea } from '@/components/Textarea'
 import { WorkoutFeedbackSection } from '@/components/workout-modal/WorkoutFeedbackSection'
 import { WorkoutTargetActualCards } from '@/components/workout-modal/WorkoutTargetActualCards'
@@ -133,34 +134,30 @@ export function AthleteWorkoutModalView({
       </div>
 
       <form action={statusCommentAction} className="px-6 py-4 border-t border-stone-100 space-y-4">
-        <input type="hidden" name="status" value={statusSegment} />
         <input type="hidden" name="perceived_feeling" value={perceivedFeeling ?? ''} />
         <input type="hidden" name="perceived_intensity" value={perceivedIntensity ?? ''} />
         <input type="hidden" name="perceived_pleasure" value={perceivedPleasure ?? ''} />
 
-        <div className="flex bg-stone-200 p-0.5 rounded-lg" role="group" aria-label={tWorkouts('status.ariaLabel')}>
-          {(['planned', 'completed', 'not_completed'] as const).map((value) => (
-            <button
-              key={value}
-              type="button"
-              onClick={() => {
-                setStatusSegment(value)
-                if (value === 'not_completed') {
-                  setActualDurationMinutes('')
-                  setActualDistanceKm('')
-                  setActualElevationM('')
-                }
-              }}
-              className={`flex-1 px-3 py-2 text-xs font-medium rounded-md transition ${
-                statusSegment === value
-                  ? 'bg-palette-forest-dark text-white shadow-sm'
-                  : 'text-stone-600 hover:bg-stone-50'
-              }`}
-            >
-              {tWorkouts(`status.${value}`)}
-            </button>
-          ))}
-        </div>
+        <Segments
+          name="status"
+          ariaLabel={tWorkouts('status.ariaLabel')}
+          size="sm"
+          className="w-full"
+          value={statusSegment}
+          onChange={(v) => {
+            const next = v as WorkoutStatus
+            setStatusSegment(next)
+            if (next === 'not_completed') {
+              setActualDurationMinutes('')
+              setActualDistanceKm('')
+              setActualElevationM('')
+            }
+          }}
+          options={(['planned', 'completed', 'not_completed'] as const).map((value) => ({
+            value,
+            label: tWorkouts(`status.${value}`),
+          }))}
+        />
 
         {statusSegment === 'completed' && (
           <>

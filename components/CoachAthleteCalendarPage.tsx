@@ -14,6 +14,7 @@ import { AvatarImage } from './AvatarImage'
 import { TileCard } from './TileCard'
 import { AthleteFacilityDetails } from '@/components/AthleteFacilityDetails'
 import { CoachAthleteNotesSection } from '@/components/CoachAthleteNotesSection'
+import { Segments } from '@/components/Segments'
 import { IconBuilding } from '@/components/icons/IconBuilding'
 import { getGoalColor, getGoalBadgeClass } from '@/lib/goalColor'
 import type {
@@ -259,44 +260,43 @@ export function CoachAthleteCalendarPage({
           return (
             <div className="pb-6 border-t border-stone-100">
               <div className="mb-6 w-full">
-                <div className="flex w-full bg-stone-200 p-0.5 rounded-lg" role="group">
-                  <button
-                    type="button"
-                    className={`flex flex-1 min-w-0 items-center justify-center gap-2 px-3 py-2.5 text-base font-bold rounded-md transition-all ${
-                      afterCalendarTab === 'goals'
-                        ? 'bg-palette-forest-dark text-white shadow-sm'
-                        : 'text-stone-600 hover:bg-stone-50'
-                    }`}
-                    onClick={() => setAfterCalendarTab('goals')}
-                  >
-                    <TargetIcon className="h-5 w-5 shrink-0" />
-                    <span className="truncate">{t('calendarTabObjectives')}</span>
-                  </button>
-                  <button
-                    type="button"
-                    className={`flex flex-1 min-w-0 items-center justify-center gap-2 px-3 py-2.5 text-base font-bold rounded-md transition-all ${
-                      afterCalendarTab === 'facilities'
-                        ? 'bg-palette-forest-dark text-white shadow-sm'
-                        : 'text-stone-600 hover:bg-stone-50'
-                    }`}
-                    onClick={() => setAfterCalendarTab('facilities')}
-                  >
-                    <IconBuilding className="h-5 w-5 shrink-0" />
-                    <span className="truncate">{tFacilities('calendarTabFacilities')}</span>
-                  </button>
-                  <button
-                    type="button"
-                    className={`flex flex-1 min-w-0 items-center justify-center gap-2 px-3 py-2.5 text-base font-bold rounded-md transition-all ${
-                      afterCalendarTab === 'notes'
-                        ? 'bg-palette-forest-dark text-white shadow-sm'
-                        : 'text-stone-600 hover:bg-stone-50'
-                    }`}
-                    onClick={() => setAfterCalendarTab('notes')}
-                  >
-                    <NoteTabIcon className="h-5 w-5 shrink-0" />
-                    <span className="truncate">{tNotes('calendarTabNotes')}</span>
-                  </button>
-                </div>
+                <Segments
+                  name="coach_after_calendar_tab"
+                  ariaLabel={t('calendarTabsAriaLabel')}
+                  size="lg"
+                  className="w-full"
+                  value={afterCalendarTab}
+                  onChange={(v) => setAfterCalendarTab(v as 'goals' | 'facilities' | 'notes')}
+                  options={[
+                    {
+                      value: 'goals',
+                      label: (
+                        <>
+                          <TargetIcon className="h-5 w-5 shrink-0" aria-hidden />
+                          <span className="min-w-0 truncate">{t('calendarTabObjectives')}</span>
+                        </>
+                      ),
+                    },
+                    {
+                      value: 'facilities',
+                      label: (
+                        <>
+                          <IconBuilding className="h-5 w-5 shrink-0" aria-hidden />
+                          <span className="min-w-0 truncate">{tFacilities('calendarTabFacilities')}</span>
+                        </>
+                      ),
+                    },
+                    {
+                      value: 'notes',
+                      label: (
+                        <>
+                          <NoteTabIcon className="h-5 w-5 shrink-0" aria-hidden />
+                          <span className="min-w-0 truncate">{tNotes('calendarTabNotes')}</span>
+                        </>
+                      ),
+                    },
+                  ]}
+                />
               </div>
 
               {afterCalendarTab === 'goals' ? (

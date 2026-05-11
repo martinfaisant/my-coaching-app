@@ -672,6 +672,7 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
                           <div className="col-span-3 flex h-full min-h-[42px] items-center">
                             <Segments
                               name={`offer_${index}_price_type`}
+                              className="w-full min-w-0"
                               options={[
                                 { value: 'monthly', label: t('priceTypes.monthly') },
                                 { value: 'one_time', label: t('priceTypes.oneTime') },

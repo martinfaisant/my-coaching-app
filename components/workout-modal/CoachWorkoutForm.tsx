@@ -3,6 +3,7 @@
 import { memo, type FormEventHandler } from 'react'
 import type { SportType, Workout, WorkoutStatus } from '@/types/database'
 import { SportTileSelectable } from '@/components/SportTileSelectable'
+import { Segments } from '@/components/Segments'
 import { Input } from '@/components/Input'
 import { Textarea } from '@/components/Textarea'
 import { ClockIcon, LightningIcon, MountainIcon, RulerIcon } from '@/components/workout-modal/icons'
@@ -127,27 +128,18 @@ export const CoachWorkoutForm = memo(function CoachWorkoutForm({
 
           <div>
             <label className={FORM_LABEL_CLASSES}>{tWorkouts('form.timeOfDay')}</label>
-            <div
-              className="flex bg-stone-200 p-0.5 rounded-lg"
-              role="group"
-              aria-label={tWorkouts('form.timeOfDay')}
-            >
-              {TIME_OF_DAY_OPTIONS.map((opt) => (
-                <button
-                  key={opt.value || 'unspecified'}
-                  type="button"
-                  onClick={() => onTimeOfDayChange(opt.value)}
-                  className={`flex-1 px-2 py-2 text-xs font-medium rounded-md transition-all ${
-                    timeOfDaySegment === opt.value
-                      ? 'bg-palette-forest-dark text-white shadow-sm'
-                      : 'text-stone-600 hover:bg-stone-50'
-                  }`}
-                >
-                  {tWorkouts(opt.labelKey)}
-                </button>
-              ))}
-            </div>
-            <input type="hidden" name="time_of_day" value={timeOfDaySegment} />
+            <Segments
+              name="time_of_day"
+              ariaLabel={tWorkouts('form.timeOfDay')}
+              size="sm"
+              className="w-full"
+              value={timeOfDaySegment}
+              onChange={onTimeOfDayChange}
+              options={TIME_OF_DAY_OPTIONS.map((opt) => ({
+                value: opt.value,
+                label: tWorkouts(opt.labelKey),
+              }))}
+            />
           </div>
 
           <div className="bg-stone-50 p-4 rounded-xl border border-stone-100">
