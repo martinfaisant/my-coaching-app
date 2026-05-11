@@ -58,6 +58,23 @@ describe('validateWorkoutFormData — options primaryMetricBySport', () => {
     }
   })
 
+  it('avec métrique distance : accepte distance seule (sans durée ni allure)', () => {
+    const fd = makeForm({
+      date: '2026-03-22',
+      sport_type: 'course',
+      title: 'Séance',
+      description: '',
+      target_distance_km: '10',
+    })
+    const r = validateWorkoutFormData(fd, { primaryMetricBySport: completePrefs })
+    expect('data' in r).toBe(true)
+    if ('data' in r) {
+      expect(r.data.target_distance_km).toBe(10)
+      expect(r.data.target_duration_minutes).toBeUndefined()
+      expect(r.data.target_pace).toBeNull()
+    }
+  })
+
   it('avec métrique temps : accepte durée + allure (distance dérivée)', () => {
     const fd = makeForm({
       date: '2026-03-22',
@@ -84,6 +101,35 @@ describe('validateWorkoutFormData — options primaryMetricBySport', () => {
     if ('data' in r) {
       expect(r.data.target_duration_minutes).toBe(50)
       expect(r.data.target_pace).toBe(5)
+    }
+  })
+
+  it('avec métrique temps : accepte durée seule (sans distance ni allure)', () => {
+    const fd = makeForm({
+      date: '2026-03-22',
+      sport_type: 'course',
+      title: 'Séance',
+      description: '',
+      target_duration_minutes: '50',
+    })
+    const prefs: WorkoutPrimaryMetricBySport = {
+      course: 'time',
+      trail: 'distance',
+      velo: 'distance',
+      natation: 'distance',
+      nordic_ski: 'distance',
+      backcountry_ski: 'distance',
+      ice_skating: 'distance',
+      randonnee: 'distance',
+      triathlon: 'distance',
+      canot: 'distance',
+    }
+    const r = validateWorkoutFormData(fd, { primaryMetricBySport: prefs })
+    expect('data' in r).toBe(true)
+    if ('data' in r) {
+      expect(r.data.target_duration_minutes).toBe(50)
+      expect(r.data.target_distance_km).toBeUndefined()
+      expect(r.data.target_pace).toBeNull()
     }
   })
 })

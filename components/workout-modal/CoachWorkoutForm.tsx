@@ -17,7 +17,7 @@ type Props = {
   workoutId?: string
   workoutStatus: WorkoutStatus
   editableDate: string
-  sportType: SportType
+  sportType: SportType | null
   title: string
   description: string
   /** Coach : métrique primaire (temps vs distance) selon profil. */
@@ -88,7 +88,7 @@ export const CoachWorkoutForm = memo(function CoachWorkoutForm({
   tWorkouts,
   onSubmit,
 }: Props) {
-  const paceVisible = workoutHasPaceField(sportType)
+  const paceVisible = sportType != null && workoutHasPaceField(sportType)
   const paceIsCycling = sportType === 'velo' || sportType === 'triathlon'
   return (
     <form id="workout-form" action={action} className="flex flex-col flex-1 min-h-0" onSubmit={onSubmit}>
@@ -96,7 +96,6 @@ export const CoachWorkoutForm = memo(function CoachWorkoutForm({
       {isEdit && currentWorkout && <input type="hidden" name="workout_id" value={currentWorkout.id} />}
       <div className="flex-1 overflow-y-auto min-h-0">
         <div className="px-6 py-4 space-y-5">
-          <input type="hidden" name="sport_type" value={sportType} />
           <div className="flex flex-wrap gap-3">
             {workoutSportTypes.map((sport) => (
               <SportTileSelectable
@@ -108,6 +107,9 @@ export const CoachWorkoutForm = memo(function CoachWorkoutForm({
             ))}
           </div>
 
+          {sportType != null ? (
+            <>
+          <input type="hidden" name="sport_type" value={sportType} />
           <div>
             <label htmlFor="title-coach" className={FORM_LABEL_CLASSES}>
               {tWorkouts('form.title')}
@@ -199,7 +201,6 @@ export const CoachWorkoutForm = memo(function CoachWorkoutForm({
                           type="number"
                           min={0}
                           step={1}
-                          autoFocus
                           value={targetDistanceKm ? String(Math.round(Number(targetDistanceKm) * 1000)) : ''}
                           onChange={(e) =>
                             onTargetDistanceChange(e.target.value ? String(Number(e.target.value) / 1000) : '')
@@ -222,7 +223,6 @@ export const CoachWorkoutForm = memo(function CoachWorkoutForm({
                           type="number"
                           min={0}
                           step={0.1}
-                          autoFocus
                           value={targetDistanceKm}
                           onChange={(e) => onTargetDistanceChange(e.target.value)}
                           onWheel={preventWheelNumberChange}
@@ -244,7 +244,6 @@ export const CoachWorkoutForm = memo(function CoachWorkoutForm({
                       name="target_duration_minutes"
                       type="number"
                       min={1}
-                      autoFocus
                       value={targetDurationMinutes}
                       onChange={(e) => onTargetDurationChange(e.target.value)}
                       onWheel={preventWheelNumberChange}
@@ -410,6 +409,8 @@ export const CoachWorkoutForm = memo(function CoachWorkoutForm({
               </p>
             </div>
           )}
+            </>
+          ) : null}
         </div>
       </div>
     </form>

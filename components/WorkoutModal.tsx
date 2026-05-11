@@ -227,7 +227,8 @@ export function WorkoutModal({
   const hasUnsavedChanges = workoutForm.hasUnsavedChanges
 
   const isEdit = !!currentWorkout
-  const hasTimeDistanceChoice = workoutHasTimeDistanceTargets(sportType)
+  const hasTimeDistanceChoice =
+    sportType != null && workoutHasTimeDistanceTargets(sportType)
 
   /** Date dans le futur (aujourd'hui ou après) pour condition modale coach modifiable (US4). */
   const isDateInFuture = (dateStr: string) => dateStr >= toDateStr(new Date())
@@ -280,12 +281,14 @@ export function WorkoutModal({
 
   const facilityHoursLines = useMemo(
     () =>
-      getWorkoutFacilityDisplayLines(
-        sportType,
-        editableDate,
-        facilitiesForHoursStrip,
-        locale === 'fr' ? 'fr' : 'en'
-      ),
+      sportType == null
+        ? []
+        : getWorkoutFacilityDisplayLines(
+            sportType,
+            editableDate,
+            facilitiesForHoursStrip,
+            locale === 'fr' ? 'fr' : 'en'
+          ),
     [sportType, editableDate, facilitiesForHoursStrip, locale]
   )
 
@@ -298,8 +301,8 @@ export function WorkoutModal({
     }
     return map[s]
   }
-  const hasElevation = workoutHasElevationField(sportType)
-  const isTimeOnly = workoutIsTimeOnlySport(sportType)
+  const hasElevation = sportType != null && workoutHasElevationField(sportType)
+  const isTimeOnly = sportType != null && workoutIsTimeOnlySport(sportType)
 
   // Coach : suppression de la phrase "métrique principale..." (mise en avant = ordre + contraste + bordure).
 
@@ -310,21 +313,26 @@ export function WorkoutModal({
   /** Formulaire athlète (toggle temps/distance) : champ désactivé affiche la valeur dérivée (temps+allure → distance, etc.). */
   const showDisabledDistance = targetMode === 'time' && paceFilled && timeFilled
   const showDisabledDuration = targetMode === 'distance' && paceFilled && distanceFilled
+  /** Coach (création / édition) : aligné sur `validateWorkoutFormData` + métrique primaire profil — titre + sport + durée OU distance selon unité, pas les deux ni l’allure obligatoires. */
+  const coachPrimaryTargetOk =
+    targetMode === 'distance' ? distanceFilled : timeFilled
   const isValid =
-    sportType &&
-    title.trim() &&
+    sportType != null &&
+    title.trim() !== '' &&
     (isTimeOnly
       ? targetDurationMinutes.trim() !== '' && Number(targetDurationMinutes) > 0
-      : !hasTimeDistanceChoice
-        ? targetDurationMinutes.trim() !== '' && Number(targetDurationMinutes) > 0
-        : (() => {
-            const primaryDistance = targetMode === 'distance'
-            const primarySatisfied = primaryDistance
-              ? distanceFilled || (timeFilled && paceFilled)
-              : timeFilled || (distanceFilled && paceFilled)
-            const paceOrBoth = paceFilled || (timeFilled && distanceFilled)
-            return primarySatisfied && paceOrBoth
-          })())
+      : hasTimeDistanceChoice
+        ? coachFormNewLayout
+          ? coachPrimaryTargetOk
+          : (() => {
+              const primaryDistance = targetMode === 'distance'
+              const primarySatisfied = primaryDistance
+                ? distanceFilled || (timeFilled && paceFilled)
+                : timeFilled || (distanceFilled && paceFilled)
+              const paceOrBoth = paceFilled || (timeFilled && distanceFilled)
+              return primarySatisfied && paceOrBoth
+            })()
+        : targetDurationMinutes.trim() !== '' && Number(targetDurationMinutes) > 0)
 
   // Synchroniser currentWorkout avec le prop workout quand il change
   useEffect(() => {
@@ -962,7 +970,7 @@ export function WorkoutModal({
                 {tWorkouts('form.sportType')}
               </span>
             )}
-            <input type="hidden" name="sport_type" value={sportType} />
+            <input type="hidden" name="sport_type" value={sportType ?? ''} />
             {canEdit ? (
               <div className="flex flex-wrap gap-2" role="group" aria-label={tWorkouts('form.sportType')}>
                 {PERSISTED_WORKOUT_SPORT_TYPES.map((sport) => {
@@ -989,8 +997,8 @@ export function WorkoutModal({
               </div>
             ) : (
               (() => {
-                if (!(sportType in SPORT_ICONS)) return null
-                const Icon = SPORT_ICONS[sportType as keyof typeof SPORT_ICONS]
+                if (sportType == null || !(sportType in SPORT_ICONS)) return null
+                const Icon = SPORT_ICONS[sportType]
                 const translationKey = SPORT_TRANSLATION_KEYS[sportType as keyof typeof SPORT_TRANSLATION_KEYS]
                 const label = translationKey ? tSports(translationKey) : sportType
                 return (
@@ -1004,7 +1012,10 @@ export function WorkoutModal({
           </div>
 
           {/* Objectifs de la séance — Design avec titre à gauche, toggle à droite, grille 2x2 */}
-          {(canEdit || (currentWorkout && (currentWorkout.target_duration_minutes != null || currentWorkout.target_distance_km != null))) && (
+          {((canEdit && sportType != null) ||
+            (!canEdit &&
+              currentWorkout &&
+              (currentWorkout.target_duration_minutes != null || currentWorkout.target_distance_km != null))) && (
             <div className="bg-stone-50 p-4 rounded-xl border border-stone-100">
               {/* En-tête avec titre et toggle */}
               <div className="flex items-center justify-between mb-3">
