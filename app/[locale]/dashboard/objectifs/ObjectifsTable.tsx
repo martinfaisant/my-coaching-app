@@ -21,6 +21,11 @@ type ObjectifsTableProps = {
   goals: Goal[]
 }
 
+/** Typographie des labels du formulaire « Ajouter un objectif » (date / priorité) */
+const OBJECTIF_ADD_FORM_LABEL_BASE =
+  'block text-xs font-bold text-stone-500 uppercase tracking-wider ml-1'
+const OBJECTIF_ADD_FORM_LABEL_CLASSES = `${OBJECTIF_ADD_FORM_LABEL_BASE} mb-1.5`
+
 // Icônes SVG pour les priorités
 const CrownIcon = ({ className = "w-5 h-5" }: { className?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -401,6 +406,7 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
             <Input
               id="race_name"
               label={tGoals('raceName')}
+              labelClassName={OBJECTIF_ADD_FORM_LABEL_CLASSES}
               name="race_name"
               type="text"
               required
@@ -409,7 +415,7 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label htmlFor="objectif-date-trigger" className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-1.5 ml-1">
+                <label htmlFor="objectif-date-trigger" className={OBJECTIF_ADD_FORM_LABEL_CLASSES}>
                   {tGoals('date')} *
                 </label>
                 <input type="hidden" name="date" value={addFormDate} required readOnly aria-hidden />
@@ -441,6 +447,7 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
               <Input
                 id="distance"
                 label={tGoals('distance')}
+                labelClassName={OBJECTIF_ADD_FORM_LABEL_CLASSES}
                 name="distance"
                 type="number"
                 required
@@ -453,7 +460,7 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
             {/* Type (Sélecteur Visuel) */}
             
             <div>
-              <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2 ml-1">{tGoals('priority.label')}</label>
+              <label className={`${OBJECTIF_ADD_FORM_LABEL_BASE} mb-2`}>{tGoals('priority.label')}</label>
               <div className="grid grid-cols-2 gap-2">
                 {/* Principal */}
                 <label className="cursor-pointer">

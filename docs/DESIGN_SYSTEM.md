@@ -1621,7 +1621,7 @@ const options = [
 
 **Fichier :** `components/Segments.tsx`
 
-Groupe de choix exclusif par segments (style offres coach : / Mois | Unique | Gratuit). Utilisé pour le type de tarification des offres, le type disponibilité/indisponibilité et la récurrence dans la modale disponibilité. Style : conteneur `bg-stone-100` bordure `border-stone-200`, options en `flex-1` ; option sélectionnée = `bg-palette-forest-dark` texte blanc + ombre ; non sélectionnée = `bg-white` `text-stone-600` bordure `border-stone-200` avec hover.
+Groupe de choix exclusif par segments (offres, dispo, stats, moment de la journée séance coach, onglets sous calendrier coach, etc.). **Conteneur :** `bg-white`, bordure `border-white`, coins `rounded-lg`. **Sélectionné :** `bg-palette-forest-dark`, texte blanc, ombre légère. **Non sélectionné :** `bg-white`, `text-stone-600`, bordure `stone-200`, survol aligné nav dashboard : `hover:bg-stone-50` + `hover:text-palette-forest-dark`. **Tailles :** `md` (défaut, `text-sm`, min-h 42px), `sm` (`text-xs`, blocs compacts), `lg` (`text-base font-bold`, icône + libellé, ex. onglets objectifs / installations / notes). Focus clavier : anneau `palette-forest-dark` sur le segment via `peer-focus-visible`.
 
 #### Props
 
@@ -1634,7 +1634,7 @@ type SegmentsProps = {
   onChange: (value: string) => void
   name: string
   ariaLabel?: string
-  size?: 'sm' | 'md'   // md = py-2 text-sm (défaut), sm = py-1.5 text-xs
+  size?: 'sm' | 'md' | 'lg'   // md = text-sm min-h 42px (défaut), sm = text-xs, lg = text-base font-bold (onglets calendrier coach)
   className?: string
 }
 ```
@@ -1664,7 +1664,8 @@ import { Segments } from '@/components/Segments'
 
 - Inputs radio masqués (sr-only), labels cliquables ; un seul choix possible.
 - **size="md"** (défaut) : hauteur min 42px, texte `text-sm`.
-- **size="sm"** : `py-1.5` `text-xs` pour blocs secondaires (ex. récurrence dans une modale).
+- **size="sm"** : `text-xs` pour blocs secondaires (ex. récurrence, filtres stats, statut séance athlète).
+- **size="lg"** : `text-base font-bold`, disposition `gap-2` pour libellé + icône (onglets sous le calendrier coach).
 - Sur petits écrans, les labels peuvent être rendus sur 2 lignes (ex. types d’installation) ; à partir de `sm`, rendu compact sur une ligne.
 - Les segments gardent une hauteur interne homogène via `min-h-*` même si un libellé tient sur une seule ligne.
 

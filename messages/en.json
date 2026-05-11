@@ -437,6 +437,7 @@
         "time": "Time",
         "distance": "Distance"
       },
+      "targetModeAriaLabel": "Primary session target: time or distance",
       "distance": "Distance",
       "distanceUnit": "m",
       "distanceUnitKm": "km",
@@ -547,6 +548,7 @@
     "title": "My Goals",
     "athleteGoalsTitle": "Athlete's goals",
     "calendarTabObjectives": "Goals",
+    "calendarTabsAriaLabel": "Sections below the calendar: goals, facilities, or notes",
     "addGoal": "Add goal",
     "editGoal": "Edit",
     "editGoalTitle": "Edit goal",

@@ -563,6 +563,7 @@
         "time": "Temps",
         "distance": "Distance"
       },
+      "targetModeAriaLabel": "Objectif principal de la séance : temps ou distance",
       "distance": "Distance",
       "distanceUnit": "m",
       "distanceUnitKm": "km",
@@ -672,6 +673,7 @@
     "title": "Mes Objectifs",
     "athleteGoalsTitle": "Objectifs de l'athlète",
     "calendarTabObjectives": "Objectifs",
+    "calendarTabsAriaLabel": "Sections sous le calendrier : objectifs, installations ou notes",
     "addGoal": "Ajouter un objectif",
     "editGoal": "Modifier",
     "editGoalTitle": "Modifier l'objectif",

@@ -1023,20 +1023,18 @@ export function WorkoutModal({
                   {tWorkouts('form.sessionGoals')}
                 </div>
                 {canEdit && hasTimeDistanceChoice && (
-                  <div className="flex bg-stone-200 p-0.5 rounded-lg">
-                    <label className="cursor-pointer">
-                      <input type="radio" name="target_mode" value="time" checked={targetMode === 'time'} onChange={() => workoutForm.setTargetMode('time')} className="sr-only" />
-                      <div className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${targetMode === 'time' ? 'bg-palette-forest-dark text-white shadow-sm' : 'text-stone-600'}`}>
-                        {tWorkouts('form.targetMode.time')}
-                      </div>
-                    </label>
-                    <label className="cursor-pointer">
-                      <input type="radio" name="target_mode" value="distance" checked={targetMode === 'distance'} onChange={() => workoutForm.setTargetMode('distance')} className="sr-only" />
-                      <div className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${targetMode === 'distance' ? 'bg-palette-forest-dark text-white shadow-sm' : 'text-stone-600'}`}>
-                        {tWorkouts('form.targetMode.distance')}
-                      </div>
-                    </label>
-                  </div>
+                  <Segments
+                    name="target_mode"
+                    ariaLabel={tWorkouts('form.targetModeAriaLabel')}
+                    size="sm"
+                    className="shrink-0"
+                    value={targetMode}
+                    onChange={(v) => workoutForm.setTargetMode(v as 'time' | 'distance')}
+                    options={[
+                      { value: 'time', label: tWorkouts('form.targetMode.time') },
+                      { value: 'distance', label: tWorkouts('form.targetMode.distance') },
+                    ]}
+                  />
                 )}
               </div>
 
