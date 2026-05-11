@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 8 mai 2026 (**Tuiles entraînement calendrier** : métriques **réalisées** sur la grille jour quand `completed` — `getCalendarWorkoutTileMetrics` ; **canot** dans `workoutHasPaceField` (vitesse km/h) ; **Project_context.md** §4.5, **docs/CALENDAR_MONTH_VIEW.md**, **docs/DESIGN_SYSTEM.md** §7, **project-core.mdc** ; précédent : refonte modale workout, archivage `docs/design-workout-modal-revamp/`…)
+**Dernière mise à jour :** 11 mai 2026 (**Résumé hebdo calendrier** : barres par sport = `PERSISTED_WORKOUT_SPORT_TYPES` + **`SPORT_WEEKLY_SUMMARY_BAR`** — **docs/DESIGN_SYSTEM.md** § Tokens sports, **Project_context.md** §4.5 ; précédent : tuiles grille `completed`, canot / `workoutHasPaceField`…)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -18,25 +18,25 @@
 - **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), stack technique, **URL production https://mysportally.com**
 - **Utiliser pour :** Comprendre le projet, les features, les rôles, l'architecture globale
 - **Taille :** ~450 lignes
-- **Dernière mise à jour :** 8 mai 2026 (§4.5 **tuiles calendrier** : affichage réalisé en grille si `completed` + **canot** / `workoutHasPaceField` ; précédent : formulaire séance coach, §4.0 en-tête public…)
+- **Dernière mise à jour :** 11 mai 2026 (§4.5 **résumé hebdo calendrier** par sport ; précédent : tuiles grille `completed`, canot…)
 
 ### **docs/CALENDAR_MONTH_VIEW.md**
-- **Contenu :** Récap **vue mois** (desktop) vs **vue semaine** (mobile), règles semaines ISO / mois civil étendu, chargement données, liste des fichiers et tests unitaires, liens vers maquettes archivées
+- **Contenu :** Récap **vue mois** (desktop) vs **vue semaine** (mobile), règles semaines ISO / mois civil étendu, **totaux hebdo** (liste sports `PERSISTED_WORKOUT_SPORT_TYPES`, `SPORT_WEEKLY_SUMMARY_BAR`), chargement données, liste des fichiers et tests unitaires, liens vers maquettes archivées
 - **Utiliser pour :** Cadrage produit/dev post-livraison sur le calendrier sans relire tout le code
-- **Taille :** ~90 lignes
-- **Dernière mise à jour :** 4 mai 2026
+- **Taille :** ~95 lignes
+- **Dernière mise à jour :** 11 mai 2026 (résumé hebdo par sport + `sportVolumeHint` i18n)
 
 ### **docs/DESIGN_SYSTEM.md** ⭐
-- **Contenu :** Tokens (couleurs, typo, espacements), composants (Button, Input, Badge, TileCard, DashboardPageShell, **DashboardTopBar**, **AthleteAccountMenu**, **AthleteStatsVolumeChart**, **AthleteStatsChartSkeleton**, Modal, **MonthSelector**, etc.), guidelines UI, exemples de code, §7 breakpoints (**calendrier** mois étendu desktop + WeekSelector mobile, chat, Trouver mon coach, My offers)
+- **Contenu :** Tokens (couleurs, typo, espacements ; **sports** : `SPORT_CARD_STYLES`, `SPORT_BADGE_STYLES`, **`SPORT_WEEKLY_SUMMARY_BAR`** résumé hebdo), composants (Button, Input, Badge, TileCard, DashboardPageShell, **DashboardTopBar**, **AthleteAccountMenu**, **AthleteStatsVolumeChart**, **AthleteStatsChartSkeleton**, Modal, **MonthSelector**, etc.), guidelines UI, exemples de code, §7 breakpoints (**calendrier** mois étendu desktop + WeekSelector mobile, chat, Trouver mon coach, My offers)
 - **Utiliser pour :** Créer ou modifier des composants UI, choisir des couleurs, appliquer le design system, règles responsive par page
-- **Taille :** ~1850 lignes
-- **Dernière mise à jour :** 8 mai 2026 (§7 calendrier : tuiles entraînement — affichage réalisé si séance complétée ; précédent : couleurs sports, `Badge`…)
+- **Taille :** ~2010 lignes
+- **Dernière mise à jour :** 11 mai 2026 (**§ Tokens sports** : `SPORT_WEEKLY_SUMMARY_BAR` + résumé hebdo ; §7 bandeau compact semaine ; précédent : tuiles grille `completed`…)
 
 ### **docs/I18N.md** ⭐
-- **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces, utilisation dans composants et server actions, **checklist pour nouvelles features** (toujours penser bilingue)
+- **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces (dont **`calendar.weekly.sportVolumeHint`**), utilisation dans composants et server actions, **checklist pour nouvelles features** (toujours penser bilingue)
 - **Utiliser pour :** Toute nouvelle feature ou texte visible, ajout de clés de traduction, dépannage i18n
-- **Taille :** ~190 lignes
-- **Dernière mise à jour :** 7 mai 2026 (`workouts.validation` : codes erreur création/édition séance coach, `translateWorkoutFormValidationError` ; précédent : `navigation.publicHome`…)
+- **Taille :** ~195 lignes
+- **Dernière mise à jour :** 11 mai 2026 (`calendar.weekly.sportVolumeHint` ; précédent : `workouts.summary.*`…)
 
 ### **docs/AUTH_EMAIL_TEMPLATES.md**
 - **Contenu :** Guide de configuration des emails d’auth Supabase (sujet, i18n FR/EN, variables, dépannage logo). **Les fichiers HTML des templates** (Confirm signup, puis Magic Link, Reset Password, etc.) sont dans **docs/email-templates/**.

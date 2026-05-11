@@ -1,6 +1,6 @@
 # Calendrier — vue mois (desktop) et vue semaine (mobile)
 
-**Dernière mise à jour :** 8 mai 2026 — aligné sur l’implémentation (`CalendarView`, `CalendarViewWithNavigation`, pages calendrier).
+**Dernière mise à jour :** 11 mai 2026 — totaux hebdo : barres par sport = `PERSISTED_WORKOUT_SPORT_TYPES` + `SPORT_WEEKLY_SUMMARY_BAR` (`docs/DESIGN_SYSTEM.md`).
 
 ## Besoin produit (rappel)
 
@@ -13,9 +13,9 @@
 | Contexte | Navigation | Grille / contenu |
 |----------|------------|------------------|
 | **&lt; 768px** | `WeekSelector` (flèches + plage de la semaine) | Bloc totaux hebdo + **une semaine** en stack vertical (cf. archives `calendar-mobile-44`, `calendar-mobile-weekly-total`). |
-| **≥ 768px** | `MonthSelector` (mois précédent \| libellé mois + année \| mois suivant) | **Mois civil étendu** : N semaines (souvent 4 à 6), 7 colonnes ; jours hors mois sélectionné en **atténuation** (`CalendarView`). Une **carte totaux** par semaine ISO visible. |
+| **≥ 768px** | `MonthSelector` (mois précédent \| libellé mois + année \| mois suivant) | **Mois civil étendu** : N semaines (souvent 4 à 6), 7 colonnes ; jours hors mois sélectionné en **atténuation** (`CalendarView`). Une **carte totaux** par semaine ISO + **bandeau compact** fait/prévu par sport sous le titre de semaine (hors mode détaillé) ; sports et couleurs : `PERSISTED_WORKOUT_SPORT_TYPES`, `SPORT_WEEKLY_SUMMARY_BAR`. |
 
-- **i18n :** `calendar.prevMonth`, `calendar.nextMonth` (aria des chevrons), `calendar.weekRangeSeparator` (mobile).
+- **i18n :** `calendar.prevMonth`, `calendar.nextMonth` (aria des chevrons), `calendar.weekRangeSeparator` (mobile), **`calendar.weekly.sportVolumeHint`** (tooltip générique par sport sur le bandeau compact).
 - **Hauteurs min. des cellules jour (desktop / mobile condensé) :** constantes Tailwind centralisées dans `lib/calendarViewDayHeights.ts` (tests dans `lib/calendarViewDayHeights.test.ts`).
 - **Tuiles entraînement (grille jour, compacte ou détaillée) :** si la séance est **`completed`**, la rangée durée / distance / allure (ou vitesse km/h pour vélo, triathlon, **canot**) / D+ affiche uniquement les métriques **`actual_*`** présentes (pas de repli sur les cibles) ; l’allure ou la vitesse réalisée est dérivée quand durée et distance réelles le permettent (`getCalendarWorkoutTileMetrics` dans `lib/workoutFormatting.ts`). Sinon (`planned`, `not_completed`) : affichage des **objectifs** comme avant. La modale au clic et les `ActivityTile` de la liste « Activités du jour » ne suivent pas cette règle (voir **Project_context.md** §4.5).
 

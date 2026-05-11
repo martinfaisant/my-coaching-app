@@ -10,8 +10,8 @@ import { WorkoutModal } from './WorkoutModal'
 import { AvailabilityModal } from './AvailabilityModal'
 import { AvailabilityDetailModal } from './AvailabilityDetailModal'
 import { Modal } from './Modal'
-import { SPORT_ICONS, SPORT_CARD_STYLES, SPORT_TRANSLATION_KEYS } from '@/lib/sportStyles'
-import { workoutPaceIsRunningStyle } from '@/lib/sportsRegistry'
+import { SPORT_ICONS, SPORT_CARD_STYLES, SPORT_TRANSLATION_KEYS, SPORT_WEEKLY_SUMMARY_BAR } from '@/lib/sportStyles'
+import { workoutPaceIsRunningStyle, PERSISTED_WORKOUT_SPORT_TYPES, workoutIsTimeOnlySport, type PersistedWorkoutSportType } from '@/lib/sportsRegistry'
 import { getCalendarWorkoutTileMetrics } from '@/lib/workoutFormatting'
 import { ActivityTile } from './ActivityTile'
 import type {
@@ -29,16 +29,6 @@ import type {
   WorkoutPrimaryMetricBySport,
 } from '@/types/database'
 import { hasGoalResult, formatGoalResultTime, formatGoalResultPlaceOrdinal, hasTargetTime, formatTargetTime } from '@/lib/goalResultUtils'
-
-const RunIcon = SPORT_ICONS.course
-const BikeIcon = SPORT_ICONS.velo
-const SwimIcon = SPORT_ICONS.natation
-const StrengthIcon = SPORT_ICONS.musculation
-const NordicSkiIcon = SPORT_ICONS.nordic_ski
-const BackcountrySkiIcon = SPORT_ICONS.backcountry_ski
-const IceSkatingIcon = SPORT_ICONS.ice_skating
-const HikeIcon = SPORT_ICONS.randonnee
-const TriathlonWeekIcon = SPORT_ICONS.triathlon
 
 /** Distance natation en mètres (arrondi au mètre près). */
 function swimmingDistanceM(km: number): number {
@@ -209,6 +199,70 @@ function weeklyBarMetric(key: SportType, prefs: WorkoutPrimaryMetricBySport | nu
   const m = prefs?.[key as keyof WorkoutPrimaryMetricBySport]
   if (m === 'time' || m === 'distance') return m
   return defaultWeeklyPrimaryMetricForSport(key)
+}
+
+/** Valeurs affichées dans le résumé hebdo (prévu / fait) pour un sport persisté. */
+function getWeeklySummaryValues(
+  sport: PersistedWorkoutSportType,
+  prevu: WeekFaitBySport,
+  fait: WeekFaitBySport,
+  coachWorkoutPrimaryMetrics: WorkoutPrimaryMetricBySport | null | undefined
+): { prevuVal: number; faitVal: number; useTime: boolean; useMeters: boolean } {
+  if (sport === 'musculation' || workoutIsTimeOnlySport(sport)) {
+    return {
+      prevuVal: prevu[sport].minutes,
+      faitVal: fait[sport].minutes,
+      useTime: true,
+      useMeters: false,
+    }
+  }
+  if (sport === 'natation') {
+    const met = weeklyBarMetric('natation', coachWorkoutPrimaryMetrics)
+    const useTime = met === 'time'
+    return {
+      prevuVal: useTime ? prevu.natation.minutes : prevu.natation.distanceKm,
+      faitVal: useTime ? fait.natation.minutes : fait.natation.distanceKm,
+      useTime,
+      useMeters: met === 'distance',
+    }
+  }
+  const met = weeklyBarMetric(sport, coachWorkoutPrimaryMetrics)
+  const useTime = met === 'time'
+  return {
+    prevuVal: useTime ? prevu[sport].minutes : prevu[sport].distanceKm,
+    faitVal: useTime ? fait[sport].minutes : fait[sport].distanceKm,
+    useTime,
+    useMeters: false,
+  }
+}
+
+function weeklyCalendarCompactTitle(
+  sport: PersistedWorkoutSportType,
+  label: string,
+  tCalendar: (key: string, values?: Record<string, string>) => string
+): string {
+  switch (sport) {
+    case 'course':
+      return tCalendar('weekly.runningDistanceCompletedPlanned')
+    case 'velo':
+      return tCalendar('weekly.cyclingDistanceCompletedPlanned')
+    case 'natation':
+      return tCalendar('weekly.swimmingDistanceCompletedPlanned')
+    case 'musculation':
+      return tCalendar('weekly.strengthTimeCompletedPlanned')
+    case 'nordic_ski':
+      return tCalendar('weekly.nordicSkiDistanceCompletedPlanned')
+    case 'backcountry_ski':
+      return tCalendar('weekly.backcountrySkiDistanceCompletedPlanned')
+    case 'ice_skating':
+      return tCalendar('weekly.iceSkatingDistanceCompletedPlanned')
+    case 'randonnee':
+      return tCalendar('weekly.hikingDistanceCompletedPlanned')
+    case 'triathlon':
+      return tCalendar('weekly.triathlonTimeCompletedPlanned')
+    default:
+      return tCalendar('weekly.sportVolumeHint', { sport: label })
+  }
 }
 
 type CalendarViewProps = {
@@ -1015,55 +1069,19 @@ export function CalendarView({
     fait: WeekFaitBySport,
     _prevWeekFait: WeekFaitBySport
   ): ReactNode {
-    const cMet = weeklyBarMetric('course', coachWorkoutPrimaryMetrics)
-    const vMet = weeklyBarMetric('velo', coachWorkoutPrimaryMetrics)
-    const nMet = weeklyBarMetric('natation', coachWorkoutPrimaryMetrics)
-    const nsMet = weeklyBarMetric('nordic_ski', coachWorkoutPrimaryMetrics)
-    const bsMet = weeklyBarMetric('backcountry_ski', coachWorkoutPrimaryMetrics)
-    const isMet = weeklyBarMetric('ice_skating', coachWorkoutPrimaryMetrics)
-    const rMet = weeklyBarMetric('randonnee', coachWorkoutPrimaryMetrics)
-    const tMet = weeklyBarMetric('triathlon', coachWorkoutPrimaryMetrics)
-    const sports = [
-      {
-        key: 'course' as const,
-        Icon: RunIcon,
-        color: 'text-palette-forest-dark',
-        bg: 'bg-palette-forest-dark',
-        label: tCalendar('weekly.sportLabels.run'),
-        prevuVal: cMet === 'time' ? (prevu?.course?.minutes ?? 0) : (prevu?.course?.distanceKm ?? 0),
-        faitVal: cMet === 'time' ? (fait?.course?.minutes ?? 0) : (fait?.course?.distanceKm ?? 0),
-        useTime: cMet === 'time',
-        useMeters: false,
-      },
-      {
-        key: 'velo' as const,
-        Icon: BikeIcon,
-        color: 'text-palette-gold',
-        bg: 'bg-palette-gold',
-        label: tCalendar('weekly.sportLabels.cycling'),
-        prevuVal: vMet === 'time' ? (prevu?.velo?.minutes ?? 0) : (prevu?.velo?.distanceKm ?? 0),
-        faitVal: vMet === 'time' ? (fait?.velo?.minutes ?? 0) : (fait?.velo?.distanceKm ?? 0),
-        useTime: vMet === 'time',
-        useMeters: false,
-      },
-      {
-        key: 'natation' as const,
-        Icon: SwimIcon,
-        color: 'text-sky-600',
-        bg: 'bg-sky-500',
-        label: tCalendar('weekly.sportLabels.swimming'),
-        prevuVal: nMet === 'time' ? (prevu?.natation?.minutes ?? 0) : (prevu?.natation?.distanceKm ?? 0),
-        faitVal: nMet === 'time' ? (fait?.natation?.minutes ?? 0) : (fait?.natation?.distanceKm ?? 0),
-        useTime: nMet === 'time',
-        useMeters: nMet === 'distance',
-      },
-      { key: 'musculation' as const, Icon: StrengthIcon, color: 'text-stone-600', bg: 'bg-stone-500', label: tCalendar('weekly.sportLabels.strength'), prevuVal: prevu?.musculation?.minutes ?? 0, faitVal: fait?.musculation?.minutes ?? 0, useTime: true, useMeters: false },
-      { key: 'nordic_ski' as const, Icon: NordicSkiIcon, color: 'text-indigo-700', bg: 'bg-indigo-400', label: tCalendar('weekly.sportLabels.nordicSki'), prevuVal: nsMet === 'time' ? (prevu?.nordic_ski?.minutes ?? 0) : (prevu?.nordic_ski?.distanceKm ?? 0), faitVal: nsMet === 'time' ? (fait?.nordic_ski?.minutes ?? 0) : (fait?.nordic_ski?.distanceKm ?? 0), useTime: nsMet === 'time', useMeters: false },
-      { key: 'backcountry_ski' as const, Icon: BackcountrySkiIcon, color: 'text-cyan-700', bg: 'bg-cyan-600', label: tCalendar('weekly.sportLabels.backcountrySki'), prevuVal: bsMet === 'time' ? (prevu?.backcountry_ski?.minutes ?? 0) : (prevu?.backcountry_ski?.distanceKm ?? 0), faitVal: bsMet === 'time' ? (fait?.backcountry_ski?.minutes ?? 0) : (fait?.backcountry_ski?.distanceKm ?? 0), useTime: bsMet === 'time', useMeters: false },
-      { key: 'ice_skating' as const, Icon: IceSkatingIcon, color: 'text-slate-600', bg: 'bg-slate-300', label: tCalendar('weekly.sportLabels.iceSkating'), prevuVal: isMet === 'time' ? (prevu?.ice_skating?.minutes ?? 0) : (prevu?.ice_skating?.distanceKm ?? 0), faitVal: isMet === 'time' ? (fait?.ice_skating?.minutes ?? 0) : (fait?.ice_skating?.distanceKm ?? 0), useTime: isMet === 'time', useMeters: false },
-      { key: 'randonnee' as const, Icon: HikeIcon, color: 'text-palette-sage', bg: 'bg-palette-sage', label: tCalendar('weekly.sportLabels.hiking'), prevuVal: rMet === 'time' ? (prevu?.randonnee?.minutes ?? 0) : (prevu?.randonnee?.distanceKm ?? 0), faitVal: rMet === 'time' ? (fait?.randonnee?.minutes ?? 0) : (fait?.randonnee?.distanceKm ?? 0), useTime: rMet === 'time', useMeters: false },
-      { key: 'triathlon' as const, Icon: TriathlonWeekIcon, color: 'text-palette-amber', bg: 'bg-palette-amber', label: tCalendar('weekly.sportLabels.triathlon'), prevuVal: tMet === 'time' ? (prevu?.triathlon?.minutes ?? 0) : (prevu?.triathlon?.distanceKm ?? 0), faitVal: tMet === 'time' ? (fait?.triathlon?.minutes ?? 0) : (fait?.triathlon?.distanceKm ?? 0), useTime: tMet === 'time', useMeters: false },
-    ].filter((s) => s.prevuVal > 0 || s.faitVal > 0)
+    const sports = PERSISTED_WORKOUT_SPORT_TYPES.map((sport) => {
+      const { prevuVal, faitVal, useTime, useMeters } = getWeeklySummaryValues(
+        sport,
+        prevu,
+        fait,
+        coachWorkoutPrimaryMetrics
+      )
+      const { color, bg } = SPORT_WEEKLY_SUMMARY_BAR[sport]
+      const Icon = SPORT_ICONS[sport]
+      const label =
+        sport === 'course' ? tCalendar('weekly.sportLabels.run') : tSports(SPORT_TRANSLATION_KEYS[sport])
+      return { key: sport, Icon, color, bg, label, prevuVal, faitVal, useTime, useMeters }
+    }).filter((s) => s.prevuVal > 0 || s.faitVal > 0)
     const hasAnyTotals = sports.length > 0
     if (!hasAnyTotals) return null
     return (
@@ -1434,111 +1452,32 @@ export function CalendarView({
                       {(() => {
                         const prevu = weekPrevuBySport[wi]
                         const fait = weekFaitBySport[wi]
-                        const cMet = weeklyBarMetric('course', coachWorkoutPrimaryMetrics)
-                        const vMet = weeklyBarMetric('velo', coachWorkoutPrimaryMetrics)
-                        const nMet = weeklyBarMetric('natation', coachWorkoutPrimaryMetrics)
-                        const nsMet = weeklyBarMetric('nordic_ski', coachWorkoutPrimaryMetrics)
-                        const bsMet = weeklyBarMetric('backcountry_ski', coachWorkoutPrimaryMetrics)
-                        const isMet = weeklyBarMetric('ice_skating', coachWorkoutPrimaryMetrics)
-                        const rMet = weeklyBarMetric('randonnee', coachWorkoutPrimaryMetrics)
-                        const tMet = weeklyBarMetric('triathlon', coachWorkoutPrimaryMetrics)
+                        if (!prevu || !fait) return null
                         const formatDist = (km: number) => String(Math.round(km))
-                        const showCourse =
-                          (cMet === 'distance' && ((prevu?.course?.distanceKm ?? 0) > 0 || (fait?.course?.distanceKm ?? 0) > 0)) ||
-                          (cMet === 'time' && ((prevu?.course?.minutes ?? 0) > 0 || (fait?.course?.minutes ?? 0) > 0))
-                        const showVelo =
-                          (vMet === 'distance' && ((prevu?.velo?.distanceKm ?? 0) > 0 || (fait?.velo?.distanceKm ?? 0) > 0)) ||
-                          (vMet === 'time' && ((prevu?.velo?.minutes ?? 0) > 0 || (fait?.velo?.minutes ?? 0) > 0))
-                        const showSwim =
-                          (nMet === 'distance' && ((prevu?.natation?.distanceKm ?? 0) > 0 || (fait?.natation?.distanceKm ?? 0) > 0)) ||
-                          (nMet === 'time' && ((prevu?.natation?.minutes ?? 0) > 0 || (fait?.natation?.minutes ?? 0) > 0))
-                        const showNordic =
-                          (nsMet === 'distance' && ((prevu?.nordic_ski?.distanceKm ?? 0) > 0 || (fait?.nordic_ski?.distanceKm ?? 0) > 0)) ||
-                          (nsMet === 'time' && ((prevu?.nordic_ski?.minutes ?? 0) > 0 || (fait?.nordic_ski?.minutes ?? 0) > 0))
-                        const showBackcountry =
-                          (bsMet === 'distance' && ((prevu?.backcountry_ski?.distanceKm ?? 0) > 0 || (fait?.backcountry_ski?.distanceKm ?? 0) > 0)) ||
-                          (bsMet === 'time' && ((prevu?.backcountry_ski?.minutes ?? 0) > 0 || (fait?.backcountry_ski?.minutes ?? 0) > 0))
-                        const showIceSkating =
-                          (isMet === 'distance' && ((prevu?.ice_skating?.distanceKm ?? 0) > 0 || (fait?.ice_skating?.distanceKm ?? 0) > 0)) ||
-                          (isMet === 'time' && ((prevu?.ice_skating?.minutes ?? 0) > 0 || (fait?.ice_skating?.minutes ?? 0) > 0))
-                        const showHiking =
-                          (rMet === 'distance' && ((prevu?.randonnee?.distanceKm ?? 0) > 0 || (fait?.randonnee?.distanceKm ?? 0) > 0)) ||
-                          (rMet === 'time' && ((prevu?.randonnee?.minutes ?? 0) > 0 || (fait?.randonnee?.minutes ?? 0) > 0))
-                        const showTriathlon =
-                          (tMet === 'distance' && ((prevu?.triathlon?.distanceKm ?? 0) > 0 || (fait?.triathlon?.distanceKm ?? 0) > 0)) ||
-                          (tMet === 'time' && ((prevu?.triathlon?.minutes ?? 0) > 0 || (fait?.triathlon?.minutes ?? 0) > 0))
                         return (
                           <>
-                            {showCourse ? (
-                              <span className="flex items-center gap-1.5 text-palette-forest-dark" title={tCalendar('weekly.runningDistanceCompletedPlanned')}>
-                                <RunIcon className="w-3.5 h-3.5" />
-                                {cMet === 'time'
-                                  ? `${formatDuration(Math.round(fait?.course?.minutes ?? 0))} / ${formatDuration(Math.round(prevu?.course?.minutes ?? 0))}`
-                                  : `${formatDist(fait?.course?.distanceKm ?? 0)} km / ${formatDist(prevu?.course?.distanceKm ?? 0)} km`}
-                              </span>
-                            ) : null}
-                            {showVelo ? (
-                              <span className="flex items-center gap-1.5 text-palette-olive" title={tCalendar('weekly.cyclingDistanceCompletedPlanned')}>
-                                <BikeIcon className="w-3.5 h-3.5" />
-                                {vMet === 'time'
-                                  ? `${formatDuration(Math.round(fait?.velo?.minutes ?? 0))} / ${formatDuration(Math.round(prevu?.velo?.minutes ?? 0))}`
-                                  : `${formatDist(fait?.velo?.distanceKm ?? 0)} km / ${formatDist(prevu?.velo?.distanceKm ?? 0)} km`}
-                              </span>
-                            ) : null}
-                            {showSwim ? (
-                              <span className="flex items-center gap-1.5 text-sky-600" title={tCalendar('weekly.swimmingDistanceCompletedPlanned')}>
-                                <SwimIcon className="w-3.5 h-3.5" />
-                                {nMet === 'time'
-                                  ? `${formatDuration(Math.round(fait?.natation?.minutes ?? 0))} / ${formatDuration(Math.round(prevu?.natation?.minutes ?? 0))}`
-                                  : `${swimmingDistanceM(fait?.natation?.distanceKm ?? 0)} m / ${swimmingDistanceM(prevu?.natation?.distanceKm ?? 0)} m`}
-                              </span>
-                            ) : null}
-                            {(prevu?.musculation?.minutes ?? 0) > 0 || (fait?.musculation?.minutes ?? 0) > 0 ? (
-                              <span className="flex items-center gap-1.5 text-stone-600" title={tCalendar('weekly.strengthTimeCompletedPlanned')}>
-                                <StrengthIcon className="w-3.5 h-3.5" />
-                                {formatDuration(fait?.musculation?.minutes ?? 0)} / {formatDuration(prevu?.musculation?.minutes ?? 0)}
-                              </span>
-                            ) : null}
-                            {showNordic ? (
-                              <span className="flex items-center gap-1.5 text-palette-sage" title={tCalendar('weekly.nordicSkiDistanceCompletedPlanned')}>
-                                <NordicSkiIcon className="w-3.5 h-3.5" />
-                                {nsMet === 'time'
-                                  ? `${formatDuration(Math.round(fait?.nordic_ski?.minutes ?? 0))} / ${formatDuration(Math.round(prevu?.nordic_ski?.minutes ?? 0))}`
-                                  : `${formatDist(fait?.nordic_ski?.distanceKm ?? 0)} km / ${formatDist(prevu?.nordic_ski?.distanceKm ?? 0)} km`}
-                              </span>
-                            ) : null}
-                            {showBackcountry ? (
-                              <span className="flex items-center gap-1.5 text-palette-gold" title={tCalendar('weekly.backcountrySkiDistanceCompletedPlanned')}>
-                                <BackcountrySkiIcon className="w-3.5 h-3.5" />
-                                {bsMet === 'time'
-                                  ? `${formatDuration(Math.round(fait?.backcountry_ski?.minutes ?? 0))} / ${formatDuration(Math.round(prevu?.backcountry_ski?.minutes ?? 0))}`
-                                  : `${formatDist(fait?.backcountry_ski?.distanceKm ?? 0)} km / ${formatDist(prevu?.backcountry_ski?.distanceKm ?? 0)} km`}
-                              </span>
-                            ) : null}
-                            {showIceSkating ? (
-                              <span className="flex items-center gap-1.5 text-cyan-600" title={tCalendar('weekly.iceSkatingDistanceCompletedPlanned')}>
-                                <IceSkatingIcon className="w-3.5 h-3.5" />
-                                {isMet === 'time'
-                                  ? `${formatDuration(Math.round(fait?.ice_skating?.minutes ?? 0))} / ${formatDuration(Math.round(prevu?.ice_skating?.minutes ?? 0))}`
-                                  : `${formatDist(fait?.ice_skating?.distanceKm ?? 0)} km / ${formatDist(prevu?.ice_skating?.distanceKm ?? 0)} km`}
-                              </span>
-                            ) : null}
-                            {showHiking ? (
-                              <span className="flex items-center gap-1.5 text-palette-sage" title={tCalendar('weekly.hikingDistanceCompletedPlanned')}>
-                                <HikeIcon className="w-3.5 h-3.5" />
-                                {rMet === 'time'
-                                  ? `${formatDuration(Math.round(fait?.randonnee?.minutes ?? 0))} / ${formatDuration(Math.round(prevu?.randonnee?.minutes ?? 0))}`
-                                  : `${formatDist(fait?.randonnee?.distanceKm ?? 0)} km / ${formatDist(prevu?.randonnee?.distanceKm ?? 0)} km`}
-                              </span>
-                            ) : null}
-                            {showTriathlon ? (
-                              <span className="flex items-center gap-1.5 text-palette-amber" title={tCalendar('weekly.triathlonTimeCompletedPlanned')}>
-                                <TriathlonWeekIcon className="w-3.5 h-3.5" />
-                                {tMet === 'time'
-                                  ? `${formatDuration(Math.round(fait?.triathlon?.minutes ?? 0))} / ${formatDuration(Math.round(prevu?.triathlon?.minutes ?? 0))}`
-                                  : `${formatDist(fait?.triathlon?.distanceKm ?? 0)} km / ${formatDist(prevu?.triathlon?.distanceKm ?? 0)} km`}
-                              </span>
-                            ) : null}
+                            {PERSISTED_WORKOUT_SPORT_TYPES.map((sport) => {
+                              const vals = getWeeklySummaryValues(sport, prevu, fait, coachWorkoutPrimaryMetrics)
+                              if (vals.prevuVal <= 0 && vals.faitVal <= 0) return null
+                              const { color } = SPORT_WEEKLY_SUMMARY_BAR[sport]
+                              const Icon = SPORT_ICONS[sport]
+                              const label =
+                                sport === 'course'
+                                  ? tCalendar('weekly.sportLabels.run')
+                                  : tSports(SPORT_TRANSLATION_KEYS[sport])
+                              const title = weeklyCalendarCompactTitle(sport, label, tCalendar)
+                              const text = vals.useTime
+                                ? `${formatDuration(Math.round(vals.faitVal))} / ${formatDuration(Math.round(vals.prevuVal))}`
+                                : vals.useMeters
+                                  ? `${swimmingDistanceM(vals.faitVal)} m / ${swimmingDistanceM(vals.prevuVal)} m`
+                                  : `${formatDist(vals.faitVal)} km / ${formatDist(vals.prevuVal)} km`
+                              return (
+                                <span key={sport} className={`flex items-center gap-1.5 ${color}`} title={title}>
+                                  <Icon className="w-3.5 h-3.5" />
+                                  {text}
+                                </span>
+                              )
+                            })}
                           </>
                         )
                       })()}

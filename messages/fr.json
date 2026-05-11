@@ -962,6 +962,7 @@
       "iceSkatingDistanceCompletedPlanned": "Patin à glace : distance faite / prévue",
       "hikingDistanceCompletedPlanned": "Randonnée : distance faite / prévue",
       "triathlonTimeCompletedPlanned": "Triathlon : temps réalisé / prévu",
+      "sportVolumeHint": "{sport} : réalisé / prévu",
       "sportLabels": {
         "run": "Run",
         "cycling": "Vélo",
