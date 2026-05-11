@@ -11,7 +11,8 @@ import {
 type TargetMode = 'time' | 'distance'
 
 type WorkoutFormValues = {
-  sportType: SportType
+  /** `null` = nouvelle séance, aucun sport choisi encore (coach / formulaire legacy). */
+  sportType: SportType | null
   title: string
   description: string
   targetMode: TargetMode
@@ -51,7 +52,8 @@ type Action =
   | { type: 'MARK_SAVED' }
   | { type: 'CLEAR_JUST_LOADED' }
 
-function modeForSport(sportType: SportType, coachPrimaryMetrics: WorkoutPrimaryMetricBySport | null): TargetMode {
+function modeForSport(sportType: SportType | null, coachPrimaryMetrics: WorkoutPrimaryMetricBySport | null): TargetMode {
+  if (sportType == null) return 'time'
   if (sportType === 'musculation') return 'time'
   return getWorkoutPrimaryMetricForSport(sportType, coachPrimaryMetrics) === 'distance' ? 'distance' : 'time'
 }
@@ -82,10 +84,10 @@ function normalizeFromWorkout(
 
 function defaultValues(date: string, coachPrimaryMetrics: WorkoutPrimaryMetricBySport | null): WorkoutFormValues {
   return {
-    sportType: 'course',
+    sportType: null,
     title: '',
     description: '',
-    targetMode: modeForSport('course', coachPrimaryMetrics),
+    targetMode: modeForSport(null, coachPrimaryMetrics),
     targetDurationMinutes: '',
     targetDistanceKm: '',
     targetElevationM: '',
@@ -137,6 +139,7 @@ export function workoutFormReducer(state: State, action: Action): State {
       if (!hasTimeDistanceChoice) return state
 
       const { sportType, targetMode, targetPace, targetDistanceKm, targetDurationMinutes } = state.values
+      if (sportType == null) return state
 
       const paceNum = Number(targetPace)
       const paceOk = (targetPace?.trim() ?? '') !== '' && paceNum > 0
@@ -153,7 +156,7 @@ export function workoutFormReducer(state: State, action: Action): State {
        * — si l’utilisateur vient de modifier l’allure (sans la vider) : recalcul du champ secondaire (non prioritaire) ;
        * — sinon : on réaligne l’allure sur le couple temps+distance (évite d’écraser durée/distance après édition).
        */
-      if (workoutHasPaceField(sportType) && durOk && distOk) {
+      if (sportType != null && workoutHasPaceField(sportType) && durOk && distOk) {
         const computedPace = computePaceFromDurationAndDistance(sportType, durParsed, distParsed)
         if (computedPace == null) return state
 
@@ -323,7 +326,8 @@ export function useWorkoutFormReducer(args: {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [workout?.id, workout?.updated_at, date, coachPrimaryMetrics])
 
-  const hasTimeDistanceChoice = workoutHasTimeDistanceTargets(state.values.sportType)
+  const hasTimeDistanceChoice =
+    state.values.sportType != null && workoutHasTimeDistanceTargets(state.values.sportType)
 
   useEffect(() => {
     const mode = modeForSport(state.values.sportType, coachPrimaryMetrics)
