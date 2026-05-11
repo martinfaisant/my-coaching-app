@@ -33,6 +33,10 @@ type State = {
   lastMetricEdit: LastMetricEdit
 }
 
+/** Exportés pour tests Vitest (`workoutFormReducer`). */
+export type WorkoutFormReducerState = State
+export type WorkoutFormReducerAction = Action
+
 type InitPayload = {
   workout: Workout | null
   date: string
@@ -105,7 +109,7 @@ function paceNearlyMatchesComputed(sportType: SportType, stored: number, compute
   return Math.abs(stored - computed) < 0.051
 }
 
-function reducer(state: State, action: Action): State {
+export function workoutFormReducer(state: State, action: Action): State {
   switch (action.type) {
     case 'INIT': {
       const { workout, date, coachPrimaryMetrics } = action.payload
@@ -145,7 +149,8 @@ function reducer(state: State, action: Action): State {
 
       /**
        * Durée + distance renseignées :
-       * — si l’utilisateur vient de modifier l’allure : recalcul du champ secondaire (non prioritaire) ;
+       * — si l’utilisateur vide l’allure / vitesse : on vide aussi le champ objectif non prioritaire (durée en mode distance, distance en mode temps) ;
+       * — si l’utilisateur vient de modifier l’allure (sans la vider) : recalcul du champ secondaire (non prioritaire) ;
        * — sinon : on réaligne l’allure sur le couple temps+distance (évite d’écraser durée/distance après édition).
        */
       if (workoutHasPaceField(sportType) && durOk && distOk) {
@@ -154,7 +159,17 @@ function reducer(state: State, action: Action): State {
 
         const userClearedPace = state.lastMetricEdit === 'pace' && !paceOk
         if (userClearedPace) {
-          return { ...state, justLoaded: false }
+          // Allure / vitesse vidée : retirer aussi le champ objectif non prioritaire (couplé à l’allure).
+          const clearedSecondary =
+            targetMode === 'distance'
+              ? { targetDurationMinutes: '' }
+              : { targetDistanceKm: '' }
+          return {
+            ...state,
+            justLoaded: false,
+            lastMetricEdit: null,
+            values: { ...state.values, ...clearedSecondary },
+          }
         }
 
         if (!paceOk) {
@@ -219,7 +234,13 @@ function reducer(state: State, action: Action): State {
               }
             }
           } else {
-            return { ...state, justLoaded: false }
+            // Durée dérivée (distance + allure) vidée : retirer aussi l’allure / vitesse saisie.
+            return {
+              ...state,
+              justLoaded: false,
+              lastMetricEdit: null,
+              values: { ...state.values, targetPace: '' },
+            }
           }
         } else if (!isJustLoaded && (!distOk || !paceOk)) {
           return { ...state, values: { ...state.values, targetDurationMinutes: '' } }
@@ -237,7 +258,13 @@ function reducer(state: State, action: Action): State {
               }
             }
           } else {
-            return { ...state, justLoaded: false }
+            // Distance dérivée (durée + allure) vidée : retirer aussi l’allure / vitesse saisie.
+            return {
+              ...state,
+              justLoaded: false,
+              lastMetricEdit: null,
+              values: { ...state.values, targetPace: '' },
+            }
           }
         } else if (!isJustLoaded && (!durOk || !paceOk)) {
           return { ...state, values: { ...state.values, targetDistanceKm: '' } }
@@ -280,7 +307,7 @@ export function useWorkoutFormReducer(args: {
 }) {
   const { workout, date, coachPrimaryMetrics } = args
 
-  const [state, dispatch] = useReducer(reducer, {
+  const [state, dispatch] = useReducer(workoutFormReducer, {
     values: defaultValues(date, coachPrimaryMetrics),
     initial: defaultValues(date, coachPrimaryMetrics),
     justLoaded: false,
