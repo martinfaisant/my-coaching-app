@@ -310,21 +310,26 @@ export function WorkoutModal({
   /** Formulaire athlète (toggle temps/distance) : champ désactivé affiche la valeur dérivée (temps+allure → distance, etc.). */
   const showDisabledDistance = targetMode === 'time' && paceFilled && timeFilled
   const showDisabledDuration = targetMode === 'distance' && paceFilled && distanceFilled
+  /** Coach (création / édition) : aligné sur `validateWorkoutFormData` + métrique primaire profil — titre + sport + durée OU distance selon unité, pas les deux ni l’allure obligatoires. */
+  const coachPrimaryTargetOk =
+    targetMode === 'distance' ? distanceFilled : timeFilled
   const isValid =
-    sportType &&
-    title.trim() &&
+    Boolean(sportType) &&
+    title.trim() !== '' &&
     (isTimeOnly
       ? targetDurationMinutes.trim() !== '' && Number(targetDurationMinutes) > 0
-      : !hasTimeDistanceChoice
-        ? targetDurationMinutes.trim() !== '' && Number(targetDurationMinutes) > 0
-        : (() => {
-            const primaryDistance = targetMode === 'distance'
-            const primarySatisfied = primaryDistance
-              ? distanceFilled || (timeFilled && paceFilled)
-              : timeFilled || (distanceFilled && paceFilled)
-            const paceOrBoth = paceFilled || (timeFilled && distanceFilled)
-            return primarySatisfied && paceOrBoth
-          })())
+      : hasTimeDistanceChoice
+        ? coachFormNewLayout
+          ? coachPrimaryTargetOk
+          : (() => {
+              const primaryDistance = targetMode === 'distance'
+              const primarySatisfied = primaryDistance
+                ? distanceFilled || (timeFilled && paceFilled)
+                : timeFilled || (distanceFilled && paceFilled)
+              const paceOrBoth = paceFilled || (timeFilled && distanceFilled)
+              return primarySatisfied && paceOrBoth
+            })()
+        : targetDurationMinutes.trim() !== '' && Number(targetDurationMinutes) > 0)
 
   // Synchroniser currentWorkout avec le prop workout quand il change
   useEffect(() => {
