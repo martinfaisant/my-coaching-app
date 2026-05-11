@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>US-COACH-PLAT-01 — Mes athlètes, abonnement plateforme inactif</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            'palette-olive': '#8a9a7e',
+            'palette-danger': '#b4534a',
+            'palette-danger-light': '#fef2f2',
+            stone: { 50: '#fafaf9', 200: '#e7e5e4', 500: '#78716c', 600: '#57534e', 700: '#44403c', 800: '#292524' },
+          },
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-stone-100 min-h-screen p-4 md:p-8">
+  <p class="text-center text-xs text-stone-600 max-w-2xl mx-auto mb-4">
+    <strong>US-COACH-PLAT-01</strong> — Coach avec athlètes mais <strong>abonnement plateforme inactif</strong>. Contexte : <code class="bg-white px-1 rounded">DashboardPageShell</code> + même squelette que <code class="bg-white px-1 rounded">athletes/page.tsx</code>. Pas de page dédiée : CTA = redirection Stripe.
+  </p>
+
+  <div class="max-w-3xl mx-auto bg-white min-h-[80vh] rounded-t-lg border border-stone-200 shadow-sm flex flex-col">
+    <header class="h-12 border-b border-stone-200 bg-white shrink-0 flex items-center px-4 text-xs text-stone-500">Barre app (aperçu)</header>
+    <main class="flex-1 p-4 md:p-6 overflow-y-auto">
+
+      <!-- État A — Liste athlètes : zone remplacée par carte blocage (option B, pas bannière pleine largeur permanente seule) -->
+      <section class="mb-8 relative rounded-2xl border border-stone-200 min-h-[200px]">
+        <div class="absolute inset-0 z-10 flex flex-col items-center justify-center rounded-2xl bg-white/95 backdrop-blur-[2px] p-6 text-center border border-stone-200">
+          <p class="text-stone-800 font-semibold text-sm md:text-base mb-1">Abonnement coach requis</p>
+          <p class="text-sm text-stone-600 max-w-sm mb-4">Vous ne pouvez plus consulter le planning et les informations de vos athlètes tant que votre abonnement n’est pas à jour.</p>
+          <button type="button" class="rounded-lg bg-palette-forest-dark px-4 py-2.5 text-sm font-medium text-white hover:opacity-95">
+            Continuer vers le paiement (Stripe)
+          </button>
+          <p class="text-xs text-stone-500 mt-3">Libellés via i18n à l’implémentation.</p>
+        </div>
+        <!-- Contenu « masqué » (grisé, non interactif) -->
+        <div class="p-6 opacity-40 pointer-events-none select-none">
+          <p class="text-xs font-bold uppercase tracking-wider text-stone-700 mb-2">Vos athlètes</p>
+          <div class="h-16 rounded-xl border border-stone-200 bg-stone-50 mb-2"></div>
+          <div class="h-16 rounded-xl border border-stone-200 bg-stone-50"></div>
+        </div>
+      </section>
+
+      <!-- État B — Demandes en attente : lecture + Refuser OK ; Discuter désactivé ; Accepter mène à modal US2 -->
+      <section>
+        <h2 class="text-sm font-bold uppercase tracking-wider text-stone-700 mb-2">Demandes en attente (2)</h2>
+        <p class="text-sm text-stone-600 mb-4">Description existante inchangée.</p>
+        <div class="rounded-xl border border-stone-200 bg-section p-4 space-y-4">
+          <div class="flex flex-wrap gap-2 items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-stone-300"></div>
+              <div>
+                <p class="font-medium text-stone-800">Athlète demande</p>
+                <p class="text-xs text-stone-500">Offre — 49€/mois</p>
+              </div>
+            </div>
+            <div class="flex flex-wrap gap-2 shrink-0 w-full sm:w-auto justify-end">
+              <button type="button" disabled class="rounded-lg border border-stone-200 bg-stone-100 px-3 py-2 text-sm text-stone-400 cursor-not-allowed" title="Abonnement requis">
+                Discuter
+              </button>
+              <button type="button" class="rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-stone-700 hover:bg-stone-50">Refuser</button>
+              <button type="button" class="rounded-lg bg-palette-forest-dark px-3 py-2 text-sm font-medium text-white">Accepter</button>
+            </div>
+          </div>
+          <p class="text-xs text-stone-500 border-t border-stone-200 pt-3">
+            <strong>Transition fonctionnelle :</strong> clic <strong>Accepter</strong> → ouverture <strong>Modal US-COACH-PLAT-02</strong> (pas d’acceptation serveur tant que paiement non validé). Clic <strong>Refuser</strong> → modale confirmation déclin (comportement actuel).
+          </p>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</body>
+</html>

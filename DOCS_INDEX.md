@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 11 mai 2026 (**Résumé hebdo calendrier** : barres par sport = `PERSISTED_WORKOUT_SPORT_TYPES` + **`SPORT_WEEKLY_SUMMARY_BAR`** — **docs/DESIGN_SYSTEM.md** § Tokens sports, **Project_context.md** §4.5 ; précédent : tuiles grille `completed`, canot / `workoutHasPaceField`…)
+**Dernière mise à jour :** 11 mai 2026 (**Intensité prévue RPE** : `docs/design-rpe-planned-intensity/` — **DESIGN_RPE_PLANNED_INTENSITY.md** + maquettes US1–US5 ; précédent : résumé hebdo calendrier…)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -90,6 +90,11 @@
 - **Contenu :** Note d’architecture : freeze du titre et de la description d’offre en **FR et EN** au moment de la demande et dans les souscriptions (actuellement une seule langue est figée)
 - **Utiliser pour :** Évolution modèle (coach_requests, subscriptions) et code (createCoachRequest, respondToCoachRequest, affichage) pour figer et afficher les deux langues
 - **Créé le :** 19 février 2026
+
+### **docs/design-rpe-planned-intensity/** (design feature — non archivé)
+- **Contenu :** **DESIGN_RPE_PLANNED_INTENSITY.md** (solution validée, hypothèses, **US-RPE-01 à US-RPE-05**, critères d’acceptation, table RPE FR + proposition EN, composants, points ouverts) ; **SPEC_ARCHITECTE_RPE_PLANNED_INTENSITY.md** (migration `planned_intensity`, table des fichiers, `saveWorkoutStatusAndComment`, RLS, edge cases, tests manuels) ; **README.md** (index fichiers) ; maquettes HTML **MOCKUP_US1** … **US5** + **MOCKUP_OPTION_A_RPE_MODAL.html** (interactif) ; **MOCKUP_OPTION_B_RPE_INLINE.html** (option non retenue).
+- **Utiliser pour :** Cadrage produit/UI puis **spec technique** **intensité prévisionnelle coach** (RPE 1–10), badge tuile, validation athlète ; **Mode Développeur** ensuite.
+- **Créé le :** 11 mai 2026
 
 
 

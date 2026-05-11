@@ -796,7 +796,8 @@
       "notConnected": "Not connected.",
       "emptyMessage": "Empty message.",
       "conversationUnavailable": "Conversation not found or not accessible.",
-      "readOnlyConversation": "This conversation is read-only."
+      "readOnlyConversation": "This conversation is read-only.",
+      "coachPlatformRequired": "An active coach subscription is required to use chat with your athletes."
     }
   },
   "calendar": {
@@ -1460,7 +1461,46 @@
       "declined": "Request declined.",
       "requireWeeklyTargetAndVolume": "Time to allocate per week and volumes per sport are required.",
       "weeklyTargetInvalid": "Time to allocate must be a number between 0 and 168 h.",
-      "weeklyVolumeInvalid": "Please check volumes per sport (number ≥ 0, within allowed limit)."
+      "weeklyVolumeInvalid": "Please check volumes per sport (number ≥ 0, within allowed limit).",
+      "platformSubscriptionRequired": "An active coach subscription is required to accept a request."
+    }
+  },
+  "coachPlatform": {
+    "listBlockedTitle": "Coach subscription required",
+    "listBlockedDescription": "You can no longer view your athletes’ planning and details until your subscription is up to date (3-day grace after due date if payment is late).",
+    "checkoutCta": "Continue to payment",
+    "checkoutPending": "Redirecting…",
+    "calendarBlockedTitle": "Subscription required",
+    "calendarBlockedDescription": "You cannot view this athlete’s calendar. Renew your coach subscription to regain access.",
+    "backToAthletes": "Back to My athletes",
+    "paywallModalTitle": "Accept this request",
+    "paywallModalBody": "To accept a new athlete, you must first activate your coach subscription through our payment partner (Stripe). Pricing is the one configured for your account.",
+    "paywallCancel": "Cancel",
+    "stripeReturnSuccess": "Your subscription is active or being processed. Refresh the page in a few moments if needed.",
+    "stripeReturnCanceled": "Payment was cancelled. Your subscription was not changed.",
+    "stripeReturnError": "We could not confirm your payment. Try again or contact support.",
+    "stripeVerifying": "Verifying payment…",
+    "stripeReturnPendingWebhook": "Payment confirmed: your access may take a few seconds to activate. Refresh the page or wait a moment.",
+    "stripeRefreshCta": "Refresh",
+    "dismissBanner": "Dismiss",
+    "chatDisabledHint": "Coach subscription required to chat",
+    "validation": {
+      "stripeNotConfigured": "Online payment is not configured.",
+      "priceNotConfigured": "The subscription price is not configured.",
+      "siteUrlMissing": "Site URL is not configured (NEXT_PUBLIC_SITE_URL or NEXT_PUBLIC_APP_URL).",
+      "notAuthenticated": "You must be signed in.",
+      "coachOnly": "Coaches only.",
+      "noCheckoutUrl": "Could not get payment URL.",
+      "checkoutFailed": "Creating the checkout session failed."
+    },
+    "verify": {
+      "stripeUnavailable": "The payment service is unavailable.",
+      "notAuthenticated": "You must be signed in.",
+      "coachOnly": "Coaches only.",
+      "invalidSession": "Invalid payment session.",
+      "sessionNotOwned": "This session does not belong to your account.",
+      "paymentIncomplete": "Payment is not complete.",
+      "retrieveFailed": "Could not verify the payment session."
     }
   },
   "myCoach": {

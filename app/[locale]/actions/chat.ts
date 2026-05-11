@@ -4,6 +4,7 @@ import { createClient } from '@/utils/supabase/server'
 import { getLocale, getTranslations } from 'next-intl/server'
 import type { ChatMessage } from '@/types/database'
 import { getDisplayName } from '@/lib/displayName'
+import { fetchCoachPlatformAccessGranted } from '@/lib/coachPlatformSubscription'
 
 export type ChatRoleResult =
   | { role: 'athlete'; userId: string }
@@ -165,6 +166,9 @@ export async function getAthletesForCoachForChat(): Promise<AthleteForChat[]> {
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) return []
+
+  const coachOk = await fetchCoachPlatformAccessGranted(supabase, user.id)
+  if (!coachOk) return []
 
   const locale = await getLocale()
   const tCommon = await getTranslations({ locale, namespace: 'common' })
@@ -362,6 +366,12 @@ export async function getOrCreateConversationForCoach(
     return { ok: false, error: t('notConnected') }
   }
 
+  const coachOk = await fetchCoachPlatformAccessGranted(supabase, user.id)
+  if (!coachOk) {
+    const t = await getTranslations({ locale, namespace: 'chat.validation' })
+    return { ok: false, error: t('coachPlatformRequired') }
+  }
+
   const writableRequestId = await getLatestWritableRequestIdForPair(supabase, user.id, athleteId)
   if (!writableRequestId) {
     const t = await getTranslations({ locale, namespace: 'chat' })
@@ -459,6 +469,9 @@ export async function getConversationsForCoach(): Promise<ConversationWithMeta[]
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) return []
+
+  const coachOk = await fetchCoachPlatformAccessGranted(supabase, user.id)
+  if (!coachOk) return []
 
   const { data: rows } = await supabase
     .from('conversations')

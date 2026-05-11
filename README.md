@@ -60,6 +60,14 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000  # en production : https://mysportally
 # Cron Vercel : clôture des souscriptions à échéance (route /api/cron/process-expired-subscriptions)
 # Générer une valeur aléatoire ; même valeur dans Vercel (CRON_SECRET) pour les invocations planifiées.
 CRON_SECRET=votre_secret_aleatoire
+
+# Stripe — abonnement plateforme coach (Checkout + webhooks)
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+# Price ID du produit d’abonnement coach (Dashboard Stripe → Produit → Prix récurrent)
+STRIPE_COACH_PLATFORM_PRICE_ID=price_...
+# URL publique de l’app (succès / annulation Checkout) : NEXT_PUBLIC_SITE_URL ou, à défaut, NEXT_PUBLIC_APP_URL (déjà utilisé pour Strava)
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ```
 
 ### Resend (formulaire contact)

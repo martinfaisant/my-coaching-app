@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>US-RPE-05 — Coach lecture seule : CoachReadOnlyWorkoutModalView</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            'palette-amber': '#c9a544',
+            'palette-danger': '#c0564b',
+            stone: { 50: '#fafaf9', 100: '#f5f5f4', 200: '#e7e5e4', 300: '#d6d3d1', 400: '#a8a29e', 500: '#78716c', 600: '#57534e', 700: '#44403c', 900: '#1c1917' },
+          },
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-stone-500/30 min-h-screen p-4 flex justify-center items-start py-8">
+  <p class="fixed top-2 left-2 right-2 text-center text-xs text-stone-600 max-w-2xl mx-auto px-2">
+    <strong>US-RPE-05</strong> — RPE prévu en lecture seule : même affichage compact que l’intensité perçue athlète (<code class="bg-white/80 px-1 rounded">IntensityCard</code>), dans la carte Objectif.
+  </p>
+
+  <div class="w-full max-w-[min(100%,42rem)] mt-12 bg-white rounded-2xl shadow-xl border border-stone-200 overflow-hidden flex flex-col max-h-[90vh]">
+    <div class="px-4 py-3 border-b border-stone-200 text-sm font-semibold text-stone-800 shrink-0">Contenu onglet modale (lecture seule coach)</div>
+
+    <div class="flex flex-col flex-1 min-h-0 overflow-y-auto">
+      <div class="px-6 py-4 space-y-6">
+        <p class="text-xs font-bold text-stone-400 uppercase tracking-widest">
+          lun. 5 mai 2026 · Soir
+        </p>
+
+        <!-- WorkoutTargetActualCards : 2 colonnes md quand carte Réalisé -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Carte Objectif -->
+          <div class="bg-stone-50 rounded-2xl p-6 border border-stone-100">
+            <div class="flex items-center gap-2 mb-4 text-stone-400">
+              <svg class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                <circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" fill="currentColor" stroke="none" />
+              </svg>
+              <span class="text-[10px] font-bold uppercase tracking-[0.2em]">Objectif</span>
+            </div>
+            <div class="space-y-3.5">
+              <div class="flex items-center justify-between min-h-7">
+                <span class="text-sm text-stone-500 font-medium">Durée</span>
+                <span class="font-bold text-stone-800">1 h 00</span>
+              </div>
+              <div class="flex items-center justify-between min-h-7">
+                <span class="text-sm text-stone-500 font-medium">Distance</span>
+                <span class="font-bold text-stone-800">12,0 km</span>
+              </div>
+              <div class="flex items-center justify-between min-h-7">
+                <span class="text-sm text-stone-500 font-medium">Allure</span>
+                <span class="font-bold text-stone-800">4:45 <span class="text-xs font-bold">min/km</span></span>
+              </div>
+            </div>
+
+            <div class="pt-4 border-t border-stone-200 mt-4">
+              <h4 class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-3">Intensité prévue (coach)</h4>
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 flex items-center justify-center rounded-xl border font-black text-xl bg-palette-amber/20 text-palette-amber border-palette-amber/40">6</div>
+                <span class="font-medium text-stone-500 text-lg">/ 10</span>
+              </div>
+            </div>
+
+            <div class="pt-4 border-t border-stone-200 mt-4">
+              <p class="text-xs text-stone-500 italic leading-relaxed">Tempo sur parcours plat — conserver allure.</p>
+            </div>
+          </div>
+
+          <!-- Carte Réalisé (même principe que WorkoutTargetActualCards) -->
+          <div class="bg-palette-forest-dark rounded-2xl p-6 text-white shadow-xl shadow-palette-forest-dark/20 relative overflow-hidden">
+            <div class="absolute -right-4 -top-4 opacity-10 pointer-events-none" aria-hidden="true">
+              <svg class="h-20 w-20 rotate-12 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
+              </svg>
+            </div>
+            <div class="flex items-center gap-2 mb-4 text-white/60 relative z-10">
+              <svg class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" />
+              </svg>
+              <span class="text-[10px] font-bold uppercase tracking-[0.2em]">Réalisé</span>
+            </div>
+            <div class="space-y-3.5 relative z-10">
+              <div class="flex items-center justify-between gap-3 min-h-7">
+                <span class="text-sm text-white/70 font-medium">Durée</span>
+                <div class="flex items-center gap-2">
+                  <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/10 text-white/80">+2 min</span>
+                  <span class="font-black text-xl">1 h 02</span>
+                </div>
+              </div>
+              <div class="flex items-center justify-between gap-3 min-h-7">
+                <span class="text-sm text-white/70 font-medium">Distance</span>
+                <span class="font-black text-xl">12,2 <span class="text-xs">km</span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- WorkoutFeedbackSummary -->
+        <div class="border-t border-stone-100 pt-6">
+          <div class="flex flex-col sm:flex-row gap-6">
+            <div class="flex-1 min-w-0">
+              <h4 class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-3">Ressenti</h4>
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 flex items-center justify-center rounded-xl border bg-emerald-50 text-emerald-700 border-emerald-200">
+                  <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10" /><path d="M8 14s1.5 2 4 2 4-2 4-2" /><circle cx="9" cy="9" r="1" fill="currentColor" stroke="none" /><circle cx="15" cy="9" r="1" fill="currentColor" stroke="none" />
+                  </svg>
+                </div>
+                <span class="font-bold text-stone-700 text-lg">Bien</span>
+              </div>
+            </div>
+            <div class="flex-1 min-w-0">
+              <h4 class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-3">Intensité (RPE)</h4>
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 flex items-center justify-center rounded-xl border font-black text-xl bg-palette-amber/30 text-palette-amber border-palette-amber/50">7</div>
+                <span class="font-medium text-stone-500 text-lg">/ 10</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

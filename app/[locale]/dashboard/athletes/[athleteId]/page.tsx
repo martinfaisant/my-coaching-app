@@ -17,19 +17,32 @@ import { getAvailabilityForDateRange } from '@/app/[locale]/dashboard/availabili
 import { logger } from '@/lib/logger'
 import { requireCoachAthleteCalendarAccess } from '@/lib/authHelpers'
 import { parseWorkoutPrimaryMetricBySport } from '@/lib/workoutPrimaryMetric'
+import { fetchCoachPlatformAccessGranted } from '@/lib/coachPlatformSubscription'
+import { pathWithLocale } from '@/lib/pathWithLocale'
+import { DashboardPageShell } from '@/components/DashboardPageShell'
+import { CoachAthleteBillingBlocked } from '@/components/CoachAthleteBillingBlocked'
 
-type PageProps = { params: Promise<{ athleteId: string }> }
+type PageProps = { params: Promise<{ locale: string; athleteId: string }> }
 
 export default async function AthleteCalendarPage({ params }: PageProps) {
-  const { athleteId } = await params
+  const { locale, athleteId } = await params
 
   const supabase = await createClient()
   const access = await requireCoachAthleteCalendarAccess(supabase, athleteId)
   if ('error' in access) {
-    redirect('/dashboard/athletes')
+    redirect(pathWithLocale(locale, '/dashboard/athletes'))
   }
 
   const { user, athleteProfile } = access
+
+  const coachHasPlatformAccess = await fetchCoachPlatformAccessGranted(supabase, user.id)
+  if (!coachHasPlatformAccess) {
+    return (
+      <DashboardPageShell>
+        <CoachAthleteBillingBlocked athletesListHref={pathWithLocale(locale, '/dashboard/athletes')} />
+      </DashboardPageShell>
+    )
+  }
 
   const coachPrefsResult = await supabase
     .from('profiles')

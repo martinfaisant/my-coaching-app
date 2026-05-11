@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { Suspense } from 'react'
 import { createClient } from '@/utils/supabase/server'
 import { getCurrentUserWithProfile } from '@/utils/auth'
 import { redirect } from 'next/navigation'
@@ -17,6 +18,10 @@ import type { Profile, Goal } from '@/types/database'
 import { formatShortDate } from '@/lib/dateUtils'
 import { getDisplayName } from '@/lib/displayName'
 import { logger } from '@/lib/logger'
+import { fetchCoachPlatformAccessGranted } from '@/lib/coachPlatformSubscription'
+import { CoachAthletesBillingOverlay } from '@/components/CoachAthletesBillingOverlay'
+import { CoachPlatformStripeBanner } from '@/components/CoachPlatformStripeBanner'
+import { CoachPlatformCheckoutVerification } from '@/components/CoachPlatformCheckoutVerification'
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params
@@ -41,6 +46,7 @@ export default async function CoachAthletesPage({ params }: { params: Promise<{ 
   }
 
   const supabase = await createClient()
+  const coachHasPlatformAccess = await fetchCoachPlatformAccessGranted(supabase, current.id)
   const t = await getTranslations({ locale, namespace: 'athletes' })
 
   const [pendingResult, athletesResult, publishedOfferResult] = await Promise.all([
@@ -209,6 +215,12 @@ export default async function CoachAthletesPage({ params }: { params: Promise<{ 
 
   return (
     <DashboardPageShell>
+      <Suspense fallback={null}>
+        <CoachPlatformCheckoutVerification />
+      </Suspense>
+      <Suspense fallback={null}>
+        <CoachPlatformStripeBanner />
+      </Suspense>
       {!isCoachProfileComplete && (
         <div className="rounded-xl border border-palette-olive/40 bg-section p-6 mb-8">
           <p className="text-stone-800 font-medium mb-1">
@@ -257,6 +269,7 @@ export default async function CoachAthletesPage({ params }: { params: Promise<{ 
                 key={req.id}
                 request={req}
                 goals={goalsByAthleteId[req.athlete_id] ?? []}
+                coachHasPlatformAccess={coachHasPlatformAccess}
               />
             ))}
           </ul>
@@ -281,10 +294,16 @@ export default async function CoachAthletesPage({ params }: { params: Promise<{ 
             </p>
           </div>
         ) : (
-          <CoachAthletesListWithFilter
-            athletes={athleteTiles}
-            showDivider={pendingRequests.length > 0}
-          />
+          <>
+            <CoachAthletesBillingOverlay
+              coachHasPlatformAccess={coachHasPlatformAccess}
+              athleteCount={visibleProfiles.length}
+            />
+            <CoachAthletesListWithFilter
+              athletes={athleteTiles}
+              showDivider={pendingRequests.length > 0}
+            />
+          </>
         )}
       </section>
     </DashboardPageShell>

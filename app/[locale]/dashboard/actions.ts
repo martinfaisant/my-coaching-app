@@ -432,6 +432,16 @@ export async function respondToCoachRequest(
   const now = new Date().toISOString()
 
   if (accept) {
+    const { data: platformOk, error: platformRpcError } = await supabase.rpc('coach_platform_access_granted', {
+      p_coach_id: user.id,
+    })
+    if (platformRpcError) {
+      return { error: tErrors('supabaseGeneric') }
+    }
+    if (platformOk !== true) {
+      return { error: t('platformSubscriptionRequired') }
+    }
+
     const { error: updateProfileError } = await supabase
       .from('profiles')
       .update({ coach_id: user.id })

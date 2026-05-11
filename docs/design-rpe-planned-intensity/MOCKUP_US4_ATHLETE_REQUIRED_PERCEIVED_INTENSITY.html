@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>US-RPE-04 — Athlète : intensité ressentie obligatoire si prévue</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            'palette-amber': '#c9a544',
+            'palette-danger': '#c0564b',
+            'palette-danger-light': '#fdf2f1',
+            stone: { 50: '#fafaf9', 100: '#f5f5f4', 200: '#e7e5e4', 300: '#d6d3d1', 400: '#a8a29e', 500: '#78716c', 600: '#57534e', 900: '#1c1917' },
+          },
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-stone-100 min-h-screen p-4 space-y-10 pb-16">
+  <p class="text-center text-xs text-stone-500 max-w-2xl mx-auto">
+    <strong>US-RPE-04</strong> — Transition : tentative d’enregistrement « Réalisé » sans intensité ressentie alors qu’une cible coach existe → erreur. Succès : les deux libellés distincts.
+  </p>
+
+  <!-- Erreur validation -->
+  <section class="max-w-lg mx-auto">
+    <h2 class="text-xs font-bold text-stone-500 uppercase tracking-widest mb-2">État erreur — enregistrement refusé</h2>
+    <div class="bg-white rounded-2xl shadow border border-stone-200 p-5 space-y-4">
+      <p class="text-xs text-stone-500">Contexte : coach a défini RPE 7 · Athlète a mis statut Réalisé mais n’a pas choisi d’intensité ressentie.</p>
+      <div class="rounded-xl border border-stone-200 bg-stone-50 p-3">
+        <h4 class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-3">Intensité prévue (coach)</h4>
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 flex items-center justify-center rounded-xl border font-black text-xl bg-palette-amber/30 text-palette-amber border-palette-amber/50">7</div>
+          <span class="font-medium text-stone-500 text-lg">/ 10</span>
+        </div>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-stone-700 mb-2">Intensité ressentie (RPE)</label>
+        <div class="flex flex-wrap gap-1.5">
+          <button type="button" class="w-9 h-9 rounded-lg text-xs font-semibold border border-stone-200 bg-white text-stone-500">1</button>
+          <button type="button" class="w-9 h-9 rounded-lg text-xs font-semibold border border-stone-200 bg-white text-stone-500">2</button>
+          <button type="button" class="w-9 h-9 rounded-lg text-xs font-semibold border border-stone-200 bg-white text-stone-500">3</button>
+          <button type="button" class="w-9 h-9 rounded-lg text-xs font-semibold border border-stone-200 bg-white text-stone-500">4</button>
+          <button type="button" class="w-9 h-9 rounded-lg text-xs font-semibold border border-stone-200 bg-white text-stone-500">5</button>
+          <button type="button" class="w-9 h-9 rounded-lg text-xs font-semibold border border-stone-200 bg-white text-stone-500">6</button>
+          <button type="button" class="w-9 h-9 rounded-lg text-xs font-semibold border border-stone-200 bg-white text-stone-500">7</button>
+          <button type="button" class="w-9 h-9 rounded-lg text-xs font-semibold border border-stone-200 bg-white text-stone-500">8</button>
+          <button type="button" class="w-9 h-9 rounded-lg text-xs font-semibold border border-stone-200 bg-white text-stone-500">9</button>
+          <button type="button" class="w-9 h-9 rounded-lg text-xs font-semibold border border-stone-200 bg-white text-stone-500">10</button>
+        </div>
+        <p class="mt-2 text-sm text-palette-danger bg-palette-danger-light border border-red-200 rounded-lg px-3 py-2">
+          Indiquez votre intensité ressentie : le coach a défini une cible RPE pour cette séance.
+        </p>
+      </div>
+      <button type="button" class="w-full py-2.5 rounded-xl bg-palette-forest-dark text-white text-sm font-semibold opacity-90">Enregistrer</button>
+    </div>
+  </section>
+
+  <!-- Récap : avec perçue -->
+  <section class="max-w-lg mx-auto">
+    <h2 class="text-xs font-bold text-stone-500 uppercase tracking-widest mb-2">Récap après sauvegarde — prévu + ressenti</h2>
+    <div class="bg-white rounded-2xl shadow border border-stone-200 p-5">
+      <p class="text-xs font-bold text-stone-400 uppercase tracking-widest mb-4">Résumé</p>
+      <div class="flex flex-col sm:flex-row gap-6 border-t border-stone-100 pt-6">
+        <div class="flex-1 min-w-0">
+          <h4 class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-3">Intensité prévue (coach)</h4>
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 flex items-center justify-center rounded-xl border font-black text-xl bg-palette-amber/30 text-palette-amber border-palette-amber/50">7</div>
+            <span class="font-medium text-stone-500 text-lg">/ 10</span>
+          </div>
+        </div>
+        <div class="flex-1 min-w-0">
+          <h4 class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-3">Intensité ressentie</h4>
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 flex items-center justify-center rounded-xl border font-black text-xl bg-palette-danger/10 text-palette-danger border-palette-danger/30">8</div>
+            <span class="font-medium text-stone-500 text-lg">/ 10</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Récap : pas de ligne ressenti si vide -->
+  <section class="max-w-lg mx-auto">
+    <h2 class="text-xs font-bold text-stone-500 uppercase tracking-widest mb-2">Récap — pas d’intensité ressentie saisie → ligne masquée</h2>
+    <div class="bg-white rounded-2xl shadow border border-stone-200 p-5">
+      <p class="text-xs font-bold text-stone-400 uppercase tracking-widest mb-4">Résumé</p>
+      <p class="text-xs text-stone-500 italic">La carte « Intensité ressentie » n’apparaît pas (valeur null). La carte « Intensité prévue » apparaît seulement si le coach l’a renseignée — ici omise pour l’exemple « masqué si vide côté athlète ».</p>
+      <div class="mt-4 rounded-xl border border-stone-200 p-3 bg-stone-50 max-w-xs">
+        <h4 class="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">Ressenti</h4>
+        <p class="text-sm text-stone-700">Bien</p>
+      </div>
+    </div>
+  </section>
+</body>
+</html>

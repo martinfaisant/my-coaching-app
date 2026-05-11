@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>US-COACH-PLAT-03 — Calendrier coach bloqué</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            stone: { 200: '#e7e5e4', 500: '#78716c', 600: '#57534e', 800: '#292524' },
+          },
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-stone-100 min-h-screen p-4">
+  <p class="text-center text-xs text-stone-600 max-w-2xl mx-auto mb-4">
+    <strong>US-COACH-PLAT-03</strong> — Route <code class="bg-white px-1 rounded">/dashboard/athletes/[athleteId]</code> : sans abonnement actif, <strong>aucune donnée</strong> calendrier / onglets / métriques ne doit fuiter. Même CTA Stripe que US1.
+  </p>
+
+  <div class="max-w-4xl mx-auto bg-white min-h-[85vh] rounded-lg border border-stone-200 shadow-sm flex flex-col">
+    <header class="h-11 border-b border-stone-200 flex items-center px-3 gap-2 text-sm text-stone-600">
+      <span class="text-stone-400">←</span> Retour Mes athlètes
+      <!-- Sans abonnement : pas de nom / avatar athlète dans l’en-tête (éviter fuite d’info) -->
+    </header>
+    <div class="flex-1 flex items-center justify-center p-6">
+      <div class="max-w-md w-full rounded-2xl border border-stone-200 bg-section p-8 text-center">
+        <p class="text-stone-800 font-semibold mb-2">Abonnement requis</p>
+        <p class="text-sm text-stone-600 mb-6">
+          Vous ne pouvez pas consulter le calendrier de cet athlète. Réactivez votre abonnement coach pour retrouver l’accès.
+        </p>
+        <button type="button" class="rounded-lg bg-palette-forest-dark px-4 py-2.5 text-sm font-medium text-white w-full sm:w-auto">
+          Continuer vers le paiement (Stripe)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <p class="text-center text-xs text-stone-500 mt-6 max-w-xl mx-auto">
+    <strong>Cas limite UI :</strong> accès direct URL ou favori — même écran. Pas d’aperçu partiel du calendrier derrière un voile lisible.
+  </p>
+</body>
+</html>

@@ -921,7 +921,8 @@
       "notConnected": "Non connecté.",
       "emptyMessage": "Message vide.",
       "conversationUnavailable": "Conversation introuvable ou inaccessible.",
-      "readOnlyConversation": "Cette conversation est en lecture seule."
+      "readOnlyConversation": "Cette conversation est en lecture seule.",
+      "coachPlatformRequired": "Un abonnement coach actif est requis pour utiliser le chat avec vos athlètes."
     }
   },
   "calendar": {
@@ -1585,7 +1586,46 @@
       "declined": "Demande refusée.",
       "requireWeeklyTargetAndVolume": "Le temps à allouer par semaine et les volumes par sport sont obligatoires.",
       "weeklyTargetInvalid": "Le temps à allouer doit être un nombre entre 0 et 168 h.",
-      "weeklyVolumeInvalid": "Vérifiez les volumes par sport (nombre ≥ 0, dans la limite autorisée)."
+      "weeklyVolumeInvalid": "Vérifiez les volumes par sport (nombre ≥ 0, dans la limite autorisée).",
+      "platformSubscriptionRequired": "Un abonnement coach actif est requis pour accepter une demande."
+    }
+  },
+  "coachPlatform": {
+    "listBlockedTitle": "Abonnement coach requis",
+    "listBlockedDescription": "Vous ne pouvez plus consulter le planning et les informations de vos athlètes tant que votre abonnement n’est pas à jour (tolérance 3 jours après échéance en cas de retard de paiement).",
+    "checkoutCta": "Continuer vers le paiement",
+    "checkoutPending": "Redirection…",
+    "calendarBlockedTitle": "Abonnement requis",
+    "calendarBlockedDescription": "Vous ne pouvez pas consulter le calendrier de cet athlète. Réactivez votre abonnement coach pour retrouver l’accès.",
+    "backToAthletes": "Retour à Mes athlètes",
+    "paywallModalTitle": "Accepter cette demande",
+    "paywallModalBody": "Pour accepter un nouvel athlète, vous devez d’abord activer votre abonnement coach via notre partenaire de paiement (Stripe). Le tarif est celui configuré pour votre compte.",
+    "paywallCancel": "Annuler",
+    "stripeReturnSuccess": "Votre abonnement est actif ou en cours de prise en compte. Vous pouvez rafraîchir la page dans quelques instants si besoin.",
+    "stripeReturnCanceled": "Le paiement a été annulé. Aucun changement sur votre abonnement.",
+    "stripeReturnError": "Nous n’avons pas pu confirmer votre paiement. Réessayez ou contactez le support.",
+    "stripeVerifying": "Vérification du paiement…",
+    "stripeReturnPendingWebhook": "Paiement confirmé : l’activation de votre accès peut prendre quelques secondes. Rafraîchissez la page ou patientez.",
+    "stripeRefreshCta": "Rafraîchir",
+    "dismissBanner": "Fermer",
+    "chatDisabledHint": "Abonnement coach requis pour discuter",
+    "validation": {
+      "stripeNotConfigured": "Le paiement en ligne n’est pas configuré.",
+      "priceNotConfigured": "L’offre d’abonnement n’est pas configurée.",
+      "siteUrlMissing": "L’URL du site n’est pas configurée (NEXT_PUBLIC_SITE_URL ou NEXT_PUBLIC_APP_URL).",
+      "notAuthenticated": "Vous devez être connecté.",
+      "coachOnly": "Réservé aux coachs.",
+      "noCheckoutUrl": "Impossible d’obtenir l’URL de paiement.",
+      "checkoutFailed": "La création de la session de paiement a échoué."
+    },
+    "verify": {
+      "stripeUnavailable": "Le service de paiement est indisponible.",
+      "notAuthenticated": "Vous devez être connecté.",
+      "coachOnly": "Réservé aux coachs.",
+      "invalidSession": "Session de paiement invalide.",
+      "sessionNotOwned": "Cette session ne correspond pas à votre compte.",
+      "paymentIncomplete": "Le paiement n’est pas finalisé.",
+      "retrieveFailed": "Impossible de vérifier la session de paiement."
     }
   },
   "myCoach": {

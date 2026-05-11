@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>US-COACH-PLAT-02 — Modal abonnement avant Stripe</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            'palette-olive': '#8a9a7e',
+            stone: { 200: '#e7e5e4', 500: '#78716c', 600: '#57534e', 700: '#44403c', 800: '#292524' },
+          },
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-stone-500/40 min-h-screen flex items-start justify-center p-4 pt-10">
+  <p class="fixed top-2 left-2 right-2 text-center text-xs text-stone-700 max-w-xl mx-auto px-2">
+    <strong>US-COACH-PLAT-02</strong> — Composant cible : <code class="bg-white/90 px-1 rounded">Modal</code> (même shell que <code class="bg-white/90 px-1 rounded">PendingRequestTile</code>). Option B : déclenchement au clic <strong>Accepter</strong> si abonnement inactif.
+  </p>
+
+  <!-- État avant action : coach sur Mes athlètes (arrière-plan simplifié) -->
+  <div class="fixed inset-0 pointer-events-none opacity-30 bg-stone-200" aria-hidden="true"></div>
+
+  <!-- Modal -->
+  <div class="relative z-10 w-full max-w-md mt-16 rounded-2xl bg-white shadow-xl border border-stone-200 overflow-hidden" role="dialog" aria-modal="true">
+    <div class="px-5 py-4 border-b border-stone-200 flex items-center justify-between">
+      <h2 class="text-lg font-semibold text-stone-800">Accepter cette demande</h2>
+      <button type="button" class="text-stone-500 hover:text-stone-800 text-xl leading-none px-1" aria-label="Fermer">×</button>
+    </div>
+    <div class="px-5 py-4 space-y-3">
+      <p class="text-sm text-stone-600">
+        Pour accepter un nouvel athlète, vous devez d’abord activer votre abonnement coach sur notre partenaire de paiement (Stripe).
+      </p>
+      <p class="text-xs text-stone-500">
+        Le montant et la formule sont ceux configurés pour votre compte (Stripe). Aucune page de tarification dans l’app pour l’instant.
+      </p>
+    </div>
+    <div class="px-5 py-4 border-t border-stone-100 flex flex-col-reverse sm:flex-row gap-2 sm:justify-end">
+      <button type="button" class="rounded-lg border border-stone-300 bg-white px-4 py-2.5 text-sm font-medium text-stone-700 hover:bg-stone-50 w-full sm:w-auto">Annuler</button>
+      <button type="button" class="rounded-lg bg-palette-forest-dark px-4 py-2.5 text-sm font-medium text-white hover:opacity-95 w-full sm:w-auto">
+        Continuer vers le paiement
+      </button>
+    </div>
+    <div class="px-5 pb-4">
+      <p class="text-xs text-stone-400">
+        <strong>Transitions :</strong> Annuler → modale fermée, demande toujours « en attente ». Continuer → redirection navigateur vers URL Stripe (Checkout ou Portal selon spec Architecte). Après paiement réussi → retour app avec bandeau US-COACH-PLAT-04.
+      </p>
+    </div>
+  </div>
+</body>
+</html>
