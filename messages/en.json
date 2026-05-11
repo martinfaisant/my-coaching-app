@@ -837,6 +837,7 @@
       "iceSkatingDistanceCompletedPlanned": "Ice skating: distance completed / planned",
       "hikingDistanceCompletedPlanned": "Hiking: distance completed / planned",
       "triathlonTimeCompletedPlanned": "Triathlon: time completed / planned",
+      "sportVolumeHint": "{sport}: completed / planned",
       "sportLabels": {
         "run": "Run",
         "cycling": "Cycling",

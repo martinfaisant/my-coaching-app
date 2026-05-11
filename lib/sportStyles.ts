@@ -170,6 +170,29 @@ export const SPORT_CARD_STYLES: Record<
   },
 }
 
+/**
+ * Texte + fond de la barre « prévu / fait » (résumé hebdomadaire calendrier).
+ * Aligné visuellement sur SPORT_CARD_STYLES ; liste = tous les SportType.
+ */
+export const SPORT_WEEKLY_SUMMARY_BAR: Record<SportType, { color: string; bg: string }> = {
+  course: { color: 'text-palette-forest-dark', bg: 'bg-palette-forest-dark' },
+  trail: { color: 'text-palette-olive', bg: 'bg-palette-olive' },
+  velo: { color: 'text-palette-gold', bg: 'bg-palette-gold' },
+  natation: { color: 'text-sky-600', bg: 'bg-sky-500' },
+  musculation: { color: 'text-stone-600', bg: 'bg-stone-500' },
+  nordic_ski: { color: 'text-indigo-700', bg: 'bg-indigo-400' },
+  backcountry_ski: { color: 'text-cyan-700', bg: 'bg-cyan-600' },
+  ice_skating: { color: 'text-slate-600', bg: 'bg-slate-300' },
+  randonnee: { color: 'text-palette-sage', bg: 'bg-palette-sage' },
+  triathlon: { color: 'text-palette-amber', bg: 'bg-palette-amber' },
+  escalade: { color: 'text-stone-700', bg: 'bg-stone-600' },
+  meditation: { color: 'text-violet-600', bg: 'bg-violet-400' },
+  canot: { color: 'text-cyan-900', bg: 'bg-cyan-700' },
+  surf: { color: 'text-orange-700', bg: 'bg-orange-400' },
+  golf: { color: 'text-teal-800', bg: 'bg-teal-600' },
+  yoga: { color: 'text-violet-700', bg: 'bg-violet-500' },
+}
+
 /** Styles badge par sport (alignés calendrier). Fond blanc, texte et contour colorés. */
 export const SPORT_BADGE_STYLES: Record<
   SportType,
