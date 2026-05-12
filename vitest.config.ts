@@ -13,6 +13,8 @@ export default defineConfig({
     },
   },
   test: {
+    // Évite les timeouts « Failed to start forks worker » sur Windows / machines lentes (Vitest 4 pool forks).
+    pool: 'threads',
     environment: 'jsdom',
     setupFiles: ['./vitest.setup.ts'],
     include: ['**/*.{test,spec}.{ts,tsx}'],

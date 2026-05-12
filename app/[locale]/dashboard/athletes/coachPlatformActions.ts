@@ -1,5 +1,6 @@
 'use server'
 
+import { headers } from 'next/headers'
 import { getTranslations } from 'next-intl/server'
 import { createClient } from '@/utils/supabase/server'
 import { requireUser } from '@/lib/authHelpers'
@@ -7,6 +8,7 @@ import { getStripeServer } from '@/lib/stripeServer'
 import { pathWithLocale } from '@/lib/pathWithLocale'
 import { logger } from '@/lib/logger'
 import { fetchCoachPlatformAccessGranted } from '@/lib/coachPlatformSubscription'
+import { resolveStripeCheckoutReturnBaseUrl } from '@/lib/checkoutReturnOrigin'
 
 export type CoachPlatformCheckoutResult = { ok: true; url: string } | { ok: false; error: string }
 
@@ -40,7 +42,8 @@ export async function createCoachPlatformCheckoutSession(locale: string): Promis
     return { ok: false, error: t('coachOnly') }
   }
 
-  const base = siteUrl.replace(/\/$/, '')
+  const headerList = await headers()
+  const base = resolveStripeCheckoutReturnBaseUrl(headerList, siteUrl)
   const successPath = pathWithLocale(
     locale,
     '/dashboard/athletes?stripe=success&session_id={CHECKOUT_SESSION_ID}'

@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { useLocale, useTranslations } from 'next-intl'
 import { Button } from '@/components/Button'
+import { createClient } from '@/utils/supabase/client'
 import { verifyCoachPlatformCheckoutSession } from '@/app/[locale]/dashboard/athletes/coachPlatformActions'
 
 type Phase = 'loading' | 'pending' | 'done' | null
@@ -41,7 +42,24 @@ export function CoachPlatformCheckoutVerification() {
     let cancelled = false
     setPhase('loading')
 
-    void verifyCoachPlatformCheckoutSession(sessionId.trim(), locale).then((result) => {
+    const supabase = createClient()
+
+    void (async () => {
+      let {
+        data: { session },
+      } = await supabase.auth.getSession()
+      if (!session) {
+        const { data: refreshed } = await supabase.auth.refreshSession()
+        session = refreshed.session
+      }
+      if (cancelled) return
+      if (!session) {
+        router.replace(locale === 'en' ? '/en/login' : '/login')
+        setPhase(null)
+        return
+      }
+
+      const result = await verifyCoachPlatformCheckoutSession(sessionId.trim(), locale)
       if (cancelled) return
       if (!result.ok) {
         goStripeError()
@@ -54,12 +72,12 @@ export function CoachPlatformCheckoutVerification() {
         return
       }
       setPhase('pending')
-    })
+    })()
 
     return () => {
       cancelled = true
     }
-  }, [stripe, sessionId, locale, goStripeError, goSuccessClean])
+  }, [stripe, sessionId, locale, router, goStripeError, goSuccessClean])
 
   useEffect(() => {
     if (phase !== 'pending') return
