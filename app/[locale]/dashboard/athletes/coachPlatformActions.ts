@@ -11,8 +11,39 @@ import { fetchCoachPlatformAccessGranted } from '@/lib/coachPlatformSubscription
 import { resolveStripeCheckoutReturnBaseUrl } from '@/lib/checkoutReturnOrigin'
 import { resolveCoachPlatformCheckoutReturnPath } from '@/lib/coachPlatformCheckoutReturnPath'
 import { getCoachPlatformAllowedPriceIds } from '@/lib/stripeCoachPlatformPriceIds'
+import { loadCoachPlatformCatalogForEnv } from '@/lib/stripeCoachPlatformCatalog'
+import type { CoachPlatformCatalogOffer } from '@/lib/stripeCoachPlatformCatalog'
 
 export type CoachPlatformCheckoutResult = { ok: true; url: string } | { ok: false; error: string }
+
+export type LoadCoachPlatformCatalogForCoachResult =
+  | { ok: true; offers: CoachPlatformCatalogOffer[] }
+  | { ok: false; error: string }
+
+/** Catalogue offres plateforme (Stripe) pour le coach connecté — utilisé par la modale souscription. */
+export async function loadCoachPlatformCatalogForCoach(
+  locale: string
+): Promise<LoadCoachPlatformCatalogForCoachResult> {
+  const tSub = await getTranslations({ locale, namespace: 'coachMsaSubscription' })
+  const tVal = await getTranslations({ locale, namespace: 'coachPlatform.validation' })
+
+  const supabase = await createClient()
+  const auth = await requireUser(supabase)
+  if ('error' in auth) {
+    return { ok: false, error: tVal('notAuthenticated') }
+  }
+
+  const { data: profile } = await supabase.from('profiles').select('role').eq('user_id', auth.user.id).single()
+  if (profile?.role !== 'coach') {
+    return { ok: false, error: tVal('coachOnly') }
+  }
+
+  const catalog = await loadCoachPlatformCatalogForEnv()
+  if (catalog.error === 'stripe_unavailable' || catalog.error === 'catalog_load_failed') {
+    return { ok: false, error: tSub('errors.catalogUnavailable') }
+  }
+  return { ok: true, offers: catalog.offers }
+}
 
 export type CreateCoachPlatformCheckoutOptions = {
   /** Price Stripe autorisé (whitelist env). Si absent : premier ID autorisé. */

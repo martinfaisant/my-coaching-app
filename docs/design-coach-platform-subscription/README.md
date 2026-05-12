@@ -1,9 +1,16 @@
 # Design — Abonnement plateforme coach (Stripe)
 
-**Statut :** Phase Designer **2** — solution page **A** validée par le PO (mai 2026).  
-**Évolution vs doc initiale :** page dédiée **« Mon Abonnement MySportAlly »** + vitrine **multi-produits** + historique factures / échecs / remboursements ; bandeau alerte si **tolérance 3 jours** ; **pas** de portail client Stripe en v1.
+**Statut :** Phase Designer **2** — évolution **mai 2026** : proposition **A** (modale catalogue offres avant Stripe) validée par le PO ; titres / descriptions offres **FR + EN** via **next-intl** (recommandation maintenabilité).  
+**Historique :** page dédiée **« Mon Abonnement MySportAlly »** + vitrine multi-produits + historique factures / échecs / remboursements ; bandeau alerte si **tolérance 3 jours** ; **pas** de portail client Stripe en v1.
 
-## User stories → mockups
+## User stories → mockups (évolution modale + i18n offres)
+
+| US | Fichier | Rôle |
+|----|---------|------|
+| **US-MYSA-OFFERS-01** | `MOCKUP_US_MYSA_OFFERS_MODAL_STATES.html` | Modale catalogue : chargement, **1 offre** (affichée), **N offres**, erreur catalogue, CTA pending ; transitions fermer / payer |
+| **US-MYSA-OFFERS-02** | `MOCKUP_US_MYSA_OFFERS_MODAL_ENTRY_POINTS.html` | Ouverture de la **même** modale depuis **demande en attente** (Accepter), **overlay Mes athlètes**, **calendrier bloqué** ; page dédiée inchangée (hors modale) |
+
+## User stories → mockups (livraison initiale page / menu)
 
 | US | Fichier | Rôle |
 |----|---------|------|
@@ -23,8 +30,10 @@
 
 ## Implémentation (référence code)
 
-- Page app : **`app/[locale]/dashboard/coach-platform-subscription/`** (`page.tsx`, `loading.tsx`), shell **`DashboardPageShell`**, offres client **`components/CoachPlatformSubscriptionOffers.tsx`**, catalogue / facturation **`lib/stripeCoachPlatformCatalog.ts`**, **`lib/stripeCoachPlatformBillingHistory.ts`**, whitelist retour Checkout **`lib/coachPlatformCheckoutReturnPath.ts`**.
+- Page app : **`app/[locale]/dashboard/coach-platform-subscription/`** (`page.tsx`, `loading.tsx`), shell **`DashboardPageShell`**, section offres **`components/CoachPlatformSubscriptionOffers.tsx`** (grille partagée **`components/CoachPlatformOfferGrid.tsx`**).
+- Modale choix d’offre avant Checkout : **`components/CoachPlatformSubscribeOffersModal.tsx`** (chargement **`loadCoachPlatformCatalogForCoach`** dans **`app/[locale]/dashboard/athletes/coachPlatformActions.ts`**), intégrations **`PendingRequestTile`**, **`CoachAthletesBillingOverlay`**, **`CoachAthleteBillingBlocked`**.
+- Catalogue / facturation Stripe : **`lib/stripeCoachPlatformCatalog.ts`**, **`lib/stripeCoachPlatformBillingHistory.ts`** ; libellés marketing par `price_id` : **`lib/coachMsaOfferDisplay.ts`** + messages **`coachMsaOffers.byPriceId`** ; whitelist retour Checkout **`lib/coachPlatformCheckoutReturnPath.ts`**.
 
 ## Suite du pipeline
 
-→ **Mode Architecte** (sources Stripe pour catalogue + factures / échecs / remboursements, route, retours Checkout, cohabitation avec flux Mes athlètes).
+→ Livraison **Développeur** réalisée (mai 2026) ; évolutions ultérieures (nouveaux `price_id`, offre « encaissements ») : ajouter les clés sous **`byPriceId`** et les IDs dans l’env, puis mise à jour **`Project_context.md`** / **`docs/I18N.md`** si besoin.

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>US-MYSA-OFFERS-02 — Déclencheurs modale offres</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            stone: { 200: '#e7e5e4', 600: '#57534e', 700: '#44403c', 800: '#292524', 900: '#1c1917' },
+          },
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-stone-100 min-h-screen p-6">
+  <header class="max-w-4xl mx-auto mb-10">
+    <h1 class="text-xl font-bold text-stone-900">US-MYSA-OFFERS-02 — Même modale catalogue, trois contextes</h1>
+    <p class="text-sm text-stone-600 mt-2">
+      Aujourd’hui ces flux appellent Checkout sans affichage des offres. <strong>Cible :</strong> le premier CTA « S’abonner / Continuer vers le paiement »
+      <strong>ouvre la modale</strong> (US-01) ; la redirection Stripe n’a lieu qu’après choix d’une offre dans la modale.
+      La page dédiée <code class="text-xs bg-white border border-stone-200 px-1 rounded">/dashboard/coach-platform-subscription</code> conserve sa section offres pleine page (hors modale) — pas de régression fonctionnelle.
+    </p>
+  </header>
+
+  <div class="max-w-4xl mx-auto grid gap-10 md:grid-cols-3">
+    <!-- Contexte A -->
+    <article class="rounded-xl border border-stone-200 bg-white p-4 shadow-sm">
+      <h2 class="text-xs font-bold uppercase tracking-wider text-stone-700 mb-2">A — Demande en attente</h2>
+      <p class="text-sm text-stone-600 mb-3">Écran : tuile demande (mobile ou desktop).</p>
+      <div class="rounded-lg border border-dashed border-stone-300 p-3 text-xs text-stone-500 mb-3">
+        État avant : coach sans abo plateforme, clic <strong>Accepter</strong>.
+      </div>
+      <p class="text-sm text-stone-800 font-medium">→ Ouvre la modale US-01</p>
+      <p class="text-xs text-stone-500 mt-2">Fichier code : <code>PendingRequestTile.tsx</code> (paywall existant remplacé / étendu).</p>
+    </article>
+
+    <!-- Contexte B -->
+    <article class="rounded-xl border border-stone-200 bg-white p-4 shadow-sm">
+      <h2 class="text-xs font-bold uppercase tracking-wider text-stone-700 mb-2">B — Liste Mes athlètes</h2>
+      <p class="text-sm text-stone-600 mb-3">Écran : overlay blocage liste (≥1 athlète, pas d’accès plateforme).</p>
+      <div class="rounded-lg border border-dashed border-stone-300 p-3 text-xs text-stone-500 mb-3">
+        État avant : CTA unique sur l’overlay.
+      </div>
+      <p class="text-sm text-stone-800 font-medium">→ Ouvre la modale US-01</p>
+      <p class="text-xs text-stone-500 mt-2">Fichier code : <code>CoachAthletesBillingOverlay.tsx</code>.</p>
+    </article>
+
+    <!-- Contexte C -->
+    <article class="rounded-xl border border-stone-200 bg-white p-4 shadow-sm">
+      <h2 class="text-xs font-bold uppercase tracking-wider text-stone-700 mb-2">C — Calendrier athlète bloqué</h2>
+      <p class="text-sm text-stone-600 mb-3">Écran : page calendrier coach, zone centrale vide bloquée.</p>
+      <div class="rounded-lg border border-dashed border-stone-300 p-3 text-xs text-stone-500 mb-3">
+        État avant : CTA « Continuer vers le paiement ».
+      </div>
+      <p class="text-sm text-stone-800 font-medium">→ Ouvre la modale US-01</p>
+      <p class="text-xs text-stone-500 mt-2">Fichier code : <code>CoachAthleteBillingBlocked.tsx</code>.</p>
+    </article>
+  </div>
+
+  <section class="max-w-4xl mx-auto mt-12 p-4 rounded-xl bg-stone-50 border border-stone-200">
+    <h3 class="text-sm font-semibold text-stone-900 mb-2">Critères d’acceptation transverses</h3>
+    <ul class="text-sm text-stone-700 list-disc list-inside space-y-1">
+      <li>Même contenu modale (offres, i18n, erreurs) quel que soit le déclencheur.</li>
+      <li>Fermeture modale : l’utilisateur reste sur le même URL / même vue qu’avant ouverture.</li>
+      <li>Après succès Stripe : comportement actuel (retour, vérification session, bandeaux) inchangé.</li>
+    </ul>
+  </section>
+</body>
+</html>

@@ -816,7 +816,7 @@
     "weeklyVolumesSectionTitle": "Volumes hebdomadaires",
     "weeklyTargetLabel": "Temps à allouer / semaine",
     "weeklyCurrentHoursLabel": "Volume actuel",
-    "weeklyMaxHoursLabel": "Volume maximum",
+    "weeklyMaxHoursLabel": "Volume max envisageable",
     "noPracticedSportsMessage": "Sélectionnez des sports pratiqués ci-dessus pour définir vos objectifs.",
     "suffixHoursPerWeek": "h/sem.",
     "suffixKmPerWeek": "km/sem.",
@@ -1428,7 +1428,7 @@
       "athleteMessageLabel": "Message de l'athlète",
       "weeklyTargetLabel": "Temps à allouer :",
       "weeklyCurrentHoursLabel": "Volume actuel :",
-      "weeklyMaxHoursLabel": "Volume maximum :",
+      "weeklyMaxHoursLabel": "Volume max envisageable :",
       "objectivesAndVolumeLabel": "Volumes hebdomadaires",
       "notSpecified": "Non renseigné",
       "goalsUpcoming": "Objectifs",
@@ -1648,6 +1648,29 @@
     "errors": {
       "catalogUnavailable": "Impossible de charger les offres. Réessayez plus tard ou contactez le support.",
       "historyUnavailable": "Impossible de charger l’historique de facturation pour le moment."
+    }
+  },
+  "coachMsaOffers": {
+    "modalTitle": "Choisir votre formule",
+    "modalIntroDefault": "Sélectionnez l’offre qui vous convient, puis continuez vers le paiement sécurisé (Stripe).",
+    "loading": "Chargement des offres…",
+    "close": "Fermer",
+    "noOffers": "Aucune offre n’est configurée pour le moment. Contactez le support si besoin.",
+    "byPriceId": {
+      "price_1TVyePD1L4D9b7s03IvfOcUY": {
+        "title": "Accès plateforme coaching — mensuel",
+        "description": "Accès complet à My Sport Ally pour coacher vos athlètes (planning, demandes, chat, objectifs). Nombre d’athlètes illimité. Facturation chaque mois. Cette formule ne couvre pas l’encaissement des paiements auprès des athlètes."
+      },
+      "price_1TWNrlD1L4D9b7s0r9Syzf05": {
+        "title": "Accès plateforme coaching — annuel",
+        "description": "Même accès illimité à la plateforme pour coacher vos athlètes. Facturation une fois par an (souvent la formule la plus avantageuse). L’encaissement des paiements auprès des athlètes pourra faire l’objet d’une offre complémentaire ultérieurement."
+      }
+    },
+    "futurePlatformPaymentsTier": {
+      "monthlyTitle": "Plateforme + encaissements athlètes — mensuel",
+      "monthlyDescription": "Accès illimité à la plateforme pour coacher vos athlètes, avec des outils pour encaisser et suivre les paiements (facturation, règlements). Formule à venir.",
+      "annualTitle": "Plateforme + encaissements athlètes — annuel",
+      "annualDescription": "Même périmètre que la formule mensuelle (plateforme + encaissements athlètes), avec facturation annuelle. Formule à venir."
     }
   },
   "coachPlatform": {

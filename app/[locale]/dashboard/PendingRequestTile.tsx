@@ -2,7 +2,6 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { usePathname } from '@/i18n/navigation'
 import { useLocale, useTranslations } from 'next-intl'
 import { Button } from '@/components/Button'
 import { Badge } from '@/components/Badge'
@@ -23,7 +22,7 @@ import {
 import type { SportType, WeeklyVolumeTileKey } from '@/lib/sportStyles'
 import { respondToCoachRequest } from '@/app/[locale]/dashboard/actions'
 import type { PendingRequestWithAthlete } from '@/app/[locale]/dashboard/actions'
-import { createCoachPlatformCheckoutSession } from '@/app/[locale]/dashboard/athletes/coachPlatformActions'
+import { CoachPlatformSubscribeOffersModal } from '@/components/CoachPlatformSubscribeOffersModal'
 import type { Goal } from '@/types/database'
 import { RequestGoalsListModal } from '@/app/[locale]/dashboard/RequestGoalsListModal'
 import {
@@ -75,13 +74,10 @@ function formatOfferPrice(
 export function PendingRequestTile({ request, goals = [], coachHasPlatformAccess }: PendingRequestTileProps) {
   const [isPending, startTransition] = useTransition()
   const [confirmModal, setConfirmModal] = useState<'decline' | 'accept' | null>(null)
-  const [paywallOpen, setPaywallOpen] = useState(false)
-  const [checkoutLoading, setCheckoutLoading] = useState(false)
-  const [checkoutError, setCheckoutError] = useState<string | null>(null)
+  const [subscribeOffersModalOpen, setSubscribeOffersModalOpen] = useState(false)
   const [respondError, setRespondError] = useState<string | null>(null)
   const [seeMoreModal, setSeeMoreModal] = useState<'objectifs' | 'resultats' | null>(null)
   const router = useRouter()
-  const pathname = usePathname()
   const locale = useLocale()
   const localeTag = locale === 'fr' ? 'fr-FR' : 'en-US'
   const t = useTranslations('athletes')
@@ -94,28 +90,10 @@ export function PendingRequestTile({ request, goals = [], coachHasPlatformAccess
   const beginAcceptFlow = () => {
     setRespondError(null)
     if (!coachHasPlatformAccess) {
-      setCheckoutError(null)
-      setPaywallOpen(true)
+      setSubscribeOffersModalOpen(true)
       return
     }
     setConfirmModal('accept')
-  }
-
-  const handlePaywallCheckout = async () => {
-    setCheckoutError(null)
-    setCheckoutLoading(true)
-    try {
-      const result = await createCoachPlatformCheckoutSession(locale, { returnPath: pathname })
-      if (!result.ok) {
-        setCheckoutError(result.error)
-        setCheckoutLoading(false)
-        return
-      }
-      window.location.href = result.url
-    } catch {
-      setCheckoutError(tPlat('validation.checkoutFailed'))
-      setCheckoutLoading(false)
-    }
   }
 
   const today = new Date().toISOString().slice(0, 10)
@@ -489,45 +467,11 @@ export function PendingRequestTile({ request, goals = [], coachHasPlatformAccess
         </div>
       </div>
 
-      <Modal
-        isOpen={paywallOpen}
-        onClose={() => {
-          setPaywallOpen(false)
-          setCheckoutError(null)
-        }}
-        size="md"
-        title={tPlat('paywallModalTitle')}
-        footer={
-          <div className="flex flex-col-reverse sm:flex-row gap-2 sm:justify-end w-full">
-            <Button
-              type="button"
-              variant="muted"
-              className="w-full sm:w-auto"
-              disabled={checkoutLoading}
-              onClick={() => {
-                setPaywallOpen(false)
-                setCheckoutError(null)
-              }}
-            >
-              {tPlat('paywallCancel')}
-            </Button>
-            <Button
-              type="button"
-              variant="primary"
-              className="w-full sm:w-auto"
-              disabled={checkoutLoading}
-              onClick={() => void handlePaywallCheckout()}
-            >
-              {checkoutLoading ? tPlat('checkoutPending') : tPlat('checkoutCta')}
-            </Button>
-          </div>
-        }
-      >
-        <div className="px-6 py-4 space-y-3">
-          <p className="text-sm text-stone-600">{tPlat('paywallModalBody')}</p>
-          {checkoutError ? <p className="text-sm text-palette-danger">{checkoutError}</p> : null}
-        </div>
-      </Modal>
+      <CoachPlatformSubscribeOffersModal
+        isOpen={subscribeOffersModalOpen}
+        onClose={() => setSubscribeOffersModalOpen(false)}
+        introSlot={<p className="text-sm text-stone-600">{tPlat('paywallModalBody')}</p>}
+      />
 
       <Modal
         isOpen={confirmModal === 'decline'}

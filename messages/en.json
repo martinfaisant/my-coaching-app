@@ -691,7 +691,7 @@
     "weeklyVolumesSectionTitle": "Weekly volumes",
     "weeklyTargetLabel": "Time to allocate / week",
     "weeklyCurrentHoursLabel": "Current volume",
-    "weeklyMaxHoursLabel": "Maximum volume",
+    "weeklyMaxHoursLabel": "Maximum possible vol",
     "noPracticedSportsMessage": "Select practiced sports above to set your goals.",
     "suffixHoursPerWeek": "h/week",
     "suffixKmPerWeek": "km/week",
@@ -1303,7 +1303,7 @@
       "athleteMessageLabel": "Athlete's message",
       "weeklyTargetLabel": "Time to allocate:",
       "weeklyCurrentHoursLabel": "Current volume:",
-      "weeklyMaxHoursLabel": "Maximum volume:",
+      "weeklyMaxHoursLabel": "Max possible volume:",
       "objectivesAndVolumeLabel": "Weekly volumes",
       "notSpecified": "Not specified",
       "goalsUpcoming": "Goals",
@@ -1523,6 +1523,29 @@
     "errors": {
       "catalogUnavailable": "Could not load offers. Try again later or contact support.",
       "historyUnavailable": "Could not load billing history right now."
+    }
+  },
+  "coachMsaOffers": {
+    "modalTitle": "Choose your plan",
+    "modalIntroDefault": "Select the plan that fits you, then continue to secure payment (Stripe).",
+    "loading": "Loading offers…",
+    "close": "Close",
+    "noOffers": "No offers are configured yet. Contact support if needed.",
+    "byPriceId": {
+      "price_1TVyePD1L4D9b7s03IvfOcUY": {
+        "title": "Platform coaching access — monthly",
+        "description": "Full My Sport Ally access to coach your athletes (planning, requests, chat, goals). Unlimited athletes. Billed every month. This plan does not include collecting payments from athletes."
+      },
+      "price_1TWNrlD1L4D9b7s0r9Syzf05": {
+        "title": "Platform coaching access — annual",
+        "description": "Same unlimited platform access to coach your athletes. Billed once per year (often the best value). Collecting payments from athletes may be offered as a separate add-on later."
+      }
+    },
+    "futurePlatformPaymentsTier": {
+      "monthlyTitle": "Platform + athlete payments — monthly",
+      "monthlyDescription": "Unlimited coaching on the platform plus tools to collect and track payments from your athletes (invoicing, settlements). Coming soon.",
+      "annualTitle": "Platform + athlete payments — annual",
+      "annualDescription": "Same scope as the monthly plan (platform + athlete payments), billed annually. Coming soon."
     }
   },
   "coachPlatform": {
