@@ -70,6 +70,7 @@ STRIPE_COACH_PLATFORM_PRICE_ID=price_...
 # STRIPE_COACH_PLATFORM_PRICE_IDS=price_xxx,price_yyy
 # Libellés FR/EN des cartes (page + modale avant Checkout) : `messages/fr.json` & `en.json` → `coachMsaOffers.byPriceId` (une entrée par `price_…` listé ci-dessus ; repli sur le nom/description produit Stripe si absent).
 # URL publique de l’app (repli si l’hôte de la requête n’est pas autorisé pour Stripe Checkout) : NEXT_PUBLIC_SITE_URL ou, à défaut, NEXT_PUBLIC_APP_URL. En preview Vercel, les success/cancel URL utilisent l’hôte courant (*.vercel.app) lorsque les en-têtes le permettent — voir `lib/checkoutReturnOrigin.ts`.
+# Comportement Checkout : si une ligne `coach_platform_subscriptions` contient déjà un `stripe_customer_id` valide côté Stripe, la session réutilise ce Customer ; sinon repli sur l’e-mail du profil (nouveau Customer possible). Voir `lib/stripeCoachPlatformCustomer.ts`.
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ```
 

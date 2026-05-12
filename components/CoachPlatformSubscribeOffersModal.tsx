@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useState, useTransition } from 'react'
+import { useEffect, useState, useTransition } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
 import { usePathname } from '@/i18n/navigation'
 import { Modal } from '@/components/Modal'
@@ -31,26 +31,20 @@ export function CoachPlatformSubscribeOffersModal({
   const [isPending, startTransition] = useTransition()
   const [pendingPriceId, setPendingPriceId] = useState<string | null>(null)
 
-  const resetState = useCallback(() => {
-    setLoadState('idle')
-    setOffers([])
-    setCatalogError(null)
-    setCheckoutError(null)
-    setPendingPriceId(null)
-  }, [])
-
   useEffect(() => {
     if (!isOpen) {
-      resetState()
       return
     }
 
     let cancelled = false
-    setLoadState('loading')
-    setCatalogError(null)
-    setCheckoutError(null)
 
     void (async () => {
+      await Promise.resolve()
+      if (cancelled) return
+      setLoadState('loading')
+      setCatalogError(null)
+      setCheckoutError(null)
+
       const result = await loadCoachPlatformCatalogForCoach(locale)
       if (cancelled) return
       if (!result.ok) {
@@ -65,7 +59,7 @@ export function CoachPlatformSubscribeOffersModal({
     return () => {
       cancelled = true
     }
-  }, [isOpen, locale, resetState])
+  }, [isOpen, locale])
 
   const handleSubscribe = (priceId: string) => {
     setCheckoutError(null)

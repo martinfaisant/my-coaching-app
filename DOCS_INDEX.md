@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 12 mai 2026 (**Abonnement plateforme coach** : modale catalogue avant Checkout, **`coachMsaOffers.byPriceId`**, **`CoachPlatformSubscribeOffersModal`** / **`CoachPlatformOfferGrid`** / **`loadCoachPlatformCatalogForCoach`** ; précédent : page `coach-platform-subscription` + `coachMsaSubscription` seuls…)
+**Dernière mise à jour :** 12 mai 2026 (**Stripe coach** : réutilisation du **Customer** Checkout via **`lib/stripeCoachPlatformCustomer.ts`** ; précédent : modale catalogue avant Checkout, **`coachMsaOffers.byPriceId`**, **`CoachPlatformSubscribeOffersModal`** / **`CoachPlatformOfferGrid`**…)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -9,16 +9,16 @@
 ## 🎯 Documentation Active (à utiliser en priorité)
 
 ### **README.md** ⭐
-- **Contenu :** Setup projet, stack technique, quick start, structure du projet, **URL production https://mysportally.com**, variables **Stripe coach plateforme** (rappel **`coachMsaOffers.byPriceId`** dans les messages) et URL de retour Checkout (`NEXT_PUBLIC_SITE_URL` / repli, `lib/checkoutReturnOrigin.ts`)
+- **Contenu :** Setup projet, stack technique, quick start, structure du projet, **URL production https://mysportally.com**, variables **Stripe coach plateforme** (rappel **`coachMsaOffers.byPriceId`**, comportement **réutilisation Customer** Checkout) et URL de retour Checkout (`NEXT_PUBLIC_SITE_URL` / repli, `lib/checkoutReturnOrigin.ts`)
 - **Utiliser pour :** Onboarding, démarrage rapide, vue d'ensemble technique
 - **Taille :** ~200 lignes
-- **Dernière mise à jour :** 12 mai 2026 (Stripe + rappel i18n offres plateforme ; précédent : URL retour preview…)
+- **Dernière mise à jour :** 12 mai 2026 (Stripe : réutilisation Customer Checkout coach, commentaire `README` ; précédent : i18n offres plateforme…)
 
 ### **Project_context.md** ⭐
-- **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), **abonnement plateforme coach Stripe** (Checkout, webhooks, migration 073, `coach_platform_access_granted`, page **Mon Abonnement MySportAlly**, **modale choix d’offre** avant Checkout, bandeaux), stack technique, **URL production https://mysportally.com**
+- **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), **abonnement plateforme coach Stripe** (Checkout avec **réutilisation du Customer** `stripe_customer_id` quand valide, webhooks, migration 073, `coach_platform_access_granted`, page **Mon Abonnement MySportAlly**, **modale choix d’offre** avant Checkout, bandeaux), stack technique, **URL production https://mysportally.com**
 - **Utiliser pour :** Comprendre le projet, les features, les rôles, l'architecture globale
 - **Taille :** ~450 lignes
-- **Dernière mise à jour :** 12 mai 2026 (§4.4 : **modale catalogue** avant Checkout, **`coachMsaOffers`**, **`CoachPlatformSubscribeOffersModal`**, chemins d’entrée Mes athlètes / calendrier / Accepter ; précédent : page Mon Abonnement + vitrine multi-prix…)
+- **Dernière mise à jour :** 12 mai 2026 (§4.4 Stripe : **réutilisation Customer** `cus_…` + **`stripeCoachPlatformCustomer`** ; précédent : modale catalogue, **`coachMsaOffers`**, chemins d’entrée Mes athlètes…)
 
 ### **docs/CALENDAR_MONTH_VIEW.md**
 - **Contenu :** Récap **vue mois** (desktop) vs **vue semaine** (mobile), règles semaines ISO / mois civil étendu, **totaux hebdo** (liste sports `PERSISTED_WORKOUT_SPORT_TYPES`, `SPORT_WEEKLY_SUMMARY_BAR`), chargement données, liste des fichiers et tests unitaires, liens vers maquettes archivées
@@ -30,7 +30,7 @@
 - **Contenu :** Tokens (couleurs, typo, espacements ; **sports** : `SPORT_CARD_STYLES`, `SPORT_BADGE_STYLES`, **`SPORT_WEEKLY_SUMMARY_BAR`** résumé hebdo), composants (Button, Input, Badge, TileCard, DashboardPageShell, **DashboardTopBar**, **AthleteAccountMenu**, **AthleteStatsVolumeChart**, **AthleteStatsChartSkeleton**, Modal, **MonthSelector**, etc.), guidelines UI, exemples de code, §7 breakpoints (**calendrier** mois étendu desktop + WeekSelector mobile, chat, Trouver mon coach, My offers)
 - **Utiliser pour :** Créer ou modifier des composants UI, choisir des couleurs, appliquer le design system, règles responsive par page
 - **Taille :** ~2010 lignes
-- **Dernière mise à jour :** 12 mai 2026 (§ **`CoachPlatformSubscribeOffersModal`**, **`CoachPlatformOfferGrid`**, `coachMsaOffers` ; précédent : § `CoachPlatformSubscriptionOffers`…)
+- **Dernière mise à jour :** 12 mai 2026 (fichiers clés : **`lib/stripeCoachPlatformCustomer.ts`** ; précédent : § **`CoachPlatformSubscribeOffersModal`**, **`CoachPlatformOfferGrid`**, `coachMsaOffers`…)
 
 ### **docs/I18N.md** ⭐
 - **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces (dont **`calendar.weekly.sportVolumeHint`**), utilisation dans composants et server actions, **checklist pour nouvelles features** (toujours penser bilingue)
@@ -106,9 +106,9 @@
 ## 🚀 Documentation Opérationnelle
 
 ### **DEPLOYMENT_NOTES.md**
-- **Contenu :** Notes et procédures de déploiement, **URL production https://mysportally.com**, section **Abonnement plateforme coach (Stripe)** (migration 073, env, webhook, Redirect URLs Supabase)
+- **Contenu :** Notes et procédures de déploiement, **URL production https://mysportally.com**, section **Abonnement plateforme coach (Stripe)** (migration 073, env, webhook, comportement réutilisation Customer Checkout, Redirect URLs Supabase)
 - **Utiliser pour :** Déployer l'application, résoudre des problèmes de déploiement
-- **Dernière mise à jour :** 12 mai 2026 (Stripe coach plateforme)
+- **Dernière mise à jour :** 12 mai 2026 (Stripe : puce **comportement applicatif** Checkout coach ; précédent : Stripe coach plateforme général)
 
 ### **MISE_EN_PROD.md**
 - **Contenu :** Checklist et étapes pour mise en production, **URL production https://mysportally.com**, rappel migrations postérieures (dont **073** Stripe coach plateforme — voir `DEPLOYMENT_NOTES.md`)
@@ -487,10 +487,16 @@
 
 **Fréquence de mise à jour :** À chaque ajout/suppression de documentation
 
-**Dernier scan :** 7 mai 2026  
-**Dernier nettoyage :** 7 mai 2026 (entrée Changements récents : en-tête marketing connecté)
+**Dernier scan :** 12 mai 2026  
+**Dernier nettoyage :** 12 mai 2026 (entrée Changements récents : Stripe Customer Checkout coach)
 
 ### Changements récents :
+
+✅ **12 mai 2026 – Réutilisation du Customer Stripe (abonnement plateforme coach) – Mode Analyste :**
+- **Livraison (réf. code) :** avant **`createCoachPlatformCheckoutSession`**, lecture de **`coach_platform_subscriptions.stripe_customer_id`** pour le coach connecté ; validation **`stripe.customers.retrieve`** dans **`lib/stripeCoachPlatformCustomer.ts`** (`resolveExistingCoachPlatformStripeCustomerId`) ; session Checkout avec **`customer`** si valide, sinon repli **`customer_email`** (nouveau Customer possible ; webhook met à jour la base).
+- **Doc :** `Project_context.md` §4.4 (paragraphe Coach ↔ plateforme), `README.md` (commentaire env Stripe), `DEPLOYMENT_NOTES.md` (section Stripe), `docs/DESIGN_SYSTEM.md` (fichiers clés + date), `docs/design-coach-platform-subscription/README.md` (pointeur lib), `DOCS_INDEX.md`.
+- **Archivage :** aucun.
+- **Pages légales / confidentialité :** aucune modification (traitement Stripe inchangé dans l’esprit ; pas de nouvelle catégorie de données).
 
 ✅ **7 mai 2026 – En-tête marketing / légal pour utilisateurs connectés – Mode Analyste :**
 - **Livraison (réf. code) :** sur l’**accueil**, **contact**, **politique de confidentialité**, **CGU** et **réinitialisation mot de passe**, **`PublicOrDashboardHeader`** affiche la barre **dashboard** (`DashboardTopBar`, navigation et menus selon le rôle) lorsqu’une **session** est active, et **`PublicHeader`** pour les **visiteurs**. **`DashboardTopBar`** est **sticky** (`top-0`, `z-50`, bordure basse) pour un défilement cohérent avec le header public. Titres **mobile** sur ces routes : clés **`navigation.publicHome`**, **`publicPrivacy`**, **`publicTerms`**, **`resetPasswordPage`**, **`contactUs`** pour `/contact` ; logique dans **`getPageTitleI18nKey`** (`lib/dashboardNavConfig.ts`).

@@ -13,6 +13,7 @@ import { resolveCoachPlatformCheckoutReturnPath } from '@/lib/coachPlatformCheck
 import { getCoachPlatformAllowedPriceIds } from '@/lib/stripeCoachPlatformPriceIds'
 import { loadCoachPlatformCatalogForEnv } from '@/lib/stripeCoachPlatformCatalog'
 import type { CoachPlatformCatalogOffer } from '@/lib/stripeCoachPlatformCatalog'
+import { resolveExistingCoachPlatformStripeCustomerId } from '@/lib/stripeCoachPlatformCustomer'
 
 export type CoachPlatformCheckoutResult = { ok: true; url: string } | { ok: false; error: string }
 
@@ -110,11 +111,19 @@ export async function createCoachPlatformCheckoutSession(
 
   const idempotencyKey = `coach-platform-checkout-${auth.user.id}-${Math.floor(Date.now() / 10000)}`
 
+  const existingStripeCustomerId = await resolveExistingCoachPlatformStripeCustomerId(
+    stripe,
+    supabase,
+    auth.user.id
+  )
+
   try {
     const checkoutSession = await stripe.checkout.sessions.create(
       {
         mode: 'subscription',
-        customer_email: profile.email ?? undefined,
+        ...(existingStripeCustomerId
+          ? { customer: existingStripeCustomerId }
+          : { customer_email: profile.email ?? undefined }),
         line_items: [{ price: priceId, quantity: 1 }],
         success_url: successUrl,
         cancel_url: cancelUrl,
