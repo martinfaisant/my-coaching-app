@@ -9,26 +9,50 @@ import { pathWithLocale } from '@/lib/pathWithLocale'
 import { logger } from '@/lib/logger'
 import { fetchCoachPlatformAccessGranted } from '@/lib/coachPlatformSubscription'
 import { resolveStripeCheckoutReturnBaseUrl } from '@/lib/checkoutReturnOrigin'
+import { resolveCoachPlatformCheckoutReturnPath } from '@/lib/coachPlatformCheckoutReturnPath'
+import { getCoachPlatformAllowedPriceIds } from '@/lib/stripeCoachPlatformPriceIds'
 
 export type CoachPlatformCheckoutResult = { ok: true; url: string } | { ok: false; error: string }
 
-export async function createCoachPlatformCheckoutSession(locale: string): Promise<CoachPlatformCheckoutResult> {
+export type CreateCoachPlatformCheckoutOptions = {
+  /** Price Stripe autorisé (whitelist env). Si absent : premier ID autorisé. */
+  priceId?: string
+  /** Chemin dashboard sans host (ex. /dashboard/athletes). Filtré contre une liste blanche. */
+  returnPath?: string
+}
+
+export async function createCoachPlatformCheckoutSession(
+  locale: string,
+  options?: CreateCoachPlatformCheckoutOptions
+): Promise<CoachPlatformCheckoutResult> {
   const t = await getTranslations({ locale, namespace: 'coachPlatform.validation' })
   const stripe = getStripeServer()
-  const priceId = process.env.STRIPE_COACH_PLATFORM_PRICE_ID
+  const allowedPriceIds = getCoachPlatformAllowedPriceIds()
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? process.env.NEXT_PUBLIC_APP_URL
 
   if (!stripe) {
     logger.error('createCoachPlatformCheckoutSession: STRIPE_SECRET_KEY manquant')
     return { ok: false, error: t('stripeNotConfigured') }
   }
-  if (!priceId) {
-    logger.error('createCoachPlatformCheckoutSession: STRIPE_COACH_PLATFORM_PRICE_ID manquant')
+  if (allowedPriceIds.length === 0) {
+    logger.error('createCoachPlatformCheckoutSession: aucun STRIPE_COACH_PLATFORM_PRICE_ID(S)')
     return { ok: false, error: t('priceNotConfigured') }
   }
   if (!siteUrl) {
     logger.error('createCoachPlatformCheckoutSession: NEXT_PUBLIC_SITE_URL / NEXT_PUBLIC_APP_URL manquant')
     return { ok: false, error: t('siteUrlMissing') }
+  }
+
+  const requestedPrice = options?.priceId?.trim()
+  const priceId =
+    requestedPrice && allowedPriceIds.includes(requestedPrice)
+      ? requestedPrice
+      : !requestedPrice
+        ? allowedPriceIds[0]
+        : null
+
+  if (!priceId) {
+    return { ok: false, error: t('invalidPriceId') }
   }
 
   const supabase = await createClient()
@@ -42,14 +66,16 @@ export async function createCoachPlatformCheckoutSession(locale: string): Promis
     return { ok: false, error: t('coachOnly') }
   }
 
+  const returnPath = resolveCoachPlatformCheckoutReturnPath(options?.returnPath)
+
   const headerList = await headers()
   const base = resolveStripeCheckoutReturnBaseUrl(headerList, siteUrl)
   const successPath = pathWithLocale(
     locale,
-    '/dashboard/athletes?stripe=success&session_id={CHECKOUT_SESSION_ID}'
+    `${returnPath}?stripe=success&session_id={CHECKOUT_SESSION_ID}`
   )
   const successUrl = `${base}${successPath}`
-  const cancelUrl = `${base}${pathWithLocale(locale, '/dashboard/athletes?stripe=canceled')}`
+  const cancelUrl = `${base}${pathWithLocale(locale, `${returnPath}?stripe=canceled`)}`
 
   const idempotencyKey = `coach-platform-checkout-${auth.user.id}-${Math.floor(Date.now() / 10000)}`
 

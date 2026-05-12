@@ -1,47 +1,36 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { useRouter, useSearchParams, usePathname } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
+import { useRouter, usePathname } from '@/i18n/navigation'
 import { useLocale, useTranslations } from 'next-intl'
 import { Button } from '@/components/Button'
 import { createClient } from '@/utils/supabase/client'
 import { verifyCoachPlatformCheckoutSession } from '@/app/[locale]/dashboard/athletes/coachPlatformActions'
 
-type Phase = 'loading' | 'pending' | 'done' | null
+type VerifyPhase = 'loading' | 'pending' | 'done'
 
-/**
- * Après Checkout Stripe : ?stripe=success&session_id=cs_…
- * Vérifie la session côté serveur ; si accès pas encore actif (webhook), propose Rafraîchir ; sinon erreur → ?stripe=error.
- */
-export function CoachPlatformCheckoutVerification() {
-  const searchParams = useSearchParams()
-  const router = useRouter()
-  const pathname = usePathname()
-  const locale = useLocale()
-  const t = useTranslations('coachPlatform')
+type InnerProps = {
+  sessionId: string
+  locale: string
+  router: ReturnType<typeof useRouter>
+  goStripeError: () => void
+  goSuccessClean: () => void
+  t: (key: string) => string
+}
 
-  const stripe = searchParams.get('stripe')
-  const sessionId = searchParams.get('session_id')
-
-  const [phase, setPhase] = useState<Phase>(null)
-
-  const goStripeError = useCallback(() => {
-    router.replace(`${pathname}?stripe=error`)
-  }, [router, pathname])
-
-  const goSuccessClean = useCallback(() => {
-    router.replace(`${pathname}?stripe=success`)
-  }, [router, pathname])
+function CoachPlatformCheckoutVerificationInner({
+  sessionId,
+  locale,
+  router,
+  goStripeError,
+  goSuccessClean,
+  t,
+}: InnerProps) {
+  const [phase, setPhase] = useState<VerifyPhase>('loading')
 
   useEffect(() => {
-    if (stripe !== 'success' || !sessionId?.trim()) {
-      setPhase(null)
-      return
-    }
-
     let cancelled = false
-    setPhase('loading')
-
     const supabase = createClient()
 
     void (async () => {
@@ -55,15 +44,13 @@ export function CoachPlatformCheckoutVerification() {
       if (cancelled) return
       if (!session) {
         router.replace(locale === 'en' ? '/en/login' : '/login')
-        setPhase(null)
         return
       }
 
-      const result = await verifyCoachPlatformCheckoutSession(sessionId.trim(), locale)
+      const result = await verifyCoachPlatformCheckoutSession(sessionId, locale)
       if (cancelled) return
       if (!result.ok) {
         goStripeError()
-        setPhase(null)
         return
       }
       if (result.accessGranted) {
@@ -77,7 +64,7 @@ export function CoachPlatformCheckoutVerification() {
     return () => {
       cancelled = true
     }
-  }, [stripe, sessionId, locale, router, goStripeError, goSuccessClean])
+  }, [sessionId, locale, router, goStripeError, goSuccessClean])
 
   useEffect(() => {
     if (phase !== 'pending') return
@@ -87,11 +74,9 @@ export function CoachPlatformCheckoutVerification() {
     return () => window.clearTimeout(id)
   }, [phase, router])
 
-  if (stripe !== 'success' || !sessionId?.trim()) return null
-
   if (phase === 'done') return null
 
-  if (phase === 'loading' || phase === null) {
+  if (phase === 'loading') {
     return (
       <div className="mb-6 rounded-xl border border-palette-olive/40 bg-section p-4">
         <p className="text-sm text-stone-800">{t('stripeVerifying')}</p>
@@ -111,4 +96,41 @@ export function CoachPlatformCheckoutVerification() {
   }
 
   return null
+}
+
+/**
+ * Après Checkout Stripe : ?stripe=success&session_id=cs_…
+ * Vérifie la session côté serveur ; si accès pas encore actif (webhook), propose Rafraîchir ; sinon erreur → ?stripe=error.
+ */
+export function CoachPlatformCheckoutVerification() {
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const pathname = usePathname()
+  const locale = useLocale()
+  const t = useTranslations('coachPlatform')
+
+  const stripe = searchParams.get('stripe')
+  const sessionId = searchParams.get('session_id')?.trim()
+
+  const goStripeError = useCallback(() => {
+    router.replace(`${pathname}?stripe=error`)
+  }, [router, pathname])
+
+  const goSuccessClean = useCallback(() => {
+    router.replace(`${pathname}?stripe=success`)
+  }, [router, pathname])
+
+  if (stripe !== 'success' || !sessionId) return null
+
+  return (
+    <CoachPlatformCheckoutVerificationInner
+      key={sessionId}
+      sessionId={sessionId}
+      locale={locale}
+      router={router}
+      goStripeError={goStripeError}
+      goSuccessClean={goSuccessClean}
+      t={t}
+    />
+  )
 }

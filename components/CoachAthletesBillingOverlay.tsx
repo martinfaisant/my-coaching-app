@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
+import { usePathname } from '@/i18n/navigation'
 import { Button } from '@/components/Button'
 import { createCoachPlatformCheckoutSession } from '@/app/[locale]/dashboard/athletes/coachPlatformActions'
 
@@ -16,6 +17,7 @@ export function CoachAthletesBillingOverlay({
 }: CoachAthletesBillingOverlayProps) {
   const t = useTranslations('coachPlatform')
   const locale = useLocale()
+  const pathname = usePathname()
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
 
@@ -25,7 +27,7 @@ export function CoachAthletesBillingOverlay({
   const handleCheckout = () => {
     setError(null)
     startTransition(async () => {
-      const result = await createCoachPlatformCheckoutSession(locale)
+      const result = await createCoachPlatformCheckoutSession(locale, { returnPath: pathname })
       if (!result.ok) {
         setError(result.error)
         return

@@ -1,3 +1,5 @@
+import { COACH_PLATFORM_SUBSCRIPTION_PATH } from '@/lib/coachPlatformCheckoutReturnPath'
+
 /**
  * Configuration centralisée des liens de navigation du dashboard.
  * Source de vérité pour le menu dynamique (athlète / coach / admin).
@@ -32,6 +34,7 @@ export type NavigationI18nKey =
   | 'publicPrivacy'
   | 'publicTerms'
   | 'resetPasswordPage'
+  | 'coachPlatformSubscription'
 
 export type ProfileNavInput = {
   role: string
@@ -41,6 +44,11 @@ export type ProfileNavInput = {
 /** Lien « Mes informations » (page profil) — menu compte athlète. */
 export function getAthleteProfileNavItem(): NavItem {
   return { href: '/dashboard/profile', i18nKey: 'myInformation' }
+}
+
+/** Lien « Mon Abonnement MySportAlly » (abonnement plateforme coach). */
+export function getCoachPlatformSubscriptionNavItem(): NavItem {
+  return { href: COACH_PLATFORM_SUBSCRIPTION_PATH, i18nKey: 'coachPlatformSubscription' }
 }
 
 /** Lien page contact public (menu compte athlète / coach). */
@@ -117,9 +125,10 @@ export function isAthleteAccountMenuTriggerActive(
   return isAthleteAccountSectionActive(pathname, profile)
 }
 
-/** Trigger menu compte coach : profil ou page contact (liens du menu). */
+/** Trigger menu compte coach : profil, abonnement plateforme ou contact. */
 export function isCoachAccountMenuTriggerActive(pathname: string): boolean {
-  return pathname === '/dashboard/profile' || pathname === '/contact'
+  if (pathname === '/dashboard/profile' || pathname === '/contact') return true
+  return isNavItemActive(pathname, getCoachPlatformSubscriptionNavItem())
 }
 
 /** Retourne true si pathname correspond à l’item (page courante). */
@@ -146,6 +155,10 @@ export function getPageTitleI18nKey(
     return 'myInformation'
   }
   if (pathname === '/dashboard/profile') return 'profile'
+
+  if (isNavItemActive(pathname, getCoachPlatformSubscriptionNavItem())) {
+    return 'coachPlatformSubscription'
+  }
 
   if (pathname === '/') return 'publicHome'
   if (pathname === '/contact') return 'contactUs'

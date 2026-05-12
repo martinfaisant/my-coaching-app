@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 12 mai 2026 (**Abonnement plateforme coach Stripe** : `Project_context.md` §4.4, `DEPLOYMENT_NOTES.md`, `lib/checkoutReturnOrigin.ts` ; Vitest `pool: 'threads'` ; précédent : intensité RPE design…)
+**Dernière mise à jour :** 12 mai 2026 (**Abonnement plateforme coach** : page `coach-platform-subscription`, **`coachMsaSubscription`**, `lib/coachPlatformCheckoutReturnPath.ts` ; précédent : `checkoutReturnOrigin` seul…)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -15,10 +15,10 @@
 - **Dernière mise à jour :** 12 mai 2026 (Stripe coach plateforme + URL retour preview ; précédent : page Contact…)
 
 ### **Project_context.md** ⭐
-- **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), **abonnement plateforme coach Stripe** (Checkout, webhooks, migration 073, `coach_platform_access_granted`, bandeaux / paywall Mes athlètes), stack technique, **URL production https://mysportally.com**
+- **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), **abonnement plateforme coach Stripe** (Checkout, webhooks, migration 073, `coach_platform_access_granted`, page **Mon Abonnement MySportAlly**, paywall / bandeaux), stack technique, **URL production https://mysportally.com**
 - **Utiliser pour :** Comprendre le projet, les features, les rôles, l'architecture globale
 - **Taille :** ~450 lignes
-- **Dernière mise à jour :** 12 mai 2026 (§4.4 coach plateforme Stripe + §6 Stripe ; précédent : §4.5 résumé hebdo…)
+- **Dernière mise à jour :** 12 mai 2026 (§4.4 : page Mon Abonnement MySportAlly, chemins retour Checkout whitelistés, catalogue multi-prix ; précédent : Stripe coach + bandeaux Mes athlètes…)
 
 ### **docs/CALENDAR_MONTH_VIEW.md**
 - **Contenu :** Récap **vue mois** (desktop) vs **vue semaine** (mobile), règles semaines ISO / mois civil étendu, **totaux hebdo** (liste sports `PERSISTED_WORKOUT_SPORT_TYPES`, `SPORT_WEEKLY_SUMMARY_BAR`), chargement données, liste des fichiers et tests unitaires, liens vers maquettes archivées
@@ -30,13 +30,13 @@
 - **Contenu :** Tokens (couleurs, typo, espacements ; **sports** : `SPORT_CARD_STYLES`, `SPORT_BADGE_STYLES`, **`SPORT_WEEKLY_SUMMARY_BAR`** résumé hebdo), composants (Button, Input, Badge, TileCard, DashboardPageShell, **DashboardTopBar**, **AthleteAccountMenu**, **AthleteStatsVolumeChart**, **AthleteStatsChartSkeleton**, Modal, **MonthSelector**, etc.), guidelines UI, exemples de code, §7 breakpoints (**calendrier** mois étendu desktop + WeekSelector mobile, chat, Trouver mon coach, My offers)
 - **Utiliser pour :** Créer ou modifier des composants UI, choisir des couleurs, appliquer le design system, règles responsive par page
 - **Taille :** ~2010 lignes
-- **Dernière mise à jour :** 12 mai 2026 (§ Fichiers clés Mes athlètes : `CoachPlatformCheckoutVerification`, `CoachPlatformStripeBanner` ; précédent : résumé hebdo…)
+- **Dernière mise à jour :** 12 mai 2026 (§ **`CoachPlatformSubscriptionOffers`**, page Mon Abonnement coach, libs Stripe catalogue / facturation / `coachPlatformCheckoutReturnPath` ; précédent : fichiers clés bannières Stripe…)
 
 ### **docs/I18N.md** ⭐
 - **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces (dont **`calendar.weekly.sportVolumeHint`**), utilisation dans composants et server actions, **checklist pour nouvelles features** (toujours penser bilingue)
 - **Utiliser pour :** Toute nouvelle feature ou texte visible, ajout de clés de traduction, dépannage i18n
 - **Taille :** ~195 lignes
-- **Dernière mise à jour :** 12 mai 2026 (`coachPlatform` / `coachPlatform.verify` ; précédent : `calendar.weekly.sportVolumeHint`…)
+- **Dernière mise à jour :** 12 mai 2026 (**`coachMsaSubscription`**, nav **`coachPlatformSubscription`**, validation **`coachPlatform.validation.invalidPriceId`** ; précédent : `coachPlatform` / `coachPlatform.verify` seuls…)
 
 ### **docs/AUTH_EMAIL_TEMPLATES.md**
 - **Contenu :** Guide de configuration des emails d’auth Supabase (sujet, i18n FR/EN, variables, dépannage logo). **Les fichiers HTML des templates** (Confirm signup, puis Magic Link, Reset Password, etc.) sont dans **docs/email-templates/**.
@@ -92,9 +92,9 @@
 - **Créé le :** 19 février 2026
 
 ### **docs/design-coach-platform-subscription/** (design feature — référence UI)
-- **Contenu :** Maquettes HTML et README d’index pour l’**abonnement plateforme coach** (Mes athlètes bloqué, modale Stripe, etc.). L’implémentation réelle est alignée sur le code (`coachPlatformActions`, webhooks, bannières).
+- **Contenu :** Maquettes HTML et README d’index pour l’**abonnement plateforme coach** (page Mon Abonnement, Mes athlètes bloqué, modale Stripe, etc.) ; **README** inclut un pointeur vers les fichiers d’implémentation (`coach-platform-subscription`, libs Stripe).
 - **Utiliser pour :** Contexte UI historique ; le détail produit / technique à jour est dans **`Project_context.md`** §4.4 et **`DEPLOYMENT_NOTES.md`** (Stripe).
-- **Dernière mise à jour :** référencé 12 mai 2026 (index DOCS)
+- **Dernière mise à jour :** 12 mai 2026 (README : lien code implémentation)
 
 ### **docs/design-rpe-planned-intensity/** (design feature — non archivé)
 - **Contenu :** **DESIGN_RPE_PLANNED_INTENSITY.md** (solution validée, hypothèses, **US-RPE-01 à US-RPE-05**, critères d’acceptation, table RPE FR + proposition EN, composants, points ouverts) ; **SPEC_ARCHITECTE_RPE_PLANNED_INTENSITY.md** (migration `planned_intensity`, table des fichiers, `saveWorkoutStatusAndComment`, RLS, edge cases, tests manuels) ; **README.md** (index fichiers) ; maquettes HTML **MOCKUP_US1** … **US5** + **MOCKUP_OPTION_A_RPE_MODAL.html** (interactif) ; **MOCKUP_OPTION_B_RPE_INLINE.html** (option non retenue).

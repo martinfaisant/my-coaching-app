@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { Suspense } from 'react'
 import { createClient } from '@/utils/supabase/server'
 import { getCurrentUserWithProfile } from '@/utils/auth'
 import { redirect } from 'next/navigation'
@@ -20,8 +19,6 @@ import { getDisplayName } from '@/lib/displayName'
 import { logger } from '@/lib/logger'
 import { fetchCoachPlatformAccessGranted } from '@/lib/coachPlatformSubscription'
 import { CoachAthletesBillingOverlay } from '@/components/CoachAthletesBillingOverlay'
-import { CoachPlatformStripeBanner } from '@/components/CoachPlatformStripeBanner'
-import { CoachPlatformCheckoutVerification } from '@/components/CoachPlatformCheckoutVerification'
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params
@@ -215,12 +212,6 @@ export default async function CoachAthletesPage({ params }: { params: Promise<{ 
 
   return (
     <DashboardPageShell>
-      <Suspense fallback={null}>
-        <CoachPlatformCheckoutVerification />
-      </Suspense>
-      <Suspense fallback={null}>
-        <CoachPlatformStripeBanner />
-      </Suspense>
       {!isCoachProfileComplete && (
         <div className="rounded-xl border border-palette-olive/40 bg-section p-6 mb-8">
           <p className="text-stone-800 font-medium mb-1">

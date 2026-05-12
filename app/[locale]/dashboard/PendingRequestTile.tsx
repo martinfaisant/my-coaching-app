@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
+import { usePathname } from '@/i18n/navigation'
 import { useLocale, useTranslations } from 'next-intl'
 import { Button } from '@/components/Button'
 import { Badge } from '@/components/Badge'
@@ -80,6 +81,7 @@ export function PendingRequestTile({ request, goals = [], coachHasPlatformAccess
   const [respondError, setRespondError] = useState<string | null>(null)
   const [seeMoreModal, setSeeMoreModal] = useState<'objectifs' | 'resultats' | null>(null)
   const router = useRouter()
+  const pathname = usePathname()
   const locale = useLocale()
   const localeTag = locale === 'fr' ? 'fr-FR' : 'en-US'
   const t = useTranslations('athletes')
@@ -103,7 +105,7 @@ export function PendingRequestTile({ request, goals = [], coachHasPlatformAccess
     setCheckoutError(null)
     setCheckoutLoading(true)
     try {
-      const result = await createCoachPlatformCheckoutSession(locale)
+      const result = await createCoachPlatformCheckoutSession(locale, { returnPath: pathname })
       if (!result.ok) {
         setCheckoutError(result.error)
         setCheckoutLoading(false)

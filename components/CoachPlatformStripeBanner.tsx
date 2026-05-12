@@ -1,15 +1,16 @@
 'use client'
 
 import { useCallback, useMemo, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
+import { usePathname, useRouter } from '@/i18n/navigation'
 import { useTranslations } from 'next-intl'
-import { Button } from '@/components/Button'
 
 type StripeFlash = 'success' | 'canceled' | 'error'
 
 export function CoachPlatformStripeBanner() {
   const searchParams = useSearchParams()
   const router = useRouter()
+  const pathname = usePathname()
   const t = useTranslations('coachPlatform')
   const [dismissed, setDismissed] = useState(false)
 
@@ -22,12 +23,13 @@ export function CoachPlatformStripeBanner() {
   const sessionId = searchParams.get('session_id')
 
   const clearQuery = useCallback(() => {
-    const url = new URL(window.location.href)
-    url.searchParams.delete('stripe')
-    url.searchParams.delete('session_id')
-    router.replace(url.pathname + (url.search || ''))
+    const params = new URLSearchParams(searchParams.toString())
+    params.delete('stripe')
+    params.delete('session_id')
+    const qs = params.toString()
+    router.replace(qs ? `${pathname}?${qs}` : pathname)
     setDismissed(true)
-  }, [router])
+  }, [router, pathname, searchParams])
 
   if (dismissed || !variant) return null
 

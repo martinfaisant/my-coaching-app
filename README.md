@@ -64,8 +64,10 @@ CRON_SECRET=votre_secret_aleatoire
 # Stripe — abonnement plateforme coach (Checkout + webhooks)
 STRIPE_SECRET_KEY=sk_test_...
 STRIPE_WEBHOOK_SECRET=whsec_...
-# Price ID du produit d’abonnement coach (Dashboard Stripe → Produit → Prix récurrent)
+# Price ID(s) du produit d’abonnement coach (Dashboard Stripe → Produit → Prix récurrent). Un seul ID ou plusieurs séparés par des virgules ou des espaces.
 STRIPE_COACH_PLATFORM_PRICE_ID=price_...
+# Optionnel : plusieurs prix (ex. mensuel + annuel). Si défini, remplace la lecture d’un seul ID pour la vitrine « Mon Abonnement ».
+# STRIPE_COACH_PLATFORM_PRICE_IDS=price_xxx,price_yyy
 # URL publique de l’app (repli si l’hôte de la requête n’est pas autorisé pour Stripe Checkout) : NEXT_PUBLIC_SITE_URL ou, à défaut, NEXT_PUBLIC_APP_URL. En preview Vercel, les success/cancel URL utilisent l’hôte courant (*.vercel.app) lorsque les en-têtes le permettent — voir `lib/checkoutReturnOrigin.ts`.
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ```

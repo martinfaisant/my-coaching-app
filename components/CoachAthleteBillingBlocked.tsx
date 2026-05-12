@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useState, useTransition } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
+import { usePathname } from '@/i18n/navigation'
 import { Button } from '@/components/Button'
 import { createCoachPlatformCheckoutSession } from '@/app/[locale]/dashboard/athletes/coachPlatformActions'
 
@@ -13,13 +14,14 @@ type CoachAthleteBillingBlockedProps = {
 export function CoachAthleteBillingBlocked({ athletesListHref }: CoachAthleteBillingBlockedProps) {
   const t = useTranslations('coachPlatform')
   const locale = useLocale()
+  const pathname = usePathname()
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
 
   const handleCheckout = () => {
     setError(null)
     startTransition(async () => {
-      const result = await createCoachPlatformCheckoutSession(locale)
+      const result = await createCoachPlatformCheckoutSession(locale, { returnPath: pathname })
       if (!result.ok) {
         setError(result.error)
         return

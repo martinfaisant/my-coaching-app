@@ -128,7 +128,8 @@
     "publicHome": "Home",
     "publicPrivacy": "Privacy Policy",
     "publicTerms": "Terms of Use",
-    "resetPasswordPage": "Reset password"
+    "resetPasswordPage": "Reset password",
+    "coachPlatformSubscription": "My MySportAlly subscription"
   },
   "athleteStats": {
     "title": "Statistics",
@@ -1468,6 +1469,62 @@
       "platformSubscriptionRequired": "An active coach subscription is required to accept a request."
     }
   },
+  "coachMsaSubscription": {
+    "pageTitle": "My MySportAlly subscription",
+    "heading": "My MySportAlly subscription",
+    "statusSectionTitle": "Subscription status",
+    "graceBannerTitle": "Payment action required",
+    "graceBannerBody": "Your last payment did not go through. You still have 3 days of full access; update your payment method to avoid an interruption.",
+    "graceBadgeLabel": "Payment overdue",
+    "badgeNoSubscription": "No active subscription",
+    "noSubscriptionDescription": "You do not have an active paid My Sport Ally subscription. Choose an offer below to unlock full access to your athletes.",
+    "inactiveSubscriptionDescription": "Your platform subscription is no longer active. You can subscribe again below.",
+    "planUnknown": "Platform plan",
+    "nextPeriodEnd": "Next renewal: {date}",
+    "portalHint": "Card management and detailed invoices may be offered here in a future update.",
+    "offersTitle": "Available offers",
+    "subscribeCta": "Subscribe",
+    "subscribePending": "Redirecting…",
+    "noOffersConfigured": "No offers are configured yet. Contact support if needed.",
+    "billingHistoryTitle": "Billing history",
+    "invoicesTitle": "Invoices",
+    "invoicesEmpty": "No invoices yet.",
+    "failedPaymentsTitle": "Failed payments",
+    "failedPaymentsEmpty": "No failed payments.",
+    "refundsTitle": "Refunds",
+    "refundsEmpty": "No refunds.",
+    "refundStatus": "Status: {status}",
+    "tableDate": "Date",
+    "tableLabel": "Description",
+    "tableAmount": "Amount",
+    "tableStatus": "Status",
+    "invoicePdfLink": "PDF",
+    "priceIntervalPerMonth": "per month",
+    "priceIntervalEveryNMonths": "every {n} months",
+    "priceIntervalPerYear": "per year",
+    "priceIntervalEveryNYears": "every {n} years",
+    "subscriptionStatus": {
+      "active": "Active",
+      "trialing": "Trialing",
+      "past_due": "Payment overdue",
+      "unpaid": "Unpaid",
+      "canceled": "Canceled",
+      "incomplete": "Incomplete",
+      "incomplete_expired": "Incomplete (expired)",
+      "paused": "Paused"
+    },
+    "invoiceStatus": {
+      "paid": "Paid",
+      "open": "Open",
+      "draft": "Draft",
+      "void": "Void",
+      "uncollectible": "Uncollectible"
+    },
+    "errors": {
+      "catalogUnavailable": "Could not load offers. Try again later or contact support.",
+      "historyUnavailable": "Could not load billing history right now."
+    }
+  },
   "coachPlatform": {
     "listBlockedTitle": "Coach subscription required",
     "listBlockedDescription": "You can no longer view your athletes’ planning and details until your subscription is up to date (3-day grace after due date if payment is late).",
@@ -1494,7 +1551,8 @@
       "notAuthenticated": "You must be signed in.",
       "coachOnly": "Coaches only.",
       "noCheckoutUrl": "Could not get payment URL.",
-      "checkoutFailed": "Creating the checkout session failed."
+      "checkoutFailed": "Creating the checkout session failed.",
+      "invalidPriceId": "This offer is not available."
     },
     "verify": {
       "stripeUnavailable": "The payment service is unavailable.",

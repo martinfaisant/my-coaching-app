@@ -129,7 +129,8 @@
     "publicHome": "Accueil",
     "publicPrivacy": "Politique de confidentialité",
     "publicTerms": "Conditions d'utilisation",
-    "resetPasswordPage": "Réinitialiser le mot de passe"
+    "resetPasswordPage": "Réinitialiser le mot de passe",
+    "coachPlatformSubscription": "Mon Abonnement MySportAlly"
   },
   "athleteStats": {
     "title": "Statistiques",
@@ -1593,6 +1594,62 @@
       "platformSubscriptionRequired": "Un abonnement coach actif est requis pour accepter une demande."
     }
   },
+  "coachMsaSubscription": {
+    "pageTitle": "Mon Abonnement MySportAlly",
+    "heading": "Mon Abonnement MySportAlly",
+    "statusSectionTitle": "Statut de l’abonnement",
+    "graceBannerTitle": "Action requise sur votre paiement",
+    "graceBannerBody": "Votre dernier paiement n’a pas abouti. Vous bénéficiez encore de 3 jours d’accès complet ; mettez à jour votre moyen de paiement pour éviter une interruption.",
+    "graceBadgeLabel": "Paiement en retard",
+    "badgeNoSubscription": "Sans abonnement actif",
+    "noSubscriptionDescription": "Vous n’avez pas d’abonnement payant à My Sport Ally. Choisissez une offre ci-dessous pour débloquer l’accès complet à vos athlètes.",
+    "inactiveSubscriptionDescription": "Votre abonnement plateforme n’est plus actif. Vous pouvez souscrire à nouveau ci-dessous.",
+    "planUnknown": "Offre plateforme",
+    "nextPeriodEnd": "Prochaine échéance : {date}",
+    "portalHint": "La gestion de carte bancaire et les factures détaillées pourront être proposées ultérieurement depuis cette page.",
+    "offersTitle": "Offres disponibles",
+    "subscribeCta": "Souscrire",
+    "subscribePending": "Redirection…",
+    "noOffersConfigured": "Aucune offre n’est configurée pour le moment. Contactez le support si besoin.",
+    "billingHistoryTitle": "Historique de facturation",
+    "invoicesTitle": "Factures",
+    "invoicesEmpty": "Aucune facture pour le moment.",
+    "failedPaymentsTitle": "Paiements échoués",
+    "failedPaymentsEmpty": "Aucun paiement échoué.",
+    "refundsTitle": "Remboursements",
+    "refundsEmpty": "Aucun remboursement.",
+    "refundStatus": "Statut : {status}",
+    "tableDate": "Date",
+    "tableLabel": "Libellé",
+    "tableAmount": "Montant",
+    "tableStatus": "Statut",
+    "invoicePdfLink": "PDF",
+    "priceIntervalPerMonth": "par mois",
+    "priceIntervalEveryNMonths": "tous les {n} mois",
+    "priceIntervalPerYear": "par an",
+    "priceIntervalEveryNYears": "tous les {n} ans",
+    "subscriptionStatus": {
+      "active": "Actif",
+      "trialing": "Essai",
+      "past_due": "Paiement en retard",
+      "unpaid": "Impayé",
+      "canceled": "Annulé",
+      "incomplete": "Incomplet",
+      "incomplete_expired": "Expiré (incomplet)",
+      "paused": "En pause"
+    },
+    "invoiceStatus": {
+      "paid": "Payée",
+      "open": "Ouverte",
+      "draft": "Brouillon",
+      "void": "Annulée",
+      "uncollectible": "Irrecouvrable"
+    },
+    "errors": {
+      "catalogUnavailable": "Impossible de charger les offres. Réessayez plus tard ou contactez le support.",
+      "historyUnavailable": "Impossible de charger l’historique de facturation pour le moment."
+    }
+  },
   "coachPlatform": {
     "listBlockedTitle": "Abonnement coach requis",
     "listBlockedDescription": "Vous ne pouvez plus consulter le planning et les informations de vos athlètes tant que votre abonnement n’est pas à jour (tolérance 3 jours après échéance en cas de retard de paiement).",
@@ -1619,7 +1676,8 @@
       "notAuthenticated": "Vous devez être connecté.",
       "coachOnly": "Réservé aux coachs.",
       "noCheckoutUrl": "Impossible d’obtenir l’URL de paiement.",
-      "checkoutFailed": "La création de la session de paiement a échoué."
+      "checkoutFailed": "La création de la session de paiement a échoué.",
+      "invalidPriceId": "Cette offre n’est pas disponible."
     },
     "verify": {
       "stripeUnavailable": "Le service de paiement est indisponible.",
