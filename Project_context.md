@@ -262,7 +262,8 @@ Athletes filter coaches by:
 - Coach accepts or declines the request. On the « Mes athlètes » page, the athlete list has a **search** field (by name) and a **sort** dropdown: **by name (A–Z)** or **by planned date** (athletes with no planned workout first, then by date ascending — furthest last). The search uses the **SearchInput** component (green clear button); the sort uses the **Dropdown** component (trigger + panel, same styling as top bar nav for selected option). **Pending requests** are shown in a unified tile per request: header with avatar, **name · offer** (offer in smaller font), sport badges, then actions **« Discuter »**, **« Refuser »**, **« Accepter »**. The tile body has **two columns**: **Message de l’athlète** (coaching_need) and **Volumes hebdomadaires** (from the athlete’s **current profile**: Volume actuel, Volume maximum, then volumes by sport; “Sport : value unit” lines with sport-colored left border and icon; D+ in the same block as Course; if empty: « Non renseigné »). Actions: **« Discuter »** (opens the chat overlay targeting that athlete), **« Refuser »** and **« Accepter »** (each opens a confirmation modal before calling the API). On mobile, the three buttons are at the bottom of the tile (Discuss full width, Decline and Accept side by side).
 - **Mes athlètes — bandeaux (coach) :** If the coach has **no** offer with status `published` (drafts only, archived only, or none), a **banner** prompts them to manage or publish offers (CTA to `/dashboard/profile/offers`). If the **coach profile is incomplete**, the **complete profile** banner is shown **above** the offer banner. **Vertical order:** profile banner → offer banner (when applicable) → **Pending requests** (if any) → athlete list or empty state. If loading the **athlete list** fails, an **error message** is shown instead of the misleading empty state (i18n `athletes.listLoadError`).
 - **On accept:** (1) `profiles.coach_id` is set (athlete linked to coach), (2) `coach_requests.status` → `accepted`, (3) a row is inserted into **`subscriptions`** with the same `frozen_*` data copied from `coach_requests` (the subscription is **not** filled from the current `coach_offers` table). Thus the active subscription between athlete and coach reflects the exact offer the athlete requested; if the coach changes the offer afterwards, existing subscriptions are unchanged.
-- No Stripe/payment yet — subscription model is structural only (billing history ready via `subscriptions.frozen_*`).
+- **Athlete ↔ coach `subscriptions`:** still **no Stripe** on that flow — rows are structural (snapshot `frozen_*`, billing history ready); payment between athlete and coach outside the platform is out of scope here.
+- **Coach ↔ platform (Stripe, migration `073_coach_platform_subscription.sql`):** the coach pays **My Sport Ally** via **Stripe Checkout** (subscription). Table `coach_platform_subscriptions`, webhook **`POST /api/webhooks/stripe`**, RPC **`coach_platform_access_granted`** (access rules including grace for `past_due` / `unpaid`). Without access: **Mes athlètes** and **athlete calendars** blocked, **chat** restricted, **Accepter** on pending requests opens a paywall modal then Checkout. **`createCoachPlatformCheckoutSession`** builds `success_url` / `cancel_url` using **`lib/checkoutReturnOrigin.ts`** when the request host is allowed (e.g. `*.vercel.app`, localhost, or host matching `NEXT_PUBLIC_SITE_URL` / `NEXT_PUBLIC_APP_URL`), otherwise env fallback. After return: **`CoachPlatformStripeBanner`**, **`CoachPlatformCheckoutVerification`** (session refresh client-side + `verifyCoachPlatformCheckoutSession`). i18n: **`coachPlatform`**, **`coachPlatform.verify`**.
 
 ---
 
@@ -464,7 +465,7 @@ The athlete picker uses these as **selected** state (`FEELING_PICKER_SELECTED_BG
 - **i18n:** Application is bilingual (French default, English). **Every new feature must be translated from day one** — use next-intl, no hardcoded user-facing strings. See `docs/I18N.md`.
 - **Auth:** Supabase Auth, server-side `getCurrentUserWithProfile()`, `requireRole()`
 - **Security:** RLS on all tables, role-based policies
-- **Stripe:** Not implemented yet; schema is payment-ready
+- **Stripe:** **Coach platform** subscription implemented (Checkout + webhooks + migration 073). Athlete–coach **`subscriptions`** rows remain non-Stripe (snapshot / structural only).
 
 **Avoid:**
 
@@ -543,7 +544,7 @@ Affiche tous les composants, variantes, et exemples d'utilisation.
 - Smart matching algorithm
 - Physiotherapist, nutritionist roles
 - Program → Weeks → Days → Sessions → Exercises structure
-- Stripe payments
+- Stripe billing for athlete–coach marketplace (beyond the existing coach platform subscription)
 
 ---
 

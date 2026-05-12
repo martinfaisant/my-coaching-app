@@ -46,7 +46,7 @@ Dans le **SQL Editor** de Supabase (prod), exécuter les fichiers **dans cet ord
 
 Si une migration a déjà été exécutée en prod (ex. 025 ou 026), sauter celle-là et exécuter seulement les suivantes.
 
-**Migrations postérieures (030 et suivantes, ex. 063)** : en général appliquées via **`supabase db push`** ou le SQL Editor en respectant l’ordre des fichiers dans `supabase/migrations/`. Pour la **liste d’avis** sur « Trouver mon coach » : fichier **`063_get_coach_public_reviews.sql`**. Pour le **formulaire contact public** : **`066_contact_submissions.sql`** puis **`067_contact_submissions_rpc_fix.sql`** ; côté hébergeur, renseigner **`RESEND_API_KEY`** et **`SUPABASE_SECRET_KEY`** (voir **`DEPLOYMENT_NOTES.md`** et **`README.md`**).
+**Migrations postérieures (030 et suivantes, ex. 063)** : en général appliquées via **`supabase db push`** ou le SQL Editor en respectant l’ordre des fichiers dans `supabase/migrations/`. Pour la **liste d’avis** sur « Trouver mon coach » : fichier **`063_get_coach_public_reviews.sql`**. Pour le **formulaire contact public** : **`066_contact_submissions.sql`** puis **`067_contact_submissions_rpc_fix.sql`** ; côté hébergeur, renseigner **`RESEND_API_KEY`** et **`SUPABASE_SECRET_KEY`** (voir **`DEPLOYMENT_NOTES.md`** et **`README.md`**). Pour l’**abonnement plateforme coach (Stripe)** : **`073_coach_platform_subscription.sql`** + variables et webhook décrits dans **`DEPLOYMENT_NOTES.md`**.
 
 ---
 

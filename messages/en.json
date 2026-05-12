@@ -1062,7 +1062,7 @@
   "legal": {
     "common": {
       "lastUpdated": "Last updated: {date}",
-      "lastUpdatedFull": "Last updated: May 6, 2026"
+      "lastUpdatedFull": "Last updated: May 12, 2026"
     },
     "terms": {
       "title": "Terms of Use",
@@ -1087,7 +1087,7 @@
         "payments": {
           "title": "5. PAYMENTS AND SUBSCRIPTIONS",
           "li1": "Coach-Athlete Transactions: Mysportally does not process any payments between Coaches and Athletes. Transactions are conducted outside the platform under the exclusive responsibility of the users.",
-          "li2": "Coach Subscription: Access to services for Coaches is subject to a fee (monthly or annual).",
+          "li2": "Coach Subscription (Platform access): Access to services for Coaches is subject to a fee (monthly or annual). Payments are processed by an external payment service provider; Mysportally does not store your full card number or security code. Payment-related information and subscription status data may be processed by that provider, strictly as needed for the transaction and billing, under its own terms applicable when you pay.",
           "li3": "Cancellation: Monthly subscriptions can be canceled at any time, effective at the end of the current billing period. Yearly subscriptions constitute a firm commitment for the full term.",
           "li4": "Refunds: No refunds are provided, except where required by mandatory law."
         },
@@ -1129,7 +1129,7 @@
     },
     "privacy": {
       "title": "Privacy Policy",
-      "lastUpdatedFull": "Last updated: May 7, 2026",
+      "lastUpdatedFull": "Last updated: May 12, 2026",
       "sections": {
         "commitment": {
           "title": "1. OUR COMMITMENT",
@@ -1141,7 +1141,8 @@
           "li2": "Training Data: athletic profile, goals, planned workouts and interactions between Coach and Athlete (e.g., messaging).",
           "li3": "Activity data via third-party services (e.g., Strava): with your explicit consent, we may import activity data (e.g., distance, duration, GPS, heart rate if available). This data may be considered sensitive.",
           "li4": "Technical Data: information sent by your device and browser when you access the website (e.g., IP address, browser type, request timestamps). It may be processed through our technical providers (hosting, authentication) for security, operations and troubleshooting purposes, including maintaining your session.",
-          "li5": "Contact form (dedicated page, with or without an account): first name, last name, email address, phone number if provided, reason for contact, message content; assignment of a tracking reference; if you are signed in, an account identifier may be linked to the request."
+          "li5": "Contact form (dedicated page, with or without an account): first name, last name, email address, phone number if provided, reason for contact, message content; assignment of a tracking reference; if you are signed in, an account identifier may be linked to the request.",
+          "li6": "Coach paid Platform subscription data: technical transaction or subscription identifiers, access status, processed when paying through an external payment service provider; Mysportally does not store your full card details on its own servers."
         },
         "useOfData": {
           "title": "3. USE OF DATA",
@@ -1149,7 +1150,8 @@
           "li2": "Enable Coaches to track Athlete progress.",
           "li3": "Improve user experience and technical functionality.",
           "li4": "Communicate with you regarding your account.",
-          "li5": "Process and respond to support requests submitted through the Contact form, including by email, and retain those requests for as long as needed to handle them and for customer support follow-up."
+          "li5": "Process and respond to support requests submitted through the Contact form, including by email, and retain those requests for as long as needed to handle them and for customer support follow-up.",
+          "li6": "Manage Coaches’ paid Platform subscription and related access status (including through an external payment service provider, as strictly necessary)."
         },
         "consent": {
           "title": "4. CONSENT AND SENSITIVE DATA",
@@ -1162,7 +1164,8 @@
           "li1": "Your Coach: for the execution of the service.",
           "li2": "Technical providers required to operate the website (hosting, authentication, database).",
           "li3": "Legal obligations: if required by law.",
-          "li4": "Transactional email delivery providers when needed to route a Contact form request to our team, strictly as required to process that request."
+          "li4": "Transactional email delivery providers when needed to route a Contact form request to our team, strictly as required to process that request.",
+          "li5": "External payment service provider: when you pay for Coach access to the Platform, data strictly necessary for payment and billing may be shared with that provider, which acts as a processor for that part of the processing and applies its own commitments to you during the transaction."
         },
         "retention": {
           "title": "6. RETENTION AND CROSS-BORDER TRANSFERS",
