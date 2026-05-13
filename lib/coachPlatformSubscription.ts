@@ -1,7 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { logger } from '@/lib/logger'
 
-/** True si le coach a accès plateforme (RPC + tolérance 3 jours côté SQL). */
+/** True si le coach a accès plateforme (RPC : statuts active / trialing uniquement). */
 export async function fetchCoachPlatformAccessGranted(
   supabase: SupabaseClient,
   coachId: string

@@ -80,9 +80,35 @@ export async function loadCoachPlatformCatalogForEnv(): Promise<{
   return fetchCoachPlatformCatalogOffers(ids)
 }
 
-export async function fetchCoachPlatformSubscriptionPlanLabel(
+/** Détails affichage carte « Mon abonnement » (un appel Stripe retrieve). */
+export type CoachPlatformSubscriptionCardDetails = {
+  planLabel: string | null
+  unitAmountMajor: number | null
+  currency: string
+  interval: CoachPlatformCatalogOffer['interval']
+  intervalCount: number | null
+  /** Fin de période courante (ISO), aligné Stripe `current_period_end` — repli si BDD incomplète */
+  currentPeriodEndIso: string | null
+}
+
+export function coachPlatformPriceIntervalTranslationKey(
+  interval: CoachPlatformCatalogOffer['interval'],
+  intervalCount: number | null
+): 'priceIntervalPerMonth' | 'priceIntervalEveryNMonths' | 'priceIntervalPerYear' | 'priceIntervalEveryNYears' | null {
+  if (!interval) return null
+  const count = intervalCount ?? 1
+  if (interval === 'month') {
+    return count === 1 ? 'priceIntervalPerMonth' : 'priceIntervalEveryNMonths'
+  }
+  if (interval === 'year') {
+    return count === 1 ? 'priceIntervalPerYear' : 'priceIntervalEveryNYears'
+  }
+  return null
+}
+
+export async function fetchCoachPlatformSubscriptionCardDetails(
   subscriptionId: string | null | undefined
-): Promise<string | null> {
+): Promise<CoachPlatformSubscriptionCardDetails | null> {
   if (!subscriptionId?.trim()) return null
   const stripe = getStripeServer()
   if (!stripe) return null
@@ -90,20 +116,57 @@ export async function fetchCoachPlatformSubscriptionPlanLabel(
     const sub = await stripe.subscriptions.retrieve(subscriptionId, {
       expand: ['items.data.price.product'],
     })
-    const item = sub.items?.data?.[0]
-    const price = item?.price
-    if (!price) return null
-    const product = price.product
-    if (product && typeof product === 'object' && !('deleted' in product && product.deleted)) {
-      return product.name ?? price.nickname ?? null
+    const currentPeriodEndIso =
+      typeof sub.current_period_end === 'number'
+        ? new Date(sub.current_period_end * 1000).toISOString()
+        : null
+    const items = sub.items?.data ?? []
+    if (items.length > 1) {
+      logger.warn('fetchCoachPlatformSubscriptionCardDetails: multiple line items, using first', {
+        subscriptionId,
+        count: items.length,
+      })
     }
-    return price.nickname ?? null
+    const price = items[0]?.price
+    if (!price) {
+      return {
+        planLabel: null,
+        unitAmountMajor: null,
+        currency: 'EUR',
+        interval: null,
+        intervalCount: null,
+        currentPeriodEndIso,
+      }
+    }
+    const recurring = price.recurring
+    const product = price.product
+    let planLabel: string | null = null
+    if (product && typeof product === 'object' && !('deleted' in product && product.deleted)) {
+      planLabel = product.name ?? price.nickname ?? null
+    } else {
+      planLabel = price.nickname ?? null
+    }
+    return {
+      planLabel,
+      unitAmountMajor: price.unit_amount != null ? price.unit_amount / 100 : null,
+      currency: (price.currency ?? 'eur').toUpperCase(),
+      interval: recurring?.interval ?? null,
+      intervalCount: recurring?.interval_count ?? null,
+      currentPeriodEndIso,
+    }
   } catch (e) {
     logger.error(
-      'fetchCoachPlatformSubscriptionPlanLabel failed',
+      'fetchCoachPlatformSubscriptionCardDetails failed',
       e instanceof Error ? e : undefined,
       { subscriptionId }
     )
     return null
   }
+}
+
+export async function fetchCoachPlatformSubscriptionPlanLabel(
+  subscriptionId: string | null | undefined
+): Promise<string | null> {
+  const details = await fetchCoachPlatformSubscriptionCardDetails(subscriptionId)
+  return details?.planLabel ?? null
 }

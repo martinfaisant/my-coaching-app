@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 13 mai 2026 (**Stripe coach — langue** : **`ensureCoachPlatformStripeCustomerForCheckout`**, `preferred_locales` + locale Checkout selon **`[locale]`** ; précédent : accueil connecté **`lib/dashboardEntryPath.ts`**…)
+**Dernière mise à jour :** 13 mai 2026 (**Stripe coach** : langue Customer / Checkout ; **page Mon abonnement** — carte prix + prochain paiement, **074**, archive maquette grâce ; précédent : accueil connecté **`lib/dashboardEntryPath.ts`**…)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -15,7 +15,7 @@
 - **Dernière mise à jour :** 13 mai 2026 (Stripe Customer langue portail ; précédent : navigation accueil…)
 
 ### **Project_context.md** ⭐
-- **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), **abonnement plateforme coach Stripe** (Checkout : **`ensureCoachPlatformStripeCustomerForCheckout`**, **`preferred_locales`** + **`locale`** session, webhooks, migration 073, `coach_platform_access_granted`, page **Mon Abonnement MySportAlly**, **modale choix d’offre** avant Checkout, bandeaux), stack technique, **URL production https://mysportally.com**
+- **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), **abonnement plateforme coach Stripe** (Checkout : **`ensureCoachPlatformStripeCustomerForCheckout`**, **`preferred_locales`** + **`locale`** session, webhooks, migrations **073** + **074** (`coach_platform_access_granted` : accès si `active` / `trialing` uniquement), page **Mon Abonnement MySportAlly**, **modale choix d’offre** avant Checkout, bandeaux retour checkout), stack technique, **URL production https://mysportally.com**
 - **Utiliser pour :** Comprendre le projet, les features, les rôles, l'architecture globale
 - **Taille :** ~450 lignes
 - **Dernière mise à jour :** 13 mai 2026 (§4.4 Stripe : langue Customer + Checkout ; précédent : §4.0 accueil connecté…)
@@ -92,9 +92,9 @@
 - **Créé le :** 19 février 2026
 
 ### **docs/design-coach-platform-subscription/** (design feature — référence UI)
-- **Contenu :** Maquettes HTML et README d’index pour l’**abonnement plateforme coach** (page Mon Abonnement, Mes athlètes bloqué, modale Stripe, etc.) ; **README** inclut un pointeur vers les fichiers d’implémentation (`coach-platform-subscription`, libs Stripe).
+- **Contenu :** Maquettes HTML et README d’index pour l’**abonnement plateforme coach** (page Mon Abonnement, Mes athlètes bloqué, modale Stripe, **carte abo actif / essai**, **défaut de paiement sans grâce**) ; **README** inclut un pointeur vers les fichiers d’implémentation (`coach-platform-subscription`, libs Stripe, **`fetchCoachPlatformSubscriptionCardDetails`**, migration **074**). Maquette **grâce 3 j** → **`docs/archive/design-coach-platform-subscription-grace/`** (archivée).
 - **Utiliser pour :** Contexte UI historique ; le détail produit / technique à jour est dans **`Project_context.md`** §4.4 et **`DEPLOYMENT_NOTES.md`** (Stripe).
-- **Dernière mise à jour :** 12 mai 2026 (README : **implémentation livrée** modale + pointeurs code `CoachPlatformSubscribeOffersModal`, `loadCoachPlatformCatalogForCoach`, `coachMsaOfferDisplay` ; précédent : lien code page seule…)
+- **Dernière mise à jour :** 13 mai 2026 (README : carte abo + **074** + archive maquette grâce ; précédent : implémentation modale…)
 
 ### **docs/design-rpe-planned-intensity/** (design feature — non archivé)
 - **Contenu :** **DESIGN_RPE_PLANNED_INTENSITY.md** (solution validée, hypothèses, **US-RPE-01 à US-RPE-05**, critères d’acceptation, table RPE FR + proposition EN, composants, points ouverts) ; **SPEC_ARCHITECTE_RPE_PLANNED_INTENSITY.md** (migration `planned_intensity`, table des fichiers, `saveWorkoutStatusAndComment`, RLS, edge cases, tests manuels) ; **README.md** (index fichiers) ; maquettes HTML **MOCKUP_US1** … **US5** + **MOCKUP_OPTION_A_RPE_MODAL.html** (interactif) ; **MOCKUP_OPTION_B_RPE_INLINE.html** (option non retenue).
@@ -106,14 +106,14 @@
 ## 🚀 Documentation Opérationnelle
 
 ### **DEPLOYMENT_NOTES.md**
-- **Contenu :** Notes et procédures de déploiement, **URL production https://mysportally.com**, section **Abonnement plateforme coach (Stripe)** (migration 073, env, webhook, comportement réutilisation Customer Checkout, Redirect URLs Supabase)
+- **Contenu :** Notes et procédures de déploiement, **URL production https://mysportally.com**, section **Abonnement plateforme coach (Stripe)** (migrations **073** + **074**, env, webhook, comportement réutilisation Customer Checkout, Redirect URLs Supabase)
 - **Utiliser pour :** Déployer l'application, résoudre des problèmes de déploiement
 - **Dernière mise à jour :** 12 mai 2026 (Stripe : puce **comportement applicatif** Checkout coach ; précédent : Stripe coach plateforme général)
 
 ### **MISE_EN_PROD.md**
-- **Contenu :** Checklist et étapes pour mise en production, **URL production https://mysportally.com**, rappel migrations postérieures (dont **073** Stripe coach plateforme — voir `DEPLOYMENT_NOTES.md`)
+- **Contenu :** Checklist et étapes pour mise en production, **URL production https://mysportally.com**, rappel migrations postérieures (dont **073** + **074** Stripe coach plateforme — voir `DEPLOYMENT_NOTES.md`)
 - **Utiliser pour :** Préparer une release production
-- **Dernière mise à jour :** 12 mai 2026 (réf. migration 073)
+- **Dernière mise à jour :** 13 mai 2026 (réf. migrations 073, 074)
 
 ### **DOCUMENTATION_UPDATE_2026-02-13.md**
 - **Contenu :** Récapitulatif de la mise à jour complète de la documentation (13 février 2026)
@@ -130,6 +130,10 @@
 **Formulaire contact public (maquettes HTML, archivées 6 mai 2026) :**
 - `docs/archive/design-contact-public-form/` — `us1-contact-page.html`, `us2-landing-footer-contact.html`, `us3-athlete-account-menu-contact.html`, `us4-coach-account-menu-contact.html`, `README.md`
 - **Raison :** feature livrée ; comportement et données décrits dans **Project_context.md §4.11**, **README.md** (Resend), **DEPLOYMENT_NOTES.md** (migrations 066–067).
+
+**Abonnement plateforme coach — maquette « grâce 3 jours » (archivée 13 mai 2026) :**
+- `docs/archive/design-coach-platform-subscription-grace/` — `MOCKUP_US_COACH_MYSA_SUB_PAGE_GRACE_ALERT.html`, `README.md`
+- **Raison :** plus de tolérance de paiement ; accès **`past_due` / `unpaid`** décrit dans **`docs/design-coach-platform-subscription/MOCKUP_US_MYSA_SUB_PAYMENT_DEFAULT_NO_GRACE.html`** et migration **074** ; info fusionnée dans **Project_context.md** / README design actif.
 
 ### Documents archivés (historique — liste ci-dessous)
 

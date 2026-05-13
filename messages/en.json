@@ -129,7 +129,7 @@
     "publicPrivacy": "Privacy Policy",
     "publicTerms": "Terms of Use",
     "resetPasswordPage": "Reset password",
-    "coachPlatformSubscription": "My MySportAlly subscription"
+    "coachPlatformSubscription": "MySportAlly subscription"
   },
   "athleteStats": {
     "title": "Statistics",
@@ -1470,18 +1470,17 @@
     }
   },
   "coachMsaSubscription": {
-    "pageTitle": "My MySportAlly subscription",
-    "heading": "My MySportAlly subscription",
+    "pageTitle": "MySportAlly subscription",
+    "heading": "MySportAlly subscription",
     "statusSectionTitle": "Subscription status",
-    "graceBannerTitle": "Payment action required",
-    "graceBannerBody": "Your last payment did not go through. You still have 3 days of full access; update your payment method to avoid an interruption.",
-    "graceBadgeLabel": "Payment overdue",
     "badgeNoSubscription": "No active subscription",
     "noSubscriptionDescription": "You do not have an active paid My Sport Ally subscription. Choose an offer below to unlock full access to your athletes.",
     "inactiveSubscriptionDescription": "Your platform subscription is no longer active. You can subscribe again below.",
     "planUnknown": "Platform plan",
-    "nextPeriodEnd": "Next renewal: {date}",
-    "portalHint": "Card management and detailed invoices may be offered here in a future update.",
+    "nextPaymentWithDate": "Next payment: {date}",
+    "trialFree": "Free trial",
+    "cardPricingUnavailable": "Plan price is temporarily unavailable.",
+    "paymentDefaultDescription": "Your last payment did not go through. Access to subscriber-only features is suspended until this is resolved. You can subscribe again below if an offer is available.",
     "offersTitle": "Available offers",
     "subscribeCta": "Subscribe",
     "subscribePending": "Redirecting…",

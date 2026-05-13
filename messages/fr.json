@@ -130,7 +130,7 @@
     "publicPrivacy": "Politique de confidentialité",
     "publicTerms": "Conditions d'utilisation",
     "resetPasswordPage": "Réinitialiser le mot de passe",
-    "coachPlatformSubscription": "Mon Abonnement MySportAlly"
+    "coachPlatformSubscription": "Abonnement MySportAlly"
   },
   "athleteStats": {
     "title": "Statistiques",
@@ -1595,18 +1595,17 @@
     }
   },
   "coachMsaSubscription": {
-    "pageTitle": "Mon Abonnement MySportAlly",
-    "heading": "Mon Abonnement MySportAlly",
+    "pageTitle": "Abonnement MySportAlly",
+    "heading": "Abonnement MySportAlly",
     "statusSectionTitle": "Statut de l’abonnement",
-    "graceBannerTitle": "Action requise sur votre paiement",
-    "graceBannerBody": "Votre dernier paiement n’a pas abouti. Vous bénéficiez encore de 3 jours d’accès complet ; mettez à jour votre moyen de paiement pour éviter une interruption.",
-    "graceBadgeLabel": "Paiement en retard",
     "badgeNoSubscription": "Sans abonnement actif",
     "noSubscriptionDescription": "Vous n’avez pas d’abonnement payant à My Sport Ally. Choisissez une offre ci-dessous pour débloquer l’accès complet à vos athlètes.",
     "inactiveSubscriptionDescription": "Votre abonnement plateforme n’est plus actif. Vous pouvez souscrire à nouveau ci-dessous.",
     "planUnknown": "Offre plateforme",
-    "nextPeriodEnd": "Prochaine échéance : {date}",
-    "portalHint": "La gestion de carte bancaire et les factures détaillées pourront être proposées ultérieurement depuis cette page.",
+    "nextPaymentWithDate": "Prochain paiement : {date}",
+    "trialFree": "Essai gratuit",
+    "cardPricingUnavailable": "Montant de l’offre indisponible pour le moment.",
+    "paymentDefaultDescription": "Votre dernier paiement n’a pas abouti. L’accès aux fonctionnalités réservées aux abonnés est suspendu tant que la situation n’est pas régularisée. Vous pouvez souscrire à nouveau ci-dessous si une offre est disponible.",
     "offersTitle": "Offres disponibles",
     "subscribeCta": "Souscrire",
     "subscribePending": "Redirection…",

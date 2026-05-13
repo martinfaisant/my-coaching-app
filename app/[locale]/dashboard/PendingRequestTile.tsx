@@ -38,7 +38,7 @@ type PendingRequestTileProps = {
   request: PendingRequestWithAthlete
   /** Objectifs de l'athlète (triés date desc), pour les blocs Objectifs / Résultats */
   goals?: Goal[]
-  /** Abonnement plateforme Stripe actif (ou tolérance) — sinon Accepter / Discuter restreints */
+  /** Abonnement plateforme Stripe actif ou en essai (`coach_platform_access_granted`) — sinon Accepter / Discuter restreints */
   coachHasPlatformAccess: boolean
 }
 

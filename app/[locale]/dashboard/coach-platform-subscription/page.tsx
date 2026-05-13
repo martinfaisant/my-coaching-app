@@ -5,13 +5,13 @@ import { getCurrentUserWithProfile } from '@/utils/auth'
 import { redirect } from 'next/navigation'
 import { pathWithLocale } from '@/lib/pathWithLocale'
 import { DashboardPageShell } from '@/components/DashboardPageShell'
-import { fetchCoachPlatformAccessGranted } from '@/lib/coachPlatformSubscription'
 import {
   fetchCoachPlatformBillingHistory,
   type CoachPlatformBillingHistory,
 } from '@/lib/stripeCoachPlatformBillingHistory'
 import {
-  fetchCoachPlatformSubscriptionPlanLabel,
+  coachPlatformPriceIntervalTranslationKey,
+  fetchCoachPlatformSubscriptionCardDetails,
   loadCoachPlatformCatalogForEnv,
   type CoachPlatformCatalogOffer,
 } from '@/lib/stripeCoachPlatformCatalog'
@@ -19,19 +19,9 @@ import type { CoachPlatformSubscription } from '@/types/database'
 import { formatShortDate } from '@/lib/dateUtils'
 import { CoachPlatformSubscriptionOffers } from '@/components/CoachPlatformSubscriptionOffers'
 
-function hasManagingPlatformSubscription(
-  row: CoachPlatformSubscription | null,
-  accessGranted: boolean
-): boolean {
+function hasManagingPlatformSubscription(row: CoachPlatformSubscription | null): boolean {
   if (!row) return false
-  if (row.status === 'active' || row.status === 'trialing') return true
-  if ((row.status === 'past_due' || row.status === 'unpaid') && accessGranted) return true
-  return false
-}
-
-function showGraceBanner(row: CoachPlatformSubscription | null, accessGranted: boolean): boolean {
-  if (!row || !accessGranted) return false
-  return row.status === 'past_due' || row.status === 'unpaid'
+  return row.status === 'active' || row.status === 'trialing'
 }
 
 function formatMoney(locale: string, amount: number, currency: string): string {
@@ -110,15 +100,13 @@ export default async function CoachPlatformSubscriptionPage({ params }: { params
 
   const row = (platformRow ?? null) as CoachPlatformSubscription | null
 
-  const [accessGranted, catalogResult, planLabel, billingResult] = await Promise.all([
-    fetchCoachPlatformAccessGranted(supabase, current.id),
+  const [catalogResult, cardDetails, billingResult] = await Promise.all([
     loadCoachPlatformCatalogForEnv(),
-    fetchCoachPlatformSubscriptionPlanLabel(row?.stripe_subscription_id ?? null),
+    fetchCoachPlatformSubscriptionCardDetails(row?.stripe_subscription_id ?? null),
     fetchCoachPlatformBillingHistory(row?.stripe_customer_id ?? null),
   ])
 
-  const managing = hasManagingPlatformSubscription(row, accessGranted)
-  const grace = showGraceBanner(row, accessGranted)
+  const managing = hasManagingPlatformSubscription(row)
   const dateLocale = locale === 'en' ? 'en-GB' : 'fr-FR'
 
   const history: CoachPlatformBillingHistory = billingResult.data ?? {
@@ -130,26 +118,27 @@ export default async function CoachPlatformSubscriptionPage({ params }: { params
   const catalogError = catalogResult.error
   const offers: CoachPlatformCatalogOffer[] = catalogResult.offers
 
-  const periodEndLabel =
-    row?.current_period_end != null ? formatShortDate(row.current_period_end, dateLocale) : null
+  const periodEndRaw = row?.current_period_end ?? cardDetails?.currentPeriodEndIso ?? null
+  const periodEndLabel = periodEndRaw != null ? formatShortDate(periodEndRaw, dateLocale) : null
+
+  const planLabel = cardDetails?.planLabel ?? null
+
+  let priceIntervalSuffix: string | null = null
+  if (cardDetails) {
+    const intervalKey = coachPlatformPriceIntervalTranslationKey(cardDetails.interval, cardDetails.intervalCount)
+    if (intervalKey === 'priceIntervalEveryNMonths' || intervalKey === 'priceIntervalEveryNYears') {
+      priceIntervalSuffix = t(intervalKey, { n: cardDetails.intervalCount ?? 1 })
+    } else if (intervalKey) {
+      priceIntervalSuffix = t(intervalKey)
+    }
+  }
+
+  const isFreeTrialDisplay =
+    row?.status === 'trialing' &&
+    (cardDetails?.unitAmountMajor === 0 || cardDetails?.unitAmountMajor == null)
 
   return (
     <DashboardPageShell>
-      {grace ? (
-        <div
-          className="mb-6 rounded-xl border border-palette-amber/50 bg-amber-50 p-4 flex flex-col sm:flex-row sm:items-start gap-3"
-          role="alert"
-        >
-          <div className="shrink-0 w-8 h-8 rounded-full bg-palette-amber/20 flex items-center justify-center text-palette-amber font-bold text-sm">
-            !
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="font-semibold text-stone-900 text-sm">{t('graceBannerTitle')}</p>
-            <p className="text-sm text-stone-700 mt-1">{t('graceBannerBody')}</p>
-          </div>
-        </div>
-      ) : null}
-
       <h1 className="text-lg font-bold text-stone-900 mb-4">{t('heading')}</h1>
 
       <section className="mb-8" aria-labelledby="coach-msa-status-heading">
@@ -165,13 +154,27 @@ export default async function CoachPlatformSubscriptionPage({ params }: { params
               <p className="text-sm text-stone-600 mt-2">{t('noSubscriptionDescription')}</p>
             </>
           ) : managing ? (
-            <>
-              <div className="flex flex-wrap items-center gap-2 mb-2">
-                {grace ? (
-                  <span className="inline-flex rounded-full border border-palette-amber bg-white px-2.5 py-0.5 text-xs font-semibold text-stone-800">
-                    {t('graceBadgeLabel')}
-                  </span>
-                ) : row.status === 'trialing' ? (
+            <div className="flex justify-between items-start gap-3">
+              <div className="min-w-0 flex-1">
+                <p className="font-semibold text-stone-900">{planLabel ?? t('planUnknown')}</p>
+                {isFreeTrialDisplay ? (
+                  <p className="text-sm text-stone-900 font-semibold mt-3">{t('trialFree')}</p>
+                ) : cardDetails?.unitAmountMajor != null ? (
+                  <p className="text-sm text-stone-900 font-semibold mt-3">
+                    {formatMoney(locale, cardDetails.unitAmountMajor, cardDetails.currency)}
+                    {priceIntervalSuffix ? (
+                      <span className="font-normal text-stone-600"> {priceIntervalSuffix}</span>
+                    ) : null}
+                  </p>
+                ) : (
+                  <p className="text-sm text-stone-500 mt-3">{t('cardPricingUnavailable')}</p>
+                )}
+                {periodEndLabel ? (
+                  <p className="text-sm text-stone-600 mt-2">{t('nextPaymentWithDate', { date: periodEndLabel })}</p>
+                ) : null}
+              </div>
+              <div className="shrink-0">
+                {row.status === 'trialing' ? (
                   <span className="inline-flex rounded-full bg-palette-forest-dark px-2.5 py-0.5 text-xs font-semibold text-white">
                     {t('subscriptionStatus.trialing')}
                   </span>
@@ -181,18 +184,17 @@ export default async function CoachPlatformSubscriptionPage({ params }: { params
                   </span>
                 )}
               </div>
-              <p className="font-semibold text-stone-900">{planLabel ?? t('planUnknown')}</p>
-              {periodEndLabel ? (
-                <p className="text-sm text-stone-600 mt-2">{t('nextPeriodEnd', { date: periodEndLabel })}</p>
-              ) : null}
-              <p className="text-xs text-stone-500 mt-2">{t('portalHint')}</p>
-            </>
+            </div>
           ) : (
             <>
               <span className="inline-flex rounded-full border border-stone-300 bg-white px-2.5 py-0.5 text-xs font-semibold text-stone-700">
                 {inactiveSubscriptionStatusLabel(t, row.status)}
               </span>
-              <p className="text-sm text-stone-600 mt-2">{t('inactiveSubscriptionDescription')}</p>
+              <p className="text-sm text-stone-600 mt-2">
+                {row.status === 'past_due' || row.status === 'unpaid'
+                  ? t('paymentDefaultDescription')
+                  : t('inactiveSubscriptionDescription')}
+              </p>
             </>
           )}
         </div>

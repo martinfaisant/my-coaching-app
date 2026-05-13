@@ -275,7 +275,7 @@ export default async function CoachAthletesPage({ params }: { params: Promise<{ 
           >
             <p className="text-palette-danger-dark font-medium">{t('listLoadError')}</p>
           </div>
-        ) : visibleProfiles.length === 0 ? (
+        ) : visibleProfiles.length === 0 && pendingRequests.length === 0 ? (
           <div className="rounded-2xl border border-stone-200 bg-section border-dashed p-12 text-center">
             <p className="text-stone-600 font-medium">
               {t('noAthletes.title')}
@@ -284,7 +284,7 @@ export default async function CoachAthletesPage({ params }: { params: Promise<{ 
               {t('noAthletes.description')}
             </p>
           </div>
-        ) : (
+        ) : visibleProfiles.length === 0 ? null : (
           <>
             <CoachAthletesBillingOverlay
               coachHasPlatformAccess={coachHasPlatformAccess}

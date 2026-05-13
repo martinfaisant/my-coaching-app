@@ -6,7 +6,7 @@
 
 ## Abonnement plateforme coach (Stripe)
 
-- **Migration Supabase :** `073_coach_platform_subscription.sql` (table `coach_platform_subscriptions`, RPC `coach_platform_access_granted`, RLS et périmètres associés — détail dans le fichier).
+- **Migrations Supabase :** `073_coach_platform_subscription.sql` (table `coach_platform_subscriptions`, RPC `coach_platform_access_granted`, RLS) ; **`074_coach_platform_access_no_grace.sql`** — `past_due` / `unpaid` n’accordent plus l’accès plateforme (suppression tolérance 3 jours).
 - **Variables d’environnement :** `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_COACH_PLATFORM_PRICE_ID` (un prix) ou **`STRIPE_COACH_PLATFORM_PRICE_IDS`** (liste séparée par virgules ou espaces, vitrine « Mon Abonnement ») ; `NEXT_PUBLIC_SITE_URL` ou `NEXT_PUBLIC_APP_URL` (repli ; les URL de retour Checkout utilisent aussi l’hôte de la requête lorsqu’il est autorisé — voir `lib/checkoutReturnOrigin.ts`, previews `*.vercel.app`).
 - **Stripe Dashboard :** webhook **`https://<votre-domaine>/api/webhooks/stripe`** — événements typiques : `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`.
 - **Comportement applicatif (Checkout coach) :** `ensureCoachPlatformStripeCustomerForCheckout` — résolution du Customer `cus_…` (ligne `coach_platform_subscriptions` si valide, sinon recherche Stripe par e-mail + `metadata.coach_id`, sinon création) ; **mise à jour** à chaque session des **`preferred_locales`** selon la locale **`[locale]`** ; session Checkout avec **`customer`** + **`locale`** (`lib/stripeCoachPlatformCustomer.ts`, `coachPlatformActions.ts`).
