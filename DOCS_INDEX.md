@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 13 mai 2026 (**Accueil connecté** : redirection `/` et `/en` vers l’entrée dashboard par rôle, **`lib/dashboardEntryPath.ts`** ; précédent : **Stripe coach** — **`lib/stripeCoachPlatformCustomer.ts`**…)
+**Dernière mise à jour :** 13 mai 2026 (**Stripe coach — langue** : **`ensureCoachPlatformStripeCustomerForCheckout`**, `preferred_locales` + locale Checkout selon **`[locale]`** ; précédent : accueil connecté **`lib/dashboardEntryPath.ts`**…)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -9,16 +9,16 @@
 ## 🎯 Documentation Active (à utiliser en priorité)
 
 ### **README.md** ⭐
-- **Contenu :** Setup projet, stack technique, quick start, structure du projet, **URL production https://mysportally.com**, **accueil `/` et `/en`** : utilisateurs connectés redirigés vers l’entrée dashboard (voir **Project_context.md** §4.0, **`lib/dashboardEntryPath.ts`**), variables **Stripe coach plateforme** (rappel **`coachMsaOffers.byPriceId`**, comportement **réutilisation Customer** Checkout) et URL de retour Checkout (`NEXT_PUBLIC_SITE_URL` / repli, `lib/checkoutReturnOrigin.ts`)
+- **Contenu :** Setup projet, stack technique, quick start, structure du projet, **URL production https://mysportally.com**, **accueil `/` et `/en`** : utilisateurs connectés redirigés vers l’entrée dashboard (voir **Project_context.md** §4.0, **`lib/dashboardEntryPath.ts`**), variables **Stripe coach plateforme** (rappel **`coachMsaOffers.byPriceId`**, Checkout : **`ensureCoachPlatformStripeCustomerForCheckout`**, langue Customer / session) et URL de retour Checkout (`NEXT_PUBLIC_SITE_URL` / repli, `lib/checkoutReturnOrigin.ts`)
 - **Utiliser pour :** Onboarding, démarrage rapide, vue d'ensemble technique
 - **Taille :** ~200 lignes
-- **Dernière mise à jour :** 13 mai 2026 (rappel navigation ; précédent : Stripe Customer Checkout coach…)
+- **Dernière mise à jour :** 13 mai 2026 (Stripe Customer langue portail ; précédent : navigation accueil…)
 
 ### **Project_context.md** ⭐
-- **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), **abonnement plateforme coach Stripe** (Checkout avec **réutilisation du Customer** `stripe_customer_id` quand valide, webhooks, migration 073, `coach_platform_access_granted`, page **Mon Abonnement MySportAlly**, **modale choix d’offre** avant Checkout, bandeaux), stack technique, **URL production https://mysportally.com**
+- **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), **abonnement plateforme coach Stripe** (Checkout : **`ensureCoachPlatformStripeCustomerForCheckout`**, **`preferred_locales`** + **`locale`** session, webhooks, migration 073, `coach_platform_access_granted`, page **Mon Abonnement MySportAlly**, **modale choix d’offre** avant Checkout, bandeaux), stack technique, **URL production https://mysportally.com**
 - **Utiliser pour :** Comprendre le projet, les features, les rôles, l'architecture globale
 - **Taille :** ~450 lignes
-- **Dernière mise à jour :** 13 mai 2026 (§4.0 : accueil `/` et `/en` connectés, **`getDashboardEntryPath`** ; précédent : §4.4 Stripe **Customer**…)
+- **Dernière mise à jour :** 13 mai 2026 (§4.4 Stripe : langue Customer + Checkout ; précédent : §4.0 accueil connecté…)
 
 ### **docs/CALENDAR_MONTH_VIEW.md**
 - **Contenu :** Récap **vue mois** (desktop) vs **vue semaine** (mobile), règles semaines ISO / mois civil étendu, **totaux hebdo** (liste sports `PERSISTED_WORKOUT_SPORT_TYPES`, `SPORT_WEEKLY_SUMMARY_BAR`), chargement données, liste des fichiers et tests unitaires, liens vers maquettes archivées
@@ -30,13 +30,13 @@
 - **Contenu :** Tokens (couleurs, typo, espacements ; **sports** : `SPORT_CARD_STYLES`, `SPORT_BADGE_STYLES`, **`SPORT_WEEKLY_SUMMARY_BAR`** résumé hebdo), composants (Button, Input, Badge, TileCard, DashboardPageShell, **DashboardTopBar**, **AthleteAccountMenu**, **AthleteStatsVolumeChart**, **AthleteStatsChartSkeleton**, Modal, **MonthSelector**, etc.), guidelines UI, exemples de code, §7 breakpoints (**calendrier** mois étendu desktop + WeekSelector mobile, chat, Trouver mon coach, My offers)
 - **Utiliser pour :** Créer ou modifier des composants UI, choisir des couleurs, appliquer le design system, règles responsive par page
 - **Taille :** ~2010 lignes
-- **Dernière mise à jour :** 13 mai 2026 (§ **PublicOrDashboardHeader**, fichiers clés **`lib/dashboardEntryPath.ts`** ; précédent : **`lib/stripeCoachPlatformCustomer.ts`**…)
+- **Dernière mise à jour :** 13 mai 2026 (fichiers clés Stripe : **`ensureCoachPlatformStripeCustomerForCheckout`** ; précédent : **`lib/dashboardEntryPath.ts`**…)
 
 ### **docs/I18N.md** ⭐
 - **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces (dont **`calendar.weekly.sportVolumeHint`**), utilisation dans composants et server actions, **checklist pour nouvelles features** (toujours penser bilingue)
 - **Utiliser pour :** Toute nouvelle feature ou texte visible, ajout de clés de traduction, dépannage i18n
 - **Taille :** ~195 lignes
-- **Dernière mise à jour :** 12 mai 2026 (**`coachMsaOffers`** modale + **`byPriceId`** / **`futurePlatformPaymentsTier`** ; précédent : `coachMsaSubscription` + `invalidPriceId`…)
+- **Dernière mise à jour :** 13 mai 2026 (**`coachPlatform.validation`** : erreurs préparation Customer Stripe ; précédent : **`coachMsaOffers`** modale + **`byPriceId`**…)
 
 ### **docs/AUTH_EMAIL_TEMPLATES.md**
 - **Contenu :** Guide de configuration des emails d’auth Supabase (sujet, i18n FR/EN, variables, dépannage logo). **Les fichiers HTML des templates** (Confirm signup, puis Magic Link, Reset Password, etc.) sont dans **docs/email-templates/**.
@@ -488,9 +488,15 @@
 **Fréquence de mise à jour :** À chaque ajout/suppression de documentation
 
 **Dernier scan :** 13 mai 2026  
-**Dernier nettoyage :** 13 mai 2026 (entrée Changements récents : redirection accueil connecté `/` et `/en`)
+**Dernier nettoyage :** 13 mai 2026 (entrée Changements récents : Stripe Customer **`preferred_locales`** + Checkout **`locale`**)
 
 ### Changements récents :
+
+✅ **13 mai 2026 – Stripe Customer : langue portail (`preferred_locales` + Checkout) – Mode Analyste :**
+- **Livraison (réf. code) :** avant **`createCoachPlatformCheckoutSession`**, **`ensureCoachPlatformStripeCustomerForCheckout`** (`lib/stripeCoachPlatformCustomer.ts`) : Customer depuis **`coach_platform_subscriptions.stripe_customer_id`** si encore valide (**`resolveExistingCoachPlatformStripeCustomerId`** + retrieve) ; sinon liste **`stripe.customers.list`** (e-mail profil + **`metadata.coach_id`**) ; sinon **`stripe.customers.create`** (e-mail, metadata, idempotence par coach + locale). Puis **`stripe.customers.update`** des **`preferred_locales`** selon **`[locale]`** (`fr` / `en`) ; session Checkout avec **`customer`** + **`locale`**. E-mail profil obligatoire (**`coachPlatform.validation.missingEmailForCheckout`**, **`stripeCustomerPrepareFailed`**). Tests : **`lib/stripeCoachPlatformCustomer.test.ts`**.
+- **Doc :** `Project_context.md` §4.4 (paragraphe Coach ↔ plateforme), `README.md` (commentaire env Stripe), `DEPLOYMENT_NOTES.md`, `docs/DESIGN_SYSTEM.md` (version + Fichiers clés), `docs/design-coach-platform-subscription/README.md`, `docs/I18N.md` (tableau `coachPlatform`), `DOCS_INDEX.md`.
+- **Archivage :** aucun.
+- **Pages légales / confidentialité :** aucune modification (pas de nouvelle collecte ; Stripe recevait déjà l’e-mail).
 
 ✅ **13 mai 2026 – Redirection accueil marketing pour session active (`/` et `/en`) – Mode Analyste :**
 - **Livraison (réf. code) :** sur les routes d’accueil **`/`** (FR) et **`/en`** (`app/[locale]/page.tsx`), si **`getOptionalUserWithProfile()`** retourne un utilisateur, **`redirect(pathWithLocale(locale, getDashboardEntryPath(profile)))`** — mêmes cibles que le hub **`/dashboard`** : athlète avec coach → calendrier ; athlète sans coach → **`find-coach`** ; coach → **`athletes`** ; admin → **`admin/members`**. Logique partagée : **`lib/dashboardEntryPath.ts`** ; hub **`app/[locale]/dashboard/page.tsx`** utilise le même helper + **`pathWithLocale`**. Les requêtes **`?code=`** (reset password) et **`?emailConfirmed=1`** restent traitées **avant** cette redirection.
@@ -500,6 +506,7 @@
 
 ✅ **12 mai 2026 – Réutilisation du Customer Stripe (abonnement plateforme coach) – Mode Analyste :**
 - **Livraison (réf. code) :** avant **`createCoachPlatformCheckoutSession`**, lecture de **`coach_platform_subscriptions.stripe_customer_id`** pour le coach connecté ; validation **`stripe.customers.retrieve`** dans **`lib/stripeCoachPlatformCustomer.ts`** (`resolveExistingCoachPlatformStripeCustomerId`) ; session Checkout avec **`customer`** si valide, sinon repli **`customer_email`** (nouveau Customer possible ; webhook met à jour la base).
+- **Note (13 mai 2026) :** le flux Checkout **sans** Customer explicite (`customer_email` seul) est **remplacé** par **`ensureCoachPlatformStripeCustomerForCheckout`** + langue — voir entrée **« Stripe Customer : langue portail »** ci-dessus.
 - **Doc :** `Project_context.md` §4.4 (paragraphe Coach ↔ plateforme), `README.md` (commentaire env Stripe), `DEPLOYMENT_NOTES.md` (section Stripe), `docs/DESIGN_SYSTEM.md` (fichiers clés + date), `docs/design-coach-platform-subscription/README.md` (pointeur lib), `DOCS_INDEX.md`.
 - **Archivage :** aucun.
 - **Pages légales / confidentialité :** aucune modification (traitement Stripe inchangé dans l’esprit ; pas de nouvelle catégorie de données).

@@ -1575,7 +1575,9 @@
       "coachOnly": "Coaches only.",
       "noCheckoutUrl": "Could not get payment URL.",
       "checkoutFailed": "Creating the checkout session failed.",
-      "invalidPriceId": "This offer is not available."
+      "invalidPriceId": "This offer is not available.",
+      "missingEmailForCheckout": "An email address is required for payment. Please complete your profile.",
+      "stripeCustomerPrepareFailed": "We could not prepare your billing account. Try again or contact support."
     },
     "verify": {
       "stripeUnavailable": "The payment service is unavailable.",

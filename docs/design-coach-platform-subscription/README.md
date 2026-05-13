@@ -32,7 +32,7 @@
 
 - Page app : **`app/[locale]/dashboard/coach-platform-subscription/`** (`page.tsx`, `loading.tsx`), shell **`DashboardPageShell`**, section offres **`components/CoachPlatformSubscriptionOffers.tsx`** (grille partagée **`components/CoachPlatformOfferGrid.tsx`**).
 - Modale choix d’offre avant Checkout : **`components/CoachPlatformSubscribeOffersModal.tsx`** (chargement **`loadCoachPlatformCatalogForCoach`** dans **`app/[locale]/dashboard/athletes/coachPlatformActions.ts`**), intégrations **`PendingRequestTile`**, **`CoachAthletesBillingOverlay`**, **`CoachAthleteBillingBlocked`**.
-- Catalogue / facturation Stripe : **`lib/stripeCoachPlatformCatalog.ts`**, **`lib/stripeCoachPlatformBillingHistory.ts`**, **`lib/stripeCoachPlatformCustomer.ts`** (validation + réutilisation du Customer Stripe pour un nouvel abonnement) ; libellés marketing par `price_id` : **`lib/coachMsaOfferDisplay.ts`** + messages **`coachMsaOffers.byPriceId`** ; whitelist retour Checkout **`lib/coachPlatformCheckoutReturnPath.ts`**.
+- Catalogue / facturation Stripe : **`lib/stripeCoachPlatformCatalog.ts`**, **`lib/stripeCoachPlatformBillingHistory.ts`**, **`lib/stripeCoachPlatformCustomer.ts`** (**`ensureCoachPlatformStripeCustomerForCheckout`** : Customer Checkout, **`preferred_locales`** + locale de session alignés sur **`[locale]`**) ; libellés marketing par `price_id` : **`lib/coachMsaOfferDisplay.ts`** + messages **`coachMsaOffers.byPriceId`** ; whitelist retour Checkout **`lib/coachPlatformCheckoutReturnPath.ts`**.
 
 ## Suite du pipeline
 

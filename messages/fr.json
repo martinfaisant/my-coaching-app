@@ -1700,7 +1700,9 @@
       "coachOnly": "Réservé aux coachs.",
       "noCheckoutUrl": "Impossible d’obtenir l’URL de paiement.",
       "checkoutFailed": "La création de la session de paiement a échoué.",
-      "invalidPriceId": "Cette offre n’est pas disponible."
+      "invalidPriceId": "Cette offre n’est pas disponible.",
+      "missingEmailForCheckout": "Une adresse e-mail est requise pour le paiement. Complétez votre profil.",
+      "stripeCustomerPrepareFailed": "Impossible de préparer votre compte de facturation. Réessayez ou contactez le support."
     },
     "verify": {
       "stripeUnavailable": "Le service de paiement est indisponible.",

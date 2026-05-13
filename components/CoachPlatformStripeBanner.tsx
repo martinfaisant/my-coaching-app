@@ -45,7 +45,7 @@ export function CoachPlatformStripeBanner() {
 
   return (
     <div
-      className={`mb-6 rounded-xl border p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 ${boxClass}`}
+      className={`mt-4 mb-2 rounded-xl border p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 ${boxClass}`}
       role={variant === 'error' ? 'alert' : undefined}
     >
       <p className="text-sm text-stone-800 flex-1">

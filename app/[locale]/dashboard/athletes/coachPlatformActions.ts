@@ -13,7 +13,10 @@ import { resolveCoachPlatformCheckoutReturnPath } from '@/lib/coachPlatformCheck
 import { getCoachPlatformAllowedPriceIds } from '@/lib/stripeCoachPlatformPriceIds'
 import { loadCoachPlatformCatalogForEnv } from '@/lib/stripeCoachPlatformCatalog'
 import type { CoachPlatformCatalogOffer } from '@/lib/stripeCoachPlatformCatalog'
-import { resolveExistingCoachPlatformStripeCustomerId } from '@/lib/stripeCoachPlatformCustomer'
+import {
+  appLocaleToStripeCheckoutLocale,
+  ensureCoachPlatformStripeCustomerForCheckout,
+} from '@/lib/stripeCoachPlatformCustomer'
 
 export type CoachPlatformCheckoutResult = { ok: true; url: string } | { ok: false; error: string }
 
@@ -111,19 +114,26 @@ export async function createCoachPlatformCheckoutSession(
 
   const idempotencyKey = `coach-platform-checkout-${auth.user.id}-${Math.floor(Date.now() / 10000)}`
 
-  const existingStripeCustomerId = await resolveExistingCoachPlatformStripeCustomerId(
+  const customerRes = await ensureCoachPlatformStripeCustomerForCheckout(
     stripe,
     supabase,
-    auth.user.id
+    auth.user.id,
+    profile.email,
+    locale
   )
+  if (!customerRes.ok) {
+    if (customerRes.reason === 'missing_email') {
+      return { ok: false, error: t('missingEmailForCheckout') }
+    }
+    return { ok: false, error: t('stripeCustomerPrepareFailed') }
+  }
 
   try {
     const checkoutSession = await stripe.checkout.sessions.create(
       {
         mode: 'subscription',
-        ...(existingStripeCustomerId
-          ? { customer: existingStripeCustomerId }
-          : { customer_email: profile.email ?? undefined }),
+        customer: customerRes.customerId,
+        locale: appLocaleToStripeCheckoutLocale(locale),
         line_items: [{ price: priceId, quantity: 1 }],
         success_url: successUrl,
         cancel_url: cancelUrl,
