@@ -1481,11 +1481,12 @@
     "trialFree": "Free trial",
     "cardPricingUnavailable": "Plan price is temporarily unavailable.",
     "paymentDefaultDescription": "Your last payment did not go through. Access to subscriber-only features is suspended until this is resolved. You can subscribe again below if an offer is available.",
+    "stripeCustomerOnlyDescription": "Your Stripe customer account is set up for billing. Subscribe to a plan below when you are ready for full platform access.",
     "offersTitle": "Available offers",
     "subscribeCta": "Subscribe",
     "subscribePending": "Redirecting…",
     "noOffersConfigured": "No offers are configured yet. Contact support if needed.",
-    "billingHistoryTitle": "Billing history",
+    "billingInfoTitle": "Billing info",
     "invoicesTitle": "Invoices",
     "invoicesEmpty": "No invoices yet.",
     "failedPaymentsTitle": "Failed payments",
@@ -1510,7 +1511,8 @@
       "canceled": "Canceled",
       "incomplete": "Incomplete",
       "incomplete_expired": "Incomplete (expired)",
-      "paused": "Paused"
+      "paused": "Paused",
+      "none": "Billing profile only"
     },
     "invoiceStatus": {
       "paid": "Paid",
@@ -1522,6 +1524,56 @@
     "errors": {
       "catalogUnavailable": "Could not load offers. Try again later or contact support.",
       "historyUnavailable": "Could not load billing history right now."
+    },
+    "billingAddress": {
+      "sectionTitle": "Billing address",
+      "cardTitle": "Billing address",
+      "formTitle": "Billing address",
+      "emptyDescription": "No billing address is saved yet.",
+      "addAddress": "Add address",
+      "edit": "Edit",
+      "line1": "Address line 1",
+      "line2Optional": "Address line 2 (optional)",
+      "city": "City",
+      "postalCode": "Postal code",
+      "province": "Province / territory",
+      "provincePlaceholder": "Select…",
+      "country": "Country",
+      "countryDisplay": "Canada",
+      "saving": "Saving…",
+      "saved": "Saved",
+      "loadError": "Could not load your billing address. Check your connection or try again.",
+      "retry": "Retry",
+      "errors": {
+        "stripeUnavailable": "Payment service is not available. Try again later.",
+        "stripeCustomerFailed": "Could not prepare your Stripe customer. Try again later.",
+        "persistFailed": "Could not save your customer reference. Try again or contact support.",
+        "saveFailed": "Could not save your address. Try again later."
+      },
+      "validation": {
+        "notAuthenticated": "You must be signed in.",
+        "coachOnly": "Only coaches can update this address.",
+        "line1Required": "Address line 1 is required.",
+        "cityRequired": "City is required.",
+        "postalRequired": "Postal code is required.",
+        "provinceRequired": "Please select a province or territory.",
+        "missingEmail": "Your profile must have an email address before you can save a billing address."
+      },
+      "provinces": {
+        "AB": "Alberta",
+        "BC": "British Columbia",
+        "MB": "Manitoba",
+        "NB": "New Brunswick",
+        "NL": "Newfoundland and Labrador",
+        "NS": "Nova Scotia",
+        "NT": "Northwest Territories",
+        "NU": "Nunavut",
+        "ON": "Ontario",
+        "PE": "Prince Edward Island",
+        "QC": "Quebec",
+        "SK": "Saskatchewan",
+        "YT": "Yukon"
+      }
     }
   },
   "coachMsaOffers": {

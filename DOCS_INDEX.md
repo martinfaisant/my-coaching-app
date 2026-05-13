@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 13 mai 2026 (**Stripe coach** : langue Customer / Checkout ; **page Mon abonnement** — carte prix + prochain paiement, **074**, archive maquette grâce ; précédent : accueil connecté **`lib/dashboardEntryPath.ts`**…)
+**Dernière mise à jour :** 13 mai 2026 (**Mon abonnement coach** : adresse facturation Stripe + titres sous-sections **`FORM_LABEL_CLASSES`** ; précédent : Stripe coach langue Customer…)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -15,10 +15,10 @@
 - **Dernière mise à jour :** 13 mai 2026 (Stripe Customer langue portail ; précédent : navigation accueil…)
 
 ### **Project_context.md** ⭐
-- **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), **abonnement plateforme coach Stripe** (Checkout : **`ensureCoachPlatformStripeCustomerForCheckout`**, **`preferred_locales`** + **`locale`** session, webhooks, migrations **073** + **074** (`coach_platform_access_granted` : accès si `active` / `trialing` uniquement), page **Mon Abonnement MySportAlly**, **modale choix d’offre** avant Checkout, bandeaux retour checkout), stack technique, **URL production https://mysportally.com**
+- **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), **abonnement plateforme coach Stripe** (Checkout : **`ensureCoachPlatformStripeCustomerForCheckout`**, **`preferred_locales`** + **`locale`** session, webhooks, migrations **073** + **074** (`coach_platform_access_granted` : accès si `active` / `trialing` uniquement), page **Mon Abonnement MySportAlly** — bloc **Informations de facturation** (adresse Canada → Stripe **`Customer.address`**, puis historiques), **modale choix d’offre** avant Checkout, bandeaux retour checkout), stack technique, **URL production https://mysportally.com**
 - **Utiliser pour :** Comprendre le projet, les features, les rôles, l'architecture globale
 - **Taille :** ~450 lignes
-- **Dernière mise à jour :** 13 mai 2026 (§4.4 Stripe : langue Customer + Checkout ; précédent : §4.0 accueil connecté…)
+- **Dernière mise à jour :** 13 mai 2026 (§ Stripe : **billing info** page coach — adresse + **`FORM_LABEL_CLASSES`** ; précédent : langue Customer + Checkout…)
 
 ### **docs/CALENDAR_MONTH_VIEW.md**
 - **Contenu :** Récap **vue mois** (desktop) vs **vue semaine** (mobile), règles semaines ISO / mois civil étendu, **totaux hebdo** (liste sports `PERSISTED_WORKOUT_SPORT_TYPES`, `SPORT_WEEKLY_SUMMARY_BAR`), chargement données, liste des fichiers et tests unitaires, liens vers maquettes archivées
@@ -27,16 +27,16 @@
 - **Dernière mise à jour :** 11 mai 2026 (résumé hebdo par sport + `sportVolumeHint` i18n)
 
 ### **docs/DESIGN_SYSTEM.md** ⭐
-- **Contenu :** Tokens (couleurs, typo, espacements ; **sports** : `SPORT_CARD_STYLES`, `SPORT_BADGE_STYLES`, **`SPORT_WEEKLY_SUMMARY_BAR`** résumé hebdo), composants (Button, Input, Badge, TileCard, DashboardPageShell, **DashboardTopBar**, **AthleteAccountMenu**, **AthleteStatsVolumeChart**, **AthleteStatsChartSkeleton**, Modal, **MonthSelector**, etc.), guidelines UI, exemples de code, §7 breakpoints (**calendrier** mois étendu desktop + WeekSelector mobile, chat, Trouver mon coach, My offers)
+- **Contenu :** Tokens (couleurs, typo, espacements ; **sports** : `SPORT_CARD_STYLES`, `SPORT_BADGE_STYLES`, **`SPORT_WEEKLY_SUMMARY_BAR`** résumé hebdo), composants (Button, Input, Badge, TileCard, DashboardPageShell, **DashboardTopBar**, **AthleteAccountMenu**, **AthleteStatsVolumeChart**, **AthleteStatsChartSkeleton**, Modal, **MonthSelector**, **`CoachPlatformBillingAddressSection`** — titre sous-section sur la page + **`FORM_LABEL_CLASSES`**, etc.), guidelines UI, exemples de code, §7 breakpoints (**calendrier** mois étendu desktop + WeekSelector mobile, chat, Trouver mon coach, My offers)
 - **Utiliser pour :** Créer ou modifier des composants UI, choisir des couleurs, appliquer le design system, règles responsive par page
 - **Taille :** ~2010 lignes
-- **Dernière mise à jour :** 13 mai 2026 (fichiers clés Stripe : **`ensureCoachPlatformStripeCustomerForCheckout`** ; précédent : **`lib/dashboardEntryPath.ts`**…)
+- **Dernière mise à jour :** 13 mai 2026 (**CoachPlatformBillingAddressSection** — titre page + **`FORM_LABEL_CLASSES`** ; précédent : adresse facturation…)
 
 ### **docs/I18N.md** ⭐
-- **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces (dont **`calendar.weekly.sportVolumeHint`**), utilisation dans composants et server actions, **checklist pour nouvelles features** (toujours penser bilingue)
+- **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces (dont **`calendar.weekly.sportVolumeHint`**), utilisation dans composants et server actions, **checklist pour nouvelles features** (toujours penser bilingue) ; **`coachMsaSubscription`** (dont **`billingInfoTitle`**, **`billingAddress`**)
 - **Utiliser pour :** Toute nouvelle feature ou texte visible, ajout de clés de traduction, dépannage i18n
 - **Taille :** ~195 lignes
-- **Dernière mise à jour :** 13 mai 2026 (**`coachPlatform.validation`** : erreurs préparation Customer Stripe ; précédent : **`coachMsaOffers`** modale + **`byPriceId`**…)
+- **Dernière mise à jour :** 13 mai 2026 (**`coachMsaSubscription.billingAddress`** + **`billingInfoTitle`** ; précédent : **`coachPlatform.validation`** — erreurs préparation Customer Stripe…)
 
 ### **docs/AUTH_EMAIL_TEMPLATES.md**
 - **Contenu :** Guide de configuration des emails d’auth Supabase (sujet, i18n FR/EN, variables, dépannage logo). **Les fichiers HTML des templates** (Confirm signup, puis Magic Link, Reset Password, etc.) sont dans **docs/email-templates/**.
@@ -92,9 +92,9 @@
 - **Créé le :** 19 février 2026
 
 ### **docs/design-coach-platform-subscription/** (design feature — référence UI)
-- **Contenu :** Maquettes HTML et README d’index pour l’**abonnement plateforme coach** (page Mon Abonnement, Mes athlètes bloqué, modale Stripe, **carte abo actif / essai**, **défaut de paiement sans grâce**) ; **README** inclut un pointeur vers les fichiers d’implémentation (`coach-platform-subscription`, libs Stripe, **`fetchCoachPlatformSubscriptionCardDetails`**, migration **074**). Maquette **grâce 3 j** → **`docs/archive/design-coach-platform-subscription-grace/`** (archivée).
+- **Contenu :** Maquettes HTML et README d’index pour l’**abonnement plateforme coach** (page Mon Abonnement, Mes athlètes bloqué, modale Stripe, **carte abo actif / essai**, **défaut de paiement sans grâce**, **adresse de facturation** `MOCKUP_US_COACH_PLATFORM_BILLING_ADDRESS.html`) ; **README** inclut pointeurs d’implémentation (`coach-platform-subscription`, **`coachPlatformBillingAddressActions`**, **`lib/stripeCoachPlatformBillingAddress`**, libs Stripe, **`fetchCoachPlatformSubscriptionCardDetails`**, migration **074**). Maquette **grâce 3 j** → **`docs/archive/design-coach-platform-subscription-grace/`** (archivée).
 - **Utiliser pour :** Contexte UI historique ; le détail produit / technique à jour est dans **`Project_context.md`** §4.4 et **`DEPLOYMENT_NOTES.md`** (Stripe).
-- **Dernière mise à jour :** 13 mai 2026 (README : carte abo + **074** + archive maquette grâce ; précédent : implémentation modale…)
+- **Dernière mise à jour :** 13 mai 2026 (US adresse facturation + **`FORM_LABEL_CLASSES`** sous-sections ; précédent : carte abo + **074**…)
 
 ### **docs/design-rpe-planned-intensity/** (design feature — non archivé)
 - **Contenu :** **DESIGN_RPE_PLANNED_INTENSITY.md** (solution validée, hypothèses, **US-RPE-01 à US-RPE-05**, critères d’acceptation, table RPE FR + proposition EN, composants, points ouverts) ; **SPEC_ARCHITECTE_RPE_PLANNED_INTENSITY.md** (migration `planned_intensity`, table des fichiers, `saveWorkoutStatusAndComment`, RLS, edge cases, tests manuels) ; **README.md** (index fichiers) ; maquettes HTML **MOCKUP_US1** … **US5** + **MOCKUP_OPTION_A_RPE_MODAL.html** (interactif) ; **MOCKUP_OPTION_B_RPE_INLINE.html** (option non retenue).

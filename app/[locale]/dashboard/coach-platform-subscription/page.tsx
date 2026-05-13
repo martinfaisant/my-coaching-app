@@ -18,6 +18,9 @@ import {
 import type { CoachPlatformSubscription } from '@/types/database'
 import { formatShortDate } from '@/lib/dateUtils'
 import { CoachPlatformSubscriptionOffers } from '@/components/CoachPlatformSubscriptionOffers'
+import { CoachPlatformBillingAddressSection } from '@/components/CoachPlatformBillingAddressSection'
+import { loadCoachBillingAddressForPage } from '@/app/[locale]/dashboard/coach-platform-subscription/coachPlatformBillingAddressActions'
+import { FORM_LABEL_CLASSES } from '@/lib/formStyles'
 
 function hasManagingPlatformSubscription(row: CoachPlatformSubscription | null): boolean {
   if (!row) return false
@@ -53,6 +56,8 @@ function inactiveSubscriptionStatusLabel(t: (key: string) => string, status: str
       return t('subscriptionStatus.incomplete_expired')
     case 'paused':
       return t('subscriptionStatus.paused')
+    case 'none':
+      return t('subscriptionStatus.none')
     default:
       return status
   }
@@ -90,6 +95,7 @@ export default async function CoachPlatformSubscriptionPage({ params }: { params
   }
 
   const t = await getTranslations({ locale, namespace: 'coachMsaSubscription' })
+  const tBillAddr = await getTranslations({ locale, namespace: 'coachMsaSubscription.billingAddress' })
   const supabase = await createClient()
 
   const { data: platformRow } = await supabase
@@ -100,10 +106,11 @@ export default async function CoachPlatformSubscriptionPage({ params }: { params
 
   const row = (platformRow ?? null) as CoachPlatformSubscription | null
 
-  const [catalogResult, cardDetails, billingResult] = await Promise.all([
+  const [catalogResult, cardDetails, billingResult, billingAddressResult] = await Promise.all([
     loadCoachPlatformCatalogForEnv(),
     fetchCoachPlatformSubscriptionCardDetails(row?.stripe_subscription_id ?? null),
     fetchCoachPlatformBillingHistory(row?.stripe_customer_id ?? null),
+    loadCoachBillingAddressForPage(row?.stripe_customer_id ?? null),
   ])
 
   const managing = hasManagingPlatformSubscription(row)
@@ -193,7 +200,9 @@ export default async function CoachPlatformSubscriptionPage({ params }: { params
               <p className="text-sm text-stone-600 mt-2">
                 {row.status === 'past_due' || row.status === 'unpaid'
                   ? t('paymentDefaultDescription')
-                  : t('inactiveSubscriptionDescription')}
+                  : row.status === 'none'
+                    ? t('stripeCustomerOnlyDescription')
+                    : t('inactiveSubscriptionDescription')}
               </p>
             </>
           )}
@@ -210,15 +219,25 @@ export default async function CoachPlatformSubscriptionPage({ params }: { params
         <p className="text-sm text-stone-500 mb-8">{t('noOffersConfigured')}</p>
       ) : null}
 
-      <section className="space-y-8" aria-labelledby="coach-msa-billing-heading">
-        <h2 id="coach-msa-billing-heading" className="text-sm font-bold uppercase tracking-wider text-stone-700">
-          {t('billingHistoryTitle')}
+      <section className="space-y-8 mb-8" aria-labelledby="coach-msa-billing-info-heading">
+        <h2 id="coach-msa-billing-info-heading" className="text-sm font-bold uppercase tracking-wider text-stone-700">
+          {t('billingInfoTitle')}
         </h2>
 
-        {historyError ? <p className="text-sm text-palette-danger mb-4">{t('errors.historyUnavailable')}</p> : null}
+        <div className="space-y-2">
+          <h3 id="coach-billing-address-subheading" className={FORM_LABEL_CLASSES}>
+            {tBillAddr('sectionTitle')}
+          </h3>
+          <CoachPlatformBillingAddressSection
+            initialFields={billingAddressResult.fields}
+            loadError={billingAddressResult.loadError}
+          />
+        </div>
+
+        {historyError ? <p className="text-sm text-palette-danger">{t('errors.historyUnavailable')}</p> : null}
 
         <div>
-          <h3 className="text-xs font-semibold text-stone-800 mb-2">{t('invoicesTitle')}</h3>
+          <h3 className={FORM_LABEL_CLASSES}>{t('invoicesTitle')}</h3>
           {history.invoices.length === 0 ? (
             <p className="text-sm text-stone-500 py-6 text-center rounded-xl border border-dashed border-stone-200 bg-white">
               {t('invoicesEmpty')}
@@ -271,7 +290,7 @@ export default async function CoachPlatformSubscriptionPage({ params }: { params
         </div>
 
         <div>
-          <h3 className="text-xs font-semibold text-stone-800 mb-2">{t('failedPaymentsTitle')}</h3>
+          <h3 className={FORM_LABEL_CLASSES}>{t('failedPaymentsTitle')}</h3>
           {history.failedPayments.length === 0 ? (
             <p className="text-sm text-stone-500 py-6 text-center rounded-xl border border-dashed border-stone-200 bg-white">
               {t('failedPaymentsEmpty')}
@@ -298,7 +317,7 @@ export default async function CoachPlatformSubscriptionPage({ params }: { params
         </div>
 
         <div>
-          <h3 className="text-xs font-semibold text-stone-800 mb-2">{t('refundsTitle')}</h3>
+          <h3 className={FORM_LABEL_CLASSES}>{t('refundsTitle')}</h3>
           {history.refunds.length === 0 ? (
             <p className="text-sm text-stone-500 py-6 text-center rounded-xl border border-dashed border-stone-200 bg-white">
               {t('refundsEmpty')}

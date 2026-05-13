@@ -1606,11 +1606,12 @@
     "trialFree": "Essai gratuit",
     "cardPricingUnavailable": "Montant de l’offre indisponible pour le moment.",
     "paymentDefaultDescription": "Votre dernier paiement n’a pas abouti. L’accès aux fonctionnalités réservées aux abonnés est suspendu tant que la situation n’est pas régularisée. Vous pouvez souscrire à nouveau ci-dessous si une offre est disponible.",
+    "stripeCustomerOnlyDescription": "Votre compte client Stripe est prêt pour la facturation. Souscrivez à une offre ci-dessous lorsque vous souhaitez l’accès complet à la plateforme.",
     "offersTitle": "Offres disponibles",
     "subscribeCta": "Souscrire",
     "subscribePending": "Redirection…",
     "noOffersConfigured": "Aucune offre n’est configurée pour le moment. Contactez le support si besoin.",
-    "billingHistoryTitle": "Historique de facturation",
+    "billingInfoTitle": "Informations de facturation",
     "invoicesTitle": "Factures",
     "invoicesEmpty": "Aucune facture pour le moment.",
     "failedPaymentsTitle": "Paiements échoués",
@@ -1635,7 +1636,8 @@
       "canceled": "Annulé",
       "incomplete": "Incomplet",
       "incomplete_expired": "Expiré (incomplet)",
-      "paused": "En pause"
+      "paused": "En pause",
+      "none": "Profil de facturation uniquement"
     },
     "invoiceStatus": {
       "paid": "Payée",
@@ -1647,6 +1649,56 @@
     "errors": {
       "catalogUnavailable": "Impossible de charger les offres. Réessayez plus tard ou contactez le support.",
       "historyUnavailable": "Impossible de charger l’historique de facturation pour le moment."
+    },
+    "billingAddress": {
+      "sectionTitle": "Adresse de facturation",
+      "cardTitle": "Adresse de facturation",
+      "formTitle": "Adresse de facturation",
+      "emptyDescription": "Aucune adresse de facturation n’est enregistrée.",
+      "addAddress": "Ajouter une adresse",
+      "edit": "Modifier",
+      "line1": "Ligne d’adresse 1",
+      "line2Optional": "Ligne d’adresse 2 (optionnel)",
+      "city": "Ville",
+      "postalCode": "Code postal",
+      "province": "Province / territoire",
+      "provincePlaceholder": "Sélectionner…",
+      "country": "Pays",
+      "countryDisplay": "Canada",
+      "saving": "Enregistrement…",
+      "saved": "Enregistré",
+      "loadError": "Impossible de récupérer votre adresse de facturation. Vérifiez votre connexion ou réessayez.",
+      "retry": "Réessayer",
+      "errors": {
+        "stripeUnavailable": "Le service de paiement est indisponible. Réessayez plus tard.",
+        "stripeCustomerFailed": "Impossible de préparer votre client Stripe. Réessayez plus tard.",
+        "persistFailed": "Impossible d’enregistrer la référence client. Réessayez ou contactez le support.",
+        "saveFailed": "Impossible d’enregistrer l’adresse. Réessayez plus tard."
+      },
+      "validation": {
+        "notAuthenticated": "Vous devez être connecté.",
+        "coachOnly": "Seuls les coachs peuvent modifier cette adresse.",
+        "line1Required": "La ligne d’adresse 1 est obligatoire.",
+        "cityRequired": "La ville est obligatoire.",
+        "postalRequired": "Le code postal est obligatoire.",
+        "provinceRequired": "Veuillez sélectionner une province ou un territoire.",
+        "missingEmail": "Votre profil doit comporter une adresse e-mail avant d’enregistrer une adresse de facturation."
+      },
+      "provinces": {
+        "AB": "Alberta",
+        "BC": "Colombie-Britannique",
+        "MB": "Manitoba",
+        "NB": "Nouveau-Brunswick",
+        "NL": "Terre-Neuve-et-Labrador",
+        "NS": "Nouvelle-Écosse",
+        "NT": "Territoires du Nord-Ouest",
+        "NU": "Nunavut",
+        "ON": "Ontario",
+        "PE": "Île-du-Prince-Édouard",
+        "QC": "Québec",
+        "SK": "Saskatchewan",
+        "YT": "Yukon"
+      }
     }
   },
   "coachMsaOffers": {

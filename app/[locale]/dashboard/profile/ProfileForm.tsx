@@ -956,8 +956,8 @@ export function ProfileForm({
           {/* Bio (coach uniquement) — EN à gauche, FR à droite (composant LanguagePrefixField) */}
           {isCoach && (
           <div className="mb-5">
-            <h2 className="text-sm font-bold uppercase tracking-wider text-stone-700 mb-3">{tProfile('presentation')}</h2>
-            <p className="text-xs text-stone-400 mb-2">{tProfile('presentationSubtitle')}</p>
+            <h2 className="text-sm font-bold uppercase tracking-wider text-stone-700 mb-2">{tProfile('presentation')}</h2>
+            <p className="text-xs text-stone-500 mb-3">{tProfile('presentationSubtitle')}</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
               <div className="relative">
                 <LanguagePrefixTextarea
@@ -998,7 +998,7 @@ export function ProfileForm({
               {tProfile('workoutPrimaryMetricsSectionTitle')}
             </h2>
             <p className="text-xs text-stone-500 mb-3">{tProfile('workoutPrimaryMetricsIntro')}</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <div
                 className={`rounded-xl border border-stone-200 bg-white p-3 flex items-center justify-between gap-3 border-l-4 ${SPORT_CARD_STYLES.course.borderLeft}`}
               >

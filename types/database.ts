@@ -117,7 +117,10 @@ export type CoachAthleteNote = {
   updated_at: string
 }
 
-/** Abonnement Stripe coach → plateforme (ligne unique par coach). */
+/**
+ * Abonnement Stripe coach → plateforme (ligne unique par coach).
+ * `status` = statuts Stripe (`active`, `trialing`, …) ou `none` si seul un client Stripe existe (adresse facturation sans abonnement).
+ */
 export type CoachPlatformSubscription = {
   coach_id: string
   stripe_customer_id: string | null
