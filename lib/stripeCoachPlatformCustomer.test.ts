@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   appLocaleToStripeCheckoutLocale,
   appLocaleToStripePreferredLocales,
+  formatCoachPlatformStripeCustomerName,
 } from './stripeCoachPlatformCustomer'
 
 describe('appLocaleToStripePreferredLocales', () => {
@@ -25,5 +26,20 @@ describe('appLocaleToStripeCheckoutLocale', () => {
   it('maps other locales to en', () => {
     expect(appLocaleToStripeCheckoutLocale('en')).toBe('en')
     expect(appLocaleToStripeCheckoutLocale('es')).toBe('en')
+  })
+})
+
+describe('formatCoachPlatformStripeCustomerName', () => {
+  it('joins first and last with a space', () => {
+    expect(formatCoachPlatformStripeCustomerName('Jean', 'Dupont')).toBe('Jean Dupont')
+  })
+
+  it('trims segments and drops empties', () => {
+    expect(formatCoachPlatformStripeCustomerName('  Marie  ', null)).toBe('Marie')
+    expect(formatCoachPlatformStripeCustomerName(undefined, '  Martin ')).toBe('Martin')
+  })
+
+  it('returns empty when both missing', () => {
+    expect(formatCoachPlatformStripeCustomerName(null, '')).toBe('')
   })
 })

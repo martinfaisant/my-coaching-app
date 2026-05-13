@@ -166,16 +166,25 @@ export async function resolveOrCreateCoachPlatformStripeCustomerId(params: {
   email: string | null | undefined
   locale: string
   existingRow: CoachPlatformSubscription | null
+  /** `Customer.name` (déjà formaté prénom + nom). Si défini, appliqué en create/update Stripe. */
+  displayNameForStripe?: string
 }): Promise<
   | { ok: true; customerId: string }
   | { ok: false; reason: 'missing_email' | 'stripe_customer_failed' | 'persist_failed' }
 > {
-  const { stripe, supabaseUser, admin, coachId, email, locale, existingRow } = params
+  const { stripe, supabaseUser, admin, coachId, email, locale, existingRow, displayNameForStripe } = params
 
   let customerId = await resolveExistingCoachPlatformStripeCustomerId(stripe, supabaseUser, coachId)
 
   if (!customerId) {
-    const ensured = await ensureCoachPlatformStripeCustomerForCheckout(stripe, supabaseUser, coachId, email, locale)
+    const ensured = await ensureCoachPlatformStripeCustomerForCheckout(
+      stripe,
+      supabaseUser,
+      coachId,
+      email,
+      locale,
+      displayNameForStripe
+    )
     if (!ensured.ok) {
       return { ok: false, reason: ensured.reason }
     }
@@ -188,11 +197,15 @@ export async function resolveOrCreateCoachPlatformStripeCustomerId(params: {
   }
 
   try {
-    await stripe.customers.update(customerId, {
+    const patch: Stripe.CustomerUpdateParams = {
       preferred_locales: appLocaleToStripePreferredLocales(locale),
-    })
+    }
+    if (displayNameForStripe !== undefined) {
+      patch.name = displayNameForStripe.length > 0 ? displayNameForStripe : ''
+    }
+    await stripe.customers.update(customerId, patch)
   } catch (e) {
-    logger.warn('resolveOrCreateCoachPlatformStripeCustomerId: preferred_locales update failed', {
+    logger.warn('resolveOrCreateCoachPlatformStripeCustomerId: customer patch failed', {
       coachId,
       customerId,
       cause: e instanceof Error ? e.message : String(e),

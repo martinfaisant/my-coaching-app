@@ -70,7 +70,7 @@ STRIPE_COACH_PLATFORM_PRICE_ID=price_...
 # STRIPE_COACH_PLATFORM_PRICE_IDS=price_xxx,price_yyy
 # Libellés FR/EN des cartes (page + modale avant Checkout) : `messages/fr.json` & `en.json` → `coachMsaOffers.byPriceId` (une entrée par `price_…` listé ci-dessus ; repli sur le nom/description produit Stripe si absent).
 # URL publique de l’app (repli si l’hôte de la requête n’est pas autorisé pour Stripe Checkout) : NEXT_PUBLIC_SITE_URL ou, à défaut, NEXT_PUBLIC_APP_URL. En preview Vercel, les success/cancel URL utilisent l’hôte courant (*.vercel.app) lorsque les en-têtes le permettent — voir `lib/checkoutReturnOrigin.ts`.
-# Comportement Checkout : `ensureCoachPlatformStripeCustomerForCheckout` (`lib/stripeCoachPlatformCustomer.ts`) résout ou crée le Customer `cus_…` (base → liste Stripe par e-mail + `metadata.coach_id` → création), met à jour `preferred_locales` selon la locale du portail (`/fr` / `/en`), puis ouvre Checkout avec `customer` + `locale` de session. E-mail profil coach obligatoire.
+# Comportement Checkout : `ensureCoachPlatformStripeCustomerForCheckout` (`lib/stripeCoachPlatformCustomer.ts`) résout ou crée le Customer `cus_…` (base → liste Stripe par e-mail + `metadata.coach_id` → création), met à jour `preferred_locales` selon la locale du portail (`/fr` / `/en`) et `Customer.name` à partir du prénom/nom profil (`formatCoachPlatformStripeCustomerName`), puis ouvre Checkout avec `customer` + `locale` de session. Après sauvegarde Mon profil, un coach avec `stripe_customer_id` déclenche `syncCoachPlatformStripeCustomerNameIfPresent` (sans bloquer le save si Stripe échoue). E-mail profil coach obligatoire.
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ```
 
@@ -288,6 +288,6 @@ Pour toute question sur l'architecture ou les conventions, consulter :
 
 ---
 
-**Dernière mise à jour :** 5 mai 2026  
+**Dernière mise à jour :** 13 mai 2026 (Stripe coach : **`Customer.name`** + doc Analyste ; précédent : 5 mai 2026)  
 **Version :** 1.0.0  
 **License :** MIT

@@ -16,6 +16,7 @@ import type { CoachPlatformCatalogOffer } from '@/lib/stripeCoachPlatformCatalog
 import {
   appLocaleToStripeCheckoutLocale,
   ensureCoachPlatformStripeCustomerForCheckout,
+  formatCoachPlatformStripeCustomerName,
 } from '@/lib/stripeCoachPlatformCustomer'
 
 export type CoachPlatformCheckoutResult = { ok: true; url: string } | { ok: false; error: string }
@@ -96,7 +97,11 @@ export async function createCoachPlatformCheckoutSession(
     return { ok: false, error: t('notAuthenticated') }
   }
 
-  const { data: profile } = await supabase.from('profiles').select('role, email').eq('user_id', auth.user.id).single()
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role, email, first_name, last_name')
+    .eq('user_id', auth.user.id)
+    .single()
   if (profile?.role !== 'coach') {
     return { ok: false, error: t('coachOnly') }
   }
@@ -114,12 +119,15 @@ export async function createCoachPlatformCheckoutSession(
 
   const idempotencyKey = `coach-platform-checkout-${auth.user.id}-${Math.floor(Date.now() / 10000)}`
 
+  const displayNameForStripe = formatCoachPlatformStripeCustomerName(profile.first_name, profile.last_name)
+
   const customerRes = await ensureCoachPlatformStripeCustomerForCheckout(
     stripe,
     supabase,
     auth.user.id,
     profile.email,
-    locale
+    locale,
+    displayNameForStripe
   )
   if (!customerRes.ok) {
     if (customerRes.reason === 'missing_email') {

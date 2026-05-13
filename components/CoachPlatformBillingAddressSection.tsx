@@ -30,6 +30,16 @@ function fieldsEqual(a: CoachBillingAddressFields, b: CoachBillingAddressFields)
   )
 }
 
+function normalizeBillingFields(f: CoachBillingAddressFields | null): CoachBillingAddressFields {
+  return {
+    line1: f?.line1 ?? '',
+    line2: f?.line2 ?? '',
+    city: f?.city ?? '',
+    postalCode: f?.postalCode ?? '',
+    provinceCode: f?.provinceCode ?? '',
+  }
+}
+
 export function CoachPlatformBillingAddressSection({ initialFields, loadError }: CoachPlatformBillingAddressSectionProps) {
   const router = useRouter()
   const locale = useLocale()
@@ -50,15 +60,24 @@ export function CoachPlatformBillingAddressSection({ initialFields, loadError }:
   )
 
   const previousIsSubmittingRef = useRef(false)
+  const savedFeedbackHideTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const [showSavedFeedback, setShowSavedFeedback] = useState(false)
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
-  const initialValuesRef = useRef<CoachBillingAddressFields>({
-    line1: initialFields?.line1 ?? '',
-    line2: initialFields?.line2 ?? '',
-    city: initialFields?.city ?? '',
-    postalCode: initialFields?.postalCode ?? '',
-    provinceCode: initialFields?.provinceCode ?? '',
-  })
+  const [savedSnapshot, setSavedSnapshot] = useState<CoachBillingAddressFields>(() =>
+    normalizeBillingFields(initialFields)
+  )
+
+  const normalizedServer = useMemo(() => normalizeBillingFields(initialFields), [initialFields])
+  const serverJson = JSON.stringify(normalizedServer)
+  const [prevServerJson, setPrevServerJson] = useState<string | null>(null)
+  if (prevServerJson === null || serverJson !== prevServerJson) {
+    setPrevServerJson(serverJson)
+    setLine1(normalizedServer.line1)
+    setLine2(normalizedServer.line2)
+    setCity(normalizedServer.city)
+    setPostalCode(normalizedServer.postalCode)
+    setProvince(normalizedServer.provinceCode)
+    setSavedSnapshot({ ...normalizedServer })
+  }
 
   const provinceOptions: DropdownOption[] = useMemo(() => {
     const placeholder: DropdownOption = { value: '', label: t('provincePlaceholder') }
@@ -70,30 +89,17 @@ export function CoachPlatformBillingAddressSection({ initialFields, loadError }:
   }, [t])
 
   const syncFromProps = useCallback((f: CoachBillingAddressFields | null) => {
-    const next: CoachBillingAddressFields = {
-      line1: f?.line1 ?? '',
-      line2: f?.line2 ?? '',
-      city: f?.city ?? '',
-      postalCode: f?.postalCode ?? '',
-      provinceCode: f?.provinceCode ?? '',
-    }
+    const next = normalizeBillingFields(f)
     setLine1(next.line1)
     setLine2(next.line2)
     setCity(next.city)
     setPostalCode(next.postalCode)
     setProvince(next.provinceCode)
-    initialValuesRef.current = { ...next }
-    setHasUnsavedChanges(false)
+    setSavedSnapshot({ ...next })
   }, [])
 
-  useEffect(() => {
-    syncFromProps(initialFields)
-  }, [initialFields, syncFromProps])
-
-  useEffect(() => {
-    const cur: CoachBillingAddressFields = { line1, line2, city, postalCode, provinceCode: province }
-    setHasUnsavedChanges(!fieldsEqual(cur, initialValuesRef.current))
-  }, [line1, line2, city, postalCode, province])
+  const curDraft: CoachBillingAddressFields = { line1, line2, city, postalCode, provinceCode: province }
+  const hasUnsavedChanges = !fieldsEqual(curDraft, savedSnapshot)
 
   const saveFeedbackKey = `${state?.success ?? ''}|${state?.error ?? ''}|${isPending}`
 
@@ -102,17 +108,34 @@ export function CoachPlatformBillingAddressSection({ initialFields, loadError }:
     previousIsSubmittingRef.current = isPending
 
     if (state?.success && justFinishedSubmitting) {
-      setShowSavedFeedback(true)
-      router.refresh()
-      setMode('view')
       const next: CoachBillingAddressFields = { line1, line2, city, postalCode, provinceCode: province }
-      initialValuesRef.current = { ...next }
-      setHasUnsavedChanges(false)
-      const timer = setTimeout(() => setShowSavedFeedback(false), 2200)
-      return () => clearTimeout(timer)
+      let cancelled = false
+      queueMicrotask(() => {
+        if (cancelled) return
+        setShowSavedFeedback(true)
+        router.refresh()
+        setMode('view')
+        setSavedSnapshot({ ...next })
+        if (savedFeedbackHideTimerRef.current !== undefined) {
+          clearTimeout(savedFeedbackHideTimerRef.current)
+        }
+        savedFeedbackHideTimerRef.current = setTimeout(() => {
+          setShowSavedFeedback(false)
+          savedFeedbackHideTimerRef.current = undefined
+        }, 2200)
+      })
+      return () => {
+        cancelled = true
+        if (savedFeedbackHideTimerRef.current !== undefined) {
+          clearTimeout(savedFeedbackHideTimerRef.current)
+          savedFeedbackHideTimerRef.current = undefined
+        }
+      }
     }
     if (state?.error) {
-      setShowSavedFeedback(false)
+      queueMicrotask(() => {
+        setShowSavedFeedback(false)
+      })
     }
     return undefined
   }, [saveFeedbackKey, isPending, state?.success, state?.error, router, line1, line2, city, postalCode, province])

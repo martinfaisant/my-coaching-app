@@ -1,8 +1,0 @@
-2026-05-04T17:39:27.4290000Z Evaluating ci.if
-2026-05-04T17:39:27.4290000Z Evaluating: success()
-2026-05-04T17:39:27.4290000Z Result: true
-2026-05-04T17:39:27.4410000Z Requested labels: ubuntu-latest
-2026-05-04T17:39:27.4410000Z Job defined at: martinfaisant/my-coaching-app/.github/workflows/ci.yml@refs/pull/79/merge
-2026-05-04T17:39:27.4410000Z Waiting for a runner to pick up this job...
-2026-05-04T17:39:27.8340000Z Job is about to start running on the hosted runner: GitHub Actions 1000000030
-2026-05-04T17:39:27.8340000Z Job is waiting for a hosted runner to come online.

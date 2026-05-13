@@ -13,6 +13,7 @@ import {
   resolveOrCreateCoachPlatformStripeCustomerId,
   updateStripeCustomerBillingAddress,
 } from '@/lib/stripeCoachPlatformBillingAddress'
+import { formatCoachPlatformStripeCustomerName } from '@/lib/stripeCoachPlatformCustomer'
 
 export type CoachBillingAddressFormState = {
   error?: string
@@ -40,7 +41,7 @@ export async function saveCoachPlatformBillingAddress(
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('role, email')
+    .select('role, email, first_name, last_name')
     .eq('user_id', auth.user.id)
     .single()
 
@@ -93,6 +94,8 @@ export async function saveCoachPlatformBillingAddress(
   const existingRow = (platformRow ?? null) as CoachPlatformSubscription | null
 
   const admin = createAdminClient()
+  const displayNameForStripe = formatCoachPlatformStripeCustomerName(profile.first_name, profile.last_name)
+
   const resolved = await resolveOrCreateCoachPlatformStripeCustomerId({
     stripe,
     supabaseUser: supabase,
@@ -101,6 +104,7 @@ export async function saveCoachPlatformBillingAddress(
     email: profile.email,
     locale,
     existingRow,
+    displayNameForStripe,
   })
 
   if (!resolved.ok) {

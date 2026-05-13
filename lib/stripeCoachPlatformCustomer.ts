@@ -9,6 +9,17 @@ export function appLocaleToStripePreferredLocales(locale: string): string[] {
   return ['en']
 }
 
+/** Prénom + nom profil → `Customer.name` Stripe (trim, ordre prénom puis nom). */
+export function formatCoachPlatformStripeCustomerName(
+  firstName: string | null | undefined,
+  lastName: string | null | undefined
+): string {
+  const f = typeof firstName === 'string' ? firstName.trim() : ''
+  const l = typeof lastName === 'string' ? lastName.trim() : ''
+  if (f && l) return `${f} ${l}`
+  return f || l
+}
+
 /** Locales app → Stripe Checkout Session `locale` (page de paiement). */
 export function appLocaleToStripeCheckoutLocale(locale: string): 'fr' | 'en' {
   const normalized = locale.trim().toLowerCase()
@@ -64,15 +75,63 @@ export async function syncCoachPlatformStripeCustomerPreferredLocalesIfPresent(
 }
 
 /**
+ * Si une ligne `coach_platform_subscriptions` existe avec un `stripe_customer_id` valide,
+ * aligne `Customer.name` sur le prénom / nom profil. Ne lève pas : journalise uniquement.
+ */
+export async function syncCoachPlatformStripeCustomerNameIfPresent(
+  stripe: Stripe,
+  supabase: SupabaseClient,
+  coachId: string,
+  firstName: string | null,
+  lastName: string | null
+): Promise<void> {
+  const { data: row, error } = await supabase
+    .from('coach_platform_subscriptions')
+    .select('stripe_customer_id')
+    .eq('coach_id', coachId)
+    .maybeSingle()
+
+  if (error) {
+    logger.error('syncCoachPlatformStripeCustomerNameIfPresent: select failed', error, {
+      coachId,
+    })
+    return
+  }
+
+  const raw = row?.stripe_customer_id
+  const customerId = typeof raw === 'string' ? raw.trim() : ''
+  if (!customerId.startsWith('cus_')) {
+    return
+  }
+
+  const name = formatCoachPlatformStripeCustomerName(firstName, lastName)
+
+  try {
+    await stripe.customers.update(customerId, {
+      name: name.length > 0 ? name : '',
+    })
+  } catch (e) {
+    logger.warn('syncCoachPlatformStripeCustomerNameIfPresent: customers.update failed', {
+      coachId,
+      stripeCustomerId: customerId,
+      cause: e instanceof Error ? e.message : String(e),
+    })
+  }
+}
+
+/**
  * Résout ou crée le Customer Stripe coach, synchronise `preferred_locales` avec la locale portail.
  * Ordre : id en base → client Stripe même email + metadata `coach_id` → création.
+ *
+ * @param displayNameForStripe — nom affiché Stripe (`Customer.name`). Si défini (y compris `''`), inclus aux create/update.
  */
 export async function ensureCoachPlatformStripeCustomerForCheckout(
   stripe: Stripe,
   supabase: SupabaseClient,
   coachId: string,
   email: string | null | undefined,
-  locale: string
+  locale: string,
+  displayNameForStripe?: string
 ): Promise<EnsureCoachPlatformStripeCustomerResult> {
   const preferredLocales = appLocaleToStripePreferredLocales(locale)
 
@@ -96,7 +155,11 @@ export async function ensureCoachPlatformStripeCustomerForCheckout(
 
   if (customerId) {
     try {
-      await stripe.customers.update(customerId, { preferred_locales: preferredLocales })
+      const updateBody: Stripe.CustomerUpdateParams = { preferred_locales: preferredLocales }
+      if (displayNameForStripe !== undefined) {
+        updateBody.name = displayNameForStripe.length > 0 ? displayNameForStripe : ''
+      }
+      await stripe.customers.update(customerId, updateBody)
     } catch (e) {
       logger.error('ensureCoachPlatformStripeCustomerForCheckout: customers.update failed', e instanceof Error ? e : undefined, {
         coachId,
@@ -113,14 +176,17 @@ export async function ensureCoachPlatformStripeCustomerForCheckout(
 
   const localeKey = appLocaleToStripeCheckoutLocale(locale)
   try {
-    const created = await stripe.customers.create(
-      {
-        email: emailTrimmed,
-        preferred_locales: preferredLocales,
-        metadata: { coach_id: coachId },
-      },
-      { idempotencyKey: `coach-platform-customer-${coachId}-${localeKey}` }
-    )
+    const createBody: Stripe.CustomerCreateParams = {
+      email: emailTrimmed,
+      preferred_locales: preferredLocales,
+      metadata: { coach_id: coachId },
+    }
+    if (displayNameForStripe !== undefined && displayNameForStripe.length > 0) {
+      createBody.name = displayNameForStripe
+    }
+    const created = await stripe.customers.create(createBody, {
+      idempotencyKey: `coach-platform-customer-${coachId}-${localeKey}`,
+    })
     return { ok: true, customerId: created.id }
   } catch (e) {
     logger.error('ensureCoachPlatformStripeCustomerForCheckout: customers.create failed', e instanceof Error ? e : undefined, {
