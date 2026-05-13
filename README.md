@@ -11,7 +11,7 @@ My Sport Ally est une marketplace + plateforme de coaching permettant aux athlè
 - Communiquer avec leur coach via messagerie intégrée
 - Synchroniser leurs activités Strava
 
-Les **visiteurs et utilisateurs** peuvent contacter le support via la page publique **Contact** (`/contact`), avec accusé de réception (référence MSA) et notification e-mail côté équipe (voir variables Resend ci-dessous).
+Les **visiteurs et utilisateurs** peuvent contacter le support via la page publique **Contact** (`/contact`), avec accusé de réception (référence MSA) et notification e-mail côté équipe (voir variables Resend ci-dessous). Les utilisateurs **connectés** qui ouvrent l’accueil marketing **`/`** ou **`/en`** sont **redirigés** vers la page d’entrée du tableau de bord selon leur rôle (détail : **Project_context.md** §4.0, code **`lib/dashboardEntryPath.ts`**).
 
 ## 🚀 Quick Start
 

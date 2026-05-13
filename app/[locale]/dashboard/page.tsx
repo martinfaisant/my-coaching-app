@@ -1,4 +1,6 @@
 import type { Metadata } from 'next'
+import { getDashboardEntryPath } from '@/lib/dashboardEntryPath'
+import { pathWithLocale } from '@/lib/pathWithLocale'
 import { getCurrentUserWithProfile } from '@/utils/auth'
 import { redirect } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
@@ -13,24 +15,8 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 }
 
 /** Page d'entrée dashboard : redirections uniquement vers la page par défaut selon le rôle. */
-export default async function DashboardPage() {
+export default async function DashboardPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params
   const current = await getCurrentUserWithProfile()
-
-  if (current.profile.role === 'athlete' && current.profile.coach_id) {
-    redirect('/dashboard/calendar')
-  }
-
-  if (current.profile.role === 'athlete' && !current.profile.coach_id) {
-    redirect('/dashboard/find-coach')
-  }
-
-  if (current.profile.role === 'coach') {
-    redirect('/dashboard/athletes')
-  }
-
-  if (current.profile.role === 'admin') {
-    redirect('/dashboard/admin/members')
-  }
-
-  redirect('/dashboard/calendar')
+  redirect(pathWithLocale(locale, getDashboardEntryPath(current.profile)))
 }

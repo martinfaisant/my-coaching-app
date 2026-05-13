@@ -147,11 +147,22 @@ function matchesLanguage(coach: CoachForList, selectedLanguages: string[]): bool
 }
 
 function matchesName(coach: CoachForList, query: string): boolean {
-  const q = query.trim().toLowerCase()
-  if (q === '') return true
-  const first = (coach.first_name ?? '').trim().toLowerCase()
-  const last = (coach.last_name ?? '').trim().toLowerCase()
-  return first.includes(q) || last.includes(q)
+  const q = query.trim().toLowerCase();
+  if (q === '') return true;
+
+  const first = (coach.first_name ?? '').trim().toLowerCase();
+  const last = (coach.last_name ?? '').trim().toLowerCase();
+  
+  // On crée des combinaisons pour tester le nom complet
+  const fullName = `${first} ${last}`;
+  const fullNameReverse = `${last} ${first}`;
+
+  return (
+    first.includes(q) || 
+    last.includes(q) || 
+    fullName.includes(q) || 
+    fullNameReverse.includes(q)
+  );
 }
 
 export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}, initialPracticedSports = [], ratingsByCoach = {}, offersByCoach = {}, athleteFirstName = '', athleteLastName = '', initialWeeklyCurrentHours, initialWeeklyTargetHours, initialWeeklyVolumeBySport, initialGoals = [] }: FindCoachSectionProps) {

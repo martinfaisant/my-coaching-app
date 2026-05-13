@@ -2,7 +2,10 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
+import { getDashboardEntryPath } from '@/lib/dashboardEntryPath'
+import { pathWithLocale } from '@/lib/pathWithLocale'
 import { createClient } from '@/utils/supabase/server'
+import { getOptionalUserWithProfile } from '@/utils/auth'
 import { AuthButtons } from '@/components/AuthButtons'
 import { HomeEmailConfirmedTrigger } from '@/components/HomeEmailConfirmedTrigger'
 import { PublicOrDashboardHeader } from '@/components/PublicOrDashboardHeader'
@@ -48,6 +51,11 @@ export default async function Home({ params, searchParams }: HomePageProps) {
         locale === 'en' ? '/en/dashboard' : '/dashboard'
       redirect(dashboardPath)
     }
+  }
+
+  const sessionUser = await getOptionalUserWithProfile()
+  if (sessionUser) {
+    redirect(pathWithLocale(locale, getDashboardEntryPath(sessionUser.profile)))
   }
 
   const t = await getTranslations('landing')

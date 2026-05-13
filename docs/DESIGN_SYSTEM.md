@@ -1,7 +1,7 @@
 # 🎨 Design System
 
-**Version :** 1.34  
-**Dernière mise à jour :** 12 mai 2026 (fichiers clés Stripe : **`lib/stripeCoachPlatformCustomer.ts`** — réutilisation du Customer Checkout coach ; précédent : **CoachPlatformSubscribeOffersModal** / **CoachPlatformOfferGrid** + **`coachMsaOffers.byPriceId`**…)
+**Version :** 1.35  
+**Dernière mise à jour :** 13 mai 2026 (§ **PublicOrDashboardHeader** : accueil `/` et `/en` → visiteurs seuls, connectés redirigés ; **`lib/dashboardEntryPath.ts`** ; précédent : fichiers clés Stripe **`lib/stripeCoachPlatformCustomer.ts`**…)
 
 ---
 
@@ -1552,7 +1552,7 @@ import { Drawer } from '@/components/Drawer'
 
 **Fichier :** `components/PublicOrDashboardHeader.tsx`
 
-Composant **serveur** : si session active (`getOptionalUserWithProfile`), rendu de `DashboardTopBar` (même barre que le dashboard) ; sinon `PublicHeader`. Utilisé sur l’accueil, contact, politique de confidentialité, CGU et réinitialisation mot de passe.
+Composant **serveur** : si session active (`getOptionalUserWithProfile`), rendu de `DashboardTopBar` (même barre que le dashboard) ; sinon `PublicHeader`. Utilisé sur **contact**, **politique de confidentialité**, **CGU** et **réinitialisation mot de passe**. Sur l’**accueil** (`/` et `/en`), les utilisateurs **connectés** sont **redirigés** vers l’app avant le rendu (`app/[locale]/page.tsx` + `getDashboardEntryPath` / `pathWithLocale`) : **`PublicOrDashboardHeader`** ne s’applique donc à la landing que pour les **visiteurs** (toujours `PublicHeader` côté marketing).
 
 ```tsx
 import { PublicOrDashboardHeader } from '@/components/PublicOrDashboardHeader'
@@ -2062,6 +2062,7 @@ Actuellement, utiliser un span custom :
 - **Page Mes athlètes (coach)** : `app/[locale]/dashboard/athletes/page.tsx` (bandeaux profil / offre publiée, erreur chargement liste), `components/CoachPlatformStripeBanner.tsx`, `components/CoachPlatformCheckoutVerification.tsx`, `CoachAthletesListWithFilter.tsx`, `PendingRequestTile.tsx` ; actions Checkout **`app/[locale]/dashboard/athletes/coachPlatformActions.ts`**
 - **Sports** : `lib/sportStyles.ts` (`SPORT_CARD_STYLES`, `SPORT_BADGE_STYLES`, **`SPORT_WEEKLY_SUMMARY_BAR`**, `SPORT_ICONS`, `SPORT_TRANSLATION_KEYS`), `lib/sportsRegistry.ts` (`PERSISTED_WORKOUT_SPORT_TYPES`, `workoutIsTimeOnlySport`), `lib/sportsOptions.ts`, `components/SportIcons.tsx`
 - **Stats athlète (Nivo)** : `lib/athleteStatsNivoTheme.ts`, `lib/athleteStatsColors.ts`, `components/athlete/AthleteStatsVolumeChart.tsx`
+- **Entrée dashboard / accueil connecté** : `lib/dashboardEntryPath.ts` (`getDashboardEntryPath`), `lib/pathWithLocale.ts`, `app/[locale]/page.tsx`, `app/[locale]/dashboard/page.tsx`
 - **Horaires modale workout (coach)** : `lib/workoutFacilityHours.ts` (filtre sport ↔ type d’installation, jour, tri alphabétique)
 - **Modale workout — formats & couleurs** : `lib/workoutFormatting.ts` (format absolu et delta des métriques workout — durée, distance, allure mm:ss, vitesse km/h, dénivelé ; tests Vitest `lib/workoutFormatting.test.ts`), `lib/workoutFeedbackColors.ts` (dégradé sémantique tuiles + picker feedback : Ressenti / Intensité RPE / Plaisir)
 - **Design system page** : `app/dashboard/admin/design-system/page.tsx`
