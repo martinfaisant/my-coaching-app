@@ -18,19 +18,19 @@
 - **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), **abonnement plateforme coach Stripe** (Checkout : **`ensureCoachPlatformStripeCustomerForCheckout`**, **`preferred_locales`**, **`Customer.name`** (profil), + **`locale`** session, webhooks, migrations **073** + **074** (`coach_platform_access_granted` : accès si `active` / `trialing` uniquement), page **Mon Abonnement MySportAlly** — bloc **Informations de facturation** (adresse Canada → Stripe **`Customer.address`**, puis historiques), **modale choix d’offre** avant Checkout, bandeaux retour checkout), stack technique, **URL production https://mysportally.com**
 - **Utiliser pour :** Comprendre le projet, les features, les rôles, l'architecture globale
 - **Taille :** ~450 lignes
-- **Dernière mise à jour :** 13 mai 2026 (§ Stripe : **`Customer.name`** coach + synchro profil ; précédent : billing info…)
+- **Dernière mise à jour :** 13 mai 2026 (§4.5 calendrier : **ordre premier bloc jour** = dispos → objectifs → séances sans moment → Strava ; **tuiles disponibilité grille** — bandeau haut, typo alignée séance ; précédent : **`Customer.name`** coach…)
 
 ### **docs/CALENDAR_MONTH_VIEW.md**
-- **Contenu :** Récap **vue mois** (desktop) vs **vue semaine** (mobile), règles semaines ISO / mois civil étendu, **totaux hebdo** (liste sports `PERSISTED_WORKOUT_SPORT_TYPES`, `SPORT_WEEKLY_SUMMARY_BAR`), chargement données, liste des fichiers et tests unitaires, liens vers maquettes archivées
+- **Contenu :** Récap **vue mois** (desktop) vs **vue semaine** (mobile), règles semaines ISO / mois civil étendu, **totaux hebdo** (liste sports `PERSISTED_WORKOUT_SPORT_TYPES`, `SPORT_WEEKLY_SUMMARY_BAR`), chargement données, liste des fichiers et tests unitaires, **tuiles disponibilité** (réf. design + `CalendarView`), liens vers maquettes archivées
 - **Utiliser pour :** Cadrage produit/dev post-livraison sur le calendrier sans relire tout le code
 - **Taille :** ~95 lignes
-- **Dernière mise à jour :** 11 mai 2026 (résumé hebdo par sport + `sportVolumeHint` i18n)
+- **Dernière mise à jour :** 13 mai 2026 (tuiles dispo grille + ligne tableau fichiers ; précédent : résumé hebdo…)
 
 ### **docs/DESIGN_SYSTEM.md** ⭐
-- **Contenu :** Tokens (couleurs, typo, espacements ; **sports** : `SPORT_CARD_STYLES`, `SPORT_BADGE_STYLES`, **`SPORT_WEEKLY_SUMMARY_BAR`** résumé hebdo), composants (Button, Input, Badge, TileCard, DashboardPageShell, **DashboardTopBar**, **AthleteAccountMenu**, **AthleteStatsVolumeChart**, **AthleteStatsChartSkeleton**, Modal, **MonthSelector**, **`CoachPlatformBillingAddressSection`** — titre sous-section sur la page + **`FORM_LABEL_CLASSES`**, etc.), guidelines UI, exemples de code, §7 breakpoints (**calendrier** mois étendu desktop + WeekSelector mobile, chat, Trouver mon coach, My offers)
+- **Contenu :** Tokens (couleurs, typo, espacements ; **sports** : `SPORT_CARD_STYLES`, `SPORT_BADGE_STYLES`, **`SPORT_WEEKLY_SUMMARY_BAR`** résumé hebdo), composants (Button, Input, Badge, TileCard, DashboardPageShell, **DashboardTopBar**, **AthleteAccountMenu**, **AthleteStatsVolumeChart**, **AthleteStatsChartSkeleton**, Modal, **MonthSelector**, **`CoachPlatformBillingAddressSection`** — titre sous-section sur la page + **`FORM_LABEL_CLASSES`**, etc.), guidelines UI, exemples de code, §7 breakpoints (**calendrier** mois étendu desktop + WeekSelector mobile, **tuiles disponibilité grille** : bandeau haut, `training-card`, typo alignée séance compacte, chat, Trouver mon coach, My offers)
 - **Utiliser pour :** Créer ou modifier des composants UI, choisir des couleurs, appliquer le design system, règles responsive par page
 - **Taille :** ~2010 lignes
-- **Dernière mise à jour :** 13 mai 2026 (**Fichiers clés** : Stripe coach **`Customer.name`** + helpers ; précédent : **CoachPlatformBillingAddressSection**…)
+- **Dernière mise à jour :** 13 mai 2026 (§7 **tuiles disponibilité calendrier** ; précédent : **Fichiers clés** Stripe coach…)
 
 ### **docs/I18N.md** ⭐
 - **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces (dont **`calendar.weekly.sportVolumeHint`**), utilisation dans composants et server actions, **checklist pour nouvelles features** (toujours penser bilingue) ; **`coachMsaSubscription`** (dont **`billingInfoTitle`**, **`billingAddress`**)
@@ -101,7 +101,10 @@
 - **Utiliser pour :** Cadrage produit/UI puis **spec technique** **intensité prévisionnelle coach** (RPE 1–10), badge tuile, validation athlète ; **Mode Développeur** ensuite.
 - **Créé le :** 11 mai 2026
 
-
+### **docs/design-availability-tile-top-accent/** (design feature — référence UI livrée)
+- **Contenu :** **README.md** (index) ; **MOCKUP_US1_CALENDAR_AVAILABILITY_TILES.html** (tuiles Disponible / Indisponible : bandeau haut, typo alignée tuile séance compacte). Implémentation : **`components/CalendarView.tsx`** (`renderAvailabilityTile`).
+- **Utiliser pour :** Relire le rendu cible ; détail normatif dans **`docs/DESIGN_SYSTEM.md`** (puce calendrier §7) et **`Project_context.md`** §4.5.
+- **Dernière mise à jour :** 13 mai 2026
 
 ## 🚀 Documentation Opérationnelle
 
@@ -671,10 +674,14 @@
 - **Livraison :** L’athlète peut déclarer des créneaux **disponibilité** ou **indisponibilité** par jour (bouton « + » sur jours futurs) : type (Segments), date (en-tête avec DatePickerPopup), Début/Fin optionnels (Dropdown 15 min), Note. Plusieurs créneaux par jour. Clic sur une tuile → modale d’édition (Supprimer + Enregistrer). Le coach voit les tuiles en **lecture seule** sur le calendrier de l’athlète (modale détail, bouton Fermer). Ordre dans la colonne du jour : disponibilités → objectifs → entraînements → Strava. **Récurrence non implémentée** (un créneau = une date).
 - **Fichiers :** `athlete_availability_slots` (migration 052), `lib/availabilityValidation.ts`, `app/[locale]/dashboard/availability/actions.ts`, `components/AvailabilityModal.tsx`, `components/AvailabilityDetailModal.tsx`, `components/CalendarView.tsx`, pages calendrier, namespace i18n `availability`.
 - **Doc :** Project_context.md §4.5 (Athlete availability), §5 (athlete_availability_slots), DESIGN_SYSTEM (§7 Calendrier, modales + tuiles), I18N (namespace availability), project-core.mdc (section Disponibilités athlète).
-- **Archivage :** `docs/design-athlete-availability/` → `docs/archive/design-athlete-availability/` (DESIGN.md, SPEC_ARCHITECTURE.md, MOCKUP_*.html). Référence courante : **Project_context.md §4.5**, **docs/DESIGN_SYSTEM.md** §7.
+- **Archivage :** `docs/design-athlete-availability/` → `docs/archive/design-athlete-availability/` (DESIGN.md, SPEC_ARCHITECTURE.md, MOCKUP_*.html). Référence courante : **Project_context.md §4.5**, **docs/DESIGN_SYSTEM.md** §7 ; maquette **post-refonte tuiles grille** : **`docs/design-availability-tile-top-accent/`** (mai 2026).
+
+✅ **13 mai 2026 – Tuiles disponibilité calendrier (refonte visuelle) – Mode Analyste :**
+- **Livraison :** Tuiles Disponible / Indisponible dans la grille alignées sur la tuile séance compacte (bandeau couleur supérieur, bordure neutre, titre `stone-900`, plage horaire / note alignées sur métriques et description séance ; `training-card`). Aucun changement BDD / modales métier.
+- **Doc :** `Project_context.md` §4.5 (Calendar day structure + Athlete availability), `docs/DESIGN_SYSTEM.md` §7, `docs/CALENDAR_MONTH_VIEW.md`, `.cursor/rules/project-core.mdc`, **`docs/design-availability-tile-top-accent/`** (README + MOCKUP), **`DOCS_INDEX.md`**.
 
 ✅ **2 mars 2026 – Moment de la journée (Matin / Midi / Soir) – Mode Analyste :**
-- **Livraison :** Le coach peut indiquer optionnellement un moment de la journée (Non précisé | Matin | Midi | Soir) sur chaque entraînement (segment dans la modale création/édition). Colonne `workouts.time_of_day` (migration 051). Calendrier et modale « Activités du jour » : journée structurée en sections — premier bloc sans titre (objectifs, entraînements sans moment, Strava), puis sections Matin / Midi / Soir avec titre uniquement si non vides. Modale lecture seule : date + « · Matin » (ou Midi/Soir) si renseigné.
+- **Livraison :** Le coach peut indiquer optionnellement un moment de la journée (Non précisé | Matin | Midi | Soir) sur chaque entraînement (segment dans la modale création/édition). Colonne `workouts.time_of_day` (migration 051). Calendrier et modale « Activités du jour » : journée structurée en sections — premier bloc sans titre (disponibilités, objectifs, entraînements sans moment, Strava), puis sections Matin / Midi / Soir avec titre uniquement si non vides. Modale lecture seule : date + « · Matin » (ou Midi/Soir) si renseigné.
 - **Fichiers :** `types/database.ts`, `lib/workoutValidation.ts`, `app/[locale]/dashboard/workouts/actions.ts`, `components/WorkoutModal.tsx`, `components/CalendarView.tsx`, `messages/fr.json`, `messages/en.json`, `supabase/migrations/051_workout_time_of_day.sql`.
 - **Doc :** Project_context.md §4.5 (structure Workout, Create & edit modal, Read-only modal, Calendar day structure), §5 (workouts.time_of_day), DESIGN_SYSTEM (WorkoutModal, §7 Calendrier), I18N (workouts.form.timeOfDay*, calendar.morning/noon/evening).
 - **Archivage :** `docs/design-workout-time-of-day/` → `docs/archive/design-workout-time-of-day/` (DESIGN.md, SPEC_TIME_OF_DAY.md, MOCKUP_*.html). Référence courante : **Project_context.md §4.5**, **docs/DESIGN_SYSTEM.md**, **docs/I18N.md**.
@@ -906,7 +913,7 @@
 | **Bouton Déconnexion (page Profil)** | **`Project_context.md` §4.2.1** (Profile page), **`docs/DESIGN_SYSTEM.md`** (§ Button / LogoutButton) |
 | **Volumes hebdomadaires (Volume actuel + Volume maximum, 2 colonnes ; volume par sport ; triathlon → 3 tuiles, trail → D+)** | **`Project_context.md` §4.2.1** (Athlete profile), **`docs/DESIGN_SYSTEM.md`** (§ SportTileSelectable), **`docs/I18N.md`** (profile.*) |
 | **Mon profil mobile (marges réduites, grille volume responsive, champs 6.5rem)** | **`Project_context.md` §4.2.1** (Mon profil — mobile layout), **`docs/DESIGN_SYSTEM.md`** §7 (Page Mon profil) |
-| **Disponibilités / indisponibilités athlète (calendrier, modales, pas de récurrence)** | **`Project_context.md` §4.5** (Athlete availability), **`docs/DESIGN_SYSTEM.md`** (§7 Calendrier, AvailabilityModal, AvailabilityDetailModal) |
+| **Disponibilités / indisponibilités athlète (calendrier, modales, pas de récurrence)** | **`Project_context.md` §4.5** (Athlete availability), **`docs/DESIGN_SYSTEM.md`** (§7 Calendrier, AvailabilityModal, AvailabilityDetailModal), **`docs/design-availability-tile-top-accent/`** (maquette tuiles grille) |
 | **Bloc date objectif (mois + année, ex. Mar. 26, puis jour)** | **`Project_context.md` §4.7**, **`docs/DESIGN_SYSTEM.md`** (§ TileCard), **`lib/dateUtils.ts`** (formatGoalDateBlock) |
 | **Résultat objectif passé (saisie temps/place/note, modale, affichage tuile)** | **`Project_context.md` §4.7** (Goals), **`docs/DESIGN_SYSTEM.md`** (§ TileCard, Page Objectifs), **`lib/goalResultUtils.ts`** |
 | **Objectif de temps facultatif + édition objectif (Modifier, GoalEditModal, affichage Objectif / Réalisé)** | **`Project_context.md` §4.7** (Goals), **`docs/DESIGN_SYSTEM.md`** (§ TileCard, Page Objectifs, GoalEditModal), **`lib/goalResultUtils.ts`** (hasTargetTime, formatTargetTime) |

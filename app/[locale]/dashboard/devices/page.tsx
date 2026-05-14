@@ -15,8 +15,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 }
 
 export default async function DevicesPage({ params }: { params: Promise<{ locale: string }> }) {
-  const { locale } = await params
-  const t = await getTranslations({ locale, namespace: 'devices' })
+  await params
   const current = await getCurrentUserWithProfile()
   if (current.profile.role !== 'athlete') {
     redirect('/dashboard')

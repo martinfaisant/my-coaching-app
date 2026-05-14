@@ -13,7 +13,7 @@ import { DatePickerPopup } from '@/components/DatePickerPopup'
 import { formatDateFr } from '@/lib/dateUtils'
 import { FORM_INPUT_HEIGHT, FORM_INPUT_TEXT_SIZE } from '@/lib/formStyles'
 import { saveGoalFull, type GoalFormState } from './actions'
-import { getGoalColor, getGoalBadgeClass } from '@/lib/goalColor'
+import { getGoalBadgeClass } from '@/lib/goalColor'
 
 type GoalFullModalProps = {
   goal: Goal
@@ -51,7 +51,6 @@ export function GoalFullModal({
   const localeForPicker = locale === 'fr' ? 'fr-FR' : 'en-US'
   const today = new Date().toISOString().slice(0, 10)
   const canShowResultSection = goal.date <= today
-  const borderColor = getGoalColor(goal.is_primary, canShowResultSection)
   const badgeClass = getGoalBadgeClass(goal.is_primary)
   useEffect(() => {
     if (!isOpen) return

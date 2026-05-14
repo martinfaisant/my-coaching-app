@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { AthleteTile } from '@/components/AthleteTile'
-import { getFrozenTitleForLocale } from '@/lib/frozenOfferI18n'
 import type { AthleteTileNextGoal } from '@/components/AthleteTile'
 import { CoachSubscriptionDetailModal } from '@/app/[locale]/dashboard/CoachSubscriptionDetailModal'
 import type { CoachSubscriptionRow } from '@/app/[locale]/dashboard/CoachSubscriptionDetailModal'

@@ -19,37 +19,27 @@ import {
 } from '@/app/[locale]/dashboard/workouts/actions'
 import type {
   AthleteFacility,
-  SportType,
   Workout,
   WorkoutStatus,
   WorkoutTimeOfDay,
   WorkoutPrimaryMetricBySport,
 } from '@/types/database'
-import {
-  getWorkoutPrimaryMetricForSport,
-  isCoachWorkoutPrimaryMetricsComplete,
-} from '@/lib/workoutPrimaryMetric'
+import { isCoachWorkoutPrimaryMetricsComplete } from '@/lib/workoutPrimaryMetric'
 import { saveCoachWorkoutPrimaryMetrics, type ProfileFormState } from '@/app/[locale]/dashboard/profile/actions'
 import { Segments } from '@/components/Segments'
 import { Modal } from '@/components/Modal'
 import { Button } from '@/components/Button'
 import { Input } from '@/components/Input'
 import { Textarea } from '@/components/Textarea'
-import { Badge } from '@/components/Badge'
-import { SportTileSelectable } from '@/components/SportTileSelectable'
-import { Angry, Frown, Laugh, Meh, Smile } from 'lucide-react'
 import {
   SPORT_BADGE_STYLES,
-  SPORT_CARD_STYLES,
   SPORT_ICONS,
   SPORT_PILL_STYLES,
   SPORT_TRANSLATION_KEYS,
 } from '@/lib/sportStyles'
 import { formatDateFr, toDateStr } from '@/lib/dateUtils'
-import { FORM_BASE_CLASSES, FORM_LABEL_CLASSES, FORM_INPUT_HEIGHT, FORM_INPUT_TEXT_SIZE, TEXTAREA_SPECIFIC_CLASSES } from '@/lib/formStyles'
-import { ClockIcon, LightningIcon, MountainIcon, RulerIcon } from '@/components/workout-modal/icons'
+import { FORM_INPUT_HEIGHT, FORM_INPUT_TEXT_SIZE } from '@/lib/formStyles'
 import { useWorkoutFormReducer } from '@/components/workout-modal/useWorkoutFormReducer'
-import { WorkoutFeedbackSection } from '@/components/workout-modal/WorkoutFeedbackSection'
 import { DatePickerPopover } from '@/components/workout-modal/DatePickerPopover'
 import { CoachWorkoutForm } from '@/components/workout-modal/CoachWorkoutForm'
 import { WorkoutFacilityHoursStrip } from '@/components/workout-modal/WorkoutFacilityHoursStrip'
@@ -64,11 +54,6 @@ import {
   workoutPaceIsRunningStyle,
   workoutIsTimeOnlySport,
 } from '@/lib/sportsRegistry'
-
-const FEELING_ICONS_READONLY = [Angry, Frown, Meh, Smile, Laugh] as const
-
-/** Course et vélo : choix temps ou distance + dénivelé facultatif. Musculation : temps. Natation : temps ou distance. */
-type TargetMode = 'time' | 'distance'
 
 type WorkoutModalProps = {
   isOpen: boolean
@@ -111,34 +96,6 @@ function SubmitButton({
       successText={t('saved')}
       error={!!formState?.error}
       className="flex-1 min-w-0"
-    >
-      {t('save')}
-    </Button>
-  )
-}
-
-function CommentSubmitButton({
-  formState,
-  hasChanges,
-  showSuccess,
-}: {
-  formState?: { success?: boolean; error?: string }
-  hasChanges?: boolean
-  showSuccess?: boolean
-}) {
-  const { pending } = useFormStatus()
-  const t = useTranslations('common')
-  
-  return (
-    <Button
-      type="submit"
-      variant="primaryDark"
-      disabled={!hasChanges || pending}
-      loading={pending}
-      loadingText={t('saving')}
-      success={showSuccess}
-      successText={t('saved')}
-      className="shrink-0"
     >
       {t('save')}
     </Button>
@@ -192,8 +149,8 @@ export function WorkoutModal({
   } = workoutForm.values
   const [commentText, setCommentText] = useState('')
   const initialCommentRef = useRef<string>('')
-  const [hasCommentChanged, setHasCommentChanged] = useState(false)
-  const [showCommentSuccess, setShowCommentSuccess] = useState(false)
+  const [, setHasCommentChanged] = useState(false)
+  const [, setShowCommentSuccess] = useState(false)
   /** Statut sélectionné (vue athlète, US3). */
   const [statusSegment, setStatusSegment] = useState<WorkoutStatus>('planned')
   const initialStatusRef = useRef<WorkoutStatus>('planned')
@@ -500,17 +457,8 @@ export function WorkoutModal({
     }
   }, [workoutSaveFeedbackKey])
 
-  // Fermeture immédiate si erreur (pas de délai)
-  useEffect(() => {
-    if (state?.error && !workoutPending) {
-      // L'erreur sera affichée dans le footer, pas besoin de fermer
-    }
-    // onClose volontairement omis des deps pour éviter une boucle
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state?.error, workoutPending])
-
   // State pour la sauvegarde du commentaire avec useActionState (coach view, legacy)
-  const [commentState, commentAction, commentPending] = useActionState<
+  const [commentState, , commentPending] = useActionState<
     CommentFormState,
     FormData
   >(
@@ -617,6 +565,8 @@ export function WorkoutModal({
     if (statusCommentState?.error) setShowStatusCommentSuccess(false)
   }, [statusCommentFeedbackKey])
 
+  /* Baseline « non modifié » pour le bouton Enregistrer (refs mises à jour dans effets / ouverture). */
+  /* eslint-disable react-hooks/refs */
   const athleteSaveDisabled =
     statusSegment === initialStatusRef.current &&
     commentText.trim() === initialCommentRef.current.trim() &&
@@ -626,6 +576,7 @@ export function WorkoutModal({
     actualDurationMinutes.trim() === initialActualDurationRef.current.trim() &&
     actualDistanceKm.trim() === initialActualDistanceRef.current.trim() &&
     actualElevationM.trim() === initialActualElevationRef.current.trim()
+  /* eslint-enable react-hooks/refs */
 
   const handleClose = useCallback(() => {
     onClose()
@@ -860,6 +811,7 @@ export function WorkoutModal({
           commentText={commentText}
           setCommentText={setCommentText}
           setHasCommentChanged={setHasCommentChanged}
+          /* eslint-disable-next-line react-hooks/refs -- snapshot initial pour reset / dirty check côté vue athlète */
           initialComment={initialCommentRef.current}
           showStatusCommentSuccess={showStatusCommentSuccess}
           statusSaveDisabled={athleteSaveDisabled}

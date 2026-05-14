@@ -51,10 +51,6 @@ function getInitialsForCoach(displayName: string | null, email: string): string 
   return getInitials(email)
 }
 
-/** Environ 10 lignes en caractères (ordre de grandeur) pour afficher "Voir plus" */
-const PRESENTATION_LONG_THRESHOLD = 500
-
-
 export type CoachForList = {
   user_id: string
   email: string
@@ -170,7 +166,6 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
   const tCommon = useTranslations('common')
   const locale = useLocale()
   const coachedSportsOptions = useCoachedSportsOptions()
-  const practicedSportsOptions = usePracticedSportsOptions()
   const [searchName, setSearchName] = useState('')
   const [selectedSports, setSelectedSports] = useState<string[]>([])
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([])
@@ -487,35 +482,6 @@ type CoachDetailModalProps = {
   initialGoals?: Goal[]
 }
 
-type OfferSelectButtonProps = {
-  isSelected: boolean
-  onClick: (e: React.MouseEvent) => void
-}
-
-function OfferSelectButton({ isSelected, onClick }: OfferSelectButtonProps) {
-  const t = useTranslations('findCoach')
-  
-  return (
-    <Button
-      type="button"
-      variant={isSelected ? 'primary' : 'outline'}
-      onClick={onClick}
-      className={`w-full ${!isSelected ? '!border-stone-200 !text-stone-600 hover:!border-stone-400 hover:!bg-stone-50' : ''}`}
-    >
-      {isSelected ? (
-        <>
-          {t('modal.selected')}
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-            <polyline points="20 6 9 17 4 12" />
-          </svg>
-        </>
-      ) : (
-        t('modal.select')
-      )}
-    </Button>
-  )
-}
-
 const MapIconSmall = ({ className = 'w-3.5 h-3.5' }: { className?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z" />
@@ -532,7 +498,7 @@ const ClockIconSmall = ({ className = 'w-3.5 h-3.5' }: { className?: string }) =
   </svg>
 )
 
-function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requestId, initialPracticedSports = [], initialWeeklyCurrentHours, initialWeeklyTargetHours, initialWeeklyVolumeBySport, showNameFields = false, athleteFirstName = '', athleteLastName = '', initialGoals = [] }: CoachDetailModalProps) {
+function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requestId: _requestId, initialPracticedSports = [], initialWeeklyCurrentHours, initialWeeklyTargetHours, initialWeeklyVolumeBySport, showNameFields = false, athleteFirstName = '', athleteLastName = '', initialGoals = [] }: CoachDetailModalProps) {
   const t = useTranslations('findCoach')
   const tGoals = useTranslations('goals')
   const tCommon = useTranslations('common')
@@ -622,13 +588,6 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
     if (!a.is_featured && b.is_featured) return 1
     return a.display_order - b.display_order
   })
-
-  // Déterminer le nombre de colonnes selon le nombre d'offres
-  const getGridCols = (count: number) => {
-    if (count === 1) return 'grid-cols-1'
-    if (count === 2) return 'grid-cols-1 md:grid-cols-2'
-    return 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
-  }
 
   const toggleSport = (value: string) => {
     setSports((prev) =>
@@ -783,19 +742,6 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
       document.body.style.overflow = 'hidden'
     }
   }, [reviewsListOpen])
-
-  const formatPrice = (offer: typeof offers[0]) => {
-    if (offer.price_type === 'free') return t('modal.free')
-    if (offer.price_type === 'monthly') return `${offer.price}€/${t('coachCard.perMonth')}`
-    return `${offer.price}€`
-  }
-
-  const getOfferBadge = (offer: typeof offers[0]) => {
-    if (offer.is_featured) return { label: t('modal.recommended'), className: 'bg-palette-forest-dark/10 text-palette-forest-dark' }
-    if (offer.price_type === 'free') return { label: t('modal.discovery'), className: 'bg-stone-100 text-stone-600' }
-    if (offer.price_type === 'monthly') return { label: t('modal.fullTracking'), className: 'bg-palette-forest-dark/10 text-palette-forest-dark' }
-    return { label: t('modal.singlePlan'), className: 'bg-blue-50 text-blue-600' }
-  }
 
   return createPortal(
     <>

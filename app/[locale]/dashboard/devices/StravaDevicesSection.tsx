@@ -13,7 +13,7 @@ type StravaDevicesSectionProps = {
   connection: Pick<AthleteConnectedService, 'id' | 'provider' | 'strava_athlete_id' | 'created_at'> | null
 }
 
-export function StravaDevicesSection({ userId, connected, connection }: StravaDevicesSectionProps) {
+export function StravaDevicesSection({ userId, connected, connection: _connection }: StravaDevicesSectionProps) {
   const t = useTranslations('devices')
   const locale = useLocale()
   const router = useRouter()

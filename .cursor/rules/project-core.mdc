@@ -323,7 +323,7 @@ if ('error' in result) return result
 ## Disponibilités athlète (availability)
 
 - **Table :** `athlete_availability_slots` (un créneau = une date ; **pas de récurrence** en produit). Athlète : CRUD sur ses créneaux ; coach : lecture seule sur les créneaux de ses athlètes.
-- **Calendrier :** ordre du jour = disponibilités → objectifs → entraînements → Strava. Tuiles : bordure fine vert/orange, icône calendrier. Modales : `AvailabilityModal` (création/édition), `AvailabilityDetailModal` (lecture seule coach).
+- **Calendrier :** ordre du jour = disponibilités → objectifs → entraînements → Strava. **Tuiles disponibilité (grille) :** bandeau couleur **en haut** (vert / orange), bordure neutre, badge calendrier teinté, titre pierre comme tuile séance compacte ; métriques horaires / note alignées sur la tuile séance — voir **`docs/DESIGN_SYSTEM.md`**. Modales : `AvailabilityModal` (création/édition), `AvailabilityDetailModal` (lecture seule coach).
 - **Référence :** `Project_context.md` §4.5 (Athlete availability), `docs/DESIGN_SYSTEM.md` §7, i18n namespace `availability`.
 
 ---
