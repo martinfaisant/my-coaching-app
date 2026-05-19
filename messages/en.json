@@ -665,7 +665,7 @@
     "emailAddress": "Email address",
     "nonEditable": "Non-editable",
     "postalCode": "Postal Code",
-    "postalCodePlaceholder": "E.g.: 75001",
+    "postalCodePlaceholder": "E.g.: H1W2S3",
     "displayLanguage": "Display language",
     "displayLanguageHelp": "This language will be used across the site while you are logged in.",
     "displayLanguageFr": "French",
@@ -970,16 +970,10 @@
   },
   "landing": {
     "hero": {
-      "badge": "The #1 personalized sports coaching platform",
+      "badge": "The personalized sports coaching platform",
       "title": "Reach your goals with a",
       "titleHighlight": "dedicated coach",
       "subtitle": "Personalized training plans, real-time tracking, Strava sync and direct messaging. Everything you need to progress effectively."
-    },
-    "stats": {
-      "athletes": "Active athletes",
-      "coaches": "Certified coaches",
-      "workouts": "Planned sessions",
-      "satisfaction": "Satisfaction"
     },
     "preview": {
       "title": "An intuitive and comprehensive interface",
@@ -1051,7 +1045,7 @@
     },
     "cta": {
       "title": "Ready to take it to the next level?",
-      "subtitle": "Join hundreds of athletes who progress every day with My Sport Ally"
+      "subtitle": "Join athletes who progress every day with My Sport Ally"
     },
     "footer": {
       "copyright": "All rights reserved.",
@@ -1371,7 +1365,7 @@
       "availableOffers": "Available plans",
       "free": "Free",
       "perMonth": "month",
-      "plan": "plan",
+      "plan": "one time",
       "viewDetails": "View details",
       "defaultBio": "Coach available to support your progress."
     },

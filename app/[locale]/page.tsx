@@ -115,12 +115,6 @@ export default async function Home({ params, searchParams }: HomePageProps) {
     },
   ] as const
 
-  const STATS = [
-    { value: '500+', labelKey: 'stats.athletes' },
-    { value: '50+', labelKey: 'stats.coaches' },
-    { value: '10k+', labelKey: 'stats.workouts' },
-    { value: '4.8/5', labelKey: 'stats.satisfaction' },
-  ] as const
   
   const COACH_FEATURES = [
     'forCoaches.features.manageAthletes',
@@ -137,7 +131,7 @@ export default async function Home({ params, searchParams }: HomePageProps) {
 
       <main>
         {/* Hero Section */}
-        <section className="relative overflow-hidden bg-gradient-to-b from-palette-forest-light/10 to-background py-20 sm:py-32">
+        <section className="relative overflow-hidden bg-gradient-to-b from-palette-forest-light/10 to-background py-10 sm:py-10">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="text-center max-w-4xl mx-auto">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-palette-forest-light/20 border border-palette-forest-light/30 mb-6">
@@ -159,22 +153,12 @@ export default async function Home({ params, searchParams }: HomePageProps) {
               <div className="flex justify-center mb-16">
                 <AuthButtons variant="hero" />
               </div>
-
-              {/* Stats */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-8 pt-8 border-t border-stone-200">
-                {STATS.map(({ value, labelKey }) => (
-                  <div key={labelKey} className="text-center">
-                    <div className="text-3xl font-bold text-palette-forest-dark mb-1">{value}</div>
-                    <div className="text-sm text-stone-600">{t(labelKey)}</div>
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
         </section>
 
         {/* Screenshot Preview */}
-        <section className="py-20 bg-stone-50">
+        <section className="py-0 bg-stone-50">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
               <h2 className="text-3xl sm:text-4xl font-bold text-stone-900 mb-4">
@@ -294,7 +278,7 @@ export default async function Home({ params, searchParams }: HomePageProps) {
         </section>
 
         {/* How it works */}
-        <section className="py-20 bg-stone-50">
+        <section className="py-10 bg-stone-50">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
               <h2 className="text-3xl sm:text-4xl font-bold text-stone-900 mb-4">
@@ -343,16 +327,14 @@ export default async function Home({ params, searchParams }: HomePageProps) {
               </div>
 
               <div>
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-palette-olive-light/20 border border-palette-olive-light/30 mb-6">
-                  <Users className="w-4 h-4 text-palette-olive-dark" />
-                  <span className="text-sm font-medium text-palette-olive-dark">
+                <div className="text-center mb-6">
+                  <h2 className="text-3xl sm:text-4xl font-bold text-stone-900 mb-2">
                     {t('forCoaches.badge')}
-                  </span>
+                  </h2>
+                  <p className="text-lg text-stone-600 max-w-2xl mx-auto">
+                   {t('forCoaches.title')}
+                  </p>
                 </div>
-
-                <h2 className="text-3xl sm:text-4xl font-bold text-stone-900 mb-6">
-                  {t('forCoaches.title')}
-                </h2>
 
                 <div className="space-y-4 mb-8">
                   {COACH_FEATURES.map((featureKey) => (
@@ -362,8 +344,9 @@ export default async function Home({ params, searchParams }: HomePageProps) {
                     </div>
                   ))}
                 </div>
-
-                <AuthButtons variant="hero" />
+                <div className="flex justify-center mb-4">
+                  <AuthButtons variant="hero" />
+                </div>
               </div>
             </div>
           </div>
@@ -378,7 +361,9 @@ export default async function Home({ params, searchParams }: HomePageProps) {
             <p className="text-xl text-white/90 mb-10 max-w-2xl mx-auto">
               {t('cta.subtitle')}
             </p>
-            <AuthButtons variant="hero" />
+            <div className="flex justify-center mb-4">
+              <AuthButtons variant="hero" />
+            </div> 
           </div>
         </section>
       </main>

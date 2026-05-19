@@ -790,7 +790,7 @@
     "emailAddress": "Adresse email",
     "nonEditable": "Non modifiable",
     "postalCode": "Code Postal",
-    "postalCodePlaceholder": "Ex: 75001",
+    "postalCodePlaceholder": "Ex: H1W2S3",
     "displayLanguage": "Langue d'affichage",
     "displayLanguageHelp": "Cette langue sera utilisée sur tout le site tant que vous êtes connecté.",
     "displayLanguageFr": "Français",
@@ -1095,16 +1095,10 @@
   },
   "landing": {
     "hero": {
-      "badge": "La plateforme n°1 de coaching sportif personnalisé",
+      "badge": "La plateforme de coaching sportif personnalisé",
       "title": "Atteignez vos objectifs avec un",
       "titleHighlight": "coach dédié",
       "subtitle": "Plans d'entraînement personnalisés, suivi en temps réel, synchronisation Strava et messagerie directe. Tout pour progresser efficacement."
-    },
-    "stats": {
-      "athletes": "Athlètes actifs",
-      "coaches": "Coachs certifiés",
-      "workouts": "Séances planifiées",
-      "satisfaction": "Satisfaction"
     },
     "preview": {
       "title": "Une interface intuitive et complète",
@@ -1176,7 +1170,7 @@
     },
     "cta": {
       "title": "Prêt à passer au niveau supérieur ?",
-      "subtitle": "Rejoignez des centaines d'athlètes qui progressent chaque jour avec My Sport Ally"
+      "subtitle": "Rejoignez les athlètes qui progressent chaque jour avec My Sport Ally"
     },
     "footer": {
       "copyright": "Tous droits réservés.",
@@ -1496,7 +1490,7 @@
       "availableOffers": "Formules disponibles",
       "free": "Gratuit",
       "perMonth": "mois",
-      "plan": "plan",
+      "plan": "unique",
       "viewDetails": "Voir le détail",
       "defaultBio": "Coach disponible pour vous accompagner dans votre progression."
     },
