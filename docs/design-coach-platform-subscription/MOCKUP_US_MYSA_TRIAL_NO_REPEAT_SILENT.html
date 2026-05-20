@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>US-MYSA-TRIAL-03 — Essai non renouvelable (masquage silencieux)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            'palette-gold': '#c9a227',
+            'palette-danger': '#b91c1c',
+            stone: { 50: '#fafaf9', 200: '#e7e5e4', 500: '#78716c', 600: '#57534e', 700: '#44403c', 800: '#292524', 900: '#1c1917' },
+          },
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-stone-100 min-h-screen p-6 space-y-16 pb-24">
+  <header class="max-w-3xl mx-auto">
+    <h1 class="text-xl font-bold text-stone-900">US-MYSA-TRIAL-03 — Essai campagne courante : une seule fois (masquage silencieux)</h1>
+    <p class="text-sm text-stone-600 mt-2">
+      <strong>Solution validée PO :</strong> proposition A — si le coach a déjà eu une souscription <code class="bg-white px-1 rounded border border-stone-200">trialing</code>, masquer badge + ligne essai <strong>sans message</strong> (pas de bandeau, pas de mention « essai déjà utilisé »).
+      <strong>Règle UI :</strong> <code class="bg-white px-1 rounded border">afficherEssaiUI = subscriptionTrialDays &gt; 0 &amp;&amp; trialEligible</code>.
+      <strong>Périmètre :</strong> même grille <code class="bg-white px-1 rounded border">CoachPlatformOfferGrid</code> (page abo + modale).
+      Taglines i18n : plus de mention d’essai dans les copies marketing (PO — mai 2026).
+    </p>
+  </header>
+
+  <!-- Contraste A vs B -->
+  <section class="max-w-5xl mx-auto" aria-labelledby="contrast">
+    <h2 id="contrast" class="text-sm font-bold uppercase tracking-wider text-stone-700 mb-3">
+      Contraste — Même campagne active (<code>COACH_PLATFORM_SUBSCRIPTION_TRIAL_DAYS &gt; 0</code>)
+    </h2>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Éligible -->
+      <div>
+        <p class="text-xs font-semibold text-palette-forest-dark mb-2">Coach éligible (jamais eu de <code>trialing</code>)</p>
+        <p class="text-xs text-stone-500 mb-3">→ Rendu identique à US-MYSA-TRIAL-01 (inchangé).</p>
+        <ul class="grid grid-cols-1 gap-3">
+          <li class="rounded-2xl border border-stone-200 bg-white shadow-sm p-6 flex flex-col">
+            <div class="flex items-start justify-between gap-2">
+              <p class="text-lg font-bold text-stone-900">Mensuel</p>
+              <span class="shrink-0 px-2.5 py-0.5 rounded-full bg-palette-forest-dark/10 text-palette-forest-dark text-xs font-bold uppercase tracking-wider">90 jours gratuits</span>
+            </div>
+            <div class="mt-4 flex items-baseline gap-1">
+              <span class="text-3xl font-black text-stone-900">19&nbsp;€</span>
+              <span class="text-sm text-stone-500">/ mois</span>
+            </div>
+            <p class="text-xs font-medium text-palette-forest-dark mb-4">90 jours d'essai offerts, puis 19&nbsp;€/ mois.</p>
+            <p class="text-sm text-stone-600 mb-4">Gérez vos athlètes avec une flexibilité maximale…</p>
+            <button type="button" class="mt-auto w-full rounded-lg bg-palette-forest-dark py-2.5 text-sm font-medium text-white">Souscrire</button>
+          </li>
+        </ul>
+      </div>
+      <!-- Non éligible -->
+      <div>
+        <p class="text-xs font-semibold text-stone-700 mb-2">Coach non éligible (au moins un <code>trialing</code> passé)</p>
+        <p class="text-xs text-stone-500 mb-3">→ <strong>Pas</strong> de badge, <strong>pas</strong> de ligne verte, <strong>pas</strong> de bandeau. Carte = tarif récurrent seul.</p>
+        <ul class="grid grid-cols-1 gap-3">
+          <li class="rounded-2xl border border-stone-200 bg-white shadow-sm p-6 flex flex-col">
+            <div class="flex items-start justify-between gap-2">
+              <p class="text-lg font-bold text-stone-900">Mensuel</p>
+              <!-- aucun badge -->
+            </div>
+            <div class="mt-4 flex items-baseline gap-1">
+              <span class="text-3xl font-black text-stone-900">19&nbsp;€</span>
+              <span class="text-sm text-stone-500">/ mois</span>
+            </div>
+            <!-- pas de ligne essai -->
+            <p class="text-sm text-stone-600 mb-4 mt-4">Gérez vos athlètes avec une flexibilité maximale…</p>
+            <ul class="space-y-2 text-sm text-stone-600 mb-4">
+              <li class="flex gap-2"><span class="text-palette-forest-dark">✓</span> Nombre d’athlètes illimité</li>
+            </ul>
+            <button type="button" class="mt-auto w-full rounded-lg bg-palette-forest-dark py-2.5 text-sm font-medium text-white">Souscrire</button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- État A : page dédiée, 2 offres, non éligible -->
+  <section class="max-w-3xl mx-auto" aria-labelledby="state-page">
+    <h2 id="state-page" class="text-sm font-bold uppercase tracking-wider text-stone-700 mb-3">
+      État A — Page « Abonnement MySportAlly », coach non éligible, grille 2 offres
+    </h2>
+    <p class="text-xs text-stone-500 mb-4">
+      <strong>Avant :</strong> coach sans abo actif (<code>canceled</code> / <code>past_due</code> / jamais resouscrit), campagne essai active, historique <code>trialing</code> sur le compte.<br />
+      <strong>Visible :</strong> cartes sans badge ni ligne essai ; titre offre, prix + intervalle, tagline, features, CTA « Souscrire ».<br />
+      <strong>Absent volontairement :</strong> bandeau, tooltip, mention « essai déjà utilisé ».<br />
+      <strong>Après clic « Souscrire » :</strong> CTA pending puis Stripe Checkout <strong>sans</strong> essai (hors écran — cohérence serveur).
+    </p>
+    <div class="rounded-xl border border-stone-200 bg-white p-6 shadow-sm">
+      <h2 class="sr-only">Offres disponibles</h2>
+      <ul class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <li class="rounded-2xl border border-stone-200 bg-white shadow-sm p-6 flex flex-col">
+          <p class="text-lg font-bold text-stone-900">Mensuel</p>
+          <div class="mt-4 flex items-baseline gap-1">
+            <span class="text-3xl font-black">19&nbsp;€</span>
+            <span class="text-sm text-stone-500">/ mois</span>
+          </div>
+          <p class="text-sm text-stone-600 mt-4 mb-6">Gérez vos athlètes avec une flexibilité maximale, sans engagement…</p>
+          <button type="button" class="mt-auto w-full rounded-lg bg-palette-forest-dark py-2.5 text-sm font-medium text-white">Souscrire</button>
+        </li>
+        <li class="rounded-2xl border border-stone-200 bg-white shadow-sm p-6 flex flex-col">
+          <p class="text-lg font-bold text-stone-900">Annuel</p>
+          <div class="mt-4 flex items-baseline gap-1">
+            <span class="text-3xl font-black">190&nbsp;€</span>
+            <span class="text-sm text-stone-500">/ an</span>
+          </div>
+          <p class="text-sm text-stone-600 mt-4 mb-6">L’offre pensée pour la performance à long terme de vos athlètes et de votre activité.</p>
+          <button type="button" class="mt-auto w-full rounded-lg bg-palette-forest-dark py-2.5 text-sm font-medium text-white">Souscrire</button>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- État B : modale -->
+  <section class="max-w-3xl mx-auto" aria-labelledby="state-modal">
+    <h2 id="state-modal" class="text-sm font-bold uppercase tracking-wider text-stone-700 mb-3">
+      État B — Modale « Choisir une offre », coach non éligible
+    </h2>
+    <p class="text-xs text-stone-500 mb-4">
+      <strong>Action déclenchante :</strong> Accepter demande / overlay Mes athlètes / calendrier bloqué → ouverture modale.<br />
+      <strong>Contenu cartes :</strong> identique à l’état A (pas d’essai visible). Intro modale inchangée.
+    </p>
+    <div class="rounded-2xl bg-white shadow-xl border border-stone-200 max-w-2xl mx-auto overflow-hidden">
+      <div class="px-6 py-4 border-b border-stone-200 flex justify-between items-center">
+        <h2 class="text-lg font-semibold text-stone-800">Choisir votre formule</h2>
+        <button type="button" class="text-stone-500 text-xl" aria-label="Fermer">×</button>
+      </div>
+      <div class="px-6 py-4 max-h-[70vh] overflow-y-auto">
+        <p class="text-sm text-stone-600 mb-4">Sélectionnez l’offre qui vous convient.</p>
+        <ul class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <li class="rounded-2xl border border-stone-200 p-6 flex flex-col bg-white shadow-sm">
+            <p class="text-lg font-bold text-stone-900">Mensuel</p>
+            <p class="text-3xl font-black mt-4">19&nbsp;€<span class="text-sm font-normal text-stone-500">/ mois</span></p>
+            <p class="text-sm text-stone-600 mt-4">Gérez vos athlètes…</p>
+            <button type="button" class="mt-6 w-full rounded-lg bg-palette-forest-dark py-2.5 text-sm font-medium text-white">Souscrire</button>
+          </li>
+          <li class="rounded-2xl border border-stone-200 p-6 flex flex-col bg-white shadow-sm">
+            <p class="text-lg font-bold text-stone-900">Annuel</p>
+            <p class="text-3xl font-black mt-4">190&nbsp;€<span class="text-sm font-normal text-stone-500">/ an</span></p>
+            <p class="text-sm text-stone-600 mt-4">L’offre pensée pour la performance à long terme…</p>
+            <button type="button" class="mt-6 w-full rounded-lg bg-palette-forest-dark py-2.5 text-sm font-medium text-white">Souscrire</button>
+          </li>
+        </ul>
+      </div>
+      <div class="px-6 py-4 border-t border-stone-200 flex justify-end">
+        <button type="button" class="rounded-lg border border-stone-200 px-4 py-2 text-sm text-stone-700">Fermer</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- État C : CTA pending (non éligible) -->
+  <section class="max-w-3xl mx-auto" aria-labelledby="state-pending">
+    <h2 id="state-pending" class="text-sm font-bold uppercase tracking-wider text-stone-700 mb-3">État C — Clic « Souscrire » (non éligible)</h2>
+    <p class="text-xs text-stone-500 mb-4">
+      <strong>Avant :</strong> carte sans essai affiché.<br />
+      <strong>Action :</strong> clic CTA.<br />
+      <strong>Après :</strong> « Redirection… » sur la carte cliquée ; Checkout Stripe sans période d’essai.
+    </p>
+    <div class="max-w-md mx-auto rounded-2xl border border-stone-200 p-6 bg-white shadow-sm">
+      <p class="text-lg font-bold text-stone-900">Annuel</p>
+      <p class="text-3xl font-black mt-4">190&nbsp;€<span class="text-sm font-normal text-stone-500">/ an</span></p>
+      <button type="button" disabled class="mt-8 w-full rounded-lg bg-palette-forest-dark/70 py-2.5 text-sm font-medium text-white cursor-wait">Redirection…</button>
+    </div>
+  </section>
+
+  <!-- US-MYSA-TRIAL-04 : extensibilité future (référence produit, hors MVP UI) -->
+  <section class="max-w-3xl mx-auto border-t border-stone-200 pt-8" aria-labelledby="future-trial">
+    <h2 id="future-trial" class="text-sm font-bold uppercase tracking-wider text-stone-700 mb-3">
+      US-MYSA-TRIAL-04 — Référence future : essai 2 sur nouvelle offre (hors livraison MVP)
+    </h2>
+    <p class="text-xs text-stone-500 mb-4">
+      PO : un coach ayant consommé l’essai campagne 1 pourrait être éligible à un <strong>essai distinct</strong> lié à une <strong>nouvelle offre / nouvelle campagne</strong> (ex. « Plateforme + encaissements »).
+      <strong>Pas de UI dédiée aujourd’hui</strong> — le modèle d’éligibilité doit être <strong>par campagne ou par price_id</strong>, pas un blocage global « plus jamais d’essai ».
+      Quand une future campagne le prévoit, le rendu redevient celui de US-MYSA-TRIAL-01 <em>uniquement pour les offres concernées</em>.
+    </p>
+    <div class="rounded-xl border border-dashed border-stone-300 bg-stone-50 p-4 opacity-90">
+      <p class="text-xs text-stone-600 mb-3">Exemple hypothétique — nouvelle offre avec essai 14 j, coach déjà essai 1 consommé :</p>
+      <div class="max-w-sm rounded-2xl border border-stone-200 bg-white p-6 shadow-sm">
+        <div class="flex justify-between gap-2">
+          <p class="font-bold text-stone-900">Plateforme + encaissements</p>
+          <span class="shrink-0 px-2 py-0.5 rounded-full bg-palette-forest-dark/10 text-palette-forest-dark text-xs font-bold uppercase">14 jours gratuits</span>
+        </div>
+        <p class="text-3xl font-black mt-4">49&nbsp;€<span class="text-sm font-normal text-stone-500">/ mois</span></p>
+        <p class="text-xs font-medium text-palette-forest-dark mt-2">14 jours d'essai offerts, puis 49&nbsp;€/ mois.</p>
+        <button type="button" class="mt-6 w-full rounded-lg bg-palette-forest-dark py-2.5 text-sm text-white">Souscrire</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Transitions -->
+  <section class="max-w-3xl mx-auto border-t border-stone-200 pt-8">
+    <h2 class="text-sm font-bold text-stone-700">Transitions fonctionnelles (récap)</h2>
+    <ul class="text-xs text-stone-600 mt-2 list-disc list-inside space-y-1">
+      <li>Campagne essai env = 0 → jamais de badge/ligne (tous les coachs).</li>
+      <li>Coach jamais <code>trialing</code> + campagne &gt; 0 → badge + ligne (US-MYSA-TRIAL-01).</li>
+      <li>Coach avec historique <code>trialing</code> + campagne &gt; 0 → masquage silencieux (US-MYSA-TRIAL-03).</li>
+      <li>Coach en <code>trialing</code> ou <code>active</code> → pas de grille offres (inchangé).</li>
+      <li>Erreur résolution éligibilité → repli prudent : pas d’essai UI (Architecte).</li>
+      <li>Checkout / webhook : cohérence obligatoire avec <code>trialEligible</code> (Architecte + Développeur).</li>
+    </ul>
+  </section>
+</body>
+</html>

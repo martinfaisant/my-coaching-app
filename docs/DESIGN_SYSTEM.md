@@ -1,7 +1,7 @@
 # 🎨 Design System
 
-**Version :** 1.40  
-**Dernière mise à jour :** 20 mai 2026 (**Mon abonnement coach** : essai catalogue + tuiles offre `tagline`/`features`, carte statut `active`/`trialing` seule, grille sans en-tête visible ; précédent : v1.39 en-tête offres…)
+**Version :** 1.41  
+**Dernière mise à jour :** 20 mai 2026 (**Mon abonnement coach** : essai **non renouvelable** par campagne (`trialEligible`, masquage silencieux) ; précédent : v1.40 essai catalogue + tuiles…)
 
 ---
 
@@ -1388,14 +1388,15 @@ Modale **création / édition** de note (`Modal` taille `lg`) : champs `Input` t
 
 **Fichier :** `components/CoachPlatformSubscriptionOffers.tsx`
 
-Section **client** de la page **`/dashboard/coach-platform-subscription`** : enveloppe `<section>` (**`aria-labelledby`**) + titre **`sr-only`** (**`coachMsaSubscription.offersTitle`**) + **`CoachPlatformOfferGrid`** avec **`subscriptionTrialDays`** (depuis **`loadCoachPlatformCatalogForEnv().subscriptionTrialDays`**, variable env **`COACH_PLATFORM_SUBSCRIPTION_TRIAL_DAYS`**) ; checkout via **`createCoachPlatformCheckoutSession`** (ajoute **`trial_period_days`** si > 0). **Visible sur la page** seulement si le coach n’est **pas** en statut `active` / `trialing` (carte statut serveur sur **`page.tsx`** : **uniquement** pour ces deux statuts). Données : `CoachPlatformCatalogOffer[]` côté serveur. Libellés : **`coachMsaOffers.byPriceId`** (`tagline`, `features`) via **`lib/coachMsaOfferDisplay.ts`**.
+Section **client** de la page **`/dashboard/coach-platform-subscription`** : enveloppe `<section>` (**`aria-labelledby`**) + titre **`sr-only`** (**`coachMsaSubscription.offersTitle`**) + **`CoachPlatformOfferGrid`** avec **`subscriptionTrialDays`** et **`trialEligible`** (résolution serveur **`resolveCoachPlatformTrialPresentationForCoach`** sur **`page.tsx`**) ; checkout via **`createCoachPlatformCheckoutSession`** (ajoute **`trial_period_days`** seulement si éligible). **Visible sur la page** seulement si le coach n’est **pas** en statut `active` / `trialing` (carte statut serveur sur **`page.tsx`** : **uniquement** pour ces deux statuts). Données : `CoachPlatformCatalogOffer[]` côté serveur. Libellés : **`coachMsaOffers.byPriceId`** (`tagline`, `features`) via **`lib/coachMsaOfferDisplay.ts`**.
 
 #### Props
 
 | Prop | Type | Description |
 |------|------|-------------|
 | `offers` | `CoachPlatformCatalogOffer[]` | Prix Stripe autorisés par env |
-| `subscriptionTrialDays` | `number` | Jours d’essai campagne (0 = pas de badge / ligne essai sur les cartes) |
+| `subscriptionTrialDays` | `number` | Jours d’essai campagne env (0 = pas de campagne) |
+| `trialEligible` | `boolean` | Si `false`, masquage silencieux badge + ligne essai (essai déjà consommé pour la campagne courante) |
 
 ---
 
@@ -1418,14 +1419,15 @@ Bloc **client** sur **`/dashboard/coach-platform-subscription`** : le libellé d
 
 **Fichier :** `components/CoachPlatformOfferGrid.tsx`
 
-Grille responsive **`grid-cols-1 md:grid-cols-2`** (`gap-6`, cartes **`rounded-2xl p-6`**) : titre **`text-lg`** ; badge essai **`{days} jours gratuits`** (majuscules CSS) si **`subscriptionTrialDays` > 0** ; prix **`text-3xl font-black`** + unité **`/ mois`** etc. (**`priceDisplayedUnit*`**), ligne verte **`trialCatalogTrialLine`** ; **`tagline`** + liste à puces (**`features`** dans **`coachMsaOffers.byPriceId`**, optionnels — repli description Stripe) ; CTA **Souscrire** / **Redirection…**. Réutilisé page abonnement + modale.
+Grille responsive **`grid-cols-1 md:grid-cols-2`** (`gap-6`, cartes **`rounded-2xl p-6`**) : titre **`text-lg`** ; badge essai **`{days} jours gratuits`** (majuscules CSS) et ligne verte **`trialCatalogTrialLine`** **uniquement** si **`subscriptionTrialDays > 0 && trialEligible`** (pas de message « essai déjà utilisé ») ; prix **`text-3xl font-black`** + unité **`/ mois`** etc. (**`priceDisplayedUnit*`**) ; **`tagline`** + liste à puces (**`features`** dans **`coachMsaOffers.byPriceId`**, optionnels — repli description Stripe) ; CTA **Souscrire** / **Redirection…**. Réutilisé page abonnement + modale.
 
 #### Props principales
 
 | Prop | Type | Description |
 |------|------|-------------|
 | `offers` | `CoachPlatformCatalogOffer[]` | |
-| `subscriptionTrialDays` | `number` (déf. `0`) | Si > 0, affichage campagne essai (badge + sous-ligne) |
+| `subscriptionTrialDays` | `number` (déf. `0`) | Jours campagne env |
+| `trialEligible` | `boolean` (déf. `true`) | Contrôle affichage essai sur les cartes |
 | `pendingPriceId` / `isPending` | | État bouton actif |
 | `error` | `string \| null` | Erreur checkout |
 | `onSubscribe` | `(priceId: string) => void` | |
@@ -1436,7 +1438,7 @@ Grille responsive **`grid-cols-1 md:grid-cols-2`** (`gap-6`, cartes **`rounded-2
 
 **Fichier :** `components/CoachPlatformSubscribeOffersModal.tsx`
 
-**`Modal`** taille **`3xl`** : chargement catalogue (**`loadCoachPlatformCatalogForCoach`**), erreur catalogue, liste vide, puis **`CoachPlatformOfferGrid`**. Intro optionnelle (`introSlot`, ex. demande en attente). Fermeture / overlay / Escape désactivés pendant redirection. i18n : **`coachMsaOffers`**.
+**`Modal`** taille **`3xl`** : chargement catalogue (**`loadCoachPlatformCatalogForCoach`** → **`subscriptionTrialDays`** + **`trialEligible`**), erreur catalogue, liste vide, puis **`CoachPlatformOfferGrid`**. Intro optionnelle (`introSlot`, ex. demande en attente). Fermeture / overlay / Escape désactivés pendant redirection. i18n : **`coachMsaOffers`**.
 
 #### Props
 
@@ -2075,7 +2077,7 @@ Actuellement, utiliser un span custom :
 - **Tokens couleurs** : `tailwind.config.ts`, `app/globals.css`
 - **Styles formulaires** : `lib/formStyles.ts` (FORM_BASE_CLASSES, FORM_INPUT_TEXT_SIZE, FORM_INPUT_HEIGHT, etc.)
 - **Composants** : `components/Button.tsx`, `components/Input.tsx`, `components/PasswordInput.tsx`, `components/SearchInput.tsx`, `components/Textarea.tsx`, `components/Badge.tsx`, `components/Avatar.tsx`, `components/AvatarImage.tsx`, `components/SportTileSelectable.tsx`, `components/ActivityTile.tsx`, `components/Modal.tsx`, `components/CoachReviewsModal.tsx`, `components/workout-modal/WorkoutFacilityHoursStrip.tsx`, `components/workout-modal/WorkoutTargetActualCards.tsx`, `components/workout-modal/WorkoutFeedbackSummary.tsx`, `components/workout-modal/WorkoutFeedbackSection.tsx`, `components/AthleteFacilityDetails.tsx`, `components/CoachAthleteNotesSection.tsx`, `components/CoachAthleteNoteModal.tsx`, `components/DashboardPageShell.tsx`, `components/DashboardTopBar.tsx`, `components/AthleteAccountMenu.tsx`, `components/CoachAccountMenu.tsx`, `components/ContactForm.tsx`, `components/Drawer.tsx`, `components/PublicOrDashboardHeader.tsx`, `components/PublicHeader.tsx`, `components/EmailValidatedModal.tsx`, `components/HomeEmailConfirmedTrigger.tsx`, `components/Dropdown.tsx`, `components/Segments.tsx`, `components/DatePickerPopup.tsx`, `components/MonthSelector.tsx`, `components/CalendarView.tsx`, `components/CalendarViewWithNavigation.tsx`, `lib/calendarViewDayHeights.ts`, `components/AvailabilityModal.tsx`, `components/AvailabilityDetailModal.tsx`, `components/ChatAthleteListItem.tsx`, `components/ChatConversationSidebar.tsx`, `components/CoachPlatformSubscriptionOffers.tsx`, `components/CoachPlatformBillingAddressSection.tsx`, `components/CoachPlatformOfferGrid.tsx`, `components/CoachPlatformSubscribeOffersModal.tsx`
-- **Page Mon Abonnement MySportAlly (coach)** : `app/[locale]/dashboard/coach-platform-subscription/page.tsx`, `loading.tsx`, **`coachPlatformBillingAddressActions.ts`** ; libs **`lib/stripeCoachPlatformCatalog.ts`** (dont **`fetchCoachPlatformSubscriptionCardDetails`**, **`coachPlatformPriceIntervalTranslationKey`**), **`lib/coachPlatformSubscriptionTrial.ts`** (**`getCoachPlatformSubscriptionTrialDays`**, **`computeCoachPlatformTrialRemainingDays`**), **`lib/stripeCoachPlatformBillingHistory.ts`**, **`lib/stripeCoachPlatformBillingAddress.ts`** (**`resolveOrCreateCoachPlatformStripeCustomerId`**), **`lib/canadianProvinces.ts`**, **`lib/stripeCoachPlatformPriceIds.ts`**, **`lib/stripeCoachPlatformCustomer.ts`** (**`ensureCoachPlatformStripeCustomerForCheckout`**, **`formatCoachPlatformStripeCustomerName`**, **`syncCoachPlatformStripeCustomerNameIfPresent`**, langue Customer / Checkout), **`lib/coachPlatformCheckoutReturnPath.ts`**, **`lib/coachMsaOfferDisplay.ts`**
+- **Page Mon Abonnement MySportAlly (coach)** : `app/[locale]/dashboard/coach-platform-subscription/page.tsx`, `loading.tsx`, **`coachPlatformBillingAddressActions.ts`** ; libs **`lib/stripeCoachPlatformCatalog.ts`** (dont **`fetchCoachPlatformSubscriptionCardDetails`**, **`coachPlatformPriceIntervalTranslationKey`**), **`lib/coachPlatformSubscriptionTrial.ts`** (**`getCoachPlatformSubscriptionTrialDays`**, **`getCoachPlatformSubscriptionTrialCampaignId`**, **`computeCoachPlatformTrialRemainingDays`**, **`resolveTrialCampaignForPriceId`**), **`lib/coachPlatformTrialEligibility.ts`** (**`resolveCoachPlatformTrialPresentationForCoach`**, **`syncCoachPlatformTrialConsumptionFromStripeSubscription`**), **`lib/stripeCoachPlatformBillingHistory.ts`**, **`lib/stripeCoachPlatformBillingAddress.ts`** (**`resolveOrCreateCoachPlatformStripeCustomerId`**), **`lib/canadianProvinces.ts`**, **`lib/stripeCoachPlatformPriceIds.ts`**, **`lib/stripeCoachPlatformCustomer.ts`** (**`ensureCoachPlatformStripeCustomerForCheckout`**, **`formatCoachPlatformStripeCustomerName`**, **`syncCoachPlatformStripeCustomerNameIfPresent`**, langue Customer / Checkout), **`lib/coachPlatformCheckoutReturnPath.ts`**, **`lib/coachMsaOfferDisplay.ts`** ; migration **`075_coach_platform_trial_consumptions.sql`**
 - **Page Mes athlètes (coach)** : `app/[locale]/dashboard/athletes/page.tsx` (bandeaux profil / offre publiée, erreur chargement liste), `components/CoachPlatformStripeBanner.tsx`, `components/CoachPlatformCheckoutVerification.tsx`, `CoachAthletesListWithFilter.tsx`, `PendingRequestTile.tsx` ; actions Checkout **`app/[locale]/dashboard/athletes/coachPlatformActions.ts`**
 - **Sports** : `lib/sportStyles.ts` (`SPORT_CARD_STYLES`, `SPORT_BADGE_STYLES`, **`SPORT_WEEKLY_SUMMARY_BAR`**, `SPORT_ICONS`, `SPORT_TRANSLATION_KEYS`), `lib/sportsRegistry.ts` (`PERSISTED_WORKOUT_SPORT_TYPES`, `workoutIsTimeOnlySport`), `lib/sportsOptions.ts`, `components/SportIcons.tsx`
 - **Stats athlète (Nivo)** : `lib/athleteStatsNivoTheme.ts`, `lib/athleteStatsColors.ts`, `components/athlete/AthleteStatsVolumeChart.tsx`

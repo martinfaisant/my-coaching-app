@@ -27,6 +27,7 @@ export function CoachPlatformSubscribeOffersModal({
   const [loadState, setLoadState] = useState<'idle' | 'loading' | 'ready' | 'error'>('idle')
   const [offers, setOffers] = useState<CoachPlatformCatalogOffer[]>([])
   const [subscriptionTrialDays, setSubscriptionTrialDays] = useState(0)
+  const [trialEligible, setTrialEligible] = useState(true)
   const [catalogError, setCatalogError] = useState<string | null>(null)
   const [checkoutError, setCheckoutError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
@@ -46,6 +47,7 @@ export function CoachPlatformSubscribeOffersModal({
       setCatalogError(null)
       setCheckoutError(null)
       setSubscriptionTrialDays(0)
+      setTrialEligible(true)
 
       const result = await loadCoachPlatformCatalogForCoach(locale)
       if (cancelled) return
@@ -56,6 +58,7 @@ export function CoachPlatformSubscribeOffersModal({
       }
       setOffers(result.offers)
       setSubscriptionTrialDays(result.subscriptionTrialDays)
+      setTrialEligible(result.trialEligible)
       setLoadState('ready')
     })()
 
@@ -137,6 +140,7 @@ export function CoachPlatformSubscribeOffersModal({
           <CoachPlatformOfferGrid
             offers={offers}
             subscriptionTrialDays={subscriptionTrialDays}
+            trialEligible={trialEligible}
             pendingPriceId={pendingPriceId}
             isPending={isPending}
             error={checkoutError}

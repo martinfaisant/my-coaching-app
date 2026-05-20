@@ -130,6 +130,14 @@ export type CoachPlatformSubscription = {
   updated_at: string
 }
 
+/** Essai plateforme coach consommé pour une campagne donnée. */
+export type CoachPlatformTrialConsumption = {
+  coach_id: string
+  trial_campaign_id: string
+  consumed_at: string
+  stripe_subscription_id: string | null
+}
+
 export type AthleteFacility = {
   id: string
   athlete_id: string

@@ -4,17 +4,15 @@ import { NextResponse } from 'next/server'
 import { getStripeServer } from '@/lib/stripeServer'
 import { createAdminClient } from '@/utils/supabase/server'
 import { logger } from '@/lib/logger'
+import {
+  coachIdFromStripeSubscription,
+  syncCoachPlatformTrialConsumptionFromStripeSubscription,
+} from '@/lib/coachPlatformTrialEligibility'
 
 export const runtime = 'nodejs'
 
-function coachIdFromSubscription(sub: Stripe.Subscription): string | null {
-  const m = sub.metadata?.coach_id
-  if (m && typeof m === 'string' && m.length > 0) return m
-  return null
-}
-
 async function upsertCoachPlatformFromStripeSubscription(sub: Stripe.Subscription) {
-  const coachId = coachIdFromSubscription(sub)
+  const coachId = coachIdFromStripeSubscription(sub)
   if (!coachId) {
     logger.warn('Stripe webhook: subscription sans metadata coach_id', { subscriptionId: sub.id })
     return
@@ -42,6 +40,8 @@ async function upsertCoachPlatformFromStripeSubscription(sub: Stripe.Subscriptio
       subscriptionId: sub.id,
     })
   }
+
+  await syncCoachPlatformTrialConsumptionFromStripeSubscription(supabase, sub)
 }
 
 export async function POST(request: Request) {

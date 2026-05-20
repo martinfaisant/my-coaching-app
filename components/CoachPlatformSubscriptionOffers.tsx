@@ -10,11 +10,13 @@ import { createCoachPlatformCheckoutSession } from '@/app/[locale]/dashboard/ath
 type CoachPlatformSubscriptionOffersProps = {
   offers: CoachPlatformCatalogOffer[]
   subscriptionTrialDays: number
+  trialEligible: boolean
 }
 
 export function CoachPlatformSubscriptionOffers({
   offers,
   subscriptionTrialDays,
+  trialEligible,
 }: CoachPlatformSubscriptionOffersProps) {
   const t = useTranslations('coachMsaSubscription')
   const locale = useLocale()
@@ -50,6 +52,7 @@ export function CoachPlatformSubscriptionOffers({
       <CoachPlatformOfferGrid
         offers={offers}
         subscriptionTrialDays={subscriptionTrialDays}
+        trialEligible={trialEligible}
         pendingPriceId={pendingPriceId}
         isPending={isPending}
         error={error}

@@ -22,6 +22,7 @@ import { CoachPlatformBillingAddressSection } from '@/components/CoachPlatformBi
 import { loadCoachBillingAddressForPage } from '@/app/[locale]/dashboard/coach-platform-subscription/coachPlatformBillingAddressActions'
 import { FORM_LABEL_CLASSES } from '@/lib/formStyles'
 import { computeCoachPlatformTrialRemainingDays } from '@/lib/coachPlatformSubscriptionTrial'
+import { resolveCoachPlatformTrialPresentationForCoach } from '@/lib/coachPlatformTrialEligibility'
 
 function hasManagingPlatformSubscription(row: CoachPlatformSubscription | null): boolean {
   if (!row) return false
@@ -100,7 +101,14 @@ export default async function CoachPlatformSubscriptionPage({ params }: { params
   const historyError = billingResult.error
   const catalogError = catalogResult.error
   const offers: CoachPlatformCatalogOffer[] = catalogResult.offers
-  const subscriptionTrialDays = catalogResult.subscriptionTrialDays
+
+  const trialPresentation = await resolveCoachPlatformTrialPresentationForCoach(
+    supabase,
+    current.id,
+    row
+  )
+  const subscriptionTrialDays = trialPresentation.subscriptionTrialDays
+  const trialEligible = trialPresentation.trialEligible
 
   const periodEndRaw =
     row?.status === 'trialing'
@@ -211,7 +219,11 @@ export default async function CoachPlatformSubscriptionPage({ params }: { params
       ) : null}
 
       {!managing && offers.length > 0 ? (
-        <CoachPlatformSubscriptionOffers offers={offers} subscriptionTrialDays={subscriptionTrialDays} />
+        <CoachPlatformSubscriptionOffers
+          offers={offers}
+          subscriptionTrialDays={subscriptionTrialDays}
+          trialEligible={trialEligible}
+        />
       ) : null}
 
       {!managing && offers.length === 0 && !catalogError ? (

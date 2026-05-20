@@ -1057,7 +1057,7 @@
   "legal": {
     "common": {
       "lastUpdated": "Last updated: {date}",
-      "lastUpdatedFull": "Last updated: May 12, 2026"
+      "lastUpdatedFull": "Last updated: May 20, 2026"
     },
     "terms": {
       "title": "Terms of Use",
@@ -1081,10 +1081,28 @@
         },
         "payments": {
           "title": "5. PAYMENTS AND SUBSCRIPTIONS",
-          "li1": "Coach-Athlete Transactions: Mysportally does not process any payments between Coaches and Athletes. Transactions are conducted outside the platform under the exclusive responsibility of the users.",
-          "li2": "Coach Subscription (Platform access): Access to services for Coaches is subject to a fee (monthly or annual). Payments are processed by an external payment service provider; Mysportally does not store your full card number or security code. Payment-related information and subscription status data may be processed by that provider, strictly as needed for the transaction and billing, under its own terms applicable when you pay.",
-          "li3": "Cancellation: Monthly subscriptions can be canceled at any time, effective at the end of the current billing period. Yearly subscriptions constitute a firm commitment for the full term.",
-          "li4": "Refunds: No refunds are provided, except where required by mandatory law."
+          "intro": "These terms also constitute the general terms of sale and refund policy applicable to Coaches’ paid Platform access subscription, subject to non-waivable consumer rights in Quebec and Canada.",
+          "coachAthlete": {
+            "title": "5.1 Coach–Athlete Transactions",
+            "p1": "Mysportally does not process any payments between Coaches and Athletes. Transactions are conducted outside the platform under the exclusive responsibility of the users."
+          },
+          "coachPlatform": {
+            "title": "5.2 Coach Subscription – Platform Access",
+            "p1": "Access to Coach-only features is paid (monthly or annual plan, as selected at checkout). Payment is processed by an external payment service provider (e.g. Stripe); Mysportally does not store your full card number or security code. The price, term, renewal and checkout disclosures form part of the contract.",
+            "trial": "Free trial (if offered): when a free trial is offered for Platform access, it is limited to one time per natural person for the campaign or offer described at signup. It is not cumulative, transferable, or available again through a new account for the same person. After the trial, the subscription continues at the price shown at signup unless canceled per the payment provider’s process and these terms.",
+            "cancellationMonthly": "Monthly subscription: may be canceled at any time; cancellation takes effect at the end of the current billing period, subject to the payment provider’s mechanics.",
+            "cancellationAnnual": "Annual subscription: constitutes a firm commitment for the full paid term; it may not be canceled early except where mandatory law requires.",
+            "refunds": "Refunds (Coach Platform subscription): no refund, in full or on a pro-rata basis, is granted for the annual plan. For the monthly plan, no refund is granted for the current billing period already started, except where mandatory law requires. Non-waivable rights under applicable law prevail over these terms."
+          },
+          "accountIntegrity": {
+            "title": "5.3 Account integrity and trial use",
+            "p1": "Each natural person may benefit only once from the applicable free trial for the same campaign or offer, regardless of how many accounts are created.",
+            "p2": "If we reasonably believe there are duplicate accounts, false statements, or circumvention (including to obtain multiple free trials), Mysportally may, without prior notice when circumstances require: suspend or close the affected accounts; immediately cancel any free trial; refuse any new trial; revoke Platform access; and, to the extent permitted by law and under the billing terms accepted at payment, charge the applicable subscription price from the date the abuse is identified, without seeking retroactive billing for periods already displayed and used as free, except where mandatory law or a court order requires otherwise."
+          },
+          "serviceEvolution": {
+            "title": "5.4 Platform and plan changes",
+            "p1": "Mysportally may evolve the Platform (features, interfaces, technical limits). New or changed features are not automatically included in a plan or subscription already in force unless stated otherwise at signup. Mysportally may offer them through another plan, paid option, or upgrade. For a material adverse change to subscribed Coaches, Mysportally will endeavour to notify affected users within a reasonable time."
+          }
         },
         "medical": {
           "title": "6. MEDICAL AND HEALTH DISCLAIMER (IMPORTANT)",
@@ -1114,7 +1132,9 @@
           "title": "10. PROHIBITED CONDUCT",
           "li1": "Use the Platform for illegal or fraudulent purposes.",
           "li2": "Engage in data scraping without authorization.",
-          "li3": "Attempt to compromise the technical integrity of the Platform."
+          "li3": "Attempt to compromise the technical integrity of the Platform.",
+          "li4": "Create or use multiple accounts to obtain multiple free trials or circumvent pricing terms.",
+          "li5": "Provide inaccurate identity information in connection with a trial, subscription, or payment."
         },
         "law": {
           "title": "11. GOVERNING LAW AND MEDIATION",
@@ -1124,7 +1144,7 @@
     },
     "privacy": {
       "title": "Privacy Policy",
-      "lastUpdatedFull": "Last updated: May 12, 2026",
+      "lastUpdatedFull": "Last updated: May 20, 2026",
       "sections": {
         "commitment": {
           "title": "1. OUR COMMITMENT",
@@ -1137,7 +1157,8 @@
           "li3": "Activity data via third-party services (e.g., Strava): with your explicit consent, we may import activity data (e.g., distance, duration, GPS, heart rate if available). This data may be considered sensitive.",
           "li4": "Technical Data: information sent by your device and browser when you access the website (e.g., IP address, browser type, request timestamps). It may be processed through our technical providers (hosting, authentication) for security, operations and troubleshooting purposes, including maintaining your session.",
           "li5": "Contact form (dedicated page, with or without an account): first name, last name, email address, phone number if provided, reason for contact, message content; assignment of a tracking reference; if you are signed in, an account identifier may be linked to the request.",
-          "li6": "Coach paid Platform subscription data: technical transaction or subscription identifiers, access status, processed when paying through an external payment service provider; Mysportally does not store your full card details on its own servers."
+          "li6": "Coach paid Platform subscription data: technical transaction or subscription identifiers, access status, free-trial consumption history per campaign (if applicable), processed when paying through an external payment service provider; Mysportally does not store your full card details on its own servers.",
+          "li7": "Abuse-prevention data: technical elements used to detect duplicate accounts or circumvention (e.g. email address, account identifiers, session or login data, payment-provider identifiers), as necessary to enforce the Terms of Use."
         },
         "useOfData": {
           "title": "3. USE OF DATA",
@@ -1146,7 +1167,8 @@
           "li3": "Improve user experience and technical functionality.",
           "li4": "Communicate with you regarding your account.",
           "li5": "Process and respond to support requests submitted through the Contact form, including by email, and retain those requests for as long as needed to handle them and for customer support follow-up.",
-          "li6": "Manage Coaches’ paid Platform subscription and related access status (including through an external payment service provider, as strictly necessary)."
+          "li6": "Manage Coaches’ paid Platform subscription and related access status (including through an external payment service provider, as strictly necessary).",
+          "li7": "Prevent abuse (including duplicate accounts or unauthorized use of a free trial) and enforce our Terms of Use."
         },
         "consent": {
           "title": "4. CONSENT AND SENSITIVE DATA",
@@ -1585,7 +1607,7 @@
       "price_1TWNrlD1L4D9b7s0r9Syzf05": {
         "title": "Annual",
         "description": "Same unlimited platform access to coach your athletes. Billed once per year (often the best value). Collecting payments from athletes may be offered as a separate add-on later.",
-        "tagline": "Built for long-term performance. Take advantage of our exclusive trial.",
+        "tagline": "Built for long-term performance of your athletes and your activity.",
         "features": [
           "Everything in the Monthly plan",
           "Simpler billing once a year",

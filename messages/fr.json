@@ -1182,7 +1182,7 @@
   "legal": {
     "common": {
       "lastUpdated": "Dernière mise à jour : {date}",
-      "lastUpdatedFull": "Dernière mise à jour : 12 mai 2026"
+      "lastUpdatedFull": "Dernière mise à jour : 20 mai 2026"
     },
     "terms": {
       "title": "Conditions d’utilisation",
@@ -1206,10 +1206,28 @@
         },
         "payments": {
           "title": "5. PAIEMENTS ET ABONNEMENTS",
-          "li1": "Transactions Coach-Athlète : Mysportally ne gère aucun paiement entre les Coachs et les Athlètes. Les transactions sont effectuées hors plateforme sous la responsabilité exclusive des utilisateurs.",
-          "li2": "Abonnement Coach (accès à la Plateforme) : l’accès aux services pour les Coachs est payant (mensuel ou annuel). Le paiement est traité par un prestataire de paiement externe ; Mysportally ne conserve pas le numéro complet de votre carte bancaire ni votre cryptogramme. Des informations relatives au paiement et au statut d’abonnement peuvent être traitées par ce prestataire, dans la limite nécessaire à la transaction et à la facturation, selon ses propres modalités applicables lors du paiement.",
-          "li3": "Résiliation : Les abonnements mensuels sont résiliables en tout temps pour la fin de la période facturée. Les abonnements annuels constituent un engagement ferme pour la durée totale.",
-          "li4": "Remboursement : Aucun remboursement n'est accordé, sauf disposition légale impérative."
+          "intro": "Les présentes conditions constituent également les conditions générales de vente et la politique de remboursement applicables à l’abonnement payant des Coachs pour l’accès à la Plateforme, sous réserve des droits impératifs du consommateur au Québec et au Canada.",
+          "coachAthlete": {
+            "title": "5.1 Transactions Coach – Athlète",
+            "p1": "Mysportally ne gère aucun paiement entre les Coachs et les Athlètes. Les transactions sont effectuées hors plateforme sous la responsabilité exclusive des utilisateurs."
+          },
+          "coachPlatform": {
+            "title": "5.2 Abonnement Coach – Accès à la Plateforme",
+            "p1": "L’accès aux fonctionnalités réservées aux Coachs est payant (forfait mensuel ou annuel, selon l’offre choisie au moment de la souscription). Le paiement est traité par un prestataire de paiement externe (ex. Stripe) ; Mysportally ne conserve pas le numéro complet de votre carte bancaire ni votre cryptogramme. Le tarif, la durée, le renouvellement et les modalités affichées lors du paiement font partie intégrante du contrat.",
+            "trial": "Période d’essai (le cas échéant) : lorsqu’une période d’essai gratuit est offerte pour l’abonnement donnant accès à la Plateforme, elle est limitée à une seule fois par personne physique, pour la campagne ou l’offre décrite au moment de la souscription. Elle n’est ni cumulable, ni transférable, ni disponible sur un nouveau compte créé pour la même personne. À l’issue de l’essai, l’abonnement se poursuit au tarif indiqué lors de la souscription, sauf résiliation selon les modalités du prestataire de paiement et les présentes conditions.",
+            "cancellationMonthly": "Abonnement mensuel : résiliable en tout temps ; la résiliation prend effet à la fin de la période de facturation en cours, sous réserve des mécanismes du prestataire de paiement.",
+            "cancellationAnnual": "Abonnement annuel : constitue un engagement ferme pour la durée totale de la période payée ; il n’est pas résiliable avant terme, sauf disposition légale impérative.",
+            "refunds": "Remboursements (abonnement Coach – Plateforme) : aucun remboursement, ni total ni au prorata, n’est accordé pour l’abonnement annuel. Pour l’abonnement mensuel, aucun remboursement n’est accordé pour la période de facturation en cours déjà entamée, sauf disposition légale impérative. Les droits non renonçables prévus par la loi applicable priment sur les présentes conditions."
+          },
+          "accountIntegrity": {
+            "title": "5.3 Intégrité des comptes et usage de l’essai",
+            "p1": "Chaque personne physique ne peut bénéficier qu’une seule fois de la période d’essai applicable à une même campagne ou offre, quel que soit le nombre de comptes créés.",
+            "p2": "En cas de multiplication de comptes, de fausses déclarations ou de manœuvre visant à contourner ces règles (y compris pour obtenir plusieurs essais gratuits), Mysportally peut, sans préavis lorsque la circonstance l’exige : suspendre ou fermer les comptes concernés ; annuler immédiatement toute période d’essai ; refuser tout nouvel essai ; retirer l’accès à la Plateforme ; et, dans la mesure permise par la loi et selon les modalités de facturation acceptées lors du paiement, appliquer le tarif de l’abonnement à compter de la date de constat de l’abus, sans exiger de refacturation rétroactive pour des périodes déjà affichées et consommées comme gratuites, sauf obligation légale contraire ou décision judiciaire."
+          },
+          "serviceEvolution": {
+            "title": "5.4 Évolution de la Plateforme et des forfaits",
+            "p1": "Mysportally peut faire évoluer la Plateforme (fonctionnalités, interfaces, limites techniques). Les fonctionnalités nouvelles ou modifiées ne sont pas automatiquement incluses dans un forfait ou un abonnement déjà souscrit, sauf mention contraire au moment de la souscription. Mysportally peut proposer ces évolutions via un autre plan, une option payante ou une mise à niveau. En cas de changement substantiel défavorable aux Coachs déjà abonnés, Mysportally s’efforce d’en informer les personnes concernées dans un délai raisonnable."
+          }
         },
         "medical": {
           "title": "6. AVERTISSEMENT MÉDICAL ET SANTÉ (IMPORTANT)",
@@ -1239,7 +1257,9 @@
           "title": "10. COMPORTEMENTS INTERDITS",
           "li1": "Utiliser la Plateforme à des fins illégales ou frauduleuses.",
           "li2": "Extraire des données (scraping) sans autorisation.",
-          "li3": "Tenter de nuire à l'intégrité technique de la Plateforme."
+          "li3": "Tenter de nuire à l'intégrité technique de la Plateforme.",
+          "li4": "Créer ou utiliser plusieurs comptes pour obtenir plusieurs périodes d’essai gratuites ou contourner les conditions tarifaires.",
+          "li5": "Fournir des informations inexactes sur son identité en lien avec un essai, un abonnement ou un paiement."
         },
         "law": {
           "title": "11. DROIT APPLICABLE ET MÉDIATION",
@@ -1249,7 +1269,7 @@
     },
     "privacy": {
       "title": "Politique de confidentialité",
-      "lastUpdatedFull": "Dernière mise à jour : 12 mai 2026",
+      "lastUpdatedFull": "Dernière mise à jour : 20 mai 2026",
       "sections": {
         "commitment": {
           "title": "1. NOTRE ENGAGEMENT",
@@ -1262,7 +1282,8 @@
           "li3": "Données d’activité via services tiers (ex. Strava) : avec votre consentement explicite, nous pouvons importer des données d’activité (ex. distance, durée, GPS, fréquence cardiaque si disponible). Ces données peuvent être considérées comme sensibles.",
           "li4": "Données techniques : informations transmises par votre appareil et votre navigateur lors de l’accès au site (ex. adresse IP, type de navigateur, dates/heure de requêtes). Elles peuvent être traitées via nos fournisseurs techniques (hébergement, authentification) pour des besoins de sécurité, de fonctionnement et de diagnostic, notamment pour maintenir votre session.",
           "li5": "Formulaire Contact (page dédiée, avec ou sans compte) : prénom, nom, adresse courriel, numéro de téléphone le cas échéant, motif de la demande, contenu du message ; attribution d’une référence de suivi ; si vous êtes connecté, un identifiant de compte peut être associé à la demande.",
-          "li6": "Données liées à l’abonnement payant des Coachs (accès à la Plateforme) : identifiants techniques de transaction ou d’abonnement, statut d’accès, traités lors du paiement via un prestataire de paiement externe ; Mysportally ne conserve pas sur ses propres serveurs vos données complètes de carte bancaire."
+          "li6": "Données liées à l’abonnement payant des Coachs (accès à la Plateforme) : identifiants techniques de transaction ou d’abonnement, statut d’accès, historique de consommation d’une période d’essai par campagne (le cas échéant), traités lors du paiement via un prestataire de paiement externe ; Mysportally ne conserve pas sur ses propres serveurs vos données complètes de carte bancaire.",
+          "li7": "Données de prévention des abus : éléments techniques permettant de détecter des comptes multiples ou un contournement des conditions (ex. adresse courriel, identifiants de compte, données de session ou de connexion, identifiants côté prestataire de paiement), dans la mesure nécessaire à l’application des Conditions d’utilisation."
         },
         "useOfData": {
           "title": "3. UTILISATION DES DONNÉES",
@@ -1271,7 +1292,8 @@
           "li3": "Améliorer l'expérience utilisateur et les fonctionnalités techniques.",
           "li4": "Communiquer avec vous concernant votre compte.",
           "li5": "Traiter et répondre aux demandes adressées au support via le formulaire Contact, y compris par courriel, et conserver ces demandes le temps nécessaire à leur traitement et au suivi du service client.",
-          "li6": "Gérer l’abonnement payant des Coachs à la Plateforme et le statut d’accès associé (y compris via un prestataire de paiement externe, dans la limite nécessaire)."
+          "li6": "Gérer l’abonnement payant des Coachs à la Plateforme et le statut d’accès associé (y compris via un prestataire de paiement externe, dans la limite nécessaire).",
+          "li7": "Prévenir les abus (dont multiplication de comptes ou utilisation non autorisée d’une période d’essai) et faire respecter nos Conditions d’utilisation."
         },
         "consent": {
           "title": "4. CONSENTEMENT ET DONNÉES SENSIBLES",
@@ -1710,7 +1732,7 @@
       "price_1TWNrlD1L4D9b7s0r9Syzf05": {
         "title": "Annuel",
         "description": "Même accès illimité à la plateforme pour coacher vos athlètes. Facturation une fois par an (souvent la formule la plus avantageuse). L’encaissement des paiements auprès des athlètes pourra faire l’objet d’une offre complémentaire ultérieurement.",
-        "tagline": "L’offre pensée pour la performance à long terme. Profitez de notre essai exclusif.",
+        "tagline": "L’offre pensée pour la performance à long terme de vos athlètes et de votre activité.",
         "features": [
           "Toutes les fonctionnalités de l’offre Mensuelle",
           "Facturation simplifiée une fois par an",

@@ -13,6 +13,8 @@ type CoachPlatformOfferGridProps = {
   offers: CoachPlatformCatalogOffer[]
   /** Si > 0 : badge + ligne d’essai (variable `COACH_PLATFORM_SUBSCRIPTION_TRIAL_DAYS`). */
   subscriptionTrialDays?: number
+  /** Si false : masquage silencieux badge + ligne essai (essai campagne déjà consommé). */
+  trialEligible?: boolean
   pendingPriceId: string | null
   isPending: boolean
   error: string | null
@@ -51,6 +53,7 @@ function offerIntervalSlash(
 export function CoachPlatformOfferGrid({
   offers,
   subscriptionTrialDays = 0,
+  trialEligible = true,
   pendingPriceId,
   isPending,
   error,
@@ -65,7 +68,7 @@ export function CoachPlatformOfferGrid({
     return enrichCoachPlatformOffersForDisplay(offers, overrides)
   }, [messages, offers])
 
-  const trialCampaignActive = subscriptionTrialDays > 0
+  const trialCampaignActive = subscriptionTrialDays > 0 && trialEligible
 
   if (offers.length === 0) return null
 
