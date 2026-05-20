@@ -1592,15 +1592,19 @@
     "pageTitle": "Abonnement MySportAlly",
     "heading": "Abonnement MySportAlly",
     "statusSectionTitle": "Statut de l’abonnement",
-    "badgeNoSubscription": "Sans abonnement actif",
-    "noSubscriptionDescription": "Vous n’avez pas d’abonnement payant à My Sport Ally. Choisissez une offre ci-dessous pour débloquer l’accès complet à vos athlètes.",
-    "inactiveSubscriptionDescription": "Votre abonnement plateforme n’est plus actif. Vous pouvez souscrire à nouveau ci-dessous.",
     "planUnknown": "Offre plateforme",
-    "nextPaymentWithDate": "Prochain paiement : {date}",
-    "trialFree": "Essai gratuit",
+    "nextPaymentWithDate": "Prochain prélèvement : {date}",
+    "trialCatalogBadgeFreeDays": "{days} jours gratuits",
+    "trialCatalogTrialLine": "{days} jours d'essai offerts, puis {thenPrice}.",
+    "priceDisplayedUnitPerMonth": "/ mois",
+    "priceDisplayedUnitPerYear": "/ an",
+    "priceDisplayedUnitEveryNMonths": "/ {n} mois",
+    "priceDisplayedUnitEveryNYears": "/ {n} ans",
+    "trialThenPrefix": "Puis",
+    "trialRemainingDays": "Il reste {count} jours d'essai gratuit",
+    "trialRemainingOneDay": "Il reste 1 jour d'essai gratuit",
+    "trialRemainingLastDay": "Dernier jour d'essai gratuit",
     "cardPricingUnavailable": "Montant de l’offre indisponible pour le moment.",
-    "paymentDefaultDescription": "Votre dernier paiement n’a pas abouti. L’accès aux fonctionnalités réservées aux abonnés est suspendu tant que la situation n’est pas régularisée. Vous pouvez souscrire à nouveau ci-dessous si une offre est disponible.",
-    "stripeCustomerOnlyDescription": "Votre compte client Stripe est prêt pour la facturation. Souscrivez à une offre ci-dessous lorsque vous souhaitez l’accès complet à la plateforme.",
     "offersTitle": "Offres disponibles",
     "subscribeCta": "Souscrire",
     "subscribePending": "Redirection…",
@@ -1624,14 +1628,7 @@
     "priceIntervalEveryNYears": "tous les {n} ans",
     "subscriptionStatus": {
       "active": "Actif",
-      "trialing": "Essai",
-      "past_due": "Paiement en retard",
-      "unpaid": "Impayé",
-      "canceled": "Annulé",
-      "incomplete": "Incomplet",
-      "incomplete_expired": "Expiré (incomplet)",
-      "paused": "En pause",
-      "none": "Profil de facturation uniquement"
+      "trialing": "En essai"
     },
     "invoiceStatus": {
       "paid": "Payée",
@@ -1646,8 +1643,6 @@
     },
     "billingAddress": {
       "sectionTitle": "Adresse de facturation",
-      "cardTitle": "Adresse de facturation",
-      "formTitle": "Adresse de facturation",
       "emptyDescription": "Aucune adresse de facturation n’est enregistrée.",
       "addAddress": "Ajouter une adresse",
       "edit": "Modifier",
@@ -1697,18 +1692,30 @@
   },
   "coachMsaOffers": {
     "modalTitle": "Choisir votre formule",
-    "modalIntroDefault": "Sélectionnez l’offre qui vous convient, puis continuez vers le paiement sécurisé (Stripe).",
+    "modalIntroDefault": "Sélectionnez l’offre qui vous convient.",
     "loading": "Chargement des offres…",
     "close": "Fermer",
     "noOffers": "Aucune offre n’est configurée pour le moment. Contactez le support si besoin.",
     "byPriceId": {
       "price_1TVyePD1L4D9b7s03IvfOcUY": {
-        "title": "Accès plateforme coaching — mensuel",
-        "description": "Accès complet à My Sport Ally pour coacher vos athlètes (planning, demandes, chat, objectifs). Nombre d’athlètes illimité. Facturation chaque mois. Cette formule ne couvre pas l’encaissement des paiements auprès des athlètes."
+        "title": "Mensuel",
+        "description": "Accès complet à My Sport Ally pour coacher vos athlètes (planning, demandes, chat, objectifs). Nombre d’athlètes illimité. Facturation chaque mois. Cette formule ne couvre pas l’encaissement des paiements auprès des athlètes.",
+        "tagline": "Gérez vos athlètes avec une flexibilité maximale, sans engagement, annulation possible à tout moment.",
+        "features": [
+          "Nombre d’athlètes illimité",
+          "Planification avancée des séances",
+          "Facturation mensuelle"
+        ]
       },
       "price_1TWNrlD1L4D9b7s0r9Syzf05": {
-        "title": "Accès plateforme coaching — annuel",
-        "description": "Même accès illimité à la plateforme pour coacher vos athlètes. Facturation une fois par an (souvent la formule la plus avantageuse). L’encaissement des paiements auprès des athlètes pourra faire l’objet d’une offre complémentaire ultérieurement."
+        "title": "Annuel",
+        "description": "Même accès illimité à la plateforme pour coacher vos athlètes. Facturation une fois par an (souvent la formule la plus avantageuse). L’encaissement des paiements auprès des athlètes pourra faire l’objet d’une offre complémentaire ultérieurement.",
+        "tagline": "L’offre pensée pour la performance à long terme. Profitez de notre essai exclusif.",
+        "features": [
+          "Toutes les fonctionnalités de l’offre Mensuelle",
+          "Facturation simplifiée une fois par an",
+          "Économisez 20% sur l’année"
+        ]
       }
     },
     "futurePlatformPaymentsTier": {
@@ -1720,7 +1727,7 @@
   },
   "coachPlatform": {
     "listBlockedTitle": "Abonnement coach requis",
-    "listBlockedDescription": "Vous ne pouvez plus consulter le planning et les informations de vos athlètes tant que votre abonnement n’est pas à jour (tolérance 3 jours après échéance en cas de retard de paiement).",
+    "listBlockedDescription": "Vous ne pouvez plus consulter le planning et les informations de vos athlètes tant que votre abonnement n’est pas à jour.",
     "checkoutCta": "Continuer vers le paiement",
     "checkoutPending": "Redirection…",
     "calendarBlockedTitle": "Abonnement requis",

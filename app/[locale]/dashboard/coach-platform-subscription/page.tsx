@@ -21,6 +21,7 @@ import { CoachPlatformSubscriptionOffers } from '@/components/CoachPlatformSubsc
 import { CoachPlatformBillingAddressSection } from '@/components/CoachPlatformBillingAddressSection'
 import { loadCoachBillingAddressForPage } from '@/app/[locale]/dashboard/coach-platform-subscription/coachPlatformBillingAddressActions'
 import { FORM_LABEL_CLASSES } from '@/lib/formStyles'
+import { computeCoachPlatformTrialRemainingDays } from '@/lib/coachPlatformSubscriptionTrial'
 
 function hasManagingPlatformSubscription(row: CoachPlatformSubscription | null): boolean {
   if (!row) return false
@@ -35,31 +36,6 @@ function formatMoney(locale: string, amount: number, currency: string): string {
     }).format(amount)
   } catch {
     return `${amount} ${currency}`
-  }
-}
-
-function inactiveSubscriptionStatusLabel(t: (key: string) => string, status: string): string {
-  switch (status) {
-    case 'active':
-      return t('subscriptionStatus.active')
-    case 'trialing':
-      return t('subscriptionStatus.trialing')
-    case 'past_due':
-      return t('subscriptionStatus.past_due')
-    case 'unpaid':
-      return t('subscriptionStatus.unpaid')
-    case 'canceled':
-      return t('subscriptionStatus.canceled')
-    case 'incomplete':
-      return t('subscriptionStatus.incomplete')
-    case 'incomplete_expired':
-      return t('subscriptionStatus.incomplete_expired')
-    case 'paused':
-      return t('subscriptionStatus.paused')
-    case 'none':
-      return t('subscriptionStatus.none')
-    default:
-      return status
   }
 }
 
@@ -124,8 +100,12 @@ export default async function CoachPlatformSubscriptionPage({ params }: { params
   const historyError = billingResult.error
   const catalogError = catalogResult.error
   const offers: CoachPlatformCatalogOffer[] = catalogResult.offers
+  const subscriptionTrialDays = catalogResult.subscriptionTrialDays
 
-  const periodEndRaw = row?.current_period_end ?? cardDetails?.currentPeriodEndIso ?? null
+  const periodEndRaw =
+    row?.status === 'trialing'
+      ? (cardDetails?.trialEndIso ?? row?.current_period_end ?? cardDetails?.currentPeriodEndIso ?? null)
+      : (row?.current_period_end ?? cardDetails?.currentPeriodEndIso ?? null)
   const periodEndLabel = periodEndRaw != null ? formatShortDate(periodEndRaw, dateLocale) : null
 
   const planLabel = cardDetails?.planLabel ?? null
@@ -140,45 +120,75 @@ export default async function CoachPlatformSubscriptionPage({ params }: { params
     }
   }
 
-  const isFreeTrialDisplay =
-    row?.status === 'trialing' &&
-    (cardDetails?.unitAmountMajor === 0 || cardDetails?.unitAmountMajor == null)
+  let trialRemainingMessage: string | null = null
+  if (row?.status === 'trialing' && periodEndRaw) {
+    const days = computeCoachPlatformTrialRemainingDays(periodEndRaw)
+    if (days >= 2) {
+      trialRemainingMessage = t('trialRemainingDays', { count: days })
+    } else if (days === 1) {
+      trialRemainingMessage = t('trialRemainingOneDay')
+    } else {
+      trialRemainingMessage = t('trialRemainingLastDay')
+    }
+  }
 
   return (
     <DashboardPageShell>
       <h1 className="text-lg font-bold text-stone-900 mb-4">{t('heading')}</h1>
 
-      <section className="mb-8" aria-labelledby="coach-msa-status-heading">
-        <h2 id="coach-msa-status-heading" className="sr-only">
-          {t('statusSectionTitle')}
-        </h2>
-        <div className="rounded-xl border border-stone-200 bg-stone-50 p-4">
-          {!row ? (
-            <>
-              <span className="inline-flex rounded-full border border-stone-300 bg-white px-2.5 py-0.5 text-xs font-semibold text-stone-700">
-                {t('badgeNoSubscription')}
-              </span>
-              <p className="text-sm text-stone-600 mt-2">{t('noSubscriptionDescription')}</p>
-            </>
-          ) : managing ? (
+      {managing && row ? (
+        <section className="mb-8" aria-labelledby="coach-msa-status-heading">
+          <h2 id="coach-msa-status-heading" className="sr-only">
+            {t('statusSectionTitle')}
+          </h2>
+          <div className="rounded-xl border border-stone-200 bg-stone-50 p-4">
             <div className="flex justify-between items-start gap-3">
               <div className="min-w-0 flex-1">
                 <p className="font-semibold text-stone-900">{planLabel ?? t('planUnknown')}</p>
-                {isFreeTrialDisplay ? (
-                  <p className="text-sm text-stone-900 font-semibold mt-3">{t('trialFree')}</p>
-                ) : cardDetails?.unitAmountMajor != null ? (
-                  <p className="text-sm text-stone-900 font-semibold mt-3">
-                    {formatMoney(locale, cardDetails.unitAmountMajor, cardDetails.currency)}
-                    {priceIntervalSuffix ? (
-                      <span className="font-normal text-stone-600"> {priceIntervalSuffix}</span>
+                {row.status === 'trialing' ? (
+                  <>
+                    {trialRemainingMessage ? (
+                      <p className="text-sm text-stone-700 font-medium mt-3">{trialRemainingMessage}</p>
                     ) : null}
-                  </p>
+                    {cardDetails?.unitAmountMajor != null ? (
+                      <p
+                        className={`text-sm text-stone-900 font-semibold ${trialRemainingMessage ? 'mt-1.5' : 'mt-3'}`}
+                      >
+                        <span className="font-normal text-stone-800">{t('trialThenPrefix')}</span>{' '}
+                        {formatMoney(locale, cardDetails.unitAmountMajor, cardDetails.currency)}
+                        {priceIntervalSuffix ? (
+                          <span className="font-normal text-stone-600"> {priceIntervalSuffix}</span>
+                        ) : null}
+                      </p>
+                    ) : (
+                      <p className={`text-sm text-stone-500 ${trialRemainingMessage ? 'mt-1.5' : 'mt-3'}`}>
+                        {t('cardPricingUnavailable')}
+                      </p>
+                    )}
+                    {periodEndLabel ? (
+                      <p className="text-sm text-stone-600 mt-2">{t('nextPaymentWithDate', { date: periodEndLabel })}</p>
+                    ) : null}
+                  </>
+                ) : cardDetails?.unitAmountMajor != null ? (
+                  <>
+                    <p className="text-sm text-stone-900 font-semibold mt-3">
+                      {formatMoney(locale, cardDetails.unitAmountMajor, cardDetails.currency)}
+                      {priceIntervalSuffix ? (
+                        <span className="font-normal text-stone-600"> {priceIntervalSuffix}</span>
+                      ) : null}
+                    </p>
+                    {periodEndLabel ? (
+                      <p className="text-sm text-stone-600 mt-2">{t('nextPaymentWithDate', { date: periodEndLabel })}</p>
+                    ) : null}
+                  </>
                 ) : (
-                  <p className="text-sm text-stone-500 mt-3">{t('cardPricingUnavailable')}</p>
+                  <>
+                    <p className="text-sm text-stone-500 mt-3">{t('cardPricingUnavailable')}</p>
+                    {periodEndLabel ? (
+                      <p className="text-sm text-stone-600 mt-2">{t('nextPaymentWithDate', { date: periodEndLabel })}</p>
+                    ) : null}
+                  </>
                 )}
-                {periodEndLabel ? (
-                  <p className="text-sm text-stone-600 mt-2">{t('nextPaymentWithDate', { date: periodEndLabel })}</p>
-                ) : null}
               </div>
               <div className="shrink-0">
                 {row.status === 'trialing' ? (
@@ -192,28 +202,17 @@ export default async function CoachPlatformSubscriptionPage({ params }: { params
                 )}
               </div>
             </div>
-          ) : (
-            <>
-              <span className="inline-flex rounded-full border border-stone-300 bg-white px-2.5 py-0.5 text-xs font-semibold text-stone-700">
-                {inactiveSubscriptionStatusLabel(t, row.status)}
-              </span>
-              <p className="text-sm text-stone-600 mt-2">
-                {row.status === 'past_due' || row.status === 'unpaid'
-                  ? t('paymentDefaultDescription')
-                  : row.status === 'none'
-                    ? t('stripeCustomerOnlyDescription')
-                    : t('inactiveSubscriptionDescription')}
-              </p>
-            </>
-          )}
-        </div>
-      </section>
+          </div>
+        </section>
+      ) : null}
 
       {catalogError === 'stripe_unavailable' || catalogError === 'catalog_load_failed' ? (
         <p className="text-sm text-palette-danger mb-6">{t('errors.catalogUnavailable')}</p>
       ) : null}
 
-      {!managing && offers.length > 0 ? <CoachPlatformSubscriptionOffers offers={offers} /> : null}
+      {!managing && offers.length > 0 ? (
+        <CoachPlatformSubscriptionOffers offers={offers} subscriptionTrialDays={subscriptionTrialDays} />
+      ) : null}
 
       {!managing && offers.length === 0 && !catalogError ? (
         <p className="text-sm text-stone-500 mb-8">{t('noOffersConfigured')}</p>

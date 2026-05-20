@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 13 mai 2026 (**Stripe coach** : **`Customer.name`** = prénom/nom profil — Checkout, facturation, Mon profil ; précédent : **Mon abonnement coach** adresse…)
+**Dernière mise à jour :** 20 mai 2026 (**Mon abonnement coach** : essai catalogue, tuiles offre, carte statut simplifiée, grille sans en-tête ; précédent : **Stripe** **`Customer.name`**…)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -9,16 +9,16 @@
 ## 🎯 Documentation Active (à utiliser en priorité)
 
 ### **README.md** ⭐
-- **Contenu :** Setup projet, stack technique, quick start, structure du projet, **URL production https://mysportally.com**, **accueil `/` et `/en`** : utilisateurs connectés redirigés vers l’entrée dashboard (voir **Project_context.md** §4.0, **`lib/dashboardEntryPath.ts`**), variables **Stripe coach plateforme** (rappel **`coachMsaOffers.byPriceId`**, Checkout : **`ensureCoachPlatformStripeCustomerForCheckout`**, langue + **`Customer.name`** profil / session) et URL de retour Checkout (`NEXT_PUBLIC_SITE_URL` / repli, `lib/checkoutReturnOrigin.ts`)
+- **Contenu :** Setup projet, stack technique, quick start, structure du projet, **URL production https://mysportally.com**, **accueil `/` et `/en`** : utilisateurs connectés redirigés vers l’entrée dashboard (voir **Project_context.md** §4.0, **`lib/dashboardEntryPath.ts`**), variables **Stripe coach plateforme** (**`COACH_PLATFORM_SUBSCRIPTION_TRIAL_DAYS`**, **`coachMsaOffers.byPriceId`** avec `tagline`/`features`, Checkout : **`ensureCoachPlatformStripeCustomerForCheckout`**, langue + **`Customer.name`** profil / session) et URL de retour Checkout (`NEXT_PUBLIC_SITE_URL` / repli, `lib/checkoutReturnOrigin.ts`)
 - **Utiliser pour :** Onboarding, démarrage rapide, vue d'ensemble technique
 - **Taille :** ~200 lignes
-- **Dernière mise à jour :** 13 mai 2026 (**Stripe Customer.name** coach + synchro Mon profil ; précédent : langue Customer…)
+- **Dernière mise à jour :** 20 mai 2026 (**COACH_PLATFORM_SUBSCRIPTION_TRIAL_DAYS**, **`coachMsaOffers.byPriceId`** ; précédent : **Stripe Customer.name**…)
 
 ### **Project_context.md** ⭐
-- **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), **abonnement plateforme coach Stripe** (Checkout : **`ensureCoachPlatformStripeCustomerForCheckout`**, **`preferred_locales`**, **`Customer.name`** (profil), + **`locale`** session, webhooks, migrations **073** + **074** (`coach_platform_access_granted` : accès si `active` / `trialing` uniquement), page **Mon Abonnement MySportAlly** — bloc **Informations de facturation** (adresse Canada → Stripe **`Customer.address`**, puis historiques), **modale choix d’offre** avant Checkout, bandeaux retour checkout), stack technique, **URL production https://mysportally.com**
+- **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), **abonnement plateforme coach Stripe** (essai **`COACH_PLATFORM_SUBSCRIPTION_TRIAL_DAYS`**, tuiles catalogue, Checkout **`trial_period_days`**, carte statut **`active`/`trialing` seule**, grille offres sans en-tête visible, Checkout Customer/langue, migrations **073**/**074**, page **Mon Abonnement** + facturation + modale offres), stack technique, **URL production https://mysportally.com**
 - **Utiliser pour :** Comprendre le projet, les features, les rôles, l'architecture globale
 - **Taille :** ~450 lignes
-- **Dernière mise à jour :** 13 mai 2026 (§4.5 calendrier : **ordre premier bloc jour** = dispos → objectifs → séances sans moment → Strava ; **tuiles disponibilité grille** — bandeau haut, typo alignée séance ; précédent : **`Customer.name`** coach…)
+- **Dernière mise à jour :** 20 mai 2026 (§4.4 abonnement plateforme coach : essai, UX page, tuiles offre ; précédent : §4.5 calendrier…)
 
 ### **docs/CALENDAR_MONTH_VIEW.md**
 - **Contenu :** Récap **vue mois** (desktop) vs **vue semaine** (mobile), règles semaines ISO / mois civil étendu, **totaux hebdo** (liste sports `PERSISTED_WORKOUT_SPORT_TYPES`, `SPORT_WEEKLY_SUMMARY_BAR`), chargement données, liste des fichiers et tests unitaires, **tuiles disponibilité** (réf. design + `CalendarView`), liens vers maquettes archivées
@@ -30,13 +30,13 @@
 - **Contenu :** Tokens (couleurs, typo, espacements ; **sports** : `SPORT_CARD_STYLES`, `SPORT_BADGE_STYLES`, **`SPORT_WEEKLY_SUMMARY_BAR`** résumé hebdo), composants (Button, Input, Badge, TileCard, DashboardPageShell, **DashboardTopBar**, **AthleteAccountMenu**, **AthleteStatsVolumeChart**, **AthleteStatsChartSkeleton**, Modal, **MonthSelector**, **`CoachPlatformBillingAddressSection`** — titre sous-section sur la page + **`FORM_LABEL_CLASSES`**, etc.), guidelines UI, exemples de code, §7 breakpoints (**calendrier** mois étendu desktop + WeekSelector mobile, **tuiles disponibilité grille** : bandeau haut, `training-card`, typo alignée séance compacte, chat, Trouver mon coach, My offers)
 - **Utiliser pour :** Créer ou modifier des composants UI, choisir des couleurs, appliquer le design system, règles responsive par page
 - **Taille :** ~2010 lignes
-- **Dernière mise à jour :** 13 mai 2026 (§7 **tuiles disponibilité calendrier** ; précédent : **Fichiers clés** Stripe coach…)
+- **Dernière mise à jour :** 20 mai 2026 (**Mon abonnement coach** : essai catalogue, tuiles offre, page statut ; précédent : tuiles disponibilité calendrier…)
 
 ### **docs/I18N.md** ⭐
 - **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces (dont **`calendar.weekly.sportVolumeHint`**), utilisation dans composants et server actions, **checklist pour nouvelles features** (toujours penser bilingue) ; **`coachMsaSubscription`** (dont **`billingInfoTitle`**, **`billingAddress`**)
 - **Utiliser pour :** Toute nouvelle feature ou texte visible, ajout de clés de traduction, dépannage i18n
 - **Taille :** ~195 lignes
-- **Dernière mise à jour :** 13 mai 2026 (**`coachMsaSubscription.billingAddress`** + **`billingInfoTitle`** ; précédent : **`coachPlatform.validation`** — erreurs préparation Customer Stripe…)
+- **Dernière mise à jour :** 20 mai 2026 (**`coachMsaSubscription`** essai + page abo ; **`coachMsaOffers.byPriceId`** `tagline`/`features` ; précédent : **`billingAddress`**…)
 
 ### **docs/AUTH_EMAIL_TEMPLATES.md**
 - **Contenu :** Guide de configuration des emails d’auth Supabase (sujet, i18n FR/EN, variables, dépannage logo). **Les fichiers HTML des templates** (Confirm signup, puis Magic Link, Reset Password, etc.) sont dans **docs/email-templates/**.
@@ -94,7 +94,7 @@
 ### **docs/design-coach-platform-subscription/** (design feature — référence UI)
 - **Contenu :** Maquettes HTML et README d’index pour l’**abonnement plateforme coach** (page Mon Abonnement, Mes athlètes bloqué, modale Stripe, **carte abo actif / essai**, **défaut de paiement sans grâce**, **adresse de facturation** `MOCKUP_US_COACH_PLATFORM_BILLING_ADDRESS.html`) ; **README** inclut pointeurs d’implémentation (`coach-platform-subscription`, **`coachPlatformBillingAddressActions`**, **`lib/stripeCoachPlatformBillingAddress`**, libs Stripe incl. **`Customer.name`** profil, **`fetchCoachPlatformSubscriptionCardDetails`**, migration **074**). Maquette **grâce 3 j** → **`docs/archive/design-coach-platform-subscription-grace/`** (archivée).
 - **Utiliser pour :** Contexte UI historique ; le détail produit / technique à jour est dans **`Project_context.md`** §4.4 et **`DEPLOYMENT_NOTES.md`** (Stripe).
-- **Dernière mise à jour :** 13 mai 2026 (README : **Stripe `Customer.name`** ; précédent : US adresse…)
+- **Dernière mise à jour :** 20 mai 2026 (README design : essai + UX page livrés ; maquettes historiques ; précédent : **Stripe `Customer.name`**…)
 
 ### **docs/design-rpe-planned-intensity/** (design feature — non archivé)
 - **Contenu :** **DESIGN_RPE_PLANNED_INTENSITY.md** (solution validée, hypothèses, **US-RPE-01 à US-RPE-05**, critères d’acceptation, table RPE FR + proposition EN, composants, points ouverts) ; **SPEC_ARCHITECTE_RPE_PLANNED_INTENSITY.md** (migration `planned_intensity`, table des fichiers, `saveWorkoutStatusAndComment`, RLS, edge cases, tests manuels) ; **README.md** (index fichiers) ; maquettes HTML **MOCKUP_US1** … **US5** + **MOCKUP_OPTION_A_RPE_MODAL.html** (interactif) ; **MOCKUP_OPTION_B_RPE_INLINE.html** (option non retenue).
@@ -494,10 +494,19 @@
 
 **Fréquence de mise à jour :** À chaque ajout/suppression de documentation
 
-**Dernier scan :** 13 mai 2026  
-**Dernier nettoyage :** 13 mai 2026 (entrée Changements récents : Stripe **`Customer.name`** coach + synchro Mon profil)
+**Dernier scan :** 20 mai 2026  
+**Dernier nettoyage :** 20 mai 2026 (entrée Changements récents : lot **Mon abonnement coach** — essai, tuiles, page, en-tête)
 
 ### Changements récents :
+
+✅ **20 mai 2026 – Abonnement plateforme coach (essai, tuiles, page) – Mode Analyste (conversation complète) :**
+- **Livraison (réf. code) — essai catalogue (scénario A) :** variable **`COACH_PLATFORM_SUBSCRIPTION_TRIAL_DAYS`** → **`lib/coachPlatformSubscriptionTrial.ts`** (`getCoachPlatformSubscriptionTrialDays`, **`computeCoachPlatformTrialRemainingDays`**) ; **`loadCoachPlatformCatalogForEnv`** / **`loadCoachPlatformCatalogForCoach`** exposent **`subscriptionTrialDays`** ; **`CoachPlatformOfferGrid`** : badge **`trialCatalogBadgeFreeDays`**, ligne **`trialCatalogTrialLine`** ; **`createCoachPlatformCheckoutSession`** : **`subscription_data.trial_period_days`** si > 0.
+- **Livraison — tuiles offre :** **`lib/coachMsaOfferDisplay.ts`** (`tagline`, **`features`** depuis **`coachMsaOffers.byPriceId`**) ; cartes `rounded-2xl`, prix **`text-3xl`**, puces check ; tests **`lib/coachMsaOfferDisplay.test.ts`**.
+- **Livraison — page Mon abonnement :** carte statut **uniquement** `active` / `trialing` (jours restants, **puis** tarif, prochain prélèvement) ; **plus** de bandeau gris « sans abo » / copie défaut de paiement sur la page ; grille offres si **pas** `active`/`trialing` ; **sans** titre ni intro visibles (**`offersTitle`** **`sr-only`** ; clés **`offersSectionHeading`** / **`offersSectionIntro`** supprimées). Fichiers : **`page.tsx`**, **`CoachPlatformOfferGrid.tsx`**, **`CoachPlatformSubscriptionOffers.tsx`**, **`CoachPlatformSubscribeOffersModal.tsx`**, **`coachPlatformActions.ts`**, **`stripeCoachPlatformCatalog.ts`**, **`messages/fr.json`** & **`en.json`**.
+- **Doc :** `Project_context.md` §4.4, `README.md`, `DEPLOYMENT_NOTES.md`, `docs/DESIGN_SYSTEM.md` (v1.40), `docs/I18N.md`, `docs/design-coach-platform-subscription/README.md`, `DOCS_INDEX.md`.
+- **Archivage :** aucun (maquettes **US-COACH-MYSA-01**, **US-MYSA-TRIAL-01**, **US-MYSA-SUB-ACCESS-01** : en-tête « Offres disponibles » possible — écart noté dans README design).
+- **Pages légales / confidentialité :** aucune modification (pas de nouvelle finalité ; essai = condition commerciale Stripe existante).
+- **Nettoyage i18n (suite) :** clés orphelines **`coachMsaSubscription`** retirées des JSON (bandeaux sans abo, défaut de paiement, essai `trialFree`, statuts Stripe non affichés) ; **`billingAddress.cardTitle`** / **`formTitle`** retirées.
 
 ✅ **13 mai 2026 – Stripe Customer : nom coach (`Customer.name` + Mon profil) – Mode Analyste :**
 - **Livraison (réf. code) :** **`formatCoachPlatformStripeCustomerName`** + **`syncCoachPlatformStripeCustomerNameIfPresent`** (`lib/stripeCoachPlatformCustomer.ts`) ; **`ensureCoachPlatformStripeCustomerForCheckout`** et **`resolveOrCreateCoachPlatformStripeCustomerId`** alignent **`Customer.name`** sur **`profiles.first_name` / `last_name`** (création si non vide, updates Checkout / adresse facturation). **`updateProfile`** (`app/[locale]/dashboard/profile/actions.ts`) : après save coach, synchro nom si **`stripe_customer_id`** (non bloquant). **`createCoachPlatformCheckoutSession`** (`coachPlatformActions.ts`) et **`saveCoachPlatformBillingAddress`** passent le nom formaté. Tests : **`formatCoachPlatformStripeCustomerName`** dans **`lib/stripeCoachPlatformCustomer.test.ts`**.

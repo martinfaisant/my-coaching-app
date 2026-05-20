@@ -68,7 +68,9 @@ STRIPE_WEBHOOK_SECRET=whsec_...
 STRIPE_COACH_PLATFORM_PRICE_ID=price_...
 # Optionnel : plusieurs prix (ex. mensuel + annuel). Si défini, remplace la lecture d’un seul ID pour la vitrine « Mon Abonnement ».
 # STRIPE_COACH_PLATFORM_PRICE_IDS=price_xxx,price_yyy
-# Libellés FR/EN des cartes (page + modale avant Checkout) : `messages/fr.json` & `en.json` → `coachMsaOffers.byPriceId` (une entrée par `price_…` listé ci-dessus ; repli sur le nom/description produit Stripe si absent).
+# Optionnel : essai gratuit sur les nouvelles souscriptions (nombre de jours, ex. 90). 0 ou absent = pas d’essai (Checkout sans trial). Retirer la campagne : mettre 0 puis redéployer.
+# COACH_PLATFORM_SUBSCRIPTION_TRIAL_DAYS=90
+# Libellés FR/EN des cartes (page + modale avant Checkout) : `messages/fr.json` & `en.json` → `coachMsaOffers.byPriceId` (une entrée par `price_…` : `title`, `description`, optionnel `tagline`, `features[]` ; repli sur nom/description Stripe). Page Mon abonnement : carte statut uniquement si abo `active`/`trialing` ; grille offres sans titre/intro visible si le coach n’a pas d’abo actif.
 # URL publique de l’app (repli si l’hôte de la requête n’est pas autorisé pour Stripe Checkout) : NEXT_PUBLIC_SITE_URL ou, à défaut, NEXT_PUBLIC_APP_URL. En preview Vercel, les success/cancel URL utilisent l’hôte courant (*.vercel.app) lorsque les en-têtes le permettent — voir `lib/checkoutReturnOrigin.ts`.
 # Comportement Checkout : `ensureCoachPlatformStripeCustomerForCheckout` (`lib/stripeCoachPlatformCustomer.ts`) résout ou crée le Customer `cus_…` (base → liste Stripe par e-mail + `metadata.coach_id` → création), met à jour `preferred_locales` selon la locale du portail (`/fr` / `/en`) et `Customer.name` à partir du prénom/nom profil (`formatCoachPlatformStripeCustomerName`), puis ouvre Checkout avec `customer` + `locale` de session. Après sauvegarde Mon profil, un coach avec `stripe_customer_id` déclenche `syncCoachPlatformStripeCustomerNameIfPresent` (sans bloquer le save si Stripe échoue). E-mail profil coach obligatoire.
 NEXT_PUBLIC_SITE_URL=http://localhost:3000

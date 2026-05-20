@@ -3,15 +3,20 @@
 import type { CoachPlatformCatalogOffer } from '@/lib/stripeCoachPlatformCatalog'
 import { CoachPlatformOfferGrid } from '@/components/CoachPlatformOfferGrid'
 import { useState, useTransition } from 'react'
-import { useLocale } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { usePathname } from '@/i18n/navigation'
 import { createCoachPlatformCheckoutSession } from '@/app/[locale]/dashboard/athletes/coachPlatformActions'
 
 type CoachPlatformSubscriptionOffersProps = {
   offers: CoachPlatformCatalogOffer[]
+  subscriptionTrialDays: number
 }
 
-export function CoachPlatformSubscriptionOffers({ offers }: CoachPlatformSubscriptionOffersProps) {
+export function CoachPlatformSubscriptionOffers({
+  offers,
+  subscriptionTrialDays,
+}: CoachPlatformSubscriptionOffersProps) {
+  const t = useTranslations('coachMsaSubscription')
   const locale = useLocale()
   const pathname = usePathname()
   const [isPending, startTransition] = useTransition()
@@ -39,9 +44,12 @@ export function CoachPlatformSubscriptionOffers({ offers }: CoachPlatformSubscri
 
   return (
     <section aria-labelledby="coach-msa-offers-heading" className="mb-8">
+      <h2 id="coach-msa-offers-heading" className="sr-only">
+        {t('offersTitle')}
+      </h2>
       <CoachPlatformOfferGrid
         offers={offers}
-        showOffersHeading
+        subscriptionTrialDays={subscriptionTrialDays}
         pendingPriceId={pendingPriceId}
         isPending={isPending}
         error={error}

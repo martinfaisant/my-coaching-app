@@ -13,6 +13,7 @@ import { resolveCoachPlatformCheckoutReturnPath } from '@/lib/coachPlatformCheck
 import { getCoachPlatformAllowedPriceIds } from '@/lib/stripeCoachPlatformPriceIds'
 import { loadCoachPlatformCatalogForEnv } from '@/lib/stripeCoachPlatformCatalog'
 import type { CoachPlatformCatalogOffer } from '@/lib/stripeCoachPlatformCatalog'
+import { getCoachPlatformSubscriptionTrialDays } from '@/lib/coachPlatformSubscriptionTrial'
 import {
   appLocaleToStripeCheckoutLocale,
   ensureCoachPlatformStripeCustomerForCheckout,
@@ -22,7 +23,7 @@ import {
 export type CoachPlatformCheckoutResult = { ok: true; url: string } | { ok: false; error: string }
 
 export type LoadCoachPlatformCatalogForCoachResult =
-  | { ok: true; offers: CoachPlatformCatalogOffer[] }
+  | { ok: true; offers: CoachPlatformCatalogOffer[]; subscriptionTrialDays: number }
   | { ok: false; error: string }
 
 /** Catalogue offres plateforme (Stripe) pour le coach connecté — utilisé par la modale souscription. */
@@ -47,7 +48,7 @@ export async function loadCoachPlatformCatalogForCoach(
   if (catalog.error === 'stripe_unavailable' || catalog.error === 'catalog_load_failed') {
     return { ok: false, error: tSub('errors.catalogUnavailable') }
   }
-  return { ok: true, offers: catalog.offers }
+  return { ok: true, offers: catalog.offers, subscriptionTrialDays: catalog.subscriptionTrialDays }
 }
 
 export type CreateCoachPlatformCheckoutOptions = {
@@ -136,6 +137,12 @@ export async function createCoachPlatformCheckoutSession(
     return { ok: false, error: t('stripeCustomerPrepareFailed') }
   }
 
+  const trialDays = getCoachPlatformSubscriptionTrialDays()
+  const subscriptionData = {
+    metadata: { coach_id: auth.user.id },
+    ...(trialDays > 0 ? { trial_period_days: trialDays } : {}),
+  }
+
   try {
     const checkoutSession = await stripe.checkout.sessions.create(
       {
@@ -146,9 +153,7 @@ export async function createCoachPlatformCheckoutSession(
         success_url: successUrl,
         cancel_url: cancelUrl,
         metadata: { coach_id: auth.user.id },
-        subscription_data: {
-          metadata: { coach_id: auth.user.id },
-        },
+        subscription_data: subscriptionData,
         client_reference_id: auth.user.id,
       },
       { idempotencyKey }

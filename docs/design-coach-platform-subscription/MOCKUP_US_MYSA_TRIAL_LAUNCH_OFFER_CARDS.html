@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>US-MYSA-TRIAL-01 — Cartes offres lancement (3 mois gratuits)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            'palette-gold': '#c9a227',
+            'palette-danger': '#b91c1c',
+            stone: { 50: '#fafaf9', 200: '#e7e5e4', 500: '#78716c', 600: '#57534e', 700: '#44403c', 800: '#292524', 900: '#1c1917' },
+          },
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-stone-100 min-h-screen p-6 space-y-16 pb-24">
+  <header class="max-w-3xl mx-auto">
+    <h1 class="text-xl font-bold text-stone-900">US-MYSA-TRIAL-01 — Essai lancement sur toutes les offres (catalogue)</h1>
+    <p class="text-sm text-stone-600 mt-2">
+      <strong>Solution validée PO :</strong> proposition A + petit badge libellé exact <strong>« 3 mois gratuits »</strong> (FR) / équivalent EN en i18n (ex. « 3 months free »).
+      <strong>Montant affiché :</strong> tarif récurrent <em>après</em> les 3 mois gratuits (Stripe Price inchangé).
+      <strong>Périmètre :</strong> même grille <code class="bg-white px-1 rounded border border-stone-200">CoachPlatformOfferGrid</code> sur la page dédiée et dans la modale (même rendu).
+      Textes utilisateur : <strong>next-intl</strong> (pas de chaînes figées dans le mockup comme contrat produit).
+    </p>
+  </header>
+
+  <!-- État A : page dédiée — section « Offres disponibles », 2 cartes -->
+  <section class="max-w-3xl mx-auto" aria-labelledby="state-page">
+    <h2 id="state-page" class="text-sm font-bold uppercase tracking-wider text-stone-700 mb-3">
+      État A — Page « Abonnement MySportAlly » (sans abo actif), grille 2 offres
+    </h2>
+    <p class="text-xs text-stone-500 mb-4">
+      <strong>Avant :</strong> coach sans abonnement gérant, catalogue chargé.<br />
+      <strong>Visible :</strong> titre de section existant + cartes enrichies (badge + ligne essai + prix récurrent + intervalle).<br />
+      <strong>Après clic « Souscrire » :</strong> CTA « Redirection… », puis page Stripe Checkout (hors app — résumé essai côté Stripe aligné avec l’app).
+    </p>
+    <div class="rounded-xl border border-stone-200 bg-white p-6 shadow-sm max-w-3xl">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-stone-700 mb-3">Offres disponibles</h2>
+      <ul class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <li class="rounded-xl border border-stone-200 p-4 flex flex-col h-full min-w-0 bg-white shadow-sm">
+          <div class="flex items-start justify-between gap-2 min-w-0">
+            <p class="font-semibold text-stone-900 truncate">Coach Standard</p>
+            <span class="shrink-0 inline-flex items-center rounded-full border border-palette-gold/40 bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-900">3 mois gratuits</span>
+          </div>
+          <p class="text-sm text-stone-600 mt-1 line-clamp-4">Jusqu’à 5 athlètes actifs, chat et demandes.</p>
+          <p class="text-sm font-medium text-palette-forest-dark mt-2">19,00&nbsp;€ · par mois</p>
+          <p class="text-sm text-stone-600 mt-1">3 premiers mois gratuits, puis facturation au tarif ci-dessus.</p>
+          <button type="button" class="mt-4 w-full rounded-lg bg-palette-forest-dark px-4 py-2.5 text-sm font-medium text-white">Souscrire</button>
+        </li>
+        <li class="rounded-xl border border-stone-200 p-4 flex flex-col h-full min-w-0 bg-white shadow-sm">
+          <div class="flex items-start justify-between gap-2 min-w-0">
+            <p class="font-semibold text-stone-900 truncate">Coach Pro</p>
+            <span class="shrink-0 inline-flex items-center rounded-full border border-palette-gold/40 bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-900">3 mois gratuits</span>
+          </div>
+          <p class="text-sm text-stone-600 mt-1 line-clamp-4">Athlètes illimités, toutes les fonctions.</p>
+          <p class="text-sm font-medium text-palette-forest-dark mt-2">29,00&nbsp;€ · par mois</p>
+          <p class="text-sm text-stone-600 mt-1">3 premiers mois gratuits, puis facturation au tarif ci-dessus.</p>
+          <button type="button" class="mt-4 w-full rounded-lg bg-palette-forest-dark px-4 py-2.5 text-sm font-medium text-white">Souscrire</button>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- État B : une seule offre (pleine largeur mobile) -->
+  <section class="max-w-3xl mx-auto" aria-labelledby="state-single">
+    <h2 id="state-single" class="text-sm font-bold uppercase tracking-wider text-stone-700 mb-3">État B — Une seule offre dans le catalogue</h2>
+    <p class="text-xs text-stone-500 mb-4">Même hiérarchie visuelle ; badge + ligne essai obligatoires.</p>
+    <div class="max-w-md mx-auto rounded-xl border border-stone-200 p-4 bg-white shadow-sm">
+      <div class="flex items-start justify-between gap-2">
+        <p class="font-semibold text-stone-900">Coach Pro</p>
+        <span class="shrink-0 inline-flex rounded-full border border-palette-gold/40 bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-900">3 mois gratuits</span>
+      </div>
+      <p class="text-sm text-stone-600 mt-1">Accès complet.</p>
+      <p class="text-sm font-medium text-palette-forest-dark mt-2">29,00&nbsp;€ · par mois</p>
+      <p class="text-sm text-stone-600 mt-1">3 premiers mois gratuits, puis facturation au tarif ci-dessus.</p>
+      <button type="button" class="mt-4 w-full rounded-lg bg-palette-forest-dark py-2.5 text-sm font-medium text-white">Souscrire</button>
+    </div>
+  </section>
+
+  <!-- État C : modale (même grille, scroll si besoin) -->
+  <section class="max-w-3xl mx-auto" aria-labelledby="state-modal">
+    <h2 id="state-modal" class="text-sm font-bold uppercase tracking-wider text-stone-700 mb-3">État C — Modale « Choisir une offre » (catalogue identique)</h2>
+    <p class="text-xs text-stone-500 mb-4">
+      Conteneur <code class="bg-white px-1 rounded border">CoachPlatformSubscribeOffersModal</code> ; contenu cartes = même US.
+    </p>
+    <div class="rounded-2xl bg-white shadow-xl border border-stone-200 max-w-2xl mx-auto overflow-hidden">
+      <div class="px-5 py-4 border-b border-stone-200 flex justify-between items-center">
+        <h2 class="text-lg font-semibold text-stone-800">Choisir votre formule</h2>
+        <button type="button" class="text-stone-500 text-xl leading-none" aria-label="Fermer">×</button>
+      </div>
+      <div class="px-5 py-4 max-h-[70vh] overflow-y-auto">
+        <ul class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <li class="rounded-xl border border-stone-200 p-4 flex flex-col bg-white shadow-sm">
+            <div class="flex items-start justify-between gap-2">
+              <p class="font-semibold text-stone-900">Coach Standard</p>
+              <span class="shrink-0 text-[11px] font-semibold px-2 py-0.5 rounded-full border border-palette-gold/40 bg-amber-50 text-amber-900">3 mois gratuits</span>
+            </div>
+            <p class="text-sm text-stone-600 mt-1">5 athlètes.</p>
+            <p class="text-sm font-medium text-palette-forest-dark mt-2">19,00&nbsp;€ · par mois</p>
+            <p class="text-sm text-stone-600 mt-1">3 premiers mois gratuits, puis facturation au tarif ci-dessus.</p>
+            <button type="button" class="mt-4 w-full rounded-lg bg-palette-forest-dark py-2.5 text-sm font-medium text-white">Souscrire</button>
+          </li>
+          <li class="rounded-xl border border-stone-200 p-4 flex flex-col bg-white shadow-sm">
+            <div class="flex items-start justify-between gap-2">
+              <p class="font-semibold text-stone-900">Coach Pro</p>
+              <span class="shrink-0 text-[11px] font-semibold px-2 py-0.5 rounded-full border border-palette-gold/40 bg-amber-50 text-amber-900">3 mois gratuits</span>
+            </div>
+            <p class="text-sm text-stone-600 mt-1">Illimité.</p>
+            <p class="text-sm font-medium text-palette-forest-dark mt-2">29,00&nbsp;€ · par mois</p>
+            <p class="text-sm text-stone-600 mt-1">3 premiers mois gratuits, puis facturation au tarif ci-dessus.</p>
+            <button type="button" class="mt-4 w-full rounded-lg bg-palette-forest-dark py-2.5 text-sm font-medium text-white">Souscrire</button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- État D : CTA pending -->
+  <section class="max-w-3xl mx-auto" aria-labelledby="state-pending">
+    <h2 id="state-pending" class="text-sm font-bold uppercase tracking-wider text-stone-700 mb-3">État D — Clic « Souscrire » (transition)</h2>
+    <p class="text-xs text-stone-500 mb-4">
+      <strong>Action :</strong> clic sur une carte.<br />
+      <strong>Après :</strong> bouton de cette carte affiche l’état pending (ex. « Redirection… »), autres CTA désactivés si pattern existant conservé.
+    </p>
+    <div class="max-w-md mx-auto rounded-xl border border-stone-200 p-4 bg-white shadow-sm opacity-95">
+      <div class="flex justify-between gap-2">
+        <p class="font-semibold text-stone-900">Coach Pro</p>
+        <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full border border-palette-gold/40 bg-amber-50 text-amber-900">3 mois gratuits</span>
+      </div>
+      <p class="text-sm font-medium text-palette-forest-dark mt-2">29,00&nbsp;€ · par mois</p>
+      <p class="text-sm text-stone-600 mt-1">3 premiers mois gratuits…</p>
+      <button type="button" disabled class="mt-4 w-full rounded-lg bg-palette-forest-dark/70 py-2.5 text-sm font-medium text-white cursor-wait">Redirection…</button>
+    </div>
+  </section>
+
+  <!-- Hors périmètre rappel -->
+  <section class="max-w-3xl mx-auto border-t border-stone-200 pt-8">
+    <h2 class="text-sm font-bold text-stone-700">Référence transitions hors écran</h2>
+    <ul class="text-xs text-stone-600 mt-2 list-disc list-inside space-y-1">
+      <li>Stripe Checkout : récap essai + montant futur (config Stripe / session) — cohérence wording à valider côté Architecte + copies légales si besoin.</li>
+      <li>Coach <strong>déjà</strong> abonné avant activation campagne : pas de rétroactivité — pas de badge / ligne essai sur une offre déjà souscrite (nouvelles souscriptions uniquement).</li>
+      <li>Retrait manuel campagne : disparition badge « 3 mois gratuits » + ligne d’accroche côté app quand le flag / config retiré (détail implémentation → Architecte).</li>
+    </ul>
+  </section>
+</body>
+</html>

@@ -1467,15 +1467,19 @@
     "pageTitle": "MySportAlly subscription",
     "heading": "MySportAlly subscription",
     "statusSectionTitle": "Subscription status",
-    "badgeNoSubscription": "No active subscription",
-    "noSubscriptionDescription": "You do not have an active paid My Sport Ally subscription. Choose an offer below to unlock full access to your athletes.",
-    "inactiveSubscriptionDescription": "Your platform subscription is no longer active. You can subscribe again below.",
     "planUnknown": "Platform plan",
-    "nextPaymentWithDate": "Next payment: {date}",
-    "trialFree": "Free trial",
+    "nextPaymentWithDate": "Next charge: {date}",
+    "trialCatalogBadgeFreeDays": "{days} free days",
+    "trialCatalogTrialLine": "{days} days free trial, then {thenPrice}.",
+    "priceDisplayedUnitPerMonth": "/ month",
+    "priceDisplayedUnitPerYear": "/ year",
+    "priceDisplayedUnitEveryNMonths": "/ {n} months",
+    "priceDisplayedUnitEveryNYears": "/ {n} years",
+    "trialThenPrefix": "then",
+    "trialRemainingDays": "{count} days of free trial left",
+    "trialRemainingOneDay": "1 day of free trial left",
+    "trialRemainingLastDay": "Last day of free trial",
     "cardPricingUnavailable": "Plan price is temporarily unavailable.",
-    "paymentDefaultDescription": "Your last payment did not go through. Access to subscriber-only features is suspended until this is resolved. You can subscribe again below if an offer is available.",
-    "stripeCustomerOnlyDescription": "Your Stripe customer account is set up for billing. Subscribe to a plan below when you are ready for full platform access.",
     "offersTitle": "Available offers",
     "subscribeCta": "Subscribe",
     "subscribePending": "Redirecting…",
@@ -1499,14 +1503,7 @@
     "priceIntervalEveryNYears": "every {n} years",
     "subscriptionStatus": {
       "active": "Active",
-      "trialing": "Trialing",
-      "past_due": "Payment overdue",
-      "unpaid": "Unpaid",
-      "canceled": "Canceled",
-      "incomplete": "Incomplete",
-      "incomplete_expired": "Incomplete (expired)",
-      "paused": "Paused",
-      "none": "Billing profile only"
+      "trialing": "On trial"
     },
     "invoiceStatus": {
       "paid": "Paid",
@@ -1521,8 +1518,6 @@
     },
     "billingAddress": {
       "sectionTitle": "Billing address",
-      "cardTitle": "Billing address",
-      "formTitle": "Billing address",
       "emptyDescription": "No billing address is saved yet.",
       "addAddress": "Add address",
       "edit": "Edit",
@@ -1572,18 +1567,30 @@
   },
   "coachMsaOffers": {
     "modalTitle": "Choose your plan",
-    "modalIntroDefault": "Select the plan that fits you, then continue to secure payment (Stripe).",
+    "modalIntroDefault": "Select the plan that fits you.",
     "loading": "Loading offers…",
     "close": "Close",
     "noOffers": "No offers are configured yet. Contact support if needed.",
     "byPriceId": {
       "price_1TVyePD1L4D9b7s03IvfOcUY": {
-        "title": "Platform coaching access — monthly",
-        "description": "Full My Sport Ally access to coach your athletes (planning, requests, chat, goals). Unlimited athletes. Billed every month. This plan does not include collecting payments from athletes."
+        "title": "Monthly",
+        "description": "Full My Sport Ally access to coach your athletes (planning, requests, chat, goals). Unlimited athletes. Billed every month. This plan does not include collecting payments from athletes.",
+        "tagline": "Coach your athletes with maximum flexibility, no long-term lock-in, cancel any time.",
+        "features": [
+          "Unlimited athletes",
+          "Advanced session planning",
+          "Monthly billing"
+        ]
       },
       "price_1TWNrlD1L4D9b7s0r9Syzf05": {
-        "title": "Platform coaching access — annual",
-        "description": "Same unlimited platform access to coach your athletes. Billed once per year (often the best value). Collecting payments from athletes may be offered as a separate add-on later."
+        "title": "Annual",
+        "description": "Same unlimited platform access to coach your athletes. Billed once per year (often the best value). Collecting payments from athletes may be offered as a separate add-on later.",
+        "tagline": "Built for long-term performance. Take advantage of our exclusive trial.",
+        "features": [
+          "Everything in the Monthly plan",
+          "Simpler billing once a year",
+          "Save 20% over the year"
+        ]
       }
     },
     "futurePlatformPaymentsTier": {
@@ -1595,7 +1602,7 @@
   },
   "coachPlatform": {
     "listBlockedTitle": "Coach subscription required",
-    "listBlockedDescription": "You can no longer view your athletes’ planning and details until your subscription is up to date (3-day grace after due date if payment is late).",
+    "listBlockedDescription": "You can no longer view your athletes’ planning and details until your subscription is up to date.",
     "checkoutCta": "Continue to payment",
     "checkoutPending": "Redirecting…",
     "calendarBlockedTitle": "Subscription required",

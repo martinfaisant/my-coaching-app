@@ -1,4 +1,5 @@
 import type Stripe from 'stripe'
+import { getCoachPlatformSubscriptionTrialDays } from '@/lib/coachPlatformSubscriptionTrial'
 import { logger } from '@/lib/logger'
 import { getStripeServer } from '@/lib/stripeServer'
 import { getCoachPlatformAllowedPriceIds } from '@/lib/stripeCoachPlatformPriceIds'
@@ -75,9 +76,12 @@ export async function fetchCoachPlatformCatalogOffers(
 export async function loadCoachPlatformCatalogForEnv(): Promise<{
   offers: CoachPlatformCatalogOffer[]
   error: string | null
+  /** Jours d’essai Checkout si > 0 (variable d’environnement). */
+  subscriptionTrialDays: number
 }> {
   const ids = getCoachPlatformAllowedPriceIds()
-  return fetchCoachPlatformCatalogOffers(ids)
+  const { offers, error } = await fetchCoachPlatformCatalogOffers(ids)
+  return { offers, error, subscriptionTrialDays: getCoachPlatformSubscriptionTrialDays() }
 }
 
 /** Détails affichage carte « Mon abonnement » (un appel Stripe retrieve). */
@@ -89,6 +93,8 @@ export type CoachPlatformSubscriptionCardDetails = {
   intervalCount: number | null
   /** Fin de période courante (ISO), aligné Stripe `current_period_end` — repli si BDD incomplète */
   currentPeriodEndIso: string | null
+  /** Fin d’essai (ISO), depuis Stripe `trial_end` si présent */
+  trialEndIso: string | null
 }
 
 export function coachPlatformPriceIntervalTranslationKey(
@@ -120,6 +126,8 @@ export async function fetchCoachPlatformSubscriptionCardDetails(
       typeof sub.current_period_end === 'number'
         ? new Date(sub.current_period_end * 1000).toISOString()
         : null
+    const trialEndIso =
+      typeof sub.trial_end === 'number' ? new Date(sub.trial_end * 1000).toISOString() : null
     const items = sub.items?.data ?? []
     if (items.length > 1) {
       logger.warn('fetchCoachPlatformSubscriptionCardDetails: multiple line items, using first', {
@@ -136,6 +144,7 @@ export async function fetchCoachPlatformSubscriptionCardDetails(
         interval: null,
         intervalCount: null,
         currentPeriodEndIso,
+        trialEndIso,
       }
     }
     const recurring = price.recurring
@@ -153,6 +162,7 @@ export async function fetchCoachPlatformSubscriptionCardDetails(
       interval: recurring?.interval ?? null,
       intervalCount: recurring?.interval_count ?? null,
       currentPeriodEndIso,
+      trialEndIso,
     }
   } catch (e) {
     logger.error(

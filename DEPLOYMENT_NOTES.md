@@ -1,13 +1,14 @@
 # Notes de déploiement
 
-**Production :** https://mysportally.com (voir `docs/DOMAIN_MYSPORTALLY_SETUP.md` pour la configuration domaine, Vercel, Resend, Supabase).
+**Production :** https://mysportally.com (voir `docs/DOMAIN_MYSPORTALLY_SETUP.md` pour la configuration domaine, Vercel, Resend, Supabase).  
+**Dernière mise à jour doc :** 20 mai 2026 (essai abonnement coach **`COACH_PLATFORM_SUBSCRIPTION_TRIAL_DAYS`**).
 
 ---
 
 ## Abonnement plateforme coach (Stripe)
 
 - **Migrations Supabase :** `073_coach_platform_subscription.sql` (table `coach_platform_subscriptions`, RPC `coach_platform_access_granted`, RLS) ; **`074_coach_platform_access_no_grace.sql`** — `past_due` / `unpaid` n’accordent plus l’accès plateforme (suppression tolérance 3 jours).
-- **Variables d’environnement :** `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_COACH_PLATFORM_PRICE_ID` (un prix) ou **`STRIPE_COACH_PLATFORM_PRICE_IDS`** (liste séparée par virgules ou espaces, vitrine « Mon Abonnement ») ; `NEXT_PUBLIC_SITE_URL` ou `NEXT_PUBLIC_APP_URL` (repli ; les URL de retour Checkout utilisent aussi l’hôte de la requête lorsqu’il est autorisé — voir `lib/checkoutReturnOrigin.ts`, previews `*.vercel.app`).
+- **Variables d’environnement :** `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_COACH_PLATFORM_PRICE_ID` (un prix) ou **`STRIPE_COACH_PLATFORM_PRICE_IDS`** (liste séparée par virgules ou espaces, vitrine « Mon Abonnement ») ; optionnel **`COACH_PLATFORM_SUBSCRIPTION_TRIAL_DAYS`** (entier > 0, ex. 90 — essai sur **nouvelles** souscriptions Checkout via `trial_period_days` ; 0 ou absent = pas d’essai ; retirer la campagne : mettre 0 puis redéployer) ; libellés cartes offre : `messages/fr.json` & `en.json` → **`coachMsaOffers.byPriceId`** (`title`, `description`, optionnel **`tagline`**, **`features`[]`) ; `NEXT_PUBLIC_SITE_URL` ou `NEXT_PUBLIC_APP_URL` (repli ; les URL de retour Checkout utilisent aussi l’hôte de la requête lorsqu’il est autorisé — voir `lib/checkoutReturnOrigin.ts`, previews `*.vercel.app`).
 - **Stripe Dashboard :** webhook **`https://<votre-domaine>/api/webhooks/stripe`** — événements typiques : `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`.
 - **Comportement applicatif (Checkout coach) :** `ensureCoachPlatformStripeCustomerForCheckout` — résolution du Customer `cus_…` (ligne `coach_platform_subscriptions` si valide, sinon recherche Stripe par e-mail + `metadata.coach_id`, sinon création) ; **mise à jour** à chaque session des **`preferred_locales`** selon la locale **`[locale]`** et du **`Customer.name`** (prénom + nom profil, `formatCoachPlatformStripeCustomerName`) ; session Checkout avec **`customer`** + **`locale`** (`lib/stripeCoachPlatformCustomer.ts`, `coachPlatformActions.ts`). Sauvegarde profil coach : `syncCoachPlatformStripeCustomerNameIfPresent` (`app/[locale]/dashboard/profile/actions.ts`). Résolution customer facturation : `resolveOrCreateCoachPlatformStripeCustomerId` (`lib/stripeCoachPlatformBillingAddress.ts`).
 - **Supabase Auth :** maintenir les **Redirect URLs** pour chaque origine réelle (prod, preview Vercel, local) ; wildcards `https://*.vercel.app/...` si besoin (`docs/AUTH_EMAIL_TEMPLATES.md`).
