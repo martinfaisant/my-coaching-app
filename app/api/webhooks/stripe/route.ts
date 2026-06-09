@@ -4,43 +4,14 @@ import { NextResponse } from 'next/server'
 import { getStripeServer } from '@/lib/stripeServer'
 import { createAdminClient } from '@/utils/supabase/server'
 import { logger } from '@/lib/logger'
-import {
-  coachIdFromStripeSubscription,
-  syncCoachPlatformTrialConsumptionFromStripeSubscription,
-} from '@/lib/coachPlatformTrialEligibility'
+import { upsertCoachPlatformSubscriptionFromStripe } from '@/lib/coachPlatformSubscriptionSync'
+import { syncCoachPlatformTrialConsumptionFromStripeSubscription } from '@/lib/coachPlatformTrialEligibility'
 
 export const runtime = 'nodejs'
 
 async function upsertCoachPlatformFromStripeSubscription(sub: Stripe.Subscription) {
-  const coachId = coachIdFromStripeSubscription(sub)
-  if (!coachId) {
-    logger.warn('Stripe webhook: subscription sans metadata coach_id', { subscriptionId: sub.id })
-    return
-  }
-  const customerId = typeof sub.customer === 'string' ? sub.customer : sub.customer?.id ?? null
   const supabase = createAdminClient()
-  const currentPeriodEnd =
-    typeof sub.current_period_end === 'number'
-      ? new Date(sub.current_period_end * 1000).toISOString()
-      : null
-  const { error } = await supabase.from('coach_platform_subscriptions').upsert(
-    {
-      coach_id: coachId,
-      stripe_customer_id: customerId,
-      stripe_subscription_id: sub.id,
-      status: sub.status,
-      current_period_end: currentPeriodEnd,
-      updated_at: new Date().toISOString(),
-    },
-    { onConflict: 'coach_id' }
-  )
-  if (error) {
-    logger.error('Stripe webhook: upsert coach_platform_subscriptions failed', error, {
-      coachId,
-      subscriptionId: sub.id,
-    })
-  }
-
+  await upsertCoachPlatformSubscriptionFromStripe(supabase, sub)
   await syncCoachPlatformTrialConsumptionFromStripeSubscription(supabase, sub)
 }
 

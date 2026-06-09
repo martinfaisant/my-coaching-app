@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>US-MYSA-SUB-UI-02 — Tuile abo courant (pleine largeur)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            'palette-forest-darker': '#506648',
+            'palette-amber': '#c9a544',
+            stone: { 50: '#fafaf9', 100: '#f5f5f4', 200: '#e7e5e4', 400: '#a8a29e', 500: '#78716c', 600: '#57534e', 800: '#292524', 900: '#1c1917' },
+          },
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-stone-100 min-h-screen p-4 md:p-6">
+  <p class="text-center text-xs text-stone-600 max-w-3xl mx-auto mb-6">
+    <strong>US-MYSA-SUB-UI-02-01 / 02 / 03</strong> — Composant <code>CoachPlatformCurrentOfferCard</code> ·
+    <strong>Pleine largeur</strong> (pas de <code>max-w-xl</code>) · <strong>Pas d’animation</strong> sur les badges ·
+    Boutons = variantes <code>Button</code> existantes (<code>muted</code>, <code>primary</code>) ·
+    <strong>Catalogue Souscrire inchangé</strong>.
+  </p>
+
+  <div class="max-w-2xl mx-auto bg-white rounded-t-lg border border-stone-200 shadow-sm flex flex-col min-h-[70vh]">
+    <header class="h-12 border-b border-stone-200 px-4 flex items-center text-xs text-stone-500 shrink-0">DashboardPageShell</header>
+    <main class="flex-1 p-4 md:p-6 overflow-y-auto space-y-10">
+      <h1 class="text-lg font-bold text-stone-900">Mon Abonnement MySportAlly</h1>
+
+      <!-- US-MYSA-SUB-UI-02-01 : Actif -->
+      <section class="space-y-2" aria-labelledby="us-02-01">
+        <h2 id="us-02-01" class="text-[10px] font-bold uppercase tracking-wider text-stone-400">US-MYSA-SUB-UI-02-01 — Actif</h2>
+        <div class="w-full bg-white rounded-2xl border border-stone-200 shadow-sm p-6 flex flex-col">
+          <div class="flex items-center justify-between gap-4">
+            <h3 class="text-xl font-bold text-stone-900 min-w-0">Coach Pro — Annuel</h3>
+            <span class="shrink-0 inline-flex px-3 py-1 rounded-full text-xs font-semibold bg-palette-forest-dark/10 text-palette-forest-dark border border-palette-forest-dark/20">
+              Actif
+            </span>
+          </div>
+          <div class="py-4 border-t border-b border-stone-100 my-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+            <div class="flex items-center gap-2.5 text-sm text-stone-600 min-w-0">
+              <svg class="w-4 h-4 text-stone-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2z"/></svg>
+              <span>Prochain prélèvement le <strong class="text-stone-900">15 mars 2027</strong></span>
+            </div>
+            <div class="shrink-0 md:text-right">
+              <span class="text-2xl font-black text-stone-900 tabular-nums tracking-tight">290 €</span>
+              <span class="text-sm text-stone-500">/ an</span>
+            </div>
+          </div>
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-1">
+            <p class="text-xs text-stone-500">Modifier ou arrêter votre abonnement.</p>
+            <button type="button" class="shrink-0 w-full sm:w-auto rounded-lg min-h-10 px-4 py-2.5 text-sm font-medium border border-stone-300 text-stone-700 hover:bg-stone-50">
+              Gérer
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- US-MYSA-SUB-UI-02-02 : Essai -->
+      <section class="space-y-2" aria-labelledby="us-02-02">
+        <h2 id="us-02-02" class="text-[10px] font-bold uppercase tracking-wider text-stone-400">US-MYSA-SUB-UI-02-02 — En essai</h2>
+        <div class="w-full bg-white rounded-2xl border border-stone-200 shadow-sm p-6 flex flex-col">
+          <div class="flex items-center justify-between gap-4">
+            <h3 class="text-xl font-bold text-stone-900">Coach Pro — Mensuel</h3>
+            <span class="shrink-0 inline-flex px-3 py-1 rounded-full text-xs font-semibold bg-palette-forest-dark/10 text-palette-forest-dark border border-palette-forest-dark/20">
+              En essai
+            </span>
+          </div>
+          <p class="text-sm text-stone-700 font-medium mt-3">Il reste 12 jours d'essai gratuit</p>
+          <div class="py-4 border-t border-b border-stone-100 my-4 space-y-2 text-sm text-stone-600">
+            <p><span class="font-normal text-stone-800">Puis</span> <strong class="text-stone-900">29 €</strong> <span class="text-stone-500">par mois</span></p>
+            <div class="flex items-center gap-2.5">
+              <svg class="w-4 h-4 text-stone-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2z"/></svg>
+              <span>Fin d'essai le <strong class="text-stone-900">1 juil. 2026</strong></span>
+            </div>
+          </div>
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-1">
+            <p class="text-xs text-stone-500">Une seule période d'essai par personne.</p>
+            <button type="button" class="shrink-0 w-full sm:w-auto rounded-lg min-h-10 px-4 py-2.5 text-sm font-medium border border-stone-300 text-stone-700 hover:bg-stone-50">Gérer</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- US-MYSA-SUB-UI-02-03 : Fin programmée -->
+      <section class="space-y-2" aria-labelledby="us-02-03">
+        <h2 id="us-02-03" class="text-[10px] font-bold uppercase tracking-wider text-stone-400">US-MYSA-SUB-UI-02-03 — Fin programmée</h2>
+        <div class="w-full bg-white rounded-2xl border border-stone-200 shadow-sm p-6 flex flex-col relative overflow-hidden">
+          <div class="absolute top-0 left-0 right-0 h-1 bg-palette-amber" aria-hidden></div>
+          <div class="flex items-center justify-between gap-4">
+            <h3 class="text-xl font-bold text-stone-900">Coach Pro — Annuel</h3>
+            <span class="shrink-0 inline-flex px-3 py-1 rounded-full text-xs font-semibold bg-palette-amber/15 text-stone-900 border border-palette-amber/30">
+              Fin programmée
+            </span>
+          </div>
+          <div class="py-4 border-t border-b border-stone-100 my-4 flex items-baseline gap-2">
+            <span class="text-2xl font-black text-stone-400 line-through tabular-nums">290 €</span>
+            <span class="text-sm text-stone-500">/ an</span>
+          </div>
+          <div class="rounded-xl p-3.5 border border-palette-amber/25 bg-palette-amber/10 text-xs text-stone-800 space-y-1.5 mb-4">
+            <div class="flex items-center gap-2 font-bold text-stone-900">
+              <svg class="w-4 h-4 text-palette-amber shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+              <span>Résiliation demandée</span>
+            </div>
+            <p class="leading-relaxed text-stone-600">Accès jusqu'au <strong class="text-stone-900">15 mars 2027</strong>.</p>
+          </div>
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-2 border-t border-stone-50">
+            <p class="text-xs text-stone-500">Changement d'avis ?</p>
+            <button type="button" class="shrink-0 w-full sm:w-auto rounded-lg min-h-10 px-4 py-2.5 text-sm font-medium text-white bg-palette-forest-dark hover:bg-palette-forest-darker">
+              Annuler l'arrêt
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <p class="text-xs text-stone-500">Grille offres catalogue : <strong>non affichée</strong> (abo géré ou fin programmée).</p>
+    </main>
+  </div>
+</body>
+</html>

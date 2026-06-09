@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 20 mai 2026 (**Mon abonnement coach** : essai non renouvelable par campagne ; précédent : essai catalogue, tuiles offre…)
+**Dernière mise à jour :** 20 mai 2026 (**Mon abonnement coach** : résiliation / tuile moderne ; précédent : essai non renouvelable par campagne…)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -12,13 +12,13 @@
 - **Contenu :** Setup projet, stack technique, quick start, structure du projet, **URL production https://mysportally.com**, **accueil `/` et `/en`** : utilisateurs connectés redirigés vers l’entrée dashboard (voir **Project_context.md** §4.0, **`lib/dashboardEntryPath.ts`**), variables **Stripe coach plateforme** (**`COACH_PLATFORM_SUBSCRIPTION_TRIAL_DAYS`**, **`COACH_PLATFORM_SUBSCRIPTION_TRIAL_CAMPAIGN_ID`**, essai une fois par campagne, **`coachMsaOffers.byPriceId`** avec `tagline`/`features`, Checkout : **`ensureCoachPlatformStripeCustomerForCheckout`**, langue + **`Customer.name`** profil / session) et URL de retour Checkout (`NEXT_PUBLIC_SITE_URL` / repli, `lib/checkoutReturnOrigin.ts`)
 - **Utiliser pour :** Onboarding, démarrage rapide, vue d'ensemble technique
 - **Taille :** ~200 lignes
-- **Dernière mise à jour :** 20 mai 2026 (**essai non renouvelable** + **`TRIAL_CAMPAIGN_ID`** ; précédent : **TRIAL_DAYS**, **`coachMsaOffers.byPriceId`**…)
+- **Dernière mise à jour :** 20 mai 2026 (**résiliation abonnement plateforme**, migration **076** ; précédent : essai non renouvelable…)
 
 ### **Project_context.md** ⭐
-- **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), **abonnement plateforme coach Stripe** (essai **`COACH_PLATFORM_SUBSCRIPTION_TRIAL_DAYS`** + campagne **`COACH_PLATFORM_SUBSCRIPTION_TRIAL_CAMPAIGN_ID`**, **une fois par campagne** via **`coach_platform_trial_consumptions`** (075), **`trialEligible`**, tuiles catalogue, Checkout **`trial_period_days`**, carte statut **`active`/`trialing` seule**, grille offres sans en-tête visible, Checkout Customer/langue, migrations **073**/**074**/**075**, page **Mon Abonnement** + facturation + modale offres), stack technique, **URL production https://mysportally.com**
+- **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), **abonnement plateforme coach Stripe** (essai campagne **075**, **résiliation / tuile moderne** **076**, Gérer / fin programmée / immédiat mensuel, impayés, migrations **073**/**074**/**075**/**076**, page **Mon Abonnement** + facturation + modale offres catalogue), stack technique, **URL production https://mysportally.com**
 - **Utiliser pour :** Comprendre le projet, les features, les rôles, l'architecture globale
 - **Taille :** ~450 lignes
-- **Dernière mise à jour :** 20 mai 2026 (§4.4 essai non renouvelable ; précédent : essai catalogue, UX page…)
+- **Dernière mise à jour :** 20 mai 2026 (§4.4 résiliation plateforme coach ; précédent : essai non renouvelable…)
 
 ### **docs/CALENDAR_MONTH_VIEW.md**
 - **Contenu :** Récap **vue mois** (desktop) vs **vue semaine** (mobile), règles semaines ISO / mois civil étendu, **totaux hebdo** (liste sports `PERSISTED_WORKOUT_SPORT_TYPES`, `SPORT_WEEKLY_SUMMARY_BAR`), chargement données, liste des fichiers et tests unitaires, **tuiles disponibilité** (réf. design + `CalendarView`), liens vers maquettes archivées
@@ -495,9 +495,15 @@
 **Fréquence de mise à jour :** À chaque ajout/suppression de documentation
 
 **Dernier scan :** 20 mai 2026  
-**Dernier nettoyage :** 20 mai 2026 (entrée Changements récents : essai non renouvelable par campagne)
+**Dernier nettoyage :** 20 mai 2026 (entrée Changements récents : résiliation abonnement plateforme coach)
 
 ### Changements récents :
+
+✅ **20 mai 2026 – Abonnement plateforme coach (résiliation + tuile moderne) – Mode Analyste :**
+- **Livraison (réf. code) :** migration **`076_coach_platform_subscription_cancel_mirror.sql`** ; **`lib/coachPlatformSubscriptionSync.ts`**, **`lib/stripeCoachPlatformCancellation.ts`**, **`lib/coachPlatformSubscriptionDisplay.ts`** ; **`coachPlatformCancellationActions.ts`** ; composants **`CoachPlatformCurrentOfferCard`**, **`CoachPlatformManageSubscriptionFlow`**, **`CoachPlatformSubscriptionStatusSection`**, **`CoachPlatformUnpaidSubscriptionBanner`** ; page **`coach-platform-subscription/page.tsx`** ; i18n **`coachMsaSubscription.cancellation`**, **`currentOfferCard`** (FR/EN).
+- **Doc :** `Project_context.md` §4.4, `DEPLOYMENT_NOTES.md`, `docs/DESIGN_SYSTEM.md` (v1.42), `docs/I18N.md`, `docs/design-coach-platform-subscription/README.md`, `DOCS_INDEX.md`.
+- **Archivage :** aucun (maquettes design **US-MYSA-CANCEL-***, **US-MYSA-SUB-UI-02-*** conservées comme référence livrée).
+- **Pages légales / confidentialité :** aucune modification proposée (gestion abonnement = prolongement facturation Stripe existante ; pas de nouvelle finalité de traitement sans validation PO).
 
 ✅ **20 mai 2026 – Abonnement plateforme coach (essai non renouvelable) – Mode Analyste :**
 - **Livraison (réf. code) :** migration **`075_coach_platform_trial_consumptions`** ; **`lib/coachPlatformTrialEligibility.ts`** (`trialEligible`, **`syncCoachPlatformTrialConsumptionFromStripeSubscription`**) ; **`COACH_PLATFORM_SUBSCRIPTION_TRIAL_CAMPAIGN_ID`** (+ fallback **`platform-default`**) ; **`CoachPlatformOfferGrid`** masquage silencieux si essai consommé ; garde Checkout ; webhook + repli **`verifyCoachPlatformCheckoutSession`** ; tests **`lib/coachPlatformTrialEligibility.test.ts`**.

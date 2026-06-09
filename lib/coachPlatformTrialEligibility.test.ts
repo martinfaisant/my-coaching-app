@@ -80,6 +80,8 @@ describe('resolveCoachPlatformTrialPresentationForCoach', () => {
       stripe_subscription_id: 'sub_1',
       status: 'trialing',
       current_period_end: null,
+      cancel_at_period_end: false,
+      cancel_at: null,
       updated_at: new Date().toISOString(),
     }
 

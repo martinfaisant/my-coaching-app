@@ -127,6 +127,8 @@ export type CoachPlatformSubscription = {
   stripe_subscription_id: string | null
   status: string
   current_period_end: string | null
+  cancel_at_period_end: boolean
+  cancel_at: string | null
   updated_at: string
 }
 

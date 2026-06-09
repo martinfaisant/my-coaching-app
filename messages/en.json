@@ -1527,6 +1527,89 @@
       "active": "Active",
       "trialing": "On trial"
     },
+    "currentOfferCard": {
+      "manage": "Manage",
+      "badgeScheduledEnd": "Scheduled to end",
+      "nextPaymentOn": "Next charge on {date}",
+      "trialEndOn": "trial ends {date}",
+      "footerHintActive": "Change or cancel your subscription.",
+      "footerHintTrial": "One trial period per person only.",
+      "scheduledAlertTitle": "Cancellation requested",
+      "scheduledAlertBody": "Access until {date}, then your coach account will be suspended.",
+      "scheduledFooterHint": "Changed your mind?",
+      "resumeScheduledEnd": "Cancel cancellation"
+    },
+    "cancellation": {
+      "common": {
+        "cancel": "Cancel",
+        "close": "Close"
+      },
+      "choose": {
+        "title": "Cancel subscription?",
+        "endOfPeriodTitle": "At end of current month",
+        "endOfPeriodHint": "Access until {date} · no renewal",
+        "endOfPeriodHintGeneric": "Access until the end of the current period",
+        "immediateTitle": "Cancel immediately",
+        "immediateHint": "Access ends as soon as you confirm",
+        "continue": "Continue"
+      },
+      "confirmSchedule": {
+        "title": "Confirm cancellation?",
+        "body": "Your subscription will end on {date}. You keep access until then.",
+        "bodyGeneric": "Your subscription will end at the end of the current period.",
+        "infoBox": "You can undo this request before that date.",
+        "confirm": "Confirm"
+      },
+      "confirmImmediate": {
+        "title": "Cancel immediately?",
+        "alertTitle": "Access ends immediately",
+        "alertBody": "My athletes, calendars and coach chat will no longer be available.",
+        "refundLoading": "Loading refund estimate…",
+        "refundWithAmount": "Refund: {amount}",
+        "refundUnknown": "A prorated refund may apply per Stripe.",
+        "confirm": "Confirm cancellation"
+      },
+      "confirmTrial": {
+        "title": "End trial?",
+        "body": "Your trial ends on {date}. Access until then; no charge after that.",
+        "bodyGeneric": "Your trial will end on the scheduled date. No charge after that.",
+        "trialOnceBox": "Only one trial period is granted per person for this offer.",
+        "confirm": "Confirm"
+      },
+      "confirmAnnual": {
+        "title": "Don't renew?",
+        "body": "Your subscription stays active until {date}, then ends.",
+        "bodyGeneric": "Your subscription stays active until the end of the annual period.",
+        "infoBox": "No partial refund. You can undo this request before that date.",
+        "confirm": "Confirm"
+      },
+      "confirmResume": {
+        "title": "Cancel the cancellation request?",
+        "body": "Your subscription will be reactivated with automatic renewal and no scheduled end date.",
+        "confirm": "Yes, reactivate"
+      },
+      "unpaid": {
+        "sectionTitle": "Payment overdue",
+        "badge": "Payment overdue",
+        "title": "Pay the outstanding balance before changing your subscription",
+        "body": "While a payment has failed, you cannot request cancellation or non-renewal from this page.",
+        "payCta": "Pay now"
+      },
+      "errors": {
+        "notFound": "Subscription not found.",
+        "forbidden": "Action not allowed.",
+        "notManaged": "No active subscription to manage.",
+        "payBeforeCancel": "Pay the outstanding balance before changing your subscription.",
+        "alreadyScheduled": "Subscription end is already scheduled.",
+        "notScheduled": "No scheduled cancellation to undo.",
+        "immediateNotAllowedTrialing": "During trial, only end-of-trial cancellation is available.",
+        "immediateMonthlyOnly": "Immediate cancellation is only available for monthly subscriptions.",
+        "unsupportedBillingPeriod": "This plan cannot be managed in the app. Contact support.",
+        "stripeUnavailable": "Payment service is unavailable. Try again later.",
+        "notUnpaid": "No overdue payment to settle.",
+        "payUrlUnavailable": "Payment link unavailable. Try again or contact support."
+      }
+    },
     "invoiceStatus": {
       "paid": "Paid",
       "open": "Open",

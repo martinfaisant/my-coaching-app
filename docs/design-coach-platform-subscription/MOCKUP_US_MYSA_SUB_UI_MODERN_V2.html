@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>US-MYSA-SUB-UI-02 — Tuile abo courant + modales (modernisation v2 PO)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            'palette-forest-darker': '#506648',
+            'palette-olive': '#8e9856',
+            'palette-sage': '#aaaa51',
+            'palette-amber': '#c9a544',
+            'palette-danger': '#c0564b',
+            'palette-danger-light': '#fdf2f1',
+            stone: { 50: '#fafaf9', 100: '#f5f5f4', 200: '#e7e5e4', 400: '#a8a29e', 500: '#78716c', 600: '#57534e', 800: '#292524', 900: '#1c1917' },
+          },
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-stone-50 text-stone-800 antialiased min-h-screen p-6 md:p-10 space-y-14">
+  <header class="max-w-3xl mx-auto border-b border-stone-200 pb-4">
+    <h1 class="text-xl font-bold text-stone-900 tracking-tight">US-MYSA-SUB-UI-02 — Modernisation tuile + modales</h1>
+    <p class="text-xs text-stone-500 mt-2">
+      Inspiré <code>gestion_offre_modernisee_v2.html</code> (PO) · Tokens <strong>palette-*</strong> (pas emerald/hex arbitraires) ·
+      Composant cible <code>CoachPlatformCurrentOfferCard</code> · Modales résiliation <strong>US-MYSA-CANCEL-*</strong> ·
+      Page <code>coach-platform-subscription</code> · <code>max-w-xl</code> sur la tuile.
+    </p>
+  </header>
+
+  <main class="max-w-3xl mx-auto space-y-12">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-stone-400">Tuile — abonnement en cours</h2>
+
+    <!-- Actif -->
+    <div class="space-y-2">
+      <p class="text-[10px] font-semibold text-stone-500">Actif / renouvellement auto</p>
+      <div class="bg-white rounded-2xl border border-stone-200 shadow-sm p-6 flex flex-col max-w-xl w-full">
+        <div class="flex items-center justify-between gap-4 mb-0">
+          <h3 class="text-xl font-bold text-stone-900">Coach Pro — Annuel</h3>
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-palette-forest-dark/10 text-palette-forest-dark border border-palette-forest-dark/20">
+            <span class="w-1.5 h-1.5 rounded-full bg-palette-forest-dark animate-pulse" aria-hidden></span>
+            Actif
+          </span>
+        </div>
+        <div class="py-4 border-t border-b border-stone-100 my-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div class="flex items-center gap-2.5 text-sm text-stone-600 min-w-0">
+            <svg class="w-4 h-4 text-stone-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2z"/></svg>
+            <span class="truncate">Prochain prélèvement le <strong class="text-stone-900">15 mars 2027</strong></span>
+          </div>
+          <div class="shrink-0 text-right sm:text-left">
+            <span class="text-2xl font-black text-stone-900 tabular-nums tracking-tight">290 €</span>
+            <span class="text-sm text-stone-500">/ an</span>
+          </div>
+        </div>
+        <div class="pt-1 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <p class="text-xs text-stone-400">Modifier ou arrêter votre abonnement.</p>
+          <button type="button" class="shrink-0 px-4 py-2 text-sm font-semibold rounded-xl text-stone-700 bg-stone-100 hover:bg-stone-200 transition-colors w-full sm:w-auto">Gérer</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Essai -->
+    <div class="space-y-2">
+      <p class="text-[10px] font-semibold text-stone-500">En essai (trialing)</p>
+      <div class="bg-white rounded-2xl border border-stone-200 shadow-sm p-6 flex flex-col max-w-xl w-full">
+        <div class="flex items-center justify-between gap-4">
+          <h3 class="text-xl font-bold text-stone-900">Coach Pro — Mensuel</h3>
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-palette-forest-dark/10 text-palette-forest-dark border border-palette-forest-dark/20">
+            <span class="w-1.5 h-1.5 rounded-full bg-palette-forest-dark animate-pulse" aria-hidden></span>
+            En essai
+          </span>
+        </div>
+        <p class="text-sm text-stone-700 font-medium mt-3">Il reste 12 jours d'essai gratuit</p>
+        <div class="py-4 border-t border-b border-stone-100 my-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div class="flex items-center gap-2.5 text-sm text-stone-600">
+            <svg class="w-4 h-4 text-stone-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2z"/></svg>
+            <span>Puis <strong class="text-stone-900">29 €</strong> <span class="text-stone-500">/ mois</span> · fin essai <strong class="text-stone-900">1 juil. 2026</strong></span>
+          </div>
+        </div>
+        <div class="pt-1 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <p class="text-xs text-stone-400">Une seule période d'essai par personne.</p>
+          <button type="button" class="shrink-0 px-4 py-2 text-sm font-semibold rounded-xl text-stone-700 bg-stone-100 hover:bg-stone-200 w-full sm:w-auto">Gérer</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fin programmée -->
+    <div class="space-y-2">
+      <p class="text-[10px] font-semibold text-stone-500">Fin programmée</p>
+      <div class="bg-white rounded-2xl border border-stone-200 shadow-sm p-6 flex flex-col max-w-xl w-full relative overflow-hidden">
+        <div class="absolute top-0 left-0 right-0 h-1 bg-palette-amber" aria-hidden></div>
+        <div class="flex items-center justify-between gap-4">
+          <h3 class="text-xl font-bold text-stone-900">Coach Pro — Annuel</h3>
+          <span class="inline-flex px-3 py-1 rounded-full text-xs font-semibold bg-palette-amber/15 text-stone-900 border border-palette-amber/30">Fin programmée</span>
+        </div>
+        <div class="py-4 border-t border-b border-stone-100 my-4 flex items-baseline gap-2">
+          <span class="text-2xl font-black text-stone-400 line-through tabular-nums">290 €</span>
+          <span class="text-sm text-stone-500">/ an</span>
+        </div>
+        <div class="rounded-xl p-3.5 border border-palette-amber/25 bg-palette-amber/10 text-xs text-stone-800 space-y-1.5 mb-4">
+          <div class="flex items-center gap-2 font-bold text-stone-900">
+            <svg class="w-4 h-4 text-palette-amber shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+            <span>Résiliation demandée</span>
+          </div>
+          <p class="leading-relaxed text-stone-600">Accès jusqu'au <strong class="text-stone-900">15 mars 2027</strong>, puis suspension du compte coach.</p>
+        </div>
+        <div class="pt-2 border-t border-stone-50 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <p class="text-xs text-stone-400">Changement d'avis ?</p>
+          <button type="button" class="shrink-0 px-4 py-2 text-sm font-semibold rounded-xl text-white bg-palette-forest-dark hover:bg-palette-forest-darker shadow-sm w-full sm:w-auto">Annuler l'arrêt</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <section class="max-w-3xl mx-auto space-y-6">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-stone-400">Modales — confirmation (layout v2)</h2>
+    <p class="text-xs text-stone-500">Header enrichi : titre + sous-titre + pastille icône · Corps · Encart info · Footer <code>bg-stone-50</code> · Boutons <code>rounded-xl</code></p>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+      <!-- Non-renouvellement (annuel) -->
+      <div class="bg-white rounded-2xl border border-stone-200 shadow-xl overflow-hidden w-full">
+        <div class="p-6 border-b border-stone-100 flex items-start justify-between gap-4">
+          <div class="space-y-1 min-w-0">
+            <h3 class="text-lg font-bold text-stone-900">Ne pas renouveler ?</h3>
+            <p class="text-xs text-stone-500">Arrêt du renouvellement automatique</p>
+          </div>
+          <span class="p-2 rounded-lg bg-palette-danger-light text-palette-danger shrink-0" aria-hidden>
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-4v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+          </span>
+        </div>
+        <div class="p-6 space-y-4">
+          <p class="text-sm text-stone-600 leading-relaxed">Actif jusqu'au <strong class="text-stone-900">15 mars 2027</strong>.</p>
+          <div class="p-3 bg-stone-50 rounded-xl border border-stone-100 text-xs text-stone-500">Pas de remboursement partiel. Demande annulable avant l'échéance.</div>
+        </div>
+        <div class="px-6 py-4 bg-stone-50 border-t border-stone-100 flex flex-col-reverse sm:flex-row justify-end gap-3">
+          <button type="button" class="px-4 py-2 text-sm font-medium text-stone-600 rounded-xl">Conserver</button>
+          <button type="button" class="px-4 py-2 text-sm font-bold text-white bg-palette-danger rounded-xl shadow-sm">Confirmer</button>
+        </div>
+      </div>
+
+      <!-- Réactivation -->
+      <div class="bg-white rounded-2xl border border-stone-200 shadow-xl overflow-hidden w-full">
+        <div class="p-6 border-b border-stone-100 flex items-start justify-between gap-4">
+          <div class="space-y-1 min-w-0">
+            <h3 class="text-lg font-bold text-stone-900">Annuler la demande d'arrêt ?</h3>
+            <p class="text-xs text-stone-500">Réactivation du renouvellement</p>
+          </div>
+          <span class="p-2 rounded-lg bg-palette-forest-dark/10 text-palette-forest-dark shrink-0" aria-hidden>
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          </span>
+        </div>
+        <div class="p-6">
+          <p class="text-sm text-stone-600 leading-relaxed">Renouvellement automatique <strong class="text-stone-900">sans date de fin</strong>.</p>
+        </div>
+        <div class="px-6 py-4 bg-stone-50 border-t border-stone-100 flex flex-col-reverse sm:flex-row justify-end gap-3">
+          <button type="button" class="px-4 py-2 text-sm font-medium text-stone-600 rounded-xl">Fermer</button>
+          <button type="button" class="px-4 py-2 text-sm font-bold text-white bg-palette-forest-dark hover:bg-palette-forest-darker rounded-xl shadow-sm">Oui, réactiver</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mensuel : choix (étape 1) -->
+    <div class="max-w-md mx-auto space-y-2">
+      <p class="text-[10px] font-semibold text-stone-500 text-center">Mensuel — étape choix (cartes radio modernisées)</p>
+      <div class="bg-white rounded-2xl border border-stone-200 shadow-xl overflow-hidden">
+        <div class="p-6 border-b border-stone-100">
+          <h3 class="text-lg font-bold text-stone-900">Arrêter l'abonnement ?</h3>
+          <p class="text-xs text-stone-500 mt-1">Choisissez une option</p>
+        </div>
+        <div class="p-6 space-y-3">
+          <label class="block rounded-xl border-2 border-palette-forest-dark bg-stone-50 p-4 cursor-pointer">
+            <p class="text-sm font-semibold text-stone-900">À la fin du mois</p>
+            <p class="text-xs text-stone-500 mt-1">Accès jusqu'au 30 juin 2026</p>
+          </label>
+          <label class="block rounded-xl border border-stone-200 p-4 cursor-pointer hover:border-stone-300">
+            <p class="text-sm font-semibold text-stone-900">Arrêt immédiat</p>
+            <p class="text-xs text-stone-500 mt-1">Remboursement Stripe : <strong>18,50 €</strong> (si disponible)</p>
+          </label>
+        </div>
+        <div class="px-6 py-4 bg-stone-50 border-t border-stone-100 flex justify-end gap-3">
+          <button type="button" class="px-4 py-2 text-sm font-medium text-stone-600 rounded-xl">Annuler</button>
+          <button type="button" class="px-4 py-2 text-sm font-bold text-white bg-palette-forest-dark rounded-xl">Continuer</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <p class="text-center text-xs text-stone-400 max-w-2xl mx-auto">
+    Catalogue <code>CoachPlatformOfferGrid</code> : voir proposition B (harmonisation légère) — mockup séparé si PO valide.
+  </p>
+</body>
+</html>

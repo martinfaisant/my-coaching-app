@@ -1652,6 +1652,89 @@
       "active": "Actif",
       "trialing": "En essai"
     },
+    "currentOfferCard": {
+      "manage": "Gérer",
+      "badgeScheduledEnd": "Fin programmée",
+      "nextPaymentOn": "Prochain prélèvement le {date}",
+      "trialEndOn": "fin d'essai le {date}",
+      "footerHintActive": "Modifier ou arrêter votre abonnement.",
+      "footerHintTrial": "Une seule période d'essai par personne.",
+      "scheduledAlertTitle": "Résiliation demandée",
+      "scheduledAlertBody": "Accès jusqu'au {date}, puis suspension du compte coach.",
+      "scheduledFooterHint": "Changement d'avis ?",
+      "resumeScheduledEnd": "Annuler l'arrêt"
+    },
+    "cancellation": {
+      "common": {
+        "cancel": "Annuler",
+        "close": "Fermer"
+      },
+      "choose": {
+        "title": "Arrêter l'abonnement ?",
+        "endOfPeriodTitle": "À la fin du mois en cours",
+        "endOfPeriodHint": "Accès jusqu'au {date} · pas de renouvellement",
+        "endOfPeriodHintGeneric": "Accès jusqu'à la fin de la période en cours",
+        "immediateTitle": "Arrêt immédiat",
+        "immediateHint": "Accès coupé dès confirmation",
+        "continue": "Continuer"
+      },
+      "confirmSchedule": {
+        "title": "Confirmer l'arrêt ?",
+        "body": "Votre abonnement prendra fin le {date}. Vous conservez l'accès jusqu'à cette date.",
+        "bodyGeneric": "Votre abonnement prendra fin à la fin de la période en cours.",
+        "infoBox": "Vous pourrez annuler cette demande avant l'échéance.",
+        "confirm": "Confirmer"
+      },
+      "confirmImmediate": {
+        "title": "Arrêt immédiat ?",
+        "alertTitle": "Accès coupé dès confirmation",
+        "alertBody": "Mes athlètes, calendriers et chat coach ne seront plus accessibles.",
+        "refundLoading": "Estimation du remboursement…",
+        "refundWithAmount": "Remboursement : {amount}",
+        "refundUnknown": "Un remboursement au prorata pourra être appliqué selon Stripe.",
+        "confirm": "Confirmer l'arrêt"
+      },
+      "confirmTrial": {
+        "title": "Mettre fin à l'essai ?",
+        "body": "Votre essai se terminera le {date}. Accès jusqu'à cette date ; aucun prélèvement ensuite.",
+        "bodyGeneric": "Votre essai prendra fin à la date prévue. Aucun prélèvement ensuite.",
+        "trialOnceBox": "Une seule période d'essai est accordée par personne pour cette offre.",
+        "confirm": "Confirmer"
+      },
+      "confirmAnnual": {
+        "title": "Ne pas renouveler ?",
+        "body": "Votre abonnement restera actif jusqu'au {date}, puis prendra fin.",
+        "bodyGeneric": "Votre abonnement restera actif jusqu'à la fin de la période annuelle.",
+        "infoBox": "Aucun remboursement partiel. Demande annulable avant l'échéance.",
+        "confirm": "Confirmer"
+      },
+      "confirmResume": {
+        "title": "Annuler la demande d'arrêt ?",
+        "body": "Votre abonnement sera réactivé : renouvellement automatique sans date de fin programmée.",
+        "confirm": "Oui, réactiver"
+      },
+      "unpaid": {
+        "sectionTitle": "Paiement en retard",
+        "badge": "Paiement en retard",
+        "title": "Réglez l'impayé avant de modifier votre abonnement",
+        "body": "Tant qu'un paiement est en échec, vous ne pouvez pas demander un arrêt ou un non-renouvellement depuis cette page.",
+        "payCta": "Régulariser le paiement"
+      },
+      "errors": {
+        "notFound": "Abonnement introuvable.",
+        "forbidden": "Action non autorisée.",
+        "notManaged": "Aucun abonnement actif à gérer.",
+        "payBeforeCancel": "Réglez l'impayé avant de modifier votre abonnement.",
+        "alreadyScheduled": "Une fin d'abonnement est déjà programmée.",
+        "notScheduled": "Aucune fin programmée à annuler.",
+        "immediateNotAllowedTrialing": "Pendant l'essai, seule la fin à l'échéance de l'essai est possible.",
+        "immediateMonthlyOnly": "L'arrêt immédiat n'est disponible que pour les abonnements mensuels.",
+        "unsupportedBillingPeriod": "Cette offre ne peut pas être gérée depuis l'application. Contactez le support.",
+        "stripeUnavailable": "Le service de paiement est indisponible. Réessayez plus tard.",
+        "notUnpaid": "Aucun impayé à régulariser.",
+        "payUrlUnavailable": "Lien de paiement indisponible. Réessayez ou contactez le support."
+      }
+    },
     "invoiceStatus": {
       "paid": "Payée",
       "open": "Ouverte",

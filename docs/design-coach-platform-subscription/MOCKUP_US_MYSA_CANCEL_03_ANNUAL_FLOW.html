@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>US-MYSA-CANCEL-03 — Annuel : non-renouvellement à l’échéance</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            stone: { 50: '#fafaf9', 200: '#e7e5e4', 500: '#78716c', 600: '#57534e', 800: '#292524', 900: '#1c1917' },
+          },
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-stone-100 min-h-screen p-4 md:p-8 space-y-10">
+  <p class="text-center text-xs text-stone-600 max-w-3xl mx-auto">
+    <strong>US-MYSA-CANCEL-03</strong> — Abonnement <strong>annuel</strong>, statut <strong>active</strong>.
+    <strong>Une seule</strong> option produit : non-renouvellement à la fin de la période annuelle en cours
+    (<strong>pas</strong> d’arrêt immédiat, <strong>pas</strong> de remboursement prorata dans le périmètre PO).
+    Même entrée <strong>Gérer mon abonnement</strong> ; modale <strong>sans</strong> étape radio.
+    État programmé + annulation demande : <strong>US-MYSA-CANCEL-02</strong>.
+  </p>
+
+  <div class="max-w-2xl mx-auto bg-white rounded-t-lg border border-stone-200 shadow-sm p-4 md:p-6">
+    <h1 class="text-lg font-bold text-stone-900 mb-4">Mon Abonnement MySportAlly</h1>
+    <div class="rounded-xl border border-stone-200 bg-stone-50 p-4">
+      <div class="flex justify-between items-start gap-3">
+        <div>
+          <p class="font-semibold text-stone-900">Coach Pro — Annuel</p>
+          <p class="text-sm text-stone-900 font-semibold mt-3">290,00 € <span class="font-normal text-stone-600">par an</span></p>
+          <p class="text-sm text-stone-600 mt-2">Prochain prélèvement : <span class="font-medium">15 mars 2027</span></p>
+          <button type="button" class="mt-4 text-sm font-medium text-stone-600 hover:text-stone-900 underline-offset-2 hover:underline">
+            Gérer mon abonnement
+          </button>
+        </div>
+        <span class="shrink-0 inline-flex rounded-full bg-palette-forest-dark px-2.5 py-0.5 text-xs font-semibold text-white">Actif</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-lg mx-auto">
+    <p class="text-xs font-semibold text-stone-700 mb-2 text-center">Clic « Gérer » → Modale unique (confirmation)</p>
+    <div class="bg-white rounded-xl border border-stone-200 shadow-lg overflow-hidden">
+      <div class="px-6 py-4 border-b border-stone-100 flex justify-between">
+        <h2 class="text-lg font-bold text-stone-900">Ne pas renouveler ?</h2>
+        <button type="button" class="text-stone-400">×</button>
+      </div>
+      <div class="px-6 py-4 space-y-3">
+        <p class="text-sm text-stone-700">
+          Votre abonnement restera actif jusqu’au <strong>15 mars 2027</strong>, puis prendra fin automatiquement.
+        </p>
+        <p class="text-xs text-stone-500">Aucun remboursement anticipé. Vous pourrez annuler cette demande avant l’échéance.</p>
+      </div>
+      <div class="px-6 py-4 border-t border-stone-100 flex justify-end gap-3">
+        <button type="button" class="rounded-lg px-4 py-2 text-sm font-medium text-stone-600">Annuler</button>
+        <button type="button" class="rounded-lg px-4 py-2 text-sm font-semibold text-white bg-palette-forest-dark">Confirmer</button>
+      </div>
+    </div>
+  </div>
+
+  <p class="text-center text-xs text-stone-500 max-w-2xl mx-auto">
+    <strong>Transitions :</strong> Confirmer → US-MYSA-CANCEL-02 · Fermer → carte inchangée · Double demande → message erreur (déjà programmé)
+  </p>
+</body>
+</html>
