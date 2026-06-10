@@ -17,7 +17,6 @@ import {
   Users,
   Award,
   CheckCircle2,
-  Activity,
 } from 'lucide-react'
 
 type HomePageProps = {
@@ -69,11 +68,6 @@ export default async function Home({ params, searchParams }: HomePageProps) {
       icon: Calendar,
       titleKey: 'features.personalizedPlanning.title',
       descriptionKey: 'features.personalizedPlanning.description',
-    },
-    {
-      icon: Activity,
-      titleKey: 'features.stravaConnection.title',
-      descriptionKey: 'features.stravaConnection.description',
     },
     {
       icon: MessageCircle,
@@ -207,15 +201,15 @@ export default async function Home({ params, searchParams }: HomePageProps) {
                 <div className="aspect-[4/3] relative">
                   <Image
                     src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80"
-                    alt={t('preview.stravaAlt')}
+                    alt={t('preview.statsAlt')}
                     fill
                     sizes="(max-width: 768px) 100vw, 33vw"
                     className="object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-stone-900/60 to-transparent"></div>
                   <div className="absolute bottom-4 left-4 right-4">
-                    <Activity className="w-8 h-8 text-white mb-2" />
-                    <h3 className="text-lg font-semibold text-white">{t('preview.stravaSync')}</h3>
+                    <TrendingUp className="w-8 h-8 text-white mb-2" />
+                    <h3 className="text-lg font-semibold text-white">{t('preview.statsVolume')}</h3>
                   </div>
                 </div>
               </div>

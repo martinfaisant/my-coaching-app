@@ -762,7 +762,8 @@
       "cannotRefresh": "Cannot refresh Strava connection.",
       "unauthorized": "Unauthorized.",
       "activityTitleDefault": "Activity",
-      "activityTitleUntitled": "Untitled"
+      "activityTitleUntitled": "Untitled",
+      "featureDisabled": "This feature is not available at the moment."
     }
   },
   "chat": {
@@ -973,17 +974,17 @@
       "badge": "The personalized sports coaching platform",
       "title": "Reach your goals with a",
       "titleHighlight": "dedicated coach",
-      "subtitle": "Personalized training plans, real-time tracking, Strava sync and direct messaging. Everything you need to progress effectively."
+      "subtitle": "Personalized training plans, real-time tracking and direct messaging. Everything you need to progress effectively."
     },
     "preview": {
       "title": "An intuitive and comprehensive interface",
       "subtitle": "Access all your workouts, goals and exchanges from a modern dashboard",
       "dashboardAlt": "My Sport Ally application dashboard",
       "calendarAlt": "Training calendar",
-      "stravaAlt": "Strava synchronization",
       "chatAlt": "Messaging with your coach",
       "weeklyPlanning": "Weekly planning",
-      "stravaSync": "Strava Sync",
+      "statsAlt": "Volume statistics",
+      "statsVolume": "Statistics",
       "liveChat": "Live chat"
     },
     "features": {
@@ -1057,7 +1058,7 @@
   "legal": {
     "common": {
       "lastUpdated": "Last updated: {date}",
-      "lastUpdatedFull": "Last updated: May 20, 2026"
+      "lastUpdatedFull": "Last updated: June 10, 2026"
     },
     "terms": {
       "title": "Terms of Use",
@@ -1116,7 +1117,7 @@
           "p1": "To the fullest extent permitted by law, Mysportally, its officers, and employees shall not be held liable for:",
           "li1": "Any physical injury, death, or health-related damage.",
           "li2": "Any indirect, punitive, or consequential damages arising from the use of the Platform.",
-          "li3": "Any inaccuracy of data originating from third-party services (e.g., Strava).",
+          "li3": "Any inaccuracy of data originating from third-party services.",
           "p2": "Liability Cap: In any event, the total liability of Mysportally to you shall not exceed the total amount you have paid to Mysportally in the 12 months preceding the claim."
         },
         "indemnification": {
@@ -1144,7 +1145,7 @@
     },
     "privacy": {
       "title": "Privacy Policy",
-      "lastUpdatedFull": "Last updated: May 20, 2026",
+      "lastUpdatedFull": "Last updated: June 10, 2026",
       "sections": {
         "commitment": {
           "title": "1. OUR COMMITMENT",
@@ -1154,7 +1155,7 @@
           "title": "2. DATA WE COLLECT",
           "li1": "Identification Data: first name, last name, email address.",
           "li2": "Training Data: athletic profile, goals, planned workouts and interactions between Coach and Athlete (e.g., messaging).",
-          "li3": "Activity data via third-party services (e.g., Strava): with your explicit consent, we may import activity data (e.g., distance, duration, GPS, heart rate if available). This data may be considered sensitive.",
+          "li3": "Activity data via third-party services: when this feature is offered, with your explicit consent, we may import activity data (e.g., distance, duration, GPS, heart rate if available). This data may be considered sensitive.",
           "li4": "Technical Data: information sent by your device and browser when you access the website (e.g., IP address, browser type, request timestamps). It may be processed through our technical providers (hosting, authentication) for security, operations and troubleshooting purposes, including maintaining your session.",
           "li5": "Contact form (dedicated page, with or without an account): first name, last name, email address, phone number if provided, reason for contact, message content; assignment of a tracking reference; if you are signed in, an account identifier may be linked to the request.",
           "li6": "Coach paid Platform subscription data: technical transaction or subscription identifiers, access status, free-trial consumption history per campaign (if applicable), processed when paying through an external payment service provider; Mysportally does not store your full card details on its own servers.",
@@ -1172,7 +1173,7 @@
         },
         "consent": {
           "title": "4. CONSENT AND SENSITIVE DATA",
-          "p1": "By connecting a third-party service (e.g., Strava), you provide your express consent to the processing of your activity data. You may withdraw this consent at any time by disconnecting the service in your settings, which will stop importing new data.",
+          "p1": "When you connect a third-party service (when this feature is available), you provide your express consent to the processing of your activity data. You may withdraw this consent at any time via your account settings, which will stop importing new data.",
           "p2": "For the Contact form, submitting the form constitutes consent to process the information you provide for the purpose of responding to your request, within the limits described in Sections 2 and 3."
         },
         "sharing": {
@@ -1211,7 +1212,7 @@
         },
         "cookies": {
           "title": "11. COOKIES",
-          "p1": "We use cookies that are strictly necessary to operate the service, including keeping you signed in and securing certain features (e.g., connecting to a third-party service such as Strava). You can configure your browser to refuse cookies, but this may prevent authentication and limit some features."
+          "p1": "We use cookies that are strictly necessary to operate the service, including keeping you signed in. You can configure your browser to refuse cookies, but this may prevent authentication and limit some features."
         }
       }
     }

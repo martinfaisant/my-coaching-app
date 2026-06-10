@@ -63,7 +63,7 @@ Avoid:
 - Manage training facilities used (type, address, opening hours)
 - Chat with coach (1-to-1)
 - Rate coach (1–5 stars + comment)
-- Connect Strava (import activities into calendar)
+- **Connect Strava** (import activities into calendar) — **gated by feature flag** `NEXT_PUBLIC_ENABLE_ATHLETE_STRAVA_DEVICES` (off by default at launch; see §4.9). Already-imported activities remain visible on calendar and stats when the flag is off.
 
 **Cannot:**
 
@@ -120,7 +120,7 @@ The same **default path** logic is centralized in **`lib/dashboardEntryPath.ts`*
 
 **Marketing home (logged-in):** On the **landing routes only** — default locale home **`/`** and English home **`/en`** (`app/[locale]/page.tsx`) — if a **session** exists, the server **redirects immediately** to the role-specific path above (no marketing content rendered). **Athlete without `coach_id`** still goes to **`/dashboard/find-coach`**. Flows with query params on the home page (e.g. **`?code=`** for password reset, **`?emailConfirmed=1`** for email confirmation) are evaluated **before** this redirect so those links keep working.
 
-The dashboard uses a **top bar** (logo My Sport Ally left, nav links center on tablet/desktop, account area right). **Mobile:** page title centered, hamburger right; tap opens a **drawer from the right**. **Athlete (tablet/desktop):** **primary** links centered — if the athlete has no `coach_id`, **Find a coach** is included, then **My calendar**, **Statistics** (`/dashboard/stats`, volume « fait » charts), and **My goals**; **right:** **account menu** (avatar + name + chevron) opens a panel: connected devices, **My coach** (only when `coach_id` is set), subscription history; separator; **My details** (route `/dashboard/profile`); **Log out**. **Athlete (mobile drawer):** same grouping with horizontal separators — primary links, then secondary links, then **My details**, then **Log out** (no separate large profile card). **Coach** nav: Mes athlètes, Mon offre, Souscriptions; **profile** remains a direct top-bar link (avatar + name) to `/dashboard/profile`. **Admin** nav: Gestion des membres, Design System only (no « Mes athlètes »). The pages **« Trouver mon coach »** and **« Mes athlètes »** are separate routes (`/dashboard/find-coach`, `/dashboard/athletes`), each with its own loading skeleton. The dashboard layout and `DashboardPageShell` (padding only, no in-page title nor card container) are used for all pages. **Navigation config** is split in `lib/dashboardNavConfig.ts` (`getAthletePrimaryNavItems`, `getAthleteAccountNavItems`, `getAthleteProfileNavItem`, merged list for mobile page titles). **Stats icon** in the top bar / drawer: `components/DashboardNavIcons.tsx` (`/dashboard/stats`).
+The dashboard uses a **top bar** (logo My Sport Ally left, nav links center on tablet/desktop, account area right). **Mobile:** page title centered, hamburger right; tap opens a **drawer from the right**. **Athlete (tablet/desktop):** **primary** links centered — if the athlete has no `coach_id`, **Find a coach** is included, then **My calendar**, **Statistics** (`/dashboard/stats`, volume « fait » charts), and **My goals**; **right:** **account menu** (avatar + name + chevron) opens a panel: **connected devices** (only when `NEXT_PUBLIC_ENABLE_ATHLETE_STRAVA_DEVICES=true`, see §4.9), **My coach** (only when `coach_id` is set), subscription history; separator; **My details** (route `/dashboard/profile`); **Log out**. **Athlete (mobile drawer):** same grouping with horizontal separators — primary links, then secondary links, then **My details**, then **Log out** (no separate large profile card). **Coach** nav: Mes athlètes, Mon offre, Souscriptions; **profile** remains a direct top-bar link (avatar + name) to `/dashboard/profile`. **Admin** nav: Gestion des membres, Design System only (no « Mes athlètes »). The pages **« Trouver mon coach »** and **« Mes athlètes »** are separate routes (`/dashboard/find-coach`, `/dashboard/athletes`), each with its own loading skeleton. The dashboard layout and `DashboardPageShell` (padding only, no in-page title nor card container) are used for all pages. **Navigation config** is split in `lib/dashboardNavConfig.ts` (`getAthletePrimaryNavItems`, `getAthleteAccountNavItems` — devices item conditional on `isAthleteStravaDevicesEnabled()` in `lib/featureFlags.ts`, `getAthleteProfileNavItem`, merged list for mobile page titles). **Stats icon** in the top bar / drawer: `components/DashboardNavIcons.tsx` (`/dashboard/stats`).
 
 **Public / marketing / legal header:** On **contact** (`/contact`), **privacy** (`/privacy`), **terms** (`/terms`), and **reset-password** (`/reset-password`), `PublicOrDashboardHeader` (server) renders **`PublicHeader`** when there is **no session** (logo, `LanguageSwitcher`, sign-in / sign-up), and the same **`DashboardTopBar`** as in the app when the user is **logged in** (role-based nav and account menus). On the **landing** (`/` and `/en`), **logged-in** users are **redirected** to the app (see « Marketing home (logged-in) » above), so only **visitors** see the marketing page with **`PublicHeader`**. The top bar is **sticky** (`sticky top-0`, `z-50`, `border-b border-stone-200`, white background) on the routes where it appears with long scroll. See `docs/DESIGN_SYSTEM.md` (§ PublicOrDashboardHeader, § DashboardTopBar).
 
@@ -383,12 +383,14 @@ The athlete picker uses these as **selected** state (`FEELING_PICKER_SELECTED_BG
 
 ---
 
-### 4.9 Strava Integration ✅
+### 4.9 Strava Integration ✅ (feature flag — off by default at launch)
 
-- Athlete connects Strava (OAuth)
-- Activities imported into calendar
-- Weekly totals per sport (imported activities)
-- Separate “Mes appareils connectés” (devices) section
+- **Feature flag:** `NEXT_PUBLIC_ENABLE_ATHLETE_STRAVA_DEVICES=true` exposes athlete Strava connection UI and OAuth; if unset or not `true`, the **« Mes appareils connectés »** nav entry is hidden, `/dashboard/devices` redirects athletes to **calendar**, and Strava OAuth routes are blocked (`lib/featureFlags.ts`, `lib/dashboardNavConfig.ts`).
+- **When enabled:** athlete connects Strava (OAuth) via `/dashboard/devices`; sync and disconnect server actions available.
+- **Existing data:** activities already imported remain visible on calendar and in « fait » totals / **Statistics** even when the flag is off (no new connections or sync).
+- Weekly totals per sport include imported activities when present; mapping `lib/stravaMapping.ts`.
+- Tables: `athlete_connected_services` (OAuth tokens), `imported_activities`.
+- **Landing / legal:** marketing home does not promote Strava sync while the flag is off; privacy and terms use conditional third-party wording (updated June 2026).
 
 ---
 

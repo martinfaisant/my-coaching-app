@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 9 juin 2026 (**prérequis Checkout** abonnement coach — **livré** ; précédent : résiliation / tuile moderne…)
+**Dernière mise à jour :** 10 juin 2026 (**feature flag Strava devices** athlète — masqué par défaut ; précédent : prérequis Checkout coach…)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -9,16 +9,16 @@
 ## 🎯 Documentation Active (à utiliser en priorité)
 
 ### **README.md** ⭐
-- **Contenu :** Setup projet, stack technique, quick start, structure du projet, **URL production https://mysportally.com**, **accueil `/` et `/en`** : utilisateurs connectés redirigés vers l’entrée dashboard (voir **Project_context.md** §4.0, **`lib/dashboardEntryPath.ts`**), variables **Stripe coach plateforme** (**`COACH_PLATFORM_SUBSCRIPTION_TRIAL_DAYS`**, **`COACH_PLATFORM_SUBSCRIPTION_TRIAL_CAMPAIGN_ID`**, essai une fois par campagne, **`coachMsaOffers.byPriceId`** avec `tagline`/`features`, Checkout : **`ensureCoachPlatformStripeCustomerForCheckout`**, langue + **`Customer.name`** profil / session) et URL de retour Checkout (`NEXT_PUBLIC_SITE_URL` / repli, `lib/checkoutReturnOrigin.ts`)
+- **Contenu :** Setup projet, stack technique, quick start, structure du projet, **URL production https://mysportally.com**, **accueil `/` et `/en`** : utilisateurs connectés redirigés vers l’entrée dashboard (voir **Project_context.md** §4.0, **`lib/dashboardEntryPath.ts`**), variables **Stripe coach plateforme** (…), **Strava devices athlète** : `NEXT_PUBLIC_ENABLE_ATHLETE_STRAVA_DEVICES` (off par défaut, voir § Intégration Strava)
 - **Utiliser pour :** Onboarding, démarrage rapide, vue d'ensemble technique
 - **Taille :** ~200 lignes
-- **Dernière mise à jour :** 9 juin 2026 (prérequis Checkout coach ; précédent : résiliation **076**…)
+- **Dernière mise à jour :** 10 juin 2026 (feature flag Strava devices ; précédent : prérequis Checkout coach…)
 
 ### **Project_context.md** ⭐
-- **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), **abonnement plateforme coach Stripe** (essai campagne **075**, **résiliation / tuile moderne** **076**, **prérequis Checkout** gate nom/adresse, migrations **073**/**074**/**075**/**076**, page **Mon Abonnement** + facturation + modales offres), stack technique, **URL production https://mysportally.com**
+- **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (…), **§4.9 Strava** (feature flag `NEXT_PUBLIC_ENABLE_ATHLETE_STRAVA_DEVICES`, off par défaut au lancement)
 - **Utiliser pour :** Comprendre le projet, les features, les rôles, l'architecture globale
 - **Taille :** ~450 lignes
-- **Dernière mise à jour :** 9 juin 2026 (§4.4 prérequis Checkout **livré** ; précédent : résiliation plateforme…)
+- **Dernière mise à jour :** 10 juin 2026 (§4.9 Strava feature flag ; précédent : prérequis Checkout…)
 
 ### **docs/CALENDAR_MONTH_VIEW.md**
 - **Contenu :** Récap **vue mois** (desktop) vs **vue semaine** (mobile), règles semaines ISO / mois civil étendu, **totaux hebdo** (liste sports `PERSISTED_WORKOUT_SPORT_TYPES`, `SPORT_WEEKLY_SUMMARY_BAR`), chargement données, liste des fichiers et tests unitaires, **tuiles disponibilité** (réf. design + `CalendarView`), liens vers maquettes archivées
@@ -109,9 +109,9 @@
 ## 🚀 Documentation Opérationnelle
 
 ### **DEPLOYMENT_NOTES.md**
-- **Contenu :** Notes et procédures de déploiement, **URL production https://mysportally.com**, section **Abonnement plateforme coach (Stripe)** (migrations **073** + **074**, env, webhook, comportement réutilisation Customer Checkout **`preferred_locales` + `Customer.name`**, Redirect URLs Supabase)
+- **Contenu :** Notes et procédures de déploiement, **URL production https://mysportally.com**, section **Connexion Strava — appareils athlète (feature flag)**, section **Abonnement plateforme coach (Stripe)** (…)
 - **Utiliser pour :** Déployer l'application, résoudre des problèmes de déploiement
-- **Dernière mise à jour :** 13 mai 2026 (Stripe : puce comportement **`Customer.name`** + synchro profil ; précédent : Checkout coach…)
+- **Dernière mise à jour :** 10 juin 2026 (feature flag Strava devices ; précédent : Stripe coach…)
 
 ### **MISE_EN_PROD.md**
 - **Contenu :** Checklist et étapes pour mise en production, **URL production https://mysportally.com**, rappel migrations postérieures (dont **073** + **074** Stripe coach plateforme — voir `DEPLOYMENT_NOTES.md`)

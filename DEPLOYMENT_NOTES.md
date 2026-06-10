@@ -1,7 +1,16 @@
 # Notes de déploiement
 
 **Production :** https://mysportally.com (voir `docs/DOMAIN_MYSPORTALLY_SETUP.md` pour la configuration domaine, Vercel, Resend, Supabase).  
-**Dernière mise à jour doc :** 20 mai 2026 (résiliation abonnement plateforme coach, migration **076** ; précédent : essai non-renouvelable, **075**).
+**Dernière mise à jour doc :** 10 juin 2026 (feature flag Strava devices athlète ; précédent : résiliation abonnement plateforme coach, migration **076**).
+
+---
+
+## Connexion Strava — appareils athlète (feature flag)
+
+- **Comportement par défaut (lancement) :** pas d’entrée menu **« Mes appareils connectés »**, page `/dashboard/devices` → redirect calendrier pour les athlètes, OAuth `/api/auth/strava` bloqué. Les activités **déjà importées** restent visibles au calendrier et aux statistiques.
+- **Variable d’environnement :** `NEXT_PUBLIC_ENABLE_ATHLETE_STRAVA_DEVICES=true` pour exposer la feature (menu compte, page devices, OAuth, sync/déconnexion). Absent ou ≠ `true` → feature off. Source : `lib/featureFlags.ts`.
+- **Strava API (inchangé) :** `STRAVA_CLIENT_ID`, `STRAVA_CLIENT_SECRET`, callback domain `mysportally.com` (prod) / `localhost` (local), `NEXT_PUBLIC_APP_URL` ou `NEXT_PUBLIC_SITE_URL`. Voir `README.md` § Intégration Strava.
+- **Réactivation :** définir la variable sur Vercel (ou `.env.local` en local) + redeploy ; aucune migration BDD.
 
 ---
 

@@ -887,7 +887,8 @@
       "cannotRefresh": "Impossible de rafraîchir la connexion Strava.",
       "unauthorized": "Non autorisé.",
       "activityTitleDefault": "Activité",
-      "activityTitleUntitled": "Sans titre"
+      "activityTitleUntitled": "Sans titre",
+      "featureDisabled": "Cette fonctionnalité n'est pas disponible pour le moment."
     }
   },
   "chat": {
@@ -1098,17 +1099,17 @@
       "badge": "La plateforme de coaching sportif personnalisé",
       "title": "Atteignez vos objectifs avec un",
       "titleHighlight": "coach dédié",
-      "subtitle": "Plans d'entraînement personnalisés, suivi en temps réel, synchronisation Strava et messagerie directe. Tout pour progresser efficacement."
+      "subtitle": "Plans d'entraînement personnalisés, suivi en temps réel et messagerie directe. Tout pour progresser efficacement."
     },
     "preview": {
       "title": "Une interface intuitive et complète",
       "subtitle": "Accédez à tous vos entraînements, objectifs et échanges depuis un tableau de bord moderne",
       "dashboardAlt": "Dashboard de l'application My Sport Ally",
       "calendarAlt": "Calendrier d'entraînement",
-      "stravaAlt": "Synchronisation Strava",
       "chatAlt": "Messagerie avec votre coach",
       "weeklyPlanning": "Planning hebdomadaire",
-      "stravaSync": "Sync Strava",
+      "statsAlt": "Statistiques de volume",
+      "statsVolume": "Statistiques",
       "liveChat": "Chat en direct"
     },
     "features": {
@@ -1182,7 +1183,7 @@
   "legal": {
     "common": {
       "lastUpdated": "Dernière mise à jour : {date}",
-      "lastUpdatedFull": "Dernière mise à jour : 20 mai 2026"
+      "lastUpdatedFull": "Dernière mise à jour : 10 juin 2026"
     },
     "terms": {
       "title": "Conditions d’utilisation",
@@ -1241,7 +1242,7 @@
           "p1": "Dans la pleine mesure permise par la loi, Mysportally, ses dirigeants et employés ne pourront être tenus responsables de :",
           "li1": "Toute blessure physique, décès ou dommage à la santé.",
           "li2": "Tout dommage indirect, punitif ou consécutif découlant de l'utilisation de la Plateforme.",
-          "li3": "Toute inexactitude des données provenant de services tiers (ex: Strava).",
+          "li3": "Toute inexactitude des données provenant de services tiers.",
           "p2": "Plafond de responsabilité : En tout état de cause, la responsabilité totale de Mysportally envers vous ne pourra excéder le montant total que vous avez payé à Mysportally au cours des 12 derniers mois."
         },
         "indemnification": {
@@ -1269,7 +1270,7 @@
     },
     "privacy": {
       "title": "Politique de confidentialité",
-      "lastUpdatedFull": "Dernière mise à jour : 20 mai 2026",
+      "lastUpdatedFull": "Dernière mise à jour : 10 juin 2026",
       "sections": {
         "commitment": {
           "title": "1. NOTRE ENGAGEMENT",
@@ -1279,7 +1280,7 @@
           "title": "2. DONNÉES COLLECTÉES",
           "li1": "Données d’identification : nom, prénom, adresse courriel.",
           "li2": "Données d’entraînement : profil sportif, objectifs, séances planifiées et interactions entre Coach et Athlète (ex. messagerie).",
-          "li3": "Données d’activité via services tiers (ex. Strava) : avec votre consentement explicite, nous pouvons importer des données d’activité (ex. distance, durée, GPS, fréquence cardiaque si disponible). Ces données peuvent être considérées comme sensibles.",
+          "li3": "Données d’activité via services tiers : lorsque cette fonctionnalité est proposée, avec votre consentement explicite, nous pouvons importer des données d’activité (ex. distance, durée, GPS, fréquence cardiaque si disponible). Ces données peuvent être considérées comme sensibles.",
           "li4": "Données techniques : informations transmises par votre appareil et votre navigateur lors de l’accès au site (ex. adresse IP, type de navigateur, dates/heure de requêtes). Elles peuvent être traitées via nos fournisseurs techniques (hébergement, authentification) pour des besoins de sécurité, de fonctionnement et de diagnostic, notamment pour maintenir votre session.",
           "li5": "Formulaire Contact (page dédiée, avec ou sans compte) : prénom, nom, adresse courriel, numéro de téléphone le cas échéant, motif de la demande, contenu du message ; attribution d’une référence de suivi ; si vous êtes connecté, un identifiant de compte peut être associé à la demande.",
           "li6": "Données liées à l’abonnement payant des Coachs (accès à la Plateforme) : identifiants techniques de transaction ou d’abonnement, statut d’accès, historique de consommation d’une période d’essai par campagne (le cas échéant), traités lors du paiement via un prestataire de paiement externe ; Mysportally ne conserve pas sur ses propres serveurs vos données complètes de carte bancaire.",
@@ -1297,7 +1298,7 @@
         },
         "consent": {
           "title": "4. CONSENTEMENT ET DONNÉES SENSIBLES",
-          "p1": "En connectant un service tiers (ex. Strava), vous donnez votre consentement exprès au traitement de vos données d’activité. Vous pouvez retirer ce consentement à tout moment en déconnectant le service dans vos paramètres, ce qui entraînera l'arrêt de l'importation de nouvelles données.",
+          "p1": "Lorsque vous connectez un service tiers (lorsque cette fonctionnalité est disponible), vous donnez votre consentement exprès au traitement de vos données d’activité. Vous pouvez retirer ce consentement à tout moment via les paramètres de votre compte, ce qui entraînera l'arrêt de l'importation de nouvelles données.",
           "p2": "Pour le formulaire Contact, la soumission vaut consentement au traitement des renseignements fournis aux fins de réponse à votre demande, dans les limites décrites aux sections 2 et 3."
         },
         "sharing": {
@@ -1336,7 +1337,7 @@
         },
         "cookies": {
           "title": "11. TÉMOINS (COOKIES)",
-          "p1": "Nous utilisons des témoins strictement nécessaires au fonctionnement du service, notamment pour maintenir votre session active et sécuriser certaines fonctionnalités (ex. connexion à un service tiers comme Strava). Vous pouvez configurer votre navigateur pour refuser les témoins, mais cela peut empêcher l’authentification et limiter certaines fonctionnalités."
+          "p1": "Nous utilisons des témoins strictement nécessaires au fonctionnement du service, notamment pour maintenir votre session active. Vous pouvez configurer votre navigateur pour refuser les témoins, mais cela peut empêcher l’authentification et limiter certaines fonctionnalités."
         }
       }
     }

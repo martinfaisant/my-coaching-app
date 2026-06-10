@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { getCurrentUserWithProfile } from '@/utils/auth'
 import { getTranslations } from 'next-intl/server'
 import { DashboardPageShell } from '@/components/DashboardPageShell'
+import { getDashboardCalendarPath, isAthleteStravaDevicesEnabled } from '@/lib/featureFlags'
 import { StravaDevicesSection } from './StravaDevicesSection'
 import { getStravaConnection } from './actions'
 
@@ -15,10 +16,14 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 }
 
 export default async function DevicesPage({ params }: { params: Promise<{ locale: string }> }) {
-  await params
+  const { locale } = await params
   const current = await getCurrentUserWithProfile()
   if (current.profile.role !== 'athlete') {
     redirect('/dashboard')
+  }
+
+  if (!isAthleteStravaDevicesEnabled()) {
+    redirect(getDashboardCalendarPath(locale === 'en' ? 'en' : 'fr'))
   }
 
   const result = await getStravaConnection(current.id)

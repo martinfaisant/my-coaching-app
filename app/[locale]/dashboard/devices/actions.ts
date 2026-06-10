@@ -3,12 +3,18 @@
 import { createClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { requireUser } from '@/lib/authHelpers'
+import { isAthleteStravaDevicesEnabled } from '@/lib/featureFlags'
 import { mapStravaTypeToSportType } from '@/lib/stravaMapping'
 import { logger } from '@/lib/logger'
 import { getTranslations } from 'next-intl/server'
 
 const STRAVA_TOKEN_URL = 'https://www.strava.com/oauth/token'
 const STRAVA_ACTIVITIES_URL = 'https://www.strava.com/api/v3/athlete/activities'
+
+async function devicesFeatureDisabledError(locale: string): Promise<{ error: string }> {
+  const t = await getTranslations({ locale, namespace: 'devices.validation' })
+  return { error: t('featureDisabled') }
+}
 
 /** Récupère un access_token valide (refresh si nécessaire). */
 async function getValidStravaToken(
@@ -97,6 +103,9 @@ export async function getStravaConnection(userId: string, locale: string = 'fr')
 }
 
 export async function syncStravaLastWeek(userId: string, locale: string = 'fr'): Promise<{ error?: string; imported?: number }> {
+  if (!isAthleteStravaDevicesEnabled()) {
+    return devicesFeatureDisabledError(locale)
+  }
   const supabase = await createClient()
   const result = await requireUser(supabase)
   const t = await getTranslations({ locale, namespace: 'devices.validation' })
@@ -173,6 +182,9 @@ export async function syncStravaLastWeek(userId: string, locale: string = 'fr'):
 }
 
 export async function disconnectStrava(userId: string, locale: string = 'fr'): Promise<{ error?: string }> {
+  if (!isAthleteStravaDevicesEnabled()) {
+    return devicesFeatureDisabledError(locale)
+  }
   const supabase = await createClient()
   const result = await requireUser(supabase)
   if ('error' in result || result.user.id !== userId) {
