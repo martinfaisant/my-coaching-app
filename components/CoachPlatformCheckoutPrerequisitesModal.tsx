@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useId, useState, useTransition } from 'react'
+import { useId, useState, useTransition } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
 import { usePathname } from '@/i18n/navigation'
 import { Modal } from '@/components/Modal'
@@ -38,18 +38,19 @@ export function CoachPlatformCheckoutPrerequisitesModal({
   const [pendingPhase, setPendingPhase] = useState<'saving' | 'redirecting' | null>(null)
   const [snapshot, setSnapshot] = useState<CoachPlatformCheckoutPrerequisitesSnapshot | null>(initialSnapshot)
   const [billingLoadError, setBillingLoadError] = useState(false)
+  const [openSyncKey, setOpenSyncKey] = useState({ isOpen, initialSnapshot })
 
-  useEffect(() => {
-    if (!isOpen) {
-      return
+  if (isOpen !== openSyncKey.isOpen || initialSnapshot !== openSyncKey.initialSnapshot) {
+    setOpenSyncKey({ isOpen, initialSnapshot })
+    if (isOpen) {
+      if (initialSnapshot) {
+        setSnapshot(initialSnapshot)
+        setBillingLoadError(initialSnapshot.billingLoadError)
+      }
+      setError(null)
+      setPendingPhase(null)
     }
-    if (initialSnapshot) {
-      setSnapshot(initialSnapshot)
-      setBillingLoadError(initialSnapshot.billingLoadError)
-    }
-    setError(null)
-    setPendingPhase(null)
-  }, [isOpen, initialSnapshot])
+  }
 
   const handleRetryLoad = () => {
     setError(null)

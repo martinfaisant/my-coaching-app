@@ -51,14 +51,21 @@ export function CoachPlatformSubscribeOffersModal({
   const [prerequisitesSnapshot, setPrerequisitesSnapshot] =
     useState<CoachPlatformCheckoutPrerequisitesSnapshot | null>(null)
   const [billingLoadError, setBillingLoadError] = useState(false)
+  const [prevIsOpen, setPrevIsOpen] = useState(isOpen)
 
-  useEffect(() => {
+  if (isOpen !== prevIsOpen) {
+    setPrevIsOpen(isOpen)
     if (!isOpen) {
       setStep('offers')
       setPrerequisitesSnapshot(null)
       setPrerequisitesError(null)
       setPendingPhase(null)
       setBillingLoadError(false)
+    }
+  }
+
+  useEffect(() => {
+    if (!isOpen) {
       return
     }
 

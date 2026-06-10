@@ -1,0 +1,41 @@
+﻿2026-06-10T13:20:38.3505890Z ##[group]Run actions/setup-node@v4
+2026-06-10T13:20:38.3506584Z with:
+2026-06-10T13:20:38.3507490Z   node-version: 20.x
+2026-06-10T13:20:38.3508130Z   cache: npm
+2026-06-10T13:20:38.3508611Z   always-auth: false
+2026-06-10T13:20:38.3509098Z   check-latest: false
+2026-06-10T13:20:38.3513884Z   token: ***
+2026-06-10T13:20:38.3514351Z env:
+2026-06-10T13:20:38.3514889Z   NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
+2026-06-10T13:20:38.3515620Z   NEXT_PUBLIC_SUPABASE_ANON_KEY: anon-key
+2026-06-10T13:20:38.3516258Z   SUPABASE_SECRET_KEY: service-role-key
+2026-06-10T13:20:38.3516903Z   NEXT_PUBLIC_APP_URL: http://localhost:3000
+2026-06-10T13:20:38.3517745Z   NEXT_PUBLIC_SITE_URL: http://localhost:3000
+2026-06-10T13:20:38.3518355Z ##[endgroup]
+2026-06-10T13:20:38.5427125Z Attempting to download 20.x...
+2026-06-10T13:20:39.2443759Z Acquiring 20.20.2 - x64 from https://github.com/actions/node-versions/releases/download/20.20.2-23521894959/node-20.20.2-linux-x64.tar.gz
+2026-06-10T13:20:39.7876187Z Extracting ...
+2026-06-10T13:20:39.7985104Z [command]/usr/bin/tar xz --strip 1 --warning=no-unknown-keyword --overwrite -C /home/runner/work/_temp/1758133c-9c08-4fef-907e-85a57e263fbe -f /home/runner/work/_temp/3d3806e4-e083-497d-9d08-c1bf290ed1ac
+2026-06-10T13:20:40.8296728Z Adding to the cache ...
+2026-06-10T13:20:42.6446857Z ##[group]Environment details
+2026-06-10T13:20:42.8634275Z node: v20.20.2
+2026-06-10T13:20:42.8635001Z npm: 10.8.2
+2026-06-10T13:20:42.8635361Z yarn: 1.22.22
+2026-06-10T13:20:42.8636177Z ##[endgroup]
+2026-06-10T13:20:42.8660878Z [command]/opt/hostedtoolcache/node/20.20.2/x64/bin/npm config get cache
+2026-06-10T13:20:42.9663084Z /home/runner/.npm
+2026-06-10T13:20:43.2451846Z Cache hit for: node-cache-Linux-x64-npm-94d466b88d98240ba19f6e5ab341f579b7e17b4c36dbb8abcce62b59d6e4b270
+2026-06-10T13:20:44.5517199Z Received 0 of 231652629 (0.0%), 0.0 MBs/sec
+2026-06-10T13:20:45.5519713Z Received 96468992 of 231652629 (41.6%), 46.0 MBs/sec
+2026-06-10T13:20:46.5525097Z Received 130023424 of 231652629 (56.1%), 41.3 MBs/sec
+2026-06-10T13:20:47.5518769Z Received 130023424 of 231652629 (56.1%), 31.0 MBs/sec
+2026-06-10T13:20:48.5528799Z Received 130023424 of 231652629 (56.1%), 24.8 MBs/sec
+2026-06-10T13:20:49.5533147Z Received 130023424 of 231652629 (56.1%), 20.7 MBs/sec
+2026-06-10T13:20:50.5540187Z Received 138412032 of 231652629 (59.7%), 18.8 MBs/sec
+2026-06-10T13:20:51.5552619Z Received 223264021 of 231652629 (96.4%), 26.6 MBs/sec
+2026-06-10T13:20:52.5555680Z Received 227458325 of 231652629 (98.2%), 24.1 MBs/sec
+2026-06-10T13:20:52.6622284Z Received 231652629 of 231652629 (100.0%), 24.2 MBs/sec
+2026-06-10T13:20:52.6623337Z Cache Size: ~221 MB (231652629 B)
+2026-06-10T13:20:52.6661247Z [command]/usr/bin/tar -xf /home/runner/work/_temp/640d8932-05a2-4ef3-a0ca-34ceb9612b01/cache.tzst -P -C /home/runner/work/my-coaching-app/my-coaching-app --use-compress-program unzstd
+2026-06-10T13:20:53.0944445Z Cache restored successfully
+2026-06-10T13:20:53.1049400Z Cache restored from key: node-cache-Linux-x64-npm-94d466b88d98240ba19f6e5ab341f579b7e17b4c36dbb8abcce62b59d6e4b270
