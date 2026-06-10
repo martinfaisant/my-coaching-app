@@ -1621,6 +1621,29 @@
       "catalogUnavailable": "Could not load offers. Try again later or contact support.",
       "historyUnavailable": "Could not load billing history right now."
     },
+    "checkoutPrerequisites": {
+      "modalTitle": "Billing information",
+      "intro": "Complete your details before continuing to payment.",
+      "billingSectionTitle": "Billing address",
+      "saveAndContinue": "Save and continue",
+      "saving": "Saving…",
+      "redirecting": "Redirecting…",
+      "backToOffers": "Back to offers",
+      "cancel": "Cancel",
+      "loadError": "Could not load your billing address. Try again.",
+      "retry": "Retry",
+      "validation": {
+        "firstNameRequired": "First name is required.",
+        "lastNameRequired": "Last name is required."
+      },
+      "errors": {
+        "stripeUnavailable": "Payment service is not available. Try again later.",
+        "stripeCustomerFailed": "Could not prepare your billing account. Try again later.",
+        "persistFailed": "Could not save your customer reference. Try again or contact support.",
+        "saveFailed": "Could not save your information. Try again later.",
+        "profileUpdateFailed": "Could not update your profile. Try again later."
+      }
+    },
     "billingAddress": {
       "sectionTitle": "Billing address",
       "emptyDescription": "No billing address is saved yet.",
@@ -1734,7 +1757,8 @@
       "checkoutFailed": "Creating the checkout session failed.",
       "invalidPriceId": "This offer is not available.",
       "missingEmailForCheckout": "An email address is required for payment. Please complete your profile.",
-      "stripeCustomerPrepareFailed": "We could not prepare your billing account. Try again or contact support."
+      "stripeCustomerPrepareFailed": "We could not prepare your billing account. Try again or contact support.",
+      "checkoutPrerequisitesIncomplete": "Complete your name and billing address before continuing to payment."
     },
     "verify": {
       "stripeUnavailable": "The payment service is unavailable.",

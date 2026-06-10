@@ -23,6 +23,7 @@ import {
   ensureCoachPlatformStripeCustomerForCheckout,
   formatCoachPlatformStripeCustomerName,
 } from '@/lib/stripeCoachPlatformCustomer'
+import { evaluateCoachPlatformCheckoutPrerequisitesForCoach } from '@/app/[locale]/dashboard/coach-platform-subscription/coachPlatformCheckoutPrerequisitesActions'
 
 export type CoachPlatformCheckoutResult = { ok: true; url: string } | { ok: false; error: string }
 
@@ -127,6 +128,16 @@ export async function createCoachPlatformCheckoutSession(
     .single()
   if (profile?.role !== 'coach') {
     return { ok: false, error: t('coachOnly') }
+  }
+
+  const prerequisitesMet = await evaluateCoachPlatformCheckoutPrerequisitesForCoach(
+    supabase,
+    stripe,
+    auth.user.id,
+    { first_name: profile.first_name, last_name: profile.last_name }
+  )
+  if (!prerequisitesMet) {
+    return { ok: false, error: t('checkoutPrerequisitesIncomplete') }
   }
 
   const returnPath = resolveCoachPlatformCheckoutReturnPath(options?.returnPath)

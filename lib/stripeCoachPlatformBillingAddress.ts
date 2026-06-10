@@ -6,6 +6,7 @@ import { isCanadianProvinceCode } from '@/lib/canadianProvinces'
 import {
   appLocaleToStripePreferredLocales,
   ensureCoachPlatformStripeCustomerForCheckout,
+  formatCoachPlatformStripeCustomerName,
   resolveExistingCoachPlatformStripeCustomerId,
 } from '@/lib/stripeCoachPlatformCustomer'
 
@@ -213,4 +214,75 @@ export async function resolveOrCreateCoachPlatformStripeCustomerId(params: {
   }
 
   return { ok: true, customerId }
+}
+
+export type PersistCoachPlatformStripeBillingForCoachResult =
+  | { ok: true }
+  | {
+      ok: false
+      reason: 'missing_email' | 'stripe_customer_failed' | 'persist_failed' | 'address_update_failed'
+    }
+
+/**
+ * Résout/crée le customer Stripe coach, persiste `cus_` si besoin, met à jour nom + adresse facturation.
+ */
+export async function persistCoachPlatformStripeBillingForCoach(params: {
+  stripe: Stripe
+  supabaseUser: SupabaseClient
+  admin: SupabaseClient
+  coachId: string
+  email: string | null | undefined
+  locale: string
+  existingRow: CoachPlatformSubscription | null
+  firstName: string | null | undefined
+  lastName: string | null | undefined
+  billingBody: SaveCoachBillingAddressStripeBody
+}): Promise<PersistCoachPlatformStripeBillingForCoachResult> {
+  const {
+    stripe,
+    supabaseUser,
+    admin,
+    coachId,
+    email,
+    locale,
+    existingRow,
+    firstName,
+    lastName,
+    billingBody,
+  } = params
+
+  const emailTrimmed = typeof email === 'string' ? email.trim() : ''
+  if (!emailTrimmed) {
+    return { ok: false, reason: 'missing_email' }
+  }
+
+  const displayNameForStripe = formatCoachPlatformStripeCustomerName(firstName, lastName)
+
+  const resolved = await resolveOrCreateCoachPlatformStripeCustomerId({
+    stripe,
+    supabaseUser,
+    admin,
+    coachId,
+    email: emailTrimmed,
+    locale,
+    existingRow,
+    displayNameForStripe,
+  })
+
+  if (!resolved.ok) {
+    if (resolved.reason === 'missing_email') {
+      return { ok: false, reason: 'missing_email' }
+    }
+    if (resolved.reason === 'persist_failed') {
+      return { ok: false, reason: 'persist_failed' }
+    }
+    return { ok: false, reason: 'stripe_customer_failed' }
+  }
+
+  const updated = await updateStripeCustomerBillingAddress(stripe, resolved.customerId, billingBody)
+  if (!updated.ok) {
+    return { ok: false, reason: 'address_update_failed' }
+  }
+
+  return { ok: true }
 }

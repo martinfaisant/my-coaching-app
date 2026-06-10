@@ -1746,6 +1746,29 @@
       "catalogUnavailable": "Impossible de charger les offres. Réessayez plus tard ou contactez le support.",
       "historyUnavailable": "Impossible de charger l’historique de facturation pour le moment."
     },
+    "checkoutPrerequisites": {
+      "modalTitle": "Informations de facturation",
+      "intro": "Complétez vos informations avant de continuer vers le paiement.",
+      "billingSectionTitle": "Adresse de facturation",
+      "saveAndContinue": "Enregistrer et continuer",
+      "saving": "Enregistrement…",
+      "redirecting": "Redirection…",
+      "backToOffers": "Retour aux offres",
+      "cancel": "Annuler",
+      "loadError": "Impossible de récupérer votre adresse de facturation. Réessayez.",
+      "retry": "Réessayer",
+      "validation": {
+        "firstNameRequired": "Le prénom est obligatoire.",
+        "lastNameRequired": "Le nom est obligatoire."
+      },
+      "errors": {
+        "stripeUnavailable": "Le service de paiement est indisponible. Réessayez plus tard.",
+        "stripeCustomerFailed": "Impossible de préparer votre compte de facturation. Réessayez plus tard.",
+        "persistFailed": "Impossible d’enregistrer la référence client. Réessayez ou contactez le support.",
+        "saveFailed": "Impossible d’enregistrer vos informations. Réessayez plus tard.",
+        "profileUpdateFailed": "Impossible de mettre à jour votre profil. Réessayez plus tard."
+      }
+    },
     "billingAddress": {
       "sectionTitle": "Adresse de facturation",
       "emptyDescription": "Aucune adresse de facturation n’est enregistrée.",
@@ -1859,7 +1882,8 @@
       "checkoutFailed": "La création de la session de paiement a échoué.",
       "invalidPriceId": "Cette offre n’est pas disponible.",
       "missingEmailForCheckout": "Une adresse e-mail est requise pour le paiement. Complétez votre profil.",
-      "stripeCustomerPrepareFailed": "Impossible de préparer votre compte de facturation. Réessayez ou contactez le support."
+      "stripeCustomerPrepareFailed": "Impossible de préparer votre compte de facturation. Réessayez ou contactez le support.",
+      "checkoutPrerequisitesIncomplete": "Complétez votre nom et votre adresse de facturation avant de continuer vers le paiement."
     },
     "verify": {
       "stripeUnavailable": "Le service de paiement est indisponible.",

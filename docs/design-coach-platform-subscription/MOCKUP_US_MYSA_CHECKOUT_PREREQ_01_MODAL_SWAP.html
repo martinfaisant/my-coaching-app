@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>US-MYSA-CHECKOUT-PREQ-01 — Modale offres : bascule prérequis Checkout</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            'palette-danger': '#c0564b',
+            stone: { 50: '#fafaf9', 100: '#f5f5f4', 200: '#e7e5e4', 300: '#d6d3d1', 500: '#78716c', 600: '#57534e', 700: '#44403c', 800: '#292524', 900: '#1c1917' },
+          },
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-stone-100 min-h-screen p-4 md:p-8 text-stone-800 space-y-16 pb-24">
+  <header class="max-w-3xl mx-auto">
+    <h1 class="text-xl font-bold text-stone-900">US-MYSA-CHECKOUT-PREQ-01 — Bascule contenu modale catalogue</h1>
+    <p class="text-sm text-stone-600 mt-2">
+      Déclencheurs : <code>CoachPlatformSubscribeOffersModal</code> (demande en attente, overlay Mes athlètes, calendrier bloqué).
+      <strong>Même modale</strong> (<code>Modal</code> <code>3xl</code>) : étape offres → étape prérequis si nom/prénom/adresse incomplets.
+      Formulaire détaillé : <code>MOCKUP_US_MYSA_CHECKOUT_PREREQ_03_FORM.html</code>.
+    </p>
+  </header>
+
+  <!-- Transition A → B -->
+  <section class="max-w-3xl mx-auto" aria-labelledby="flow-ab">
+    <h2 id="flow-ab" class="text-sm font-bold uppercase tracking-wider text-stone-700 mb-3">Transition A → B — Clic « Souscrire » (prérequis manquants)</h2>
+    <p class="text-xs text-stone-500 mb-4">
+      <strong>Avant :</strong> modale ouverte, grille offres (US-MYSA-OFFERS-01). Coach clique <strong>Souscrire</strong> sur une carte.<br />
+      <strong>Contrôle :</strong> prénom, nom et adresse facturation complètes ? Non → bascule contenu (pas de 2ᵉ modale).<br />
+      <strong>Après :</strong> même modale, titre header mis à jour, corps = formulaire prérequis ; <code>pendingPriceId</code> mémorisé.
+    </p>
+    <div class="grid md:grid-cols-2 gap-6 items-start">
+      <div>
+        <p class="text-xs font-semibold text-stone-600 mb-2">A — Grille offres (existant)</p>
+        <div class="rounded-2xl bg-white shadow-xl border border-stone-200 overflow-hidden">
+          <div class="px-5 py-4 border-b border-stone-200 flex justify-between items-start gap-3">
+            <h3 class="text-lg font-semibold text-stone-800">Choisir votre formule</h3>
+            <button type="button" class="text-stone-500 shrink-0" aria-label="Fermer">×</button>
+          </div>
+          <div class="px-5 py-4">
+            <div class="grid grid-cols-1 gap-4">
+              <div class="rounded-2xl border border-stone-200 p-5">
+                <p class="font-bold text-stone-900">Mensuel</p>
+                <p class="text-3xl font-black text-stone-900 mt-2">29&nbsp;$<span class="text-base font-medium text-stone-500"> / mois</span></p>
+                <button type="button" class="mt-4 w-full rounded-lg bg-palette-forest-dark px-4 py-2.5 text-sm font-semibold text-white ring-2 ring-palette-forest-dark ring-offset-2">Souscrire ← clic</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <p class="text-xs font-semibold text-stone-600 mb-2">B — Contenu basculé (prérequis)</p>
+        <div class="rounded-2xl bg-white shadow-xl border border-stone-200 overflow-hidden">
+          <div class="px-5 py-4 border-b border-stone-200 flex justify-between items-start gap-3">
+            <h3 class="text-lg font-semibold text-stone-800">Informations de facturation</h3>
+            <button type="button" class="text-stone-500 shrink-0" aria-label="Fermer">×</button>
+          </div>
+          <div class="px-5 py-4 max-h-[min(70vh,32rem)] overflow-y-auto space-y-4">
+            <p class="text-sm text-stone-600">Complétez vos informations avant de continuer vers le paiement.</p>
+            <p class="text-xs text-stone-400 italic">→ Voir formulaire complet dans US-MYSA-CHECKOUT-PREQ-03</p>
+            <div class="rounded-xl border border-dashed border-stone-300 p-4 text-xs text-stone-500">Prénom · Nom · Adresse (tous les champs affichés, valeurs connues pré-remplies)</div>
+          </div>
+          <div class="px-5 py-4 border-t border-stone-100 flex flex-col-reverse sm:flex-row gap-2 sm:justify-end">
+            <button type="button" class="rounded-lg px-4 py-2.5 text-sm font-medium text-stone-600 border border-stone-300 bg-white">Retour aux offres</button>
+            <button type="button" class="rounded-lg bg-palette-forest-dark px-4 py-2.5 text-sm font-semibold text-white">Enregistrer et continuer</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Transition B → A (Retour) -->
+  <section class="max-w-3xl mx-auto" aria-labelledby="flow-ba">
+    <h2 id="flow-ba" class="text-sm font-bold uppercase tracking-wider text-stone-700 mb-3">Transition B → A — « Retour aux offres »</h2>
+    <p class="text-xs text-stone-500 mb-4">
+      <strong>Action :</strong> clic <strong>Retour aux offres</strong> (footer, <code>Button</code> muted).<br />
+      <strong>Après :</strong> contenu repasse à la grille ; sélection offre conservée visuellement (optionnel : surligner la carte choisie). Aucune sauvegarde partielle.
+    </p>
+  </section>
+
+  <!-- Transition B → Stripe (succès) -->
+  <section class="max-w-3xl mx-auto" aria-labelledby="flow-stripe">
+    <h2 id="flow-stripe" class="text-sm font-bold uppercase tracking-wider text-stone-700 mb-3">Transition B → Stripe — Enregistrement réussi</h2>
+    <p class="text-xs text-stone-500 mb-4">
+      <strong>Action :</strong> clic <strong>Enregistrer et continuer</strong> (formulaire valide).<br />
+      <strong>Pendant :</strong> CTA loading « Enregistrement… » ; overlay/escape/fermeture désactivés (comme redirect checkout actuel).<br />
+      <strong>Après save :</strong> profil (prénom/nom) + Stripe (nom + adresse) ; puis <code>createCoachPlatformCheckoutSession</code> → <code>window.location.href</code> Stripe.<br />
+      <strong>Erreur save ou checkout :</strong> rester sur étape prérequis, message <code>role="alert"</code> au-dessus du formulaire.
+    </p>
+  </section>
+
+  <!-- Transition A → Stripe direct (nominal) -->
+  <section class="max-w-3xl mx-auto" aria-labelledby="flow-nominal">
+    <h2 id="flow-nominal" class="text-sm font-bold uppercase tracking-wider text-stone-700 mb-3">Transition A → Stripe direct — Prérequis déjà complets</h2>
+    <p class="text-xs text-stone-500 mb-4">
+      Si prénom, nom et adresse facturation sont déjà valides : <strong>pas de bascule</strong> ; comportement actuel (CTA pending → redirect Stripe immédiat).
+    </p>
+  </section>
+
+  <!-- Fermeture modale -->
+  <section class="max-w-3xl mx-auto rounded-xl border border-stone-200 bg-stone-50 p-4">
+    <h3 class="text-sm font-semibold text-stone-900 mb-2">Fermeture (× / overlay / Échap)</h3>
+    <ul class="text-sm text-stone-700 list-disc list-inside space-y-1">
+      <li>Étape offres : ferme la modale (comportement actuel).</li>
+      <li>Étape prérequis : ferme la modale entière (pas seulement retour offres) — sauf pendant pending save/checkout.</li>
+    </ul>
+  </section>
+</body>
+</html>

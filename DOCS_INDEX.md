@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 20 mai 2026 (**Mon abonnement coach** : résiliation / tuile moderne ; précédent : essai non renouvelable par campagne…)
+**Dernière mise à jour :** 9 juin 2026 (**prérequis Checkout** abonnement coach — **livré** ; précédent : résiliation / tuile moderne…)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -12,13 +12,13 @@
 - **Contenu :** Setup projet, stack technique, quick start, structure du projet, **URL production https://mysportally.com**, **accueil `/` et `/en`** : utilisateurs connectés redirigés vers l’entrée dashboard (voir **Project_context.md** §4.0, **`lib/dashboardEntryPath.ts`**), variables **Stripe coach plateforme** (**`COACH_PLATFORM_SUBSCRIPTION_TRIAL_DAYS`**, **`COACH_PLATFORM_SUBSCRIPTION_TRIAL_CAMPAIGN_ID`**, essai une fois par campagne, **`coachMsaOffers.byPriceId`** avec `tagline`/`features`, Checkout : **`ensureCoachPlatformStripeCustomerForCheckout`**, langue + **`Customer.name`** profil / session) et URL de retour Checkout (`NEXT_PUBLIC_SITE_URL` / repli, `lib/checkoutReturnOrigin.ts`)
 - **Utiliser pour :** Onboarding, démarrage rapide, vue d'ensemble technique
 - **Taille :** ~200 lignes
-- **Dernière mise à jour :** 20 mai 2026 (**résiliation abonnement plateforme**, migration **076** ; précédent : essai non renouvelable…)
+- **Dernière mise à jour :** 9 juin 2026 (prérequis Checkout coach ; précédent : résiliation **076**…)
 
 ### **Project_context.md** ⭐
-- **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), **abonnement plateforme coach Stripe** (essai campagne **075**, **résiliation / tuile moderne** **076**, Gérer / fin programmée / immédiat mensuel, impayés, migrations **073**/**074**/**075**/**076**, page **Mon Abonnement** + facturation + modale offres catalogue), stack technique, **URL production https://mysportally.com**
+- **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (dont snapshot offre + souscriptions, vue/résiliation, En résiliation), **abonnement plateforme coach Stripe** (essai campagne **075**, **résiliation / tuile moderne** **076**, **prérequis Checkout** gate nom/adresse, migrations **073**/**074**/**075**/**076**, page **Mon Abonnement** + facturation + modales offres), stack technique, **URL production https://mysportally.com**
 - **Utiliser pour :** Comprendre le projet, les features, les rôles, l'architecture globale
 - **Taille :** ~450 lignes
-- **Dernière mise à jour :** 20 mai 2026 (§4.4 résiliation plateforme coach ; précédent : essai non renouvelable…)
+- **Dernière mise à jour :** 9 juin 2026 (§4.4 prérequis Checkout **livré** ; précédent : résiliation plateforme…)
 
 ### **docs/CALENDAR_MONTH_VIEW.md**
 - **Contenu :** Récap **vue mois** (desktop) vs **vue semaine** (mobile), règles semaines ISO / mois civil étendu, **totaux hebdo** (liste sports `PERSISTED_WORKOUT_SPORT_TYPES`, `SPORT_WEEKLY_SUMMARY_BAR`), chargement données, liste des fichiers et tests unitaires, **tuiles disponibilité** (réf. design + `CalendarView`), liens vers maquettes archivées
@@ -30,13 +30,13 @@
 - **Contenu :** Tokens (couleurs, typo, espacements ; **sports** : `SPORT_CARD_STYLES`, `SPORT_BADGE_STYLES`, **`SPORT_WEEKLY_SUMMARY_BAR`** résumé hebdo), composants (Button, Input, Badge, TileCard, DashboardPageShell, **DashboardTopBar**, **AthleteAccountMenu**, **AthleteStatsVolumeChart**, **AthleteStatsChartSkeleton**, Modal, **MonthSelector**, **`CoachPlatformBillingAddressSection`** — titre sous-section sur la page + **`FORM_LABEL_CLASSES`**, etc.), guidelines UI, exemples de code, §7 breakpoints (**calendrier** mois étendu desktop + WeekSelector mobile, **tuiles disponibilité grille** : bandeau haut, `training-card`, typo alignée séance compacte, chat, Trouver mon coach, My offers)
 - **Utiliser pour :** Créer ou modifier des composants UI, choisir des couleurs, appliquer le design system, règles responsive par page
 - **Taille :** ~2010 lignes
-- **Dernière mise à jour :** 20 mai 2026 (**Mon abonnement coach** : essai non renouvelable `trialEligible` ; précédent : essai catalogue, tuiles offre…)
+- **Dernière mise à jour :** 9 juin 2026 (**prérequis Checkout** v1.44 — `CoachPlatformCheckoutPrerequisites*`, `CoachPlatformBillingAddressFields` ; précédent : essai non renouvelable…)
 
 ### **docs/I18N.md** ⭐
 - **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces (dont **`calendar.weekly.sportVolumeHint`**), utilisation dans composants et server actions, **checklist pour nouvelles features** (toujours penser bilingue) ; **`coachMsaSubscription`** (dont **`billingInfoTitle`**, **`billingAddress`**)
 - **Utiliser pour :** Toute nouvelle feature ou texte visible, ajout de clés de traduction, dépannage i18n
 - **Taille :** ~195 lignes
-- **Dernière mise à jour :** 20 mai 2026 (**`coachMsaSubscription`** essai + page abo ; **`coachMsaOffers.byPriceId`** `tagline`/`features` ; précédent : **`billingAddress`**…)
+- **Dernière mise à jour :** 9 juin 2026 (**`checkoutPrerequisites`** livré FR/EN ; précédent : essai + page abo…)
 
 ### **docs/AUTH_EMAIL_TEMPLATES.md**
 - **Contenu :** Guide de configuration des emails d’auth Supabase (sujet, i18n FR/EN, variables, dépannage logo). **Les fichiers HTML des templates** (Confirm signup, puis Magic Link, Reset Password, etc.) sont dans **docs/email-templates/**.
@@ -92,9 +92,9 @@
 - **Créé le :** 19 février 2026
 
 ### **docs/design-coach-platform-subscription/** (design feature — référence UI)
-- **Contenu :** Maquettes HTML et README d’index pour l’**abonnement plateforme coach** (page Mon Abonnement, Mes athlètes bloqué, modale Stripe, **carte abo actif / essai**, **défaut de paiement sans grâce**, **adresse de facturation** `MOCKUP_US_COACH_PLATFORM_BILLING_ADDRESS.html`) ; **README** inclut pointeurs d’implémentation (`coach-platform-subscription`, **`coachPlatformBillingAddressActions`**, **`lib/stripeCoachPlatformBillingAddress`**, libs Stripe incl. **`Customer.name`** profil, **`fetchCoachPlatformSubscriptionCardDetails`**, migration **074**). Maquette **grâce 3 j** → **`docs/archive/design-coach-platform-subscription-grace/`** (archivée).
-- **Utiliser pour :** Contexte UI historique ; le détail produit / technique à jour est dans **`Project_context.md`** §4.4 et **`DEPLOYMENT_NOTES.md`** (Stripe).
-- **Dernière mise à jour :** 20 mai 2026 (README design : US-MYSA-TRIAL-03/04 livrés, repli verify ; précédent : essai catalogue…)
+- **Contenu :** Maquettes HTML et README d’index pour l’**abonnement plateforme coach** (page Mon Abonnement, Mes athlètes bloqué, modale Stripe, **carte abo actif / essai**, **défaut de paiement sans grâce**, **adresse de facturation**, **prérequis Checkout** **`MOCKUP_US_MYSA_CHECKOUT_PREREQ_01…03`**) ; **README** inclut pointeurs d’implémentation (`coach-platform-subscription`, **`coachPlatformCheckoutPrerequisitesActions`**, **`coachPlatformBillingAddressActions`**, **`lib/coachPlatformCheckoutPrerequisites.ts`**, **`persistCoachPlatformStripeBillingForCoach`**, migrations **074**–**076**). Maquette **grâce 3 j** → **`docs/archive/design-coach-platform-subscription-grace/`** (archivée).
+- **Utiliser pour :** Contexte UI historique et référence livrée ; le détail produit / technique à jour est dans **`Project_context.md`** §4.4 et **`docs/DESIGN_SYSTEM.md`**.
+- **Dernière mise à jour :** 9 juin 2026 (US-MYSA-CHECKOUT-PREQ-01…03 **livré** ; précédent : Phase 2 Designer…)
 
 ### **docs/design-rpe-planned-intensity/** (design feature — non archivé)
 - **Contenu :** **DESIGN_RPE_PLANNED_INTENSITY.md** (solution validée, hypothèses, **US-RPE-01 à US-RPE-05**, critères d’acceptation, table RPE FR + proposition EN, composants, points ouverts) ; **SPEC_ARCHITECTE_RPE_PLANNED_INTENSITY.md** (migration `planned_intensity`, table des fichiers, `saveWorkoutStatusAndComment`, RLS, edge cases, tests manuels) ; **README.md** (index fichiers) ; maquettes HTML **MOCKUP_US1** … **US5** + **MOCKUP_OPTION_A_RPE_MODAL.html** (interactif) ; **MOCKUP_OPTION_B_RPE_INLINE.html** (option non retenue).
@@ -494,10 +494,23 @@
 
 **Fréquence de mise à jour :** À chaque ajout/suppression de documentation
 
-**Dernier scan :** 20 mai 2026  
-**Dernier nettoyage :** 20 mai 2026 (entrée Changements récents : résiliation abonnement plateforme coach)
+**Dernier scan :** 9 juin 2026  
+**Dernier nettoyage :** 9 juin 2026 (entrée Changements récents : prérequis Checkout — livraison code)
 
 ### Changements récents :
+
+✅ **9 juin 2026 – Abonnement plateforme coach (prérequis Checkout) – Mode Analyste (livraison + Reviewer Tech OK) :**
+- **Livraison (réf. code) :** **`lib/coachPlatformCheckoutPrerequisites.ts`** (+ tests) ; **`coachPlatformCheckoutPrerequisitesActions.ts`** (`loadCoachPlatformCheckoutPrerequisitesForCoach`, `saveCoachPlatformCheckoutPrerequisites`, `evaluateCoachPlatformCheckoutPrerequisitesForCoach`) ; **`persistCoachPlatformStripeBillingForCoach`** ; garde **`createCoachPlatformCheckoutSession`** ; composants **`CoachPlatformBillingAddressFields`**, **`CoachPlatformCheckoutPrerequisitesForm`**, **`CoachPlatformCheckoutPrerequisitesModal`** ; évolutions **`CoachPlatformSubscribeOffersModal`** (bascule contenu), **`CoachPlatformSubscriptionOffers`** (modale overlay), **`CoachPlatformBillingAddressSection`** ; i18n **`coachMsaSubscription.checkoutPrerequisites`**, **`coachPlatform.validation.checkoutPrerequisitesIncomplete`** (FR/EN).
+- **Doc :** `Project_context.md` §4.4, `docs/design-coach-platform-subscription/README.md`, `docs/DESIGN_SYSTEM.md` (v1.44), `docs/I18N.md`, `DOCS_INDEX.md`.
+- **Archivage :** aucun (maquettes **US-MYSA-CHECKOUT-PREQ-*** conservées comme référence livrée).
+- **Pages légales / confidentialité :** aucune modification (même finalités identité / facturation ; pas de nouvelle finalité).
+
+✅ **9 juin 2026 – Abonnement plateforme coach (prérequis Checkout) – Mode Analyste (design Phase 2, pas de livraison code) :**
+- **Design validé PO :** **US-MYSA-CHECKOUT-PREQ-01…03** — avant redirect Stripe, prénom + nom + adresse facturation Canada obligatoires ; **modale offres** = bascule contenu (`CoachPlatformSubscribeOffersModal`) ; **page Mon Abonnement** = modale dédiée (`md`) ; formulaire commun (tous champs visibles, pré-remplissage) ; maquettes **`MOCKUP_US_MYSA_CHECKOUT_PREREQ_01_MODAL_SWAP.html`**, **`02_SUB_PAGE_MODAL.html`**, **`03_FORM.html`**.
+- **Doc :** `docs/design-coach-platform-subscription/README.md`, `Project_context.md` §4.4 (mention *à implémenter*), `docs/DESIGN_SYSTEM.md` (v1.43 — spec composants), `docs/I18N.md` (namespace prévu **`checkoutPrerequisites`**), `DOCS_INDEX.md`.
+- **Archivage :** aucun.
+- **Pages légales / confidentialité :** aucune modification proposée (collecte identité / adresse déjà couverte par profil et facturation Stripe ; pas de nouvelle finalité sans validation PO).
+- **Suite pipeline :** **Architecte** → **Développeur** → **Reviewer Tech** → mise à jour doc post-implémentation.
 
 ✅ **20 mai 2026 – Abonnement plateforme coach (résiliation + tuile moderne) – Mode Analyste :**
 - **Livraison (réf. code) :** migration **`076_coach_platform_subscription_cancel_mirror.sql`** ; **`lib/coachPlatformSubscriptionSync.ts`**, **`lib/stripeCoachPlatformCancellation.ts`**, **`lib/coachPlatformSubscriptionDisplay.ts`** ; **`coachPlatformCancellationActions.ts`** ; composants **`CoachPlatformCurrentOfferCard`**, **`CoachPlatformManageSubscriptionFlow`**, **`CoachPlatformSubscriptionStatusSection`**, **`CoachPlatformUnpaidSubscriptionBanner`** ; page **`coach-platform-subscription/page.tsx`** ; i18n **`coachMsaSubscription.cancellation`**, **`currentOfferCard`** (FR/EN).

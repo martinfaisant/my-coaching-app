@@ -10,10 +10,8 @@ import { isCanadianProvinceCode } from '@/lib/canadianProvinces'
 import type { CoachBillingAddressFields } from '@/lib/stripeCoachPlatformBillingAddress'
 import {
   fetchCoachBillingAddressFromStripe,
-  resolveOrCreateCoachPlatformStripeCustomerId,
-  updateStripeCustomerBillingAddress,
+  persistCoachPlatformStripeBillingForCoach,
 } from '@/lib/stripeCoachPlatformBillingAddress'
-import { formatCoachPlatformStripeCustomerName } from '@/lib/stripeCoachPlatformCustomer'
 
 export type CoachBillingAddressFormState = {
   error?: string
@@ -92,11 +90,9 @@ export async function saveCoachPlatformBillingAddress(
   }
 
   const existingRow = (platformRow ?? null) as CoachPlatformSubscription | null
-
   const admin = createAdminClient()
-  const displayNameForStripe = formatCoachPlatformStripeCustomerName(profile.first_name, profile.last_name)
 
-  const resolved = await resolveOrCreateCoachPlatformStripeCustomerId({
+  const persist = await persistCoachPlatformStripeBillingForCoach({
     stripe,
     supabaseUser: supabase,
     admin,
@@ -104,28 +100,27 @@ export async function saveCoachPlatformBillingAddress(
     email: profile.email,
     locale,
     existingRow,
-    displayNameForStripe,
+    firstName: profile.first_name,
+    lastName: profile.last_name,
+    billingBody: {
+      line1,
+      line2,
+      city,
+      postalCode,
+      provinceCode: provinceRaw,
+    },
   })
 
-  if (!resolved.ok) {
-    if (resolved.reason === 'missing_email') {
+  if (!persist.ok) {
+    if (persist.reason === 'missing_email') {
       return { error: tVal('missingEmail') }
     }
-    if (resolved.reason === 'persist_failed') {
+    if (persist.reason === 'persist_failed') {
       return { error: t('errors.persistFailed') }
     }
-    return { error: t('errors.stripeCustomerFailed') }
-  }
-
-  const updated = await updateStripeCustomerBillingAddress(stripe, resolved.customerId, {
-    line1,
-    line2,
-    city,
-    postalCode,
-    provinceCode: provinceRaw,
-  })
-
-  if (!updated.ok) {
+    if (persist.reason === 'stripe_customer_failed') {
+      return { error: t('errors.stripeCustomerFailed') }
+    }
     return { error: t('errors.saveFailed') }
   }
 

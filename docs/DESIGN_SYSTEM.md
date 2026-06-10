@@ -1,7 +1,7 @@
 # 🎨 Design System
 
-**Version :** 1.42  
-**Dernière mise à jour :** 20 mai 2026 (**Mon abonnement coach** : essai **non renouvelable** par campagne (`trialEligible`, masquage silencieux) ; précédent : v1.40 essai catalogue + tuiles…)
+**Version :** 1.44  
+**Dernière mise à jour :** 9 juin 2026 (**prérequis Checkout** coach livré — US-MYSA-CHECKOUT-PREQ-01…03 ; précédent : v1.43 spec design…)
 
 ---
 
@@ -34,11 +34,14 @@
    - [CoachAthleteNoteModal](#coachathletenotemodal)
    - [CoachPlatformSubscriptionOffers](#coachplatformsubscriptionoffers)
    - [CoachPlatformBillingAddressSection](#coachplatformbillingaddresssection)
+   - [CoachPlatformBillingAddressFields](#coachplatformbillingaddressfields)
    - [CoachPlatformOfferGrid](#coachplatformoffergrid)
    - [CoachPlatformCurrentOfferCard](#coachplatformcurrentoffercard)
    - [CoachPlatformSubscriptionStatusSection](#coachplatformsubscriptionstatussection)
    - [CoachPlatformUnpaidSubscriptionBanner](#coachplatformunpaidsubscriptionbanner)
    - [CoachPlatformSubscribeOffersModal](#coachplatformsubscribeoffersmodal)
+   - [CoachPlatformCheckoutPrerequisitesForm](#coachplatformcheckoutprerequisitesform)
+   - [CoachPlatformCheckoutPrerequisitesModal](#coachplatformcheckoutprerequisitesmodal)
    - [DashboardPageShell](#dashboardpageshell)
    - [DashboardTopBar](#dashboardtopbar)
   - [AthleteAccountMenu](#athleteaccountmenu)
@@ -1467,6 +1470,8 @@ Statuts **`past_due` / `unpaid`** : carte `palette-danger-light`, CTA **`getCoac
 
 **`Modal`** taille **`3xl`** : chargement catalogue (**`loadCoachPlatformCatalogForCoach`** → **`subscriptionTrialDays`** + **`trialEligible`**), erreur catalogue, liste vide, puis **`CoachPlatformOfferGrid`**. Intro optionnelle (`introSlot`, ex. demande en attente). Fermeture / overlay / Escape désactivés pendant redirection. i18n : **`coachMsaOffers`**.
 
+**Prérequis Checkout (US-MYSA-CHECKOUT-PREQ-01) :** après clic **Souscrire**, si prénom, nom ou adresse facturation incomplets, **bascule du corps** vers **`CoachPlatformCheckoutPrerequisitesForm`** (titre **`checkoutPrerequisites.modalTitle`**), **`pendingPriceId`** mémorisé ; **Retour aux offres** restaure la grille ; **Enregistrer et continuer** → save + redirect Stripe. Si prérequis déjà complets : redirect direct.
+
 #### Props
 
 | Prop | Type | Description |
@@ -1474,6 +1479,30 @@ Statuts **`past_due` / `unpaid`** : carte `palette-danger-light`, CTA **`getCoac
 | `isOpen` | `boolean` | |
 | `onClose` | `() => void` | |
 | `introSlot` | `React.ReactNode` | Contexte au-dessus de la grille (optionnel) |
+
+---
+
+### CoachPlatformBillingAddressFields
+
+**Fichier :** `components/CoachPlatformBillingAddressFields.tsx`
+
+Bloc réutilisable des champs adresse facturation Canada (lignes 1–2, CP, ville, province, pays fixe). Utilisé par **`CoachPlatformBillingAddressSection`** (mode édition) et **`CoachPlatformCheckoutPrerequisitesForm`**. Props : `idPrefix`, `values`, `onChange`, `disabled`, `useFormNames` (noms `billing_*` pour FormData), **`provinceOnSeparateRow`** (modales prérequis Checkout : CP + ville sur une ligne, province en pleine largeur en dessous — évite le scroll horizontal).
+
+---
+
+### CoachPlatformCheckoutPrerequisitesForm
+
+**Fichier :** `components/CoachPlatformCheckoutPrerequisitesForm.tsx`
+
+Formulaire **client** partagé (**US-MYSA-CHECKOUT-PREQ-03**) : prénom, nom (`profile.*`), adresse via **`CoachPlatformBillingAddressFields`**. Pré-remplissage depuis snapshot serveur. États : erreur save/checkout, `billingLoadError` + retry. Helper **`getCoachPlatformCheckoutPrerequisitesFormPayload`**. i18n : **`coachMsaSubscription.checkoutPrerequisites`** + **`billingAddress.*`**.
+
+---
+
+### CoachPlatformCheckoutPrerequisitesModal
+
+**Fichier :** `components/CoachPlatformCheckoutPrerequisitesModal.tsx`
+
+**`Modal`** **`md`** sur **`/dashboard/coach-platform-subscription`** (**US-MYSA-CHECKOUT-PREQ-02**) : **`CoachPlatformCheckoutPrerequisitesForm`** + footer **Annuler** / **Enregistrer et continuer**. Ouvert par **`CoachPlatformSubscriptionOffers`**.
 
 ---
 
@@ -2103,8 +2132,8 @@ Actuellement, utiliser un span custom :
 
 - **Tokens couleurs** : `tailwind.config.ts`, `app/globals.css`
 - **Styles formulaires** : `lib/formStyles.ts` (FORM_BASE_CLASSES, FORM_INPUT_TEXT_SIZE, FORM_INPUT_HEIGHT, etc.)
-- **Composants** : `components/Button.tsx`, `components/Input.tsx`, `components/PasswordInput.tsx`, `components/SearchInput.tsx`, `components/Textarea.tsx`, `components/Badge.tsx`, `components/Avatar.tsx`, `components/AvatarImage.tsx`, `components/SportTileSelectable.tsx`, `components/ActivityTile.tsx`, `components/Modal.tsx`, `components/CoachReviewsModal.tsx`, `components/workout-modal/WorkoutFacilityHoursStrip.tsx`, `components/workout-modal/WorkoutTargetActualCards.tsx`, `components/workout-modal/WorkoutFeedbackSummary.tsx`, `components/workout-modal/WorkoutFeedbackSection.tsx`, `components/AthleteFacilityDetails.tsx`, `components/CoachAthleteNotesSection.tsx`, `components/CoachAthleteNoteModal.tsx`, `components/DashboardPageShell.tsx`, `components/DashboardTopBar.tsx`, `components/AthleteAccountMenu.tsx`, `components/CoachAccountMenu.tsx`, `components/ContactForm.tsx`, `components/Drawer.tsx`, `components/PublicOrDashboardHeader.tsx`, `components/PublicHeader.tsx`, `components/EmailValidatedModal.tsx`, `components/HomeEmailConfirmedTrigger.tsx`, `components/Dropdown.tsx`, `components/Segments.tsx`, `components/DatePickerPopup.tsx`, `components/MonthSelector.tsx`, `components/CalendarView.tsx`, `components/CalendarViewWithNavigation.tsx`, `lib/calendarViewDayHeights.ts`, `components/AvailabilityModal.tsx`, `components/AvailabilityDetailModal.tsx`, `components/ChatAthleteListItem.tsx`, `components/ChatConversationSidebar.tsx`, `components/CoachPlatformSubscriptionOffers.tsx`, `components/CoachPlatformBillingAddressSection.tsx`, `components/CoachPlatformOfferGrid.tsx`, `components/CoachPlatformSubscribeOffersModal.tsx`, **`components/CoachPlatformCurrentOfferCard.tsx`**, **`components/CoachPlatformManageSubscriptionFlow.tsx`**, **`components/CoachPlatformSubscriptionStatusSection.tsx`**, **`components/CoachPlatformUnpaidSubscriptionBanner.tsx`**
-- **Page Mon Abonnement MySportAlly (coach)** : `app/[locale]/dashboard/coach-platform-subscription/page.tsx`, `loading.tsx`, **`coachPlatformBillingAddressActions.ts`**, **`coachPlatformCancellationActions.ts`** ; libs **`lib/stripeCoachPlatformCatalog.ts`**, **`lib/coachPlatformSubscriptionTrial.ts`**, **`lib/coachPlatformTrialEligibility.ts`**, **`lib/stripeCoachPlatformBillingHistory.ts`**, **`lib/stripeCoachPlatformBillingAddress.ts`**, **`lib/stripeCoachPlatformCancellation.ts`**, **`lib/coachPlatformSubscriptionSync.ts`**, **`lib/coachPlatformSubscriptionDisplay.ts`**, **`lib/formatMoney.ts`**, **`lib/stripeCoachPlatformCustomer.ts`**, **`lib/coachPlatformCheckoutReturnPath.ts`**, **`lib/coachMsaOfferDisplay.ts`** ; migrations **`075`**, **`076`**
+- **Composants** : `components/Button.tsx`, `components/Input.tsx`, `components/PasswordInput.tsx`, `components/SearchInput.tsx`, `components/Textarea.tsx`, `components/Badge.tsx`, `components/Avatar.tsx`, `components/AvatarImage.tsx`, `components/SportTileSelectable.tsx`, `components/ActivityTile.tsx`, `components/Modal.tsx`, `components/CoachReviewsModal.tsx`, `components/workout-modal/WorkoutFacilityHoursStrip.tsx`, `components/workout-modal/WorkoutTargetActualCards.tsx`, `components/workout-modal/WorkoutFeedbackSummary.tsx`, `components/workout-modal/WorkoutFeedbackSection.tsx`, `components/AthleteFacilityDetails.tsx`, `components/CoachAthleteNotesSection.tsx`, `components/CoachAthleteNoteModal.tsx`, `components/DashboardPageShell.tsx`, `components/DashboardTopBar.tsx`, `components/AthleteAccountMenu.tsx`, `components/CoachAccountMenu.tsx`, `components/ContactForm.tsx`, `components/Drawer.tsx`, `components/PublicOrDashboardHeader.tsx`, `components/PublicHeader.tsx`, `components/EmailValidatedModal.tsx`, `components/HomeEmailConfirmedTrigger.tsx`, `components/Dropdown.tsx`, `components/Segments.tsx`, `components/DatePickerPopup.tsx`, `components/MonthSelector.tsx`, `components/CalendarView.tsx`, `components/CalendarViewWithNavigation.tsx`, `lib/calendarViewDayHeights.ts`, `components/AvailabilityModal.tsx`, `components/AvailabilityDetailModal.tsx`, `components/ChatAthleteListItem.tsx`, `components/ChatConversationSidebar.tsx`, `components/CoachPlatformSubscriptionOffers.tsx`, `components/CoachPlatformBillingAddressSection.tsx`, **`components/CoachPlatformBillingAddressFields.tsx`**, **`components/CoachPlatformCheckoutPrerequisitesForm.tsx`**, **`components/CoachPlatformCheckoutPrerequisitesModal.tsx`**, `components/CoachPlatformOfferGrid.tsx`, `components/CoachPlatformSubscribeOffersModal.tsx`, **`components/CoachPlatformCurrentOfferCard.tsx`**, **`components/CoachPlatformManageSubscriptionFlow.tsx`**, **`components/CoachPlatformSubscriptionStatusSection.tsx`**, **`components/CoachPlatformUnpaidSubscriptionBanner.tsx`**
+- **Page Mon Abonnement MySportAlly (coach)** : `app/[locale]/dashboard/coach-platform-subscription/page.tsx`, `loading.tsx`, **`coachPlatformBillingAddressActions.ts`**, **`coachPlatformCheckoutPrerequisitesActions.ts`**, **`coachPlatformCancellationActions.ts`** ; libs **`lib/coachPlatformCheckoutPrerequisites.ts`**, **`lib/stripeCoachPlatformCatalog.ts`**, **`lib/coachPlatformSubscriptionTrial.ts`**, **`lib/coachPlatformTrialEligibility.ts`**, **`lib/stripeCoachPlatformBillingHistory.ts`**, **`lib/stripeCoachPlatformBillingAddress.ts`**, **`lib/stripeCoachPlatformCancellation.ts`**, **`lib/coachPlatformSubscriptionSync.ts`**, **`lib/coachPlatformSubscriptionDisplay.ts`**, **`lib/formatMoney.ts`**, **`lib/stripeCoachPlatformCustomer.ts`**, **`lib/coachPlatformCheckoutReturnPath.ts`**, **`lib/coachMsaOfferDisplay.ts`** ; migrations **`075`**, **`076`**
 - **Page Mes athlètes (coach)** : `app/[locale]/dashboard/athletes/page.tsx` (bandeaux profil / offre publiée, erreur chargement liste), `components/CoachPlatformStripeBanner.tsx`, `components/CoachPlatformCheckoutVerification.tsx`, `CoachAthletesListWithFilter.tsx`, `PendingRequestTile.tsx` ; actions Checkout **`app/[locale]/dashboard/athletes/coachPlatformActions.ts`**
 - **Sports** : `lib/sportStyles.ts` (`SPORT_CARD_STYLES`, `SPORT_BADGE_STYLES`, **`SPORT_WEEKLY_SUMMARY_BAR`**, `SPORT_ICONS`, `SPORT_TRANSLATION_KEYS`), `lib/sportsRegistry.ts` (`PERSISTED_WORKOUT_SPORT_TYPES`, `workoutIsTimeOnlySport`), `lib/sportsOptions.ts`, `components/SportIcons.tsx`
 - **Stats athlète (Nivo)** : `lib/athleteStatsNivoTheme.ts`, `lib/athleteStatsColors.ts`, `components/athlete/AthleteStatsVolumeChart.tsx`

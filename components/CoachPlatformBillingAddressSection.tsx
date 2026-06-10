@@ -4,9 +4,7 @@ import { useActionState, useCallback, useEffect, useMemo, useRef, useState } fro
 import { useRouter } from 'next/navigation'
 import { useLocale, useTranslations } from 'next-intl'
 import { Button } from '@/components/Button'
-import { Input } from '@/components/Input'
-import { Dropdown, type DropdownOption } from '@/components/Dropdown'
-import { CANADIAN_PROVINCE_CODES } from '@/lib/canadianProvinces'
+import { CoachPlatformBillingAddressFields } from '@/components/CoachPlatformBillingAddressFields'
 import type { CoachBillingAddressFields } from '@/lib/stripeCoachPlatformBillingAddress'
 import {
   saveCoachPlatformBillingAddress,
@@ -78,15 +76,6 @@ export function CoachPlatformBillingAddressSection({ initialFields, loadError }:
     setProvince(normalizedServer.provinceCode)
     setSavedSnapshot({ ...normalizedServer })
   }
-
-  const provinceOptions: DropdownOption[] = useMemo(() => {
-    const placeholder: DropdownOption = { value: '', label: t('provincePlaceholder') }
-    const opts = [...CANADIAN_PROVINCE_CODES].map((code) => ({
-      value: code,
-      label: t(`provinces.${code}`),
-    }))
-    return [placeholder, ...opts]
-  }, [t])
 
   const syncFromProps = useCallback((f: CoachBillingAddressFields | null) => {
     const next = normalizeBillingFields(f)
@@ -176,49 +165,21 @@ export function CoachPlatformBillingAddressSection({ initialFields, loadError }:
       <div className="border border-stone-100 bg-white rounded-2xl p-4">
         <form action={formAction} className="space-y-5" aria-labelledby="coach-billing-address-subheading">
           <input type="hidden" name="_locale" value={locale} readOnly />
-          <input type="hidden" name="billing_province" value={province} readOnly />
 
           {state?.error ? <p className="text-sm text-palette-danger">{state.error}</p> : null}
 
-          <div className="space-y-3">
-            <Input
-              label={t('line1')}
-              name="billing_line1"
-              value={line1}
-              onChange={(e) => setLine1(e.target.value)}
-              required
-            />
-            <Input
-              label={t('line2Optional')}
-              name="billing_line2"
-              value={line2}
-              onChange={(e) => setLine2(e.target.value)}
-            />
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <Input
-              label={t('postalCode')}
-              name="billing_postal_code"
-              value={postalCode}
-              onChange={(e) => setPostalCode(e.target.value)}
-              required
-            />
-            <Input label={t('city')} name="billing_city" value={city} onChange={(e) => setCity(e.target.value)} required />
-            <Dropdown
-              id="billing-province"
-              label={t('province')}
-              options={provinceOptions}
-              value={province}
-              onChange={(v) => setProvince(v)}
-              ariaLabel={t('province')}
-            />
-          </div>
-
-          <div>
-            <p className="block text-sm font-medium text-stone-700 mb-1">{t('country')}</p>
-            <p className="rounded-lg border border-stone-200 bg-stone-50 px-3 py-2.5 text-sm text-stone-700">{t('countryDisplay')}</p>
-          </div>
+          <CoachPlatformBillingAddressFields
+            idPrefix="coach-billing"
+            values={curDraft}
+            onChange={(next) => {
+              setLine1(next.line1)
+              setLine2(next.line2)
+              setCity(next.city)
+              setPostalCode(next.postalCode)
+              setProvince(next.provinceCode)
+            }}
+            useFormNames
+          />
 
           <div className="flex items-center justify-end gap-3 pt-2 border-t border-stone-100">
             <Button type="button" variant="muted" onClick={cancelEdit}>
