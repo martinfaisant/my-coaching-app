@@ -22,7 +22,6 @@ export default async function CoachSubscriptionsPage({ params }: { params: Promi
     redirect('/dashboard')
   }
 
-  const t = await getTranslations({ locale, namespace: 'coachSubscriptions' })
   const supabase = await createClient()
 
   const [activeAndScheduledResult, historyResult] = await Promise.all([
@@ -40,7 +39,6 @@ export default async function CoachSubscriptionsPage({ params }: { params: Promi
       .order('end_date', { ascending: false }),
   ])
 
-  const now = new Date()
   const allActiveAndScheduled = activeAndScheduledResult.data ?? []
   const activeRows = allActiveAndScheduled.filter((s) => s.status === 'active')
   const cancellationScheduledRows = allActiveAndScheduled.filter((s) => s.status === 'cancellation_scheduled')

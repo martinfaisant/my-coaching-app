@@ -11,7 +11,7 @@ My Sport Ally est une marketplace + plateforme de coaching permettant aux athlè
 - Communiquer avec leur coach via messagerie intégrée
 - Synchroniser leurs activités Strava
 
-Les **visiteurs et utilisateurs** peuvent contacter le support via la page publique **Contact** (`/contact`), avec accusé de réception (référence MSA) et notification e-mail côté équipe (voir variables Resend ci-dessous).
+Les **visiteurs et utilisateurs** peuvent contacter le support via la page publique **Contact** (`/contact`), avec accusé de réception (référence MSA) et notification e-mail côté équipe (voir variables Resend ci-dessous). Les utilisateurs **connectés** qui ouvrent l’accueil marketing **`/`** ou **`/en`** sont **redirigés** vers la page d’entrée du tableau de bord selon leur rôle (détail : **Project_context.md** §4.0, code **`lib/dashboardEntryPath.ts`**).
 
 ## 🚀 Quick Start
 
@@ -60,6 +60,22 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000  # en production : https://mysportally
 # Cron Vercel : clôture des souscriptions à échéance (route /api/cron/process-expired-subscriptions)
 # Générer une valeur aléatoire ; même valeur dans Vercel (CRON_SECRET) pour les invocations planifiées.
 CRON_SECRET=votre_secret_aleatoire
+
+# Stripe — abonnement plateforme coach (Checkout + webhooks)
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+# Price ID(s) du produit d’abonnement coach (Dashboard Stripe → Produit → Prix récurrent). Un seul ID ou plusieurs séparés par des virgules ou des espaces.
+STRIPE_COACH_PLATFORM_PRICE_ID=price_...
+# Optionnel : plusieurs prix (ex. mensuel + annuel). Si défini, remplace la lecture d’un seul ID pour la vitrine « Mon Abonnement ».
+# STRIPE_COACH_PLATFORM_PRICE_IDS=price_xxx,price_yyy
+# Optionnel : essai gratuit sur les nouvelles souscriptions (nombre de jours, ex. 90). 0 ou absent = pas d’essai. Un coach ne peut bénéficier qu’une fois par campagne (table coach_platform_trial_consumptions, migration 075 ; enregistrement webhook + retour Checkout verify). Retirer la campagne : mettre TRIAL_DAYS à 0 puis redéployer.
+# COACH_PLATFORM_SUBSCRIPTION_TRIAL_DAYS=90
+# Optionnel : identifiant stable de la campagne essai (ex. launch-2026-v1). Si absent alors que TRIAL_DAYS > 0, fallback `platform-default`.
+# COACH_PLATFORM_SUBSCRIPTION_TRIAL_CAMPAIGN_ID=launch-2026-v1
+# Libellés FR/EN des cartes (page + modale avant Checkout) : `messages/fr.json` & `en.json` → `coachMsaOffers.byPriceId` (une entrée par `price_…` : `title`, `description`, optionnel `tagline`, `features[]` ; repli sur nom/description Stripe). Page Mon abonnement : tuile abo + Gérer (résiliation) si `active`/`trialing` ; bannière impayé si `past_due`/`unpaid` ; grille offres masquée tant que l’abo est géré ou impayé.
+# URL publique de l’app (repli si l’hôte de la requête n’est pas autorisé pour Stripe Checkout) : NEXT_PUBLIC_SITE_URL ou, à défaut, NEXT_PUBLIC_APP_URL. En preview Vercel, les success/cancel URL utilisent l’hôte courant (*.vercel.app) lorsque les en-têtes le permettent — voir `lib/checkoutReturnOrigin.ts`.
+# Comportement Checkout : `ensureCoachPlatformStripeCustomerForCheckout` (`lib/stripeCoachPlatformCustomer.ts`) résout ou crée le Customer `cus_…` (base → liste Stripe par e-mail + `metadata.coach_id` → création), met à jour `preferred_locales` selon la locale du portail (`/fr` / `/en`) et `Customer.name` à partir du prénom/nom profil (`formatCoachPlatformStripeCustomerName`), puis ouvre Checkout avec `customer` + `locale` de session. Après sauvegarde Mon profil, un coach avec `stripe_customer_id` déclenche `syncCoachPlatformStripeCustomerNameIfPresent` (sans bloquer le save si Stripe échoue). E-mail profil coach obligatoire.
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ```
 
 ### Resend (formulaire contact)
@@ -276,6 +292,6 @@ Pour toute question sur l'architecture ou les conventions, consulter :
 
 ---
 
-**Dernière mise à jour :** 5 mai 2026  
+**Dernière mise à jour :** 13 mai 2026 (Stripe coach : **`Customer.name`** + doc Analyste ; précédent : 5 mai 2026)  
 **Version :** 1.0.0  
 **License :** MIT

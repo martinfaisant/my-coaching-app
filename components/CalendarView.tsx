@@ -299,20 +299,6 @@ type CalendarViewProps = {
   civilMonth?: { year: number; month: number }
 }
 
-/** Icône cible avec badge 1 (objectif principal) ou 2 (secondaire). */
-function GoalTargetBadge({ isPrimary, title }: { isPrimary: boolean; title: string }) {
-  return (
-    <span className="inline-flex items-center justify-center shrink-0" title={title}>
-      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-palette-forest-dark">
-        <circle cx="12" cy="12" r="10" />
-        <circle cx="12" cy="12" r="6" />
-        <circle cx="12" cy="12" r="2" />
-      </svg>
-      <span className="ml-0.5 text-[10px] font-bold text-palette-forest-dark leading-none">{isPrimary ? '1' : '2'}</span>
-    </span>
-  )
-}
-
 const EMPTY_FAIT: WeekFaitBySport = {
   course: { minutes: 0, distanceKm: 0 },
   trail: { minutes: 0, distanceKm: 0 },
@@ -343,7 +329,7 @@ export function CalendarView({
   athleteView = false,
   pathToRevalidate,
   referenceMonday,
-  onNavigate,
+  onNavigate: _onNavigate,
   onWorkoutSaved,
   availabilities = [],
   onAvailabilitySaved,
@@ -449,7 +435,7 @@ export function CalendarView({
     days: CalendarDayCell[]
   }
 
-  const { startMonday, weeks } = useMemo(() => {
+  const { weeks } = useMemo(() => {
     const today = new Date()
     const getMonthName = (monthIndex: number): string => {
       const date = new Date(2000, monthIndex, 1)
@@ -508,7 +494,6 @@ export function CalendarView({
     if (calendarLayout === 'month' && civilMonth != null) {
       const { weekStartDates } = getExtendedCalendarMonthGridBounds(civilMonth.year, civilMonth.month)
       const weeksOut: CalendarWeekRow[] = []
-      const gridStartMonday = new Date(weekStartDates[0]! + 'T12:00:00')
       for (let wi = 0; wi < weekStartDates.length; wi++) {
         const weekStart = new Date(weekStartDates[wi]! + 'T12:00:00')
         const weekMonday = getWeekMonday(weekStart)
@@ -526,7 +511,7 @@ export function CalendarView({
           days: buildDays(weekStart, civilMonth),
         })
       }
-      return { startMonday: gridStartMonday, weeks: weeksOut }
+      return { weeks: weeksOut }
     }
 
     const baseMonday = referenceMonday ? getWeekMonday(referenceMonday) : getWeekMonday(today)
@@ -567,7 +552,7 @@ export function CalendarView({
       })
     }
 
-    return { startMonday, weeks }
+    return { weeks }
   }, [referenceMonday, locale, localeTag, tCalendar, calendarLayout, civilMonth])
 
   const workoutsByDate = useMemo(() => {
@@ -684,24 +669,6 @@ export function CalendarView({
 
   /** Totaux "fait" par semaine (depuis imported_activity_weekly_totals). */
   const weekFaitBySport = useMemo((): WeekFaitBySport[] => {
-    const empty = (): WeekFaitBySport => ({
-      course: { minutes: 0, distanceKm: 0 },
-      trail: { minutes: 0, distanceKm: 0 },
-      velo: { minutes: 0, distanceKm: 0 },
-      natation: { minutes: 0, distanceKm: 0 },
-      musculation: { minutes: 0, distanceKm: 0 },
-      nordic_ski: { minutes: 0, distanceKm: 0 },
-      backcountry_ski: { minutes: 0, distanceKm: 0 },
-      ice_skating: { minutes: 0, distanceKm: 0 },
-      randonnee: { minutes: 0, distanceKm: 0 },
-      triathlon: { minutes: 0, distanceKm: 0 },
-      escalade: { minutes: 0, distanceKm: 0 },
-      meditation: { minutes: 0, distanceKm: 0 },
-      canot: { minutes: 0, distanceKm: 0 },
-      surf: { minutes: 0, distanceKm: 0 },
-      golf: { minutes: 0, distanceKm: 0 },
-      yoga: { minutes: 0, distanceKm: 0 },
-    })
     if (weeks.length === 0) return []
     return weeks.map((week) => {
       const weekStartDate = new Date(week.days[0]!.dateStr + 'T12:00:00')
@@ -797,7 +764,7 @@ export function CalendarView({
     return `${String(h).padStart(2, '0')}h${String(m).padStart(2, '0')}`
   }
 
-  /** Tuile disponibilité / indisponibilité (option D : bordure fine, fond blanc transparent, icône calendrier). */
+  /** Tuile disponibilité / indisponibilité : bandeau haut (épaisseur type tuile séance `border-l-4`), alignement typo sur séance compacte + description. */
   const renderAvailabilityTile = (
     slot: AthleteAvailabilitySlot,
     dateStr: string,
@@ -805,41 +772,54 @@ export function CalendarView({
     onTileClick?: (s: AthleteAvailabilitySlot, d: string) => void
   ) => {
     const isAvailable = slot.type === 'available'
-    const borderClass = isAvailable ? 'border-palette-forest-dark/40' : 'border-orange-500/40'
-    const iconBgClass = isAvailable ? 'text-palette-forest-dark' : 'text-orange-600'
+    const accentBarClass = isAvailable ? 'bg-palette-forest-dark' : 'bg-orange-500'
+    const badgeClass = isAvailable
+      ? 'text-palette-forest-dark bg-palette-forest-dark/15'
+      : 'text-orange-600 bg-orange-500/15'
     const label = isAvailable ? tAvailability('available') : tAvailability('unavailable')
     const startTime = slot.start_time ?? null
     const endTime = slot.end_time ?? null
     const hasTime = startTime != null && endTime != null
     const timeRange = hasTime && startTime && endTime ? `${formatTimeDisplay(startTime)} – ${formatTimeDisplay(endTime)}` : null
     const note = slot.note?.trim() || null
-    const className = compact
-      ? 'rounded-lg border bg-white/90 shadow-sm p-1.5 cursor-pointer hover:shadow-md transition-shadow'
-      : 'rounded-2xl border bg-white/90 shadow-sm p-2 cursor-pointer hover:shadow-md transition-shadow'
+    /** Même rayon que `renderCompactCard` (`rounded`), pas `rounded-lg`, pour cohérence visuelle avec les séances. */
+    const rounded = compact ? 'rounded' : 'rounded-2xl'
+    const accentTopRounded = compact ? 'rounded-t' : 'rounded-t-2xl'
+    const bodyPad = compact ? 'p-1.5' : 'p-2'
     return (
       <div
         key={slot.id}
-        className={`${className} ${borderClass}`}
+        className={`training-card overflow-hidden border border-stone-100 bg-white shadow-sm ${rounded} cursor-pointer`}
         role="button"
         onClick={(e) => { e.stopPropagation(); onTileClick?.(slot, dateStr) }}
         tabIndex={0}
         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onTileClick?.(slot, dateStr) } }}
       >
-        <div className="flex items-center gap-1.5 mb-0.5">
-          <span className={`inline-flex items-center justify-center w-5 h-5 rounded text-[10px] shrink-0 ${iconBgClass}`} aria-hidden>
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-          </span>
-          <span className={`font-semibold text-xs ${isAvailable ? 'text-palette-forest-dark' : 'text-orange-700'}`}>{label}</span>
-        </div>
-        {timeRange && (
-          <div className="text-[10px] text-stone-600 flex items-center gap-1">
-            <ClockIcon className="w-3.5 h-3.5 text-stone-400 shrink-0" />
-            <span>{timeRange}</span>
+        <div className={`h-1 w-full shrink-0 ${accentBarClass} ${accentTopRounded}`} aria-hidden />
+        <div className={bodyPad}>
+          <div className="flex items-start gap-1">
+            <span
+              className={`inline-flex items-center justify-center px-1.5 py-0.5 rounded shrink-0 ${badgeClass}`}
+              aria-hidden
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-2.5 w-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </span>
+            <span className="text-xs font-bold text-stone-900 leading-tight flex-1 min-w-0 break-words">{label}</span>
           </div>
-        )}
-        {note && <p className="text-[10px] text-stone-500 mt-0.5 line-clamp-1">{note}</p>}
+          {timeRange && (
+            <div className="flex items-center gap-1 flex-wrap text-[10px] text-stone-500 font-semibold mt-1">
+              <div className="flex items-center gap-1">
+                <ClockIcon className="h-3 w-3 text-stone-400 shrink-0" />
+                <span>{timeRange}</span>
+              </div>
+            </div>
+          )}
+          {note && (
+            <p className="text-xs text-stone-500 leading-snug mt-1 line-clamp-2">{note}</p>
+          )}
+        </div>
       </div>
     )
   }
@@ -862,7 +842,7 @@ export function CalendarView({
           e.stopPropagation()
           openWorkout(dateStr, w)
         }}
-        className={`bg-white rounded border-l-4 ${style.borderLeft} shadow-sm p-1.5 h-full flex flex-col justify-between cursor-pointer ${canEdit ? 'training-card' : 'hover:shadow-md transition-shadow'}`}
+        className={`bg-white rounded border-l-4 ${style.borderLeft} shadow-sm p-1 h-full flex flex-col justify-between cursor-pointer ${canEdit ? 'training-card' : 'hover:shadow-md transition-shadow'}`}
         role="button"
       >
         <div>
@@ -870,7 +850,7 @@ export function CalendarView({
             <span className={`inline-flex items-center ${style.badge} ${style.badgeBg} px-1 py-0.5 rounded shrink-0`}>
               <SportIcon className="w-2.5 h-2.5" />
             </span>
-            <span className="text-sm font-bold text-stone-700 leading-tight flex-1 min-w-0 break-words">{w.title}</span>
+            <span className="text-xs font-bold text-stone-900 leading-tight flex-1 min-w-0 break-words">{w.title}</span>
           </div>
         </div>
         <div className="flex items-center gap-1 flex-wrap text-[10px] text-stone-500 font-semibold mt-1">
@@ -970,7 +950,7 @@ export function CalendarView({
           <span className={`float-left inline-flex items-center mr-2 ${style.badge} ${style.badgeBg} px-1.5 py-0.5 rounded shrink-0`}>
             <SportIcon className="w-3 h-3" />
           </span>
-          <h4 className="text-sm font-bold text-stone-900 leading-tight break-words">{w.title}</h4>
+          <h4 className="text-xs font-bold text-stone-900 leading-tight break-words">{w.title}</h4>
           <div className="clear-both" />
         </div>
         <p className="text-xs text-stone-500 leading-snug mb-3 line-clamp-2">{w.description || '—'}</p>
@@ -1956,7 +1936,7 @@ export function CalendarView({
                                               {getImportedActivityTypeLabel(a, tSports)}
                                             </span>
                                           </div>
-                                          <h4 className="text-sm font-bold text-stone-900 leading-tight mb-2 break-words">{a.title}</h4>
+                                          <h4 className="text-xs font-bold text-stone-900 leading-tight mb-2 break-words">{a.title}</h4>
                                           {a.description ? (
                                             <p className="text-xs text-stone-500 leading-snug mb-3 line-clamp-2">{a.description}</p>
                                           ) : null}

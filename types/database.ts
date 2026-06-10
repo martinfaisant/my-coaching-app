@@ -117,6 +117,29 @@ export type CoachAthleteNote = {
   updated_at: string
 }
 
+/**
+ * Abonnement Stripe coach → plateforme (ligne unique par coach).
+ * `status` = statuts Stripe (`active`, `trialing`, …) ou `none` si seul un client Stripe existe (adresse facturation sans abonnement).
+ */
+export type CoachPlatformSubscription = {
+  coach_id: string
+  stripe_customer_id: string | null
+  stripe_subscription_id: string | null
+  status: string
+  current_period_end: string | null
+  cancel_at_period_end: boolean
+  cancel_at: string | null
+  updated_at: string
+}
+
+/** Essai plateforme coach consommé pour une campagne donnée. */
+export type CoachPlatformTrialConsumption = {
+  coach_id: string
+  trial_campaign_id: string
+  consumed_at: string
+  stripe_subscription_id: string | null
+}
+
 export type AthleteFacility = {
   id: string
   athlete_id: string

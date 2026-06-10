@@ -1,0 +1,125 @@
+﻿2026-06-10T13:21:05.9975160Z ##[group]Run npm run lint
+2026-06-10T13:21:05.9975490Z [36;1mnpm run lint[0m
+2026-06-10T13:21:06.0004323Z shell: /usr/bin/bash -e {0}
+2026-06-10T13:21:06.0004591Z env:
+2026-06-10T13:21:06.0004875Z   NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
+2026-06-10T13:21:06.0005233Z   NEXT_PUBLIC_SUPABASE_ANON_KEY: anon-key
+2026-06-10T13:21:06.0005531Z   SUPABASE_SECRET_KEY: service-role-key
+2026-06-10T13:21:06.0005831Z   NEXT_PUBLIC_APP_URL: http://localhost:3000
+2026-06-10T13:21:06.0006145Z   NEXT_PUBLIC_SITE_URL: http://localhost:3000
+2026-06-10T13:21:06.0006421Z ##[endgroup]
+2026-06-10T13:21:06.1101665Z 
+2026-06-10T13:21:06.1102343Z > my-coaching-app@0.1.0 lint
+2026-06-10T13:21:06.1102814Z > eslint
+2026-06-10T13:21:06.1102950Z 
+2026-06-10T13:21:24.1943265Z 
+2026-06-10T13:21:24.1944630Z /home/runner/work/my-coaching-app/my-coaching-app/app/[locale]/dashboard/CoachSubscriptionDetailModal.tsx
+2026-06-10T13:21:24.1985706Z ##[warning]  88:13  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-06-10T13:21:24.1998902Z 
+2026-06-10T13:21:24.1999761Z /home/runner/work/my-coaching-app/my-coaching-app/app/[locale]/dashboard/FindCoachSection.tsx
+2026-06-10T13:21:24.2004744Z ##[warning]  425:19  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-06-10T13:21:24.2012317Z ##[warning]  580:6   warning  React Hook useEffect has missing dependencies: 'displaySportsForVolume' and 'sports'. Either include them or remove the dependency array. You can also replace multiple useState variables with useReducer if 'setWeeklyVolumeInputs' needs the current value of 'sports'                react-hooks/exhaustive-deps
+2026-06-10T13:21:24.2018925Z ##[warning]  580:7   warning  React Hook useEffect has a complex expression in the dependency array. Extract it to a separate variable so it can be statically checked                                                                                                                                                 react-hooks/exhaustive-deps
+2026-06-10T13:21:24.2021379Z 
+2026-06-10T13:21:24.2022193Z /home/runner/work/my-coaching-app/my-coaching-app/app/[locale]/dashboard/RequestCoachButton.tsx
+2026-06-10T13:21:24.2025246Z ##[warning]  104:6  warning  React Hook useEffect has a missing dependency: 'closeModal'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+2026-06-10T13:21:24.2027346Z 
+2026-06-10T13:21:24.2028533Z /home/runner/work/my-coaching-app/my-coaching-app/app/[locale]/dashboard/coach-platform-subscription/coachPlatformCancellationActions.ts
+2026-06-10T13:21:24.2031173Z ##[warning]  8:10  warning  'logger' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+2026-06-10T13:21:24.2032869Z 
+2026-06-10T13:21:24.2033645Z /home/runner/work/my-coaching-app/my-coaching-app/app/[locale]/dashboard/coach/CoachRatingForm.tsx
+2026-06-10T13:21:24.2036240Z ##[warning]  106:6  warning  React Hook useEffect has a missing dependency: 't'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+2026-06-10T13:21:24.2038276Z 
+2026-06-10T13:21:24.2039146Z /home/runner/work/my-coaching-app/my-coaching-app/app/[locale]/dashboard/devices/StravaDevicesSection.tsx
+2026-06-10T13:21:24.2044049Z ##[warning]  81:17  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-06-10T13:21:24.2047537Z 
+2026-06-10T13:21:24.2048297Z /home/runner/work/my-coaching-app/my-coaching-app/app/[locale]/dashboard/profile/ProfileForm.tsx
+2026-06-10T13:21:24.2052356Z ##[warning]  297:6   warning  React Hook useCallback has missing dependencies: 'unitCanot' and 'unitTriathlon'. Either include them or remove the dependency array                                                                                                                                                     react-hooks/exhaustive-deps
+2026-06-10T13:21:24.2058795Z ##[warning]  455:6   warning  React Hook useEffect has missing dependencies: 'avatarUrlState', 'effectiveInitialLocale', 'isSubmitting', 'router', 'state?.error', 'state?.success', and 'unitTrail'. Either include them or remove the dependency array                                                               react-hooks/exhaustive-deps
+2026-06-10T13:21:24.2065657Z ##[warning]  620:19  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-06-10T13:21:24.2068803Z 
+2026-06-10T13:21:24.2069646Z /home/runner/work/my-coaching-app/my-coaching-app/app/[locale]/dashboard/profile/offers/OffersForm.tsx
+2026-06-10T13:21:24.2073046Z ##[warning]  343:6  warning  React Hook useEffect has missing dependencies: 'isSubmitting', 'router', 'state?.error', and 'state?.success'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+2026-06-10T13:21:24.2075260Z 
+2026-06-10T13:21:24.2075855Z /home/runner/work/my-coaching-app/my-coaching-app/app/[locale]/page.tsx
+2026-06-10T13:21:24.2078032Z ##[warning]  17:3  warning  'Users' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+2026-06-10T13:21:24.2079700Z 
+2026-06-10T13:21:24.2080335Z /home/runner/work/my-coaching-app/my-coaching-app/components/ActivityTile.tsx
+2026-06-10T13:21:24.2085015Z ##[warning]  133:9  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-06-10T13:21:24.2088158Z 
+2026-06-10T13:21:24.2088753Z /home/runner/work/my-coaching-app/my-coaching-app/components/AthleteTile.tsx
+2026-06-10T13:21:24.2093594Z ##[warning]  78:17  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-06-10T13:21:24.2096514Z 
+2026-06-10T13:21:24.2097360Z /home/runner/work/my-coaching-app/my-coaching-app/components/AvatarImage.tsx
+2026-06-10T13:21:24.2101897Z ##[warning]  22:5  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-06-10T13:21:24.2104801Z 
+2026-06-10T13:21:24.2105397Z /home/runner/work/my-coaching-app/my-coaching-app/components/CalendarView.tsx
+2026-06-10T13:21:24.2109221Z ##[warning]   556:6    warning  React Hook useMemo has an unnecessary dependency: 'locale'. Either exclude it or remove the dependency array                                                                                                                                                                             react-hooks/exhaustive-deps
+2026-06-10T13:21:24.2115597Z ##[warning]  1205:49   warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-06-10T13:21:24.2123020Z ##[warning]  1269:41   warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-06-10T13:21:24.2130054Z ##[warning]  1366:41   warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-06-10T13:21:24.2137534Z ##[warning]  1540:302  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-06-10T13:21:24.2143310Z ##[warning]  1599:41   warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-06-10T13:21:24.2148260Z ##[warning]  1709:55   warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-06-10T13:21:24.2152985Z ##[warning]  1784:43   warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-06-10T13:21:24.2157574Z ##[warning]  1934:45   warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-06-10T13:21:24.2161960Z ##[warning]  2299:21   warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-06-10T13:21:24.2163673Z 
+2026-06-10T13:21:24.2164106Z /home/runner/work/my-coaching-app/my-coaching-app/components/CalendarViewWithNavigation.tsx
+2026-06-10T13:21:24.2166111Z ##[warning]  270:6  warning  React Hook useEffect has missing dependencies: 'initialWeeklyTotals.length', 'initialWorkouts.length', and 'today'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+2026-06-10T13:21:24.2169247Z ##[warning]  404:6  warning  React Hook useEffect has a missing dependency: 'isMdUp'. Either include it or remove the dependency array                                                               react-hooks/exhaustive-deps
+2026-06-10T13:21:24.2170502Z 
+2026-06-10T13:21:24.2171015Z /home/runner/work/my-coaching-app/my-coaching-app/components/CoachPlatformCheckoutPrerequisitesModal.tsx
+2026-06-10T13:21:24.2171985Z   47:7  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+2026-06-10T13:21:24.2172663Z 
+2026-06-10T13:21:24.2173732Z Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+2026-06-10T13:21:24.2174873Z * Update external systems with the latest state from React.
+2026-06-10T13:21:24.2175674Z * Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+2026-06-10T13:21:24.2176165Z 
+2026-06-10T13:21:24.2177172Z Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+2026-06-10T13:21:24.2177920Z 
+2026-06-10T13:21:24.2178479Z /home/runner/work/my-coaching-app/my-coaching-app/components/CoachPlatformCheckoutPrerequisitesModal.tsx:47:7
+2026-06-10T13:21:24.2179093Z   45 |     }
+2026-06-10T13:21:24.2179368Z   46 |     if (initialSnapshot) {
+2026-06-10T13:21:24.2179749Z > 47 |       setSnapshot(initialSnapshot)
+2026-06-10T13:21:24.2180186Z      |       ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+2026-06-10T13:21:24.2180699Z   48 |       setBillingLoadError(initialSnapshot.billingLoadError)
+2026-06-10T13:21:24.2181094Z   49 |     }
+2026-06-10T13:21:24.2181419Z   50 |     setError(null)  react-hooks/set-state-in-effect
+2026-06-10T13:21:24.2181675Z 
+2026-06-10T13:21:24.2182171Z /home/runner/work/my-coaching-app/my-coaching-app/components/CoachPlatformSubscribeOffersModal.tsx
+2026-06-10T13:21:24.2183085Z   57:7  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+2026-06-10T13:21:24.2183492Z 
+2026-06-10T13:21:24.2184536Z Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+2026-06-10T13:21:24.2185663Z * Update external systems with the latest state from React.
+2026-06-10T13:21:24.2186441Z * Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+2026-06-10T13:21:24.2187184Z 
+2026-06-10T13:21:24.2188087Z Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+2026-06-10T13:21:24.2188829Z 
+2026-06-10T13:21:24.2189483Z /home/runner/work/my-coaching-app/my-coaching-app/components/CoachPlatformSubscribeOffersModal.tsx:57:7
+2026-06-10T13:21:24.2190085Z   55 |   useEffect(() => {
+2026-06-10T13:21:24.2190364Z   56 |     if (!isOpen) {
+2026-06-10T13:21:24.2190686Z > 57 |       setStep('offers')
+2026-06-10T13:21:24.2191156Z      |       ^^^^^^^ Avoid calling setState() directly within an effect
+2026-06-10T13:21:24.2191593Z   58 |       setPrerequisitesSnapshot(null)
+2026-06-10T13:21:24.2191962Z   59 |       setPrerequisitesError(null)
+2026-06-10T13:21:24.2192414Z   60 |       setPendingPhase(null)  react-hooks/set-state-in-effect
+2026-06-10T13:21:24.2192678Z 
+2026-06-10T13:21:24.2193015Z /home/runner/work/my-coaching-app/my-coaching-app/components/CoachTile.tsx
+2026-06-10T13:21:24.2195710Z ##[warning]  88:17  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-06-10T13:21:24.2197669Z 
+2026-06-10T13:21:24.2198085Z /home/runner/work/my-coaching-app/my-coaching-app/components/WorkoutModal.tsx
+2026-06-10T13:21:24.2200284Z ##[warning]  423:9  warning  'workoutPending' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                              @typescript-eslint/no-unused-vars
+2026-06-10T13:21:24.2204776Z ##[warning]  458:6  warning  React Hook useEffect has missing dependencies: 'isSubmitting', 'onClose', 'state?.error', 'state?.success', 'state.workout', and 'workoutForm'. Either include them or remove the dependency array. If 'onClose' changes too often, find the parent component that defines it and wrap that definition in useCallback                                  react-hooks/exhaustive-deps
+2026-06-10T13:21:24.2209244Z ##[warning]  548:6  warning  React Hook useEffect has missing dependencies: 'commentPending', 'commentState?.error', and 'commentState?.success'. Either include them or remove the dependency array                                                                                                                                                                                react-hooks/exhaustive-deps
+2026-06-10T13:21:24.2213782Z ##[warning]  566:6  warning  React Hook useEffect has missing dependencies: 'onClose', 'statusCommentPending', 'statusCommentState?.error', 'statusCommentState?.success', and 'statusCommentState.workout'. Either include them or remove the dependency array. If 'onClose' changes too often, find the parent component that defines it and wrap that definition in useCallback  react-hooks/exhaustive-deps
+2026-06-10T13:21:24.2215729Z 
+2026-06-10T13:21:24.2216164Z /home/runner/work/my-coaching-app/my-coaching-app/lib/coachPlatformSubscriptionDisplay.ts
+2026-06-10T13:21:24.2217715Z ##[warning]  8:3  warning  'intervalCount' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+2026-06-10T13:21:24.2218689Z 
+2026-06-10T13:21:24.2219102Z /home/runner/work/my-coaching-app/my-coaching-app/lib/stripeCoachPlatformCancellation.ts
+2026-06-10T13:21:24.2220528Z ##[warning]  6:15  warning  'CoachPlatformSubscription' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+2026-06-10T13:21:24.2221613Z 
+2026-06-10T13:21:24.2222036Z ✖ 37 problems (2 errors, 35 warnings)
+2026-06-10T13:21:24.2222265Z 
+2026-06-10T13:21:24.3046216Z ##[error]Process completed with exit code 1.

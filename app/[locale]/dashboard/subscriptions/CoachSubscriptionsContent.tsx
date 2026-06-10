@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { CoachSubscriptionDetailModal } from '@/app/[locale]/dashboard/CoachSubscriptionDetailModal'
 import { TileCard } from '@/components/TileCard'
-import { getFrozenTitleForLocale, getFrozenDescriptionForLocale } from '@/lib/frozenOfferI18n'
+import { getFrozenTitleForLocale } from '@/lib/frozenOfferI18n'
 import { formatShortDate } from '@/lib/dateUtils'
 import type { CoachSubscriptionRow } from '@/app/[locale]/dashboard/CoachSubscriptionDetailModal'
 import type { FrozenPriceType } from '@/types/database'
@@ -49,7 +49,6 @@ export function CoachSubscriptionsContent({
   const t = useTranslations('coachSubscriptions')
   const tMyCoach = useTranslations('myCoach')
   const tHistory = useTranslations('subscriptionHistory')
-  const tDetail = useTranslations('athletes.subscriptionDetail')
   const dateLocale = locale === 'en' ? 'en-GB' : 'fr-FR'
   const [selectedSubscription, setSelectedSubscription] = useState<ActiveSubscriptionItem | null>(null)
 

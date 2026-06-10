@@ -625,7 +625,7 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
                           return (
                             <div className="flex flex-wrap items-center gap-2">
                               <span className="text-base font-bold text-stone-800">
-                                {priceType === 'free' ? '0' : price} €
+                                {priceType === 'free' ? '0' : price} $
                               </span>
                               <span className="text-stone-400" aria-hidden>·</span>
                               <span className="text-sm text-stone-600">{priceTypeLabel}</span>
@@ -649,7 +649,7 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
                                 <input type="hidden" name={`offer_${index}_price`} value="0" />
                                 <div className="w-full pl-3 pr-6 py-2.5 rounded-lg bg-white border border-stone-300 flex items-center text-stone-900 font-bold">
                                   <span>0</span>
-                                  <span className="ml-auto text-stone-400 font-medium">€</span>
+                                  <span className="ml-auto text-stone-400 font-medium">$</span>
                                 </div>
                               </>
                             ) : (
@@ -665,7 +665,7 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
                                   onInput={triggerUnsavedCheck}
                                   className="w-full pl-3 pr-6 py-2.5 rounded-lg border border-stone-300 bg-white text-stone-900 placeholder-stone-400 font-bold focus:outline-none focus:ring-2 focus:ring-palette-forest-dark focus:border-transparent transition [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                 />
-                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 font-medium pointer-events-none">€</span>
+                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 font-medium pointer-events-none">$</span>
                               </div>
                             )}
                           </div>
@@ -730,7 +730,7 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
                   const priceLabel =
                     archived.price_type === 'free'
                       ? t('priceTypes.free')
-                      : `${archived.price ?? 0} € / ${archived.price_type === 'monthly' ? t('priceTypes.monthly') : t('priceTypes.oneTime')}`
+                      : `${archived.price ?? 0} $ / ${archived.price_type === 'monthly' ? t('priceTypes.monthly') : t('priceTypes.oneTime')}`
                   const archivedDate = new Date(archived.archived_at).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-GB', {
                     day: 'numeric',
                     month: 'short',

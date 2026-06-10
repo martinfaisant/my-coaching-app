@@ -1,7 +1,7 @@
 # 🎨 Design System
 
-**Version :** 1.32  
-**Dernière mise à jour :** 11 mai 2026 (tokens sports : **`SPORT_WEEKLY_SUMMARY_BAR`** résumé hebdo calendrier ; précédent : §7 tuiles grille `completed`…)
+**Version :** 1.44  
+**Dernière mise à jour :** 9 juin 2026 (**prérequis Checkout** coach livré — US-MYSA-CHECKOUT-PREQ-01…03 ; précédent : v1.43 spec design…)
 
 ---
 
@@ -32,6 +32,16 @@
    - [AthleteFacilityDetails](#athletefacilitydetails)
    - [CoachAthleteNotesSection](#coachathletenotessection)
    - [CoachAthleteNoteModal](#coachathletenotemodal)
+   - [CoachPlatformSubscriptionOffers](#coachplatformsubscriptionoffers)
+   - [CoachPlatformBillingAddressSection](#coachplatformbillingaddresssection)
+   - [CoachPlatformBillingAddressFields](#coachplatformbillingaddressfields)
+   - [CoachPlatformOfferGrid](#coachplatformoffergrid)
+   - [CoachPlatformCurrentOfferCard](#coachplatformcurrentoffercard)
+   - [CoachPlatformSubscriptionStatusSection](#coachplatformsubscriptionstatussection)
+   - [CoachPlatformUnpaidSubscriptionBanner](#coachplatformunpaidsubscriptionbanner)
+   - [CoachPlatformSubscribeOffersModal](#coachplatformsubscribeoffersmodal)
+   - [CoachPlatformCheckoutPrerequisitesForm](#coachplatformcheckoutprerequisitesform)
+   - [CoachPlatformCheckoutPrerequisitesModal](#coachplatformcheckoutprerequisitesmodal)
    - [DashboardPageShell](#dashboardpageshell)
    - [DashboardTopBar](#dashboardtopbar)
   - [AthleteAccountMenu](#athleteaccountmenu)
@@ -1380,6 +1390,122 @@ Modale **création / édition** de note (`Modal` taille `lg`) : champs `Input` t
 
 ---
 
+### CoachPlatformSubscriptionOffers
+
+**Fichier :** `components/CoachPlatformSubscriptionOffers.tsx`
+
+Section **client** de la page **`/dashboard/coach-platform-subscription`** : enveloppe `<section>` (**`aria-labelledby`**) + titre **`sr-only`** (**`coachMsaSubscription.offersTitle`**) + **`CoachPlatformOfferGrid`** (catalogue **inchangé** visuellement). **Visible** seulement si **`shouldShowCoachPlatformOfferGrid`** (pas d’abo géré `active`/`trialing`, pas `past_due`/`unpaid`). Tuile abo gérée : **`CoachPlatformSubscriptionStatusSection`** (hors cette section). Données : `CoachPlatformCatalogOffer[]` côté serveur. Libellés : **`coachMsaOffers.byPriceId`** via **`lib/coachMsaOfferDisplay.ts`**.
+
+#### Props
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `offers` | `CoachPlatformCatalogOffer[]` | Prix Stripe autorisés par env |
+| `subscriptionTrialDays` | `number` | Jours d’essai campagne env (0 = pas de campagne) |
+| `trialEligible` | `boolean` | Si `false`, masquage silencieux badge + ligne essai (essai déjà consommé pour la campagne courante) |
+
+---
+
+### CoachPlatformBillingAddressSection
+
+**Fichier :** `components/CoachPlatformBillingAddressSection.tsx`
+
+Bloc **client** sur **`/dashboard/coach-platform-subscription`** : le libellé de sous-section (**`coachMsaSubscription.billingAddress.sectionTitle`**) est rendu sur **`page.tsx`** (**`h3`** + **`FORM_LABEL_CLASSES`**, comme les titres **Factures** / **Paiements échoués** / **Remboursements**), au-dessus du contenu ; le composant ne duplique pas ce titre. Placé **en premier** sous **`billingInfoTitle`**. Adresse de facturation Canada (lignes 1–2, ville, CP, province, pays fixe), aligné visuellement sur les cartes **installations** (`rounded-2xl border-stone-100`, grille `sm:grid-cols-3`). États : vide (zone en pointillés + bouton secondaire), lecture (carte + **Modifier**), édition (formulaire + pied Annuler / Enregistrer), erreur de chargement Stripe. Persistance **Stripe Customer.address** via **`saveCoachPlatformBillingAddress`** ; feedback succès : pattern bouton Enregistrer (`docs/PATTERN_SAVE_BUTTON.md`). **`aria-labelledby`** : id **`coach-billing-address-subheading`** sur la page. i18n : **`coachMsaSubscription.billingAddress`** (+ `validation`, `provinces.*`).
+
+#### Props
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `initialFields` | `CoachBillingAddressFields \| null` | Données initiales (serveur) |
+| `loadError` | `boolean` | Échec `customers.retrieve` |
+
+---
+
+### CoachPlatformOfferGrid
+
+**Fichier :** `components/CoachPlatformOfferGrid.tsx`
+
+Grille responsive **`grid-cols-1 md:grid-cols-2`** (`gap-6`, cartes **`rounded-2xl p-6`**) : titre **`text-lg`** ; badge essai **`{days} jours gratuits`** (majuscules CSS) et ligne verte **`trialCatalogTrialLine`** **uniquement** si **`subscriptionTrialDays > 0 && trialEligible`** (pas de message « essai déjà utilisé ») ; prix **`text-3xl font-black`** + unité **`/ mois`** etc. (**`priceDisplayedUnit*`**) ; **`tagline`** + liste à puces (**`features`** dans **`coachMsaOffers.byPriceId`**, optionnels — repli description Stripe) ; CTA **Souscrire** / **Redirection…**. Réutilisé page abonnement + modale.
+
+#### Props principales
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `offers` | `CoachPlatformCatalogOffer[]` | |
+| `subscriptionTrialDays` | `number` (déf. `0`) | Jours campagne env |
+| `trialEligible` | `boolean` (déf. `true`) | Contrôle affichage essai sur les cartes |
+| `pendingPriceId` / `isPending` | | État bouton actif |
+| `error` | `string \| null` | Erreur checkout |
+| `onSubscribe` | `(priceId: string) => void` | |
+
+---
+
+### CoachPlatformCurrentOfferCard
+
+**Fichier :** `components/CoachPlatformCurrentOfferCard.tsx`
+
+Tuile **pleine largeur** (`w-full`, `bg-white`, `rounded-2xl`, `shadow-sm`, `p-6`) pour l’abo plateforme **actif**, **en essai** ou **fin programmée**. Badge outline (`palette-forest-dark/10`, pas d’animation). Bandeau central `border-t/b border-stone-100` : calendrier + prochain prélèvement / fin d’essai ; prix `text-2xl font-black`. Pied : micro-copy + **`Button`** `muted` (**Gérer**) ou `primary` (**Annuler l’arrêt**). Variante fin programmée : bandeau `h-1 bg-palette-amber`, encart alerte ambre (texte à gauche, **prix barré à droite centré verticalement** dans l’encart). i18n : **`coachMsaSubscription.currentOfferCard`**.
+
+---
+
+### CoachPlatformSubscriptionStatusSection
+
+**Fichier :** `components/CoachPlatformSubscriptionStatusSection.tsx`
+
+Enveloppe client : **`CoachPlatformCurrentOfferCard`** + **`CoachPlatformManageSubscriptionFlow`** (modales résiliation, **`Modal`** `md`, pattern **`EndSubscriptionButton`**). Props : données carte formatées côté serveur (`page.tsx`).
+
+---
+
+### CoachPlatformUnpaidSubscriptionBanner
+
+**Fichier :** `components/CoachPlatformUnpaidSubscriptionBanner.tsx`
+
+Statuts **`past_due` / `unpaid`** : carte `palette-danger-light`, CTA **`getCoachPlatformPayInvoiceUrlAction`** → facture hébergée Stripe. Pas de flow résiliation. i18n : **`coachMsaSubscription.cancellation.unpaid`**.
+
+---
+
+### CoachPlatformSubscribeOffersModal
+
+**Fichier :** `components/CoachPlatformSubscribeOffersModal.tsx`
+
+**`Modal`** taille **`3xl`** : chargement catalogue (**`loadCoachPlatformCatalogForCoach`** → **`subscriptionTrialDays`** + **`trialEligible`**), erreur catalogue, liste vide, puis **`CoachPlatformOfferGrid`**. Intro optionnelle (`introSlot`, ex. demande en attente). Fermeture / overlay / Escape désactivés pendant redirection. i18n : **`coachMsaOffers`**.
+
+**Prérequis Checkout (US-MYSA-CHECKOUT-PREQ-01) :** après clic **Souscrire**, si prénom, nom ou adresse facturation incomplets, **bascule du corps** vers **`CoachPlatformCheckoutPrerequisitesForm`** (titre **`checkoutPrerequisites.modalTitle`**), **`pendingPriceId`** mémorisé ; **Retour aux offres** restaure la grille ; **Enregistrer et continuer** → save + redirect Stripe. Si prérequis déjà complets : redirect direct.
+
+#### Props
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `isOpen` | `boolean` | |
+| `onClose` | `() => void` | |
+| `introSlot` | `React.ReactNode` | Contexte au-dessus de la grille (optionnel) |
+
+---
+
+### CoachPlatformBillingAddressFields
+
+**Fichier :** `components/CoachPlatformBillingAddressFields.tsx`
+
+Bloc réutilisable des champs adresse facturation Canada (lignes 1–2, CP, ville, province, pays fixe). Utilisé par **`CoachPlatformBillingAddressSection`** (mode édition) et **`CoachPlatformCheckoutPrerequisitesForm`**. Props : `idPrefix`, `values`, `onChange`, `disabled`, `useFormNames` (noms `billing_*` pour FormData), **`provinceOnSeparateRow`** (modales prérequis Checkout : CP + ville sur une ligne, province en pleine largeur en dessous — évite le scroll horizontal).
+
+---
+
+### CoachPlatformCheckoutPrerequisitesForm
+
+**Fichier :** `components/CoachPlatformCheckoutPrerequisitesForm.tsx`
+
+Formulaire **client** partagé (**US-MYSA-CHECKOUT-PREQ-03**) : prénom, nom (`profile.*`), adresse via **`CoachPlatformBillingAddressFields`**. Pré-remplissage depuis snapshot serveur. États : erreur save/checkout, `billingLoadError` + retry. Helper **`getCoachPlatformCheckoutPrerequisitesFormPayload`**. i18n : **`coachMsaSubscription.checkoutPrerequisites`** + **`billingAddress.*`**.
+
+---
+
+### CoachPlatformCheckoutPrerequisitesModal
+
+**Fichier :** `components/CoachPlatformCheckoutPrerequisitesModal.tsx`
+
+**`Modal`** **`md`** sur **`/dashboard/coach-platform-subscription`** (**US-MYSA-CHECKOUT-PREQ-02**) : **`CoachPlatformCheckoutPrerequisitesForm`** + footer **Annuler** / **Enregistrer et continuer**. Ouvert par **`CoachPlatformSubscriptionOffers`**.
+
+---
+
 ### DashboardPageShell
 
 **Fichier :** `components/DashboardPageShell.tsx`
@@ -1501,7 +1627,7 @@ import { Drawer } from '@/components/Drawer'
 
 **Fichier :** `components/PublicOrDashboardHeader.tsx`
 
-Composant **serveur** : si session active (`getOptionalUserWithProfile`), rendu de `DashboardTopBar` (même barre que le dashboard) ; sinon `PublicHeader`. Utilisé sur l’accueil, contact, politique de confidentialité, CGU et réinitialisation mot de passe.
+Composant **serveur** : si session active (`getOptionalUserWithProfile`), rendu de `DashboardTopBar` (même barre que le dashboard) ; sinon `PublicHeader`. Utilisé sur **contact**, **politique de confidentialité**, **CGU** et **réinitialisation mot de passe**. Sur l’**accueil** (`/` et `/en`), les utilisateurs **connectés** sont **redirigés** vers l’app avant le rendu (`app/[locale]/page.tsx` + `getDashboardEntryPath` / `pathWithLocale`) : **`PublicOrDashboardHeader`** ne s’applique donc à la landing que pour les **visiteurs** (toujours `PublicHeader` côté marketing).
 
 ```tsx
 import { PublicOrDashboardHeader } from '@/components/PublicOrDashboardHeader'
@@ -1923,7 +2049,7 @@ Ce breakpoint `md` est le breakpoint de référence pour les bascules de layout 
 **Usages actuels documentés :**
 - **Top bar dashboard** : barre en haut (`DashboardTopBar`) — logo My Sport Ally à gauche, liens de navigation au centre (tablette/desktop, centrés). **Athlète** : liens principaux seuls au centre ; à droite `AthleteAccountMenu` (menu compte : appareils, coach si lié, historique ; séparateur ; Contact ; Mes informations ; déconnexion). **Coach** : à droite `CoachAccountMenu` (Mes informations, Contact, déconnexion). **Admin** : lien profil direct à droite. **Mobile :** titre de la page au centre, bouton hamburger à droite ; **Drawer** athlète = liens secondaires, contact, Mes informations, déconnexion ; **coach** = liste nav, carte profil, contact, déconnexion ; **admin** = liste nav, carte profil, déconnexion. **Admin** : nav = Gestion des membres + Design System uniquement. Fichiers : `DashboardTopBar.tsx`, `AthleteAccountMenu.tsx`, `CoachAccountMenu.tsx`, `DashboardNavLinks.tsx`, `Drawer.tsx`, `lib/dashboardNavConfig.ts`. **Pages dashboard** : `DashboardPageShell` fournit uniquement le padding de contenu — pas de titre en tête de page ni conteneur carte. Fichier : `components/DashboardPageShell.tsx`.
 - **Page « Mon profil »** (`/dashboard/profile`) : sur **mobile**, marges latérales réduites (wrapper `-mx-3` + `contentClassName` `!px-2 sm:!px-6 lg:!px-8` sur le shell) ; section Volumes hebdomadaires : grille **responsive** `grid-cols-1 sm:grid-cols-2` (1 colonne en dessous de `sm`, 2 colonnes à partir de `sm`) ; champs temps à allouer et volumes par sport : largeur `w-[6.5rem]`, padding droit réduit (pr-10 / pr-11 / pr-12) pour le suffixe. **Section Facilities Used :** cards en 2 blocs (adresse 1/3, horaires 2/3), table horaires compacte avec badge open/closed aligné ; modal add/edit en `size="2xl"` avec cartes jour bordées et fallback mobile (ligne 1 : jour + badge, ligne 2 : créneaux pleine largeur) pour éviter le débordement. Fichiers : `app/[locale]/dashboard/profile/page.tsx`, `ProfileForm.tsx`, `installations/*`.
-- **Calendrier (athlète + coach)** : sous `md`, en-tête sur 2 lignes + **WeekSelector** + bloc totaux de la semaine (volume horaire total + barres par sport : sports = **`PERSISTED_WORKOUT_SPORT_TYPES`**, styles barre **`SPORT_WEEKLY_SUMMARY_BAR`**, voir § Tokens sports) + **1 semaine** en stack (inchangé ; archives `calendar-mobile-44`, `calendar-mobile-weekly-total`). À partir de `md`, **mois civil étendu** en **semaines ISO** (lundi–dimanche), jours hors mois en atténuation ; navigation **MonthSelector** ; une carte totaux par semaine ISO visible ; en-tête de semaine non détaillée : **bandeau compact** fait/prévu par sport (même liste + styles). Chargement = `getExtendedCalendarMonthGridBounds` + `fetchCalendarDataBundle`. Fichiers : `CalendarView.tsx`, `CalendarViewWithNavigation.tsx`, `MonthSelector.tsx`, `lib/dateUtils.ts`, `lib/calendarViewDayHeights.ts`, `lib/sportsRegistry.ts`. Récap produit : `docs/CALENDAR_MONTH_VIEW.md`. **Structure du jour :** **disponibilités athlète** (tuiles Disponible/Indisponible) → objectifs → entraînements → Strava ; puis sections **Matin** / **Midi** / **Soir** pour les entraînements avec moment ; couleurs et icônes des tuiles entraînement = sport uniquement. **Tuile entraînement dans la grille (pas la modale au clic) :** si statut **Réalisé** (`completed`), les durée / distance / allure ou vitesse (km/h pour vélo, triathlon, canot — via `workoutHasPaceField` + dérivation) / D+ affichés proviennent des **`actual_*`** uniquement (`getCalendarWorkoutTileMetrics`, `lib/workoutFormatting.ts`) ; sinon affichage des objectifs. **Tuiles disponibilité :** bordure fine (vert / orange), icône calendrier, libellé Disponible/Indisponible en `text-xs font-semibold` (sans `uppercase`) + plage horaire précédée d'une icône horloge (`ClockIcon`), ou note ; pas de récurrence. **Modales :** `AvailabilityModal` (création/édition : Segments type, date en en-tête, Début/Fin en Dropdown 15 min, Note ; athlète : bouton « + » sur jours futurs, clic tuile → édition avec Supprimer + Enregistrer) ; `AvailabilityDetailModal` (lecture seule coach : détail créneau, bouton Fermer). **Natation :** totaux et métadonnées en **mètres (m)** ; icône commentaire sur tuiles entraînement (`calendar.tile.athleteCommentLabel`). Détail : `Project_context.md` §4.5.
+- **Calendrier (athlète + coach)** : sous `md`, en-tête sur 2 lignes + **WeekSelector** + bloc totaux de la semaine (volume horaire total + barres par sport : sports = **`PERSISTED_WORKOUT_SPORT_TYPES`**, styles barre **`SPORT_WEEKLY_SUMMARY_BAR`**, voir § Tokens sports) + **1 semaine** en stack (inchangé ; archives `calendar-mobile-44`, `calendar-mobile-weekly-total`). À partir de `md`, **mois civil étendu** en **semaines ISO** (lundi–dimanche), jours hors mois en atténuation ; navigation **MonthSelector** ; une carte totaux par semaine ISO visible ; en-tête de semaine non détaillée : **bandeau compact** fait/prévu par sport (même liste + styles). Chargement = `getExtendedCalendarMonthGridBounds` + `fetchCalendarDataBundle`. Fichiers : `CalendarView.tsx`, `CalendarViewWithNavigation.tsx`, `MonthSelector.tsx`, `lib/dateUtils.ts`, `lib/calendarViewDayHeights.ts`, `lib/sportsRegistry.ts`. Récap produit : `docs/CALENDAR_MONTH_VIEW.md`. **Structure du jour :** **disponibilités athlète** (tuiles Disponible/Indisponible) → objectifs → entraînements → Strava ; puis sections **Matin** / **Midi** / **Soir** pour les entraînements avec moment ; couleurs et icônes des tuiles entraînement = sport uniquement. **Tuile entraînement dans la grille (pas la modale au clic) :** si statut **Réalisé** (`completed`), les durée / distance / allure ou vitesse (km/h pour vélo, triathlon, canot — via `workoutHasPaceField` + dérivation) / D+ affichés proviennent des **`actual_*`** uniquement (`getCalendarWorkoutTileMetrics`, `lib/workoutFormatting.ts`) ; sinon affichage des objectifs. **Tuiles disponibilité :** carte `overflow-hidden` + `training-card` ; même rayon d’angle que la tuile séance **compacte** (`rounded` en compact, `rounded-2xl` sinon) ; bandeau supérieur `h-1` avec `rounded-t` / `rounded-t-2xl` assorti (angles haut du filet de couleur, comme l’extrémité de la barre gauche des séances) vert `palette-forest-dark` / orange `orange-500` ; bordure `border-stone-100`, fond `bg-white`. Ligne titre : badge calendrier teinté + libellé i18n **`text-sm font-bold text-stone-900`** (identique au titre de la tuile séance compacte dans la grille). Plage horaire : même bloc typographique que les métriques séance compactes (`text-[10px] text-stone-500 font-semibold`, icône horloge `h-3 w-3 text-stone-400`). Note : même profil que la description sur la carte séance large (`text-xs text-stone-500 leading-snug line-clamp-2`). Pas de récurrence. **Modales :** `AvailabilityModal` (création/édition : Segments type, date en en-tête, Début/Fin en Dropdown 15 min, Note ; athlète : bouton « + » sur jours futurs, clic tuile → édition avec Supprimer + Enregistrer) ; `AvailabilityDetailModal` (lecture seule coach : détail créneau, bouton Fermer). **Natation :** totaux et métadonnées en **mètres (m)** ; icône commentaire sur tuiles entraînement (`calendar.tile.athleteCommentLabel`). Détail : `Project_context.md` §4.5.
 - **Sélecteur de semaine (WeekSelector, calendrier sous `md`)** : utilisé sous le breakpoint `md` sur les pages calendrier. Zone centrale à largeur fixe (80px sous `lg`, 150px à partir de `lg`) ; plage de dates sur une ligne à partir de `lg` (1024px), sur deux lignes sous `lg`. Boutons gauche/droite : largeur fixe 40px sous 400px, 80px à partir de 400px ; les dates « semaine précédente/suivante » dans les boutons sont affichées à partir de 400px et masquées en dessous pour que le sélecteur tienne sur les écrans étroits. Fichier : `components/WeekSelector.tsx`. À partir de `md`, le calendrier utilise **MonthSelector** (voir section MonthSelector).
 - **Chat coach (overlay)** : sous `md`, navigation mobile en 2 écrans (liste des conversations puis conversation avec bouton Retour) ; à partir de `md`, layout desktop avec sidebar + panneau conversation.
 - **Page « Trouver mon coach »** (`/dashboard/find-coach`, athlète sans coach) : page dédiée avec son propre skeleton (filtres + grille). Bloc Filtres avec recherche par nom ou prénom (temps réel), grille Sport coaché / Langue parlée en 2 colonnes à partir de `md` (768px) ; liste des tuiles : 1 colonne par défaut, 2 colonnes à partir de `md`, 3 colonnes à partir de `xl` (1280px). Fichiers : `app/[locale]/dashboard/find-coach/page.tsx`, `FindCoachSection.tsx`.
@@ -2006,10 +2132,12 @@ Actuellement, utiliser un span custom :
 
 - **Tokens couleurs** : `tailwind.config.ts`, `app/globals.css`
 - **Styles formulaires** : `lib/formStyles.ts` (FORM_BASE_CLASSES, FORM_INPUT_TEXT_SIZE, FORM_INPUT_HEIGHT, etc.)
-- **Composants** : `components/Button.tsx`, `components/Input.tsx`, `components/PasswordInput.tsx`, `components/SearchInput.tsx`, `components/Textarea.tsx`, `components/Badge.tsx`, `components/Avatar.tsx`, `components/AvatarImage.tsx`, `components/SportTileSelectable.tsx`, `components/ActivityTile.tsx`, `components/Modal.tsx`, `components/CoachReviewsModal.tsx`, `components/workout-modal/WorkoutFacilityHoursStrip.tsx`, `components/workout-modal/WorkoutTargetActualCards.tsx`, `components/workout-modal/WorkoutFeedbackSummary.tsx`, `components/workout-modal/WorkoutFeedbackSection.tsx`, `components/AthleteFacilityDetails.tsx`, `components/CoachAthleteNotesSection.tsx`, `components/CoachAthleteNoteModal.tsx`, `components/DashboardPageShell.tsx`, `components/DashboardTopBar.tsx`, `components/AthleteAccountMenu.tsx`, `components/CoachAccountMenu.tsx`, `components/ContactForm.tsx`, `components/Drawer.tsx`, `components/PublicOrDashboardHeader.tsx`, `components/PublicHeader.tsx`, `components/EmailValidatedModal.tsx`, `components/HomeEmailConfirmedTrigger.tsx`, `components/Dropdown.tsx`, `components/Segments.tsx`, `components/DatePickerPopup.tsx`, `components/MonthSelector.tsx`, `components/CalendarView.tsx`, `components/CalendarViewWithNavigation.tsx`, `lib/calendarViewDayHeights.ts`, `components/AvailabilityModal.tsx`, `components/AvailabilityDetailModal.tsx`, `components/ChatAthleteListItem.tsx`, `components/ChatConversationSidebar.tsx`
-- **Page Mes athlètes (coach)** : `app/[locale]/dashboard/athletes/page.tsx` (bandeaux profil / offre publiée, erreur chargement liste), `CoachAthletesListWithFilter.tsx`, `PendingRequestTile.tsx`
+- **Composants** : `components/Button.tsx`, `components/Input.tsx`, `components/PasswordInput.tsx`, `components/SearchInput.tsx`, `components/Textarea.tsx`, `components/Badge.tsx`, `components/Avatar.tsx`, `components/AvatarImage.tsx`, `components/SportTileSelectable.tsx`, `components/ActivityTile.tsx`, `components/Modal.tsx`, `components/CoachReviewsModal.tsx`, `components/workout-modal/WorkoutFacilityHoursStrip.tsx`, `components/workout-modal/WorkoutTargetActualCards.tsx`, `components/workout-modal/WorkoutFeedbackSummary.tsx`, `components/workout-modal/WorkoutFeedbackSection.tsx`, `components/AthleteFacilityDetails.tsx`, `components/CoachAthleteNotesSection.tsx`, `components/CoachAthleteNoteModal.tsx`, `components/DashboardPageShell.tsx`, `components/DashboardTopBar.tsx`, `components/AthleteAccountMenu.tsx`, `components/CoachAccountMenu.tsx`, `components/ContactForm.tsx`, `components/Drawer.tsx`, `components/PublicOrDashboardHeader.tsx`, `components/PublicHeader.tsx`, `components/EmailValidatedModal.tsx`, `components/HomeEmailConfirmedTrigger.tsx`, `components/Dropdown.tsx`, `components/Segments.tsx`, `components/DatePickerPopup.tsx`, `components/MonthSelector.tsx`, `components/CalendarView.tsx`, `components/CalendarViewWithNavigation.tsx`, `lib/calendarViewDayHeights.ts`, `components/AvailabilityModal.tsx`, `components/AvailabilityDetailModal.tsx`, `components/ChatAthleteListItem.tsx`, `components/ChatConversationSidebar.tsx`, `components/CoachPlatformSubscriptionOffers.tsx`, `components/CoachPlatformBillingAddressSection.tsx`, **`components/CoachPlatformBillingAddressFields.tsx`**, **`components/CoachPlatformCheckoutPrerequisitesForm.tsx`**, **`components/CoachPlatformCheckoutPrerequisitesModal.tsx`**, `components/CoachPlatformOfferGrid.tsx`, `components/CoachPlatformSubscribeOffersModal.tsx`, **`components/CoachPlatformCurrentOfferCard.tsx`**, **`components/CoachPlatformManageSubscriptionFlow.tsx`**, **`components/CoachPlatformSubscriptionStatusSection.tsx`**, **`components/CoachPlatformUnpaidSubscriptionBanner.tsx`**
+- **Page Mon Abonnement MySportAlly (coach)** : `app/[locale]/dashboard/coach-platform-subscription/page.tsx`, `loading.tsx`, **`coachPlatformBillingAddressActions.ts`**, **`coachPlatformCheckoutPrerequisitesActions.ts`**, **`coachPlatformCancellationActions.ts`** ; libs **`lib/coachPlatformCheckoutPrerequisites.ts`**, **`lib/stripeCoachPlatformCatalog.ts`**, **`lib/coachPlatformSubscriptionTrial.ts`**, **`lib/coachPlatformTrialEligibility.ts`**, **`lib/stripeCoachPlatformBillingHistory.ts`**, **`lib/stripeCoachPlatformBillingAddress.ts`**, **`lib/stripeCoachPlatformCancellation.ts`**, **`lib/coachPlatformSubscriptionSync.ts`**, **`lib/coachPlatformSubscriptionDisplay.ts`**, **`lib/formatMoney.ts`**, **`lib/stripeCoachPlatformCustomer.ts`**, **`lib/coachPlatformCheckoutReturnPath.ts`**, **`lib/coachMsaOfferDisplay.ts`** ; migrations **`075`**, **`076`**
+- **Page Mes athlètes (coach)** : `app/[locale]/dashboard/athletes/page.tsx` (bandeaux profil / offre publiée, erreur chargement liste), `components/CoachPlatformStripeBanner.tsx`, `components/CoachPlatformCheckoutVerification.tsx`, `CoachAthletesListWithFilter.tsx`, `PendingRequestTile.tsx` ; actions Checkout **`app/[locale]/dashboard/athletes/coachPlatformActions.ts`**
 - **Sports** : `lib/sportStyles.ts` (`SPORT_CARD_STYLES`, `SPORT_BADGE_STYLES`, **`SPORT_WEEKLY_SUMMARY_BAR`**, `SPORT_ICONS`, `SPORT_TRANSLATION_KEYS`), `lib/sportsRegistry.ts` (`PERSISTED_WORKOUT_SPORT_TYPES`, `workoutIsTimeOnlySport`), `lib/sportsOptions.ts`, `components/SportIcons.tsx`
 - **Stats athlète (Nivo)** : `lib/athleteStatsNivoTheme.ts`, `lib/athleteStatsColors.ts`, `components/athlete/AthleteStatsVolumeChart.tsx`
+- **Entrée dashboard / accueil connecté** : `lib/dashboardEntryPath.ts` (`getDashboardEntryPath`), `lib/pathWithLocale.ts`, `app/[locale]/page.tsx`, `app/[locale]/dashboard/page.tsx`
 - **Horaires modale workout (coach)** : `lib/workoutFacilityHours.ts` (filtre sport ↔ type d’installation, jour, tri alphabétique)
 - **Modale workout — formats & couleurs** : `lib/workoutFormatting.ts` (format absolu et delta des métriques workout — durée, distance, allure mm:ss, vitesse km/h, dénivelé ; tests Vitest `lib/workoutFormatting.test.ts`), `lib/workoutFeedbackColors.ts` (dégradé sémantique tuiles + picker feedback : Ressenti / Intensité RPE / Plaisir)
 - **Design system page** : `app/dashboard/admin/design-system/page.tsx`

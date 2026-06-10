@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>US-MYSA-CHECKOUT-PREQ-03 — Formulaire prérequis Checkout (états)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            'palette-danger': '#c0564b',
+            stone: { 50: '#fafaf9', 100: '#f5f5f4', 200: '#e7e5e4', 300: '#d6d3d1', 500: '#78716c', 600: '#57534e', 700: '#44403c', 800: '#292524', 900: '#1c1917' },
+          },
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-stone-100 min-h-screen p-4 md:p-8 text-stone-800 space-y-14 pb-24">
+  <header class="max-w-2xl mx-auto">
+    <h1 class="text-xl font-bold text-stone-900">US-MYSA-CHECKOUT-PREQ-03 — Formulaire prérequis (commun)</h1>
+    <p class="text-sm text-stone-600 mt-2">
+      Composant cible : <code>CoachPlatformCheckoutPrerequisitesForm</code> (nom provisoire).
+      Réutilise layout adresse de <code>CoachPlatformBillingAddressSection</code> + champs prénom/nom (Mon profil).
+      <strong>Tous les champs toujours visibles</strong> ; valeurs existantes pré-remplies. i18n probable :
+      <code>coachMsaSubscription.checkoutPrerequisites</code> (+ réutilisation clés <code>billingAddress</code> pour adresse).
+    </p>
+  </header>
+
+  <!-- État 1 : vide -->
+  <section class="max-w-md mx-auto" aria-labelledby="s1">
+    <h2 id="s1" class="text-sm font-bold uppercase tracking-wider text-stone-700 mb-3">État 1 — Aucune donnée (champs vides)</h2>
+    <p class="text-xs text-stone-500 mb-4">Coach sans prénom, nom ni adresse Stripe.</p>
+    <div class="rounded-2xl bg-white border border-stone-200 shadow-sm p-5 space-y-5">
+      <p class="text-sm text-stone-600">Complétez vos informations avant de continuer vers le paiement.</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-medium text-stone-700 mb-1">Prénom</label>
+          <input type="text" class="w-full rounded-lg border border-stone-300 px-3 py-2.5 text-sm" placeholder="" />
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-stone-700 mb-1">Nom</label>
+          <input type="text" class="w-full rounded-lg border border-stone-300 px-3 py-2.5 text-sm" />
+        </div>
+      </div>
+      <div class="border-t border-stone-100 pt-4 space-y-3">
+        <p class="text-xs font-bold uppercase tracking-wider text-stone-600">Adresse de facturation</p>
+        <div>
+          <label class="block text-xs font-medium text-stone-700 mb-1">Ligne d’adresse 1</label>
+          <input type="text" class="w-full rounded-lg border border-stone-300 px-3 py-2.5 text-sm" placeholder="Numéro et rue" />
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-stone-700 mb-1">Ligne d’adresse 2 <span class="font-normal text-stone-500">(optionnel)</span></label>
+          <input type="text" class="w-full rounded-lg border border-stone-300 px-3 py-2.5 text-sm" />
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block text-xs font-medium text-stone-700 mb-1">Code postal</label>
+            <input type="text" class="w-full rounded-lg border border-stone-300 px-3 py-2.5 text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-stone-700 mb-1">Ville</label>
+            <input type="text" class="w-full rounded-lg border border-stone-300 px-3 py-2.5 text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-stone-700 mb-1">Province / territoire</label>
+            <select class="w-full rounded-lg border border-stone-300 px-3 py-2.5 text-sm">
+              <option value="">Sélectionner…</option>
+              <option>QC — Québec</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-stone-700 mb-1">Pays</label>
+          <p class="rounded-lg border border-stone-200 bg-stone-50 px-3 py-2.5 text-sm text-stone-700">Canada</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- État 2 : pré-rempli -->
+  <section class="max-w-md mx-auto" aria-labelledby="s2">
+    <h2 id="s2" class="text-sm font-bold uppercase tracking-wider text-stone-700 mb-3">État 2 — Données partielles (pré-remplissage)</h2>
+    <p class="text-xs text-stone-500 mb-4">Ex. prénom/nom en profil, adresse absente — <strong>tous les champs restent affichés</strong>, valeurs connues pré-remplies.</p>
+    <div class="rounded-2xl bg-white border border-stone-200 shadow-sm p-5 space-y-5">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-medium text-stone-700 mb-1">Prénom</label>
+          <input type="text" value="Marie" class="w-full rounded-lg border border-stone-300 px-3 py-2.5 text-sm" />
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-stone-700 mb-1">Nom</label>
+          <input type="text" value="" class="w-full rounded-lg border border-stone-300 px-3 py-2.5 text-sm" />
+        </div>
+      </div>
+      <p class="text-xs text-stone-500">Adresse : champs vides ou partiels selon Stripe.</p>
+    </div>
+  </section>
+
+  <!-- État 3 : validation -->
+  <section class="max-w-md mx-auto" aria-labelledby="s3">
+    <h2 id="s3" class="text-sm font-bold uppercase tracking-wider text-stone-700 mb-3">État 3 — Erreurs de validation</h2>
+    <p class="text-xs text-stone-500 mb-4">Soumission avec champs obligatoires vides ou province invalide. Message global ou par champ (<code>text-palette-danger text-sm</code>).</p>
+    <div class="rounded-2xl bg-white border border-stone-200 shadow-sm p-5 space-y-4">
+      <p class="text-sm text-palette-danger" role="alert">Veuillez corriger les champs indiqués.</p>
+      <div>
+        <label class="block text-xs font-medium text-stone-700 mb-1">Nom</label>
+        <input type="text" class="w-full rounded-lg border border-palette-danger px-3 py-2.5 text-sm" />
+        <p class="text-xs text-palette-danger mt-1">Ce champ est obligatoire.</p>
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-stone-700 mb-1">Ligne d’adresse 1</label>
+        <input type="text" class="w-full rounded-lg border border-palette-danger px-3 py-2.5 text-sm" />
+        <p class="text-xs text-palette-danger mt-1">La ligne d’adresse 1 est obligatoire.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- État 4 : pending -->
+  <section class="max-w-md mx-auto" aria-labelledby="s4">
+    <h2 id="s4" class="text-sm font-bold uppercase tracking-wider text-stone-700 mb-3">État 4 — Enregistrement + redirection (pending)</h2>
+    <p class="text-xs text-stone-500 mb-4">CTA primary disabled + loading « Enregistrement… » puis « Redirection… » si checkout lancé. Champs disabled.</p>
+    <div class="rounded-2xl bg-white border border-stone-200 shadow-sm p-5">
+      <button type="button" disabled class="w-full rounded-lg bg-palette-forest-dark/70 px-4 py-2.5 text-sm font-semibold text-white flex items-center justify-center gap-2">
+        <span class="h-4 w-4 rounded-full border-2 border-white/40 border-t-white animate-spin"></span>
+        Enregistrement…
+      </button>
+    </div>
+  </section>
+
+  <!-- État 5 : erreur serveur -->
+  <section class="max-w-md mx-auto" aria-labelledby="s5">
+    <h2 id="s5" class="text-sm font-bold uppercase tracking-wider text-stone-700 mb-3">État 5 — Erreur serveur (save ou checkout)</h2>
+    <p class="text-xs text-stone-500 mb-4">Reste sur le formulaire ; pas de redirect. Ex. Stripe indisponible, e-mail profil manquant.</p>
+    <div class="rounded-2xl bg-white border border-stone-200 shadow-sm p-5">
+      <p class="text-sm text-palette-danger mb-4" role="alert">Impossible d’enregistrer l’adresse. Réessayez plus tard.</p>
+      <button type="button" class="w-full rounded-lg bg-palette-forest-dark px-4 py-2.5 text-sm font-semibold text-white">Enregistrer et continuer</button>
+    </div>
+  </section>
+
+  <!-- Règles métier -->
+  <section class="max-w-2xl mx-auto rounded-xl border border-stone-200 bg-stone-50 p-4 space-y-3">
+    <h3 class="text-sm font-semibold text-stone-900">Règles de complétude (gate Checkout)</h3>
+    <ul class="text-sm text-stone-700 list-disc list-inside space-y-1">
+      <li><strong>Prénom</strong> et <strong>nom</strong> : tous deux obligatoires (<code>profiles</code>).</li>
+      <li><strong>Adresse</strong> : ligne 1, ville, code postal, province valide (Canada) — ligne 2 optionnelle.</li>
+      <li>Save : met à jour profil + Stripe (<code>Customer.name</code>, <code>Customer.address</code>).</li>
+      <li>Garde serveur recommandée sur <code>createCoachPlatformCheckoutSession</code> (Architecte).</li>
+    </ul>
+  </section>
+</body>
+</html>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>US-MYSA-CANCEL-01 — Mensuel actif, option A (choix + confirmations)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            'palette-olive': '#8e9856',
+            'palette-danger': '#c0564b',
+            'palette-danger-light': '#fdf2f1',
+            'palette-amber': '#d4a574',
+            stone: { 50: '#fafaf9', 100: '#f5f5f4', 200: '#e7e5e4', 500: '#78716c', 600: '#57534e', 800: '#292524', 900: '#1c1917' },
+          },
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-stone-100 min-h-screen p-4 md:p-8 space-y-12">
+  <p class="text-center text-xs text-stone-600 max-w-3xl mx-auto">
+    <strong>US-MYSA-CANCEL-01</strong> — Abonnement plateforme <strong>mensuel</strong>, statut <strong>active</strong>.
+    Entrée : lien <strong>Gérer mon abonnement</strong> (Button <code>muted</code>, text-sm) dans la carte statut.
+    <strong>Pas</strong> d’option « immédiat » en <strong>trialing</strong> (voir US-MYSA-CANCEL-04).
+    Montant remboursement : affiché <strong>uniquement</strong> si fourni par Stripe (ex. preview invoice / credit note) — <strong>jamais</strong> calculé côté app.
+    Grille offres : <strong>masquée</strong> tant que l’abo est géré (<code>active</code> / <code>trialing</code> / résiliation programmée).
+  </p>
+
+  <!-- État initial : carte + CTA -->
+  <section class="max-w-2xl mx-auto">
+    <p class="text-xs font-semibold text-stone-700 mb-2 text-center">① État initial — carte statut (active)</p>
+    <div class="bg-white rounded-t-lg border border-stone-200 shadow-sm p-4 md:p-6">
+      <h1 class="text-lg font-bold text-stone-900 mb-4">Mon Abonnement MySportAlly</h1>
+      <div class="rounded-xl border border-stone-200 bg-stone-50 p-4">
+        <div class="flex justify-between items-start gap-3">
+          <div class="min-w-0 flex-1">
+            <p class="font-semibold text-stone-900">Coach Pro — Mensuel</p>
+            <p class="text-sm text-stone-900 font-semibold mt-3">29,00 € <span class="font-normal text-stone-600">par mois</span></p>
+            <p class="text-sm text-stone-600 mt-2">Prochain prélèvement : <span class="font-medium text-stone-900">12 juin 2026</span></p>
+            <button type="button" class="mt-4 text-sm font-medium text-stone-600 hover:text-stone-900 underline-offset-2 hover:underline">
+              Gérer mon abonnement
+            </button>
+          </div>
+          <span class="shrink-0 inline-flex rounded-full bg-palette-forest-dark px-2.5 py-0.5 text-xs font-semibold text-white">Actif</span>
+        </div>
+      </div>
+      <p class="text-xs text-stone-500 mt-3">Pas de section offres visible sous la carte.</p>
+    </div>
+  </section>
+
+  <!-- Modale étape 1 : choix -->
+  <section class="max-w-lg mx-auto">
+    <p class="text-xs font-semibold text-stone-700 mb-2 text-center">② Clic « Gérer » → Modale étape 1 — choix (radio cartes)</p>
+    <div class="bg-white rounded-xl border border-stone-200 shadow-lg overflow-hidden">
+      <div class="px-6 py-4 border-b border-stone-100 flex justify-between items-center">
+        <h2 class="text-lg font-bold text-stone-900">Arrêter l’abonnement ?</h2>
+        <button type="button" class="text-stone-400 hover:text-stone-600" aria-label="Fermer">×</button>
+      </div>
+      <div class="px-6 py-4 space-y-3">
+        <label class="block rounded-xl border-2 border-palette-forest-dark bg-stone-50 p-4 cursor-pointer">
+          <div class="flex gap-3">
+            <input type="radio" name="cancel" checked class="mt-1 accent-palette-forest-dark" />
+            <div>
+              <p class="font-semibold text-stone-900 text-sm">À la fin du mois en cours</p>
+              <p class="text-xs text-stone-600 mt-1">Accès jusqu’au <strong>30 juin 2026</strong> · pas de renouvellement</p>
+            </div>
+          </div>
+        </label>
+        <label class="block rounded-xl border border-stone-200 p-4 cursor-pointer hover:border-stone-300">
+          <div class="flex gap-3">
+            <input type="radio" name="cancel" class="mt-1" />
+            <div>
+              <p class="font-semibold text-stone-900 text-sm">Arrêt immédiat</p>
+              <p class="text-xs text-stone-600 mt-1">Accès coupé dès confirmation</p>
+              <!-- Variante A : montant Stripe disponible -->
+              <p class="text-xs text-stone-800 mt-1.5 font-medium">Remboursement estimé par Stripe : <strong>18,50 €</strong></p>
+            </div>
+          </div>
+        </label>
+        <!-- Variante B (même option, montant Stripe indisponible) — commentaire mockup -->
+        <p class="text-[10px] text-stone-500 italic border-t border-dashed border-stone-200 pt-2">
+          Si Stripe ne renvoie pas de montant : remplacer la ligne montant par copy générique i18n
+          (<code>cancellation.immediateRefundUnknown</code>) — pas de chiffre inventé.
+        </p>
+      </div>
+      <div class="px-6 py-4 border-t border-stone-100 flex justify-end gap-3">
+        <button type="button" class="rounded-lg px-4 py-2 text-sm font-medium text-stone-600">Annuler</button>
+        <button type="button" class="rounded-lg px-4 py-2 text-sm font-semibold text-white bg-palette-forest-dark">Continuer</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modale étape 2a : fin de mois -->
+  <section class="max-w-lg mx-auto">
+    <p class="text-xs font-semibold text-stone-700 mb-2 text-center">③a Continuer (fin de mois) → Confirmation</p>
+    <div class="bg-white rounded-xl border border-stone-200 shadow-lg overflow-hidden">
+      <div class="px-6 py-4 border-b border-stone-100">
+        <h2 class="text-lg font-bold text-stone-900">Confirmer l’arrêt ?</h2>
+      </div>
+      <div class="px-6 py-4 space-y-3">
+        <p class="text-sm text-stone-700">Votre abonnement prendra fin le <strong>30 juin 2026</strong>. Vous conservez l’accès jusqu’à cette date.</p>
+        <p class="text-xs text-stone-500">Vous pourrez annuler cette demande avant la date pour réactiver le renouvellement automatique.</p>
+      </div>
+      <div class="px-6 py-4 border-t border-stone-100 flex justify-end gap-3">
+        <button type="button" class="rounded-lg px-4 py-2 text-sm font-medium text-stone-600">Retour</button>
+        <button type="button" class="rounded-lg px-4 py-2 text-sm font-semibold text-white bg-palette-forest-dark">Confirmer</button>
+      </div>
+    </div>
+    <p class="text-xs text-stone-500 mt-2 text-center">Après succès → carte état « fin programmée » (US-MYSA-CANCEL-02). Grille offres toujours masquée.</p>
+  </section>
+
+  <!-- Modale étape 2b : immédiat -->
+  <section class="max-w-lg mx-auto">
+    <p class="text-xs font-semibold text-stone-700 mb-2 text-center">③b Continuer (immédiat) → Confirmation renforcée</p>
+    <div class="bg-white rounded-xl border border-stone-200 shadow-lg overflow-hidden">
+      <div class="px-6 py-4 border-b border-stone-100">
+        <h2 class="text-lg font-bold text-stone-900">Arrêt immédiat ?</h2>
+      </div>
+      <div class="px-6 py-4 space-y-3">
+        <div class="rounded-lg bg-palette-danger-light border border-palette-danger/20 px-3 py-2.5 text-sm text-stone-800">
+          <p class="font-medium text-palette-danger">Accès coupé dès confirmation</p>
+          <p class="text-xs mt-1 text-stone-700">Mes athlètes, calendriers et chat coach ne seront plus accessibles.</p>
+        </div>
+        <p class="text-sm text-stone-700">Remboursement du non utilisé : <strong>18,50 €</strong> (montant Stripe)</p>
+        <p class="text-[10px] text-stone-500 italic">Sans montant Stripe : une phrase sans chiffre.</p>
+      </div>
+      <div class="px-6 py-4 border-t border-stone-100 flex justify-end gap-3">
+        <button type="button" class="rounded-lg px-4 py-2 text-sm font-medium text-stone-600">Annuler</button>
+        <button type="button" class="rounded-lg px-4 py-2 text-sm font-semibold text-white bg-palette-danger">Confirmer l’arrêt</button>
+      </div>
+    </div>
+    <p class="text-xs text-stone-500 mt-2 text-center">Après succès → accès coupé ; carte statut disparaît ; offres visibles seulement si plus d’abo géré (hors résiliation programmée).</p>
+  </section>
+
+  <p class="text-center text-xs text-stone-500 max-w-3xl mx-auto">
+    <strong>Transitions :</strong> Fermer modale / Annuler → ① inchangé · Erreur serveur → message <code>role="alert"</code> dans modale, CTA réessayable · Pending → boutons désactivés, libellé « … »
+  </p>
+</body>
+</html>

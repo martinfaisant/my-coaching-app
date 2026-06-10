@@ -53,6 +53,8 @@ export default async function PrivacyPage({ params }: PrivacyPageProps) {
               <li>{t('privacy.sections.dataCollected.li3')}</li>
               <li>{t('privacy.sections.dataCollected.li4')}</li>
               <li>{t('privacy.sections.dataCollected.li5')}</li>
+              <li>{t('privacy.sections.dataCollected.li6')}</li>
+              <li>{t('privacy.sections.dataCollected.li7')}</li>
             </ul>
           </section>
 
@@ -66,6 +68,8 @@ export default async function PrivacyPage({ params }: PrivacyPageProps) {
               <li>{t('privacy.sections.useOfData.li3')}</li>
               <li>{t('privacy.sections.useOfData.li4')}</li>
               <li>{t('privacy.sections.useOfData.li5')}</li>
+              <li>{t('privacy.sections.useOfData.li6')}</li>
+              <li>{t('privacy.sections.useOfData.li7')}</li>
             </ul>
           </section>
 
@@ -87,6 +91,7 @@ export default async function PrivacyPage({ params }: PrivacyPageProps) {
               <li>{t('privacy.sections.sharing.li2')}</li>
               <li>{t('privacy.sections.sharing.li3')}</li>
               <li>{t('privacy.sections.sharing.li4')}</li>
+              <li>{t('privacy.sections.sharing.li5')}</li>
             </ul>
           </section>
 

@@ -128,7 +128,8 @@
     "publicHome": "Home",
     "publicPrivacy": "Privacy Policy",
     "publicTerms": "Terms of Use",
-    "resetPasswordPage": "Reset password"
+    "resetPasswordPage": "Reset password",
+    "coachPlatformSubscription": "MySportAlly subscription"
   },
   "athleteStats": {
     "title": "Statistics",
@@ -664,7 +665,7 @@
     "emailAddress": "Email address",
     "nonEditable": "Non-editable",
     "postalCode": "Postal Code",
-    "postalCodePlaceholder": "E.g.: 75001",
+    "postalCodePlaceholder": "E.g.: H1W2S3",
     "displayLanguage": "Display language",
     "displayLanguageHelp": "This language will be used across the site while you are logged in.",
     "displayLanguageFr": "French",
@@ -690,7 +691,7 @@
     "weeklyVolumesSectionTitle": "Weekly volumes",
     "weeklyTargetLabel": "Time to allocate / week",
     "weeklyCurrentHoursLabel": "Current volume",
-    "weeklyMaxHoursLabel": "Maximum volume",
+    "weeklyMaxHoursLabel": "Maximum possible vol",
     "noPracticedSportsMessage": "Select practiced sports above to set your goals.",
     "suffixHoursPerWeek": "h/week",
     "suffixKmPerWeek": "km/week",
@@ -796,7 +797,8 @@
       "notConnected": "Not connected.",
       "emptyMessage": "Empty message.",
       "conversationUnavailable": "Conversation not found or not accessible.",
-      "readOnlyConversation": "This conversation is read-only."
+      "readOnlyConversation": "This conversation is read-only.",
+      "coachPlatformRequired": "An active coach subscription is required to use chat with your athletes."
     }
   },
   "calendar": {
@@ -968,16 +970,10 @@
   },
   "landing": {
     "hero": {
-      "badge": "The #1 personalized sports coaching platform",
+      "badge": "The personalized sports coaching platform",
       "title": "Reach your goals with a",
       "titleHighlight": "dedicated coach",
       "subtitle": "Personalized training plans, real-time tracking, Strava sync and direct messaging. Everything you need to progress effectively."
-    },
-    "stats": {
-      "athletes": "Active athletes",
-      "coaches": "Certified coaches",
-      "workouts": "Planned sessions",
-      "satisfaction": "Satisfaction"
     },
     "preview": {
       "title": "An intuitive and comprehensive interface",
@@ -1049,7 +1045,7 @@
     },
     "cta": {
       "title": "Ready to take it to the next level?",
-      "subtitle": "Join hundreds of athletes who progress every day with My Sport Ally"
+      "subtitle": "Join athletes who progress every day with My Sport Ally"
     },
     "footer": {
       "copyright": "All rights reserved.",
@@ -1061,7 +1057,7 @@
   "legal": {
     "common": {
       "lastUpdated": "Last updated: {date}",
-      "lastUpdatedFull": "Last updated: May 6, 2026"
+      "lastUpdatedFull": "Last updated: May 20, 2026"
     },
     "terms": {
       "title": "Terms of Use",
@@ -1085,10 +1081,28 @@
         },
         "payments": {
           "title": "5. PAYMENTS AND SUBSCRIPTIONS",
-          "li1": "Coach-Athlete Transactions: Mysportally does not process any payments between Coaches and Athletes. Transactions are conducted outside the platform under the exclusive responsibility of the users.",
-          "li2": "Coach Subscription: Access to services for Coaches is subject to a fee (monthly or annual).",
-          "li3": "Cancellation: Monthly subscriptions can be canceled at any time, effective at the end of the current billing period. Yearly subscriptions constitute a firm commitment for the full term.",
-          "li4": "Refunds: No refunds are provided, except where required by mandatory law."
+          "intro": "These terms also constitute the general terms of sale and refund policy applicable to Coaches’ paid Platform access subscription, subject to non-waivable consumer rights in Quebec and Canada.",
+          "coachAthlete": {
+            "title": "5.1 Coach–Athlete Transactions",
+            "p1": "Mysportally does not process any payments between Coaches and Athletes. Transactions are conducted outside the platform under the exclusive responsibility of the users."
+          },
+          "coachPlatform": {
+            "title": "5.2 Coach Subscription – Platform Access",
+            "p1": "Access to Coach-only features is paid (monthly or annual plan, as selected at checkout). Payment is processed by an external payment service provider (e.g. Stripe); Mysportally does not store your full card number or security code. The price, term, renewal and checkout disclosures form part of the contract.",
+            "trial": "Free trial (if offered): when a free trial is offered for Platform access, it is limited to one time per natural person for the campaign or offer described at signup. It is not cumulative, transferable, or available again through a new account for the same person. After the trial, the subscription continues at the price shown at signup unless canceled per the payment provider’s process and these terms.",
+            "cancellationMonthly": "Monthly subscription: may be canceled at any time; cancellation takes effect at the end of the current billing period, subject to the payment provider’s mechanics.",
+            "cancellationAnnual": "Annual subscription: constitutes a firm commitment for the full paid term; it may not be canceled early except where mandatory law requires.",
+            "refunds": "Refunds (Coach Platform subscription): no refund, in full or on a pro-rata basis, is granted for the annual plan. For the monthly plan, no refund is granted for the current billing period already started, except where mandatory law requires. Non-waivable rights under applicable law prevail over these terms."
+          },
+          "accountIntegrity": {
+            "title": "5.3 Account integrity and trial use",
+            "p1": "Each natural person may benefit only once from the applicable free trial for the same campaign or offer, regardless of how many accounts are created.",
+            "p2": "If we reasonably believe there are duplicate accounts, false statements, or circumvention (including to obtain multiple free trials), Mysportally may, without prior notice when circumstances require: suspend or close the affected accounts; immediately cancel any free trial; refuse any new trial; revoke Platform access; and, to the extent permitted by law and under the billing terms accepted at payment, charge the applicable subscription price from the date the abuse is identified, without seeking retroactive billing for periods already displayed and used as free, except where mandatory law or a court order requires otherwise."
+          },
+          "serviceEvolution": {
+            "title": "5.4 Platform and plan changes",
+            "p1": "Mysportally may evolve the Platform (features, interfaces, technical limits). New or changed features are not automatically included in a plan or subscription already in force unless stated otherwise at signup. Mysportally may offer them through another plan, paid option, or upgrade. For a material adverse change to subscribed Coaches, Mysportally will endeavour to notify affected users within a reasonable time."
+          }
         },
         "medical": {
           "title": "6. MEDICAL AND HEALTH DISCLAIMER (IMPORTANT)",
@@ -1118,7 +1132,9 @@
           "title": "10. PROHIBITED CONDUCT",
           "li1": "Use the Platform for illegal or fraudulent purposes.",
           "li2": "Engage in data scraping without authorization.",
-          "li3": "Attempt to compromise the technical integrity of the Platform."
+          "li3": "Attempt to compromise the technical integrity of the Platform.",
+          "li4": "Create or use multiple accounts to obtain multiple free trials or circumvent pricing terms.",
+          "li5": "Provide inaccurate identity information in connection with a trial, subscription, or payment."
         },
         "law": {
           "title": "11. GOVERNING LAW AND MEDIATION",
@@ -1128,7 +1144,7 @@
     },
     "privacy": {
       "title": "Privacy Policy",
-      "lastUpdatedFull": "Last updated: May 7, 2026",
+      "lastUpdatedFull": "Last updated: May 20, 2026",
       "sections": {
         "commitment": {
           "title": "1. OUR COMMITMENT",
@@ -1140,7 +1156,9 @@
           "li2": "Training Data: athletic profile, goals, planned workouts and interactions between Coach and Athlete (e.g., messaging).",
           "li3": "Activity data via third-party services (e.g., Strava): with your explicit consent, we may import activity data (e.g., distance, duration, GPS, heart rate if available). This data may be considered sensitive.",
           "li4": "Technical Data: information sent by your device and browser when you access the website (e.g., IP address, browser type, request timestamps). It may be processed through our technical providers (hosting, authentication) for security, operations and troubleshooting purposes, including maintaining your session.",
-          "li5": "Contact form (dedicated page, with or without an account): first name, last name, email address, phone number if provided, reason for contact, message content; assignment of a tracking reference; if you are signed in, an account identifier may be linked to the request."
+          "li5": "Contact form (dedicated page, with or without an account): first name, last name, email address, phone number if provided, reason for contact, message content; assignment of a tracking reference; if you are signed in, an account identifier may be linked to the request.",
+          "li6": "Coach paid Platform subscription data: technical transaction or subscription identifiers, access status, free-trial consumption history per campaign (if applicable), processed when paying through an external payment service provider; Mysportally does not store your full card details on its own servers.",
+          "li7": "Abuse-prevention data: technical elements used to detect duplicate accounts or circumvention (e.g. email address, account identifiers, session or login data, payment-provider identifiers), as necessary to enforce the Terms of Use."
         },
         "useOfData": {
           "title": "3. USE OF DATA",
@@ -1148,7 +1166,9 @@
           "li2": "Enable Coaches to track Athlete progress.",
           "li3": "Improve user experience and technical functionality.",
           "li4": "Communicate with you regarding your account.",
-          "li5": "Process and respond to support requests submitted through the Contact form, including by email, and retain those requests for as long as needed to handle them and for customer support follow-up."
+          "li5": "Process and respond to support requests submitted through the Contact form, including by email, and retain those requests for as long as needed to handle them and for customer support follow-up.",
+          "li6": "Manage Coaches’ paid Platform subscription and related access status (including through an external payment service provider, as strictly necessary).",
+          "li7": "Prevent abuse (including duplicate accounts or unauthorized use of a free trial) and enforce our Terms of Use."
         },
         "consent": {
           "title": "4. CONSENT AND SENSITIVE DATA",
@@ -1161,7 +1181,8 @@
           "li1": "Your Coach: for the execution of the service.",
           "li2": "Technical providers required to operate the website (hosting, authentication, database).",
           "li3": "Legal obligations: if required by law.",
-          "li4": "Transactional email delivery providers when needed to route a Contact form request to our team, strictly as required to process that request."
+          "li4": "Transactional email delivery providers when needed to route a Contact form request to our team, strictly as required to process that request.",
+          "li5": "External payment service provider: when you pay for Coach access to the Platform, data strictly necessary for payment and billing may be shared with that provider, which acts as a processor for that part of the processing and applies its own commitments to you during the transaction."
         },
         "retention": {
           "title": "6. RETENTION AND CROSS-BORDER TRANSFERS",
@@ -1298,7 +1319,7 @@
       "athleteMessageLabel": "Athlete's message",
       "weeklyTargetLabel": "Time to allocate:",
       "weeklyCurrentHoursLabel": "Current volume:",
-      "weeklyMaxHoursLabel": "Maximum volume:",
+      "weeklyMaxHoursLabel": "Max possible volume:",
       "objectivesAndVolumeLabel": "Weekly volumes",
       "notSpecified": "Not specified",
       "goalsUpcoming": "Goals",
@@ -1366,7 +1387,7 @@
       "availableOffers": "Available plans",
       "free": "Free",
       "perMonth": "month",
-      "plan": "plan",
+      "plan": "one time",
       "viewDetails": "View details",
       "defaultBio": "Coach available to support your progress."
     },
@@ -1460,7 +1481,313 @@
       "declined": "Request declined.",
       "requireWeeklyTargetAndVolume": "Time to allocate per week and volumes per sport are required.",
       "weeklyTargetInvalid": "Time to allocate must be a number between 0 and 168 h.",
-      "weeklyVolumeInvalid": "Please check volumes per sport (number ≥ 0, within allowed limit)."
+      "weeklyVolumeInvalid": "Please check volumes per sport (number ≥ 0, within allowed limit).",
+      "platformSubscriptionRequired": "An active coach subscription is required to accept a request."
+    }
+  },
+  "coachMsaSubscription": {
+    "pageTitle": "MySportAlly subscription",
+    "heading": "MySportAlly subscription",
+    "statusSectionTitle": "Subscription status",
+    "planUnknown": "Platform plan",
+    "nextPaymentWithDate": "Next charge: {date}",
+    "trialCatalogBadgeFreeDays": "{days} free days",
+    "trialCatalogTrialLine": "{days} days free trial, then {thenPrice}.",
+    "priceDisplayedUnitPerMonth": "/ month",
+    "priceDisplayedUnitPerYear": "/ year",
+    "priceDisplayedUnitEveryNMonths": "/ {n} months",
+    "priceDisplayedUnitEveryNYears": "/ {n} years",
+    "trialThenPrefix": "then",
+    "trialRemainingDays": "{count} days of free trial left",
+    "trialRemainingOneDay": "1 day of free trial left",
+    "trialRemainingLastDay": "Last day of free trial",
+    "cardPricingUnavailable": "Plan price is temporarily unavailable.",
+    "offersTitle": "Available offers",
+    "subscribeCta": "Subscribe",
+    "subscribePending": "Redirecting…",
+    "noOffersConfigured": "No offers are configured yet. Contact support if needed.",
+    "billingInfoTitle": "Billing info",
+    "invoicesTitle": "Invoices",
+    "invoicesEmpty": "No invoices yet.",
+    "failedPaymentsTitle": "Failed payments",
+    "failedPaymentsEmpty": "No failed payments.",
+    "refundsTitle": "Refunds",
+    "refundsEmpty": "No refunds.",
+    "refundStatus": "Status: {status}",
+    "tableDate": "Date",
+    "tableLabel": "Description",
+    "tableAmount": "Amount",
+    "tableStatus": "Status",
+    "invoicePdfLink": "PDF",
+    "priceIntervalPerMonth": "per month",
+    "priceIntervalEveryNMonths": "every {n} months",
+    "priceIntervalPerYear": "per year",
+    "priceIntervalEveryNYears": "every {n} years",
+    "subscriptionStatus": {
+      "active": "Active",
+      "trialing": "On trial"
+    },
+    "currentOfferCard": {
+      "manage": "Manage",
+      "badgeScheduledEnd": "Scheduled to end",
+      "nextPaymentOn": "Next charge on {date}",
+      "trialEndOn": "trial ends {date}",
+      "footerHintActive": "Change or cancel your subscription.",
+      "footerHintTrial": "One trial period per person only.",
+      "scheduledAlertTitle": "Cancellation requested",
+      "scheduledAlertBody": "Access until {date}, then your coach account will be suspended.",
+      "scheduledFooterHint": "Changed your mind?",
+      "resumeScheduledEnd": "Cancel cancellation"
+    },
+    "cancellation": {
+      "common": {
+        "cancel": "Cancel",
+        "close": "Close"
+      },
+      "choose": {
+        "title": "Cancel subscription?",
+        "endOfPeriodTitle": "At end of current month",
+        "endOfPeriodHint": "Access until {date} · no renewal",
+        "endOfPeriodHintGeneric": "Access until the end of the current period",
+        "immediateTitle": "Cancel immediately",
+        "immediateHint": "Access ends as soon as you confirm",
+        "continue": "Continue"
+      },
+      "confirmSchedule": {
+        "title": "Confirm cancellation?",
+        "body": "Your subscription will end on {date}. You keep access until then.",
+        "bodyGeneric": "Your subscription will end at the end of the current period.",
+        "infoBox": "You can undo this request before that date.",
+        "confirm": "Confirm"
+      },
+      "confirmImmediate": {
+        "title": "Cancel immediately?",
+        "alertTitle": "Access ends immediately",
+        "alertBody": "My athletes, calendars and coach chat will no longer be available.",
+        "refundLoading": "Loading refund estimate…",
+        "refundWithAmount": "Refund: {amount}",
+        "refundUnknown": "A prorated refund may apply per Stripe.",
+        "confirm": "Confirm cancellation"
+      },
+      "confirmTrial": {
+        "title": "End trial?",
+        "body": "Your trial ends on {date}. Access until then; no charge after that.",
+        "bodyGeneric": "Your trial will end on the scheduled date. No charge after that.",
+        "trialOnceBox": "Only one trial period is granted per person for this offer.",
+        "confirm": "Confirm"
+      },
+      "confirmAnnual": {
+        "title": "Don't renew?",
+        "body": "Your subscription stays active until {date}, then ends.",
+        "bodyGeneric": "Your subscription stays active until the end of the annual period.",
+        "infoBox": "No partial refund. You can undo this request before that date.",
+        "confirm": "Confirm"
+      },
+      "confirmResume": {
+        "title": "Cancel the cancellation request?",
+        "body": "Your subscription will be reactivated with automatic renewal and no scheduled end date.",
+        "confirm": "Yes, reactivate"
+      },
+      "unpaid": {
+        "sectionTitle": "Payment overdue",
+        "badge": "Payment overdue",
+        "title": "Pay the outstanding balance before changing your subscription",
+        "body": "While a payment has failed, you cannot request cancellation or non-renewal from this page.",
+        "payCta": "Pay now"
+      },
+      "errors": {
+        "notFound": "Subscription not found.",
+        "forbidden": "Action not allowed.",
+        "notManaged": "No active subscription to manage.",
+        "payBeforeCancel": "Pay the outstanding balance before changing your subscription.",
+        "alreadyScheduled": "Subscription end is already scheduled.",
+        "notScheduled": "No scheduled cancellation to undo.",
+        "immediateNotAllowedTrialing": "During trial, only end-of-trial cancellation is available.",
+        "immediateMonthlyOnly": "Immediate cancellation is only available for monthly subscriptions.",
+        "unsupportedBillingPeriod": "This plan cannot be managed in the app. Contact support.",
+        "stripeUnavailable": "Payment service is unavailable. Try again later.",
+        "notUnpaid": "No overdue payment to settle.",
+        "payUrlUnavailable": "Payment link unavailable. Try again or contact support."
+      }
+    },
+    "invoiceStatus": {
+      "paid": "Paid",
+      "open": "Open",
+      "draft": "Draft",
+      "void": "Void",
+      "uncollectible": "Uncollectible"
+    },
+    "errors": {
+      "catalogUnavailable": "Could not load offers. Try again later or contact support.",
+      "historyUnavailable": "Could not load billing history right now."
+    },
+    "checkoutPrerequisites": {
+      "modalTitle": "Billing information",
+      "intro": "Complete your details before continuing to payment.",
+      "billingSectionTitle": "Billing address",
+      "saveAndContinue": "Save and continue",
+      "saving": "Saving…",
+      "redirecting": "Redirecting…",
+      "backToOffers": "Back to offers",
+      "cancel": "Cancel",
+      "loadError": "Could not load your billing address. Try again.",
+      "retry": "Retry",
+      "validation": {
+        "firstNameRequired": "First name is required.",
+        "lastNameRequired": "Last name is required."
+      },
+      "errors": {
+        "stripeUnavailable": "Payment service is not available. Try again later.",
+        "stripeCustomerFailed": "Could not prepare your billing account. Try again later.",
+        "persistFailed": "Could not save your customer reference. Try again or contact support.",
+        "saveFailed": "Could not save your information. Try again later.",
+        "profileUpdateFailed": "Could not update your profile. Try again later."
+      }
+    },
+    "billingAddress": {
+      "sectionTitle": "Billing address",
+      "emptyDescription": "No billing address is saved yet.",
+      "addAddress": "Add address",
+      "edit": "Edit",
+      "line1": "Address line 1",
+      "line2Optional": "Address line 2 (optional)",
+      "city": "City",
+      "postalCode": "Postal code",
+      "province": "Province / territory",
+      "provincePlaceholder": "Select…",
+      "country": "Country",
+      "countryDisplay": "Canada",
+      "saving": "Saving…",
+      "saved": "Saved",
+      "loadError": "Could not load your billing address. Check your connection or try again.",
+      "retry": "Retry",
+      "errors": {
+        "stripeUnavailable": "Payment service is not available. Try again later.",
+        "stripeCustomerFailed": "Could not prepare your Stripe customer. Try again later.",
+        "persistFailed": "Could not save your customer reference. Try again or contact support.",
+        "saveFailed": "Could not save your address. Try again later."
+      },
+      "validation": {
+        "notAuthenticated": "You must be signed in.",
+        "coachOnly": "Only coaches can update this address.",
+        "line1Required": "Address line 1 is required.",
+        "cityRequired": "City is required.",
+        "postalRequired": "Postal code is required.",
+        "provinceRequired": "Please select a province or territory.",
+        "missingEmail": "Your profile must have an email address before you can save a billing address."
+      },
+      "provinces": {
+        "AB": "Alberta",
+        "BC": "British Columbia",
+        "MB": "Manitoba",
+        "NB": "New Brunswick",
+        "NL": "Newfoundland and Labrador",
+        "NS": "Nova Scotia",
+        "NT": "Northwest Territories",
+        "NU": "Nunavut",
+        "ON": "Ontario",
+        "PE": "Prince Edward Island",
+        "QC": "Quebec",
+        "SK": "Saskatchewan",
+        "YT": "Yukon"
+      }
+    }
+  },
+  "coachMsaOffers": {
+    "modalTitle": "Choose your plan",
+    "modalIntroDefault": "Select the plan that fits you.",
+    "loading": "Loading offers…",
+    "close": "Close",
+    "noOffers": "No offers are configured yet. Contact support if needed.",
+    "byPriceId": {
+      "price_1TVyePD1L4D9b7s03IvfOcUY": {
+        "title": "Monthly",
+        "description": "Full My Sport Ally access to coach your athletes (planning, requests, chat, goals). Unlimited athletes. Billed every month. This plan does not include collecting payments from athletes.",
+        "tagline": "Coach your athletes with maximum flexibility, no long-term lock-in, cancel any time.",
+        "features": [
+          "Unlimited athletes",
+          "Advanced session planning",
+          "Monthly billing"
+        ]
+      },
+      "price_1TWNrlD1L4D9b7s0r9Syzf05": {
+        "title": "Annual",
+        "description": "Same unlimited platform access to coach your athletes. Billed once per year (often the best value). Collecting payments from athletes may be offered as a separate add-on later.",
+        "tagline": "Built for long-term performance of your athletes and your activity.",
+        "features": [
+          "Everything in the Monthly plan",
+          "Simpler billing once a year",
+          "Save 20% over the year"
+        ]
+      },
+      "price_1TWcZORfZVuQT1uNXT5xfWYe": {
+        "title": "Monthly",
+        "description": "Full My Sport Ally access to coach your athletes (planning, requests, chat, goals). Unlimited athletes. Billed every month. This plan does not include collecting payments from athletes.",
+        "tagline": "Coach your athletes with maximum flexibility, no long-term lock-in, cancel any time.",
+        "features": [
+          "Unlimited athletes",
+          "Advanced session planning",
+          "Monthly billing"
+        ]
+      },
+      "price_1TWcZyRfZVuQT1uNZyU8Rn0X": {
+        "title": "Annual",
+        "description": "Same unlimited platform access to coach your athletes. Billed once per year (often the best value). Collecting payments from athletes may be offered as a separate add-on later.",
+        "tagline": "Built for long-term performance of your athletes and your activity.",
+        "features": [
+          "Everything in the Monthly plan",
+          "Simpler billing once a year",
+          "Save 20% over the year"
+        ]
+      }
+    },
+    "futurePlatformPaymentsTier": {
+      "monthlyTitle": "Platform + athlete payments — monthly",
+      "monthlyDescription": "Unlimited coaching on the platform plus tools to collect and track payments from your athletes (invoicing, settlements). Coming soon.",
+      "annualTitle": "Platform + athlete payments — annual",
+      "annualDescription": "Same scope as the monthly plan (platform + athlete payments), billed annually. Coming soon."
+    }
+  },
+  "coachPlatform": {
+    "listBlockedTitle": "Coach subscription required",
+    "listBlockedDescription": "You can no longer view your athletes’ planning and details until your subscription is up to date.",
+    "checkoutCta": "Continue to payment",
+    "checkoutPending": "Redirecting…",
+    "calendarBlockedTitle": "Subscription required",
+    "calendarBlockedDescription": "You cannot view this athlete’s calendar. Renew your coach subscription to regain access.",
+    "backToAthletes": "Back to My athletes",
+    "paywallModalTitle": "Accept this request",
+    "paywallModalBody": "To accept a new athlete, you must first activate your coach subscription through our payment partner (Stripe). Pricing is the one configured for your account.",
+    "paywallCancel": "Cancel",
+    "stripeReturnSuccess": "Your subscription is active or being processed. Refresh the page in a few moments if needed.",
+    "stripeReturnCanceled": "Payment was cancelled. Your subscription was not changed.",
+    "stripeReturnError": "We could not confirm your payment. Try again or contact support.",
+    "stripeVerifying": "Verifying payment…",
+    "stripeReturnPendingWebhook": "Payment confirmed: your access may take a few seconds to activate. Refresh the page or wait a moment.",
+    "stripeRefreshCta": "Refresh",
+    "dismissBanner": "Dismiss",
+    "chatDisabledHint": "Coach subscription required to chat",
+    "validation": {
+      "stripeNotConfigured": "Online payment is not configured.",
+      "priceNotConfigured": "The subscription price is not configured.",
+      "siteUrlMissing": "Site URL is not configured (NEXT_PUBLIC_SITE_URL or NEXT_PUBLIC_APP_URL).",
+      "notAuthenticated": "You must be signed in.",
+      "coachOnly": "Coaches only.",
+      "noCheckoutUrl": "Could not get payment URL.",
+      "checkoutFailed": "Creating the checkout session failed.",
+      "invalidPriceId": "This offer is not available.",
+      "missingEmailForCheckout": "An email address is required for payment. Please complete your profile.",
+      "stripeCustomerPrepareFailed": "We could not prepare your billing account. Try again or contact support.",
+      "checkoutPrerequisitesIncomplete": "Complete your name and billing address before continuing to payment."
+    },
+    "verify": {
+      "stripeUnavailable": "The payment service is unavailable.",
+      "notAuthenticated": "You must be signed in.",
+      "coachOnly": "Coaches only.",
+      "invalidSession": "Invalid payment session.",
+      "sessionNotOwned": "This session does not belong to your account.",
+      "paymentIncomplete": "Payment is not complete.",
+      "retrieveFailed": "Could not verify the payment session."
     }
   },
   "myCoach": {

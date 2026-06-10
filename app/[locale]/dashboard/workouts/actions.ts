@@ -302,10 +302,7 @@ export async function getEffectiveWeeklyTotalsFait(
   const supabase = await createClient()
   const accessResult = await requireCoachOrAthleteAccess(supabase, athleteId)
   const locale = await getLocale()
-  const [tAuth, tErrors] = await Promise.all([
-    getTranslations({ locale, namespace: 'auth.errors' }),
-    getTranslations({ locale, namespace: 'errors' }),
-  ])
+  const tAuth = await getTranslations({ locale, namespace: 'auth.errors' })
   if ('error' in accessResult) return { error: tAuth(accessResult.errorCode ?? 'notAuthenticated'), weeklyTotals: [] }
 
   const endDateLastSunday = (() => {

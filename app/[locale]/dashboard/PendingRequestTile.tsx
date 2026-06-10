@@ -22,6 +22,7 @@ import {
 import type { SportType, WeeklyVolumeTileKey } from '@/lib/sportStyles'
 import { respondToCoachRequest } from '@/app/[locale]/dashboard/actions'
 import type { PendingRequestWithAthlete } from '@/app/[locale]/dashboard/actions'
+import { CoachPlatformSubscribeOffersModal } from '@/components/CoachPlatformSubscribeOffersModal'
 import type { Goal } from '@/types/database'
 import { RequestGoalsListModal } from '@/app/[locale]/dashboard/RequestGoalsListModal'
 import {
@@ -37,6 +38,8 @@ type PendingRequestTileProps = {
   request: PendingRequestWithAthlete
   /** Objectifs de l'athlète (triés date desc), pour les blocs Objectifs / Résultats */
   goals?: Goal[]
+  /** Abonnement plateforme Stripe actif ou en essai (`coach_platform_access_granted`) — sinon Accepter / Discuter restreints */
+  coachHasPlatformAccess: boolean
 }
 
 const MapIconSmall = ({ className = 'w-3.5 h-3.5' }: { className?: string }) => (
@@ -68,9 +71,11 @@ function formatOfferPrice(
   return `${request.offer_price}€`
 }
 
-export function PendingRequestTile({ request, goals = [] }: PendingRequestTileProps) {
+export function PendingRequestTile({ request, goals = [], coachHasPlatformAccess }: PendingRequestTileProps) {
   const [isPending, startTransition] = useTransition()
   const [confirmModal, setConfirmModal] = useState<'decline' | 'accept' | null>(null)
+  const [subscribeOffersModalOpen, setSubscribeOffersModalOpen] = useState(false)
+  const [respondError, setRespondError] = useState<string | null>(null)
   const [seeMoreModal, setSeeMoreModal] = useState<'objectifs' | 'resultats' | null>(null)
   const router = useRouter()
   const locale = useLocale()
@@ -79,7 +84,17 @@ export function PendingRequestTile({ request, goals = [] }: PendingRequestTilePr
   const tCoach = useTranslations('coachRequests')
   const tGoals = useTranslations('goals')
   const tCommon = useTranslations('common')
+  const tPlat = useTranslations('coachPlatform')
   const { openChatWithAthlete } = useOpenChat()
+
+  const beginAcceptFlow = () => {
+    setRespondError(null)
+    if (!coachHasPlatformAccess) {
+      setSubscribeOffersModalOpen(true)
+      return
+    }
+    setConfirmModal('accept')
+  }
 
   const today = new Date().toISOString().slice(0, 10)
   const upcomingGoals = goals.filter((g) => g.date > today).sort((a, b) => b.date.localeCompare(a.date))
@@ -92,12 +107,14 @@ export function PendingRequestTile({ request, goals = [] }: PendingRequestTilePr
     .filter(Boolean)
 
   const handleRespond = (accept: boolean) => {
+    setRespondError(null)
     startTransition(async () => {
       const result = await respondToCoachRequest(request.id, accept, locale)
       if (result.error) {
-        alert(result.error)
+        setRespondError(result.error)
         return
       }
+      setRespondError(null)
       setConfirmModal(null)
       router.refresh()
     })
@@ -185,13 +202,18 @@ export function PendingRequestTile({ request, goals = [] }: PendingRequestTilePr
             variant="secondary"
             onClick={() => openChatWithAthlete(request.athlete_id)}
             className="whitespace-nowrap"
+            disabled={isPending || !coachHasPlatformAccess}
+            title={!coachHasPlatformAccess ? tPlat('chatDisabledHint') : undefined}
           >
             {t('pendingRequests.chat')}
           </Button>
           <Button
             type="button"
             variant="danger"
-            onClick={() => setConfirmModal('decline')}
+            onClick={() => {
+              setRespondError(null)
+              setConfirmModal('decline')
+            }}
             disabled={isPending}
           >
             {tCoach('decline')}
@@ -199,7 +221,7 @@ export function PendingRequestTile({ request, goals = [] }: PendingRequestTilePr
           <Button
             type="button"
             variant="primary"
-            onClick={() => setConfirmModal('accept')}
+            onClick={beginAcceptFlow}
             disabled={isPending}
           >
             {tCoach('accept')}
@@ -415,6 +437,8 @@ export function PendingRequestTile({ request, goals = [] }: PendingRequestTilePr
           variant="secondary"
           onClick={() => openChatWithAthlete(request.athlete_id)}
           className="w-full"
+          disabled={isPending || !coachHasPlatformAccess}
+          title={!coachHasPlatformAccess ? tPlat('chatDisabledHint') : undefined}
         >
           {t('pendingRequests.chat')}
         </Button>
@@ -422,7 +446,10 @@ export function PendingRequestTile({ request, goals = [] }: PendingRequestTilePr
           <Button
             type="button"
             variant="danger"
-            onClick={() => setConfirmModal('decline')}
+            onClick={() => {
+              setRespondError(null)
+              setConfirmModal('decline')
+            }}
             disabled={isPending}
             className="flex-1"
           >
@@ -431,7 +458,7 @@ export function PendingRequestTile({ request, goals = [] }: PendingRequestTilePr
           <Button
             type="button"
             variant="primary"
-            onClick={() => setConfirmModal('accept')}
+            onClick={beginAcceptFlow}
             disabled={isPending}
             className="flex-1"
           >
@@ -440,9 +467,18 @@ export function PendingRequestTile({ request, goals = [] }: PendingRequestTilePr
         </div>
       </div>
 
+      <CoachPlatformSubscribeOffersModal
+        isOpen={subscribeOffersModalOpen}
+        onClose={() => setSubscribeOffersModalOpen(false)}
+        introSlot={<p className="text-sm text-stone-600">{tPlat('paywallModalBody')}</p>}
+      />
+
       <Modal
         isOpen={confirmModal === 'decline'}
-        onClose={() => setConfirmModal(null)}
+        onClose={() => {
+          setRespondError(null)
+          setConfirmModal(null)
+        }}
         size="sm"
         title={tCoach('confirmDeclineTitle')}
         footer={
@@ -451,7 +487,10 @@ export function PendingRequestTile({ request, goals = [] }: PendingRequestTilePr
               type="button"
               variant="muted"
               className="flex-1"
-              onClick={() => setConfirmModal(null)}
+              onClick={() => {
+                setRespondError(null)
+                setConfirmModal(null)
+              }}
             >
               {tCommon('cancel')}
             </Button>
@@ -469,12 +508,20 @@ export function PendingRequestTile({ request, goals = [] }: PendingRequestTilePr
       >
         <div className="px-6 py-4">
           <p className="text-sm text-stone-600">{tCoach('confirmDeclineBody')}</p>
+          {respondError ? (
+            <p className="mt-2 text-sm text-palette-danger" role="alert">
+              {respondError}
+            </p>
+          ) : null}
         </div>
       </Modal>
 
       <Modal
         isOpen={confirmModal === 'accept'}
-        onClose={() => setConfirmModal(null)}
+        onClose={() => {
+          setRespondError(null)
+          setConfirmModal(null)
+        }}
         size="sm"
         title={tCoach('confirmAcceptTitle')}
         footer={
@@ -483,7 +530,10 @@ export function PendingRequestTile({ request, goals = [] }: PendingRequestTilePr
               type="button"
               variant="muted"
               className="flex-1"
-              onClick={() => setConfirmModal(null)}
+              onClick={() => {
+                setRespondError(null)
+                setConfirmModal(null)
+              }}
             >
               {tCommon('cancel')}
             </Button>
@@ -501,6 +551,11 @@ export function PendingRequestTile({ request, goals = [] }: PendingRequestTilePr
       >
         <div className="px-6 py-4">
           <p className="text-sm text-stone-600">{tCoach('confirmAcceptBody')}</p>
+          {respondError ? (
+            <p className="mt-2 text-sm text-palette-danger" role="alert">
+              {respondError}
+            </p>
+          ) : null}
         </div>
       </Modal>
 

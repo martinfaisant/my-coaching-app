@@ -1,7 +1,10 @@
 import { getCurrentUserWithProfile } from '@/utils/auth'
+import { Suspense } from 'react'
 import type { ChatRoleResult } from '@/app/[locale]/actions/chat'
 import { DashboardChatWrapper } from '@/app/[locale]/dashboard/DashboardChatWrapper'
 import { DashboardTopBar } from '@/components/DashboardTopBar'
+import { CoachPlatformCheckoutVerification } from '@/components/CoachPlatformCheckoutVerification'
+import { CoachPlatformStripeBanner } from '@/components/CoachPlatformStripeBanner'
 
 function getChatRoleFromProfile(profile: { role: string }, userId: string): ChatRoleResult {
   if (profile.role === 'coach') return { role: 'coach', userId }
@@ -21,7 +24,21 @@ export default async function DashboardLayout({
     <div className="bg-stone-100 text-stone-800 antialiased h-screen flex flex-col overflow-hidden">
       <DashboardTopBar profile={{ ...current.profile, email: current.email }} />
       <div className="flex-1 min-h-0 pt-0 px-3 pb-3 flex flex-col overflow-hidden bg-white">
-        <DashboardChatWrapper initialChatRole={initialChatRole}>
+        <DashboardChatWrapper
+          initialChatRole={initialChatRole}
+          coachStripeSlot={
+            current.profile.role === 'coach' ? (
+              <>
+                <Suspense fallback={null}>
+                  <CoachPlatformCheckoutVerification />
+                </Suspense>
+                <Suspense fallback={null}>
+                  <CoachPlatformStripeBanner />
+                </Suspense>
+              </>
+            ) : undefined
+          }
+        >
           {children}
         </DashboardChatWrapper>
       </div>

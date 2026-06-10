@@ -65,16 +65,46 @@ export default async function TermsPage({ params }: TermsPageProps) {
             <p className="leading-relaxed">{t('terms.sections.independence.p1')}</p>
           </section>
 
-          <section className="space-y-3">
+          <section className="space-y-6">
             <h2 className="text-xl font-semibold text-stone-900">
               {t('terms.sections.payments.title')}
             </h2>
-            <ul className="list-disc pl-6 space-y-2 leading-relaxed">
-              <li>{t('terms.sections.payments.li1')}</li>
-              <li>{t('terms.sections.payments.li2')}</li>
-              <li>{t('terms.sections.payments.li3')}</li>
-              <li>{t('terms.sections.payments.li4')}</li>
-            </ul>
+            <p className="leading-relaxed">{t('terms.sections.payments.intro')}</p>
+
+            <div className="space-y-3">
+              <h3 className="text-lg font-semibold text-stone-900">
+                {t('terms.sections.payments.coachAthlete.title')}
+              </h3>
+              <p className="leading-relaxed">{t('terms.sections.payments.coachAthlete.p1')}</p>
+            </div>
+
+            <div className="space-y-3">
+              <h3 className="text-lg font-semibold text-stone-900">
+                {t('terms.sections.payments.coachPlatform.title')}
+              </h3>
+              <p className="leading-relaxed">{t('terms.sections.payments.coachPlatform.p1')}</p>
+              <ul className="list-disc pl-6 space-y-2 leading-relaxed">
+                <li>{t('terms.sections.payments.coachPlatform.trial')}</li>
+                <li>{t('terms.sections.payments.coachPlatform.cancellationMonthly')}</li>
+                <li>{t('terms.sections.payments.coachPlatform.cancellationAnnual')}</li>
+                <li>{t('terms.sections.payments.coachPlatform.refunds')}</li>
+              </ul>
+            </div>
+
+            <div className="space-y-3">
+              <h3 className="text-lg font-semibold text-stone-900">
+                {t('terms.sections.payments.accountIntegrity.title')}
+              </h3>
+              <p className="leading-relaxed">{t('terms.sections.payments.accountIntegrity.p1')}</p>
+              <p className="leading-relaxed">{t('terms.sections.payments.accountIntegrity.p2')}</p>
+            </div>
+
+            <div className="space-y-3">
+              <h3 className="text-lg font-semibold text-stone-900">
+                {t('terms.sections.payments.serviceEvolution.title')}
+              </h3>
+              <p className="leading-relaxed">{t('terms.sections.payments.serviceEvolution.p1')}</p>
+            </div>
           </section>
 
           <section className="space-y-3">
@@ -129,6 +159,8 @@ export default async function TermsPage({ params }: TermsPageProps) {
               <li>{t('terms.sections.prohibited.li1')}</li>
               <li>{t('terms.sections.prohibited.li2')}</li>
               <li>{t('terms.sections.prohibited.li3')}</li>
+              <li>{t('terms.sections.prohibited.li4')}</li>
+              <li>{t('terms.sections.prohibited.li5')}</li>
             </ul>
           </section>
 

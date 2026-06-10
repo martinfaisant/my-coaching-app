@@ -46,7 +46,9 @@ Si tu ne précises pas le mode, l’IA te demandera : Designer, Architecte, Dév
 
 ### Style des designs
 
-Les designs et mockups doivent être **modernes, épurés et agréables à l'œil** : esthétique soignée, hiérarchie visuelle claire, pas de surcharge visuelle.
+Les designs et mockups doivent être **modernes, épurés et agréables à l'œil** : esthétique actuelle et soignée, respiration, hiérarchie visuelle claire, pas de surcharge visuelle ni d’ornements inutiles.
+
+**Texte à l’écran :** minimiser le volume de texte visible — titres et libellés courts, éviter les longs paragraphes ; privilégier progressive disclosure, micro-copy concis et icônes du design system quand cela clarifie. Conserver le strict nécessaire pour la compréhension, l’accessibilité et les messages d’erreur utiles.
 
 ### Références obligatoires
 
@@ -71,6 +73,7 @@ Les designs et mockups doivent être **modernes, épurés et agréables à l'œi
 ### Checklist avant livraison des US (à l’Architecte)
 
 - [ ] Design system et composants existants consultés ; composants à réutiliser / à faire évoluer listés dans le doc.
+- [ ] Proposition **moderne et épurée** ; **peu de texte** à l’écran (libellés courts, pas de blocs verbeux inutiles).
 - [ ] Mockup ouvert dans un navigateur et validé visuellement.
 - [ ] Chaque user story comporte une **référence au mockup** (quelle zone ou écran correspond).
 - [ ] Pour chaque US qui concerne une **page** ou une **modale**, le mockup associé montre bien **l’écran complet** (page entière ou modale entière) avec la modification intégrée dans le contexte du design existant.

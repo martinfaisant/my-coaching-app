@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>US-MYSA-CHECKOUT-PREQ-02 — Page abonnement : modale prérequis</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            stone: { 50: '#fafaf9', 100: '#f5f5f4', 200: '#e7e5e4', 300: '#d6d3d1', 500: '#78716c', 600: '#57534e', 700: '#44403c', 800: '#292524', 900: '#1c1917' },
+          },
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-stone-100 min-h-screen p-4 md:p-8 text-stone-800 space-y-16 pb-24">
+  <header class="max-w-4xl mx-auto">
+    <h1 class="text-xl font-bold text-stone-900">US-MYSA-CHECKOUT-PREQ-02 — Page « Mon Abonnement MySportAlly »</h1>
+    <p class="text-sm text-stone-600 mt-2">
+      Contexte : <code>/dashboard/coach-platform-subscription</code>, composant <code>CoachPlatformSubscriptionOffers</code>.
+      Contrairement à la modale catalogue (bascule contenu), ici une <strong>modale dédiée</strong> (<code>Modal</code> <code>md</code>) s’ouvre par-dessus la page.
+      Formulaire identique à US-MYSA-CHECKOUT-PREQ-03.
+    </p>
+  </header>
+
+  <!-- État page + modale ouverte -->
+  <section class="max-w-4xl mx-auto" aria-labelledby="page-modal">
+    <h2 id="page-modal" class="text-sm font-bold uppercase tracking-wider text-stone-700 mb-3">Transition — Clic « Souscrire » sur la page (prérequis manquants)</h2>
+    <p class="text-xs text-stone-500 mb-4">
+      <strong>Avant :</strong> page abonnement sans abo actif, grille offres pleine largeur sous le shell dashboard.<br />
+      <strong>Action :</strong> clic <strong>Souscrire</strong> sur une carte offre.<br />
+      <strong>Après :</strong> page visible en arrière-plan (légèrement assombrie) ; modale prérequis au premier plan.
+    </p>
+
+    <div class="relative rounded-2xl border border-stone-200 bg-white shadow-sm overflow-hidden min-h-[28rem]">
+      <!-- Page simulée (arrière-plan) -->
+      <div class="p-6 opacity-50 pointer-events-none select-none" aria-hidden="true">
+        <p class="text-xs font-bold uppercase tracking-wider text-stone-700 mb-4">Mon Abonnement MySportAlly</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <div class="rounded-2xl border border-stone-200 p-6 bg-white">
+            <p class="font-bold">Mensuel</p>
+            <p class="text-3xl font-black mt-2">29&nbsp;$<span class="text-base font-medium text-stone-500"> / mois</span></p>
+            <div class="mt-4 h-10 rounded-lg bg-stone-200"></div>
+          </div>
+          <div class="rounded-2xl border border-stone-200 p-6 bg-white">
+            <p class="font-bold">Annuel</p>
+            <p class="text-3xl font-black mt-2">290&nbsp;$<span class="text-base font-medium text-stone-500"> / an</span></p>
+            <div class="mt-4 h-10 rounded-lg bg-palette-forest-dark/30"></div>
+          </div>
+        </div>
+        <p class="text-xs text-stone-500 uppercase tracking-wider">Informations de facturation</p>
+        <div class="mt-2 h-20 rounded-xl border border-dashed border-stone-200"></div>
+      </div>
+
+      <!-- Overlay -->
+      <div class="absolute inset-0 bg-stone-900/40 flex items-center justify-center p-4">
+        <div class="w-full max-w-md rounded-2xl bg-white shadow-xl border border-stone-200 overflow-hidden">
+          <div class="px-5 py-4 border-b border-stone-200 flex justify-between items-start gap-3">
+            <h3 class="text-lg font-semibold text-stone-800">Informations de facturation</h3>
+            <button type="button" class="text-stone-500 shrink-0" aria-label="Fermer">×</button>
+          </div>
+          <div class="px-5 py-4 max-h-[min(70vh,28rem)] overflow-y-auto space-y-4">
+            <p class="text-sm text-stone-600">Complétez vos informations avant de continuer vers le paiement.</p>
+            <div class="rounded-xl border border-dashed border-stone-300 p-4 text-xs text-stone-500">Formulaire US-MYSA-CHECKOUT-PREQ-03 (tous les champs)</div>
+          </div>
+          <div class="px-5 py-4 border-t border-stone-100 flex flex-col-reverse sm:flex-row gap-2 sm:justify-end">
+            <button type="button" class="rounded-lg px-4 py-2.5 text-sm font-medium text-stone-600">Annuler</button>
+            <button type="button" class="rounded-lg bg-palette-forest-dark px-4 py-2.5 text-sm font-semibold text-white">Enregistrer et continuer</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Annuler -->
+  <section class="max-w-4xl mx-auto" aria-labelledby="cancel">
+    <h2 id="cancel" class="text-sm font-bold uppercase tracking-wider text-stone-700 mb-3">Transition — « Annuler » ou fermeture modale</h2>
+    <p class="text-xs text-stone-500 mb-2">
+      <strong>Action :</strong> Annuler, ×, overlay ou Échap (hors pending).<br />
+      <strong>Après :</strong> modale fermée ; coach reste sur la page abonnement, grille offres inchangée. Pas de redirect Stripe.
+    </p>
+  </section>
+
+  <!-- Succès → Stripe -->
+  <section class="max-w-4xl mx-auto" aria-labelledby="success">
+    <h2 id="success" class="text-sm font-bold uppercase tracking-wider text-stone-700 mb-3">Transition — Enregistrement réussi</h2>
+    <p class="text-xs text-stone-500">
+      Identique US-MYSA-CHECKOUT-PREQ-01 : save profil + Stripe → checkout session → navigation Stripe. Modale se ferme implicitement (changement de page).
+    </p>
+  </section>
+
+  <!-- Nominal -->
+  <section class="max-w-4xl mx-auto rounded-xl border border-stone-200 bg-stone-50 p-4">
+    <h3 class="text-sm font-semibold text-stone-900 mb-2">Prérequis déjà complets</h3>
+    <p class="text-sm text-stone-700">Pas d’ouverture de modale prérequis ; redirect Stripe direct depuis la grille page (comportement actuel).</p>
+  </section>
+</body>
+</html>

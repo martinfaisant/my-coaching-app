@@ -17,6 +17,8 @@ import type { Profile, Goal } from '@/types/database'
 import { formatShortDate } from '@/lib/dateUtils'
 import { getDisplayName } from '@/lib/displayName'
 import { logger } from '@/lib/logger'
+import { fetchCoachPlatformAccessGranted } from '@/lib/coachPlatformSubscription'
+import { CoachAthletesBillingOverlay } from '@/components/CoachAthletesBillingOverlay'
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params
@@ -41,6 +43,7 @@ export default async function CoachAthletesPage({ params }: { params: Promise<{ 
   }
 
   const supabase = await createClient()
+  const coachHasPlatformAccess = await fetchCoachPlatformAccessGranted(supabase, current.id)
   const t = await getTranslations({ locale, namespace: 'athletes' })
 
   const [pendingResult, athletesResult, publishedOfferResult] = await Promise.all([
@@ -257,6 +260,7 @@ export default async function CoachAthletesPage({ params }: { params: Promise<{ 
                 key={req.id}
                 request={req}
                 goals={goalsByAthleteId[req.athlete_id] ?? []}
+                coachHasPlatformAccess={coachHasPlatformAccess}
               />
             ))}
           </ul>
@@ -271,7 +275,7 @@ export default async function CoachAthletesPage({ params }: { params: Promise<{ 
           >
             <p className="text-palette-danger-dark font-medium">{t('listLoadError')}</p>
           </div>
-        ) : visibleProfiles.length === 0 ? (
+        ) : visibleProfiles.length === 0 && pendingRequests.length === 0 ? (
           <div className="rounded-2xl border border-stone-200 bg-section border-dashed p-12 text-center">
             <p className="text-stone-600 font-medium">
               {t('noAthletes.title')}
@@ -280,11 +284,17 @@ export default async function CoachAthletesPage({ params }: { params: Promise<{ 
               {t('noAthletes.description')}
             </p>
           </div>
-        ) : (
-          <CoachAthletesListWithFilter
-            athletes={athleteTiles}
-            showDivider={pendingRequests.length > 0}
-          />
+        ) : visibleProfiles.length === 0 ? null : (
+          <>
+            <CoachAthletesBillingOverlay
+              coachHasPlatformAccess={coachHasPlatformAccess}
+              athleteCount={visibleProfiles.length}
+            />
+            <CoachAthletesListWithFilter
+              athletes={athleteTiles}
+              showDivider={pendingRequests.length > 0}
+            />
+          </>
         )}
       </section>
     </DashboardPageShell>

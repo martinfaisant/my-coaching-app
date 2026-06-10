@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>US-MYSA-OFFERS-01 — Modale catalogue offres (états)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            'palette-olive': '#8a9a7e',
+            'palette-danger': '#b91c1c',
+            'palette-amber': '#d97706',
+            stone: { 50: '#fafaf9', 200: '#e7e5e4', 500: '#78716c', 600: '#57534e', 700: '#44403c', 800: '#292524', 900: '#1c1917' },
+          },
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-stone-100 min-h-screen p-6 space-y-16 pb-24">
+  <header class="max-w-3xl mx-auto">
+    <h1 class="text-xl font-bold text-stone-900">US-MYSA-OFFERS-01 — Modale « Choisir une offre » (My Sport Ally)</h1>
+    <p class="text-sm text-stone-600 mt-2">
+      Composants cibles : <code class="bg-white px-1 rounded border border-stone-200">Modal</code>,
+      <code class="bg-white px-1 rounded border border-stone-200">Button</code>, cartes alignées
+      <code class="bg-white px-1 rounded border border-stone-200">CoachPlatformSubscriptionOffers</code> (ou variante modale partagée).
+      Textes titre / description d’offre : <strong>FR/EN via next-intl</strong> (clés par offre), montant / devise / période depuis Stripe.
+    </p>
+  </header>
+
+  <!-- État 1 : chargement catalogue -->
+  <section class="max-w-3xl mx-auto" aria-labelledby="s1">
+    <h2 id="s1" class="text-sm font-bold uppercase tracking-wider text-stone-700 mb-3">État initial — chargement des offres</h2>
+    <p class="text-xs text-stone-500 mb-4">
+      <strong>Avant :</strong> modale ouverte (déclencheur selon US-02). <strong>Action système :</strong> fetch catalogue.
+      <strong>Après :</strong> grille remplie ou erreur.
+    </p>
+    <div class="rounded-2xl bg-white shadow-xl border border-stone-200 max-w-lg mx-auto overflow-hidden">
+      <div class="px-5 py-4 border-b border-stone-200 flex justify-between items-center">
+        <h2 class="text-lg font-semibold text-stone-800">Choisir votre formule</h2>
+        <button type="button" class="text-stone-500" aria-label="Fermer">×</button>
+      </div>
+      <div class="px-5 py-10 flex flex-col items-center gap-3">
+        <div class="h-8 w-8 rounded-full border-2 border-stone-200 border-t-palette-forest-dark animate-spin" aria-hidden="true"></div>
+        <p class="text-sm text-stone-600">Chargement des offres…</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- État 2 : une seule offre (obligation affichage) -->
+  <section class="max-w-3xl mx-auto" aria-labelledby="s2">
+    <h2 id="s2" class="text-sm font-bold uppercase tracking-wider text-stone-700 mb-3">Catalogue — une offre</h2>
+    <p class="text-xs text-stone-500 mb-4">
+      Carte unique pleine largeur (mobile), même hiérarchie que multi-offres. CTA « Payer avec Stripe » ou libellé i18n équivalent.
+    </p>
+    <div class="rounded-2xl bg-white shadow-xl border border-stone-200 max-w-lg mx-auto overflow-hidden">
+      <div class="px-5 py-4 border-b border-stone-200 flex justify-between items-center">
+        <h2 class="text-lg font-semibold text-stone-800">Choisir votre formule</h2>
+        <button type="button" class="text-stone-500">×</button>
+      </div>
+      <div class="px-5 py-4 space-y-3">
+        <p class="text-sm text-stone-600">Sélectionnez l’offre ci-dessous, puis continuez vers le paiement sécurisé.</p>
+        <div class="rounded-xl border border-stone-200 p-4 bg-white shadow-sm">
+          <p class="font-semibold text-stone-900">Coach Pro</p>
+          <p class="text-sm text-stone-600 mt-1">Accès complet aux athlètes, chat et demandes. Renouvellement mensuel.</p>
+          <p class="text-sm font-medium text-palette-forest-dark mt-2">29,00&nbsp;€ · par mois</p>
+          <button type="button" class="mt-4 w-full rounded-lg bg-palette-forest-dark px-4 py-2.5 text-sm font-medium text-white">Continuer vers le paiement</button>
+        </div>
+      </div>
+      <div class="px-5 py-4 border-t border-stone-100">
+        <button type="button" class="w-full rounded-lg border border-stone-300 bg-white px-4 py-2.5 text-sm font-medium text-stone-700">Fermer</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- État 3 : plusieurs offres -->
+  <section class="max-w-3xl mx-auto" aria-labelledby="s3">
+    <h2 id="s3" class="text-sm font-bold uppercase tracking-wider text-stone-700 mb-3">Catalogue — plusieurs offres</h2>
+    <p class="text-xs text-stone-500 mb-4">
+      Grille 1 col mobile / 2 cols ≥ md. Chaque carte : titre + description (i18n) + prix + CTA. Pas de redirection tant qu’aucun CTA cliqué.
+    </p>
+    <div class="rounded-2xl bg-white shadow-xl border border-stone-200 max-w-2xl mx-auto overflow-hidden">
+      <div class="px-5 py-4 border-b border-stone-200 flex justify-between items-center">
+        <h2 class="text-lg font-semibold text-stone-800">Choisir votre formule</h2>
+        <button type="button" class="text-stone-500">×</button>
+      </div>
+      <div class="px-5 py-4 space-y-3">
+        <p class="text-sm text-stone-600">Comparez les formules, puis lancez le paiement pour celle qui vous convient.</p>
+        <ul class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <li class="rounded-xl border border-stone-200 p-4 flex flex-col bg-white shadow-sm">
+            <div class="flex-1">
+              <p class="font-semibold text-stone-900">Coach Standard</p>
+              <p class="text-sm text-stone-600 mt-1 line-clamp-4">Jusqu’à 5 athlètes actifs, facturation mensuelle.</p>
+              <p class="text-sm font-medium text-palette-forest-dark mt-2">19,00&nbsp;€ · par mois</p>
+            </div>
+            <button type="button" class="mt-4 w-full rounded-lg bg-palette-forest-dark py-2.5 text-sm font-medium text-white">Continuer vers le paiement</button>
+          </li>
+          <li class="rounded-xl border border-stone-200 p-4 flex flex-col bg-white shadow-sm">
+            <div class="flex-1">
+              <p class="font-semibold text-stone-900">Coach Pro</p>
+              <p class="text-sm text-stone-600 mt-1 line-clamp-4">Athlètes illimités, priorité support.</p>
+              <p class="text-sm font-medium text-palette-forest-dark mt-2">39,00&nbsp;€ · par mois</p>
+            </div>
+            <button type="button" class="mt-4 w-full rounded-lg bg-palette-forest-dark py-2.5 text-sm font-medium text-white">Continuer vers le paiement</button>
+          </li>
+        </ul>
+      </div>
+      <div class="px-5 py-4 border-t border-stone-100">
+        <button type="button" class="w-full sm:w-auto rounded-lg border border-stone-300 bg-white px-4 py-2.5 text-sm font-medium text-stone-700">Fermer</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- État 4 : erreur catalogue -->
+  <section class="max-w-3xl mx-auto" aria-labelledby="s4">
+    <h2 id="s4" class="text-sm font-bold uppercase tracking-wider text-stone-700 mb-3">Erreur — catalogue indisponible</h2>
+    <p class="text-xs text-stone-500 mb-4">
+      Message i18n + bouton Fermer ; pas de redirection Stripe. Option secondaire : lien « Réessayer » (re-fetch).
+    </p>
+    <div class="rounded-2xl bg-white shadow-xl border border-stone-200 max-w-lg mx-auto overflow-hidden">
+      <div class="px-5 py-4 border-b border-stone-200">
+        <h2 class="text-lg font-semibold text-stone-800">Choisir votre formule</h2>
+      </div>
+      <div class="px-5 py-4">
+        <p class="text-sm text-palette-danger">Impossible de charger les offres pour le moment. Réessayez plus tard.</p>
+      </div>
+      <div class="px-5 py-4 border-t border-stone-100">
+        <button type="button" class="w-full rounded-lg border border-stone-300 px-4 py-2.5 text-sm font-medium text-stone-700">Fermer</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- État 5 : CTA en cours (pending) -->
+  <section class="max-w-3xl mx-auto" aria-labelledby="s5">
+    <h2 id="s5" class="text-sm font-bold uppercase tracking-wider text-stone-700 mb-3">Après clic « Continuer » — session en cours</h2>
+    <p class="text-xs text-stone-500 mb-4">
+      Carte concernée : CTA désactivé + libellé « Redirection… » ; autres cartes désactivées pour éviter double session.
+    </p>
+    <div class="rounded-xl border border-stone-200 p-4 max-w-sm bg-white opacity-90">
+      <p class="font-semibold text-stone-900">Coach Standard</p>
+      <p class="text-sm font-medium text-palette-forest-dark mt-2">19,00&nbsp;€ · par mois</p>
+      <button type="button" disabled class="mt-4 w-full rounded-lg bg-stone-300 py-2.5 text-sm font-medium text-white cursor-not-allowed">Redirection en cours…</button>
+    </div>
+  </section>
+
+  <!-- Transitions récap -->
+  <section class="max-w-3xl mx-auto border-t border-stone-200 pt-8">
+    <h2 class="text-sm font-bold uppercase tracking-wider text-stone-700 mb-3">Transitions fonctionnelles (parcours visible)</h2>
+    <ol class="text-sm text-stone-700 space-y-2 list-decimal list-inside">
+      <li><strong>Ouvrir</strong> (depuis US-02) → état chargement ou directement grille si données en cache (à trancher impl.).</li>
+      <li><strong>Fermer</strong> (× ou Fermer) → modale fermée, utilisateur reste sur l’écran d’origine, aucune redirection.</li>
+      <li><strong>Continuer</strong> sur une offre → création session Checkout pour ce <code class="text-xs bg-stone-100 px-1 rounded">priceId</code> → redirection navigateur Stripe.</li>
+      <li><strong>Retour annulé Stripe</strong> → inchangé (bandeau / page existants).</li>
+      <li><strong>Locale EN</strong> → mêmes cartes, textes titre/description issus des clés EN (même structure JSON).</li>
+    </ol>
+  </section>
+</body>
+</html>

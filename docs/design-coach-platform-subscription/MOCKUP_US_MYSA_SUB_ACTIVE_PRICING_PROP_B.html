@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>US-MYSA-SUB-UI-01 — Abo plateforme actif, proposition B (montant + prochain paiement)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            'palette-olive': '#8e9856',
+            stone: { 50: '#fafaf9', 200: '#e7e5e4', 500: '#78716c', 600: '#57534e', 800: '#292524', 900: '#1c1917' },
+          },
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-stone-100 min-h-screen p-4 md:p-8">
+  <p class="text-center text-xs text-stone-600 max-w-3xl mx-auto mb-4">
+    <strong>US-MYSA-SUB-UI-01</strong> — Abonnement plateforme <strong>actif</strong> ou <strong>essai</strong> : carte statut avec
+    <strong>ligne 1</strong> montant récurrent + intervalle, <strong>ligne 2</strong> libellé <strong>« Prochain paiement »</strong> + date.
+    Badge statut <strong>en haut à droite</strong> de la carte. Pas de bandeau tolérance (hors périmètre de cette US). Pas de mention « gestion de carte / portail » sous la carte.
+  </p>
+
+  <div class="max-w-2xl mx-auto bg-white min-h-[40vh] rounded-t-lg border border-stone-200 shadow-sm flex flex-col">
+    <header class="h-12 border-b border-stone-200 bg-white shrink-0 flex items-center px-4 text-xs text-stone-500">DashboardTopBar</header>
+    <main class="flex-1 p-4 md:p-6 overflow-y-auto space-y-6">
+      <h1 class="text-lg font-bold text-stone-900">Mon Abonnement MySportAlly</h1>
+
+      <section aria-labelledby="status-card">
+        <h2 id="status-card" class="sr-only">Statut abonnement</h2>
+        <div class="rounded-xl border border-stone-200 bg-stone-50 p-4">
+          <div class="flex justify-between items-start gap-3">
+            <div class="min-w-0 flex-1">
+              <p class="font-semibold text-stone-900">Coach Pro — Mensuel</p>
+              <p class="text-sm text-stone-900 font-semibold mt-3">29,00 € <span class="font-normal text-stone-600">par mois</span></p>
+              <p class="text-sm text-stone-600 mt-2">Prochain paiement : <span class="text-stone-900 font-medium">12 juin 2026</span></p>
+            </div>
+            <span class="inline-flex shrink-0 rounded-full bg-palette-forest-dark px-2.5 py-0.5 text-xs font-semibold text-white">Actif</span>
+          </div>
+        </div>
+      </section>
+
+      <p class="text-xs text-stone-500 border-t border-stone-200 pt-4">
+        <strong>État essai (trialing)</strong> — même disposition ; si montant = 0 après réduction, afficher libellé type « Essai gratuit »
+        (i18n) à la place ou sous le montant : <span class="italic">À trancher avec Architecte / copy</span>.
+      </p>
+    </main>
+  </div>
+</body>
+</html>

@@ -26,31 +26,6 @@ const OBJECTIF_ADD_FORM_LABEL_BASE =
   'block text-xs font-bold text-stone-500 uppercase tracking-wider ml-1'
 const OBJECTIF_ADD_FORM_LABEL_CLASSES = `${OBJECTIF_ADD_FORM_LABEL_BASE} mb-1.5`
 
-// Icônes SVG pour les priorités
-const CrownIcon = ({ className = "w-5 h-5" }: { className?: string }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M5 3l2 4h10l2-4M5 7h14M5 7l-1 8h16l-1-8M5 7v10h14V7M9 17v-6M15 17v-6" />
-  </svg>
-)
-
-const MedalIcon = ({ className = "w-5 h-5" }: { className?: string }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-  </svg>
-)
-
-const ZapIcon = ({ className = "w-5 h-5" }: { className?: string }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-  </svg>
-)
-
-const TrophyIcon = ({ className = "w-24 h-24" }: { className?: string }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.75M16.5 18.75v-3.375c0-.621.503-1.125 1.125-1.125h.75m-9 0H5.625c-.621 0-1.125.504-1.125 1.125v3.375M3 13.125h18M3 13.125v-1.5c0-1.036.84-1.875 1.875-1.875h3.38c1.014 0 1.864.668 2.122 1.587l1.498 4.493c.073.22.28.375.505.375h6.24c.225 0 .432-.155.505-.375l1.498-4.493c.258-.919 1.108-1.587 2.122-1.587h3.38c1.036 0 1.875.84 1.875 1.875v1.5M3 13.125l-1.5 6.75m19.5-6.75l1.5 6.75" />
-  </svg>
-)
-
 const MapIcon = ({ className = "w-3.5 h-3.5" }: { className?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z" />
@@ -249,10 +224,6 @@ export function ObjectifsTable({ goals: initialGoals }: ObjectifsTableProps) {
   
   // Trier les saisons de la plus loin dans le futur à la plus ancienne
   const seasons = Array.from(goalsBySeason.keys()).sort((a, b) => b - a)
-
-  // Trouver le prochain objectif pour le widget du header
-  const nextGoal = futureGoals.length > 0 ? futureGoals[0] : null
-  const daysUntilNext = nextGoal ? getDaysUntil(nextGoal.date) : null
 
   return (
     <div className="flex flex-col xl:grid xl:grid-cols-3 gap-8">

@@ -158,7 +158,10 @@ export function AvailabilityModal({
   }, [typeSegment, editableDate, startTime, endTime, note])
 
   const openDatePicker = () => {
-    dateTriggerRef.current?.getBoundingClientRect && setDatePickerAnchor(dateTriggerRef.current.getBoundingClientRect())
+    const el = dateTriggerRef.current
+    if (el) {
+      setDatePickerAnchor(el.getBoundingClientRect())
+    }
     setShowDatePickerPopup(true)
   }
   const closeDatePicker = () => {

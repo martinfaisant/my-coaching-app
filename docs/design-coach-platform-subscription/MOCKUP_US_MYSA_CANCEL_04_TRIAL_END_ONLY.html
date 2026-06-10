@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>US-MYSA-CANCEL-04 — Essai : fin à l’échéance uniquement + une seule période d’essai</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            stone: { 50: '#fafaf9', 200: '#e7e5e4', 500: '#78716c', 600: '#57534e', 800: '#292524', 900: '#1c1917' },
+          },
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-stone-100 min-h-screen p-4 md:p-8 space-y-10">
+  <p class="text-center text-xs text-stone-600 max-w-3xl mx-auto">
+    <strong>US-MYSA-CANCEL-04</strong> — Statut <strong>trialing</strong>.
+    <strong>Pas</strong> d’option « arrêt immédiat » ni de remboursement (aucun prélèvement en cours).
+    Le coach peut uniquement demander que l’essai <strong>ne se renouvelle pas</strong> → fin à la <strong>date de fin d’essai</strong> (alignée « Prochain prélèvement » / <code>trial_end</code>).
+    Rappel obligatoire : <strong>une seule période d’essai</strong> par personne / campagne (cohérent CGU § essai + table <code>coach_platform_trial_consumptions</code>).
+  </p>
+
+  <div class="max-w-2xl mx-auto bg-white rounded-t-lg border border-stone-200 shadow-sm p-4 md:p-6">
+    <h1 class="text-lg font-bold text-stone-900 mb-4">Mon Abonnement MySportAlly</h1>
+    <div class="rounded-xl border border-stone-200 bg-stone-50 p-4">
+      <div class="flex justify-between items-start gap-3">
+        <div>
+          <p class="font-semibold text-stone-900">Coach Pro — Mensuel</p>
+          <p class="text-sm text-stone-700 font-medium mt-3">Il reste 12 jours d’essai gratuit</p>
+          <p class="text-sm text-stone-900 font-semibold mt-1.5">
+            <span class="font-normal text-stone-800">Puis</span> 29,00 € <span class="font-normal text-stone-600">par mois</span>
+          </p>
+          <p class="text-sm text-stone-600 mt-2">Prochain prélèvement : <span class="font-medium">1 juil. 2026</span></p>
+          <button type="button" class="mt-4 text-sm font-medium text-stone-600 hover:text-stone-900">Gérer mon abonnement</button>
+        </div>
+        <span class="shrink-0 inline-flex rounded-full bg-palette-forest-dark px-2.5 py-0.5 text-xs font-semibold text-white">En essai</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-lg mx-auto">
+    <p class="text-xs font-semibold text-stone-700 mb-2 text-center">Modale — une seule action (pas de radio)</p>
+    <div class="bg-white rounded-xl border border-stone-200 shadow-lg overflow-hidden">
+      <div class="px-6 py-4 border-b border-stone-100">
+        <h2 class="text-lg font-bold text-stone-900">Mettre fin à l’essai ?</h2>
+      </div>
+      <div class="px-6 py-4 space-y-3">
+        <p class="text-sm text-stone-700">
+          Votre essai se terminera le <strong>1 juillet 2026</strong>. Vous conservez l’accès jusqu’à cette date ; <strong>aucun prélèvement</strong> ne sera effectué ensuite.
+        </p>
+        <p class="text-xs text-stone-600 bg-stone-50 rounded-lg border border-stone-200 px-3 py-2.5">
+          <strong>Une seule période d’essai</strong> est accordée par personne pour cette offre. Vous ne pourrez pas bénéficier d’un nouvel essai sur un autre compte ou une re-souscription ultérieure.
+        </p>
+      </div>
+      <div class="px-6 py-4 border-t border-stone-100 flex justify-end gap-3">
+        <button type="button" class="rounded-lg px-4 py-2 text-sm font-medium text-stone-600">Annuler</button>
+        <button type="button" class="rounded-lg px-4 py-2 text-sm font-semibold text-white bg-palette-forest-dark">Confirmer</button>
+      </div>
+    </div>
+  </div>
+
+  <p class="text-center text-xs text-stone-500 max-w-3xl mx-auto">
+    Après confirmation → état programmé (badge « Se termine le … », date = fin d’essai) — <strong>US-MYSA-CANCEL-02</strong>.
+    Annulation de la demande possible avant la date. Grille offres masquée jusqu’à fin effective.
+  </p>
+</body>
+</html>

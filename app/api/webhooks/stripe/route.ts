@@ -1,0 +1,70 @@
+import Stripe from 'stripe'
+import { headers } from 'next/headers'
+import { NextResponse } from 'next/server'
+import { getStripeServer } from '@/lib/stripeServer'
+import { createAdminClient } from '@/utils/supabase/server'
+import { logger } from '@/lib/logger'
+import { upsertCoachPlatformSubscriptionFromStripe } from '@/lib/coachPlatformSubscriptionSync'
+import { syncCoachPlatformTrialConsumptionFromStripeSubscription } from '@/lib/coachPlatformTrialEligibility'
+
+export const runtime = 'nodejs'
+
+async function upsertCoachPlatformFromStripeSubscription(sub: Stripe.Subscription) {
+  const supabase = createAdminClient()
+  await upsertCoachPlatformSubscriptionFromStripe(supabase, sub)
+  await syncCoachPlatformTrialConsumptionFromStripeSubscription(supabase, sub)
+}
+
+export async function POST(request: Request) {
+  const stripe = getStripeServer()
+  const secret = process.env.STRIPE_WEBHOOK_SECRET
+  if (!stripe || !secret) {
+    logger.error('Stripe webhook: configuration manquante')
+    return NextResponse.json({ error: 'Stripe non configuré' }, { status: 500 })
+  }
+
+  const body = await request.text()
+  const headerList = await headers()
+  const sig = headerList.get('stripe-signature')
+  if (!sig) {
+    return NextResponse.json({ error: 'Signature absente' }, { status: 400 })
+  }
+
+  let event: Stripe.Event
+  try {
+    event = stripe.webhooks.constructEvent(body, sig, secret)
+  } catch (err) {
+    logger.error('Stripe webhook: signature invalide', err instanceof Error ? err : undefined)
+    return NextResponse.json({ error: 'Signature invalide' }, { status: 400 })
+  }
+
+  try {
+    switch (event.type) {
+      case 'checkout.session.completed': {
+        const session = event.data.object as Stripe.Checkout.Session
+        if (session.mode === 'subscription' && session.subscription) {
+          const subId =
+            typeof session.subscription === 'string' ? session.subscription : session.subscription.id
+          const sub = await stripe.subscriptions.retrieve(subId)
+          await upsertCoachPlatformFromStripeSubscription(sub)
+        }
+        break
+      }
+      case 'customer.subscription.updated':
+      case 'customer.subscription.deleted': {
+        const sub = event.data.object as Stripe.Subscription
+        await upsertCoachPlatformFromStripeSubscription(sub)
+        break
+      }
+      default:
+        break
+    }
+  } catch (err) {
+    logger.error('Stripe webhook: traitement événement', err instanceof Error ? err : undefined, {
+      type: event.type,
+    })
+    return NextResponse.json({ error: 'Traitement webhook' }, { status: 500 })
+  }
+
+  return NextResponse.json({ received: true })
+}

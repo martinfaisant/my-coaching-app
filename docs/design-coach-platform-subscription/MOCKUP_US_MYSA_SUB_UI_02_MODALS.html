@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>US-MYSA-SUB-UI-02-04 — Modales résiliation (Modal app)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            'palette-forest-darker': '#506648',
+            'palette-danger': '#c0564b',
+            'palette-danger-light': '#fdf2f1',
+            stone: { 50: '#fafaf9', 100: '#f5f5f4', 200: '#e7e5e4', 500: '#78716c', 600: '#57534e', 700: '#44403c', 800: '#292524', 900: '#1c1917' },
+          },
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-stone-900/50 min-h-screen p-4 md:p-8 space-y-12">
+  <p class="text-center text-xs text-stone-200 max-w-3xl mx-auto">
+    <strong>US-MYSA-SUB-UI-02-04</strong> + fonctionnel <strong>US-MYSA-CANCEL-*</strong> —
+    Composant <code>Modal</code> existant (<code>components/Modal.tsx</code>) : header <code>bg-stone-50/50</code>, titre seul, fermeture × ;
+    <strong>pas d’icône / logo à droite du titre</strong> (hors périmètre v1) ·
+    Sous-titre éventuel = 1re ligne du corps <code>text-xs text-stone-500</code> ·
+    Footer <code>Button muted</code> + <code>primaryDark</code> ou <code>danger</code> ·
+    Encart info = <code>rounded-lg border border-stone-200 bg-stone-50 p-3 text-xs</code>.
+  </p>
+
+  <!-- Chrome Modal réutilisable (aligné app) -->
+  <template id="modal-chrome">
+    <div class="relative w-full max-w-md max-h-[90vh] flex flex-col bg-white rounded-2xl shadow-xl border border-stone-100 overflow-hidden mx-auto">
+      <div class="shrink-0 px-6 py-4 border-b border-stone-100 bg-stone-50/50 flex items-center justify-between gap-3">
+        <h2 class="text-lg font-bold text-stone-900 truncate">Titre</h2>
+        <button type="button" class="rounded-lg min-h-10 min-w-10 text-stone-500 hover:bg-stone-200/80" aria-label="Fermer">×</button>
+      </div>
+      <div class="flex-1 overflow-y-auto"><!-- body --></div>
+      <div class="shrink-0 px-6 py-4 border-t border-stone-100 bg-stone-50/50 flex items-center justify-end gap-3"><!-- footer --></div>
+    </div>
+  </template>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 max-w-5xl mx-auto">
+    <!-- Annuel : non-renouveler (CANCEL-03) -->
+    <div class="space-y-2">
+      <p class="text-[10px] font-bold uppercase tracking-wider text-stone-400 text-center">CANCEL-03 · Annuel</p>
+      <div class="relative w-full max-w-md flex flex-col bg-white rounded-2xl shadow-xl border border-stone-100 overflow-hidden mx-auto">
+        <div class="px-6 py-4 border-b border-stone-100 bg-stone-50/50 flex items-center justify-between gap-3">
+          <h2 class="text-lg font-bold text-stone-900">Ne pas renouveler ?</h2>
+          <button type="button" class="rounded-lg min-h-10 min-w-10 text-stone-500" aria-hidden>×</button>
+        </div>
+        <div class="px-6 py-4 space-y-4">
+          <p class="text-xs text-stone-500">Arrêt du renouvellement automatique</p>
+          <p class="text-sm text-stone-700 leading-relaxed">Actif jusqu'au <strong>15 mars 2027</strong>.</p>
+          <div class="rounded-lg border border-stone-200 bg-stone-50 p-3 text-xs text-stone-600">
+            Pas de remboursement partiel. Demande annulable avant l'échéance.
+          </div>
+        </div>
+        <div class="px-6 py-4 border-t border-stone-100 bg-stone-50/50 flex flex-col-reverse sm:flex-row justify-end gap-3">
+          <button type="button" class="rounded-lg min-h-10 px-4 py-2.5 text-sm font-medium border border-stone-300 text-stone-700">Annuler</button>
+          <button type="button" class="rounded-lg min-h-10 px-4 py-2.5 text-sm font-medium text-white bg-palette-forest-dark">Confirmer</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Réactivation (CANCEL-02) -->
+    <div class="space-y-2">
+      <p class="text-[10px] font-bold uppercase tracking-wider text-stone-400 text-center">CANCEL-02 · Réactivation</p>
+      <div class="relative w-full max-w-md flex flex-col bg-white rounded-2xl shadow-xl border border-stone-100 overflow-hidden mx-auto">
+        <div class="px-6 py-4 border-b border-stone-100 bg-stone-50/50 flex items-center justify-between gap-3">
+          <h2 class="text-lg font-bold text-stone-900">Annuler la demande d'arrêt ?</h2>
+          <button type="button" class="rounded-lg min-h-10 min-w-10 text-stone-500" aria-hidden>×</button>
+        </div>
+        <div class="px-6 py-4 space-y-3">
+          <p class="text-xs text-stone-500">Réactivation du renouvellement</p>
+          <p class="text-sm text-stone-700">Renouvellement automatique sans date de fin programmée.</p>
+        </div>
+        <div class="px-6 py-4 border-t border-stone-100 bg-stone-50/50 flex justify-end gap-3">
+          <button type="button" class="rounded-lg min-h-10 px-4 border border-stone-300 text-stone-700 text-sm">Fermer</button>
+          <button type="button" class="rounded-lg min-h-10 px-4 text-sm text-white bg-palette-forest-dark">Oui, réactiver</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mensuel choix (CANCEL-01 étape 1) -->
+  <div class="max-w-md mx-auto space-y-2">
+    <p class="text-[10px] font-bold uppercase tracking-wider text-stone-400 text-center">CANCEL-01 · Mensuel — choix</p>
+    <div class="flex flex-col bg-white rounded-2xl shadow-xl border border-stone-100 overflow-hidden">
+      <div class="px-6 py-4 border-b border-stone-100 bg-stone-50/50 flex justify-between gap-3">
+        <h2 class="text-lg font-bold text-stone-900">Arrêter l'abonnement ?</h2>
+        <button type="button" class="rounded-lg min-h-10 min-w-10 text-stone-500" aria-hidden>×</button>
+      </div>
+      <div class="px-6 py-4 space-y-3">
+        <p class="text-xs text-stone-500 -mt-1 mb-1">Choisissez une option</p>
+        <label class="block rounded-xl border-2 border-palette-forest-dark bg-stone-50 p-4 cursor-pointer">
+          <p class="text-sm font-semibold text-stone-900">À la fin du mois en cours</p>
+          <p class="text-xs text-stone-500 mt-1">Accès jusqu'au 30 juin 2026</p>
+        </label>
+        <label class="block rounded-xl border border-stone-200 p-4 cursor-pointer">
+          <p class="text-sm font-semibold text-stone-900">Arrêt immédiat</p>
+          <p class="text-xs text-stone-500 mt-1">Remboursement Stripe : 18,50 € (si disponible)</p>
+        </label>
+      </div>
+      <div class="px-6 py-4 border-t border-stone-100 bg-stone-50/50 flex justify-end gap-3">
+        <button type="button" class="rounded-lg min-h-10 px-4 border border-stone-300 text-stone-700 text-sm">Annuler</button>
+        <button type="button" class="rounded-lg min-h-10 px-4 text-sm text-white bg-palette-forest-dark">Continuer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Immédiat confirm (danger) -->
+  <div class="max-w-md mx-auto space-y-2">
+    <p class="text-[10px] font-bold uppercase tracking-wider text-stone-400 text-center">CANCEL-01 · Immédiat — confirmation</p>
+    <div class="flex flex-col bg-white rounded-2xl shadow-xl border border-stone-100 overflow-hidden">
+      <div class="px-6 py-4 border-b border-stone-100 bg-stone-50/50 flex justify-between">
+        <h2 class="text-lg font-bold text-stone-900">Arrêt immédiat ?</h2>
+        <button type="button" class="rounded-lg min-h-10 min-w-10 text-stone-500" aria-hidden>×</button>
+      </div>
+      <div class="px-6 py-4 space-y-3">
+        <div class="rounded-lg bg-palette-danger-light border border-palette-danger/20 px-3 py-2.5 text-sm text-stone-800">
+          <p class="font-medium text-palette-danger">Accès coupé dès confirmation</p>
+        </div>
+        <p class="text-sm text-stone-700">Remboursement : <strong>18,50 €</strong> (Stripe uniquement)</p>
+      </div>
+      <div class="px-6 py-4 border-t border-stone-100 bg-stone-50/50 flex justify-end gap-3">
+        <button type="button" class="rounded-lg min-h-10 px-4 border border-stone-300 text-stone-700 text-sm">Annuler</button>
+        <button type="button" class="rounded-lg min-h-10 px-4 text-sm font-medium text-stone-700 hover:text-palette-danger hover:bg-palette-danger-light">Confirmer l'arrêt</button>
+      </div>
+    </div>
+    <p class="text-[10px] text-stone-400 text-center">CTA destructif = <code>Button variant="danger"</code> (comme EndSubscriptionButton)</p>
+  </div>
+
+  <!-- Essai (CANCEL-04) -->
+  <div class="max-w-md mx-auto space-y-2">
+    <p class="text-[10px] font-bold uppercase tracking-wider text-stone-400 text-center">CANCEL-04 · Essai</p>
+    <div class="flex flex-col bg-white rounded-2xl shadow-xl border border-stone-100 overflow-hidden">
+      <div class="px-6 py-4 border-b border-stone-100 bg-stone-50/50 flex justify-between">
+        <h2 class="text-lg font-bold text-stone-900">Mettre fin à l'essai ?</h2>
+        <button type="button" class="rounded-lg min-h-10 min-w-10 text-stone-500" aria-hidden>×</button>
+      </div>
+      <div class="px-6 py-4 space-y-3">
+        <p class="text-sm text-stone-700">Fin le <strong>1 juil. 2026</strong> · aucun prélèvement ensuite.</p>
+        <div class="rounded-lg border border-stone-200 bg-stone-50 p-3 text-xs text-stone-600">
+          <strong>Une seule période d'essai</strong> par personne pour cette offre.
+        </div>
+      </div>
+      <div class="px-6 py-4 border-t border-stone-100 bg-stone-50/50 flex justify-end gap-3">
+        <button type="button" class="rounded-lg min-h-10 px-4 border border-stone-300 text-stone-700 text-sm">Annuler</button>
+        <button type="button" class="rounded-lg min-h-10 px-4 text-sm text-white bg-palette-forest-dark">Confirmer</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

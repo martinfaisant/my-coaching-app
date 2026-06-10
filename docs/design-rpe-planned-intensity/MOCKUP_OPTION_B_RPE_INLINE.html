@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Option B — RPE : encart niveau + tableau repliable dans la modale</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            'palette-forest-darker': '#506648',
+            stone: { 50: '#fafaf9', 100: '#f5f5f4', 200: '#e7e5e4', 300: '#d6d3d1', 400: '#a8a29e', 500: '#78716c', 600: '#57534e', 700: '#44403c', 900: '#1c1917' },
+          },
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-stone-800/90 min-h-screen p-4 flex items-start justify-center pt-6">
+  <p class="fixed top-2 left-2 right-2 text-center text-xs text-stone-400 max-w-lg mx-auto">
+    <strong>Option B</strong> — Maquette non fonctionnelle (sauf replier/déplier le panneau). Pas de modale : tout défile dans la même colonne.
+  </p>
+
+  <div class="w-full max-w-lg mt-8">
+    <div class="bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div class="px-5 py-4 border-b border-stone-200 flex justify-between items-center shrink-0">
+        <span class="text-sm font-bold text-stone-900">mer. 14 mai 2026</span>
+        <span class="text-xs font-semibold px-2 py-1 rounded-full bg-stone-200 text-stone-700">Planifié</span>
+      </div>
+
+      <div class="overflow-y-auto p-5 space-y-5">
+        <div class="bg-stone-50 p-4 rounded-xl border border-stone-100">
+          <div class="text-xs font-semibold text-stone-500 uppercase tracking-wider mb-3">Objectifs de la séance</div>
+          <p class="text-sm text-stone-600 mb-4">45 min · 10 km <span class="text-stone-400">(exemple)</span></p>
+
+          <div class="border-t border-stone-200 pt-4 mt-2">
+            <label class="block text-sm font-medium text-stone-700 mb-2">Intensité prévue (RPE)</label>
+            <p class="text-xs text-stone-500 mb-3">Facultatif côté coach — 1 = très léger, 10 = maximal.</p>
+
+            <div class="flex flex-wrap gap-1.5" role="group" aria-label="RPE 1 à 10">
+              <button type="button" class="w-9 h-9 rounded-lg text-xs font-semibold border border-stone-200 bg-white text-stone-500">1</button>
+              <button type="button" class="w-9 h-9 rounded-lg text-xs font-semibold border border-stone-200 bg-white text-stone-500">2</button>
+              <button type="button" class="w-9 h-9 rounded-lg text-xs font-semibold border border-stone-200 bg-white text-stone-500">3</button>
+              <button type="button" class="w-9 h-9 rounded-lg text-xs font-semibold border border-stone-200 bg-white text-stone-500">4</button>
+              <button type="button" class="w-9 h-9 rounded-lg text-xs font-semibold border border-stone-200 bg-white text-stone-500">5</button>
+              <button type="button" class="w-9 h-9 rounded-lg text-xs font-semibold border border-stone-200 bg-white text-stone-500">6</button>
+              <button type="button" class="w-9 h-9 rounded-lg text-xs font-semibold border border-palette-forest-dark bg-palette-forest-dark text-white">7</button>
+              <button type="button" class="w-9 h-9 rounded-lg text-xs font-semibold border border-stone-200 bg-white text-stone-500">8</button>
+              <button type="button" class="w-9 h-9 rounded-lg text-xs font-semibold border border-stone-200 bg-white text-stone-500">9</button>
+              <button type="button" class="w-9 h-9 rounded-lg text-xs font-semibold border border-stone-200 bg-white text-stone-500">10</button>
+            </div>
+
+            <div class="mt-3 rounded-xl border border-stone-200 bg-white p-3">
+              <p class="text-xs font-bold text-palette-forest-dark uppercase tracking-wide mb-1">Niveau sélectionné : 7 — Très difficile</p>
+              <p class="text-sm text-stone-600 leading-snug">
+                Zone de seuil. Effort inconfortable. On se concentre sur sa respiration. Phrases d’un ou deux mots.
+              </p>
+            </div>
+
+            <!-- Panneau repliable : table complète inline -->
+            <div class="mt-4 rounded-xl border border-stone-200 overflow-hidden">
+              <button type="button" id="toggleTable" class="w-full flex items-center justify-between px-3 py-2.5 bg-stone-100 text-left text-sm font-semibold text-stone-800 hover:bg-stone-200/80 transition">
+                <span>Échelle RPE complète (1–10)</span>
+                <span id="chevron" class="text-stone-500 text-xs transition-transform" aria-hidden="true">▼</span>
+              </button>
+              <div id="rpePanel" class="hidden border-t border-stone-200 bg-white max-h-56 overflow-y-auto">
+                <table class="w-full text-left text-sm border-collapse">
+                  <thead class="sticky top-0 bg-stone-50 border-b border-stone-200">
+                    <tr class="text-xs font-bold text-stone-500 uppercase">
+                      <th class="py-2 px-3 w-10">RPE</th>
+                      <th class="py-2 pr-2 w-28">Intensité</th>
+                      <th class="py-2 pr-3">Description</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-stone-700">
+                    <tr class="border-b border-stone-100"><td class="py-2 px-3 font-semibold">1</td><td class="py-2 pr-2">Très léger</td><td class="py-2 pr-3 text-stone-600">Effort quasi nul. Marcher lentement pour aller chercher le café.</td></tr>
+                    <tr class="border-b border-stone-100"><td class="py-2 px-3 font-semibold">2</td><td class="py-2 pr-2">Léger</td><td class="py-2 pr-3 text-stone-600">Rythme de récupération active. On peut discuter sans aucune gêne.</td></tr>
+                    <tr class="border-b border-stone-100"><td class="py-2 px-3 font-semibold">3</td><td class="py-2 pr-2">Modéré</td><td class="py-2 pr-3 text-stone-600">Footing de base (EF). Respiration facile, on peut parler normalement.</td></tr>
+                    <tr class="border-b border-stone-100"><td class="py-2 px-3 font-semibold">4</td><td class="py-2 pr-2">Actif</td><td class="py-2 pr-3 text-stone-600">Rythme un peu plus soutenu. Respiration plus rapide, loin du souffle court.</td></tr>
+                    <tr class="border-b border-stone-100"><td class="py-2 px-3 font-semibold">5</td><td class="py-2 pr-2">Difficile</td><td class="py-2 pr-3 text-stone-600">On transpire. La conversation devient un peu hachée.</td></tr>
+                    <tr class="border-b border-stone-100"><td class="py-2 px-3 font-semibold">6</td><td class="py-2 pr-2">Vigoureux</td><td class="py-2 pr-3 text-stone-600">Effort soutenu, « tempo ». Courtes phrases seulement.</td></tr>
+                    <tr class="border-b border-stone-100 bg-palette-forest-dark/5"><td class="py-2 px-3 font-semibold">7</td><td class="py-2 pr-2">Très difficile</td><td class="py-2 pr-3 text-stone-600">Seuil. Inconfortable. Phrases d’un ou deux mots.</td></tr>
+                    <tr class="border-b border-stone-100"><td class="py-2 px-3 font-semibold">8</td><td class="py-2 pr-2">Exténuant</td><td class="py-2 pr-3 text-stone-600">VMA / intervalles. Souffle très court.</td></tr>
+                    <tr class="border-b border-stone-100"><td class="py-2 px-3 font-semibold">9</td><td class="py-2 pr-2">Presque maximal</td><td class="py-2 pr-3 text-stone-600">Effort extrême, quasi pas de parole.</td></tr>
+                    <tr><td class="py-2 px-3 font-semibold">10</td><td class="py-2 pr-2">Maximal</td><td class="py-2 pr-3 text-stone-600">All-out, quelques secondes seulement.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p class="text-xs text-stone-500 text-center">Faites défiler pour voir l’effet « longue modale » quand le panneau est ouvert.</p>
+      </div>
+
+      <div class="border-t border-stone-200 p-4 shrink-0">
+        <button type="button" class="w-full py-3 rounded-xl bg-palette-forest-dark text-white text-sm font-semibold">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var btn = document.getElementById('toggleTable');
+      var panel = document.getElementById('rpePanel');
+      var chevron = document.getElementById('chevron');
+      var open = false;
+      btn.addEventListener('click', function () {
+        open = !open;
+        panel.classList.toggle('hidden', !open);
+        chevron.textContent = open ? '▲' : '▼';
+        chevron.classList.toggle('rotate-180', open);
+      });
+    })();
+  </script>
+</body>
+</html>

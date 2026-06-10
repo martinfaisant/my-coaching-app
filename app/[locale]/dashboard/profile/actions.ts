@@ -13,6 +13,11 @@ import {
 } from '@/lib/sportStyles'
 import type { WorkoutPrimaryMetricBySport } from '@/types/database'
 import { isCoachWorkoutPrimaryMetricsComplete } from '@/lib/workoutPrimaryMetric'
+import { getStripeServer } from '@/lib/stripeServer'
+import {
+  syncCoachPlatformStripeCustomerNameIfPresent,
+  syncCoachPlatformStripeCustomerPreferredLocalesIfPresent,
+} from '@/lib/stripeCoachPlatformCustomer'
 
 export type ProfileFormState = {
   error?: string
@@ -219,6 +224,15 @@ export async function updateProfile(
   revalidatePath('/dashboard')
   revalidatePath('/dashboard/profile')
   revalidatePath('/dashboard/coach')
+
+  const stripe = getStripeServer()
+  if (stripe && profile?.role === 'coach') {
+    await syncCoachPlatformStripeCustomerNameIfPresent(stripe, supabase, user.id, firstName, lastName)
+  }
+  if (stripe && preferredLocale !== null) {
+    await syncCoachPlatformStripeCustomerPreferredLocalesIfPresent(stripe, supabase, user.id, preferredLocale)
+  }
+
   return { success: t('saved') }
 }
 
@@ -307,6 +321,12 @@ export async function updatePreferredLocale(newLocale: 'fr' | 'en'): Promise<Upd
   revalidatePath('/dashboard')
   revalidatePath('/dashboard/profile')
   revalidatePath('/dashboard/coach')
+
+  const stripe = getStripeServer()
+  if (stripe) {
+    await syncCoachPlatformStripeCustomerPreferredLocalesIfPresent(stripe, supabase, user.id, newLocale)
+  }
+
   return {}
 }
 

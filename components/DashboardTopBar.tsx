@@ -13,6 +13,7 @@ import {
   getAthleteAccountNavItems,
   getAthletePrimaryNavItems,
   getAthleteProfileNavItem,
+  getCoachPlatformSubscriptionNavItem,
   getContactPublicNavItem,
   getDashboardNavItems,
   getPageTitleI18nKey,
@@ -39,6 +40,7 @@ export function DashboardTopBar({ profile }: DashboardTopBarProps) {
   const athleteAccount = isAthlete ? getAthleteAccountNavItems(profile) : []
   const athleteProfileItem = isAthlete ? [getAthleteProfileNavItem()] : []
   const contactPublicItem = getContactPublicNavItem()
+  const coachMsaItem = getCoachPlatformSubscriptionNavItem()
 
   const displayName = getDisplayName(profile, '')
   const initials = getInitials(displayName)
@@ -243,18 +245,30 @@ export function DashboardTopBar({ profile }: DashboardTopBarProps) {
                     </div>
                   </Link>
                   {profile.role === 'coach' ? (
-                    <Link
-                      href={contactPublicItem.href}
-                      onClick={closeDrawer}
-                      className={`${contactDrawerLinkBase} ${
-                        isNavItemActive(pathname, contactPublicItem)
-                          ? contactDrawerActive
-                          : contactDrawerInactive
-                      }`}
-                    >
-                      {getNavIcon(contactPublicItem)}
-                      <span>{t(contactPublicItem.i18nKey)}</span>
-                    </Link>
+                    <>
+                      <Link
+                        href={coachMsaItem.href}
+                        onClick={closeDrawer}
+                        className={`${contactDrawerLinkBase} mx-2 ${
+                          isNavItemActive(pathname, coachMsaItem) ? contactDrawerActive : contactDrawerInactive
+                        }`}
+                      >
+                        {getNavIcon(coachMsaItem)}
+                        <span className="leading-tight">{t(coachMsaItem.i18nKey)}</span>
+                      </Link>
+                      <Link
+                        href={contactPublicItem.href}
+                        onClick={closeDrawer}
+                        className={`${contactDrawerLinkBase} mx-2 ${
+                          isNavItemActive(pathname, contactPublicItem)
+                            ? contactDrawerActive
+                            : contactDrawerInactive
+                        }`}
+                      >
+                        {getNavIcon(contactPublicItem)}
+                        <span>{t(contactPublicItem.i18nKey)}</span>
+                      </Link>
+                    </>
                   ) : null}
                   <hr className="border-stone-200 my-2" />
                   <div className="px-3 py-2">

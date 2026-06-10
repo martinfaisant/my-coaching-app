@@ -1,0 +1,333 @@
+﻿2026-06-10T13:20:36.2123021Z Current runner version: '2.334.0'
+2026-06-10T13:20:36.2148672Z ##[group]Runner Image Provisioner
+2026-06-10T13:20:36.2149530Z Hosted Compute Agent
+2026-06-10T13:20:36.2150109Z Version: 20260520.533
+2026-06-10T13:20:36.2150847Z Commit: 189110e25284a9812c124fd27b339e2fb4f2f9db
+2026-06-10T13:20:36.2151575Z Build Date: 2026-05-20T17:44:04Z
+2026-06-10T13:20:36.2152294Z Worker ID: {1fc4031f-d083-46a3-9aad-f4f196822a01}
+2026-06-10T13:20:36.2153015Z Azure Region: westus2
+2026-06-10T13:20:36.2153584Z ##[endgroup]
+2026-06-10T13:20:36.2155402Z ##[group]Operating System
+2026-06-10T13:20:36.2156061Z Ubuntu
+2026-06-10T13:20:36.2156568Z 24.04.4
+2026-06-10T13:20:36.2157567Z LTS
+2026-06-10T13:20:36.2158143Z ##[endgroup]
+2026-06-10T13:20:36.2158814Z ##[group]Runner Image
+2026-06-10T13:20:36.2159443Z Image: ubuntu-24.04
+2026-06-10T13:20:36.2159999Z Version: 20260525.161.1
+2026-06-10T13:20:36.2161374Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260525.161/images/ubuntu/Ubuntu2404-Readme.md
+2026-06-10T13:20:36.2163012Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260525.161
+2026-06-10T13:20:36.2163975Z ##[endgroup]
+2026-06-10T13:20:36.2165161Z ##[group]GITHUB_TOKEN Permissions
+2026-06-10T13:20:36.2167538Z Contents: read
+2026-06-10T13:20:36.2168151Z Metadata: read
+2026-06-10T13:20:36.2168861Z Packages: read
+2026-06-10T13:20:36.2169416Z ##[endgroup]
+2026-06-10T13:20:36.2171595Z Secret source: Actions
+2026-06-10T13:20:36.2172609Z Prepare workflow directory
+2026-06-10T13:20:36.2586002Z Prepare all required actions
+2026-06-10T13:20:36.2643068Z Getting action download info
+2026-06-10T13:20:36.9470337Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+2026-06-10T13:20:37.0614334Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+2026-06-10T13:20:37.2462036Z Complete job name: ci (20.x)
+2026-06-10T13:20:37.3208941Z ##[group]Run actions/checkout@v4
+2026-06-10T13:20:37.3209842Z with:
+2026-06-10T13:20:37.3210352Z   repository: martinfaisant/my-coaching-app
+2026-06-10T13:20:37.3215010Z   token: ***
+2026-06-10T13:20:37.3215453Z   ssh-strict: true
+2026-06-10T13:20:37.3215890Z   ssh-user: git
+2026-06-10T13:20:37.3216340Z   persist-credentials: true
+2026-06-10T13:20:37.3216830Z   clean: true
+2026-06-10T13:20:37.3217555Z   sparse-checkout-cone-mode: true
+2026-06-10T13:20:37.3218075Z   fetch-depth: 1
+2026-06-10T13:20:37.3218547Z   fetch-tags: false
+2026-06-10T13:20:37.3218994Z   show-progress: true
+2026-06-10T13:20:37.3219441Z   lfs: false
+2026-06-10T13:20:37.3219860Z   submodules: false
+2026-06-10T13:20:37.3220308Z   set-safe-directory: true
+2026-06-10T13:20:37.3221053Z env:
+2026-06-10T13:20:37.3221586Z   NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
+2026-06-10T13:20:37.3222257Z   NEXT_PUBLIC_SUPABASE_ANON_KEY: anon-key
+2026-06-10T13:20:37.3222836Z   SUPABASE_SECRET_KEY: service-role-key
+2026-06-10T13:20:37.3223467Z   NEXT_PUBLIC_APP_URL: http://localhost:3000
+2026-06-10T13:20:37.3224093Z   NEXT_PUBLIC_SITE_URL: http://localhost:3000
+2026-06-10T13:20:37.3224648Z ##[endgroup]
+2026-06-10T13:20:37.4410171Z Syncing repository: martinfaisant/my-coaching-app
+2026-06-10T13:20:37.4413127Z ##[group]Getting Git version info
+2026-06-10T13:20:37.4414555Z Working directory is '/home/runner/work/my-coaching-app/my-coaching-app'
+2026-06-10T13:20:37.4416567Z [command]/usr/bin/git version
+2026-06-10T13:20:37.4489548Z git version 2.54.0
+2026-06-10T13:20:37.4517151Z ##[endgroup]
+2026-06-10T13:20:37.4533475Z Temporarily overriding HOME='/home/runner/work/_temp/759fc5e4-8f9c-44f0-83ca-b850016e8933' before making global git config changes
+2026-06-10T13:20:37.4536536Z Adding repository directory to the temporary git global config as a safe directory
+2026-06-10T13:20:37.4540782Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/my-coaching-app/my-coaching-app
+2026-06-10T13:20:37.4586240Z Deleting the contents of '/home/runner/work/my-coaching-app/my-coaching-app'
+2026-06-10T13:20:37.4590250Z ##[group]Initializing the repository
+2026-06-10T13:20:37.4594190Z [command]/usr/bin/git init /home/runner/work/my-coaching-app/my-coaching-app
+2026-06-10T13:20:37.4701653Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-06-10T13:20:37.4702845Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-06-10T13:20:37.4703923Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-06-10T13:20:37.4704669Z hint: call:
+2026-06-10T13:20:37.4705070Z hint:
+2026-06-10T13:20:37.4705572Z hint: 	git config --global init.defaultBranch <name>
+2026-06-10T13:20:37.4706509Z hint:
+2026-06-10T13:20:37.4707637Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-06-10T13:20:37.4708713Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-06-10T13:20:37.4709448Z hint:
+2026-06-10T13:20:37.4709907Z hint: 	git branch -m <name>
+2026-06-10T13:20:37.4710393Z hint:
+2026-06-10T13:20:37.4711066Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-06-10T13:20:37.4712285Z Initialized empty Git repository in /home/runner/work/my-coaching-app/my-coaching-app/.git/
+2026-06-10T13:20:37.4719296Z [command]/usr/bin/git remote add origin https://github.com/martinfaisant/my-coaching-app
+2026-06-10T13:20:37.4762321Z ##[endgroup]
+2026-06-10T13:20:37.4763080Z ##[group]Disabling automatic garbage collection
+2026-06-10T13:20:37.4766439Z [command]/usr/bin/git config --local gc.auto 0
+2026-06-10T13:20:37.4794048Z ##[endgroup]
+2026-06-10T13:20:37.4794848Z ##[group]Setting up auth
+2026-06-10T13:20:37.4801446Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-06-10T13:20:37.4833864Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-06-10T13:20:37.5186720Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-06-10T13:20:37.5218334Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-06-10T13:20:37.5450913Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-06-10T13:20:37.5482001Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-06-10T13:20:37.5703164Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-06-10T13:20:37.5737391Z ##[endgroup]
+2026-06-10T13:20:37.5738462Z ##[group]Fetching the repository
+2026-06-10T13:20:37.5745818Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +f6a428cf029067b6190e9ec026073ed893e672a9:refs/remotes/pull/98/merge
+2026-06-10T13:20:38.2470349Z From https://github.com/martinfaisant/my-coaching-app
+2026-06-10T13:20:38.2471502Z  * [new ref]         f6a428cf029067b6190e9ec026073ed893e672a9 -> pull/98/merge
+2026-06-10T13:20:38.2506454Z ##[endgroup]
+2026-06-10T13:20:38.2508064Z ##[group]Determining the checkout info
+2026-06-10T13:20:38.2509629Z ##[endgroup]
+2026-06-10T13:20:38.2513623Z [command]/usr/bin/git sparse-checkout disable
+2026-06-10T13:20:38.2555098Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-06-10T13:20:38.2580121Z ##[group]Checking out the ref
+2026-06-10T13:20:38.2584019Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/98/merge
+2026-06-10T13:20:38.3115211Z Note: switching to 'refs/remotes/pull/98/merge'.
+2026-06-10T13:20:38.3116607Z 
+2026-06-10T13:20:38.3118140Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-06-10T13:20:38.3120220Z changes and commit them, and you can discard any commits you make in this
+2026-06-10T13:20:38.3122191Z state without impacting any branches by switching back to a branch.
+2026-06-10T13:20:38.3123669Z 
+2026-06-10T13:20:38.3124427Z If you want to create a new branch to retain commits you create, you may
+2026-06-10T13:20:38.3126110Z do so (now or later) by using -c with the switch command. Example:
+2026-06-10T13:20:38.3127442Z 
+2026-06-10T13:20:38.3127958Z   git switch -c <new-branch-name>
+2026-06-10T13:20:38.3128724Z 
+2026-06-10T13:20:38.3129199Z Or undo this operation with:
+2026-06-10T13:20:38.3129865Z 
+2026-06-10T13:20:38.3130280Z   git switch -
+2026-06-10T13:20:38.3130892Z 
+2026-06-10T13:20:38.3131818Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-06-10T13:20:38.3133080Z 
+2026-06-10T13:20:38.3134448Z HEAD is now at f6a428c Merge fda60909f800c79ff821449808d4704c6539eddb into 1bf61de11bb38193507fc9451433c47eba4b8a82
+2026-06-10T13:20:38.3139250Z ##[endgroup]
+2026-06-10T13:20:38.3178741Z [command]/usr/bin/git log -1 --format=%H
+2026-06-10T13:20:38.3202852Z f6a428cf029067b6190e9ec026073ed893e672a9
+2026-06-10T13:20:38.3505923Z ##[group]Run actions/setup-node@v4
+2026-06-10T13:20:38.3506588Z with:
+2026-06-10T13:20:38.3507505Z   node-version: 20.x
+2026-06-10T13:20:38.3508135Z   cache: npm
+2026-06-10T13:20:38.3508614Z   always-auth: false
+2026-06-10T13:20:38.3509102Z   check-latest: false
+2026-06-10T13:20:38.3513888Z   token: ***
+2026-06-10T13:20:38.3514354Z env:
+2026-06-10T13:20:38.3514893Z   NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
+2026-06-10T13:20:38.3515624Z   NEXT_PUBLIC_SUPABASE_ANON_KEY: anon-key
+2026-06-10T13:20:38.3516261Z   SUPABASE_SECRET_KEY: service-role-key
+2026-06-10T13:20:38.3516907Z   NEXT_PUBLIC_APP_URL: http://localhost:3000
+2026-06-10T13:20:38.3517750Z   NEXT_PUBLIC_SITE_URL: http://localhost:3000
+2026-06-10T13:20:38.3518359Z ##[endgroup]
+2026-06-10T13:20:38.5427193Z Attempting to download 20.x...
+2026-06-10T13:20:39.2443809Z Acquiring 20.20.2 - x64 from https://github.com/actions/node-versions/releases/download/20.20.2-23521894959/node-20.20.2-linux-x64.tar.gz
+2026-06-10T13:20:39.7876350Z Extracting ...
+2026-06-10T13:20:39.7985161Z [command]/usr/bin/tar xz --strip 1 --warning=no-unknown-keyword --overwrite -C /home/runner/work/_temp/1758133c-9c08-4fef-907e-85a57e263fbe -f /home/runner/work/_temp/3d3806e4-e083-497d-9d08-c1bf290ed1ac
+2026-06-10T13:20:40.8296796Z Adding to the cache ...
+2026-06-10T13:20:42.6446954Z ##[group]Environment details
+2026-06-10T13:20:42.8634429Z node: v20.20.2
+2026-06-10T13:20:42.8635014Z npm: 10.8.2
+2026-06-10T13:20:42.8635370Z yarn: 1.22.22
+2026-06-10T13:20:42.8636192Z ##[endgroup]
+2026-06-10T13:20:42.8660905Z [command]/opt/hostedtoolcache/node/20.20.2/x64/bin/npm config get cache
+2026-06-10T13:20:42.9663148Z /home/runner/.npm
+2026-06-10T13:20:43.2451881Z Cache hit for: node-cache-Linux-x64-npm-94d466b88d98240ba19f6e5ab341f579b7e17b4c36dbb8abcce62b59d6e4b270
+2026-06-10T13:20:44.5517255Z Received 0 of 231652629 (0.0%), 0.0 MBs/sec
+2026-06-10T13:20:45.5519769Z Received 96468992 of 231652629 (41.6%), 46.0 MBs/sec
+2026-06-10T13:20:46.5525374Z Received 130023424 of 231652629 (56.1%), 41.3 MBs/sec
+2026-06-10T13:20:47.5519069Z Received 130023424 of 231652629 (56.1%), 31.0 MBs/sec
+2026-06-10T13:20:48.5528845Z Received 130023424 of 231652629 (56.1%), 24.8 MBs/sec
+2026-06-10T13:20:49.5533190Z Received 130023424 of 231652629 (56.1%), 20.7 MBs/sec
+2026-06-10T13:20:50.5540232Z Received 138412032 of 231652629 (59.7%), 18.8 MBs/sec
+2026-06-10T13:20:51.5552666Z Received 223264021 of 231652629 (96.4%), 26.6 MBs/sec
+2026-06-10T13:20:52.5555738Z Received 227458325 of 231652629 (98.2%), 24.1 MBs/sec
+2026-06-10T13:20:52.6622326Z Received 231652629 of 231652629 (100.0%), 24.2 MBs/sec
+2026-06-10T13:20:52.6623348Z Cache Size: ~221 MB (231652629 B)
+2026-06-10T13:20:52.6661263Z [command]/usr/bin/tar -xf /home/runner/work/_temp/640d8932-05a2-4ef3-a0ca-34ceb9612b01/cache.tzst -P -C /home/runner/work/my-coaching-app/my-coaching-app --use-compress-program unzstd
+2026-06-10T13:20:53.0944490Z Cache restored successfully
+2026-06-10T13:20:53.1049468Z Cache restored from key: node-cache-Linux-x64-npm-94d466b88d98240ba19f6e5ab341f579b7e17b4c36dbb8abcce62b59d6e4b270
+2026-06-10T13:20:53.1236634Z ##[group]Run npm ci
+2026-06-10T13:20:53.1237285Z [36;1mnpm ci[0m
+2026-06-10T13:20:53.1269219Z shell: /usr/bin/bash -e {0}
+2026-06-10T13:20:53.1269516Z env:
+2026-06-10T13:20:53.1269809Z   NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
+2026-06-10T13:20:53.1270218Z   NEXT_PUBLIC_SUPABASE_ANON_KEY: anon-key
+2026-06-10T13:20:53.1270518Z   SUPABASE_SECRET_KEY: service-role-key
+2026-06-10T13:20:53.1270828Z   NEXT_PUBLIC_APP_URL: http://localhost:3000
+2026-06-10T13:20:53.1271176Z   NEXT_PUBLIC_SITE_URL: http://localhost:3000
+2026-06-10T13:20:53.1271466Z ##[endgroup]
+2026-06-10T13:21:05.7078349Z 
+2026-06-10T13:21:05.7088521Z added 544 packages, and audited 545 packages in 13s
+2026-06-10T13:21:05.7089037Z 
+2026-06-10T13:21:05.7089357Z 179 packages are looking for funding
+2026-06-10T13:21:05.7089876Z   run `npm fund` for details
+2026-06-10T13:21:05.9112239Z 
+2026-06-10T13:21:05.9113187Z 12 vulnerabilities (1 low, 6 moderate, 5 high)
+2026-06-10T13:21:05.9113835Z 
+2026-06-10T13:21:05.9114444Z To address issues that do not require attention, run:
+2026-06-10T13:21:05.9125152Z   npm audit fix
+2026-06-10T13:21:05.9125644Z 
+2026-06-10T13:21:05.9126022Z To address all issues, run:
+2026-06-10T13:21:05.9126639Z   npm audit fix --force
+2026-06-10T13:21:05.9127463Z 
+2026-06-10T13:21:05.9127722Z Run `npm audit` for details.
+2026-06-10T13:21:05.9975173Z ##[group]Run npm run lint
+2026-06-10T13:21:05.9975492Z [36;1mnpm run lint[0m
+2026-06-10T13:21:06.0004330Z shell: /usr/bin/bash -e {0}
+2026-06-10T13:21:06.0004593Z env:
+2026-06-10T13:21:06.0004878Z   NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
+2026-06-10T13:21:06.0005236Z   NEXT_PUBLIC_SUPABASE_ANON_KEY: anon-key
+2026-06-10T13:21:06.0005534Z   SUPABASE_SECRET_KEY: service-role-key
+2026-06-10T13:21:06.0005833Z   NEXT_PUBLIC_APP_URL: http://localhost:3000
+2026-06-10T13:21:06.0006147Z   NEXT_PUBLIC_SITE_URL: http://localhost:3000
+2026-06-10T13:21:06.0006423Z ##[endgroup]
+2026-06-10T13:21:06.1101714Z 
+2026-06-10T13:21:06.1102348Z > my-coaching-app@0.1.0 lint
+2026-06-10T13:21:06.1102819Z > eslint
+2026-06-10T13:21:06.1102952Z 
+2026-06-10T13:21:24.1943311Z 
+2026-06-10T13:21:24.1944646Z /home/runner/work/my-coaching-app/my-coaching-app/app/[locale]/dashboard/CoachSubscriptionDetailModal.tsx
+2026-06-10T13:21:24.1985809Z ##[warning]  88:13  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-06-10T13:21:24.1998922Z 
+2026-06-10T13:21:24.1999790Z /home/runner/work/my-coaching-app/my-coaching-app/app/[locale]/dashboard/FindCoachSection.tsx
+2026-06-10T13:21:24.2004758Z ##[warning]  425:19  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-06-10T13:21:24.2012343Z ##[warning]  580:6   warning  React Hook useEffect has missing dependencies: 'displaySportsForVolume' and 'sports'. Either include them or remove the dependency array. You can also replace multiple useState variables with useReducer if 'setWeeklyVolumeInputs' needs the current value of 'sports'                react-hooks/exhaustive-deps
+2026-06-10T13:21:24.2018940Z ##[warning]  580:7   warning  React Hook useEffect has a complex expression in the dependency array. Extract it to a separate variable so it can be statically checked                                                                                                                                                 react-hooks/exhaustive-deps
+2026-06-10T13:21:24.2021388Z 
+2026-06-10T13:21:24.2022199Z /home/runner/work/my-coaching-app/my-coaching-app/app/[locale]/dashboard/RequestCoachButton.tsx
+2026-06-10T13:21:24.2025256Z ##[warning]  104:6  warning  React Hook useEffect has a missing dependency: 'closeModal'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+2026-06-10T13:21:24.2027356Z 
+2026-06-10T13:21:24.2028552Z /home/runner/work/my-coaching-app/my-coaching-app/app/[locale]/dashboard/coach-platform-subscription/coachPlatformCancellationActions.ts
+2026-06-10T13:21:24.2031181Z ##[warning]  8:10  warning  'logger' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+2026-06-10T13:21:24.2032876Z 
+2026-06-10T13:21:24.2033652Z /home/runner/work/my-coaching-app/my-coaching-app/app/[locale]/dashboard/coach/CoachRatingForm.tsx
+2026-06-10T13:21:24.2036249Z ##[warning]  106:6  warning  React Hook useEffect has a missing dependency: 't'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+2026-06-10T13:21:24.2038285Z 
+2026-06-10T13:21:24.2039154Z /home/runner/work/my-coaching-app/my-coaching-app/app/[locale]/dashboard/devices/StravaDevicesSection.tsx
+2026-06-10T13:21:24.2044427Z ##[warning]  81:17  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-06-10T13:21:24.2047546Z 
+2026-06-10T13:21:24.2048304Z /home/runner/work/my-coaching-app/my-coaching-app/app/[locale]/dashboard/profile/ProfileForm.tsx
+2026-06-10T13:21:24.2052366Z ##[warning]  297:6   warning  React Hook useCallback has missing dependencies: 'unitCanot' and 'unitTriathlon'. Either include them or remove the dependency array                                                                                                                                                     react-hooks/exhaustive-deps
+2026-06-10T13:21:24.2058808Z ##[warning]  455:6   warning  React Hook useEffect has missing dependencies: 'avatarUrlState', 'effectiveInitialLocale', 'isSubmitting', 'router', 'state?.error', 'state?.success', and 'unitTrail'. Either include them or remove the dependency array                                                               react-hooks/exhaustive-deps
+2026-06-10T13:21:24.2065679Z ##[warning]  620:19  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-06-10T13:21:24.2068812Z 
+2026-06-10T13:21:24.2069653Z /home/runner/work/my-coaching-app/my-coaching-app/app/[locale]/dashboard/profile/offers/OffersForm.tsx
+2026-06-10T13:21:24.2073055Z ##[warning]  343:6  warning  React Hook useEffect has missing dependencies: 'isSubmitting', 'router', 'state?.error', and 'state?.success'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+2026-06-10T13:21:24.2075291Z 
+2026-06-10T13:21:24.2075860Z /home/runner/work/my-coaching-app/my-coaching-app/app/[locale]/page.tsx
+2026-06-10T13:21:24.2078041Z ##[warning]  17:3  warning  'Users' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+2026-06-10T13:21:24.2079707Z 
+2026-06-10T13:21:24.2080352Z /home/runner/work/my-coaching-app/my-coaching-app/components/ActivityTile.tsx
+2026-06-10T13:21:24.2085027Z ##[warning]  133:9  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-06-10T13:21:24.2088168Z 
+2026-06-10T13:21:24.2088759Z /home/runner/work/my-coaching-app/my-coaching-app/components/AthleteTile.tsx
+2026-06-10T13:21:24.2093610Z ##[warning]  78:17  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-06-10T13:21:24.2096521Z 
+2026-06-10T13:21:24.2097379Z /home/runner/work/my-coaching-app/my-coaching-app/components/AvatarImage.tsx
+2026-06-10T13:21:24.2101906Z ##[warning]  22:5  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-06-10T13:21:24.2104809Z 
+2026-06-10T13:21:24.2105403Z /home/runner/work/my-coaching-app/my-coaching-app/components/CalendarView.tsx
+2026-06-10T13:21:24.2109231Z ##[warning]   556:6    warning  React Hook useMemo has an unnecessary dependency: 'locale'. Either exclude it or remove the dependency array                                                                                                                                                                             react-hooks/exhaustive-deps
+2026-06-10T13:21:24.2115836Z ##[warning]  1205:49   warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-06-10T13:21:24.2123031Z ##[warning]  1269:41   warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-06-10T13:21:24.2130077Z ##[warning]  1366:41   warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-06-10T13:21:24.2137554Z ##[warning]  1540:302  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-06-10T13:21:24.2143316Z ##[warning]  1599:41   warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-06-10T13:21:24.2148279Z ##[warning]  1709:55   warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-06-10T13:21:24.2152999Z ##[warning]  1784:43   warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-06-10T13:21:24.2157590Z ##[warning]  1934:45   warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-06-10T13:21:24.2161972Z ##[warning]  2299:21   warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-06-10T13:21:24.2163677Z 
+2026-06-10T13:21:24.2164110Z /home/runner/work/my-coaching-app/my-coaching-app/components/CalendarViewWithNavigation.tsx
+2026-06-10T13:21:24.2166115Z ##[warning]  270:6  warning  React Hook useEffect has missing dependencies: 'initialWeeklyTotals.length', 'initialWorkouts.length', and 'today'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+2026-06-10T13:21:24.2169257Z ##[warning]  404:6  warning  React Hook useEffect has a missing dependency: 'isMdUp'. Either include it or remove the dependency array                                                               react-hooks/exhaustive-deps
+2026-06-10T13:21:24.2170506Z 
+2026-06-10T13:21:24.2171019Z /home/runner/work/my-coaching-app/my-coaching-app/components/CoachPlatformCheckoutPrerequisitesModal.tsx
+2026-06-10T13:21:24.2172225Z   47:7  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+2026-06-10T13:21:24.2172666Z 
+2026-06-10T13:21:24.2173737Z Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+2026-06-10T13:21:24.2174881Z * Update external systems with the latest state from React.
+2026-06-10T13:21:24.2175678Z * Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+2026-06-10T13:21:24.2176168Z 
+2026-06-10T13:21:24.2177177Z Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+2026-06-10T13:21:24.2177923Z 
+2026-06-10T13:21:24.2178488Z /home/runner/work/my-coaching-app/my-coaching-app/components/CoachPlatformCheckoutPrerequisitesModal.tsx:47:7
+2026-06-10T13:21:24.2179097Z   45 |     }
+2026-06-10T13:21:24.2179371Z   46 |     if (initialSnapshot) {
+2026-06-10T13:21:24.2179758Z > 47 |       setSnapshot(initialSnapshot)
+2026-06-10T13:21:24.2180189Z      |       ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+2026-06-10T13:21:24.2180702Z   48 |       setBillingLoadError(initialSnapshot.billingLoadError)
+2026-06-10T13:21:24.2181097Z   49 |     }
+2026-06-10T13:21:24.2181423Z   50 |     setError(null)  react-hooks/set-state-in-effect
+2026-06-10T13:21:24.2181678Z 
+2026-06-10T13:21:24.2182175Z /home/runner/work/my-coaching-app/my-coaching-app/components/CoachPlatformSubscribeOffersModal.tsx
+2026-06-10T13:21:24.2183088Z   57:7  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+2026-06-10T13:21:24.2183494Z 
+2026-06-10T13:21:24.2184544Z Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+2026-06-10T13:21:24.2185666Z * Update external systems with the latest state from React.
+2026-06-10T13:21:24.2186444Z * Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+2026-06-10T13:21:24.2187214Z 
+2026-06-10T13:21:24.2188091Z Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+2026-06-10T13:21:24.2188832Z 
+2026-06-10T13:21:24.2189487Z /home/runner/work/my-coaching-app/my-coaching-app/components/CoachPlatformSubscribeOffersModal.tsx:57:7
+2026-06-10T13:21:24.2190089Z   55 |   useEffect(() => {
+2026-06-10T13:21:24.2190367Z   56 |     if (!isOpen) {
+2026-06-10T13:21:24.2190689Z > 57 |       setStep('offers')
+2026-06-10T13:21:24.2191160Z      |       ^^^^^^^ Avoid calling setState() directly within an effect
+2026-06-10T13:21:24.2191601Z   58 |       setPrerequisitesSnapshot(null)
+2026-06-10T13:21:24.2191965Z   59 |       setPrerequisitesError(null)
+2026-06-10T13:21:24.2192417Z   60 |       setPendingPhase(null)  react-hooks/set-state-in-effect
+2026-06-10T13:21:24.2192680Z 
+2026-06-10T13:21:24.2193017Z /home/runner/work/my-coaching-app/my-coaching-app/components/CoachTile.tsx
+2026-06-10T13:21:24.2195714Z ##[warning]  88:17  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+2026-06-10T13:21:24.2197674Z 
+2026-06-10T13:21:24.2198089Z /home/runner/work/my-coaching-app/my-coaching-app/components/WorkoutModal.tsx
+2026-06-10T13:21:24.2200444Z ##[warning]  423:9  warning  'workoutPending' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                              @typescript-eslint/no-unused-vars
+2026-06-10T13:21:24.2204788Z ##[warning]  458:6  warning  React Hook useEffect has missing dependencies: 'isSubmitting', 'onClose', 'state?.error', 'state?.success', 'state.workout', and 'workoutForm'. Either include them or remove the dependency array. If 'onClose' changes too often, find the parent component that defines it and wrap that definition in useCallback                                  react-hooks/exhaustive-deps
+2026-06-10T13:21:24.2209273Z ##[warning]  548:6  warning  React Hook useEffect has missing dependencies: 'commentPending', 'commentState?.error', and 'commentState?.success'. Either include them or remove the dependency array                                                                                                                                                                                react-hooks/exhaustive-deps
+2026-06-10T13:21:24.2213796Z ##[warning]  566:6  warning  React Hook useEffect has missing dependencies: 'onClose', 'statusCommentPending', 'statusCommentState?.error', 'statusCommentState?.success', and 'statusCommentState.workout'. Either include them or remove the dependency array. If 'onClose' changes too often, find the parent component that defines it and wrap that definition in useCallback  react-hooks/exhaustive-deps
+2026-06-10T13:21:24.2215732Z 
+2026-06-10T13:21:24.2216168Z /home/runner/work/my-coaching-app/my-coaching-app/lib/coachPlatformSubscriptionDisplay.ts
+2026-06-10T13:21:24.2217721Z ##[warning]  8:3  warning  'intervalCount' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+2026-06-10T13:21:24.2218692Z 
+2026-06-10T13:21:24.2219106Z /home/runner/work/my-coaching-app/my-coaching-app/lib/stripeCoachPlatformCancellation.ts
+2026-06-10T13:21:24.2220538Z ##[warning]  6:15  warning  'CoachPlatformSubscription' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+2026-06-10T13:21:24.2221616Z 
+2026-06-10T13:21:24.2222040Z ✖ 37 problems (2 errors, 35 warnings)
+2026-06-10T13:21:24.2222268Z 
+2026-06-10T13:21:24.3046240Z ##[error]Process completed with exit code 1.
+2026-06-10T13:21:24.3169400Z Post job cleanup.
+2026-06-10T13:21:24.4184469Z [command]/usr/bin/git version
+2026-06-10T13:21:24.4221715Z git version 2.54.0
+2026-06-10T13:21:24.4265677Z Temporarily overriding HOME='/home/runner/work/_temp/ce62b6ee-ffdc-41d6-aae4-5e419a804a95' before making global git config changes
+2026-06-10T13:21:24.4266851Z Adding repository directory to the temporary git global config as a safe directory
+2026-06-10T13:21:24.4278409Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/my-coaching-app/my-coaching-app
+2026-06-10T13:21:24.4311620Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-06-10T13:21:24.4343317Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-06-10T13:21:24.4568218Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-06-10T13:21:24.4590399Z http.https://github.com/.extraheader
+2026-06-10T13:21:24.4602552Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-06-10T13:21:24.4632460Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-06-10T13:21:24.4851238Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-06-10T13:21:24.4880743Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-06-10T13:21:24.5216674Z Cleaning up orphan processes
+2026-06-10T13:21:24.5517812Z ##[warning]Node.js 20 actions are deprecated. The following actions are running on Node.js 20 and may not work as expected: actions/checkout@v4, actions/setup-node@v4. Actions will be forced to run with Node.js 24 by default starting June 16th, 2026. Node.js 20 will be removed from the runner on September 16th, 2026. Please check if updated versions of these actions are available that support Node.js 24. To opt into Node.js 24 now, set the FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true environment variable on the runner or in your workflow file. Once Node.js 24 becomes the default, you can temporarily opt out by setting ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
 export const dynamic = 'force-dynamic'
 
-export default async function ProfilePage({ params }: { params: Promise<{ locale: string }> }) {
+export default async function ProfilePage({ params: _params }: { params: Promise<{ locale: string }> }) {
   const current = await getCurrentUserWithProfile()
   const isAthlete = current.profile.role === 'athlete'
   const isCoach = current.profile.role === 'coach'

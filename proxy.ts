@@ -50,16 +50,6 @@ export async function proxy(request: NextRequest) {
   const locale = localeMatch ? localeMatch[1] : 'fr'
   const pathnameWithoutLocale = localeMatch ? pathname.slice(3) || '/' : pathname
 
-  // Public routes accessible without authentication
-  const publicRoutes = [
-    '/',
-    '/login',
-    '/reset-password',
-  ]
-
-  // Check if route is public
-  const isPublicRoute = publicRoutes.includes(pathnameWithoutLocale) || isApiRoute
-
   // Protected routes (dashboard and admin)
   const isProtectedRoute = pathnameWithoutLocale.startsWith('/dashboard') || pathnameWithoutLocale.startsWith('/admin')
 
