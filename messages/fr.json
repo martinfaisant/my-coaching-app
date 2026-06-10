@@ -1844,6 +1844,26 @@
           "Facturation simplifiée une fois par an",
           "Économisez 20% sur l’année"
         ]
+      },
+      "price_1TWcZORfZVuQT1uNXT5xfWYe": {
+        "title": "Mensuel",
+        "description": "Accès complet à My Sport Ally pour coacher vos athlètes (planning, demandes, chat, objectifs). Nombre d’athlètes illimité. Facturation chaque mois. Cette formule ne couvre pas l’encaissement des paiements auprès des athlètes.",
+        "tagline": "Gérez vos athlètes avec une flexibilité maximale, sans engagement, annulation possible à tout moment.",
+        "features": [
+          "Nombre d’athlètes illimité",
+          "Planification avancée des séances",
+          "Facturation mensuelle"
+        ]
+      },
+      "price_1TWcZyRfZVuQT1uNZyU8Rn0X": {
+        "title": "Annuel",
+        "description": "Même accès illimité à la plateforme pour coacher vos athlètes. Facturation une fois par an (souvent la formule la plus avantageuse). L’encaissement des paiements auprès des athlètes pourra faire l’objet d’une offre complémentaire ultérieurement.",
+        "tagline": "L’offre pensée pour la performance à long terme de vos athlètes et de votre activité.",
+        "features": [
+          "Toutes les fonctionnalités de l’offre Mensuelle",
+          "Facturation simplifiée une fois par an",
+          "Économisez 20% sur l’année"
+        ]
       }
     },
     "futurePlatformPaymentsTier": {

@@ -1719,6 +1719,26 @@
           "Simpler billing once a year",
           "Save 20% over the year"
         ]
+      },
+      "price_1TWcZORfZVuQT1uNXT5xfWYe": {
+        "title": "Monthly",
+        "description": "Full My Sport Ally access to coach your athletes (planning, requests, chat, goals). Unlimited athletes. Billed every month. This plan does not include collecting payments from athletes.",
+        "tagline": "Coach your athletes with maximum flexibility, no long-term lock-in, cancel any time.",
+        "features": [
+          "Unlimited athletes",
+          "Advanced session planning",
+          "Monthly billing"
+        ]
+      },
+      "price_1TWcZyRfZVuQT1uNZyU8Rn0X": {
+        "title": "Annual",
+        "description": "Same unlimited platform access to coach your athletes. Billed once per year (often the best value). Collecting payments from athletes may be offered as a separate add-on later.",
+        "tagline": "Built for long-term performance of your athletes and your activity.",
+        "features": [
+          "Everything in the Monthly plan",
+          "Simpler billing once a year",
+          "Save 20% over the year"
+        ]
       }
     },
     "futurePlatformPaymentsTier": {
