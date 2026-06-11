@@ -1,5 +1,15 @@
 import { createClient } from '@/utils/supabase/server'
 import { NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
+import {
+  AUTH_OAUTH_LOCALE_COOKIE,
+  getLocaleFromUser,
+  markOAuthSignupPendingFromCallback,
+  normalizeAppLocale,
+  resolveOAuthCallbackFailure,
+  resolvePostOAuthRedirect,
+  type PostOAuthRedirect,
+} from '@/lib/authOAuth'
 
 function getLocaleFromAcceptLanguage(request: Request): 'en' | 'fr' {
   const acceptLanguage = request.headers.get('accept-language') ?? ''
@@ -22,6 +32,16 @@ function redirectToLoginFailed(origin: string, request: Request) {
   )
 }
 
+async function readOAuthLocaleFromCookie(): Promise<'en' | 'fr'> {
+  const cookieStore = await cookies()
+  const value = cookieStore.get(AUTH_OAUTH_LOCALE_COOKIE)?.value
+  return normalizeAppLocale(value)
+}
+
+function redirectFromPostOAuth(origin: string, result: PostOAuthRedirect) {
+  return NextResponse.redirect(new URL(result.path, origin))
+}
+
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url)
   const origin = requestUrl.origin
@@ -29,29 +49,61 @@ export async function GET(request: Request) {
   const type = requestUrl.searchParams.get('type')
   const next = requestUrl.searchParams.get('next')
   const tokenHash = requestUrl.searchParams.get('token_hash')
+  const oauthError = requestUrl.searchParams.get('error')
+  const oauthErrorDescription = requestUrl.searchParams.get('error_description')
+
+  const cookieLocale = await readOAuthLocaleFromCookie()
+
+  if (oauthError && !code) {
+    const failure = resolveOAuthCallbackFailure(
+      cookieLocale,
+      oauthError,
+      oauthErrorDescription
+    )
+    return redirectFromPostOAuth(origin, failure)
+  }
 
   const supabase = await createClient()
 
   // 1) PKCE flow : code présent (Supabase envoie ?code= après vérification si PKCE activé)
   if (code) {
     const { data, error } = await supabase.auth.exchangeCodeForSession(code)
-    if (!error) {
-      const locale =
-        (data?.user?.user_metadata?.locale as string) === 'en' ? 'en' : 'fr'
-      if (type === 'signup' || !next) {
+    if (!error && data.user) {
+      const userLocale = getLocaleFromUser(data.user)
+      const locale = userLocale === 'en' ? 'en' : cookieLocale
+
+      if ((type === 'signup' || type === 'email' || type === 'invite') && !next) {
         return redirectToHomeWithConfirmed(origin, locale)
       }
-      const pathPrefix = locale === 'en' ? '/en' : ''
-      return NextResponse.redirect(
-        new URL(
-          next?.startsWith('/') ? next : `${pathPrefix}/dashboard`,
-          origin
-        )
+
+      if (next?.startsWith('/')) {
+        const path =
+          next.startsWith('/en') || locale === 'fr'
+            ? next
+            : `/en${next}`
+        return NextResponse.redirect(new URL(path, origin))
+      }
+
+      const oauthResult = await resolvePostOAuthRedirect(supabase, data.user, locale)
+
+      if (oauthResult.kind === 'complete_signup') {
+        await markOAuthSignupPendingFromCallback(supabase, data.user, locale)
+      }
+
+      return NextResponse.redirect(new URL(oauthResult.path, origin))
+    }
+
+    if (error) {
+      const failure = resolveOAuthCallbackFailure(
+        cookieLocale,
+        error.name ?? 'oauth_failed',
+        error.message
       )
+      return redirectFromPostOAuth(origin, failure)
     }
   }
 
-  // 2) Lien personnalisé (template email avec token_hash) : le clic va directement sur notre callback
+  // 2) Lien personnalisé (template email avec token_hash)
   if (tokenHash && type) {
     const otpType = type as OtpType
     const { data, error } = await supabase.auth.verifyOtp({

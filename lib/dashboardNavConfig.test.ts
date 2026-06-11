@@ -13,6 +13,8 @@ import {
 
 const athleteNoCoach = { role: 'athlete' as const, coach_id: null as string | null }
 const athleteWithCoach = { role: 'athlete' as const, coach_id: 'c1' }
+const devicesOn = { devicesEnabled: true as const }
+const devicesOff = { devicesEnabled: false as const }
 
 describe('getAthletePrimaryNavItems', () => {
   it('sans coach : Trouver mon coach, calendrier, statistiques, objectifs', () => {
@@ -36,24 +38,33 @@ describe('getAthletePrimaryNavItems', () => {
 })
 
 describe('getAthleteAccountNavItems', () => {
-  it('sans coach : appareils et historique (pas Mon coach)', () => {
-    expect(getAthleteAccountNavItems(athleteNoCoach).map((i) => i.i18nKey)).toEqual([
+  it('devices activés, sans coach : appareils et historique (pas Mon coach)', () => {
+    expect(getAthleteAccountNavItems(athleteNoCoach, devicesOn).map((i) => i.i18nKey)).toEqual([
       'devices',
       'subscriptionHistory',
     ])
   })
-  it('avec coach : appareils, Mon coach, historique', () => {
-    expect(getAthleteAccountNavItems(athleteWithCoach).map((i) => i.i18nKey)).toEqual([
+  it('devices activés, avec coach : appareils, Mon coach, historique', () => {
+    expect(getAthleteAccountNavItems(athleteWithCoach, devicesOn).map((i) => i.i18nKey)).toEqual([
       'devices',
       'myCoach',
+      'subscriptionHistory',
+    ])
+  })
+  it('devices désactivés : pas d’entrée appareils', () => {
+    expect(getAthleteAccountNavItems(athleteWithCoach, devicesOff).map((i) => i.i18nKey)).toEqual([
+      'myCoach',
+      'subscriptionHistory',
+    ])
+    expect(getAthleteAccountNavItems(athleteNoCoach, devicesOff).map((i) => i.i18nKey)).toEqual([
       'subscriptionHistory',
     ])
   })
 })
 
 describe('getAthleteNavItemsForPageTitle / getDashboardNavItems athlete', () => {
-  it('fusionne primary + account comme avant refonte visuelle', () => {
-    const merged = getAthleteNavItemsForPageTitle(athleteWithCoach)
+  it('fusionne primary + account (devices activés)', () => {
+    const merged = getAthleteNavItemsForPageTitle(athleteWithCoach, devicesOn)
     expect(merged.map((i) => i.href)).toEqual([
       '/dashboard/calendar',
       '/dashboard/stats',
@@ -62,10 +73,10 @@ describe('getAthleteNavItemsForPageTitle / getDashboardNavItems athlete', () => 
       '/dashboard/coach',
       '/dashboard/subscriptions/history',
     ])
-    expect(getDashboardNavItems(athleteWithCoach)).toEqual(merged)
+    expect(getDashboardNavItems(athleteWithCoach, devicesOn)).toEqual(merged)
   })
-  it('sans coach : find coach en tête puis le reste', () => {
-    const merged = getAthleteNavItemsForPageTitle(athleteNoCoach)
+  it('sans coach : find coach en tête puis le reste (devices activés)', () => {
+    const merged = getAthleteNavItemsForPageTitle(athleteNoCoach, devicesOn)
     expect(merged[0].i18nKey).toBe('findCoach')
     expect(merged.map((i) => i.i18nKey)).toEqual([
       'findCoach',
@@ -73,6 +84,16 @@ describe('getAthleteNavItemsForPageTitle / getDashboardNavItems athlete', () => 
       'stats',
       'goals',
       'devices',
+      'subscriptionHistory',
+    ])
+  })
+  it('devices désactivés : pas de lien appareils', () => {
+    const merged = getAthleteNavItemsForPageTitle(athleteWithCoach, devicesOff)
+    expect(merged.map((i) => i.i18nKey)).toEqual([
+      'calendar',
+      'stats',
+      'goals',
+      'myCoach',
       'subscriptionHistory',
     ])
   })
@@ -111,7 +132,7 @@ describe('isNavItemActive', () => {
 })
 
 describe('getPageTitleI18nKey', () => {
-  const nav = getAthleteNavItemsForPageTitle(athleteWithCoach)
+  const nav = getAthleteNavItemsForPageTitle(athleteWithCoach, devicesOn)
 
   it('profil athlète : myInformation', () => {
     expect(getPageTitleI18nKey('/dashboard/profile', nav, athleteWithCoach)).toBe('myInformation')
@@ -131,8 +152,15 @@ describe('isAthleteAccountMenuTriggerActive', () => {
   it('actif sur profil', () => {
     expect(isAthleteAccountMenuTriggerActive('/dashboard/profile', athleteWithCoach)).toBe(true)
   })
-  it('actif sur route compte', () => {
-    expect(isAthleteAccountMenuTriggerActive('/dashboard/devices', athleteWithCoach)).toBe(true)
+  it('actif sur /dashboard/devices quand feature activée', () => {
+    expect(isAthleteAccountMenuTriggerActive('/dashboard/devices', athleteWithCoach, devicesOn)).toBe(
+      true,
+    )
+  })
+  it('inactif sur /dashboard/devices quand feature désactivée', () => {
+    expect(isAthleteAccountMenuTriggerActive('/dashboard/devices', athleteWithCoach, devicesOff)).toBe(
+      false,
+    )
   })
   it('inactif sur calendrier', () => {
     expect(isAthleteAccountMenuTriggerActive('/dashboard/calendar', athleteWithCoach)).toBe(false)

@@ -50,6 +50,54 @@ export default async function TermsPage({ params }: TermsPageProps) {
             <p className="leading-relaxed">{t('terms.sections.eligibility.p1')}</p>
           </section>
 
+          <section className="space-y-6">
+            <h2 className="text-xl font-semibold text-stone-900">
+              {t('terms.sections.authentication.title')}
+            </h2>
+
+            <div className="space-y-3">
+              <h3 className="text-lg font-semibold text-stone-900">
+                {t('terms.sections.authentication.accountCreation.title')}
+              </h3>
+              <p className="leading-relaxed">{t('terms.sections.authentication.accountCreation.p1')}</p>
+              <ul className="list-disc pl-6 space-y-2 leading-relaxed">
+                <li>{t('terms.sections.authentication.accountCreation.li1')}</li>
+                <li>{t('terms.sections.authentication.accountCreation.li2')}</li>
+              </ul>
+              <p className="leading-relaxed">{t('terms.sections.authentication.accountCreation.p2')}</p>
+            </div>
+
+            <div className="space-y-3">
+              <h3 className="text-lg font-semibold text-stone-900">
+                {t('terms.sections.authentication.google.title')}
+              </h3>
+              <p className="leading-relaxed">{t('terms.sections.authentication.google.p1')}</p>
+              <p className="leading-relaxed">{t('terms.sections.authentication.google.p2')}</p>
+              <p className="leading-relaxed">{t('terms.sections.authentication.google.p3')}</p>
+            </div>
+
+            <div className="space-y-3">
+              <h3 className="text-lg font-semibold text-stone-900">
+                {t('terms.sections.authentication.linking.title')}
+              </h3>
+              <p className="leading-relaxed">{t('terms.sections.authentication.linking.p1')}</p>
+            </div>
+
+            <div className="space-y-3">
+              <h3 className="text-lg font-semibold text-stone-900">
+                {t('terms.sections.authentication.security.title')}
+              </h3>
+              <p className="leading-relaxed">{t('terms.sections.authentication.security.p1')}</p>
+            </div>
+
+            <div className="space-y-3">
+              <h3 className="text-lg font-semibold text-stone-900">
+                {t('terms.sections.authentication.oneAccount.title')}
+              </h3>
+              <p className="leading-relaxed">{t('terms.sections.authentication.oneAccount.p1')}</p>
+            </div>
+          </section>
+
           <section className="space-y-3">
             <h2 className="text-xl font-semibold text-stone-900">
               {t('terms.sections.role.title')}
@@ -161,6 +209,7 @@ export default async function TermsPage({ params }: TermsPageProps) {
               <li>{t('terms.sections.prohibited.li3')}</li>
               <li>{t('terms.sections.prohibited.li4')}</li>
               <li>{t('terms.sections.prohibited.li5')}</li>
+              <li>{t('terms.sections.prohibited.li6')}</li>
             </ul>
           </section>
 

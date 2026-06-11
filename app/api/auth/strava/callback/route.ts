@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/utils/supabase/server'
 import { cookies } from 'next/headers'
+import { getDashboardCalendarPath, isAthleteStravaDevicesEnabled } from '@/lib/featureFlags'
 import { logger } from '@/lib/logger'
 
 const STRAVA_TOKEN_URL = 'https://www.strava.com/oauth/token'
@@ -32,6 +33,14 @@ function getOrigin(request: NextRequest): string {
 
 export async function GET(request: NextRequest) {
   const origin = getOrigin(request) || 'https://localhost:3000'
+  const locale = getLocaleFromAcceptLanguage(request)
+  const redirectToCalendar = () =>
+    NextResponse.redirect(new URL(getDashboardCalendarPath(locale), origin))
+
+  if (!isAthleteStravaDevicesEnabled()) {
+    return redirectToCalendar()
+  }
+
   const redirectToDevices = (query?: string) =>
     NextResponse.redirect(new URL(query ? `/dashboard/devices?${query}` : '/dashboard/devices', origin))
 

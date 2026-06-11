@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useActionState, useEffect, useRef } from 'react'
-import Link from 'next/link'
 import { useTranslations, useLocale } from 'next-intl'
 import {
   login,
@@ -15,9 +14,10 @@ import { Button } from '@/components/Button'
 import { Input } from '@/components/Input'
 import { PasswordInput } from '@/components/PasswordInput'
 import { FORM_ERROR_TEXT_CLASSES } from '@/lib/formStyles'
+import { SocialAuthButtons, AuthDivider } from '@/components/SocialAuthButtons'
+import { AuthRolePicker, type SignupRole } from '@/components/AuthRolePicker'
+import { AuthLegalConsent } from '@/components/AuthLegalConsent'
 import type { AuthModalMode } from './LoginModal'
-
-type SignupRole = 'athlete' | 'coach'
 
 type LoginFormProps = {
   mode: AuthModalMode
@@ -31,7 +31,8 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
   const locale = useLocale()
   const [loginState, loginAction] = useActionState<LoginState, FormData>(login, {})
   const [signupState, signupAction] = useActionState<SignupState, FormData>(signup, {})
-  const [signupRole, setSignupRole] = useState<SignupRole>('athlete')
+  const [signupRole, setSignupRole] = useState<SignupRole | null>(null)
+  const [roleError, setRoleError] = useState<string | null>(null)
   const [showForgotPassword, setShowForgotPassword] = useState(false)
   const [prefilledEmail, setPrefilledEmail] = useState<string>('')
   const emailInputRef = useRef<HTMLInputElement>(null)
@@ -40,7 +41,10 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
   const [termsError, setTermsError] = useState<string | null>(null)
   const serverTermsError =
     signupState?.error === tErrors('termsRequired') ? signupState.error : null
+  const serverRoleError =
+    signupState?.error === tErrors('roleRequired') ? signupState.error : null
   const displayedTermsError = termsError ?? serverTermsError
+  const displayedRoleError = roleError ?? serverRoleError
 
   // Pré-remplir l'email quand on bascule vers le mode login
   useEffect(() => {
@@ -96,6 +100,9 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
         <p className="text-stone-400 text-sm text-center mb-8">
           {t('enterCredentials')}
         </p>
+
+        <SocialAuthButtons intent="login" locale={locale} />
+        <AuthDivider />
 
         <form action={loginAction} className="space-y-5">
           <Input
@@ -245,61 +252,41 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
         </div>
       </div>
       <p className="text-stone-400 text-sm text-center mb-8">
-        {t('chooseProfile')}
+        {t('signupSubtitleQuick')}
       </p>
+
+      <SocialAuthButtons intent="signup" locale={locale} />
+      <AuthDivider />
 
       <form
         action={signupAction}
         className="space-y-5"
         onSubmit={(e) => {
-          if (termsAccepted) return
-          e.preventDefault()
-          setTermsError(tErrors('termsRequired'))
+          let hasError = false
+          if (!signupRole) {
+            setRoleError(tErrors('roleRequired'))
+            hasError = true
+          } else {
+            setRoleError(null)
+          }
+          if (!termsAccepted) {
+            setTermsError(tErrors('termsRequired'))
+            hasError = true
+          } else {
+            setTermsError(null)
+          }
+          if (hasError) e.preventDefault()
         }}
       >
-        <div>
-          <span className="block text-sm font-medium text-stone-700 mb-3">
-            {t('signupAs')}
-          </span>
-          <div className="grid grid-cols-2 gap-3">
-            <label
-              className={`flex flex-col items-center justify-center gap-1.5 rounded-lg border-2 p-4 cursor-pointer transition-all ${
-                signupRole === 'athlete'
-                  ? 'border-2 border-palette-forest-dark bg-stone-50 text-stone-900'
-                  : 'border-2 border-stone-200 hover:border-stone-300 text-stone-600'
-              }`}
-            >
-              <input
-                type="radio"
-                name="role"
-                value="athlete"
-                checked={signupRole === 'athlete'}
-                onChange={() => setSignupRole('athlete')}
-                className="sr-only"
-              />
-              <span className="text-base font-semibold">{t('athlete')}</span>
-              <span className="text-xs text-center">{t('athleteDesc')}</span>
-            </label>
-            <label
-              className={`flex flex-col items-center justify-center gap-1.5 rounded-lg border-2 p-4 cursor-pointer transition-all ${
-                signupRole === 'coach'
-                  ? 'border-2 border-palette-forest-dark bg-stone-50 text-stone-900'
-                  : 'border-2 border-stone-200 hover:border-stone-300 text-stone-600'
-              }`}
-            >
-              <input
-                type="radio"
-                name="role"
-                value="coach"
-                checked={signupRole === 'coach'}
-                onChange={() => setSignupRole('coach')}
-                className="sr-only"
-              />
-              <span className="text-base font-semibold">{t('coach')}</span>
-              <span className="text-xs text-center">{t('coachDesc')}</span>
-            </label>
-          </div>
-        </div>
+        <AuthRolePicker
+          value={signupRole}
+          onChange={(role) => {
+            setSignupRole(role)
+            setRoleError(null)
+          }}
+          error={displayedRoleError}
+          idPrefix="modal-signup-role"
+        />
         <Input
           key={signupState?.existingEmail ? `signup-email-${signupState.existingEmail}` : 'signup-email'}
           id="modal-signup-email"
@@ -322,55 +309,19 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
         />
 
         <input type="hidden" name="termsAccepted" value={termsAccepted ? 'true' : 'false'} />
-        <div
-          className={`rounded-xl border px-4 py-3 ${
-            displayedTermsError
-              ? 'border-palette-danger bg-palette-danger-light/40'
-              : 'border-stone-200 bg-white'
-          }`}
-          aria-label={t('legalConsent.aria')}
-        >
-          <div className="flex items-start gap-3">
-            <input
-              id="modal-termsAccepted"
-              type="checkbox"
-              checked={termsAccepted}
-              onChange={(e) => {
-                setTermsAccepted(e.target.checked)
-                if (e.target.checked) setTermsError(null)
-              }}
-              className="mt-1 h-4 w-4 rounded border-stone-300 text-palette-forest-dark focus:ring-palette-forest-dark"
-              aria-describedby={displayedTermsError ? 'modal-termsAccepted-error' : undefined}
-            />
-            <label htmlFor="modal-termsAccepted" className="text-sm text-stone-600 leading-relaxed">
-              {t('legalConsent.prefix')}{' '}
-              <Link
-                href={termsHref}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline underline-offset-4 text-palette-forest-dark hover:text-palette-olive font-medium"
-              >
-                {t('legalConsent.terms')}
-              </Link>{' '}
-              {t('legalConsent.and')}{' '}
-              <Link
-                href={privacyHref}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline underline-offset-4 text-palette-forest-dark hover:text-palette-olive font-medium"
-              >
-                {t('legalConsent.privacy')}
-              </Link>.
-            </label>
-          </div>
-          {displayedTermsError && (
-            <p id="modal-termsAccepted-error" className="mt-2 text-sm text-palette-danger" role="alert">
-              {displayedTermsError}
-            </p>
-          )}
-        </div>
 
-        {signupState?.error && !serverTermsError && (
+        <AuthLegalConsent
+          locale={locale}
+          checked={termsAccepted}
+          onChange={(checked) => {
+            setTermsAccepted(checked)
+            if (checked) setTermsError(null)
+          }}
+          error={displayedTermsError}
+          inputId="modal-termsAccepted"
+        />
+
+        {signupState?.error && !serverTermsError && !serverRoleError && (
           <p className={FORM_ERROR_TEXT_CLASSES} role="alert">
             {signupState.error}
             {signupState.userExists && signupState.existingEmail && onModeChange && (

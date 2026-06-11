@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>US-AUTH-GOOGLE-04 – Liaison compte Google / email existant</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, sans-serif; background: linear-gradient(135deg, #fafaf9, #e7e5e4); padding: 1.5rem; margin: 0; }
+    .note { font-size: 0.75rem; color: #78716c; max-width: 40rem; margin: 0 auto 1.5rem; line-height: 1.5; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; max-width: 56rem; margin: 0 auto; }
+    @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
+    .card { max-width: 28rem; background: white; border-radius: 1rem; padding: 2rem; border: 2px solid #627e59; box-shadow: 0 8px 32px rgba(0,0,0,.06); }
+    .tag { font-size: 0.6875rem; font-weight: 700; color: #627e59; text-transform: uppercase; margin-bottom: 0.75rem; }
+    h2 { font-size: 1.25rem; font-weight: 600; text-align: center; margin: 0 0 0.5rem; color: #1c1917; }
+    .msg { font-size: 0.875rem; color: #57534e; text-align: center; line-height: 1.5; margin-bottom: 1.25rem; }
+    .info { background: #f5f5f4; border-radius: 0.75rem; padding: 0.875rem; font-size: 0.8125rem; color: #44403c; margin-bottom: 1.25rem; text-align: center; }
+    label { display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.375rem; }
+    input { width: 100%; padding: 0.75rem 1rem; border: 1px solid #d6d3d1; border-radius: 0.75rem; margin-bottom: 1rem; font-size: 0.875rem; }
+    .btn-primary { width: 100%; padding: 0.75rem; border: none; border-radius: 0.75rem; background: #627e59; color: white; font-weight: 600; margin-bottom: 0.75rem; }
+    .btn-muted { width: 100%; padding: 0.5rem; border: none; background: transparent; color: #a8a29e; font-size: 0.875rem; cursor: pointer; }
+    .error { padding: 0.75rem; border-radius: 0.5rem; background: #fdf2f1; color: #9e3b31; font-size: 0.875rem; margin-bottom: 1rem; }
+    .success { padding: 1rem; border-radius: 0.75rem; background: #f0f4ef; color: #44403c; font-size: 0.875rem; text-align: center; }
+  </style>
+</head>
+<body>
+  <p class="note">
+    <strong>US-AUTH-GOOGLE-04</strong> — L’email Google correspond à un compte déjà créé en email/mot de passe.
+    L’utilisateur confirme son identité (mot de passe) pour <strong>lier</strong> Google au compte existant — pas de doublon.
+    Affiché en modale ou sur page <code>/login</code> après retour OAuth.
+  </p>
+
+  <div class="grid">
+    <div>
+      <p class="tag">État initial — liaison requise</p>
+      <div class="card">
+        <h2>Lier votre compte Google</h2>
+        <p class="msg">Un compte existe déjà avec <strong>marie@exemple.com</strong>. Entrez votre mot de passe pour associer Google.</p>
+        <div class="info">Après liaison, vous pourrez vous connecter avec Google ou votre mot de passe.</div>
+        <label>Mot de passe</label>
+        <input type="password" placeholder="••••••••" />
+        <button class="btn-primary">Lier et continuer</button>
+        <button class="btn-muted">← Retour à la connexion</button>
+      </div>
+    </div>
+
+    <div>
+      <p class="tag">Erreur — mot de passe incorrect</p>
+      <div class="card">
+        <h2>Lier votre compte Google</h2>
+        <div class="error" role="alert">Mot de passe incorrect. Réessayez.</div>
+        <label>Mot de passe</label>
+        <input type="password" value="wrong" />
+        <button class="btn-primary">Lier et continuer</button>
+        <button class="btn-muted">Mot de passe oublié ?</button>
+      </div>
+
+      <p class="tag" style="margin-top:1.25rem">Succès — liaison OK</p>
+      <div class="card">
+        <div class="success">✓ Compte lié. Redirection vers votre espace…</div>
+      </div>
+    </div>
+  </div>
+
+  <p class="note" style="margin-top:1.5rem">
+    <strong>Transitions :</strong>
+    OAuth Google (email existant, compte email/mdp) → écran liaison → mot de passe valide → identities liées → dashboard.
+    Lien « Mot de passe oublié » réutilise le flux existant.
+  </p>
+</body>
+</html>

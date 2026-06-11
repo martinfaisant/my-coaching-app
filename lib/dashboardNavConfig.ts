@@ -1,4 +1,5 @@
 import { COACH_PLATFORM_SUBSCRIPTION_PATH } from '@/lib/coachPlatformCheckoutReturnPath'
+import { isAthleteStravaDevicesEnabled } from '@/lib/featureFlags'
 
 /**
  * Configuration centralisée des liens de navigation du dashboard.
@@ -69,10 +70,22 @@ export function getAthletePrimaryNavItems(profile: ProfileNavInput): NavItem[] {
   return items
 }
 
+export type AthleteAccountNavOptions = {
+  /** Surcharge tests / storybook ; défaut = feature flag Strava devices. */
+  devicesEnabled?: boolean
+}
+
 /** Entrées secondaires menu compte / milieu drawer (sans la ligne profil). */
-export function getAthleteAccountNavItems(profile: ProfileNavInput): NavItem[] {
+export function getAthleteAccountNavItems(
+  profile: ProfileNavInput,
+  options?: AthleteAccountNavOptions,
+): NavItem[] {
   if (profile.role !== 'athlete') return []
-  const items: NavItem[] = [{ href: '/dashboard/devices', i18nKey: 'devices' }]
+  const items: NavItem[] = []
+  const showDevices = options?.devicesEnabled ?? isAthleteStravaDevicesEnabled()
+  if (showDevices) {
+    items.push({ href: '/dashboard/devices', i18nKey: 'devices' })
+  }
   if (profile.coach_id) {
     items.push({ href: '/dashboard/coach', i18nKey: 'myCoach' })
   }
@@ -81,14 +94,20 @@ export function getAthleteAccountNavItems(profile: ProfileNavInput): NavItem[] {
 }
 
 /** Fusion pour titre mobile et rétrocompat `getDashboardNavItems` athlète. */
-export function getAthleteNavItemsForPageTitle(profile: ProfileNavInput): NavItem[] {
+export function getAthleteNavItemsForPageTitle(
+  profile: ProfileNavInput,
+  options?: AthleteAccountNavOptions,
+): NavItem[] {
   if (profile.role !== 'athlete') return []
-  return [...getAthletePrimaryNavItems(profile), ...getAthleteAccountNavItems(profile)]
+  return [...getAthletePrimaryNavItems(profile), ...getAthleteAccountNavItems(profile, options)]
 }
 
-export function getDashboardNavItems(profile: ProfileNavInput): NavItem[] {
+export function getDashboardNavItems(
+  profile: ProfileNavInput,
+  options?: AthleteAccountNavOptions,
+): NavItem[] {
   if (profile.role === 'athlete') {
-    return getAthleteNavItemsForPageTitle(profile)
+    return getAthleteNavItemsForPageTitle(profile, options)
   }
 
   if (profile.role === 'coach') {
@@ -110,19 +129,24 @@ export function getDashboardNavItems(profile: ProfileNavInput): NavItem[] {
 }
 
 /** Indique si la route courante correspond au menu compte (hors profil). */
-export function isAthleteAccountSectionActive(pathname: string, profile: ProfileNavInput): boolean {
+export function isAthleteAccountSectionActive(
+  pathname: string,
+  profile: ProfileNavInput,
+  options?: AthleteAccountNavOptions,
+): boolean {
   if (profile.role !== 'athlete') return false
-  return getAthleteAccountNavItems(profile).some((item) => isNavItemActive(pathname, item))
+  return getAthleteAccountNavItems(profile, options).some((item) => isNavItemActive(pathname, item))
 }
 
 /** Retourne true si le trigger menu compte doit apparaître « actif » (profil ou section compte). */
 export function isAthleteAccountMenuTriggerActive(
   pathname: string,
   profile: ProfileNavInput,
+  options?: AthleteAccountNavOptions,
 ): boolean {
   if (profile.role !== 'athlete') return false
   if (pathname === '/dashboard/profile') return true
-  return isAthleteAccountSectionActive(pathname, profile)
+  return isAthleteAccountSectionActive(pathname, profile, options)
 }
 
 /** Trigger menu compte coach : profil, abonnement plateforme ou contact. */

@@ -9,7 +9,8 @@ My Sport Ally est une marketplace + plateforme de coaching permettant aux athlè
 - Suivre un programme d'entraînement structuré
 - Suivre leurs progrès et objectifs
 - Communiquer avec leur coach via messagerie intégrée
-- Synchroniser leurs activités Strava
+- Consulter leurs **statistiques** de volume réalisé (`/dashboard/stats`)
+- *(Optionnel, feature flag)* synchroniser Strava — voir § Intégration Strava ci-dessous
 
 Les **visiteurs et utilisateurs** peuvent contacter le support via la page publique **Contact** (`/contact`), avec accusé de réception (référence MSA) et notification e-mail côté équipe (voir variables Resend ci-dessous). Les utilisateurs **connectés** qui ouvrent l’accueil marketing **`/`** ou **`/en`** sont **redirigés** vers la page d’entrée du tableau de bord selon leur rôle (détail : **Project_context.md** §4.0, code **`lib/dashboardEntryPath.ts`**).
 
@@ -52,10 +53,14 @@ RESEND_API_KEY=re_xxxxxxxx
 # CONTACT_SUPPORT_TO=support@mysportally.com
 # CONTACT_EMAIL_FROM=My Sport Ally <no-reply@mysportally.com>
 
-# Strava (optionnel - pour import d'activités)
+# Strava (optionnel — import d'activités ; UI athlète masquée par défaut)
 STRAVA_CLIENT_ID=votre_client_id
 STRAVA_CLIENT_SECRET=votre_client_secret
 NEXT_PUBLIC_APP_URL=http://localhost:3000  # en production : https://mysportally.com
+# Connexion Google (login/signup) : configurer le provider dans Supabase + Google Cloud ;
+# callback app = NEXT_PUBLIC_SITE_URL/auth/callback — voir DEPLOYMENT_NOTES.md § Connexion Google
+# Activer la page « Mes appareils connectés » et le flux OAuth athlète (désactivé si absent ou ≠ true)
+# NEXT_PUBLIC_ENABLE_ATHLETE_STRAVA_DEVICES=true
 
 # Cron Vercel : clôture des souscriptions à échéance (route /api/cron/process-expired-subscriptions)
 # Générer une valeur aléatoire ; même valeur dans Vercel (CRON_SECRET) pour les invocations planifiées.
@@ -140,7 +145,7 @@ Voir [docs/DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md) pour tous les détails.
 - Consulter ses **statistiques** de volume réalisé (`/dashboard/stats` : années, sport, courbe Nivo, même logique « fait » que le calendrier)
 - Gérer ses objectifs
 - Noter son coach
-- Synchroniser Strava
+- *(Si feature flag activé)* synchroniser Strava — voir **Intégration Strava**
 
 **Coach**
 - Créer un profil professionnel et des offres (statuts : brouillon → en ligne → archivée)
@@ -166,6 +171,8 @@ Détails complets : [Project_context.md](./Project_context.md) (sections 4.4 et 
 
 ## 🔗 Intégration Strava
 
+> **Lancement :** la connexion Strava côté athlète est **désactivée par défaut** (`NEXT_PUBLIC_ENABLE_ATHLETE_STRAVA_DEVICES` absent ou ≠ `true`). Les activités déjà importées restent visibles au calendrier. Pour réactiver : `NEXT_PUBLIC_ENABLE_ATHLETE_STRAVA_DEVICES=true` + redeploy. Détail : **Project_context.md** §4.9, **`lib/featureFlags.ts`**.
+
 ### Configuration
 
 1. Créer une app sur [Strava API](https://www.strava.com/settings/api)
@@ -182,7 +189,7 @@ Détails complets : [Project_context.md](./Project_context.md) (sections 4.4 et 
 
 ### Utilisation
 
-Les athlètes peuvent lier leur compte Strava via **Profil → Mes appareils connectés** pour importer automatiquement leurs activités dans le calendrier.
+Quand le feature flag est **activé**, les athlètes lient Strava via **Menu compte → Mes appareils connectés** (`/dashboard/devices`) pour importer leurs activités dans le calendrier. Si le flag est **off**, l’entrée menu est masquée et l’accès direct redirige vers le calendrier.
 
 ## 📁 Structure du Projet
 

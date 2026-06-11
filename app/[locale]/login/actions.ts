@@ -90,7 +90,10 @@ export async function signup(
     return { error: t('passwordMinLength') }
   }
 
-  const role = roleRaw === 'coach' ? 'coach' : 'athlete'
+  if (roleRaw !== 'athlete' && roleRaw !== 'coach') {
+    return { error: t('roleRequired') }
+  }
+  const role = roleRaw
 
   const siteUrl =
     process.env.NEXT_PUBLIC_SITE_URL ||

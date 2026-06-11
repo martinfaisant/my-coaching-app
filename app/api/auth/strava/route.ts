@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/utils/supabase/server'
 import { cookies } from 'next/headers'
+import { getDashboardCalendarPath, isAthleteStravaDevicesEnabled } from '@/lib/featureFlags'
 import { logger } from '@/lib/logger'
 
 const STRAVA_AUTH_URL = 'https://www.strava.com/oauth/authorize'
@@ -35,16 +36,22 @@ function getOrigin(request: NextRequest): string {
 export async function GET(request: NextRequest) {
   try {
     const origin = getOrigin(request) || 'https://localhost:3000'
+    const locale = getLocaleFromAcceptLanguage(request)
+
+    if (!isAthleteStravaDevicesEnabled()) {
+      return NextResponse.redirect(new URL(getDashboardCalendarPath(locale), origin))
+    }
 
     const clientId = process.env.STRAVA_CLIENT_ID
     if (!clientId) {
-      return NextResponse.redirect(new URL('/dashboard/devices?error=strava_config', origin))
+      return NextResponse.redirect(
+        new URL(`${getDashboardCalendarPath(locale)}?error=strava_config`, origin),
+      )
     }
 
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
-      const locale = getLocaleFromAcceptLanguage(request)
       return NextResponse.redirect(new URL(getHomePathForLocale(locale), origin))
     }
 
@@ -73,6 +80,7 @@ export async function GET(request: NextRequest) {
   } catch (err) {
     logger.error('Strava OAuth redirect error', err)
     const origin = getOrigin(request) || 'https://localhost:3000'
-    return NextResponse.redirect(new URL('/dashboard/devices?error=strava_config', origin))
+    const locale = getLocaleFromAcceptLanguage(request)
+    return NextResponse.redirect(new URL(getDashboardCalendarPath(locale), origin))
   }
 }

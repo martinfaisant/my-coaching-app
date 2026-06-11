@@ -3,6 +3,7 @@ import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import { headers } from 'next/headers'
 import type { Profile, Role } from '@/types/database'
+import { isOAuthSignupPending } from '@/lib/authOAuth'
 
 export type CurrentUserWithProfile = {
   id: string
@@ -26,6 +27,10 @@ const getCachedUserAndProfile = cache(async (): Promise<CurrentUserWithProfile |
     .single()
 
   if (!profile) {
+    if (isOAuthSignupPending(user)) {
+      return null
+    }
+
     const { error } = await supabase.from('profiles').insert({
       user_id: user.id,
       email: user.email,
