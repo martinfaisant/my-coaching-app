@@ -1200,7 +1200,7 @@
   "legal": {
     "common": {
       "lastUpdated": "Dernière mise à jour : {date}",
-      "lastUpdatedFull": "Dernière mise à jour : 11 juin 2026"
+      "lastUpdatedFull": "Dernière mise à jour : 12 juin 2026"
     },
     "terms": {
       "title": "Conditions d’utilisation",
@@ -1225,7 +1225,7 @@
           "google": {
             "title": "3.2 Compte Google",
             "p1": "En choisissant Google, vous autorisez Mysportally à recevoir, via notre prestataire d’authentification, les renseignements strictement nécessaires à la création ou à la connexion de votre compte, notamment votre adresse courriel et, le cas échéant, votre nom tel que communiqué par Google.",
-            "p2": "Mysportally ne reçoit pas votre mot de passe Google. Nous n’importons pas automatiquement votre photo de profil Google ; vous pouvez ajouter ou modifier une photo dans les paramètres de votre compte sur la Plateforme.",
+            "p2": "Mysportally ne reçoit pas votre mot de passe Google. Lorsque Google la communique, nous pouvons enregistrer l’URL de votre photo de profil Google dans votre compte Mysportally afin d’afficher votre avatar ; vous pouvez la modifier ou la remplacer à tout moment dans les paramètres de votre compte sur la Plateforme.",
             "p3": "L’utilisation de Google est également régie par les conditions et la politique de confidentialité de Google, que vous pouvez consulter sur les sites de Google. Mysportally n’est pas responsable des services, interruptions ou politiques de Google."
           },
           "linking": {
@@ -1316,7 +1316,7 @@
     },
     "privacy": {
       "title": "Politique de confidentialité",
-      "lastUpdatedFull": "Dernière mise à jour : 11 juin 2026",
+      "lastUpdatedFull": "Dernière mise à jour : 12 juin 2026",
       "sections": {
         "commitment": {
           "title": "1. NOTRE ENGAGEMENT",
@@ -1331,7 +1331,7 @@
           "li5": "Formulaire Contact (page dédiée, avec ou sans compte) : prénom, nom, adresse courriel, numéro de téléphone le cas échéant, motif de la demande, contenu du message ; attribution d’une référence de suivi ; si vous êtes connecté, un identifiant de compte peut être associé à la demande.",
           "li6": "Données liées à l’abonnement payant des Coachs (accès à la Plateforme) : identifiants techniques de transaction ou d’abonnement, statut d’accès, historique de consommation d’une période d’essai par campagne (le cas échéant), traités lors du paiement via un prestataire de paiement externe ; Mysportally ne conserve pas sur ses propres serveurs vos données complètes de carte bancaire.",
           "li7": "Données de prévention des abus : éléments techniques permettant de détecter des comptes multiples ou un contournement des conditions (ex. adresse courriel, identifiants de compte, données de session ou de connexion, identifiants côté prestataire de paiement), dans la mesure nécessaire à l’application des Conditions d’utilisation.",
-          "li8": "Données d’authentification via Google : lorsque vous utilisez « Continuer avec Google », nous recevons de Google, par l’intermédiaire de notre prestataire d’authentification, votre adresse courriel, votre nom (prénom et nom lorsque Google les communique, notamment sous la forme d’un nom complet), ainsi qu’un identifiant technique permettant de reconnaître votre compte Google. Nous ne recevons pas votre mot de passe Google et nous n’importons pas automatiquement votre photo de profil Google."
+          "li8": "Données d’authentification via Google : lorsque vous utilisez « Continuer avec Google », nous recevons de Google, par l’intermédiaire de notre prestataire d’authentification, votre adresse courriel, votre nom (prénom et nom lorsque Google les communique, notamment sous la forme d’un nom complet), l’URL de votre photo de profil Google lorsqu’elle est disponible, ainsi qu’un identifiant technique permettant de reconnaître votre compte Google. Nous ne recevons pas votre mot de passe Google. L’URL de la photo est enregistrée dans votre profil Mysportally pour afficher votre avatar ; vous pouvez la modifier ou la supprimer depuis Mon profil."
         },
         "useOfData": {
           "title": "3. UTILISATION DES DONNÉES",

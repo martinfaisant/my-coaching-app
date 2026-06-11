@@ -1,8 +1,11 @@
 import { describe, expect, it } from 'vitest'
+import type { User } from '@supabase/supabase-js'
 import {
   extractEmailFromOAuthError,
+  hasGoogleIdentity,
   normalizeAppLocale,
   resolveOAuthCallbackFailure,
+  resolveOAuthCallbackUrl,
   shouldOfferAccountLink,
 } from '@/lib/authOAuth'
 
@@ -30,6 +33,26 @@ describe('authOAuth helpers', () => {
     const result = resolveOAuthCallbackFailure('fr', 'access_denied', null)
     expect(result.kind).toBe('login_error')
     expect(result.path).toContain('oauth_cancelled')
+  })
+
+  it('hasGoogleIdentity detects google via app_metadata when identities are empty', () => {
+    const user = {
+      identities: [],
+      app_metadata: { provider: 'google', providers: ['google'] },
+    } as unknown as User
+
+    expect(hasGoogleIdentity(user)).toBe(true)
+  })
+
+  it('resolveOAuthCallbackUrl uses request host for mysportally apex vs www', () => {
+    const headers = new Headers({
+      host: 'www.mysportally.com',
+      'x-forwarded-proto': 'https',
+    })
+
+    process.env.NEXT_PUBLIC_SITE_URL = 'https://mysportally.com'
+
+    expect(resolveOAuthCallbackUrl(headers)).toBe('https://www.mysportally.com/auth/callback')
   })
 
   it('resolveOAuthCallbackFailure maps duplicate to link account', () => {

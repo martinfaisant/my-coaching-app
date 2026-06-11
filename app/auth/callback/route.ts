@@ -4,12 +4,15 @@ import { cookies } from 'next/headers'
 import {
   AUTH_OAUTH_LOCALE_COOKIE,
   getLocaleFromUser,
+  hasGoogleIdentity,
   markOAuthSignupPendingFromCallback,
   normalizeAppLocale,
   resolveOAuthCallbackFailure,
   resolvePostOAuthRedirect,
   type PostOAuthRedirect,
 } from '@/lib/authOAuth'
+import { getProfile } from '@/lib/authHelpers'
+import { logger } from '@/lib/logger'
 
 function getLocaleFromAcceptLanguage(request: Request): 'en' | 'fr' {
   const acceptLanguage = request.headers.get('accept-language') ?? ''
@@ -69,7 +72,12 @@ export async function GET(request: Request) {
   if (code) {
     const { data, error } = await supabase.auth.exchangeCodeForSession(code)
     if (!error && data.user) {
-      const userLocale = getLocaleFromUser(data.user)
+      const {
+        data: { user: refreshedUser },
+      } = await supabase.auth.getUser()
+      const user = refreshedUser ?? data.user
+
+      const userLocale = getLocaleFromUser(user)
       const locale = userLocale === 'en' ? 'en' : cookieLocale
 
       if ((type === 'signup' || type === 'email' || type === 'invite') && !next) {
@@ -84,16 +92,31 @@ export async function GET(request: Request) {
         return NextResponse.redirect(new URL(path, origin))
       }
 
-      const oauthResult = await resolvePostOAuthRedirect(supabase, data.user, locale)
+      const profile = await getProfile(supabase, user.id, 'user_id')
+      if (!profile && (hasGoogleIdentity(user) || user.email)) {
+        await markOAuthSignupPendingFromCallback(supabase, user, locale)
+      }
 
-      if (oauthResult.kind === 'complete_signup') {
-        await markOAuthSignupPendingFromCallback(supabase, data.user, locale)
+      const oauthResult = await resolvePostOAuthRedirect(supabase, user, locale)
+
+      if (oauthResult.kind === 'login_error') {
+        logger.error('OAuth callback post-redirect failed', undefined, {
+          userId: user.id,
+          email: user.email,
+          hasGoogleIdentity: hasGoogleIdentity(user),
+          providers: user.app_metadata?.providers,
+          error: oauthResult.error,
+        })
       }
 
       return NextResponse.redirect(new URL(oauthResult.path, origin))
     }
 
     if (error) {
+      logger.error('OAuth exchangeCodeForSession failed', error, {
+        codePresent: Boolean(code),
+        origin,
+      })
       const failure = resolveOAuthCallbackFailure(
         cookieLocale,
         error.name ?? 'oauth_failed',

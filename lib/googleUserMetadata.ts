@@ -3,6 +3,7 @@ import type { User } from '@supabase/supabase-js'
 export type GoogleProfileFields = {
   first_name: string | null
   last_name: string | null
+  avatar_url: string | null
 }
 
 function trimString(value: unknown): string | null {
@@ -11,7 +12,14 @@ function trimString(value: unknown): string | null {
   return trimmed.length > 0 ? trimmed : null
 }
 
-function splitFullName(fullName: string): GoogleProfileFields {
+function normalizeAvatarUrl(value: unknown): string | null {
+  const url = trimString(value)
+  if (!url) return null
+  if (!url.startsWith('https://')) return null
+  return url
+}
+
+function splitFullName(fullName: string): Pick<GoogleProfileFields, 'first_name' | 'last_name'> {
   const trimmed = fullName.trim()
   if (!trimmed) {
     return { first_name: null, last_name: null }
@@ -63,24 +71,33 @@ function collectGoogleMetadataSources(
   return sources
 }
 
+function extractAvatarUrl(sources: Array<Record<string, unknown>>): string | null {
+  return (
+    normalizeAvatarUrl(pickStringField(sources, 'avatar_url')) ??
+    normalizeAvatarUrl(pickStringField(sources, 'picture'))
+  )
+}
+
 /**
- * Extrait prénom et nom depuis les métadonnées Supabase (provider Google).
- * Supabase expose surtout full_name / name (pas given_name / family_name).
+ * Extrait prénom, nom et photo depuis les métadonnées Supabase (provider Google).
+ * Supabase expose surtout full_name / name et avatar_url / picture.
  */
 export function extractGoogleProfileFields(
   metadata: User['user_metadata'] | null | undefined,
   identities?: User['identities']
 ): GoogleProfileFields {
   const sources = collectGoogleMetadataSources(metadata, identities)
+  const avatar_url = extractAvatarUrl(sources)
 
   const givenName = pickStringField(sources, 'given_name')
   const familyName = pickStringField(sources, 'family_name')
 
   if (givenName || familyName) {
-    return { first_name: givenName, last_name: familyName }
+    return { first_name: givenName, last_name: familyName, avatar_url }
   }
 
-  return splitFullName(pickStringField(sources, 'full_name', 'name') ?? '')
+  const names = splitFullName(pickStringField(sources, 'full_name', 'name') ?? '')
+  return { ...names, avatar_url }
 }
 
 export function extractGoogleProfileFieldsFromUser(

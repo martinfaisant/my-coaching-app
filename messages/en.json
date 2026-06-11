@@ -1075,7 +1075,7 @@
   "legal": {
     "common": {
       "lastUpdated": "Last updated: {date}",
-      "lastUpdatedFull": "Last updated: June 11, 2026"
+      "lastUpdatedFull": "Last updated: June 12, 2026"
     },
     "terms": {
       "title": "Terms of Use",
@@ -1100,7 +1100,7 @@
           "google": {
             "title": "3.2 Google sign-in",
             "p1": "By choosing Google, you authorize Mysportally to receive, through our authentication provider, the information strictly necessary to create or sign in to your account, including your email address and, where provided by Google, your name.",
-            "p2": "Mysportally does not receive your Google password. We do not automatically import your Google profile photo; you may add or change a photo in your account settings on the Platform.",
+            "p2": "Mysportally does not receive your Google password. When Google provides it, we may store the URL of your Google profile photo in your Mysportally account to display your avatar; you may change or replace it at any time in your account settings on the Platform.",
             "p3": "Your use of Google is also governed by Google's terms and privacy policy, available on Google's websites. Mysportally is not responsible for Google's services, outages, or policies."
           },
           "linking": {
@@ -1191,7 +1191,7 @@
     },
     "privacy": {
       "title": "Privacy Policy",
-      "lastUpdatedFull": "Last updated: June 11, 2026",
+      "lastUpdatedFull": "Last updated: June 12, 2026",
       "sections": {
         "commitment": {
           "title": "1. OUR COMMITMENT",
@@ -1206,7 +1206,7 @@
           "li5": "Contact form (dedicated page, with or without an account): first name, last name, email address, phone number if provided, reason for contact, message content; assignment of a tracking reference; if you are signed in, an account identifier may be linked to the request.",
           "li6": "Coach paid Platform subscription data: technical transaction or subscription identifiers, access status, free-trial consumption history per campaign (if applicable), processed when paying through an external payment service provider; Mysportally does not store your full card details on its own servers.",
           "li7": "Abuse-prevention data: technical elements used to detect duplicate accounts or circumvention (e.g. email address, account identifiers, session or login data, payment-provider identifiers), as necessary to enforce the Terms of Use.",
-          "li8": "Google authentication data: when you use \"Continue with Google\", we receive from Google, through our authentication provider, your email address, your name (first and last name when Google provides them, including as a full name), and a technical identifier used to recognize your Google account. We do not receive your Google password and we do not automatically import your Google profile photo."
+          "li8": "Google authentication data: when you use \"Continue with Google\", we receive from Google, through our authentication provider, your email address, your name (first and last name when Google provides them, including as a full name), your Google profile photo URL when available, and a technical identifier used to recognize your Google account. We do not receive your Google password. The photo URL is stored in your Mysportally profile to display your avatar; you may change or remove it from My profile."
         },
         "useOfData": {
           "title": "3. USE OF DATA",
