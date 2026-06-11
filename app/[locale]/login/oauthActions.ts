@@ -1,6 +1,6 @@
 'use server'
 
-import { cookies } from 'next/headers'
+import { cookies, headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/utils/supabase/server'
@@ -19,7 +19,7 @@ import {
   hasGoogleIdentity,
   isOAuthSignupPending,
   normalizeAppLocale,
-  oauthCallbackPath,
+  resolveOAuthCallbackUrl,
   type AppLocale,
   type OAuthIntent,
 } from '@/lib/authOAuth'
@@ -48,11 +48,14 @@ export async function startGoogleOAuth(formData: FormData): Promise<void> {
 
   await setOAuthCookies(intent, locale)
 
+  const requestHeaders = await headers()
+  const redirectTo = resolveOAuthCallbackUrl(requestHeaders)
+
   const supabase = await createClient()
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: oauthCallbackPath(),
+      redirectTo,
       queryParams: {
         access_type: 'offline',
         prompt: 'select_account',
@@ -61,7 +64,7 @@ export async function startGoogleOAuth(formData: FormData): Promise<void> {
   })
 
   if (error || !data.url) {
-    logger.error('Google OAuth start failed', error, { intent, locale })
+    logger.error('Google OAuth start failed', error, { intent, locale, redirectTo })
     redirect(pathWithLocale(locale, '/login?error=oauth_failed'))
   }
 
@@ -120,6 +123,7 @@ export async function completeOAuthSignup(
     preferred_locale: preferredLocale,
     first_name: googleProfile.first_name,
     last_name: googleProfile.last_name,
+    avatar_url: googleProfile.avatar_url,
   })
 
   if (profileError) {
@@ -182,10 +186,12 @@ export async function linkGoogleAccount(
 
   await setOAuthCookies('login', locale)
 
+  const redirectTo = resolveOAuthCallbackUrl(await headers())
+
   const { data, error: linkError } = await supabase.auth.linkIdentity({
     provider: 'google',
     options: {
-      redirectTo: oauthCallbackPath(),
+      redirectTo,
     },
   })
 

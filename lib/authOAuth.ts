@@ -18,11 +18,43 @@ export type PostOAuthRedirect =
   | { kind: 'login_error'; path: string; error: string }
 
 export function getAuthSiteUrl(): string {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, '')
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '')
   return (
-    process.env.NEXT_PUBLIC_SITE_URL ||
+    siteUrl ||
+    appUrl ||
     (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null) ||
     'http://localhost:3000'
   )
+}
+
+/**
+ * URL de callback OAuth alignée sur l'hôte de la requête courante (évite les échecs PKCE www vs apex).
+ */
+export function resolveOAuthCallbackUrl(requestHeaders: Headers): string {
+  const host = requestHeaders.get('x-forwarded-host') ?? requestHeaders.get('host')
+  const proto = requestHeaders.get('x-forwarded-proto') ?? 'https'
+
+  if (host) {
+    const requestOrigin = `${proto}://${host}`
+    const configured = getAuthSiteUrl()
+
+    try {
+      const configuredHost = new URL(configured).host
+      const normalize = (value: string) => value.replace(/^www\./, '')
+      if (normalize(configuredHost) === normalize(host)) {
+        return `${requestOrigin}/auth/callback`
+      }
+    } catch {
+      // ignore invalid configured URL
+    }
+
+    if (host === 'localhost:3000' || host.endsWith('.vercel.app')) {
+      return `${requestOrigin}/auth/callback`
+    }
+  }
+
+  return oauthCallbackPath()
 }
 
 export function normalizeAppLocale(value: string | null | undefined): AppLocale {
@@ -39,9 +71,18 @@ export function isOAuthSignupPending(user: User | null | undefined): boolean {
 }
 
 export function hasGoogleIdentity(user: User | null | undefined): boolean {
-  return (
-    user?.identities?.some((identity) => identity.provider === 'google') ?? false
-  )
+  if (!user) return false
+
+  if (user.identities?.some((identity) => identity.provider === 'google')) {
+    return true
+  }
+
+  const providers = user.app_metadata?.providers
+  if (Array.isArray(providers) && providers.includes('google')) {
+    return true
+  }
+
+  return user.app_metadata?.provider === 'google'
 }
 
 export function oauthCallbackPath(): string {
@@ -83,25 +124,29 @@ export function extractEmailFromOAuthError(errorDescription: string | null): str
 /**
  * Détermine la redirection après un OAuth Google réussi (session établie).
  */
-async function backfillGoogleProfileNamesIfEmpty(
+async function backfillGoogleProfileFieldsIfEmpty(
   supabase: SupabaseClient,
   user: User,
-  profile: Pick<Profile, 'first_name' | 'last_name'>
+  profile: Pick<Profile, 'first_name' | 'last_name' | 'avatar_url'>
 ): Promise<void> {
   if (!hasGoogleIdentity(user)) return
 
   const hasFirstName = Boolean(profile.first_name?.trim())
   const hasLastName = Boolean(profile.last_name?.trim())
-  if (hasFirstName && hasLastName) return
+  const hasAvatar = Boolean(profile.avatar_url?.trim())
+  if (hasFirstName && hasLastName && hasAvatar) return
 
   const googleProfile = extractGoogleProfileFieldsFromUser(user)
-  const updates: Partial<Pick<Profile, 'first_name' | 'last_name'>> = {}
+  const updates: Partial<Pick<Profile, 'first_name' | 'last_name' | 'avatar_url'>> = {}
 
   if (!hasFirstName && googleProfile.first_name) {
     updates.first_name = googleProfile.first_name
   }
   if (!hasLastName && googleProfile.last_name) {
     updates.last_name = googleProfile.last_name
+  }
+  if (!hasAvatar && googleProfile.avatar_url) {
+    updates.avatar_url = googleProfile.avatar_url
   }
 
   if (Object.keys(updates).length === 0) return
@@ -117,17 +162,25 @@ export async function resolvePostOAuthRedirect(
   const profile = (await getProfile(
     supabase,
     user.id,
-    'role, coach_id, preferred_locale, first_name, last_name'
-  )) as Pick<Profile, 'role' | 'coach_id' | 'preferred_locale' | 'first_name' | 'last_name'> | null
+    'role, coach_id, preferred_locale, first_name, last_name, avatar_url'
+  )) as Pick<
+    Profile,
+    'role' | 'coach_id' | 'preferred_locale' | 'first_name' | 'last_name' | 'avatar_url'
+  > | null
 
   if (profile?.role) {
-    await backfillGoogleProfileNamesIfEmpty(supabase, user, profile)
+    await backfillGoogleProfileFieldsIfEmpty(supabase, user, profile)
     const profileLocale = normalizeAppLocale(profile.preferred_locale ?? locale)
     const dashboardPath = getDashboardEntryPath(profile)
     return { kind: 'dashboard', path: pathWithLocale(profileLocale, dashboardPath) }
   }
 
   if (hasGoogleIdentity(user) || isOAuthSignupPending(user)) {
+    return { kind: 'complete_signup', path: authPagePath(locale, 'complete-signup') }
+  }
+
+  // Session établie sans profil après OAuth : finaliser l'inscription (identities parfois absentes au callback).
+  if (user.email) {
     return { kind: 'complete_signup', path: authPagePath(locale, 'complete-signup') }
   }
 

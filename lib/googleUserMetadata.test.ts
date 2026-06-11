@@ -5,30 +5,34 @@ import {
 } from '@/lib/googleUserMetadata'
 
 describe('extractGoogleProfileFields', () => {
-  it('maps given_name and family_name when present', () => {
+  it('maps given_name, family_name and avatar_url', () => {
     expect(
       extractGoogleProfileFields({
         given_name: 'Martin',
         family_name: 'Faisant',
+        avatar_url: 'https://lh3.googleusercontent.com/a/photo',
       })
     ).toEqual({
       first_name: 'Martin',
       last_name: 'Faisant',
+      avatar_url: 'https://lh3.googleusercontent.com/a/photo',
     })
   })
 
-  it('parses full_name when given_name and family_name are absent (Supabase Google default)', () => {
+  it('parses full_name and falls back to picture', () => {
     expect(
       extractGoogleProfileFields({
         full_name: 'Martin Faisant',
+        picture: 'https://lh3.googleusercontent.com/a/picture',
       })
     ).toEqual({
       first_name: 'Martin',
       last_name: 'Faisant',
+      avatar_url: 'https://lh3.googleusercontent.com/a/picture',
     })
   })
 
-  it('falls back to name from identity_data', () => {
+  it('falls back to name and picture from identity_data', () => {
     expect(
       extractGoogleProfileFields(
         {},
@@ -40,6 +44,7 @@ describe('extractGoogleProfileFields', () => {
             user_id: 'user-id',
             identity_data: {
               name: 'Jane Doe',
+              picture: 'https://lh3.googleusercontent.com/a/picture',
             },
             created_at: '2026-01-01T00:00:00Z',
             last_sign_in_at: '2026-01-01T00:00:00Z',
@@ -50,6 +55,7 @@ describe('extractGoogleProfileFields', () => {
     ).toEqual({
       first_name: 'Jane',
       last_name: 'Doe',
+      avatar_url: 'https://lh3.googleusercontent.com/a/picture',
     })
   })
 
@@ -57,14 +63,17 @@ describe('extractGoogleProfileFields', () => {
     expect(extractGoogleProfileFields({})).toEqual({
       first_name: null,
       last_name: null,
+      avatar_url: null,
     })
     expect(
       extractGoogleProfileFields({
         full_name: '  ',
+        avatar_url: 'http://insecure.example/photo.jpg',
       })
     ).toEqual({
       first_name: null,
       last_name: null,
+      avatar_url: null,
     })
   })
 
@@ -77,6 +86,7 @@ describe('extractGoogleProfileFields', () => {
     ).toEqual({
       first_name: 'Alex',
       last_name: 'Smith',
+      avatar_url: null,
     })
   })
 })
