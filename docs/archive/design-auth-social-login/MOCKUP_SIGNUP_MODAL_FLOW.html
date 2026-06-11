@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modale inscription — parcours complet (Google + email)</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, sans-serif; background: #e7e5e4; padding: 1.5rem; margin: 0; color: #1c1917; }
+    h1.page-title { text-align: center; font-size: 1.125rem; margin: 0 0 0.5rem; }
+    .intro { max-width: 42rem; margin: 0 auto 2rem; font-size: 0.8125rem; color: #57534e; line-height: 1.6; background: white; padding: 1rem 1.25rem; border-radius: 0.75rem; border-left: 4px solid #627e59; }
+    .flow { display: flex; flex-direction: column; gap: 2rem; max-width: 52rem; margin: 0 auto; }
+    .step { display: grid; grid-template-columns: 10rem 1fr; gap: 1rem; align-items: start; }
+    @media (max-width: 640px) { .step { grid-template-columns: 1fr; } }
+    .step-label { font-size: 0.6875rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: #627e59; padding-top: 0.5rem; }
+    .step-label .path { display: block; font-size: 0.625rem; color: #a8a29e; margin-top: 0.25rem; font-weight: 600; }
+    .backdrop { background: rgba(28,25,23,.35); border-radius: 1rem; padding: 2rem 1rem; display: flex; justify-content: center; }
+    .modal { width: 100%; max-width: 26rem; background: white; border-radius: 1rem; padding: 2rem; border: 2px solid #627e59; box-shadow: 0 16px 48px rgba(0,0,0,.15); }
+    .modal h2 { font-size: 1.375rem; font-weight: 600; text-align: center; margin: 0 0 0.25rem; }
+    .modal .sub { font-size: 0.8125rem; color: #a8a29e; text-align: center; margin: 0 0 1.25rem; }
+    .social { width: 100%; padding: 0.7rem; border: 2px solid #d6d3d1; border-radius: 0.75rem; background: white; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem; cursor: pointer; }
+    .social.highlight { border-color: #627e59; background: #f0f4ef; }
+    .apple-slot { border-style: dashed; color: #a8a29e; font-size: 0.75rem; cursor: not-allowed; }
+    .divider { display: flex; align-items: center; gap: 0.5rem; margin: 1rem 0; font-size: 0.8125rem; color: #a8a29e; }
+    .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: #627e59; }
+    .email-zone { border: 1px dashed #d6d3d1; border-radius: 0.75rem; padding: 0.875rem; background: #fafaf9; }
+    .email-zone .tag { font-size: 0.625rem; font-weight: 700; color: #78716c; text-transform: uppercase; margin-bottom: 0.5rem; }
+    .role { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin: 0.5rem 0; }
+    .tile { border: 2px dashed #d6d3d1; border-radius: 0.5rem; padding: 0.5rem; font-size: 0.75rem; text-align: center; color: #78716c; }
+    .fake-input { height: 2rem; background: white; border: 1px solid #e7e5e4; border-radius: 0.5rem; margin: 0.375rem 0; }
+    .btn { width: 100%; padding: 0.625rem; border: none; border-radius: 0.75rem; background: #627e59; color: white; font-weight: 600; font-size: 0.875rem; margin-top: 0.5rem; }
+    .arrow { text-align: center; color: #627e59; font-size: 1.25rem; margin: -0.5rem 0; }
+    .note-inline { font-size: 0.6875rem; color: #78716c; margin-top: 0.5rem; line-height: 1.4; }
+    .badge { display: inline-block; font-size: 0.6875rem; background: #f0f4ef; color: #44403c; padding: 0.25rem 0.5rem; border-radius: 999px; margin-bottom: 0.75rem; }
+    .success { text-align: center; }
+    .success .icon { width: 2.5rem; height: 2.5rem; border-radius: 50%; background: #f0f4ef; color: #627e59; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem; font-size: 1.25rem; }
+    .error { background: #fdf2f1; color: #9e3b31; font-size: 0.8125rem; padding: 0.625rem; border-radius: 0.5rem; margin-bottom: 0.75rem; }
+    .skip { background: #fafaf9; border: 1px solid #e7e5e4; border-radius: 0.75rem; padding: 1rem; text-align: center; font-size: 0.8125rem; color: #57534e; max-width: 26rem; margin: 0 auto; }
+    .legend { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; margin-bottom: 2rem; font-size: 0.75rem; }
+    .legend span { display: flex; align-items: center; gap: 0.375rem; }
+    .dot { width: 0.625rem; height: 0.625rem; border-radius: 50%; }
+    .dot-a { background: #627e59; }
+    .dot-b { background: #a8a29e; }
+  </style>
+</head>
+<body>
+  <h1 class="page-title">Modale « Créer un compte » — les 2 chemins</h1>
+
+  <div class="intro">
+    <strong>Point clé :</strong> la modale inscription contient <em>deux parcours indépendants</em>.
+    Le bouton Google en haut sert à l’<strong>inscription rapide</strong> : l’utilisateur n’a pas besoin de remplir rôle / email / mdp / CGU
+    <em>avant</em> de cliquer. Tout ce qui est sous le « ou » concerne uniquement l’<strong>inscription par email</strong> (flux actuel).
+  </div>
+
+  <div class="legend">
+    <span><i class="dot dot-a"></i> Chemin A — Google (nouveau)</span>
+    <span><i class="dot dot-b"></i> Chemin B — Email (existant)</span>
+  </div>
+
+  <div class="flow">
+    <!-- ÉTAPE 0 -->
+    <div class="step">
+      <div class="step-label">Étape 0<span class="path">Commun</span></div>
+      <div>
+        <div class="backdrop">
+          <div class="modal">
+            <h2>Créer un compte</h2>
+            <p class="sub">Choisissez votre profil puis renseignez vos informations</p>
+
+            <button class="social highlight">G Continuer avec Google</button>
+            <button class="social apple-slot" disabled> Apple — bientôt</button>
+
+            <div class="divider">ou</div>
+
+            <div class="email-zone">
+              <div class="tag">Inscription par email seulement</div>
+              <div class="role">
+                <div class="tile">Athlète</div>
+                <div class="tile">Coach</div>
+              </div>
+              <p class="note-inline">Aucun rôle présélectionné</p>
+              <div class="fake-input"></div>
+              <div class="fake-input"></div>
+              <div style="font-size:0.7rem;color:#78716c">☐ CGU + Privacy</div>
+              <button class="btn">S'inscrire</button>
+            </div>
+          </div>
+        </div>
+        <p class="note-inline">Ouverture via « Créer un compte » (header ou hero). La zone grisée = formulaire email inchangé.</p>
+      </div>
+    </div>
+
+    <div class="arrow">↓</div>
+
+    <!-- CHEMIN A - branche -->
+    <div class="step">
+      <div class="step-label">Chemin A.1<span class="path">Clic Google</span></div>
+      <div>
+        <div class="skip">La modale se ferme (ou affiche « Redirection… »). L’utilisateur part sur Google.<br><strong>Il ignore</strong> rôle, email, mdp et CGU de la modale.</div>
+      </div>
+    </div>
+
+    <div class="arrow">↓ retour app après Google</div>
+
+    <!-- A.2 nouveau -->
+    <div class="step">
+      <div class="step-label">Chemin A.2a<span class="path">Nouveau compte</span></div>
+      <div>
+        <div class="backdrop">
+          <div class="modal">
+            <h2>Finaliser votre compte</h2>
+            <p class="sub">Dernière étape</p>
+            <div style="text-align:center"><span class="badge">✓ Google · marie@exemple.com</span></div>
+            <div class="role">
+              <div class="tile">Athlète</div>
+              <div class="tile">Coach</div>
+            </div>
+            <div style="font-size:0.75rem;margin:0.5rem 0">☐ J'accepte les CGU et la Privacy</div>
+            <button class="btn">Continuer</button>
+          </div>
+        </div>
+        <p class="note-inline">Nouvelle modale (ou remplacement contenu). Rôle + CGU ici, pas avant.</p>
+      </div>
+    </div>
+
+    <div class="arrow">↓ Continuer</div>
+
+    <div class="step">
+      <div class="step-label">Chemin A.2a fin<span class="path">Dashboard</span></div>
+      <div><div class="skip">Modale fermée → redirection dashboard. Pas d’email de confirmation.</div></div>
+    </div>
+
+    <!-- A.2b liaison -->
+    <div class="step">
+      <div class="step-label">Chemin A.2b<span class="path">Email déjà utilisé (mdp)</span></div>
+      <div>
+        <div class="backdrop">
+          <div class="modal">
+            <h2>Lier votre compte Google</h2>
+            <p class="sub">Un compte existe avec <strong>marie@exemple.com</strong></p>
+            <div class="fake-input" style="margin-top:1rem"></div>
+            <p class="note-inline">Mot de passe</p>
+            <button class="btn">Lier et continuer</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- A.2c déjà lié -->
+    <div class="step">
+      <div class="step-label">Chemin A.2c<span class="path">Déjà inscrit via Google</span></div>
+      <div><div class="skip">Connexion directe → dashboard. Pas d’écran intermédiaire.</div></div>
+    </div>
+
+    <div class="arrow" style="margin:1.5rem 0">— ou —</div>
+
+    <!-- CHEMIN B -->
+    <div class="step">
+      <div class="step-label">Chemin B.1<span class="path">Email</span></div>
+      <div>
+        <div class="backdrop">
+          <div class="modal">
+            <h2>Créer un compte</h2>
+            <p class="sub">…</p>
+            <button class="social" style="opacity:.4">Google (non utilisé)</button>
+            <div class="divider">ou</div>
+            <div class="email-zone" style="border-style:solid;border-color:#627e59;background:white">
+              <div class="role">
+                <div class="tile" style="border-style:solid;border-color:#627e59;background:#fafaf9">Athlète ✓</div>
+                <div class="tile">Coach</div>
+              </div>
+              <div class="fake-input"></div>
+              <div class="fake-input"></div>
+              <div style="font-size:0.75rem">☑ CGU</div>
+              <button class="btn">S'inscrire</button>
+            </div>
+          </div>
+        </div>
+        <p class="note-inline">L’utilisateur remplit tout sous le « ou » puis soumet. Flux actuel conservé.</p>
+      </div>
+    </div>
+
+    <div class="arrow">↓</div>
+
+    <div class="step">
+      <div class="step-label">Chemin B.2<span class="path">Succès email</span></div>
+      <div>
+        <div class="backdrop">
+          <div class="modal">
+            <div class="success">
+              <div class="icon">✓</div>
+              <h2>Compte créé</h2>
+              <p class="sub">Consultez votre boîte mail pour confirmer…</p>
+              <button class="btn">Fermer</button>
+            </div>
+          </div>
+        </div>
+        <p class="note-inline">Écran succès existant — inchangé pour l’email.</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>US-AUTH-SIGNUP-05 – Rôle non présélectionné (inscription)</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, sans-serif; background: #fafaf9; padding: 1.5rem; margin: 0; }
+    .note { font-size: 0.75rem; color: #78716c; max-width: 40rem; margin: 0 auto 1.5rem; line-height: 1.5; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; max-width: 64rem; margin: 0 auto; }
+    @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+    .card { background: white; border-radius: 1rem; padding: 1.5rem; border: 2px solid #627e59; }
+    .tag { font-size: 0.6875rem; font-weight: 700; color: #627e59; text-transform: uppercase; margin-bottom: 0.75rem; }
+    .label { font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem; display: block; }
+    .role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.625rem; margin-bottom: 0.75rem; }
+    .role { border: 2px solid #e7e5e4; border-radius: 0.75rem; padding: 0.875rem; text-align: center; font-size: 0.875rem; cursor: pointer; color: #57534e; }
+    .role.sel { border-color: #627e59; background: #fafaf9; color: #1c1917; font-weight: 600; }
+    .role.neutral { border-style: dashed; }
+    .err { font-size: 0.8125rem; color: #9e3b31; margin-bottom: 0.75rem; }
+    .compare { font-size: 0.75rem; padding: 0.5rem; border-radius: 0.5rem; margin-top: 0.75rem; }
+    .bad { background: #fdf2f1; color: #9e3b31; text-decoration: line-through; }
+    .good { background: #f0f4ef; color: #44403c; }
+    .btn { width: 100%; padding: 0.625rem; border: none; border-radius: 0.75rem; background: #627e59; color: white; font-weight: 600; font-size: 0.875rem; margin-top: 0.5rem; }
+  </style>
+</head>
+<body>
+  <p class="note">
+    <strong>US-AUTH-SIGNUP-05</strong> — À l’ouverture de la modale inscription ou du bloc « Créer mon compte » sur <code>/login</code>,
+    <strong>aucun rôle n’est présélectionné</strong> (changement par rapport à l’existant où Athlète est sélectionné par défaut).
+    Même règle sur l’écran finalisation OAuth (US3).
+  </p>
+
+  <div class="grid">
+    <div>
+      <p class="tag">❌ Avant (à supprimer)</p>
+      <div class="card" style="opacity:.85">
+        <span class="label">Je m'inscris en tant que</span>
+        <div class="role-grid">
+          <div class="role sel">Athlète<br><small>Suivi</small></div>
+          <div class="role">Coach<br><small>Accompagner</small></div>
+        </div>
+        <p class="compare bad">Athlète pré-coché — ne plus faire</p>
+      </div>
+    </div>
+
+    <div>
+      <p class="tag">✓ Après — état initial</p>
+      <div class="card">
+        <span class="label">Je m'inscris en tant que</span>
+        <div class="role-grid">
+          <div class="role neutral">Athlète<br><small>Suivi</small></div>
+          <div class="role neutral">Coach<br><small>Accompagner</small></div>
+        </div>
+        <p class="compare good">Aucune tuile active à l’ouverture</p>
+        <button class="btn">S'inscrire</button>
+      </div>
+    </div>
+
+    <div>
+      <p class="tag">Validation — soumission sans rôle</p>
+      <div class="card">
+        <span class="label">Je m'inscris en tant que</span>
+        <div class="role-grid">
+          <div class="role neutral" style="border-color:#9e3b31">Athlète</div>
+          <div class="role neutral" style="border-color:#9e3b31">Coach</div>
+        </div>
+        <p class="err" role="alert">Choisissez Athlète ou Coach.</p>
+        <p class="compare good">Même message sur email et OAuth finalize</p>
+        <button class="btn">S'inscrire</button>
+      </div>
+    </div>
+  </div>
+
+  <p class="note" style="margin-top:1.5rem">
+    <strong>Surfaces impactées :</strong> <code>LoginForm</code> (signup), <code>login/page.tsx</code> (bloc inscription), <code>OAuthCompleteSignup</code> (US3).
+    Le champ radio <code>role</code> n’a pas de valeur par défaut côté UI ni en hidden field.
+  </p>
+</body>
+</html>

@@ -57,6 +57,8 @@ RESEND_API_KEY=re_xxxxxxxx
 STRAVA_CLIENT_ID=votre_client_id
 STRAVA_CLIENT_SECRET=votre_client_secret
 NEXT_PUBLIC_APP_URL=http://localhost:3000  # en production : https://mysportally.com
+# Connexion Google (login/signup) : configurer le provider dans Supabase + Google Cloud ;
+# callback app = NEXT_PUBLIC_SITE_URL/auth/callback — voir DEPLOYMENT_NOTES.md § Connexion Google
 # Activer la page « Mes appareils connectés » et le flux OAuth athlète (désactivé si absent ou ≠ true)
 # NEXT_PUBLIC_ENABLE_ATHLETE_STRAVA_DEVICES=true
 

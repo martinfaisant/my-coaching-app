@@ -45,6 +45,19 @@
     "startFree": "Commencer gratuitement",
     "enterCredentials": "Entrez vos identifiants pour accéder à votre espace",
     "chooseProfile": "Choisissez votre profil puis renseignez vos informations",
+    "signupSubtitleQuick": "Inscrivez-vous en un clic ou avec votre email",
+    "continueWithGoogle": "Continuer avec Google",
+    "continueWithAppleSoon": "Continuer avec Apple — bientôt",
+    "oauthRedirecting": "Redirection…",
+    "finalizeAccountTitle": "Finaliser votre compte",
+    "finalizeAccountSubtitle": "Dernière étape avant d'accéder à l'app",
+    "oauthConnectedAs": "Connecté via Google · {email}",
+    "oauthContinue": "Continuer",
+    "linkGoogleAccountTitle": "Lier votre compte Google",
+    "linkGoogleAccountMessage": "Un compte existe déjà avec {email}. Entrez votre mot de passe pour associer Google.",
+    "linkGoogleAccountMessageGeneric": "Un compte existe déjà avec cet email. Entrez votre mot de passe pour associer Google.",
+    "linkGoogleAccountHint": "Après liaison, vous pourrez vous connecter avec Google ou votre mot de passe.",
+    "linkGoogleAccountSubmit": "Lier et continuer",
     "signupAs": "Je m'inscris en tant que",
     "athlete": "Athlète",
     "coach": "Coach",
@@ -103,7 +116,11 @@
       "accountExistsLoginMessage": "Un compte existe déjà avec cet email. Connectez-vous avec votre mot de passe.",
       "emailNotConfirmed": "Votre adresse email n'a pas encore été confirmée. Vous devriez avoir reçu un email de confirmation ; consultez votre boîte mail (et les spams). Si vous ne l'avez pas reçu, vous pouvez en redemander un en recommençant le processus de création de compte (réinscrivez-vous avec la même adresse)."
       ,
-      "termsRequired": "Veuillez accepter les conditions pour créer un compte."
+      "termsRequired": "Veuillez accepter les conditions pour créer un compte.",
+      "roleRequired": "Choisissez Athlète ou Coach.",
+      "oauthCancelled": "Connexion Google annulée. Réessayez ou utilisez votre email.",
+      "oauthFailed": "La connexion Google a échoué. Réessayez ou utilisez votre email.",
+      "oauthLinkFailed": "Impossible de lier votre compte Google. Réessayez."
     }
   },
   "navigation": {
@@ -1183,7 +1200,7 @@
   "legal": {
     "common": {
       "lastUpdated": "Dernière mise à jour : {date}",
-      "lastUpdatedFull": "Dernière mise à jour : 10 juin 2026"
+      "lastUpdatedFull": "Dernière mise à jour : 11 juin 2026"
     },
     "terms": {
       "title": "Conditions d’utilisation",
@@ -1196,24 +1213,52 @@
           "title": "2. ÉLIGIBILITÉ",
           "p1": "Vous devez avoir au moins 18 ans pour créer un compte. En utilisant la Plateforme, vous garantissez que vous avez la capacité juridique de contracter."
         },
+        "authentication": {
+          "title": "3. COMPTES ET AUTHENTIFICATION",
+          "accountCreation": {
+            "title": "3.1 Création de compte",
+            "p1": "Vous pouvez créer un compte et vous connecter à la Plateforme :",
+            "li1": "en utilisant une adresse courriel et un mot de passe ; ou",
+            "li2": "en utilisant le bouton « Continuer avec Google », qui vous redirige vers les services d’authentification de Google LLC (« Google »).",
+            "p2": "Quel que soit le mode choisi, vous devez avoir au moins 18 ans et accepter les présentes Conditions d’utilisation ainsi que notre Politique de confidentialité au moment de la création du compte. Lors d’une première inscription via Google, vous devez également choisir votre profil (Athlète ou Coach) et confirmer votre acceptation des conditions avant d’accéder à la Plateforme."
+          },
+          "google": {
+            "title": "3.2 Compte Google",
+            "p1": "En choisissant Google, vous autorisez Mysportally à recevoir, via notre prestataire d’authentification, les renseignements strictement nécessaires à la création ou à la connexion de votre compte, notamment votre adresse courriel et, le cas échéant, votre nom tel que communiqué par Google.",
+            "p2": "Mysportally ne reçoit pas votre mot de passe Google. Nous n’importons pas automatiquement votre photo de profil Google ; vous pouvez ajouter ou modifier une photo dans les paramètres de votre compte sur la Plateforme.",
+            "p3": "L’utilisation de Google est également régie par les conditions et la politique de confidentialité de Google, que vous pouvez consulter sur les sites de Google. Mysportally n’est pas responsable des services, interruptions ou politiques de Google."
+          },
+          "linking": {
+            "title": "3.3 Liaison de comptes",
+            "p1": "Si une adresse courriel est déjà associée à un compte Mysportally créé avec un mot de passe, la connexion via Google peut exiger que vous confirmiez votre identité en saisissant le mot de passe de ce compte existant avant d’associer Google à celui-ci. Vous ne devez lier un compte Google qu’à un compte que vous contrôlez légitimement."
+          },
+          "security": {
+            "title": "3.4 Exactitude et sécurité",
+            "p1": "Vous êtes responsable de l’exactitude des renseignements associés à votre compte et de la confidentialité de vos identifiants (mot de passe et accès à votre compte Google). Toute activité réalisée via votre compte est réputée effectuée par vous, sauf preuve contraire et dans la mesure permise par la loi."
+          },
+          "oneAccount": {
+            "title": "3.5 Un compte par personne",
+            "p1": "Chaque personne physique ne doit maintenir qu’un seul compte actif sur la Plateforme, sauf autorisation écrite de Mysportally. La création de comptes multiples, y compris par l’utilisation de plusieurs adresses courriel ou de plusieurs comptes Google, pour contourner les présentes conditions (notamment les règles relatives aux essais gratuits ou à l’accès à la Plateforme) est interdite et peut entraîner la suspension ou la fermeture des comptes concernés, conformément à la section 6.3 des présentes."
+          }
+        },
         "role": {
-          "title": "3. DESCRIPTION ET RÔLE DE MYSPORTALLY",
+          "title": "4. DESCRIPTION ET RÔLE DE MYSPORTALLY",
           "p1": "Mysportally est une plateforme technologique facilitant la mise en relation entre des coachs sportifs (« Coachs ») et des utilisateurs (« Athlètes »).",
           "p2": "Mysportally agit uniquement en tant qu'intermédiaire technologique. Nous ne sommes pas un fournisseur de services de coaching, une agence de placement, ni un employeur. Nous ne validons pas les certifications, les compétences ou l'identité des Coachs."
         },
         "independence": {
-          "title": "4. INDÉPENDANCE DES INTERVENANTS",
+          "title": "5. INDÉPENDANCE DES INTERVENANTS",
           "p1": "Les Coachs sont des entrepreneurs indépendants utilisant la Plateforme comme outil. Mysportally n'exerce aucun contrôle sur la qualité, la sécurité, la légalité ou l'exactitude des programmes fournis par les Coachs. Toute entente entre un Coach et un Athlète est strictement privée ; Mysportally n'est pas partie à cette relation."
         },
         "payments": {
-          "title": "5. PAIEMENTS ET ABONNEMENTS",
+          "title": "6. PAIEMENTS ET ABONNEMENTS",
           "intro": "Les présentes conditions constituent également les conditions générales de vente et la politique de remboursement applicables à l’abonnement payant des Coachs pour l’accès à la Plateforme, sous réserve des droits impératifs du consommateur au Québec et au Canada.",
           "coachAthlete": {
-            "title": "5.1 Transactions Coach – Athlète",
+            "title": "6.1 Transactions Coach – Athlète",
             "p1": "Mysportally ne gère aucun paiement entre les Coachs et les Athlètes. Les transactions sont effectuées hors plateforme sous la responsabilité exclusive des utilisateurs."
           },
           "coachPlatform": {
-            "title": "5.2 Abonnement Coach – Accès à la Plateforme",
+            "title": "6.2 Abonnement Coach – Accès à la Plateforme",
             "p1": "L’accès aux fonctionnalités réservées aux Coachs est payant (forfait mensuel ou annuel, selon l’offre choisie au moment de la souscription). Le paiement est traité par un prestataire de paiement externe (ex. Stripe) ; Mysportally ne conserve pas le numéro complet de votre carte bancaire ni votre cryptogramme. Le tarif, la durée, le renouvellement et les modalités affichées lors du paiement font partie intégrante du contrat.",
             "trial": "Période d’essai (le cas échéant) : lorsqu’une période d’essai gratuit est offerte pour l’abonnement donnant accès à la Plateforme, elle est limitée à une seule fois par personne physique, pour la campagne ou l’offre décrite au moment de la souscription. Elle n’est ni cumulable, ni transférable, ni disponible sur un nouveau compte créé pour la même personne. À l’issue de l’essai, l’abonnement se poursuit au tarif indiqué lors de la souscription, sauf résiliation selon les modalités du prestataire de paiement et les présentes conditions.",
             "cancellationMonthly": "Abonnement mensuel : résiliable en tout temps ; la résiliation prend effet à la fin de la période de facturation en cours, sous réserve des mécanismes du prestataire de paiement.",
@@ -1221,24 +1266,24 @@
             "refunds": "Remboursements (abonnement Coach – Plateforme) : aucun remboursement, ni total ni au prorata, n’est accordé pour l’abonnement annuel. Pour l’abonnement mensuel, aucun remboursement n’est accordé pour la période de facturation en cours déjà entamée, sauf disposition légale impérative. Les droits non renonçables prévus par la loi applicable priment sur les présentes conditions."
           },
           "accountIntegrity": {
-            "title": "5.3 Intégrité des comptes et usage de l’essai",
+            "title": "6.3 Intégrité des comptes et usage de l’essai",
             "p1": "Chaque personne physique ne peut bénéficier qu’une seule fois de la période d’essai applicable à une même campagne ou offre, quel que soit le nombre de comptes créés.",
             "p2": "En cas de multiplication de comptes, de fausses déclarations ou de manœuvre visant à contourner ces règles (y compris pour obtenir plusieurs essais gratuits), Mysportally peut, sans préavis lorsque la circonstance l’exige : suspendre ou fermer les comptes concernés ; annuler immédiatement toute période d’essai ; refuser tout nouvel essai ; retirer l’accès à la Plateforme ; et, dans la mesure permise par la loi et selon les modalités de facturation acceptées lors du paiement, appliquer le tarif de l’abonnement à compter de la date de constat de l’abus, sans exiger de refacturation rétroactive pour des périodes déjà affichées et consommées comme gratuites, sauf obligation légale contraire ou décision judiciaire."
           },
           "serviceEvolution": {
-            "title": "5.4 Évolution de la Plateforme et des forfaits",
+            "title": "6.4 Évolution de la Plateforme et des forfaits",
             "p1": "Mysportally peut faire évoluer la Plateforme (fonctionnalités, interfaces, limites techniques). Les fonctionnalités nouvelles ou modifiées ne sont pas automatiquement incluses dans un forfait ou un abonnement déjà souscrit, sauf mention contraire au moment de la souscription. Mysportally peut proposer ces évolutions via un autre plan, une option payante ou une mise à niveau. En cas de changement substantiel défavorable aux Coachs déjà abonnés, Mysportally s’efforce d’en informer les personnes concernées dans un délai raisonnable."
           }
         },
         "medical": {
-          "title": "6. AVERTISSEMENT MÉDICAL ET SANTÉ (IMPORTANT)",
+          "title": "7. AVERTISSEMENT MÉDICAL ET SANTÉ (IMPORTANT)",
           "p1": "Mysportally ne fournit aucun avis médical.",
           "li1": "L'utilisation de programmes d'entraînement comporte des risques de blessures physiques.",
           "li2": "L'Athlète reconnaît qu'il participe à ces activités volontairement et à ses propres risques.",
           "li3": "Il est fortement recommandé de consulter un médecin avant de commencer tout programme d'entraînement. En utilisant la Plateforme, vous confirmez être en bonne santé physique pour pratiquer les activités proposées."
         },
         "liability": {
-          "title": "7. LIMITATION DE RESPONSABILITÉ",
+          "title": "8. LIMITATION DE RESPONSABILITÉ",
           "p1": "Dans la pleine mesure permise par la loi, Mysportally, ses dirigeants et employés ne pourront être tenus responsables de :",
           "li1": "Toute blessure physique, décès ou dommage à la santé.",
           "li2": "Tout dommage indirect, punitif ou consécutif découlant de l'utilisation de la Plateforme.",
@@ -1246,31 +1291,32 @@
           "p2": "Plafond de responsabilité : En tout état de cause, la responsabilité totale de Mysportally envers vous ne pourra excéder le montant total que vous avez payé à Mysportally au cours des 12 derniers mois."
         },
         "indemnification": {
-          "title": "8. INDEMNISATION",
+          "title": "9. INDEMNISATION",
           "p1": "Vous acceptez d'indemniser et de dégager de toute responsabilité Mysportally en cas de réclamation, perte ou demande (y compris les frais d'avocat) découlant de votre violation des présentes conditions ou de votre utilisation de la Plateforme."
         },
         "ip": {
-          "title": "9. PROPRIÉTÉ INTELLECTUELLE",
+          "title": "10. PROPRIÉTÉ INTELLECTUELLE",
           "li1": "Plateforme : Le design, le code, la marque et les logos de Mysportally sont notre propriété exclusive.",
           "li2": "Contenu Utilisateur : Les Coachs conservent leurs droits sur leurs programmes. Toutefois, vous nous accordez une licence mondiale, non exclusive et gratuite pour héberger, stocker et afficher ce contenu afin de fournir le service."
         },
         "prohibited": {
-          "title": "10. COMPORTEMENTS INTERDITS",
+          "title": "11. COMPORTEMENTS INTERDITS",
           "li1": "Utiliser la Plateforme à des fins illégales ou frauduleuses.",
           "li2": "Extraire des données (scraping) sans autorisation.",
           "li3": "Tenter de nuire à l'intégrité technique de la Plateforme.",
           "li4": "Créer ou utiliser plusieurs comptes pour obtenir plusieurs périodes d’essai gratuites ou contourner les conditions tarifaires.",
-          "li5": "Fournir des informations inexactes sur son identité en lien avec un essai, un abonnement ou un paiement."
+          "li5": "Fournir des informations inexactes sur son identité en lien avec un essai, un abonnement ou un paiement.",
+          "li6": "Utiliser un compte Google ou une adresse courriel ne vous appartenant pas, ou tenter d’associer un compte Google à un compte Mysportally sans y être autorisé."
         },
         "law": {
-          "title": "11. DROIT APPLICABLE ET MÉDIATION",
+          "title": "12. DROIT APPLICABLE ET MÉDIATION",
           "p1": "Les présentes conditions sont régies par les lois du Québec et du Canada. En cas de litige, les parties s'engagent à tenter de résoudre le différend par voie de médiation avant de s'adresser aux tribunaux compétents du district judiciaire de Montréal ou de Québec."
         }
       }
     },
     "privacy": {
       "title": "Politique de confidentialité",
-      "lastUpdatedFull": "Dernière mise à jour : 10 juin 2026",
+      "lastUpdatedFull": "Dernière mise à jour : 11 juin 2026",
       "sections": {
         "commitment": {
           "title": "1. NOTRE ENGAGEMENT",
@@ -1284,7 +1330,8 @@
           "li4": "Données techniques : informations transmises par votre appareil et votre navigateur lors de l’accès au site (ex. adresse IP, type de navigateur, dates/heure de requêtes). Elles peuvent être traitées via nos fournisseurs techniques (hébergement, authentification) pour des besoins de sécurité, de fonctionnement et de diagnostic, notamment pour maintenir votre session.",
           "li5": "Formulaire Contact (page dédiée, avec ou sans compte) : prénom, nom, adresse courriel, numéro de téléphone le cas échéant, motif de la demande, contenu du message ; attribution d’une référence de suivi ; si vous êtes connecté, un identifiant de compte peut être associé à la demande.",
           "li6": "Données liées à l’abonnement payant des Coachs (accès à la Plateforme) : identifiants techniques de transaction ou d’abonnement, statut d’accès, historique de consommation d’une période d’essai par campagne (le cas échéant), traités lors du paiement via un prestataire de paiement externe ; Mysportally ne conserve pas sur ses propres serveurs vos données complètes de carte bancaire.",
-          "li7": "Données de prévention des abus : éléments techniques permettant de détecter des comptes multiples ou un contournement des conditions (ex. adresse courriel, identifiants de compte, données de session ou de connexion, identifiants côté prestataire de paiement), dans la mesure nécessaire à l’application des Conditions d’utilisation."
+          "li7": "Données de prévention des abus : éléments techniques permettant de détecter des comptes multiples ou un contournement des conditions (ex. adresse courriel, identifiants de compte, données de session ou de connexion, identifiants côté prestataire de paiement), dans la mesure nécessaire à l’application des Conditions d’utilisation.",
+          "li8": "Données d’authentification via Google : lorsque vous utilisez « Continuer avec Google », nous recevons de Google, par l’intermédiaire de notre prestataire d’authentification, votre adresse courriel, votre nom (prénom et nom lorsque Google les communique, notamment sous la forme d’un nom complet), ainsi qu’un identifiant technique permettant de reconnaître votre compte Google. Nous ne recevons pas votre mot de passe Google et nous n’importons pas automatiquement votre photo de profil Google."
         },
         "useOfData": {
           "title": "3. UTILISATION DES DONNÉES",
@@ -1294,21 +1341,25 @@
           "li4": "Communiquer avec vous concernant votre compte.",
           "li5": "Traiter et répondre aux demandes adressées au support via le formulaire Contact, y compris par courriel, et conserver ces demandes le temps nécessaire à leur traitement et au suivi du service client.",
           "li6": "Gérer l’abonnement payant des Coachs à la Plateforme et le statut d’accès associé (y compris via un prestataire de paiement externe, dans la limite nécessaire).",
-          "li7": "Prévenir les abus (dont multiplication de comptes ou utilisation non autorisée d’une période d’essai) et faire respecter nos Conditions d’utilisation."
+          "li7": "Prévenir les abus (dont multiplication de comptes ou utilisation non autorisée d’une période d’essai) et faire respecter nos Conditions d’utilisation.",
+          "li8": "Créer, authentifier et sécuriser votre compte, y compris lors d’une connexion ou inscription via Google, et gérer la liaison entre un compte existant et Google."
         },
         "consent": {
           "title": "4. CONSENTEMENT ET DONNÉES SENSIBLES",
           "p1": "Lorsque vous connectez un service tiers (lorsque cette fonctionnalité est disponible), vous donnez votre consentement exprès au traitement de vos données d’activité. Vous pouvez retirer ce consentement à tout moment via les paramètres de votre compte, ce qui entraînera l'arrêt de l'importation de nouvelles données.",
-          "p2": "Pour le formulaire Contact, la soumission vaut consentement au traitement des renseignements fournis aux fins de réponse à votre demande, dans les limites décrites aux sections 2 et 3."
+          "p2": "Pour le formulaire Contact, la soumission vaut consentement au traitement des renseignements fournis aux fins de réponse à votre demande, dans les limites décrites aux sections 2 et 3.",
+          "p3": "Lors d’une première inscription via Google, l’acceptation des présentes conditions et de la Politique de confidentialité, le choix de votre profil (Athlète ou Coach) et la poursuite du processus d’inscription constituent votre consentement au traitement des renseignements reçus de Google aux fins de création et de gestion de votre compte. Vous pouvez retirer ce consentement en supprimant votre compte ou en cessant d’utiliser la Plateforme ; la suppression peut toutefois limiter ou empêcher l’accès au service."
         },
         "sharing": {
           "title": "5. PARTAGE ET DIVULGATION",
           "p1": "Nous ne vendons jamais vos données personnelles. Le partage est limité à :",
+          "p2": "Lorsque vous utilisez Google pour vous connecter, Google traite également vos renseignements en qualité de responsable distinct pour ses propres finalités (gestion de votre compte Google, sécurité, etc.). Nous vous invitons à consulter la politique de confidentialité de Google.",
           "li1": "Votre Coach : pour l'exécution du service.",
           "li2": "Fournisseurs techniques nécessaires au fonctionnement du site (hébergement, authentification, base de données).",
           "li3": "Obligations légales : si la loi l'exige.",
           "li4": "Prestataires d’envoi de courriels transactionnels, lorsque nécessaire pour transmettre une demande du formulaire Contact à notre équipe, dans la limite du traitement de cette demande.",
-          "li5": "Prestataire de paiement externe : lorsque vous payez l’abonnement d’accès à la Plateforme pour les Coachs, des données strictement nécessaires au paiement et à la facturation peuvent être communiquées à ce prestataire, qui agit comme sous-traitant pour cette partie du traitement et applique ses propres engagements envers vous lors de la transaction."
+          "li5": "Prestataire de paiement externe : lorsque vous payez l’abonnement d’accès à la Plateforme pour les Coachs, des données strictement nécessaires au paiement et à la facturation peuvent être communiquées à ce prestataire, qui agit comme sous-traitant pour cette partie du traitement et applique ses propres engagements envers vous lors de la transaction.",
+          "li6": "Prestataires d’authentification : notamment notre fournisseur d’infrastructure d’authentification (ex. Supabase) et, lorsque vous choisissez Google, Google en tant que fournisseur d’identité. Ces tiers traitent des renseignements strictement nécessaires à l’authentification, la sécurité et le fonctionnement technique du service, conformément à leurs propres politiques et à nos instructions contractuelles, dans la mesure applicable."
         },
         "retention": {
           "title": "6. CONSERVATION ET TRANSFERT HORS QUÉBEC",
@@ -1337,7 +1388,7 @@
         },
         "cookies": {
           "title": "11. TÉMOINS (COOKIES)",
-          "p1": "Nous utilisons des témoins strictement nécessaires au fonctionnement du service, notamment pour maintenir votre session active. Vous pouvez configurer votre navigateur pour refuser les témoins, mais cela peut empêcher l’authentification et limiter certaines fonctionnalités."
+          "p1": "Nous utilisons des témoins (cookies) et technologies similaires strictement nécessaires au fonctionnement du service, notamment pour maintenir votre session active et assurer le retour sécurisé vers la Plateforme après une authentification via Google. Vous pouvez configurer votre navigateur pour refuser les témoins, mais cela peut empêcher l’authentification et limiter certaines fonctionnalités."
         }
       }
     }

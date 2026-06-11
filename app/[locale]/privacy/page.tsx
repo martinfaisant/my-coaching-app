@@ -55,6 +55,7 @@ export default async function PrivacyPage({ params }: PrivacyPageProps) {
               <li>{t('privacy.sections.dataCollected.li5')}</li>
               <li>{t('privacy.sections.dataCollected.li6')}</li>
               <li>{t('privacy.sections.dataCollected.li7')}</li>
+              <li>{t('privacy.sections.dataCollected.li8')}</li>
             </ul>
           </section>
 
@@ -70,6 +71,7 @@ export default async function PrivacyPage({ params }: PrivacyPageProps) {
               <li>{t('privacy.sections.useOfData.li5')}</li>
               <li>{t('privacy.sections.useOfData.li6')}</li>
               <li>{t('privacy.sections.useOfData.li7')}</li>
+              <li>{t('privacy.sections.useOfData.li8')}</li>
             </ul>
           </section>
 
@@ -79,6 +81,7 @@ export default async function PrivacyPage({ params }: PrivacyPageProps) {
             </h2>
             <p className="leading-relaxed">{t('privacy.sections.consent.p1')}</p>
             <p className="leading-relaxed">{t('privacy.sections.consent.p2')}</p>
+            <p className="leading-relaxed">{t('privacy.sections.consent.p3')}</p>
           </section>
 
           <section className="space-y-3">
@@ -86,12 +89,14 @@ export default async function PrivacyPage({ params }: PrivacyPageProps) {
               {t('privacy.sections.sharing.title')}
             </h2>
             <p className="leading-relaxed">{t('privacy.sections.sharing.p1')}</p>
+            <p className="leading-relaxed">{t('privacy.sections.sharing.p2')}</p>
             <ul className="list-disc pl-6 space-y-2 leading-relaxed">
               <li>{t('privacy.sections.sharing.li1')}</li>
               <li>{t('privacy.sections.sharing.li2')}</li>
               <li>{t('privacy.sections.sharing.li3')}</li>
               <li>{t('privacy.sections.sharing.li4')}</li>
               <li>{t('privacy.sections.sharing.li5')}</li>
+              <li>{t('privacy.sections.sharing.li6')}</li>
             </ul>
           </section>
 

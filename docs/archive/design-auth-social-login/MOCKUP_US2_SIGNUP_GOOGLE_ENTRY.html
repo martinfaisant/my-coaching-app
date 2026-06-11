@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>US-AUTH-GOOGLE-02 – Inscription : Google en tête + email</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, sans-serif; background: linear-gradient(135deg, #fafaf9, #e7e5e4); padding: 1.5rem; margin: 0; }
+    .note { font-size: 0.75rem; color: #78716c; max-width: 36rem; margin: 0 auto 1.5rem; line-height: 1.5; }
+    .page-wrap { max-width: 28rem; margin: 0 auto; }
+    .card { background: white; border-radius: 1rem; padding: 2rem; box-shadow: 0 8px 32px rgba(0,0,0,.06); border: 2px solid #627e59; }
+    h1 { font-size: 1.5rem; font-weight: 600; text-align: center; margin: 0 0 0.25rem; color: #1c1917; }
+    .subtitle { font-size: 0.875rem; color: #a8a29e; text-align: center; margin: 0 0 1.5rem; }
+    .section-title { font-size: 0.875rem; font-weight: 600; color: #44403c; margin: 0 0 1rem; }
+    .social-btn { display: flex; align-items: center; justify-content: center; gap: 0.5rem; width: 100%; padding: 0.75rem; border-radius: 0.75rem; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.625rem; cursor: pointer; }
+    .social-google { border: 2px solid #d6d3d1; background: white; }
+    .social-apple-slot { border: 2px dashed #d6d3d1; background: #fafaf9; color: #a8a29e; cursor: not-allowed; font-size: 0.8125rem; }
+    .divider { display: flex; align-items: center; gap: 0.75rem; margin: 1.25rem 0; color: #a8a29e; font-size: 0.875rem; }
+    .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: #627e59; }
+    .role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem; }
+    .role-tile { border: 2px solid #e7e5e4; border-radius: 0.75rem; padding: 1rem; text-align: center; cursor: pointer; color: #57534e; }
+    .role-tile.selected { border-color: #627e59; background: #fafaf9; color: #1c1917; }
+    .role-tile.none { border-style: dashed; }
+    .role-name { font-weight: 600; display: block; }
+    .role-desc { font-size: 0.6875rem; margin-top: 0.25rem; display: block; }
+    label { display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.25rem; color: #44403c; }
+    input { width: 100%; padding: 0.75rem 1rem; border: 1px solid #d6d3d1; border-radius: 0.75rem; margin-bottom: 0.875rem; font-size: 0.875rem; }
+    .legal { border: 1px solid #e7e5e4; border-radius: 0.75rem; padding: 0.875rem; font-size: 0.8125rem; color: #57534e; margin-bottom: 1rem; display: flex; gap: 0.625rem; align-items: flex-start; }
+    .legal.error { border-color: #9e3b31; background: #fdf2f1; }
+    .btn-primary { width: 100%; padding: 0.75rem; border: none; border-radius: 0.75rem; background: #627e59; color: white; font-weight: 600; }
+    .login-block { margin-bottom: 2rem; padding-bottom: 2rem; border-bottom: 1px solid #e7e5e4; }
+    .state-tag { font-size: 0.6875rem; font-weight: 700; color: #627e59; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 0.5rem; }
+  </style>
+</head>
+<body>
+  <p class="note">
+    <strong>US-AUTH-GOOGLE-02</strong> — Section inscription : modale signup + bloc bas de page <code>/login</code> (structure page unique conservée).
+    Google en tête ; formulaire email conservé sous le séparateur « ou ».
+  </p>
+
+  <!-- Page /login : contexte complet -->
+  <p class="state-tag" style="max-width:28rem;margin:0 auto .5rem">Page /login — vue complète (connexion + inscription)</p>
+  <div class="page-wrap">
+    <div class="card">
+      <h1>Connexion</h1>
+      <p class="subtitle">Connectez-vous ou créez un compte</p>
+
+      <div class="login-block">
+        <p class="state-tag">Bloc connexion (US1 — rappel)</p>
+        <button class="social-btn social-google">Continuer avec Google</button>
+        <button class="social-btn social-apple-slot" disabled> Apple — bientôt</button>
+        <div class="divider">ou</div>
+        <input type="email" placeholder="Email connexion" />
+        <input type="password" placeholder="Mot de passe" />
+        <button class="btn-primary">Se connecter</button>
+      </div>
+
+      <p class="section-title">Créer mon compte</p>
+      <button class="social-btn social-google">Continuer avec Google</button>
+      <button class="social-btn social-apple-slot" disabled> Apple — bientôt</button>
+      <div class="divider">ou</div>
+
+      <span style="font-size:0.875rem;font-weight:500;color:#44403c">Je m'inscris en tant que</span>
+      <div class="role-grid" style="margin-top:0.5rem">
+        <div class="role-tile none">
+          <span class="role-name">Athlète</span>
+          <span class="role-desc">Suivi d'entraînement</span>
+        </div>
+        <div class="role-tile none">
+          <span class="role-name">Coach</span>
+          <span class="role-desc">Accompagner des athlètes</span>
+        </div>
+      </div>
+      <p style="font-size:0.75rem;color:#a8a29e;margin:-0.5rem 0 1rem">Aucun rôle présélectionné — voir US-AUTH-SIGNUP-05</p>
+
+      <label>Email</label>
+      <input type="email" placeholder="vous@exemple.com" />
+      <label>Mot de passe (min. 6 car.)</label>
+      <input type="password" placeholder="••••••••" />
+      <div class="legal">
+        <input type="checkbox" />
+        <span>J'accepte les <u>CGU</u> et la <u>Politique de confidentialité</u>.</span>
+      </div>
+      <button class="btn-primary">S'inscrire</button>
+    </div>
+  </div>
+
+  <p class="note" style="margin-top:1.5rem">
+    <strong>Modale signup :</strong> même hiérarchie (Google → slot Apple → ou → rôle sans présélection → email/mdp → CGU).
+    <br><strong>Transition inscription Google :</strong> clic → redirect → si nouveau compte → US-AUTH-GOOGLE-03 (finalisation). Si compte existant lié → dashboard. Si compte email/mdp existant → US-AUTH-GOOGLE-04 (liaison).
+  </p>
+</body>
+</html>

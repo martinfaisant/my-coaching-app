@@ -50,11 +50,25 @@ Si une migration a déjà été exécutée en prod (ex. 025 ou 026), sauter cell
 
 ---
 
-## 3. Après la mise en prod
+## 3. Connexion Google (si feature livrée)
+
+Sur le projet Supabase **production** (`vkkykxbtywoxsqlpznng`) et **Google Cloud** :
+
+1. Activer le provider Google dans Supabase (Client ID / Secret).
+2. **Redirect URLs** Supabase : `https://mysportally.com/auth/callback`.
+3. **Google Cloud** : URI de redirection `https://vkkykxbtywoxsqlpznng.supabase.co/auth/v1/callback`.
+4. Vercel **Production** : `NEXT_PUBLIC_SUPABASE_URL`, clés anon/service **prod**, `NEXT_PUBLIC_SITE_URL=https://mysportally.com`.
+
+Détail complet : **`DEPLOYMENT_NOTES.md`** § Connexion Google. **Pas de migration SQL.**
+
+---
+
+## 4. Après la mise en prod
 
 1. **Vérifier l’app** : ouvrir l’URL de prod et tester le calendrier, les résumés, la création d’entraînements.
-2. **Strava** : les prochaines importations (NordicSki, BackcountrySki, IceSkate) seront mappées automatiquement.
-3. **Optionnel** : si vous aviez déjà des activités “ski” ou “patin” importées avant ces changements, vous pouvez exécuter en prod (avec précaution) le script `supabase/scripts/update_nordic_ski_activities.sql` pour les recatégoriser, puis éventuellement `force_recalculate_totals.sql` pour recalculer les totaux. Sinon, une réimport depuis Strava suffit.
+2. **Connexion Google** : tester inscription et connexion depuis `/login`.
+3. **Strava** : les prochaines importations (NordicSki, BackcountrySki, IceSkate) seront mappées automatiquement.
+4. **Optionnel** : si vous aviez déjà des activités “ski” ou “patin” importées avant ces changements, vous pouvez exécuter en prod (avec précaution) le script `supabase/scripts/update_nordic_ski_activities.sql` pour les recatégoriser, puis éventuellement `force_recalculate_totals.sql` pour recalculer les totaux. Sinon, une réimport depuis Strava suffit.
 
 ---
 
@@ -64,6 +78,7 @@ Si une migration a déjà été exécutée en prod (ex. 025 ou 026), sauter cell
 |-------|--------|
 | 1 | Merger `preview` dans la branche de prod et pousser (ou déclencher le déploiement). |
 | 2 | Exécuter les 6 migrations SQL (024 → 025 → 026 → 027 → 028 → 029) sur la base Supabase **production** dans l’ordre. |
-| 3 | Tester l’app en prod et les imports Strava si besoin. |
+| 3 | Configurer Google OAuth (Supabase prod + Google Cloud + Vercel) si la feature est livrée. |
+| 4 | Tester l’app en prod (dont `/login` Google) et les imports Strava si besoin. |
 
 Une fois ces étapes faites, tout est en prod.

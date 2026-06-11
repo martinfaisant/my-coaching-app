@@ -1,7 +1,61 @@
 # Notes de déploiement
 
 **Production :** https://mysportally.com (voir `docs/DOMAIN_MYSPORTALLY_SETUP.md` pour la configuration domaine, Vercel, Resend, Supabase).  
-**Dernière mise à jour doc :** 10 juin 2026 (feature flag Strava devices athlète ; précédent : résiliation abonnement plateforme coach, migration **076**).
+**Dernière mise à jour doc :** 10 juin 2026 (connexion Google OAuth ; précédent : feature flag Strava devices athlète).
+
+---
+
+## Connexion Google (OAuth login / signup)
+
+**Aucune migration BDD** — Auth Supabase + config Google Cloud + variables Vercel.
+
+### Flux des URLs (2 redirect distincts)
+
+| Étape | Où configurer | URL exemple (prod) |
+|-------|----------------|---------------------|
+| Google → Supabase | **Google Cloud** → Identifiants OAuth → **URI de redirection autorisés** | `https://<REF_PROJET_SUPABASE>.supabase.co/auth/v1/callback` |
+| Supabase → app | **Supabase** → Authentication → URL Configuration → **Redirect URLs** | `https://mysportally.com/auth/callback` |
+
+L’app construit le callback via `NEXT_PUBLIC_SITE_URL` + `/auth/callback` (`lib/authOAuth.ts` → `oauthCallbackPath()`).
+
+### Google Cloud Console
+
+1. **APIs & Services → Identifiants** → client OAuth Web.
+2. **URI de redirection autorisés** (URL **complètes**, avec `/auth/v1/callback`) — une entrée **par projet Supabase** si dev et prod sont distincts :
+   - Prod : `https://vkkykxbtywoxsqlpznng.supabase.co/auth/v1/callback`
+   - Dev/preview : `https://<ref_dev>.supabase.co/auth/v1/callback` (si même client Google)
+3. **Branding → Domaines autorisés** : `mysportally.com` + les sous-domaines `*.supabase.co` utilisés (cohérent avec les redirect ci-dessus).
+4. Écran de consentement : nom d’app **My Sport Ally** ; liens CGU / confidentialité vers `https://mysportally.com/terms` et `/privacy`.
+
+### Supabase (projet **production**)
+
+1. **Authentication → Providers → Google** : activer, renseigner Client ID + Secret (même client Google ou client dédié prod).
+2. **Authentication → URL Configuration** :
+   - **Site URL** : `https://mysportally.com`
+   - **Redirect URLs** : `https://mysportally.com/auth/callback` (ajouter preview/local si besoin : `http://localhost:3000/auth/callback`, `https://*.vercel.app/auth/callback` selon politique Supabase).
+
+Répéter la config Google provider sur le **projet Supabase de dev/preview** avec les URLs de cet environnement.
+
+### Vercel — variables par environnement
+
+| Variable | Production | Preview / local |
+|----------|------------|-----------------|
+| `NEXT_PUBLIC_SUPABASE_URL` | `https://vkkykxbtywoxsqlpznng.supabase.co` | projet dev |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | clé anon **prod** | clé anon dev |
+| `SUPABASE_SECRET_KEY` | service role **prod** | service role dev |
+| `NEXT_PUBLIC_SITE_URL` | `https://mysportally.com` | preview URL ou `http://localhost:3000` |
+| `NEXT_PUBLIC_APP_URL` | `https://mysportally.com` | idem |
+
+**Ne pas mélanger** clés Supabase prod et redirect Google d’un autre projet.
+
+### Vérification post-déploiement
+
+1. `https://mysportally.com/login` → **Continuer avec Google**.
+2. Nouveau compte → `/auth/complete-signup` (rôle + CGU) → dashboard ; prénom/nom préremplis si Google les fournit.
+3. Compte existant lié → dashboard direct.
+4. Erreurs typiques : `redirect_uri_mismatch` (Google) = URI Supabase manquante ; échec après Google = Redirect URL app absente dans Supabase ; mauvaises données = variables Vercel pointant vers le mauvais projet Supabase.
+
+**Code clé :** `lib/authOAuth.ts`, `app/[locale]/login/oauthActions.ts`, `app/auth/callback/route.ts`, `lib/googleUserMetadata.ts`, `proxy.ts` (i18n : exclure uniquement `/auth/callback`).
 
 ---
 

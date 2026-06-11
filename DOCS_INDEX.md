@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 10 juin 2026 (**feature flag Strava devices** athlète — masqué par défaut ; précédent : prérequis Checkout coach…)
+**Dernière mise à jour :** 10 juin 2026 (**connexion Google OAuth** login/signup ; précédent : feature flag Strava devices…)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -9,16 +9,16 @@
 ## 🎯 Documentation Active (à utiliser en priorité)
 
 ### **README.md** ⭐
-- **Contenu :** Setup projet, stack technique, quick start, structure du projet, **URL production https://mysportally.com**, **accueil `/` et `/en`** : utilisateurs connectés redirigés vers l’entrée dashboard (voir **Project_context.md** §4.0, **`lib/dashboardEntryPath.ts`**), variables **Stripe coach plateforme** (…), **Strava devices athlète** : `NEXT_PUBLIC_ENABLE_ATHLETE_STRAVA_DEVICES` (off par défaut, voir § Intégration Strava)
+- **Contenu :** Setup projet, stack technique, quick start, structure du projet, **URL production https://mysportally.com**, **accueil `/` et `/en`** : utilisateurs connectés redirigés vers l’entrée dashboard (voir **Project_context.md** §4.0, **`lib/dashboardEntryPath.ts`**), **connexion Google OAuth** (voir **DEPLOYMENT_NOTES.md** § Connexion Google), variables **Stripe coach plateforme** (…), **Strava devices athlète** : `NEXT_PUBLIC_ENABLE_ATHLETE_STRAVA_DEVICES` (off par défaut, voir § Intégration Strava)
 - **Utiliser pour :** Onboarding, démarrage rapide, vue d'ensemble technique
 - **Taille :** ~200 lignes
-- **Dernière mise à jour :** 10 juin 2026 (feature flag Strava devices ; précédent : prérequis Checkout coach…)
+- **Dernière mise à jour :** 10 juin 2026 (connexion Google OAuth ; précédent : feature flag Strava devices…)
 
 ### **Project_context.md** ⭐
-- **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (…), **§4.9 Strava** (feature flag `NEXT_PUBLIC_ENABLE_ATHLETE_STRAVA_DEVICES`, off par défaut au lancement)
+- **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (…), **§4.1 Authentication** (email/password + **Google OAuth**), **§4.9 Strava** (feature flag `NEXT_PUBLIC_ENABLE_ATHLETE_STRAVA_DEVICES`, off par défaut au lancement)
 - **Utiliser pour :** Comprendre le projet, les features, les rôles, l'architecture globale
 - **Taille :** ~450 lignes
-- **Dernière mise à jour :** 10 juin 2026 (§4.9 Strava feature flag ; précédent : prérequis Checkout…)
+- **Dernière mise à jour :** 10 juin 2026 (§4.1 Google OAuth ; précédent : §4.9 Strava feature flag…)
 
 ### **docs/CALENDAR_MONTH_VIEW.md**
 - **Contenu :** Récap **vue mois** (desktop) vs **vue semaine** (mobile), règles semaines ISO / mois civil étendu, **totaux hebdo** (liste sports `PERSISTED_WORKOUT_SPORT_TYPES`, `SPORT_WEEKLY_SUMMARY_BAR`), chargement données, liste des fichiers et tests unitaires, **tuiles disponibilité** (réf. design + `CalendarView`), liens vers maquettes archivées
@@ -30,7 +30,7 @@
 - **Contenu :** Tokens (couleurs, typo, espacements ; **sports** : `SPORT_CARD_STYLES`, `SPORT_BADGE_STYLES`, **`SPORT_WEEKLY_SUMMARY_BAR`** résumé hebdo), composants (Button, Input, Badge, TileCard, DashboardPageShell, **DashboardTopBar**, **AthleteAccountMenu**, **AthleteStatsVolumeChart**, **AthleteStatsChartSkeleton**, Modal, **MonthSelector**, **`CoachPlatformBillingAddressSection`** — titre sous-section sur la page + **`FORM_LABEL_CLASSES`**, etc.), guidelines UI, exemples de code, §7 breakpoints (**calendrier** mois étendu desktop + WeekSelector mobile, **tuiles disponibilité grille** : bandeau haut, `training-card`, typo alignée séance compacte, chat, Trouver mon coach, My offers)
 - **Utiliser pour :** Créer ou modifier des composants UI, choisir des couleurs, appliquer le design system, règles responsive par page
 - **Taille :** ~2010 lignes
-- **Dernière mise à jour :** 9 juin 2026 (**prérequis Checkout** v1.44 — `CoachPlatformCheckoutPrerequisites*`, `CoachPlatformBillingAddressFields` ; précédent : essai non renouvelable…)
+- **Dernière mise à jour :** 10 juin 2026 (**SocialAuthButtons**, OAuth post-signup / link-account ; précédent : prérequis Checkout…)
 
 ### **docs/I18N.md** ⭐
 - **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces (dont **`calendar.weekly.sportVolumeHint`**), utilisation dans composants et server actions, **checklist pour nouvelles features** (toujours penser bilingue) ; **`coachMsaSubscription`** (dont **`billingInfoTitle`**, **`billingAddress`**)
@@ -109,14 +109,14 @@
 ## 🚀 Documentation Opérationnelle
 
 ### **DEPLOYMENT_NOTES.md**
-- **Contenu :** Notes et procédures de déploiement, **URL production https://mysportally.com**, section **Connexion Strava — appareils athlète (feature flag)**, section **Abonnement plateforme coach (Stripe)** (…)
+- **Contenu :** Notes et procédures de déploiement, **URL production https://mysportally.com**, section **Connexion Google (OAuth login/signup)** (Google Cloud + Supabase prod `vkkykxbtywoxsqlpznng` + Vercel), section **Connexion Strava — appareils athlète (feature flag)**, section **Abonnement plateforme coach (Stripe)** (…)
 - **Utiliser pour :** Déployer l'application, résoudre des problèmes de déploiement
-- **Dernière mise à jour :** 10 juin 2026 (feature flag Strava devices ; précédent : Stripe coach…)
+- **Dernière mise à jour :** 10 juin 2026 (connexion Google OAuth ; précédent : feature flag Strava devices…)
 
 ### **MISE_EN_PROD.md**
 - **Contenu :** Checklist et étapes pour mise en production, **URL production https://mysportally.com**, rappel migrations postérieures (dont **073** + **074** Stripe coach plateforme — voir `DEPLOYMENT_NOTES.md`)
 - **Utiliser pour :** Préparer une release production
-- **Dernière mise à jour :** 13 mai 2026 (réf. migrations 073, 074)
+- **Dernière mise à jour :** 10 juin 2026 (étape Google OAuth ; précédent : migrations 073, 074)
 
 ### **DOCUMENTATION_UPDATE_2026-02-13.md**
 - **Contenu :** Récapitulatif de la mise à jour complète de la documentation (13 février 2026)
@@ -131,6 +131,7 @@
 > L’état courant canonique est dans **`docs/ENGINEERING_STATUS_REFAC_AUDIT.md`**.
 
 **Formulaire contact public (maquettes HTML, archivées 6 mai 2026) :**
+- `docs/archive/design-auth-social-login/` — maquettes HTML US1–US5 (login Google, signup, finalisation rôle+CGU, liaison compte, modale signup) ; **livré** : Google OAuth v1 (pas Apple, pas photo Google). Référence produit : **`Project_context.md`** §4.1 ; déploiement : **`DEPLOYMENT_NOTES.md`** § Connexion Google ; UI : **`docs/DESIGN_SYSTEM.md`** § SocialAuthButtons.
 - `docs/archive/design-contact-public-form/` — `us1-contact-page.html`, `us2-landing-footer-contact.html`, `us3-athlete-account-menu-contact.html`, `us4-coach-account-menu-contact.html`, `README.md`
 - **Raison :** feature livrée ; comportement et données décrits dans **Project_context.md §4.11**, **README.md** (Resend), **DEPLOYMENT_NOTES.md** (migrations 066–067).
 
