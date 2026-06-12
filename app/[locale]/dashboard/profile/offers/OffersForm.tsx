@@ -120,9 +120,11 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
   }, [offers, sortedOffers, featuredOfferIndex])
 
   // Fonction pour vérifier les modifications
-  const checkUnsavedChanges = useCallback(() => {
+  const checkUnsavedChanges = useCallback((featuredIndexOverride?: number | null) => {
     const form = formRef.current
     if (!form) return false
+    const effectiveFeaturedIndex =
+      featuredIndexOverride !== undefined ? featuredIndexOverride : featuredOfferIndex
 
     const currentOffers: Array<{
       title_fr: string
@@ -176,17 +178,10 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
       }
     }
 
-    if (featuredOfferIndex !== initialFeaturedIndexRef.current) return true
+    if (effectiveFeaturedIndex !== initialFeaturedIndexRef.current) return true
 
     return false
   }, [offerCount, featuredOfferIndex, priceTypes])
-
-  // Recalculer les modifications non enregistrées quand l'offre recommandée change
-  // (évite le setTimeout stale dans le clic étoile qui laissait Enregistrer désactivé)
-  useEffect(() => {
-    if (!isInitializedRef.current) return
-    setHasUnsavedChanges(checkUnsavedChanges())
-  }, [featuredOfferIndex, checkUnsavedChanges])
 
   /** Offre complète (titre FR/EN, description FR/EN, prix et récurrence) */
   const computeCanPublishOfferAtSlot = useCallback(
@@ -554,9 +549,7 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
                         onClick={() => {
                           const nextFeatured = isFeatured ? null : index
                           setFeaturedOfferIndex(nextFeatured)
-                          if (nextFeatured !== initialFeaturedIndexRef.current) {
-                            setHasUnsavedChanges(true)
-                          }
+                          setHasUnsavedChanges(checkUnsavedChanges(nextFeatured))
                         }}
                         className={`p-1.5 rounded-lg transition-colors ${
                           isFeatured ? 'bg-yellow-50 text-yellow-600 hover:bg-yellow-100' : 'hover:bg-yellow-50 text-stone-300 hover:text-yellow-600'
