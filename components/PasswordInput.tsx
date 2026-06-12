@@ -14,14 +14,25 @@ import { IconEye } from '@/components/icons/IconEye'
 import { IconEyeClosed } from '@/components/icons/IconEyeClosed'
 import type { InputProps } from '@/components/Input'
 
-export type PasswordInputProps = Omit<InputProps, 'type'>
+export type PasswordInputProps = Omit<InputProps, 'type'> & {
+  describedBy?: string
+}
 
 export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
-  function PasswordInput({ label, labelClassName, error, id, className = '', ...props }, ref) {
+  function PasswordInput(
+    { label, labelClassName, error, id, className = '', describedBy, ...props },
+    ref
+  ) {
     const t = useTranslations('auth')
     const [visible, setVisible] = useState(false)
     const inputId = id ?? label?.toLowerCase().replace(/\s+/g, '-')
     const labelClasses = labelClassName ?? FORM_LABEL_CLASSES
+    const ariaDescribedBy = [
+      describedBy,
+      error ? `${inputId}-error` : undefined,
+    ]
+      .filter(Boolean)
+      .join(' ') || undefined
 
     return (
       <div className="w-full">
@@ -37,7 +48,7 @@ export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
             type={visible ? 'text' : 'password'}
             className={`${FORM_BASE_CLASSES} ${FORM_INPUT_HEIGHT} pr-11 ${FORM_DISABLED_READONLY_CLASSES} ${error ? FORM_ERROR_CLASSES : ''} ${className}`.trim()}
             aria-invalid={!!error}
-            aria-describedby={error ? `${inputId}-error` : undefined}
+            aria-describedby={ariaDescribedBy}
             {...props}
           />
           <button

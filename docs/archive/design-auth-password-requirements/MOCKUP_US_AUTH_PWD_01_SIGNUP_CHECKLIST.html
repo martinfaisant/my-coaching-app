@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>US-AUTH-PWD-01 — Inscription : checklist mot de passe interactive</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, sans-serif; background: #f5f5f4; padding: 1.5rem; margin: 0; color: #1c1917; }
+    .doc { max-width: 42rem; margin: 0 auto 2rem; font-size: 0.8125rem; color: #57534e; line-height: 1.55; }
+    .doc h1 { font-size: 1.125rem; color: #1c1917; margin: 0 0 0.5rem; }
+    .doc ul { margin: 0.5rem 0; padding-left: 1.25rem; }
+    .state-tag { font-size: 0.6875rem; font-weight: 700; color: #627e59; text-transform: uppercase; letter-spacing: .05em; margin: 2rem 0 0.5rem; }
+    .grid { display: grid; gap: 1.5rem; max-width: 56rem; margin: 0 auto; }
+    @media (min-width: 900px) { .grid-2 { grid-template-columns: 1fr 1fr; } }
+    .card { background: white; border-radius: 1rem; padding: 1.75rem; box-shadow: 0 8px 32px rgba(0,0,0,.06); border: 2px solid #627e59; }
+    .card-modal { max-width: 28rem; margin: 0 auto; }
+    h2 { font-size: 1.25rem; font-weight: 600; text-align: center; margin: 0 0 0.25rem; }
+    .subtitle { font-size: 0.875rem; color: #a8a29e; text-align: center; margin: 0 0 1.25rem; }
+    label { display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem; color: #44403c; }
+    .input-wrap { position: relative; margin-bottom: 0.5rem; }
+    input.pwd {
+      width: 100%; padding: 0.625rem 2.75rem 0.625rem 1rem; border: 1px solid #d6d3d1;
+      border-radius: 0.5rem; font-size: 0.875rem; height: 2.75rem;
+    }
+    input.pwd.error { border-color: #9e3b31; outline: 2px solid rgba(158,59,49,.2); }
+    .eye { position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: #78716c; padding: 0.375rem; cursor: default; }
+    .req-list { list-style: none; margin: 0.25rem 0 1rem; padding: 0; }
+    .req-list li {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-size: 0.75rem; line-height: 1.35; padding: 0.125rem 0; color: #78716c;
+    }
+    .req-list li .icon { width: 1rem; flex-shrink: 0; text-align: center; font-size: 0.6875rem; }
+    .req-list li.pending .icon::before { content: "○"; color: #a8a29e; }
+    .req-list li.ok { color: #627e59; }
+    .req-list li.ok .icon::before { content: "✓"; color: #627e59; font-weight: 700; }
+    .req-list li.fail { color: #9e3b31; }
+    .req-list li.fail .icon::before { content: "○"; color: #9e3b31; }
+    .btn { width: 100%; padding: 0.75rem; border: none; border-radius: 0.75rem; font-weight: 600; font-size: 0.875rem; }
+    .btn-primary { background: #627e59; color: white; }
+    .btn-disabled { background: #d6d3d1; color: #78716c; cursor: not-allowed; }
+    .err { font-size: 0.8125rem; color: #9e3b31; margin: 0 0 0.75rem; }
+    .transition {
+      margin-top: 1rem; padding: 0.75rem; background: #fafaf9; border-radius: 0.5rem;
+      border: 1px dashed #d6d3d1; font-size: 0.75rem; color: #57534e;
+    }
+    .transition strong { color: #44403c; }
+    .divider { height: 1px; background: #e7e5e4; margin: 1rem 0; }
+    .context-note { font-size: 0.6875rem; color: #a8a29e; text-align: center; margin-top: 0.5rem; }
+  </style>
+</head>
+<body>
+  <div class="doc">
+    <h1>US-AUTH-PWD-01 — Inscription email : checklist mot de passe</h1>
+    <p><strong>Périmètre :</strong> formulaire inscription sur <code>/[locale]/login</code> (bloc « Créer mon compte ») et modale <code>LoginForm</code> (mode signup). Connexion et OAuth inchangés.</p>
+    <p><strong>Règles Supabase :</strong> ≥ 8 caractères, minuscule, majuscule, chiffre, caractère spécial (sans exemples de symboles).</p>
+    <p><strong>Comportement :</strong> checklist mise à jour en temps réel ; bouton « S'inscrire » désactivé tant que les 5 critères ne sont pas verts ; pas de submit tant que désactivé.</p>
+  </div>
+
+  <p class="state-tag" style="max-width:28rem;margin:0 auto .5rem">État 1 — Initial (champ vide, critères neutres)</p>
+  <div class="card card-modal">
+    <h2>Créer mon compte</h2>
+    <p class="subtitle">Inscrivez-vous en un clic ou avec votre email</p>
+    <label for="s1">Mot de passe</label>
+    <div class="input-wrap">
+      <input id="s1" class="pwd" type="password" placeholder="••••••••" value="" readonly />
+      <button class="eye" type="button" aria-label="Afficher">👁</button>
+    </div>
+    <ul class="req-list" aria-live="polite">
+      <li class="pending"><span class="icon"></span>Au moins 8 caractères</li>
+      <li class="pending"><span class="icon"></span>Une lettre minuscule</li>
+      <li class="pending"><span class="icon"></span>Une lettre majuscule</li>
+      <li class="pending"><span class="icon"></span>Un chiffre</li>
+      <li class="pending"><span class="icon"></span>Un caractère spécial</li>
+    </ul>
+    <button class="btn btn-disabled" disabled>S'inscrire</button>
+    <p class="context-note">Bouton désactivé — rôle + CGU + critères mot de passe requis</p>
+  </div>
+  <div class="transition">
+    <strong>Transition :</strong> l'utilisateur tape dans le champ → État 2 (saisie partielle) ou État 3 (tous critères OK).
+  </div>
+
+  <p class="state-tag" style="max-width:28rem;margin:2rem auto .5rem">État 2 — Saisie partielle (ex. « password »)</p>
+  <div class="card card-modal">
+    <label>Mot de passe</label>
+    <div class="input-wrap">
+      <input class="pwd" type="password" value="password" readonly />
+      <button class="eye" type="button">👁</button>
+    </div>
+    <ul class="req-list">
+      <li class="ok"><span class="icon"></span>Au moins 8 caractères</li>
+      <li class="ok"><span class="icon"></span>Une lettre minuscule</li>
+      <li class="fail"><span class="icon"></span>Une lettre majuscule</li>
+      <li class="fail"><span class="icon"></span>Un chiffre</li>
+      <li class="fail"><span class="icon"></span>Un caractère spécial</li>
+    </ul>
+    <button class="btn btn-disabled" disabled>S'inscrire</button>
+  </div>
+  <div class="transition">
+    <strong>Transition :</strong> saisie complète valide (ex. « MonMot2! ») → État 3 ; toggle œil → texte visible, checklist inchangée.
+  </div>
+
+  <p class="state-tag" style="max-width:28rem;margin:2rem auto .5rem">État 3 — Tous critères validés (ex. « MonMot2! »)</p>
+  <div class="card card-modal">
+    <label>Mot de passe</label>
+    <div class="input-wrap">
+      <input class="pwd" type="password" value="MonMot2!" readonly />
+      <button class="eye" type="button">👁</button>
+    </div>
+    <ul class="req-list">
+      <li class="ok"><span class="icon"></span>Au moins 8 caractères</li>
+      <li class="ok"><span class="icon"></span>Une lettre minuscule</li>
+      <li class="ok"><span class="icon"></span>Une lettre majuscule</li>
+      <li class="ok"><span class="icon"></span>Un chiffre</li>
+      <li class="ok"><span class="icon"></span>Un caractère spécial</li>
+    </ul>
+    <button class="btn btn-primary">S'inscrire</button>
+    <p class="context-note">Bouton actif seulement si rôle + CGU aussi OK</p>
+  </div>
+  <div class="transition">
+    <strong>Transition :</strong> clic « S'inscrire » (critères + rôle + CGU OK) → soumission serveur ; si Supabase rejette → État 4 (rare, message aligné checklist).
+  </div>
+
+  <p class="state-tag" style="max-width:28rem;margin:2rem auto .5rem">État 4 — Erreur serveur (alignée sur les critères)</p>
+  <div class="card card-modal">
+    <label>Mot de passe</label>
+    <div class="input-wrap">
+      <input class="pwd error" type="password" value="abcdefgh" readonly />
+      <button class="eye" type="button">👁</button>
+    </div>
+    <ul class="req-list">
+      <li class="ok"><span class="icon"></span>Au moins 8 caractères</li>
+      <li class="ok"><span class="icon"></span>Une lettre minuscule</li>
+      <li class="fail"><span class="icon"></span>Une lettre majuscule</li>
+      <li class="fail"><span class="icon"></span>Un chiffre</li>
+      <li class="fail"><span class="icon"></span>Un caractère spécial</li>
+    </ul>
+    <p class="err" role="alert">Le mot de passe ne respecte pas tous les critères.</p>
+    <button class="btn btn-disabled" disabled>S'inscrire</button>
+  </div>
+
+  <div class="divider" style="max-width:28rem;margin:2rem auto"></div>
+
+  <p class="state-tag" style="max-width:28rem;margin:0 auto .5rem">Modale LoginForm — même bloc mot de passe</p>
+  <div class="card card-modal" style="border-radius:1.125rem">
+    <h2 style="font-size:1.125rem">Créer un compte</h2>
+    <p class="subtitle">Choisissez votre profil puis renseignez vos informations</p>
+    <label>Mot de passe</label>
+    <div class="input-wrap">
+      <input class="pwd" type="password" placeholder="••••••••" readonly />
+      <button class="eye" type="button">👁</button>
+    </div>
+    <ul class="req-list">
+      <li class="pending"><span class="icon"></span>Au moins 8 caractères</li>
+      <li class="pending"><span class="icon"></span>Une lettre minuscule</li>
+      <li class="pending"><span class="icon"></span>Une lettre majuscule</li>
+      <li class="pending"><span class="icon"></span>Un chiffre</li>
+      <li class="pending"><span class="icon"></span>Un caractère spécial</li>
+    </ul>
+    <p class="context-note">Identique page login — composant partagé <code>PasswordRequirements</code></p>
+  </div>
+
+  <div class="doc" style="margin-top:2rem">
+    <p><strong>Accessibilité :</strong> <code>aria-describedby</code> sur l'input pointe vers l'id de la liste ; <code>aria-live="polite"</code> sur la checklist.</p>
+    <p><strong>i18n (namespace <code>auth.passwordRequirements</code>) :</strong> minLength, lowercase, uppercase, digit, specialChar ; label champ → <code>auth.password</code> (sans « min. 6 »).</p>
+    <p><strong>Hors scope :</strong> connexion, liaison Google, finalisation OAuth.</p>
+  </div>
+</body>
+</html>

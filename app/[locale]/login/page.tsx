@@ -7,6 +7,8 @@ import { login, signup, type LoginState, type SignupState } from './actions'
 import { Button } from '@/components/Button'
 import { Input } from '@/components/Input'
 import { PasswordInput } from '@/components/PasswordInput'
+import { NewPasswordField } from '@/components/NewPasswordField'
+import { isPasswordValid } from '@/lib/passwordValidation'
 import { SocialAuthButtons, AuthDivider } from '@/components/SocialAuthButtons'
 import { AuthRolePicker, type SignupRole } from '@/components/AuthRolePicker'
 import { AuthLegalConsent } from '@/components/AuthLegalConsent'
@@ -36,6 +38,7 @@ function LoginPageContent() {
   const [termsAccepted, setTermsAccepted] = useState(false)
   const [termsError, setTermsError] = useState<string | null>(null)
   const [roleError, setRoleError] = useState<string | null>(null)
+  const [signupPassword, setSignupPassword] = useState('')
 
   const serverTermsError =
     signupState?.error === tErrors('termsRequired') ? signupState.error : null
@@ -43,6 +46,10 @@ function LoginPageContent() {
     signupState?.error === tErrors('roleRequired') ? signupState.error : null
   const displayedTermsError = termsError ?? serverTermsError
   const displayedRoleError = roleError ?? serverRoleError
+  const serverPasswordError =
+    signupState?.error === tErrors('passwordRequirements') ? signupState.error : null
+  const canSignup =
+    Boolean(signupRole) && termsAccepted && isPasswordValid(signupPassword)
 
   const showSignupSuccess =
     Boolean(signupState?.success && signupState?.successType)
@@ -169,6 +176,9 @@ function LoginPageContent() {
                     } else {
                       setTermsError(null)
                     }
+                    if (!isPasswordValid(signupPassword)) {
+                      hasError = true
+                    }
                     if (hasError) e.preventDefault()
                   }}
                 >
@@ -197,15 +207,16 @@ function LoginPageContent() {
                     className="rounded-xl"
                     defaultValue={signupState?.existingEmail ?? ''}
                   />
-                  <PasswordInput
+                  <NewPasswordField
                     id="signup-password"
-                    label={t('passwordMin')}
+                    label={t('password')}
                     name="password"
-                    autoComplete="new-password"
-                    required
-                    minLength={6}
+                    value={signupPassword}
+                    onChange={setSignupPassword}
                     placeholder={t('passwordPlaceholder')}
                     className="rounded-xl"
+                    error={serverPasswordError ?? undefined}
+                    highlightFailures={Boolean(serverPasswordError)}
                   />
                   <input
                     type="hidden"
@@ -222,12 +233,15 @@ function LoginPageContent() {
                     error={displayedTermsError}
                     inputId="signup-termsAccepted"
                   />
-                  {signupState?.error && !serverTermsError && !serverRoleError && (
+                  {signupState?.error &&
+                    !serverTermsError &&
+                    !serverRoleError &&
+                    !serverPasswordError && (
                     <p className={FORM_ERROR_TEXT_CLASSES} role="alert">
                       {signupState.error}
                     </p>
                   )}
-                  <Button type="submit" variant="primary" fullWidth>
+                  <Button type="submit" variant="primary" fullWidth disabled={!canSignup}>
                     {t('signupButton')}
                   </Button>
                 </form>

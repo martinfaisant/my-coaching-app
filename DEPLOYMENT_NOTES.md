@@ -1,7 +1,24 @@
 # Notes de déploiement
 
 **Production :** https://mysportally.com (voir `docs/DOMAIN_MYSPORTALLY_SETUP.md` pour la configuration domaine, Vercel, Resend, Supabase).  
-**Dernière mise à jour doc :** 10 juin 2026 (connexion Google OAuth ; précédent : feature flag Strava devices athlète).
+**Dernière mise à jour doc :** 12 juin 2026 (politique mot de passe Supabase ; précédent : connexion Google OAuth).
+
+---
+
+## Politique mot de passe (Supabase Auth)
+
+**Aucune migration BDD** — réglage dashboard Supabase + validation app (`lib/passwordValidation.ts`).
+
+### Supabase (prod et dev)
+
+**Authentication → Settings** (ou **Auth → Policies / Password**) — exiger :
+
+- Longueur minimale : **8**
+- **Lowercase**, **Uppercase**, **Digits**, **Symbols**
+
+L’app affiche une checklist des 5 critères à l’**inscription email** et à la **réinitialisation** ; le bouton de validation reste désactivé tant que tous les critères ne sont pas remplis. Référence produit : **`Project_context.md`** §4.1 ; composants : **`PasswordRequirements`**, **`NewPasswordField`** (`docs/DESIGN_SYSTEM.md`).
+
+**Vérification post-déploiement :** sur `/login` (bloc inscription), saisir un mot de passe incomplet → critères gris/rouge, bouton « S'inscrire » désactivé ; mot de passe valide (ex. `MonMot2!`) + rôle + CGU → submit possible.
 
 ---
 

@@ -9,7 +9,43 @@ export const AUTH_ERROR_CODES = {
   USER_EXISTS: 'userExists',
   INVALID_CREDENTIALS: 'invalidCredentials',
   EMAIL_NOT_CONFIRMED: 'emailNotConfirmed',
+  PASSWORD_REQUIREMENTS: 'passwordRequirements',
 } as const
+
+/**
+ * Détecte une erreur Supabase liée à la politique de mot de passe (longueur, complexité).
+ */
+export function isSupabasePasswordPolicyError(error: AuthError): boolean {
+  const msg = error.message.toLowerCase()
+  const code = (error.code ?? '').toLowerCase()
+
+  if (code.includes('weak_password') || code.includes('password')) {
+    if (
+      msg.includes('at least') ||
+      msg.includes('weak') ||
+      msg.includes('uppercase') ||
+      msg.includes('lowercase') ||
+      msg.includes('digit') ||
+      msg.includes('number') ||
+      msg.includes('symbol') ||
+      msg.includes('special')
+    ) {
+      return true
+    }
+  }
+
+  return (
+    msg.includes('password should') ||
+    msg.includes('password must') ||
+    msg.includes('weak password') ||
+    (msg.includes('password') &&
+      (msg.includes('at least') ||
+        msg.includes('uppercase') ||
+        msg.includes('lowercase') ||
+        msg.includes('digit') ||
+        msg.includes('symbol')))
+  )
+}
 
 /**
  * Gère les erreurs de rate limiting Supabase Auth.

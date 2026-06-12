@@ -2,6 +2,11 @@
 
 import { createClient } from '@/utils/supabase/server'
 import { getTranslations, getLocale } from 'next-intl/server'
+import {
+  isSupabasePasswordPolicyError,
+  AUTH_ERROR_CODES,
+} from '@/lib/authErrors'
+import { isPasswordValid } from '@/lib/passwordValidation'
 
 export type UpdatePasswordState = {
   error?: string
@@ -30,8 +35,8 @@ export async function updatePassword(
     return { error: t('passwordMismatch') }
   }
 
-  if (password.length < 6) {
-    return { error: t('passwordMinLength') }
+  if (!isPasswordValid(password)) {
+    return { error: t('passwordRequirements') }
   }
 
   const supabase = await createClient()
@@ -48,6 +53,9 @@ export async function updatePassword(
   })
 
   if (error) {
+    if (isSupabasePasswordPolicyError(error)) {
+      return { error: t(AUTH_ERROR_CODES.PASSWORD_REQUIREMENTS) }
+    }
     return { error: tErrors('supabaseGeneric') }
   }
 

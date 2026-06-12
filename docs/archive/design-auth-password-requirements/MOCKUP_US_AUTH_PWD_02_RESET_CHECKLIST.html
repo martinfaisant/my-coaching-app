@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>US-AUTH-PWD-02 — Réinitialisation : checklist mot de passe interactive</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, sans-serif; background: linear-gradient(135deg, #fafaf9, #e7e5e4); padding: 1.5rem; margin: 0; color: #1c1917; }
+    .doc { max-width: 42rem; margin: 0 auto 2rem; font-size: 0.8125rem; color: #57534e; line-height: 1.55; }
+    .doc h1 { font-size: 1.125rem; color: #1c1917; margin: 0 0 0.5rem; }
+    .state-tag { font-size: 0.6875rem; font-weight: 700; color: #627e59; text-transform: uppercase; letter-spacing: .05em; margin: 2rem auto 0.5rem; max-width: 28rem; }
+    .card { background: white; border-radius: 1rem; padding: 2rem 2.5rem; box-shadow: 0 8px 32px rgba(0,0,0,.08); border: 2px solid #627e59; max-width: 28rem; margin: 0 auto 1rem; }
+    h2 { font-size: 1.5rem; font-weight: 600; text-align: center; margin: 0 0 0.25rem; }
+    .subtitle { font-size: 0.875rem; color: #a8a29e; text-align: center; margin: 0 0 1.5rem; }
+    label { display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem; color: #44403c; }
+    .field { margin-bottom: 1.25rem; }
+    .input-wrap { position: relative; }
+    input.pwd {
+      width: 100%; padding: 0.625rem 2.75rem 0.625rem 1rem; border: 1px solid #d6d3d1;
+      border-radius: 0.5rem; font-size: 0.875rem; height: 2.75rem;
+    }
+    input.pwd.error { border-color: #9e3b31; }
+    .eye { position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: #78716c; padding: 0.375rem; }
+    .req-list { list-style: none; margin: 0.5rem 0 0; padding: 0; }
+    .req-list li {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-size: 0.75rem; line-height: 1.35; padding: 0.125rem 0; color: #78716c;
+    }
+    .req-list li .icon { width: 1rem; flex-shrink: 0; text-align: center; font-size: 0.6875rem; }
+    .req-list li.pending .icon::before { content: "○"; color: #a8a29e; }
+    .req-list li.ok { color: #627e59; }
+    .req-list li.ok .icon::before { content: "✓"; color: #627e59; font-weight: 700; }
+    .req-list li.fail .icon::before { content: "○"; color: #9e3b31; }
+    .req-list li.fail { color: #9e3b31; }
+    .match-hint { font-size: 0.75rem; margin-top: 0.375rem; color: #78716c; }
+    .match-hint.ok { color: #627e59; }
+    .match-hint.fail { color: #9e3b31; }
+    .btn { width: 100%; padding: 0.75rem; border: none; border-radius: 0.75rem; font-weight: 600; font-size: 0.875rem; margin-top: 0.5rem; }
+    .btn-primary { background: #627e59; color: white; }
+    .btn-disabled { background: #d6d3d1; color: #78716c; cursor: not-allowed; }
+    .err { font-size: 0.8125rem; color: #9e3b31; margin: 0 0 0.75rem; }
+    .transition {
+      max-width: 28rem; margin: 0 auto 1rem; padding: 0.75rem; background: #fafaf9;
+      border-radius: 0.5rem; border: 1px dashed #d6d3d1; font-size: 0.75rem; color: #57534e;
+    }
+    .transition strong { color: #44403c; }
+  </style>
+</head>
+<body>
+  <div class="doc">
+    <h1>US-AUTH-PWD-02 — Réinitialisation mot de passe : checklist interactive</h1>
+    <p><strong>Périmètre :</strong> page <code>/[locale]/reset-password</code> — formulaire après lien email valide.</p>
+    <p><strong>Mêmes règles</strong> que l'inscription (8 car., minuscule, majuscule, chiffre, caractère spécial).</p>
+    <p><strong>Changements vs existant :</strong> remplacer <code>Input</code> par <code>PasswordInput</code> sur le 1er champ ; checklist sous « Nouveau mot de passe » uniquement ; confirmation séparée.</p>
+    <p><strong>Submit bloqué</strong> tant que : (1) les 5 critères ne sont pas verts ET (2) les deux mots de passe ne correspondent pas.</p>
+  </div>
+
+  <p class="state-tag">État 1 — Initial (lien valide, champs vides)</p>
+  <div class="card">
+    <h2>Nouveau mot de passe</h2>
+    <p class="subtitle">Définissez votre nouveau mot de passe</p>
+    <div class="field">
+      <label>Nouveau mot de passe</label>
+      <div class="input-wrap">
+        <input class="pwd" type="password" placeholder="••••••••" value="" readonly />
+        <button class="eye" type="button" aria-label="Afficher">👁</button>
+      </div>
+      <ul class="req-list" aria-live="polite">
+        <li class="pending"><span class="icon"></span>Au moins 8 caractères</li>
+        <li class="pending"><span class="icon"></span>Une lettre minuscule</li>
+        <li class="pending"><span class="icon"></span>Une lettre majuscule</li>
+        <li class="pending"><span class="icon"></span>Un chiffre</li>
+        <li class="pending"><span class="icon"></span>Un caractère spécial</li>
+      </ul>
+    </div>
+    <div class="field">
+      <label>Confirmer le mot de passe</label>
+      <div class="input-wrap">
+        <input class="pwd" type="password" placeholder="••••••••" value="" readonly />
+        <button class="eye" type="button">👁</button>
+      </div>
+    </div>
+    <button class="btn btn-disabled" disabled>Définir le nouveau mot de passe</button>
+  </div>
+  <div class="transition">
+    <strong>Transition :</strong> saisie nouveau mot de passe → État 2 ; saisie confirmation → État 3 ou 4.
+  </div>
+
+  <p class="state-tag">État 2 — Nouveau mot de passe valide, confirmation vide</p>
+  <div class="card">
+    <div class="field">
+      <label>Nouveau mot de passe</label>
+      <div class="input-wrap">
+        <input class="pwd" type="password" value="MonMot2!" readonly />
+        <button class="eye" type="button">👁</button>
+      </div>
+      <ul class="req-list">
+        <li class="ok"><span class="icon"></span>Au moins 8 caractères</li>
+        <li class="ok"><span class="icon"></span>Une lettre minuscule</li>
+        <li class="ok"><span class="icon"></span>Une lettre majuscule</li>
+        <li class="ok"><span class="icon"></span>Un chiffre</li>
+        <li class="ok"><span class="icon"></span>Un caractère spécial</li>
+      </ul>
+    </div>
+    <div class="field">
+      <label>Confirmer le mot de passe</label>
+      <div class="input-wrap">
+        <input class="pwd" type="password" placeholder="••••••••" readonly />
+        <button class="eye" type="button">👁</button>
+      </div>
+    </div>
+    <button class="btn btn-disabled" disabled>Définir le nouveau mot de passe</button>
+  </div>
+  <div class="transition">
+    <strong>Transition :</strong> confirmation identique → État 3 ; confirmation différente → État 4.
+  </div>
+
+  <p class="state-tag">État 3 — Nominal (critères OK + confirmation identique)</p>
+  <div class="card">
+    <div class="field">
+      <label>Nouveau mot de passe</label>
+      <div class="input-wrap">
+        <input class="pwd" type="password" value="MonMot2!" readonly />
+        <button class="eye" type="button">👁</button>
+      </div>
+      <ul class="req-list">
+        <li class="ok"><span class="icon"></span>Au moins 8 caractères</li>
+        <li class="ok"><span class="icon"></span>Une lettre minuscule</li>
+        <li class="ok"><span class="icon"></span>Une lettre majuscule</li>
+        <li class="ok"><span class="icon"></span>Un chiffre</li>
+        <li class="ok"><span class="icon"></span>Un caractère spécial</li>
+      </ul>
+    </div>
+    <div class="field">
+      <label>Confirmer le mot de passe</label>
+      <div class="input-wrap">
+        <input class="pwd" type="password" value="MonMot2!" readonly />
+        <button class="eye" type="button">👁</button>
+      </div>
+      <p class="match-hint ok">✓ Les mots de passe correspondent</p>
+    </div>
+    <button class="btn btn-primary">Définir le nouveau mot de passe</button>
+  </div>
+  <div class="transition">
+    <strong>Transition :</strong> clic bouton → action serveur ; succès → message vert + redirection dashboard (existant).
+  </div>
+
+  <p class="state-tag">État 4 — Confirmation différente (critères OK)</p>
+  <div class="card">
+    <div class="field">
+      <label>Nouveau mot de passe</label>
+      <div class="input-wrap">
+        <input class="pwd" type="password" value="MonMot2!" readonly />
+        <button class="eye" type="button">👁</button>
+      </div>
+      <ul class="req-list">
+        <li class="ok"><span class="icon"></span>Au moins 8 caractères</li>
+        <li class="ok"><span class="icon"></span>Une lettre minuscule</li>
+        <li class="ok"><span class="icon"></span>Une lettre majuscule</li>
+        <li class="ok"><span class="icon"></span>Un chiffre</li>
+        <li class="ok"><span class="icon"></span>Un caractère spécial</li>
+      </ul>
+    </div>
+    <div class="field">
+      <label>Confirmer le mot de passe</label>
+      <div class="input-wrap">
+        <input class="pwd error" type="password" value="MonMot2?" readonly />
+        <button class="eye" type="button">👁</button>
+      </div>
+      <p class="match-hint fail">Les deux mots de passe doivent être identiques</p>
+    </div>
+    <button class="btn btn-disabled" disabled>Définir le nouveau mot de passe</button>
+  </div>
+  <div class="transition">
+    <strong>Note :</strong> le message de non-correspondance s'affiche après saisie dans le 2e champ (pas au 1er caractère). Le bouton reste désactivé — pas de submit client.
+  </div>
+
+  <p class="state-tag">État 5 — Erreur serveur Supabase (fallback)</p>
+  <div class="card">
+    <div class="field">
+      <label>Nouveau mot de passe</label>
+      <div class="input-wrap">
+        <input class="pwd error" type="password" value="Abcdef1!" readonly />
+        <button class="eye" type="button">👁</button>
+      </div>
+      <ul class="req-list">
+        <li class="ok"><span class="icon"></span>Au moins 8 caractères</li>
+        <li class="ok"><span class="icon"></span>Une lettre minuscule</li>
+        <li class="ok"><span class="icon"></span>Une lettre majuscule</li>
+        <li class="ok"><span class="icon"></span>Un chiffre</li>
+        <li class="ok"><span class="icon"></span>Un caractère spécial</li>
+      </ul>
+    </div>
+    <div class="field">
+      <label>Confirmer le mot de passe</label>
+      <div class="input-wrap">
+        <input class="pwd" type="password" value="Abcdef1!" readonly />
+        <button class="eye" type="button">👁</button>
+      </div>
+    </div>
+    <p class="err" role="alert">Le mot de passe ne respecte pas tous les critères.</p>
+    <button class="btn btn-disabled" disabled>Définir le nouveau mot de passe</button>
+  </div>
+
+  <div class="doc" style="margin-top:2rem">
+    <p><strong>États hors formulaire (inchangés) :</strong> lien invalide → message + redirection login ; vérification lien → spinner texte « Vérification du lien… ».</p>
+    <p><strong>Composants :</strong> <code>PasswordInput</code> × 2, <code>PasswordRequirements</code> sous le 1er champ, <code>Button</code> avec <code>disabled</code> + état loading existant.</p>
+  </div>
+</body>
+</html>

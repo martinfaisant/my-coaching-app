@@ -4,7 +4,14 @@ import { createClient, createAdminClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { headers } from 'next/headers'
-import { handleSignupError, handleResetPasswordError, handleLoginError } from '@/lib/authErrors'
+import {
+  handleSignupError,
+  handleResetPasswordError,
+  handleLoginError,
+  isSupabasePasswordPolicyError,
+  AUTH_ERROR_CODES,
+} from '@/lib/authErrors'
+import { isPasswordValid } from '@/lib/passwordValidation'
 import { getExistingAuthUserConfirmationStatus } from '@/lib/authHelpers'
 import { getTranslations, getLocale } from 'next-intl/server'
 
@@ -86,8 +93,8 @@ export async function signup(
     return { error: t('termsRequired') }
   }
 
-  if (password.length < 6) {
-    return { error: t('passwordMinLength') }
+  if (!isPasswordValid(password)) {
+    return { error: t('passwordRequirements') }
   }
 
   if (roleRaw !== 'athlete' && roleRaw !== 'coach') {
@@ -112,6 +119,9 @@ export async function signup(
   })
 
   if (error) {
+    if (isSupabasePasswordPolicyError(error)) {
+      return { error: t(AUTH_ERROR_CODES.PASSWORD_REQUIREMENTS) }
+    }
     const handled = handleSignupError(error, email)
     if (handled.errorCode) return { error: t(handled.errorCode), userExists: handled.userExists, existingEmail: handled.existingEmail }
     return { error: t('signupGenericError') }
