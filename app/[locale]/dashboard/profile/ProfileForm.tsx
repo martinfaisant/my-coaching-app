@@ -155,6 +155,15 @@ export function ProfileForm({
   const [presentationFrLength, setPresentationFrLength] = useState((presentationFr || '').length)
   const [presentationEnLength, setPresentationEnLength] = useState((presentationEn || '').length)
 
+  /** Sports coachés sélectionnés (état local pour synchroniser le style visuel des tuiles). */
+  const [selectedCoachedSports, setSelectedCoachedSports] = useState<string[]>(() => [...coachedSports].sort())
+  useEffect(() => {
+    setSelectedCoachedSports((prev) => {
+      const next = [...coachedSports].sort()
+      return JSON.stringify(prev) === JSON.stringify(next) ? prev : next
+    })
+  }, [coachedSports])
+
   /** Sports pratiqués sélectionnés (état local pour mise à jour dynamique des tuiles volume). */
   const [selectedPracticedSports, setSelectedPracticedSports] = useState<string[]>(() => [...practicedSports].sort())
   useEffect(() => {
@@ -757,7 +766,14 @@ export function ProfileForm({
                       key={opt.value}
                       value={opt.value}
                       name="coached_sports"
-                      defaultChecked={coachedSports.includes(opt.value)}
+                      checked={selectedCoachedSports.includes(opt.value)}
+                      onChange={(checked) => {
+                        setSelectedCoachedSports((prev) =>
+                          checked
+                            ? [...prev, opt.value].sort()
+                            : prev.filter((s) => s !== opt.value)
+                        )
+                      }}
                     />
                   ))}
                 </div>              </>

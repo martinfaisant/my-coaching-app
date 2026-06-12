@@ -13,6 +13,8 @@ import {
 import { Button } from '@/components/Button'
 import { Input } from '@/components/Input'
 import { PasswordInput } from '@/components/PasswordInput'
+import { NewPasswordField } from '@/components/NewPasswordField'
+import { isPasswordValid } from '@/lib/passwordValidation'
 import { FORM_ERROR_TEXT_CLASSES } from '@/lib/formStyles'
 import { SocialAuthButtons, AuthDivider } from '@/components/SocialAuthButtons'
 import { AuthRolePicker, type SignupRole } from '@/components/AuthRolePicker'
@@ -39,12 +41,17 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
   const tErrors = useTranslations('auth.errors')
   const [termsAccepted, setTermsAccepted] = useState(false)
   const [termsError, setTermsError] = useState<string | null>(null)
+  const [signupPassword, setSignupPassword] = useState('')
   const serverTermsError =
     signupState?.error === tErrors('termsRequired') ? signupState.error : null
   const serverRoleError =
     signupState?.error === tErrors('roleRequired') ? signupState.error : null
   const displayedTermsError = termsError ?? serverTermsError
   const displayedRoleError = roleError ?? serverRoleError
+  const serverPasswordError =
+    signupState?.error === tErrors('passwordRequirements') ? signupState.error : null
+  const canSignup =
+    Boolean(signupRole) && termsAccepted && isPasswordValid(signupPassword)
 
   // Pré-remplir l'email quand on bascule vers le mode login
   useEffect(() => {
@@ -275,6 +282,9 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
           } else {
             setTermsError(null)
           }
+          if (!isPasswordValid(signupPassword)) {
+            hasError = true
+          }
           if (hasError) e.preventDefault()
         }}
       >
@@ -298,14 +308,15 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
           placeholder={t('emailPlaceholder')}
           defaultValue={signupState?.existingEmail ?? ''}
         />
-        <PasswordInput
+        <NewPasswordField
           id="modal-signup-password"
-          label={t('passwordMin')}
+          label={t('password')}
           name="password"
-          autoComplete="new-password"
-          required
-          minLength={6}
+          value={signupPassword}
+          onChange={setSignupPassword}
           placeholder={t('passwordPlaceholder')}
+          error={serverPasswordError ?? undefined}
+          highlightFailures={Boolean(serverPasswordError)}
         />
 
         <input type="hidden" name="termsAccepted" value={termsAccepted ? 'true' : 'false'} />
@@ -321,7 +332,10 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
           inputId="modal-termsAccepted"
         />
 
-        {signupState?.error && !serverTermsError && !serverRoleError && (
+        {signupState?.error &&
+          !serverTermsError &&
+          !serverRoleError &&
+          !serverPasswordError && (
           <p className={FORM_ERROR_TEXT_CLASSES} role="alert">
             {signupState.error}
             {signupState.userExists && signupState.existingEmail && onModeChange && (
@@ -342,7 +356,7 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
             )}
           </p>
         )}
-        <Button type="submit" fullWidth>
+        <Button type="submit" fullWidth disabled={!canSignup}>
           {t('signup')}
         </Button>
       </form>

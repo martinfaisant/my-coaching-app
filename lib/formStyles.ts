@@ -29,6 +29,9 @@ export const FORM_LABEL_CLASSES = 'block text-sm font-medium text-stone-700 mb-2
 /** Classes pour les messages d'erreur */
 export const FORM_ERROR_MESSAGE_CLASSES = 'mt-1.5 text-sm text-palette-danger'
 
+/** Classes pour un texte d'aide sous un champ (hint secondaire) */
+export const FORM_HINT_CLASSES = 'mt-1.5 text-xs text-stone-500'
+
 /** Classes pour un texte d'erreur standard (inline, role=alert). */
 export const FORM_ERROR_TEXT_CLASSES = 'text-sm text-palette-danger-dark'
 
