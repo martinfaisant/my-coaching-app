@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>US-PRICING-PUB-05 — Coach sans abonnement</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            stone: { 200: '#e7e5e4', 600: '#57534e', 900: '#1c1917' },
+          },
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-stone-50 min-h-screen">
+  <p class="text-xs text-stone-500 p-4 bg-white border-b">US-PRICING-PUB-05 — Coach connecté <strong>sans</strong> abonnement géré (pas de ligne active/trialing). Cas limite non arbitré explicitement par le PO ; proposition design pour cohérence.</p>
+
+  <header class="h-14 border-b bg-white flex items-center px-4 text-sm text-stone-600">[ DashboardTopBar ]</header>
+
+  <main class="max-w-4xl mx-auto px-4 py-10">
+    <h1 class="text-3xl font-bold text-center">Tarifs coach MySportAlly</h1>
+
+    <div class="rounded-2xl border border-palette-forest-light/40 bg-palette-forest-light/15 p-5 mt-8 text-sm text-stone-700">
+      Gratuit tant que vous ne coacherez pas d'athlète. Abonnement requis à l'acceptation d'une demande.
+    </div>
+
+    <h2 class="text-xl font-bold text-center mt-12 mb-6">Nos formules</h2>
+    <ul class="grid md:grid-cols-2 gap-6">
+      <li class="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm flex flex-col">
+        <h3 class="font-bold text-lg">Mensuel</h3>
+        <p class="text-3xl font-black mt-4">29&nbsp;€<span class="text-sm text-stone-500"> / mois</span></p>
+        <button type="button" class="mt-8 w-full rounded-lg bg-palette-forest-dark text-white py-3 text-sm font-medium">Souscrire</button>
+      </li>
+      <li class="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm flex flex-col">
+        <h3 class="font-bold text-lg">Annuel</h3>
+        <p class="text-3xl font-black mt-4">279&nbsp;€<span class="text-sm text-stone-500"> / an</span></p>
+        <button type="button" class="mt-8 w-full rounded-lg bg-palette-forest-dark text-white py-3 text-sm font-medium">Souscrire</button>
+      </li>
+    </ul>
+
+    <p class="text-xs text-stone-500 text-center mt-6">CTA carte → <code>/dashboard/coach-platform-subscription</code> (checkout depuis page abo, pas depuis /pricing).</p>
+
+    <!-- Pas de bandeau CTA final « Créer un compte » -->
+    <div class="mt-12 rounded-xl border border-dashed border-stone-300 p-6 text-center text-sm text-stone-400">
+      [ Bandeau CTA final « Créer un compte » masqué pour coach connecté ]
+    </div>
+  </main>
+
+  <section class="max-w-3xl mx-auto p-6 border-t">
+    <h2 class="text-sm font-bold uppercase text-stone-700">Point ouvert PO</h2>
+    <p class="text-xs text-stone-500 mt-2">Valider en implémentation : athlète connecté sur /pricing → contenu informatif seul, sans CTA coach.</p>
+  </section>
+</body>
+</html>

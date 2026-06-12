@@ -944,7 +944,61 @@
     "termsTitle": "Terms of Use",
     "privacyTitle": "Privacy Policy",
     "contactTitle": "Contact",
-    "contactDescription": "Contact the My Sport Ally team: support request form."
+    "contactDescription": "Contact the My Sport Ally team: support request form.",
+    "pricingTitle": "Coach pricing",
+    "pricingDescription": "Explore MySportAlly subscriptions for coaches. A subscription is only required once you start coaching an athlete."
+  },
+  "coachPricingPublic": {
+    "navHome": "Home",
+    "navPricing": "Pricing",
+    "publicNavAriaLabel": "Main navigation",
+    "heroTitle": "MySportAlly coach pricing",
+    "heroSubtitle": "A simple plan to manage your athletes on the platform.",
+    "freeUntilCoachingTitle": "Free until you coach an athlete",
+    "freeUntilCoachingDescription": "Create your coach account, complete your profile, and prepare your offers with no subscription. A platform subscription is only required when you accept your first athlete.",
+    "timelineTitle": "When to subscribe",
+    "timeline": {
+      "step1": {
+        "title": "Coach account",
+        "description": "Free signup and profile setup."
+      },
+      "step2": {
+        "title": "Prepare your business",
+        "description": "Publish offers and receive requests."
+      },
+      "step3": {
+        "title": "Accept an athlete",
+        "description": "Platform subscription required to coach."
+      }
+    },
+    "offersTitle": "Our plans",
+    "createAccountCta": "Create an account",
+    "subscribeCta": "Subscribe",
+    "catalogUnavailable": "Pricing is temporarily unavailable.",
+    "catalogContactLink": "Contact us",
+    "includedTitle": "Included in every plan",
+    "included": {
+      "unlimitedAthletes": "Unlimited athlete management",
+      "calendarPlanning": "Calendar and workout planning",
+      "messaging": "Messaging with your athletes",
+      "goals": "Goal tracking"
+    },
+    "faqTitle": "Frequently asked questions",
+    "faq": {
+      "payOnSignup": {
+        "question": "Do I have to pay when I sign up?",
+        "answer": "No. A subscription is only required when you accept an athlete."
+      },
+      "vsCoachOffers": {
+        "question": "Is this the same as my coaching offers to athletes?",
+        "answer": "No. These prices are for access to the MySportAlly platform. Your coaching offers remain separate."
+      }
+    },
+    "finalCtaTitle": "Ready to coach on MySportAlly?",
+    "finalCtaSubtitle": "Create your coach account for free. Subscribe when the time is right.",
+    "manageBannerTitle": "You already have a MySportAlly subscription",
+    "manageBannerDescription": "Manage your plan, billing, and invoices from your subscription page.",
+    "manageSubscriptionCta": "Manage my subscription"
   },
   "contact": {
     "title": "Contact us",

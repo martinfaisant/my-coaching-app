@@ -1069,7 +1069,61 @@
     "termsTitle": "Conditions d’utilisation",
     "privacyTitle": "Politique de confidentialité",
     "contactTitle": "Contact",
-    "contactDescription": "Contactez l’équipe My Sport Ally : formulaire de demande et support."
+    "contactDescription": "Contactez l’équipe My Sport Ally : formulaire de demande et support.",
+    "pricingTitle": "Tarifs coach",
+    "pricingDescription": "Découvrez les abonnements MySportAlly pour les coachs. L’abonnement n’est requis qu’à partir du moment où vous commencez à coacher un athlète."
+  },
+  "coachPricingPublic": {
+    "navHome": "Accueil",
+    "navPricing": "Tarifs",
+    "publicNavAriaLabel": "Navigation principale",
+    "heroTitle": "Tarifs coach MySportAlly",
+    "heroSubtitle": "Une formule simple pour gérer vos athlètes sur la plateforme.",
+    "freeUntilCoachingTitle": "Gratuit tant que vous ne coacherez pas d’athlète",
+    "freeUntilCoachingDescription": "Créez votre compte coach, complétez votre profil et préparez vos offres sans abonnement. L’abonnement plateforme n’est requis qu’au moment d’accepter votre premier athlète.",
+    "timelineTitle": "Quand souscrire ?",
+    "timeline": {
+      "step1": {
+        "title": "Compte coach",
+        "description": "Inscription gratuite, configuration du profil."
+      },
+      "step2": {
+        "title": "Préparer votre activité",
+        "description": "Publiez vos offres, recevez des demandes."
+      },
+      "step3": {
+        "title": "Accepter un athlète",
+        "description": "Abonnement plateforme requis pour coacher."
+      }
+    },
+    "offersTitle": "Nos formules",
+    "createAccountCta": "Créer un compte",
+    "subscribeCta": "Souscrire",
+    "catalogUnavailable": "Les tarifs sont temporairement indisponibles.",
+    "catalogContactLink": "Nous contacter",
+    "includedTitle": "Inclus dans toutes les formules",
+    "included": {
+      "unlimitedAthletes": "Gestion illimitée d’athlètes",
+      "calendarPlanning": "Calendrier et planification",
+      "messaging": "Messagerie avec vos athlètes",
+      "goals": "Suivi des objectifs"
+    },
+    "faqTitle": "Questions fréquentes",
+    "faq": {
+      "payOnSignup": {
+        "question": "Dois-je payer dès l’inscription ?",
+        "answer": "Non. L’abonnement est demandé uniquement lorsque vous acceptez un athlète."
+      },
+      "vsCoachOffers": {
+        "question": "Est-ce le même prix que mes offres aux athlètes ?",
+        "answer": "Non. Ces tarifs concernent l’accès à la plateforme MySportAlly. Vos offres de coaching restent libres."
+      }
+    },
+    "finalCtaTitle": "Prêt à coacher sur MySportAlly ?",
+    "finalCtaSubtitle": "Créez votre compte coach gratuitement. L’abonnement viendra au bon moment.",
+    "manageBannerTitle": "Vous avez déjà un abonnement MySportAlly",
+    "manageBannerDescription": "Gérez votre formule, votre facturation et vos factures depuis votre espace abonnement.",
+    "manageSubscriptionCta": "Gérer mon abonnement"
   },
   "contact": {
     "title": "Nous contacter",
