@@ -122,7 +122,7 @@ The same **default path** logic is centralized in **`lib/dashboardEntryPath.ts`*
 
 The dashboard uses a **top bar** (logo My Sport Ally left, nav links center on tablet/desktop, account area right). **Mobile:** page title centered, hamburger right; tap opens a **drawer from the right**. **Athlete (tablet/desktop):** **primary** links centered — if the athlete has no `coach_id`, **Find a coach** is included, then **My calendar**, **Statistics** (`/dashboard/stats`, volume « fait » charts), and **My goals**; **right:** **account menu** (avatar + name + chevron) opens a panel: **connected devices** (only when `NEXT_PUBLIC_ENABLE_ATHLETE_STRAVA_DEVICES=true`, see §4.9), **My coach** (only when `coach_id` is set), subscription history; separator; **My details** (route `/dashboard/profile`); **Log out**. **Athlete (mobile drawer):** same grouping with horizontal separators — primary links, then secondary links, then **My details**, then **Log out** (no separate large profile card). **Coach** nav: Mes athlètes, Mon offre, Souscriptions; **profile** remains a direct top-bar link (avatar + name) to `/dashboard/profile`. **Admin** nav: Gestion des membres, Design System only (no « Mes athlètes »). The pages **« Trouver mon coach »** and **« Mes athlètes »** are separate routes (`/dashboard/find-coach`, `/dashboard/athletes`), each with its own loading skeleton. The dashboard layout and `DashboardPageShell` (padding only, no in-page title nor card container) are used for all pages. **Navigation config** is split in `lib/dashboardNavConfig.ts` (`getAthletePrimaryNavItems`, `getAthleteAccountNavItems` — devices item conditional on `isAthleteStravaDevicesEnabled()` in `lib/featureFlags.ts`, `getAthleteProfileNavItem`, merged list for mobile page titles). **Stats icon** in the top bar / drawer: `components/DashboardNavIcons.tsx` (`/dashboard/stats`).
 
-**Public / marketing / legal header:** On **contact** (`/contact`), **privacy** (`/privacy`), **terms** (`/terms`), and **reset-password** (`/reset-password`), `PublicOrDashboardHeader` (server) renders **`PublicHeader`** when there is **no session** (logo, `LanguageSwitcher`, sign-in / sign-up), and the same **`DashboardTopBar`** as in the app when the user is **logged in** (role-based nav and account menus). On the **landing** (`/` and `/en`), **logged-in** users are **redirected** to the app (see « Marketing home (logged-in) » above), so only **visitors** see the marketing page with **`PublicHeader`**. The top bar is **sticky** (`sticky top-0`, `z-50`, `border-b border-stone-200`, white background) on the routes where it appears with long scroll. See `docs/DESIGN_SYSTEM.md` (§ PublicOrDashboardHeader, § DashboardTopBar).
+**Public / marketing / legal header:** On **contact** (`/contact`), **pricing** (`/pricing`), **privacy** (`/privacy`), **terms** (`/terms`), and **reset-password** (`/reset-password`), `PublicOrDashboardHeader` (server) renders **`PublicHeader`** when there is **no session** (logo, nav **Accueil** + **Tarifs**, `LanguageSwitcher`, sign-in / sign-up), and the same **`DashboardTopBar`** as in the app when the user is **logged in** (role-based nav and account menus). On the **landing** (`/` and `/en`), **logged-in** users are **redirected** to the app (see « Marketing home (logged-in) » above), so only **visitors** see the marketing page with **`PublicHeader`**. The top bar is **sticky** (`sticky top-0`, `z-50`, `border-b border-stone-200`, white background) on the routes where it appears with long scroll. See `docs/DESIGN_SYSTEM.md` (§ PublicOrDashboardHeader, § PublicHeader, § DashboardTopBar).
 
 ---
 
@@ -431,6 +431,29 @@ The athlete picker uses these as **selected** state (`FEELING_PICKER_SELECTED_BG
 **E-mail :** envoi via **API Resend** depuis le serveur (`lib/contactSupportEmail.ts`), **pas** via les templates Supabase Auth : variable **`RESEND_API_KEY`** (alias toléré `RESEND_KEY`) ; `CONTACT_EMAIL_FROM` / `CONTACT_SUPPORT_TO` optionnels ; **Reply-To** = e-mail du formulaire. En cas d’échec d’envoi après insert, message dédié (`emailSendFailed` / `emailNotifyUnavailable` si clé absente). Champ `email_delivered_at` mis à jour après envoi réussi.
 
 **Références design :** maquettes archivées `docs/archive/design-contact-public-form/` (anciennement `docs/design/contact/`).
+
+---
+
+### 4.12 Public coach platform pricing page ✅
+
+**Besoin produit :** page **publique** présentant les **abonnements plateforme MySportAlly** (coach → plateforme, Stripe), accessible à tous, avec message clair : l’abonnement n’est **requis qu’à l’acceptation du premier athlète** (pas à la création du compte coach).
+
+**Routes :** `/pricing` et `/en/pricing` (`app/[locale]/pricing/page.tsx`). **Entrée UI :** nav **`PublicHeader`** — **Accueil** (`/`) puis **Tarifs** (`/pricing`), états actifs via `usePathname` ; i18n **`coachPricingPublic.navHome`** / **`navPricing`**.
+
+**Contenu :** hero, bandeau « gratuit tant que vous ne coacherez pas d’athlète », timeline 3 étapes, grille offres (catalogue Stripe via **`loadCoachPlatformCatalogForEnv()`** + enrichissement **`coachMsaOffers.byPriceId`**), bloc « Inclus », FAQ, bandeau CTA final. **Pas** de Checkout Stripe depuis cette page ; **pas** d’offre future « plateforme + encaissements » (`futurePlatformPaymentsTier` masquée).
+
+**Modes d’affichage** (`lib/coachPricingPublicView.ts`) :
+
+| Mode | Grille offres | CTA |
+|------|---------------|-----|
+| Visiteur | Oui | **Créer un compte** → `LoginModal` signup (`CoachPricingPublicSignupProvider`) |
+| Coach sans abo géré | Oui | **Souscrire** → `/dashboard/coach-platform-subscription` |
+| Coach abo actif / essai / impayé | Masquée | Bannière **Gérer mon abonnement** → page abonnement |
+| Athlète / admin connecté | Oui (lecture seule) | Aucun CTA carte ni bandeau final |
+
+**Grille :** **`CoachPlatformOfferGrid`** mode **`marketing`** (réutilise le rendu checkout ; CTA adapté). Essai campagne : badge visiteur si **`COACH_PLATFORM_SUBSCRIPTION_TRIAL_DAYS > 0`** ; coach sans abo : éligibilité via **`resolveCoachPlatformTrialPresentationForCoach`**.
+
+**Références design :** maquettes archivées **`docs/archive/design-coach-pricing-public/`**.
 
 ---
 

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>US-PRICING-PUB-01 — Page /pricing visiteur</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            'palette-forest-default': '#7a9a6e',
+            'palette-forest-light': '#a8c4a0',
+            stone: { 50: '#fafaf9', 200: '#e7e5e4', 500: '#78716c', 600: '#57534e', 700: '#44403c', 900: '#1c1917' },
+          },
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-stone-50 min-h-screen text-stone-900">
+  <p class="text-xs text-stone-500 p-4 max-w-3xl mx-auto border-b border-stone-200 bg-white">
+    <strong>US-PRICING-PUB-01</strong> — Visiteur non connecté sur <code>/pricing</code>.
+    Textes = namespace i18n <code>coachPricingPublic</code> (FR/EN). Offres = <code>CoachPlatformOfferGrid</code> mode <code>marketing</code>.
+  </p>
+
+  <!-- État initial : arrivée depuis header -->
+  <section class="max-w-3xl mx-auto p-6 space-y-2" aria-labelledby="flow-1">
+    <h2 id="flow-1" class="text-sm font-bold uppercase tracking-wider text-stone-700">Transition — Clic « Tarifs » dans le header</h2>
+    <p class="text-xs text-stone-500">Avant : page accueil ou autre route publique. Après : scroll en haut de <code>/pricing</code>, lien header en état actif (voir US-PRICING-PUB-02).</p>
+  </section>
+
+  <div class="min-h-screen bg-white">
+    <!-- Header simplifié (détail US-02) -->
+    <header class="sticky top-0 z-50 border-b border-stone-200 bg-white/95 backdrop-blur">
+      <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
+        <span class="font-semibold text-stone-900">My Sport Ally</span>
+        <nav class="hidden sm:flex items-center gap-6 text-sm">
+          <a href="#" class="font-medium text-palette-forest-dark border-b-2 border-palette-forest-dark pb-0.5">Tarifs</a>
+        </nav>
+        <div class="flex items-center gap-3 text-sm">
+          <button type="button" class="text-stone-700">Connexion</button>
+          <button type="button" class="rounded-lg bg-palette-forest-dark px-3 py-1.5 text-white font-medium">Créer un compte</button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- Hero -->
+      <section class="py-12 sm:py-16 bg-gradient-to-b from-palette-forest-light/10 to-white">
+        <div class="mx-auto max-w-3xl px-4 text-center">
+          <h1 class="text-3xl sm:text-4xl font-bold text-stone-900">Tarifs coach MySportAlly</h1>
+          <p class="mt-3 text-lg text-stone-600 max-w-xl mx-auto">Une formule simple pour gérer vos athlètes sur la plateforme.</p>
+        </div>
+      </section>
+
+      <!-- Bandeau règle métier -->
+      <section class="mx-auto max-w-3xl px-4 -mt-4">
+        <div class="rounded-2xl border border-palette-forest-light/40 bg-palette-forest-light/15 p-5 flex gap-4 items-start">
+          <div class="w-10 h-10 rounded-xl bg-palette-forest-dark/10 flex items-center justify-center shrink-0 text-palette-forest-dark font-bold">✓</div>
+          <div>
+            <p class="font-semibold text-stone-900">Gratuit tant que vous ne coacherez pas d'athlète</p>
+            <p class="text-sm text-stone-600 mt-1">Créez votre compte coach, complétez votre profil et préparez vos offres sans abonnement. L'abonnement plateforme n'est requis qu'au moment d'accepter votre premier athlète.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Timeline 3 étapes -->
+      <section class="py-14 mx-auto max-w-4xl px-4">
+        <h2 class="text-xl font-bold text-center mb-10">Quand souscrire ?</h2>
+        <ol class="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+          <li class="text-center">
+            <div class="w-12 h-12 mx-auto rounded-full bg-palette-forest-dark text-white flex items-center justify-center font-bold mb-4">1</div>
+            <h3 class="font-semibold mb-2">Compte coach</h3>
+            <p class="text-sm text-stone-600">Inscription gratuite, configuration du profil.</p>
+          </li>
+          <li class="text-center">
+            <div class="w-12 h-12 mx-auto rounded-full bg-palette-forest-dark text-white flex items-center justify-center font-bold mb-4">2</div>
+            <h3 class="font-semibold mb-2">Préparer votre activité</h3>
+            <p class="text-sm text-stone-600">Publiez vos offres, recevez des demandes.</p>
+          </li>
+          <li class="text-center">
+            <div class="w-12 h-12 mx-auto rounded-full bg-palette-forest-dark text-white flex items-center justify-center font-bold mb-4">3</div>
+            <h3 class="font-semibold mb-2">Accepter un athlète</h3>
+            <p class="text-sm text-stone-600">Abonnement plateforme requis pour coacher.</p>
+          </li>
+        </ol>
+      </section>
+
+      <!-- Grille offres (aperçu — détail US-03) -->
+      <section class="py-8 bg-stone-50">
+        <div class="mx-auto max-w-4xl px-4">
+          <h2 class="text-xl font-bold text-center mb-8">Nos formules</h2>
+          <ul class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <li class="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm flex flex-col">
+              <h3 class="text-lg font-bold">Mensuel</h3>
+              <p class="text-3xl font-black mt-4">29&nbsp;€<span class="text-sm font-normal text-stone-500"> / mois</span></p>
+              <p class="text-sm text-stone-600 mt-3">Flexibilité maximale, sans engagement longue durée.</p>
+              <ul class="mt-4 space-y-2 text-sm text-stone-600">
+                <li>✓ Athlètes illimités</li>
+                <li>✓ Planning, chat, objectifs</li>
+              </ul>
+              <button type="button" class="mt-8 w-full rounded-lg bg-palette-forest-dark text-white py-3 font-medium">Créer un compte</button>
+            </li>
+            <li class="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm flex flex-col">
+              <h3 class="text-lg font-bold">Annuel</h3>
+              <p class="text-3xl font-black mt-4">279&nbsp;€<span class="text-sm font-normal text-stone-500"> / an</span></p>
+              <p class="text-sm text-stone-600 mt-3">Formule avantageuse sur 12 mois.</p>
+              <ul class="mt-4 space-y-2 text-sm text-stone-600">
+                <li>✓ Toutes les fonctionnalités Mensuel</li>
+                <li>✓ Facturation annuelle</li>
+              </ul>
+              <button type="button" class="mt-8 w-full rounded-lg bg-palette-forest-dark text-white py-3 font-medium">Créer un compte</button>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Inclus -->
+      <section class="py-14 mx-auto max-w-3xl px-4">
+        <h2 class="text-xl font-bold text-center mb-8">Inclus dans toutes les formules</h2>
+        <ul class="grid sm:grid-cols-2 gap-4 text-sm text-stone-700">
+          <li class="flex gap-2"><span class="text-palette-forest-dark">✓</span> Gestion illimitée d'athlètes</li>
+          <li class="flex gap-2"><span class="text-palette-forest-dark">✓</span> Calendrier et planification</li>
+          <li class="flex gap-2"><span class="text-palette-forest-dark">✓</span> Messagerie avec vos athlètes</li>
+          <li class="flex gap-2"><span class="text-palette-forest-dark">✓</span> Suivi des objectifs</li>
+        </ul>
+      </section>
+
+      <!-- FAQ -->
+      <section class="py-10 bg-stone-50 mx-auto max-w-3xl px-4 rounded-none">
+        <h2 class="text-xl font-bold text-center mb-6">Questions fréquentes</h2>
+        <dl class="space-y-4">
+          <div class="rounded-xl border border-stone-200 bg-white p-4">
+            <dt class="font-semibold text-sm">Dois-je payer dès l'inscription ?</dt>
+            <dd class="text-sm text-stone-600 mt-1">Non. L'abonnement est demandé uniquement lorsque vous acceptez un athlète.</dd>
+          </div>
+          <div class="rounded-xl border border-stone-200 bg-white p-4">
+            <dt class="font-semibold text-sm">Est-ce le même prix que mes offres aux athlètes ?</dt>
+            <dd class="text-sm text-stone-600 mt-1">Non. Ces tarifs concernent l'accès à la plateforme MySportAlly. Vos offres de coaching restent libres.</dd>
+          </div>
+          <div class="rounded-xl border border-stone-200 bg-white p-4">
+            <dt class="font-semibold text-sm">Puis-je annuler ?</dt>
+            <dd class="text-sm text-stone-600 mt-1">Oui, selon votre formule, depuis votre espace abonnement après connexion.</dd>
+          </div>
+        </dl>
+      </section>
+
+      <!-- CTA final -->
+      <section class="py-16 bg-gradient-to-br from-palette-forest-dark to-palette-forest-default text-white text-center px-4">
+        <h2 class="text-2xl font-bold mb-3">Prêt à coacher sur MySportAlly ?</h2>
+        <p class="text-white/90 mb-8 max-w-md mx-auto text-sm">Créez votre compte coach gratuitement. L'abonnement viendra au bon moment.</p>
+        <button type="button" class="px-8 py-3.5 bg-white text-palette-forest-dark rounded-xl font-semibold shadow-lg">Créer un compte</button>
+        <p class="text-xs text-white/70 mt-4">Action → ouvre <code>LoginModal</code> en mode <code>signup</code> (même flux que <code>AuthButtons</code>).</p>
+      </section>
+    </main>
+
+    <footer class="border-t border-stone-200 py-8 text-center text-sm text-stone-500">© My Sport Ally</footer>
+  </div>
+
+  <!-- Transition CTA -->
+  <section class="max-w-3xl mx-auto p-6 mt-8 border-t border-stone-300" aria-labelledby="flow-2">
+    <h2 id="flow-2" class="text-sm font-bold uppercase tracking-wider text-stone-700">Transition — Clic « Créer un compte »</h2>
+    <p class="text-xs text-stone-500 mt-2">Avant : page /pricing. Action : clic CTA (hero offre, carte ou bandeau final). Après : modale inscription (<code>LoginModal</code> signup), utilisateur reste sur /pricing si fermeture.</p>
+  </section>
+</body>
+</html>

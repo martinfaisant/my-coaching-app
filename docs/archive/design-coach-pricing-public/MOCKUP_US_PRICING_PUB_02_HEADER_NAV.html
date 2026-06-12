@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>US-PRICING-PUB-02 — Header public + lien Tarifs</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            stone: { 200: '#e7e5e4', 600: '#57534e', 900: '#1c1917' },
+          },
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-stone-100 p-6 space-y-12">
+  <header class="max-w-3xl">
+    <h1 class="text-xl font-bold">US-PRICING-PUB-02 — Entrée header public</h1>
+    <p class="text-sm text-stone-600 mt-2">Évolution <code>PublicHeader</code> : nav <strong>Accueil</strong> (<code>coachPricingPublic.navHome</code> → <code>/</code>) puis <strong>Tarifs</strong> (<code>coachPricingPublic.navPricing</code> → <code>/pricing</code>), entre logo et zone auth. Visible sur toutes les routes publiques.</p>
+  </header>
+
+  <!-- État A : page autre que /pricing -->
+  <section aria-labelledby="state-a">
+    <h2 id="state-a" class="text-sm font-bold uppercase tracking-wider text-stone-700 mb-3">État A — Header sur accueil (lien inactif)</h2>
+    <p class="text-xs text-stone-500 mb-4">Avant clic Tarifs. Lien neutre stone-600, hover stone-900.</p>
+    <div class="rounded-xl border border-stone-200 bg-white shadow-sm overflow-hidden">
+      <div class="flex h-16 items-center justify-between px-4 sm:px-6">
+        <a href="#" class="font-semibold text-stone-900 flex items-center gap-2">
+          <span class="w-8 h-8 rounded bg-stone-200"></span>
+          <span class="hidden sm:inline">My Sport Ally</span>
+        </a>
+        <nav class="flex items-center gap-4 sm:gap-6">
+          <a href="/" class="text-sm font-medium text-stone-600 hover:text-stone-900 transition-colors">Accueil</a>
+          <a href="/pricing" class="text-sm font-medium text-stone-600 hover:text-stone-900 transition-colors">Tarifs</a>
+        </nav>
+        <div class="flex items-center gap-2 sm:gap-4">
+          <button type="button" class="text-sm text-stone-700 hidden xs:inline">Connexion</button>
+          <button type="button" class="text-sm rounded-lg bg-palette-forest-dark text-white px-3 py-1.5 font-medium">Créer un compte</button>
+          <span class="w-px h-6 bg-stone-200 hidden sm:block"></span>
+          <span class="text-sm text-stone-600">FR</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- État B : sur /pricing (lien actif) -->
+  <section aria-labelledby="state-b">
+    <h2 id="state-b" class="text-sm font-bold uppercase tracking-wider text-stone-700 mb-3">État B — Header sur /pricing (lien actif)</h2>
+    <p class="text-xs text-stone-500 mb-4">Après navigation. Lien actif : texte palette-forest-dark + indicateur (soulignement ou font-semibold).</p>
+    <div class="rounded-xl border border-stone-200 bg-white shadow-sm overflow-hidden">
+      <div class="flex h-16 items-center justify-between px-4 sm:px-6">
+        <a href="#" class="font-semibold text-stone-900 flex items-center gap-2">
+          <span class="w-8 h-8 rounded bg-stone-200"></span>
+          <span class="hidden sm:inline">My Sport Ally</span>
+        </a>
+        <nav class="flex items-center gap-4 sm:gap-6">
+          <a href="/" class="text-sm font-medium text-stone-600 hover:text-stone-900 transition-colors">Accueil</a>
+          <a href="/pricing" aria-current="page" class="text-sm font-semibold text-palette-forest-dark border-b-2 border-palette-forest-dark pb-0.5">Tarifs</a>
+        </nav>
+        <div class="flex items-center gap-2 sm:gap-4">
+          <button type="button" class="text-sm rounded-lg border border-stone-200 px-3 py-1.5">Connexion</button>
+          <button type="button" class="text-sm rounded-lg bg-palette-forest-dark text-white px-3 py-1.5 font-medium">Créer un compte</button>
+          <span class="w-px h-6 bg-stone-200 hidden sm:block"></span>
+          <span class="text-sm text-stone-600">FR</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- État C : mobile étroit -->
+  <section aria-labelledby="state-c">
+    <h2 id="state-c" class="text-sm font-bold uppercase tracking-wider text-stone-700 mb-3">État C — Mobile (&lt; sm)</h2>
+    <p class="text-xs text-stone-500 mb-4">Lien « Tarifs » reste visible entre logo et zone auth (pas de drawer). Libellé court. Pas de débordement : auth en icônes/compact si besoin.</p>
+    <div class="max-w-[360px] rounded-xl border border-stone-200 bg-white shadow-sm overflow-hidden">
+      <div class="flex h-14 items-center justify-between px-3 gap-2">
+        <a href="#" class="font-semibold text-stone-900 text-sm shrink-0">MSA</a>
+        <nav class="flex gap-2 shrink-0">
+          <a href="/" class="text-xs font-medium text-stone-600">Accueil</a>
+          <a href="/pricing" class="text-xs font-medium text-palette-forest-dark">Tarifs</a>
+        </nav>
+        <div class="flex items-center gap-1.5 shrink-0">
+          <button type="button" class="text-xs px-2 py-1 border border-stone-200 rounded-md">Connexion</button>
+          <button type="button" class="text-xs px-2 py-1 bg-palette-forest-dark text-white rounded-md">S'inscrire</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Transition -->
+  <section class="max-w-3xl border-t border-stone-300 pt-6" aria-labelledby="flow">
+    <h2 id="flow" class="text-sm font-bold uppercase tracking-wider text-stone-700">Transition fonctionnelle</h2>
+    <p class="text-xs text-stone-500 mt-2">
+      <strong>Avant :</strong> utilisateur sur route publique.<br />
+      <strong>Action :</strong> clic « Tarifs ».<br />
+      <strong>Après :</strong> navigation client vers <code>/pricing</code> ; header passe en état B ; contenu page US-PRICING-PUB-01 (ou 04/05 selon session).
+    </p>
+  </section>
+</body>
+</html>

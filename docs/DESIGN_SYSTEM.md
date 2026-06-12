@@ -1491,9 +1491,11 @@ Bloc **client** sur **`/dashboard/coach-platform-subscription`** : le libellé d
 
 **Fichier :** `components/CoachPlatformOfferGrid.tsx`
 
-Grille responsive **`grid-cols-1 md:grid-cols-2`** (`gap-6`, cartes **`rounded-2xl p-6`**) : titre **`text-lg`** ; badge essai **`{days} jours gratuits`** (majuscules CSS) et ligne verte **`trialCatalogTrialLine`** **uniquement** si **`subscriptionTrialDays > 0 && trialEligible`** (pas de message « essai déjà utilisé ») ; prix **`text-3xl font-black`** + unité **`/ mois`** etc. (**`priceDisplayedUnit*`**) ; **`tagline`** + liste à puces (**`features`** dans **`coachMsaOffers.byPriceId`**, optionnels — repli description Stripe) ; CTA **Souscrire** / **Redirection…**. Réutilisé page abonnement + modale.
+Grille responsive **`grid-cols-1 md:grid-cols-2`** (`gap-6`, cartes **`rounded-2xl p-6`**) : titre **`text-lg`** ; badge essai **`{days} jours gratuits`** (majuscules CSS) et ligne verte **`trialCatalogTrialLine`** **uniquement** si **`subscriptionTrialDays > 0 && trialEligible`** (pas de message « essai déjà utilisé ») ; prix **`text-3xl font-black`** + unité **`/ mois`** etc. (**`priceDisplayedUnit*`**) ; **`tagline`** + liste à puces (**`features`** dans **`coachMsaOffers.byPriceId`**, optionnels — repli description Stripe). Réutilisée page abonnement dashboard, modale souscription, et **page publique `/pricing`** (mode **`marketing`**).
 
-#### Props principales
+#### Mode `checkout` (défaut)
+
+CTA **Souscrire** / **Redirection…** ; props checkout obligatoires.
 
 | Prop | Type | Description |
 |------|------|-------------|
@@ -1503,6 +1505,17 @@ Grille responsive **`grid-cols-1 md:grid-cols-2`** (`gap-6`, cartes **`rounded-2
 | `pendingPriceId` / `isPending` | | État bouton actif |
 | `error` | `string \| null` | Erreur checkout |
 | `onSubscribe` | `(priceId: string) => void` | |
+
+#### Mode `marketing` (page `/pricing`)
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `mode` | `'marketing'` | |
+| `marketingCta` | `'signup' \| 'subscribe' \| 'none'` | Visiteur / coach sans abo / lecture seule |
+| `createAccountCtaLabel` | `string` | i18n `coachPricingPublic.createAccountCta` |
+| `subscribeCtaLabel` | `string` | i18n `coachPricingPublic.subscribeCta` |
+| `onCreateAccountClick` | `() => void` | Ouvre signup (`CoachPricingPublicSignupProvider`) |
+| `subscribeHref` | `string` | Lien dashboard abonnement (ex. `/dashboard/coach-platform-subscription`) |
 
 ---
 
@@ -1710,9 +1723,9 @@ import { PublicOrDashboardHeader } from '@/components/PublicOrDashboardHeader'
 
 **Fichier :** `components/PublicHeader.tsx`
 
-En-tête public pour **visiteurs** : logo My Sport Ally (lien vers `/`), LanguageSwitcher, séparateur vertical, AuthButtons (Se connecter, Créer un compte). Classes : `sticky top-0 z-50 border-b border-stone-200 bg-background/95 backdrop-blur-md`, conteneur `max-w-7xl h-16`.
+En-tête public pour **visiteurs** : logo My Sport Ally (lien vers `/`), nav **Accueil** (`/`) et **Tarifs** (`/pricing`, i18n `coachPricingPublic.navHome` / `navPricing`, état actif via `usePathname`), AuthButtons, séparateur vertical, LanguageSwitcher. Classes : `sticky top-0 z-50 border-b border-stone-200 bg-background/95 backdrop-blur-md`, conteneur `max-w-7xl h-16`.
 
-**Usage :** Rendu indirectement via `PublicOrDashboardHeader` sur les pages marketing ; ne pas l’utiliser seul sur ces routes sauf cas exceptionnel. Référence design archivée : `docs/archive/design-reset-password-header/DESIGN_RESET_PASSWORD_HEADER.md`.
+**Usage :** Rendu indirectement via `PublicOrDashboardHeader` sur les pages marketing (accueil visiteur, **/pricing**, contact, CGU, confidentialité, reset-password) ; ne pas l’utiliser seul sur ces routes sauf cas exceptionnel. Référence design : `docs/design-coach-pricing-public/`, archivée reset-password : `docs/archive/design-reset-password-header/DESIGN_RESET_PASSWORD_HEADER.md`.
 
 ```tsx
 import { PublicHeader } from '@/components/PublicHeader'

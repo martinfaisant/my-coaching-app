@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>US-PRICING-PUB-04 — Coach abonnement actif</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            'palette-forest-default': '#7a9a6e',
+            stone: { 200: '#e7e5e4', 600: '#57534e', 900: '#1c1917' },
+          },
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-stone-50 min-h-screen">
+  <p class="text-xs text-stone-500 p-4 bg-white border-b">US-PRICING-PUB-04 — Coach connecté avec abonnement géré (<code>active</code> ou <code>trialing</code>, y compris fin programmée). Header = <code>DashboardTopBar</code> (session active).</p>
+
+  <header class="h-14 border-b bg-white flex items-center px-4 text-sm text-stone-600">[ DashboardTopBar — coach connecté ]</header>
+
+  <main class="max-w-3xl mx-auto px-4 py-10 space-y-8">
+    <div class="text-center">
+      <h1 class="text-3xl font-bold">Tarifs coach MySportAlly</h1>
+      <p class="text-stone-600 mt-2 text-sm">Une formule simple pour gérer vos athlètes.</p>
+    </div>
+
+    <!-- Bannière abonnement existant -->
+    <div class="rounded-2xl border border-palette-forest-light/50 bg-palette-forest-light/20 p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div>
+        <p class="font-semibold text-stone-900">Vous avez déjà un abonnement MySportAlly</p>
+        <p class="text-sm text-stone-600 mt-1">Gérez votre formule, votre facturation et vos factures depuis votre espace abonnement.</p>
+      </div>
+      <a href="/dashboard/coach-platform-subscription" class="inline-flex justify-center shrink-0 rounded-lg bg-palette-forest-dark text-white px-5 py-2.5 text-sm font-medium">Gérer mon abonnement</a>
+    </div>
+
+    <!-- Bandeau règle métier (inchangé, contexte) -->
+    <div class="rounded-2xl border border-stone-200 bg-white p-5 text-sm text-stone-600">
+      L'abonnement plateforme est requis lorsque vous acceptez un athlète. Votre accès est actuellement actif.
+    </div>
+
+    <!-- Grille offres : masquée OU lecture seule sans CTA souscrire -->
+    <section aria-labelledby="offers-hidden">
+      <h2 id="offers-hidden" class="text-sm font-bold uppercase tracking-wider text-stone-500 mb-3">Offres — masquées (recommandé)</h2>
+      <p class="text-xs text-stone-500 mb-4">Pas de grille « Souscrire » ni CTA « Créer un compte » en bas de page. Évite double souscription.</p>
+      <div class="rounded-xl border border-dashed border-stone-300 p-8 text-center text-sm text-stone-400">[ Section offres non affichée ]</div>
+    </section>
+
+    <!-- FAQ + inclus : conservés (optionnel lecture) -->
+    <section>
+      <h2 class="text-lg font-bold mb-4">Questions fréquentes</h2>
+      <p class="text-sm text-stone-500">Sections FAQ / Inclus inchangées (contenu informatif).</p>
+    </section>
+  </main>
+
+  <section class="max-w-3xl mx-auto p-6 border-t mt-8">
+    <h2 class="text-sm font-bold uppercase tracking-wider text-stone-700">Transitions</h2>
+    <ul class="text-xs text-stone-500 mt-2 space-y-2 list-disc pl-4">
+      <li><strong>Clic « Gérer mon abonnement »</strong> → navigation <code>/dashboard/coach-platform-subscription</code> (page « Abonnement MySportAlly »).</li>
+      <li><strong>Coach avec abo past_due/unpaid</strong> : même CTA Gérer (régularisation sur page abo) — pas de nouvelle souscription depuis /pricing.</li>
+    </ul>
+  </section>
+</body>
+</html>
