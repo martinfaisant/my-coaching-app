@@ -13,7 +13,6 @@ import { DatePickerPopup } from '@/components/DatePickerPopup'
 import { formatDateFr } from '@/lib/dateUtils'
 import { FORM_INPUT_HEIGHT, FORM_INPUT_TEXT_SIZE } from '@/lib/formStyles'
 import { saveGoalFull, type GoalFormState } from './actions'
-import { getGoalBadgeClass } from '@/lib/goalColor'
 
 type GoalFullModalProps = {
   goal: Goal
@@ -42,6 +41,7 @@ export function GoalFullModal({
   const [activeTab, setActiveTab] = useState<'objective' | 'result'>(initialTab)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [date, setDate] = useState(goal.date)
+  const [priority, setPriority] = useState<'primary' | 'secondary'>(goal.is_primary ? 'primary' : 'secondary')
   const [showDatePickerPopup, setShowDatePickerPopup] = useState(false)
   const [datePickerAnchor, setDatePickerAnchor] = useState<DOMRect | null>(null)
   const formRef = useRef<HTMLFormElement>(null)
@@ -51,10 +51,10 @@ export function GoalFullModal({
   const localeForPicker = locale === 'fr' ? 'fr-FR' : 'en-US'
   const today = new Date().toISOString().slice(0, 10)
   const canShowResultSection = goal.date <= today
-  const badgeClass = getGoalBadgeClass(goal.is_primary)
   useEffect(() => {
     if (!isOpen) return
     setDate(goal.date)
+    setPriority(goal.is_primary ? 'primary' : 'secondary')
     if (!canShowResultSection && activeTab === 'result') {
       setActiveTab('objective')
     } else if (canShowResultSection) {
@@ -227,7 +227,7 @@ export function GoalFullModal({
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-stone-500 uppercase mb-2 ml-1">
+              <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2 ml-1">
                 {tGoals('priority.label')}
               </label>
               <div className="grid grid-cols-2 gap-2">
@@ -236,15 +236,18 @@ export function GoalFullModal({
                     type="radio"
                     name="is_primary"
                     value="primary"
-                    defaultChecked={goal.is_primary}
+                    checked={priority === 'primary'}
+                    onChange={() => setPriority('primary')}
                     className="hidden peer"
                   />
                   <div
-                    className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg border text-[20px] font-bold transition-all ${
-                      badgeClass
+                    className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg border text-[14px] font-bold transition-all ${
+                      priority === 'primary'
+                        ? 'bg-white text-palette-forest-dark border-palette-forest-dark'
+                        : 'bg-white text-stone-400 border-stone-200 hover:border-stone-300'
                     }`}
                   >
-                    {tGoals('priority.primary')}
+                    <span>{tGoals('priority.primary')}</span>
                   </div>
                 </label>
                 <label className="cursor-pointer">
@@ -252,15 +255,18 @@ export function GoalFullModal({
                     type="radio"
                     name="is_primary"
                     value="secondary"
-                    defaultChecked={!goal.is_primary}
+                    checked={priority === 'secondary'}
+                    onChange={() => setPriority('secondary')}
                     className="hidden peer"
                   />
                   <div
-                    className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg border text-[10px] font-bold transition-all ${
-                      badgeClass
+                    className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg border text-[14px] font-bold transition-all ${
+                      priority === 'secondary'
+                        ? 'bg-white text-palette-amber border-palette-amber'
+                        : 'bg-white text-stone-400 border-stone-200 hover:border-stone-300'
                     }`}
                   >
-                    {tGoals('priority.secondary')}
+                    <span>{tGoals('priority.secondary')}</span>
                   </div>
                 </label>
               </div>
