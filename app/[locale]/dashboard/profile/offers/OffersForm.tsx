@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useActionState, useEffect, useRef, useCallback, useMemo } from 'react'
+import { useState, useActionState, useEffect, useRef, useCallback, useMemo, type FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations, useLocale } from 'next-intl'
 import { Button } from '@/components/Button'
@@ -11,6 +11,7 @@ import { LanguagePrefixInput, LanguagePrefixTextarea } from '@/components/Langua
 import { saveOffers, archiveOffer, publishOffer, type OffersFormState } from './actions'
 import type { CoachOffer, CoachOfferArchived } from '@/types/database'
 import { FORM_ERROR_BOX_CLASSES } from '@/lib/formStyles'
+import { syncFeaturedHiddenInputs as syncFeaturedHiddenInputsUtil } from '@/lib/offersFeaturedForm'
 
 type OffersFormProps = {
   offers: CoachOffer[]
@@ -180,6 +181,13 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
     return false
   }, [offerCount, featuredOfferIndex, priceTypes])
 
+  // Recalculer les modifications non enregistrées quand l'offre recommandée change
+  // (évite le setTimeout stale dans le clic étoile qui laissait Enregistrer désactivé)
+  useEffect(() => {
+    if (!isInitializedRef.current) return
+    setHasUnsavedChanges(checkUnsavedChanges())
+  }, [featuredOfferIndex, checkUnsavedChanges])
+
   /** Offre complète (titre FR/EN, description FR/EN, prix et récurrence) */
   const computeCanPublishOfferAtSlot = useCallback(
     (index: number) => {
@@ -302,8 +310,16 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
     return () => window.removeEventListener('popstate', handlePopState)
   }, [hasUnsavedChanges, t])
 
-  // Soumission : marquer l’envoi en cours et le slot (aligné sur ProfileForm handleFormSubmit)
-  const handleFormSubmit = () => {
+  const syncFeaturedHiddenInputs = useCallback(
+    (form: HTMLFormElement) => {
+      syncFeaturedHiddenInputsUtil(form, offerCount, featuredOfferIndex)
+    },
+    [offerCount, featuredOfferIndex]
+  )
+
+  // Soumission : synchroniser les champs featured puis marquer l’envoi en cours
+  const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
+    syncFeaturedHiddenInputs(e.currentTarget)
     isSubmittingRef.current = true
     setIsSubmitting(true)
   }
@@ -354,6 +370,7 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
   const handleSaveAndLeave = async () => {
     if (!formRef.current) return
     setIsSavingBeforeLeave(true)
+    syncFeaturedHiddenInputs(formRef.current)
     const formData = new FormData(formRef.current)
     formData.set('_locale', locale)
     const result = await saveOffers({}, formData)
@@ -535,9 +552,11 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
                       <button
                         type="button"
                         onClick={() => {
-                          if (isFeatured) setFeaturedOfferIndex(null)
-                          else setFeaturedOfferIndex(index)
-                          setTimeout(() => setHasUnsavedChanges(checkUnsavedChanges()), 0)
+                          const nextFeatured = isFeatured ? null : index
+                          setFeaturedOfferIndex(nextFeatured)
+                          if (nextFeatured !== initialFeaturedIndexRef.current) {
+                            setHasUnsavedChanges(true)
+                          }
                         }}
                         className={`p-1.5 rounded-lg transition-colors ${
                           isFeatured ? 'bg-yellow-50 text-yellow-600 hover:bg-yellow-100' : 'hover:bg-yellow-50 text-stone-300 hover:text-yellow-600'
@@ -813,6 +832,7 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
                 fd.set('_publish_price', (form.querySelector(`[name="offer_${publishConfirmIndex}_price"]`) as HTMLInputElement)?.value?.trim() ?? '')
                 const slotKey = offer.id ?? `new-${publishConfirmIndex - sortedOffers.length}`
                 fd.set('_publish_price_type', (priceTypes[slotKey] ?? offer.price_type) ?? '')
+                fd.set('_publish_is_featured', featuredOfferIndex === publishConfirmIndex ? 'on' : '')
                 const result = await publishOffer(offer.id, fd, locale)
                 setPublishingOfferId(null)
                 if ('error' in result && result.error) {
@@ -820,6 +840,7 @@ export function OffersForm({ offers, archivedOffers = [] }: OffersFormProps) {
                   return
                 }
                 setPublishedIdsInThisSession((prev) => new Set(prev).add(offer.id))
+                router.refresh()
                 setPublishConfirmModalOpen(false)
                 setPublishConfirmOfferId(null)
                 setPublishConfirmIndex(null)

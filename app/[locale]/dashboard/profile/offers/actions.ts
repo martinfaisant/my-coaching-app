@@ -5,6 +5,25 @@ import { revalidatePath } from 'next/cache'
 import { requireRole } from '@/lib/authHelpers'
 import { getTranslations } from 'next-intl/server'
 import type { CoachOffer, CoachOfferArchived } from '@/types/database'
+import type { SupabaseClient } from '@supabase/supabase-js'
+
+async function clearOtherFeaturedOffers(
+  supabase: SupabaseClient,
+  coachId: string,
+  exceptOfferId?: string
+) {
+  let query = supabase
+    .from('coach_offers')
+    .update({ is_featured: false })
+    .eq('coach_id', coachId)
+    .eq('is_featured', true)
+
+  if (exceptOfferId) {
+    query = query.neq('id', exceptOfferId)
+  }
+
+  await query
+}
 
 export type OffersFormState = {
   error?: string
@@ -95,13 +114,8 @@ export async function saveOffers(
   const usedOrders = new Set(offers.filter((o) => o.id).map((o) => o.display_order))
 
   for (const offer of offers) {
-    if (offer.is_featured && offer.id) {
-      await supabase
-        .from('coach_offers')
-        .update({ is_featured: false })
-        .eq('coach_id', user.id)
-        .eq('status', 'published')
-        .neq('id', offer.id)
+    if (offer.is_featured) {
+      await clearOtherFeaturedOffers(supabase, user.id, offer.id)
     }
 
     if (offer.id) {
@@ -141,13 +155,6 @@ export async function saveOffers(
         return { error: updateError.message }
       }
     } else {
-      if (offer.is_featured) {
-        await supabase
-          .from('coach_offers')
-          .update({ is_featured: false })
-          .eq('coach_id', user.id)
-          .eq('status', 'published')
-      }
       // Garder la position du slot (ordre affiché = ordre de création)
       const displayOrder = offer.display_order
       const { error: insertError } = await supabase.from('coach_offers').insert({
@@ -274,6 +281,11 @@ export async function publishOffer(
 
   if (fetchError || !offer) return { error: t('offerNotFound') }
 
+  const isFeatured = formData.get('_publish_is_featured') === 'on'
+  if (isFeatured) {
+    await clearOtherFeaturedOffers(supabase, user.id, offerId)
+  }
+
   const { data: updated, error: updateError } = await supabase
     .from('coach_offers')
     .update({
@@ -286,6 +298,7 @@ export async function publishOffer(
       price,
       price_type: priceTypeRaw,
       status: 'published',
+      is_featured: isFeatured,
     })
     .eq('id', offerId)
     .eq('coach_id', user.id)
