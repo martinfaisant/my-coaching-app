@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>US-PUB-HDR-02 — Drawer menu public</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        colors: {
+          'palette-forest-dark': '#627e59',
+          'palette-olive': '#8e9856',
+        }
+      }}
+    }
+  </script>
+</head>
+<body class="bg-stone-100 text-stone-800 antialiased min-h-screen">
+  <div class="max-w-lg mx-auto py-8 px-4 space-y-10">
+    <header class="space-y-2">
+      <h1 class="text-xl font-bold text-stone-900">US-PUB-HDR-02 — Drawer menu public</h1>
+      <p class="text-sm text-stone-600">Mockup non fonctionnel. <code>Drawer</code> <code>placement="right"</code>, structure alignée <code>DashboardTopBar</code>. Nav + auth + langue regroupés ; pas de CTA inscription dans la barre.</p>
+    </header>
+
+    <!-- État A : drawer ouvert — accueil actif -->
+    <section class="space-y-2" aria-labelledby="drawer-a">
+      <h2 id="drawer-a" class="text-sm font-bold uppercase tracking-wider text-stone-700">État A — Drawer ouvert · page Accueil active</h2>
+      <div class="relative max-w-[390px] mx-auto">
+        <div class="absolute inset-0 bg-stone-900/50 backdrop-blur-sm rounded-xl" aria-hidden></div>
+        <div class="relative ml-8 rounded-xl border border-stone-200 bg-white shadow-xl min-h-[480px] flex flex-col">
+          <div class="flex items-center justify-end p-4 border-b border-stone-200 bg-stone-50 shrink-0">
+            <button type="button" class="p-2.5 rounded-xl text-stone-500 hover:bg-stone-100" aria-label="Réduire le menu">✕</button>
+          </div>
+          <div class="flex-1 overflow-y-auto p-2 space-y-1">
+            <a href="#" aria-current="page" class="flex items-center gap-3 px-3 py-3 rounded-xl font-medium bg-palette-forest-dark text-white shadow-lg shadow-palette-forest-dark/20">Accueil</a>
+            <a href="#" class="flex items-center gap-3 px-3 py-3 rounded-xl font-medium text-stone-600 hover:bg-stone-50 hover:text-palette-forest-dark">Tarifs</a>
+            <hr class="border-stone-200 my-2 mx-2" />
+            <button type="button" class="w-full text-left px-3 py-3 rounded-xl font-medium text-stone-700 hover:bg-stone-50 border border-stone-200">Se connecter</button>
+            <button type="button" class="w-full text-left px-3 py-3 rounded-xl font-medium text-white bg-palette-forest-dark hover:bg-palette-olive">Créer un compte</button>
+            <hr class="border-stone-200 my-2 mx-2" />
+            <div class="px-3 py-2">
+              <label class="text-xs font-medium text-stone-500 block mb-1.5">Langue</label>
+              <div class="flex items-center gap-2 rounded-lg border border-stone-200 px-3 py-2.5 text-sm font-medium text-stone-700">
+                <span aria-hidden>🌐</span> FR <span class="ml-auto text-stone-400">▾</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- État B : drawer — tarifs actif -->
+    <section class="space-y-2" aria-labelledby="drawer-b">
+      <h2 id="drawer-b" class="text-sm font-bold uppercase tracking-wider text-stone-700">État B — Drawer ouvert · page Tarifs active</h2>
+      <p class="text-xs text-stone-500">Lien actif = fond forest-dark (variant list dashboard), pas soulignement border-b.</p>
+      <div class="rounded-xl border border-stone-200 bg-white shadow-xl max-w-sm ml-auto min-h-[400px] flex flex-col">
+        <div class="flex justify-end p-4 border-b bg-stone-50"><button type="button" class="p-2 rounded-xl text-stone-500">✕</button></div>
+        <div class="p-2 space-y-1 flex-1">
+          <a href="#" class="flex px-3 py-3 rounded-xl font-medium text-stone-600 hover:bg-stone-50">Accueil</a>
+          <a href="#" class="flex px-3 py-3 rounded-xl font-medium bg-palette-forest-dark text-white">Tarifs</a>
+          <hr class="border-stone-200 my-2" />
+          <button type="button" class="w-full text-left px-3 py-3 rounded-xl font-medium text-stone-700 border border-stone-200">Se connecter</button>
+          <button type="button" class="w-full text-left px-3 py-3 rounded-xl font-medium text-white bg-palette-forest-dark">Créer un compte</button>
+          <hr class="border-stone-200 my-2" />
+          <div class="px-3 py-2 text-sm text-stone-600">🌐 FR ▾</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Transitions auth -->
+    <section class="rounded-xl bg-stone-50 border border-stone-200 p-4 text-sm space-y-3" aria-labelledby="auth-flow">
+      <h3 id="auth-flow" class="font-bold text-stone-900">Transitions — Auth</h3>
+      <ul class="list-disc pl-5 text-stone-600 space-y-1 text-xs">
+        <li><strong>Clic « Se connecter » ou « Créer un compte » :</strong> fermer le drawer → ouvrir <code>LoginModal</code> (mode login ou signup).</li>
+        <li><strong>Après fermeture modale :</strong> retour page courante, drawer fermé, barre mobile inchangée.</li>
+      </ul>
+    </section>
+
+    <!-- Transitions nav -->
+    <section class="rounded-xl bg-white border border-stone-200 p-4 text-sm space-y-3" aria-labelledby="nav-flow">
+      <h3 id="nav-flow" class="font-bold text-stone-900">Transitions — Navigation &amp; fermeture</h3>
+      <ul class="list-disc pl-5 text-stone-600 space-y-1 text-xs">
+        <li><strong>Clic lien Accueil / Tarifs :</strong> navigation i18n + fermeture drawer (comme dashboard <code>onItemClick</code>).</li>
+        <li><strong>Clic overlay, bouton ✕, touche Escape :</strong> fermeture drawer sans navigation.</li>
+        <li><strong>Changement langue :</strong> via <code>LanguageSwitcher</code> dans le drawer ; drawer peut rester ouvert ou se fermer (à trancher en implémentation — recommandation : rester ouvert jusqu’à navigation).</li>
+      </ul>
+    </section>
+  </div>
+</body>
+</html>

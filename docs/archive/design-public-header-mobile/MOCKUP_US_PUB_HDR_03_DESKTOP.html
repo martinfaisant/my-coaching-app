@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>US-PUB-HDR-03 — Desktop PublicHeader inchangé</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        colors: {
+          'palette-forest-dark': '#627e59',
+        }
+      }}
+    }
+  </script>
+</head>
+<body class="bg-stone-100 text-stone-800 antialiased min-h-screen">
+  <div class="max-w-5xl mx-auto py-8 px-4 space-y-10">
+    <header class="space-y-2">
+      <h1 class="text-xl font-bold text-stone-900">US-PUB-HDR-03 — Desktop (≥ md)</h1>
+      <p class="text-sm text-stone-600">Mockup non fonctionnel. À partir de <code>md</code> (768 px), le layout actuel de <code>PublicHeader</code> est <strong>strictement conservé</strong> : pas de hamburger, pas de drawer.</p>
+    </header>
+
+    <section class="space-y-2" aria-labelledby="desktop-home">
+      <h2 id="desktop-home" class="text-sm font-bold uppercase tracking-wider text-stone-700">État A — Desktop · accueil</h2>
+      <div class="rounded-xl border border-stone-200 bg-white shadow-sm overflow-hidden">
+        <div class="flex h-16 max-w-7xl mx-auto items-center justify-between gap-3 px-6">
+          <div class="flex items-center gap-8">
+            <a href="#" class="font-semibold text-stone-900 flex items-center gap-2">
+              <span class="w-9 h-9 rounded bg-palette-forest-dark/15"></span>
+              <span>My Sport Ally</span>
+            </a>
+            <nav class="flex items-center gap-6">
+              <a href="#" class="text-sm font-semibold text-palette-forest-dark border-b-2 border-palette-forest-dark pb-0.5">Accueil</a>
+              <a href="#" class="text-sm font-medium text-stone-600 hover:text-stone-900">Tarifs</a>
+            </nav>
+          </div>
+          <div class="flex items-center gap-4">
+            <button type="button" class="rounded-lg min-h-10 px-4 text-sm font-medium text-stone-700 hover:bg-stone-100">Se connecter</button>
+            <button type="button" class="rounded-lg min-h-10 px-4 text-sm font-medium text-white bg-palette-forest-dark">Créer un compte</button>
+            <span class="h-6 w-px bg-stone-200" aria-hidden></span>
+            <span class="text-sm text-stone-700">🌐 FR ▾</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="space-y-2" aria-labelledby="desktop-pricing">
+      <h2 id="desktop-pricing" class="text-sm font-bold uppercase tracking-wider text-stone-700">État B — Desktop · /pricing (lien actif)</h2>
+      <div class="rounded-xl border border-stone-200 bg-white shadow-sm overflow-hidden">
+        <div class="flex h-16 max-w-7xl mx-auto items-center justify-between gap-3 px-6">
+          <div class="flex items-center gap-8">
+            <a href="#" class="font-semibold flex items-center gap-2"><span class="w-9 h-9 rounded bg-stone-200"></span>My Sport Ally</a>
+            <nav class="flex gap-6">
+              <a href="#" class="text-sm font-medium text-stone-600">Accueil</a>
+              <a href="#" class="text-sm font-semibold text-palette-forest-dark border-b-2 border-palette-forest-dark pb-0.5">Tarifs</a>
+            </nav>
+          </div>
+          <div class="flex items-center gap-4">
+            <button type="button" class="rounded-lg px-4 py-2.5 text-sm text-stone-700">Se connecter</button>
+            <button type="button" class="rounded-lg px-4 py-2.5 text-sm text-white bg-palette-forest-dark">Créer un compte</button>
+            <span class="h-6 w-px bg-stone-200"></span>
+            <span class="text-sm">FR ▾</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="rounded-xl bg-stone-50 border border-stone-200 p-4 text-sm">
+      <h3 class="font-bold text-stone-900 mb-2">Critère de non-régression</h3>
+      <p class="text-xs text-stone-600">Viewport ≥ 768 px : aucun élément mobile (hamburger, titre centré, drawer) ne doit apparaître. Comportement auth et langue identique à l’existant.</p>
+    </section>
+  </div>
+</body>
+</html>

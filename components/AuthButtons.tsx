@@ -7,22 +7,48 @@ import { LoginModal } from '@/components/LoginModal'
 import { ArrowRight } from 'lucide-react'
 
 interface AuthButtonsProps {
-  variant?: 'default' | 'hero'
+  variant?: 'default' | 'hero' | 'drawer'
+  /** Appelé avant ouverture de la modale (ex. fermer le drawer mobile). */
+  onBeforeOpen?: () => void
 }
 
-export function AuthButtons({ variant = 'default' }: AuthButtonsProps) {
+export function AuthButtons({ variant = 'default', onBeforeOpen }: AuthButtonsProps) {
   const t = useTranslations('auth')
   const [modalOpen, setModalOpen] = useState(false)
   const [modalMode, setModalMode] = useState<'login' | 'signup'>('login')
 
   const openLogin = () => {
+    onBeforeOpen?.()
     setModalMode('login')
     setModalOpen(true)
   }
 
   const openSignup = () => {
+    onBeforeOpen?.()
     setModalMode('signup')
     setModalOpen(true)
+  }
+
+  if (variant === 'drawer') {
+    return (
+      <>
+        <div className="flex flex-col gap-2 px-2">
+          <Button variant="secondary" fullWidth onClick={openLogin}>
+            {t('login')}
+          </Button>
+          <Button variant="primary" fullWidth onClick={openSignup}>
+            {t('signup')}
+          </Button>
+        </div>
+
+        <LoginModal
+          isOpen={modalOpen}
+          mode={modalMode}
+          onClose={() => setModalOpen(false)}
+          onModeChange={setModalMode}
+        />
+      </>
+    )
   }
 
   if (variant === 'hero') {
