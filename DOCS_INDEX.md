@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 12 juin 2026 (**page publique tarifs coach** `/pricing` ; précédent : checklist critères mot de passe…)
+**Dernière mise à jour :** 13 juin 2026 (**PublicHeader** mobile hamburger + drawer visiteurs ; précédent : page publique tarifs coach `/pricing`…)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -18,7 +18,7 @@
 - **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (…), **§4.1 Authentication** (email/password, **politique mot de passe + checklist**, **Google OAuth**), **§4.9 Strava** (feature flag `NEXT_PUBLIC_ENABLE_ATHLETE_STRAVA_DEVICES`, off par défaut au lancement)
 - **Utiliser pour :** Comprendre le projet, les features, les rôles, l'architecture globale
 - **Taille :** ~450 lignes
-- **Dernière mise à jour :** 12 juin 2026 (§4.12 page publique tarifs coach `/pricing` ; précédent : §4.1 checklist mot de passe…)
+- **Dernière mise à jour :** 13 juin 2026 (§4.0 **PublicHeader** mobile drawer visiteurs ; précédent : §4.12 page publique tarifs coach `/pricing`…)
 
 ### **docs/CALENDAR_MONTH_VIEW.md**
 - **Contenu :** Récap **vue mois** (desktop) vs **vue semaine** (mobile), règles semaines ISO / mois civil étendu, **totaux hebdo** (liste sports `PERSISTED_WORKOUT_SPORT_TYPES`, `SPORT_WEEKLY_SUMMARY_BAR`), chargement données, liste des fichiers et tests unitaires, **tuiles disponibilité** (réf. design + `CalendarView`), liens vers maquettes archivées
@@ -30,7 +30,7 @@
 - **Contenu :** Tokens (couleurs, typo, espacements ; **sports** : `SPORT_CARD_STYLES`, `SPORT_BADGE_STYLES`, **`SPORT_WEEKLY_SUMMARY_BAR`** résumé hebdo), composants (Button, Input, Badge, TileCard, DashboardPageShell, **DashboardTopBar**, **AthleteAccountMenu**, **AthleteStatsVolumeChart**, **AthleteStatsChartSkeleton**, Modal, **MonthSelector**, **`CoachPlatformBillingAddressSection`** — titre sous-section sur la page + **`FORM_LABEL_CLASSES`**, etc.), guidelines UI, exemples de code, §7 breakpoints (**calendrier** mois étendu desktop + WeekSelector mobile, **tuiles disponibilité grille** : bandeau haut, `training-card`, typo alignée séance compacte, chat, Trouver mon coach, My offers)
 - **Utiliser pour :** Créer ou modifier des composants UI, choisir des couleurs, appliquer le design system, règles responsive par page
 - **Taille :** ~2010 lignes
-- **Dernière mise à jour :** 12 juin 2026 (**PublicHeader** nav Accueil/Tarifs, **CoachPlatformOfferGrid** mode marketing ; précédent : PasswordRequirements…)
+- **Dernière mise à jour :** 13 juin 2026 (**PublicHeader** mobile drawer visiteurs, **`AuthButtons`** variant `drawer` ; précédent : nav Accueil/Tarifs, **CoachPlatformOfferGrid**…)
 
 ### **docs/I18N.md** ⭐
 - **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces (dont **`calendar.weekly.sportVolumeHint`**), utilisation dans composants et server actions, **checklist pour nouvelles features** (toujours penser bilingue) ; **`coachMsaSubscription`** (dont **`billingInfoTitle`**, **`billingAddress`**)
@@ -106,6 +106,11 @@
 - **Utiliser pour :** Relire le rendu cible ; détail normatif dans **`docs/DESIGN_SYSTEM.md`** (puce calendrier §7) et **`Project_context.md`** §4.5.
 - **Dernière mise à jour :** 13 mai 2026
 
+### **docs/archive/design-public-header-mobile/** (design feature — archivé juin 2026)
+- **Contenu :** Maquettes HTML **US-PUB-HDR-01…03** + README (barre mobile visiteur, drawer nav/auth/langue, desktop inchangé).
+- **Utiliser pour :** Contexte UI historique ; détail produit / technique à jour : **`Project_context.md`** §4.0, **`docs/DESIGN_SYSTEM.md`** § PublicHeader.
+- **Archivé le :** 13 juin 2026 (fusion vers docs actives ci-dessus).
+
 ### **docs/archive/design-coach-pricing-public/** (design feature — archivé juin 2026)
 - **Contenu :** Maquettes HTML **US-PRICING-PUB-01…05** + README (page vitrine `/pricing`, nav **Accueil | Tarifs**, modes visiteur / coach).
 - **Utiliser pour :** Contexte UI historique ; détail produit / technique à jour : **`Project_context.md`** §4.12, **`docs/DESIGN_SYSTEM.md`** § PublicHeader / CoachPlatformOfferGrid.
@@ -134,6 +139,10 @@
 
 > La majorité des documents d'audit/refactoring historiques sont archivés dans `docs/archive/`.  
 > L’état courant canonique est dans **`docs/ENGINEERING_STATUS_REFAC_AUDIT.md`**.
+
+**PublicHeader mobile visiteurs (maquettes HTML, archivées 13 juin 2026) :**
+- `docs/archive/design-public-header-mobile/` — `MOCKUP_US_PUB_HDR_01_MOBILE_BAR.html`, `MOCKUP_US_PUB_HDR_02_DRAWER.html`, `MOCKUP_US_PUB_HDR_03_DESKTOP.html`, `README.md`
+- **Raison :** feature livrée ; comportement décrit dans **`Project_context.md`** §4.0, **`docs/DESIGN_SYSTEM.md`** § PublicHeader, helper **`lib/publicHeaderPageTitle.ts`**.
 
 **Checklist critères mot de passe (maquettes HTML, archivées 12 juin 2026) :**
 - `docs/archive/design-auth-password-requirements/` — `MOCKUP_US_AUTH_PWD_01_SIGNUP_CHECKLIST.html`, `MOCKUP_US_AUTH_PWD_02_RESET_CHECKLIST.html` (inscription + reset, checklist 5 critères).
@@ -505,10 +514,16 @@
 
 **Fréquence de mise à jour :** À chaque ajout/suppression de documentation
 
-**Dernier scan :** 9 juin 2026  
-**Dernier nettoyage :** 9 juin 2026 (entrée Changements récents : prérequis Checkout — livraison code)
+**Dernier scan :** 13 juin 2026  
+**Dernier nettoyage :** 13 juin 2026 (entrée Changements récents : PublicHeader mobile visiteurs)
 
 ### Changements récents :
+
+✅ **13 juin 2026 – PublicHeader mobile (hamburger + drawer visiteurs) – Mode Analyste :**
+- **Livraison (réf. code) :** **`components/PublicHeader.tsx`** — barre mobile `h-14` (logo, titre centré, hamburger `< md`) + **`Drawer`** droit (nav Accueil/Tarifs, **`AuthButtons`** `variant="drawer"`, **`LanguageSwitcher`**) ; **`components/AuthButtons.tsx`** — variant **`drawer`**, prop **`onBeforeOpen`** ; **`lib/publicHeaderPageTitle.ts`** + tests. Breakpoint **`md`** (aligné **`DashboardTopBar`**). Périmètre : toutes les routes **`PublicOrDashboardHeader`** visiteur (accueil, tarifs, contact, CGU, confidentialité, reset-password).
+- **Doc :** `Project_context.md` §4.0, `docs/DESIGN_SYSTEM.md` (v1.46, § PublicHeader, Fichiers clés), `docs/I18N.md`, `DOCS_INDEX.md`.
+- **Archivage :** `docs/archive/design-public-header-mobile/` (maquettes US-PUB-HDR-01…03 + README).
+- **Pages légales / confidentialité :** aucune modification (pas de nouvelle collecte ni changement de finalité).
 
 ✅ **9 juin 2026 – Abonnement plateforme coach (prérequis Checkout) – Mode Analyste (livraison + Reviewer Tech OK) :**
 - **Livraison (réf. code) :** **`lib/coachPlatformCheckoutPrerequisites.ts`** (+ tests) ; **`coachPlatformCheckoutPrerequisitesActions.ts`** (`loadCoachPlatformCheckoutPrerequisitesForCoach`, `saveCoachPlatformCheckoutPrerequisites`, `evaluateCoachPlatformCheckoutPrerequisitesForCoach`) ; **`persistCoachPlatformStripeBillingForCoach`** ; garde **`createCoachPlatformCheckoutSession`** ; composants **`CoachPlatformBillingAddressFields`**, **`CoachPlatformCheckoutPrerequisitesForm`**, **`CoachPlatformCheckoutPrerequisitesModal`** ; évolutions **`CoachPlatformSubscribeOffersModal`** (bascule contenu), **`CoachPlatformSubscriptionOffers`** (modale overlay), **`CoachPlatformBillingAddressSection`** ; i18n **`coachMsaSubscription.checkoutPrerequisites`**, **`coachPlatform.validation.checkoutPrerequisitesIncomplete`** (FR/EN).

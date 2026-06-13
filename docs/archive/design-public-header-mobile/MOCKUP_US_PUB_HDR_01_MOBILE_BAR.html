@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>US-PUB-HDR-01 — Barre mobile PublicHeader</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        colors: {
+          'palette-forest-dark': '#627e59',
+          'palette-olive': '#8e9856',
+        }
+      }}
+    }
+  </script>
+</head>
+<body class="bg-stone-100 text-stone-800 antialiased min-h-screen">
+  <div class="max-w-lg mx-auto py-8 px-4 space-y-10">
+    <header class="space-y-2">
+      <h1 class="text-xl font-bold text-stone-900">US-PUB-HDR-01 — Barre mobile (&lt; md)</h1>
+      <p class="text-sm text-stone-600">Mockup non fonctionnel. Même structure que <code>DashboardTopBar</code> : logo à gauche, titre de page centré, hamburger à droite. Hauteur <code>h-14</code>, breakpoint <code>md</code> (768 px).</p>
+    </header>
+
+    <!-- État A : accueil -->
+    <section class="space-y-2" aria-labelledby="state-a">
+      <h2 id="state-a" class="text-sm font-bold uppercase tracking-wider text-stone-700">État A — Page accueil (drawer fermé)</h2>
+      <p class="text-xs text-stone-500">Titre centré = libellé page courante (ex. « Accueil »). Aucun lien nav ni auth visible dans la barre.</p>
+      <div class="max-w-[390px] rounded-xl border border-stone-200 bg-white shadow-sm overflow-hidden">
+        <div class="sticky top-0 z-50 flex h-14 items-center gap-3 border-b border-stone-200 bg-white/95 px-4">
+          <a href="#" class="flex items-center gap-2 shrink-0" aria-label="My Sport Ally">
+            <span class="h-7 w-10 rounded bg-palette-forest-dark/20 flex items-center justify-center text-[9px] font-bold text-palette-forest-dark">LOGO</span>
+          </a>
+          <span class="flex-1 text-center text-sm font-semibold text-stone-800 truncate px-2">Accueil</span>
+          <button type="button" class="ml-auto p-2.5 rounded-xl text-stone-500 hover:bg-stone-100 shrink-0" aria-label="Ouvrir le menu">
+            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+        </div>
+        <div class="h-24 bg-gradient-to-b from-palette-forest-dark/5 to-white flex items-center justify-center text-xs text-stone-400">Contenu page (hero…)</div>
+      </div>
+    </section>
+
+    <!-- État B : tarifs -->
+    <section class="space-y-2" aria-labelledby="state-b">
+      <h2 id="state-b" class="text-sm font-bold uppercase tracking-wider text-stone-700">État B — Page /pricing</h2>
+      <p class="text-xs text-stone-500">Même barre ; seul le titre centré change (« Tarifs »).</p>
+      <div class="max-w-[390px] rounded-xl border border-stone-200 bg-white shadow-sm overflow-hidden">
+        <div class="flex h-14 items-center gap-3 border-b border-stone-200 bg-white px-4">
+          <span class="h-7 w-10 rounded bg-palette-forest-dark/20 shrink-0"></span>
+          <span class="flex-1 text-center text-sm font-semibold text-stone-800 truncate px-2">Tarifs</span>
+          <button type="button" class="ml-auto p-2.5 rounded-xl text-stone-500 bg-stone-50 shrink-0" aria-label="Ouvrir le menu">☰</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- État C : contact / CGU / etc. -->
+    <section class="space-y-2" aria-labelledby="state-c">
+      <h2 id="state-c" class="text-sm font-bold uppercase tracking-wider text-stone-700">État C — Autres pages publiques</h2>
+      <p class="text-xs text-stone-500">Contact, CGU, confidentialité, reset-password : même barre, titre issu de <code>metadata.*Title</code> ou <code>auth.resetPassword</code>.</p>
+      <div class="max-w-[390px] rounded-xl border border-stone-200 bg-white shadow-sm overflow-hidden">
+        <div class="flex h-14 items-center gap-3 border-b border-stone-200 bg-white px-4">
+          <span class="h-7 w-10 rounded bg-palette-forest-dark/20 shrink-0"></span>
+          <span class="flex-1 text-center text-sm font-semibold text-stone-800 truncate px-2">Contact</span>
+          <button type="button" class="ml-auto p-2.5 rounded-xl text-stone-500 shrink-0">☰</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Transition -->
+    <section class="rounded-xl bg-stone-50 border border-stone-200 p-4 text-sm space-y-3" aria-labelledby="transitions">
+      <h3 id="transitions" class="font-bold text-stone-900">Transitions fonctionnelles</h3>
+      <ul class="list-disc pl-5 text-stone-600 space-y-1 text-xs">
+        <li><strong>Avant :</strong> visiteur sur page publique, viewport &lt; md, drawer fermé.</li>
+        <li><strong>Action :</strong> clic hamburger → ouverture drawer (US-PUB-HDR-02), overlay semi-opaque.</li>
+        <li><strong>Après :</strong> barre inchangée ; drawer visible par-dessus le contenu.</li>
+        <li><strong>Logo :</strong> clic → navigation vers <code>/</code> (comportement actuel conservé).</li>
+        <li><strong>Périmètre :</strong> toutes les routes via <code>PublicOrDashboardHeader</code> → <code>PublicHeader</code>.</li>
+      </ul>
+    </section>
+  </div>
+</body>
+</html>

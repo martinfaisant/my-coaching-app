@@ -1,6 +1,6 @@
 # 🎨 Design System
 
-**Version :** 1.45  
+**Version :** 1.46  
 **Dernière mise à jour :** 12 juin 2026 (**PasswordRequirements**, **NewPasswordField** — checklist mot de passe inscription/reset ; précédent : prérequis Checkout…)
 
 ---
@@ -1723,9 +1723,22 @@ import { PublicOrDashboardHeader } from '@/components/PublicOrDashboardHeader'
 
 **Fichier :** `components/PublicHeader.tsx`
 
-En-tête public pour **visiteurs** : logo My Sport Ally (lien vers `/`), nav **Accueil** (`/`) et **Tarifs** (`/pricing`, i18n `coachPricingPublic.navHome` / `navPricing`, état actif via `usePathname`), AuthButtons, séparateur vertical, LanguageSwitcher. Classes : `sticky top-0 z-50 border-b border-stone-200 bg-background/95 backdrop-blur-md`, conteneur `max-w-7xl h-16`.
+En-tête public pour **visiteurs** : logo My Sport Ally (lien vers `/`), nav **Accueil** (`/`) et **Tarifs** (`/pricing`, i18n `coachPricingPublic.navHome` / `navPricing`, état actif via `usePathname`), **`AuthButtons`**, séparateur vertical, **`LanguageSwitcher`**. Classes communes : `sticky top-0 z-50 border-b border-stone-200 bg-background/95 backdrop-blur-md`.
 
-**Usage :** Rendu indirectement via `PublicOrDashboardHeader` sur les pages marketing (accueil visiteur, **/pricing**, contact, CGU, confidentialité, reset-password) ; ne pas l’utiliser seul sur ces routes sauf cas exceptionnel. Référence design : `docs/design-coach-pricing-public/`, archivée reset-password : `docs/archive/design-reset-password-header/DESIGN_RESET_PASSWORD_HEADER.md`.
+**Usage :** Rendu indirectement via `PublicOrDashboardHeader` sur les pages marketing (accueil visiteur, **/pricing**, contact, CGU, confidentialité, reset-password) ; ne pas l’utiliser seul sur ces routes sauf cas exceptionnel. Maquettes archivées : `docs/archive/design-public-header-mobile/` ; historique nav tarifs : `docs/archive/design-coach-pricing-public/`, reset-password : `docs/archive/design-reset-password-header/`.
+
+#### Comportement attendu
+
+- **Desktop / tablette (`md`+, ≥ 768 px)** : barre `h-16`, conteneur `max-w-7xl` — logo + nom « My Sport Ally » (à partir de `sm`), nav inline Accueil/Tarifs (lien actif : `border-b-2`), **`AuthButtons`** (`variant` défaut), séparateur vertical, **`LanguageSwitcher`**. **Inchangé** par rapport au layout historique.
+- **Mobile (`< md`)** : même pattern que **`DashboardTopBar`** — barre **`h-14`** : logo seul (`h-7`), **titre de page centré** (tronqué), bouton **hamburger** à droite (`navigation.openMenu`). Aucun lien nav, auth ni langue dans la barre.
+- **Drawer mobile** : `Drawer` `placement="right"` ; en-tête avec bouton fermer (`navigation.collapseMenu`, `IconClose`) ; contenu scrollable :
+  1. Nav **Accueil** / **Tarifs** (style liste dashboard : tuile active `bg-palette-forest-dark`) ;
+  2. séparateur ;
+  3. **`AuthButtons`** `variant="drawer"` (boutons pleine largeur ; fermeture drawer avant ouverture **`LoginModal`**) ;
+  4. séparateur ;
+  5. **`LanguageSwitcher`**.
+- **Titres mobile** : mapping pathname → i18n via **`getPublicHeaderPageTitleI18n`** (`lib/publicHeaderPageTitle.ts`) — `coachPricingPublic.navHome` / `navPricing`, `metadata.contactTitle` / `termsTitle` / `privacyTitle`, `auth.resetPassword`.
+- **État drawer** : ouverture liée au `pathname` courant (même logique que `DashboardTopBar`) ; fermeture sur navigation, auth, overlay, ✕ ou Escape.
 
 ```tsx
 import { PublicHeader } from '@/components/PublicHeader'
@@ -1735,6 +1748,8 @@ import { PublicHeader } from '@/components/PublicHeader'
   <main className="flex-1">...</main>
 </div>
 ```
+
+**Voir aussi :** § **PublicOrDashboardHeader**, § **DashboardTopBar**, § **Drawer**, § **LanguageSwitcher** ; helper **`lib/publicHeaderPageTitle.ts`**.
 
 ---
 
@@ -2211,12 +2226,12 @@ Actuellement, utiliser un span custom :
 
 - **Tokens couleurs** : `tailwind.config.ts`, `app/globals.css`
 - **Styles formulaires** : `lib/formStyles.ts` (FORM_BASE_CLASSES, FORM_INPUT_TEXT_SIZE, FORM_INPUT_HEIGHT, etc.)
-- **Composants** : `components/Button.tsx`, `components/SocialAuthButtons.tsx`, `components/AuthRolePicker.tsx`, `components/AuthLegalConsent.tsx`, `components/Input.tsx`, `components/PasswordInput.tsx`, `components/PasswordRequirements.tsx`, `components/NewPasswordField.tsx`, `components/SearchInput.tsx`, `components/Textarea.tsx`, `components/Badge.tsx`, `components/Avatar.tsx`, `components/AvatarImage.tsx`, `components/SportTileSelectable.tsx`, `components/ActivityTile.tsx`, `components/Modal.tsx`, `components/CoachReviewsModal.tsx`, `components/workout-modal/WorkoutFacilityHoursStrip.tsx`, `components/workout-modal/WorkoutTargetActualCards.tsx`, `components/workout-modal/WorkoutFeedbackSummary.tsx`, `components/workout-modal/WorkoutFeedbackSection.tsx`, `components/AthleteFacilityDetails.tsx`, `components/CoachAthleteNotesSection.tsx`, `components/CoachAthleteNoteModal.tsx`, `components/DashboardPageShell.tsx`, `components/DashboardTopBar.tsx`, `components/AthleteAccountMenu.tsx`, `components/CoachAccountMenu.tsx`, `components/ContactForm.tsx`, `components/Drawer.tsx`, `components/PublicOrDashboardHeader.tsx`, `components/PublicHeader.tsx`, `components/EmailValidatedModal.tsx`, `components/HomeEmailConfirmedTrigger.tsx`, `components/Dropdown.tsx`, `components/Segments.tsx`, `components/DatePickerPopup.tsx`, `components/MonthSelector.tsx`, `components/CalendarView.tsx`, `components/CalendarViewWithNavigation.tsx`, `lib/calendarViewDayHeights.ts`, `components/AvailabilityModal.tsx`, `components/AvailabilityDetailModal.tsx`, `components/ChatAthleteListItem.tsx`, `components/ChatConversationSidebar.tsx`, `components/CoachPlatformSubscriptionOffers.tsx`, `components/CoachPlatformBillingAddressSection.tsx`, **`components/CoachPlatformBillingAddressFields.tsx`**, **`components/CoachPlatformCheckoutPrerequisitesForm.tsx`**, **`components/CoachPlatformCheckoutPrerequisitesModal.tsx`**, `components/CoachPlatformOfferGrid.tsx`, `components/CoachPlatformSubscribeOffersModal.tsx`, **`components/CoachPlatformCurrentOfferCard.tsx`**, **`components/CoachPlatformManageSubscriptionFlow.tsx`**, **`components/CoachPlatformSubscriptionStatusSection.tsx`**, **`components/CoachPlatformUnpaidSubscriptionBanner.tsx`**
+- **Composants** : `components/Button.tsx`, `components/AuthButtons.tsx` (variants `default`, `hero`, **`drawer`** — auth pleine largeur dans drawer `PublicHeader`), `components/SocialAuthButtons.tsx`, `components/AuthRolePicker.tsx`, `components/AuthLegalConsent.tsx`, `components/Input.tsx`, `components/PasswordInput.tsx`, `components/PasswordRequirements.tsx`, `components/NewPasswordField.tsx`, `components/SearchInput.tsx`, `components/Textarea.tsx`, `components/Badge.tsx`, `components/Avatar.tsx`, `components/AvatarImage.tsx`, `components/SportTileSelectable.tsx`, `components/ActivityTile.tsx`, `components/Modal.tsx`, `components/CoachReviewsModal.tsx`, `components/workout-modal/WorkoutFacilityHoursStrip.tsx`, `components/workout-modal/WorkoutTargetActualCards.tsx`, `components/workout-modal/WorkoutFeedbackSummary.tsx`, `components/workout-modal/WorkoutFeedbackSection.tsx`, `components/AthleteFacilityDetails.tsx`, `components/CoachAthleteNotesSection.tsx`, `components/CoachAthleteNoteModal.tsx`, `components/DashboardPageShell.tsx`, `components/DashboardTopBar.tsx`, `components/AthleteAccountMenu.tsx`, `components/CoachAccountMenu.tsx`, `components/ContactForm.tsx`, `components/Drawer.tsx`, `components/PublicOrDashboardHeader.tsx`, `components/PublicHeader.tsx`, `components/EmailValidatedModal.tsx`, `components/HomeEmailConfirmedTrigger.tsx`, `components/Dropdown.tsx`, `components/Segments.tsx`, `components/DatePickerPopup.tsx`, `components/MonthSelector.tsx`, `components/CalendarView.tsx`, `components/CalendarViewWithNavigation.tsx`, `lib/calendarViewDayHeights.ts`, `components/AvailabilityModal.tsx`, `components/AvailabilityDetailModal.tsx`, `components/ChatAthleteListItem.tsx`, `components/ChatConversationSidebar.tsx`, `components/CoachPlatformSubscriptionOffers.tsx`, `components/CoachPlatformBillingAddressSection.tsx`, **`components/CoachPlatformBillingAddressFields.tsx`**, **`components/CoachPlatformCheckoutPrerequisitesForm.tsx`**, **`components/CoachPlatformCheckoutPrerequisitesModal.tsx`**, `components/CoachPlatformOfferGrid.tsx`, `components/CoachPlatformSubscribeOffersModal.tsx`, **`components/CoachPlatformCurrentOfferCard.tsx`**, **`components/CoachPlatformManageSubscriptionFlow.tsx`**, **`components/CoachPlatformSubscriptionStatusSection.tsx`**, **`components/CoachPlatformUnpaidSubscriptionBanner.tsx`**
 - **Page Mon Abonnement MySportAlly (coach)** : `app/[locale]/dashboard/coach-platform-subscription/page.tsx`, `loading.tsx`, **`coachPlatformBillingAddressActions.ts`**, **`coachPlatformCheckoutPrerequisitesActions.ts`**, **`coachPlatformCancellationActions.ts`** ; libs **`lib/coachPlatformCheckoutPrerequisites.ts`**, **`lib/stripeCoachPlatformCatalog.ts`**, **`lib/coachPlatformSubscriptionTrial.ts`**, **`lib/coachPlatformTrialEligibility.ts`**, **`lib/stripeCoachPlatformBillingHistory.ts`**, **`lib/stripeCoachPlatformBillingAddress.ts`**, **`lib/stripeCoachPlatformCancellation.ts`**, **`lib/coachPlatformSubscriptionSync.ts`**, **`lib/coachPlatformSubscriptionDisplay.ts`**, **`lib/formatMoney.ts`**, **`lib/stripeCoachPlatformCustomer.ts`**, **`lib/coachPlatformCheckoutReturnPath.ts`**, **`lib/coachMsaOfferDisplay.ts`** ; migrations **`075`**, **`076`**
 - **Page Mes athlètes (coach)** : `app/[locale]/dashboard/athletes/page.tsx` (bandeaux profil / offre publiée, erreur chargement liste), `components/CoachPlatformStripeBanner.tsx`, `components/CoachPlatformCheckoutVerification.tsx`, `CoachAthletesListWithFilter.tsx`, `PendingRequestTile.tsx` ; actions Checkout **`app/[locale]/dashboard/athletes/coachPlatformActions.ts`**
 - **Sports** : `lib/sportStyles.ts` (`SPORT_CARD_STYLES`, `SPORT_BADGE_STYLES`, **`SPORT_WEEKLY_SUMMARY_BAR`**, `SPORT_ICONS`, `SPORT_TRANSLATION_KEYS`), `lib/sportsRegistry.ts` (`PERSISTED_WORKOUT_SPORT_TYPES`, `workoutIsTimeOnlySport`), `lib/sportsOptions.ts`, `components/SportIcons.tsx`
 - **Stats athlète (Nivo)** : `lib/athleteStatsNivoTheme.ts`, `lib/athleteStatsColors.ts`, `components/athlete/AthleteStatsVolumeChart.tsx`
-- **Entrée dashboard / accueil connecté** : `lib/dashboardEntryPath.ts` (`getDashboardEntryPath`), `lib/pathWithLocale.ts`, `app/[locale]/page.tsx`, `app/[locale]/dashboard/page.tsx`
+- **Entrée dashboard / accueil connecté** : `lib/dashboardEntryPath.ts` (`getDashboardEntryPath`), `lib/pathWithLocale.ts`, `lib/publicHeaderPageTitle.ts` (`getPublicHeaderPageTitleI18n` — titres barre mobile `PublicHeader`), `app/[locale]/page.tsx`, `app/[locale]/dashboard/page.tsx`
 - **Horaires modale workout (coach)** : `lib/workoutFacilityHours.ts` (filtre sport ↔ type d’installation, jour, tri alphabétique)
 - **Modale workout — formats & couleurs** : `lib/workoutFormatting.ts` (format absolu et delta des métriques workout — durée, distance, allure mm:ss, vitesse km/h, dénivelé ; tests Vitest `lib/workoutFormatting.test.ts`), `lib/workoutFeedbackColors.ts` (dégradé sémantique tuiles + picker feedback : Ressenti / Intensité RPE / Plaisir)
 - **Design system page** : `app/dashboard/admin/design-system/page.tsx`
