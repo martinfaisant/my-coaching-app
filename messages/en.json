@@ -314,7 +314,7 @@
         },
         "badges": { "new": "New", "sample": "Running" },
         "misc": {
-          "ratingLine": "4.8 (12 reviews)",
+          "ratingLine": "4.8 ★ (12 reviews)",
           "bio": "Specialized in running/trail. Progress without getting injured.",
           "availableOffers": "Available offers",
           "offerTitle": "Monthly plan",
