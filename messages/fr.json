@@ -1177,6 +1177,107 @@
       "titleHighlight": "coach dédié",
       "subtitle": "Plans d'entraînement personnalisés, suivi en temps réel et messagerie directe. Tout pour progresser efficacement."
     },
+    "pricingLink": {
+      "hero": "Vous êtes coach ? Voir les tarifs",
+      "coachCard": "Voir les tarifs plateforme",
+      "showcaseOffers": "Voir les tarifs plateforme",
+      "finalCta": "Découvrir les tarifs coach"
+    },
+    "showcase": {
+      "title": "Découvrez la plateforme",
+      "subtitle": "Athlètes et coachs : tout ce qu'il faut pour planifier, suivre et progresser.",
+      "tabsAriaLabel": "Fonctionnalités de la plateforme",
+      "audience": {
+        "athlete": "Athlète",
+        "coach": "Coach"
+      },
+      "tabs": {
+        "calendarAthlete": "Calendrier",
+        "stats": "Statistiques",
+        "findCoach": "Trouver un coach",
+        "calendarCoach": "Mes athlètes",
+        "planSession": "Planifier",
+        "coachOffers": "Mon offre"
+      },
+      "panels": {
+        "calendarAthlete": {
+          "title": "Votre semaine d'entraînement en un coup d'œil",
+          "description": "Séances planifiées, disponibilités et volumes par sport — tout est centralisé.",
+          "ctaAthlete": "Commencer gratuitement",
+          "ctaCoach": "Créer mon compte coach"
+        },
+        "stats": {
+          "title": "Visualisez votre volume réalisé",
+          "description": "Courbes par semaine ou mois, comparaison sur 3 années, filtres par sport et métrique.",
+          "ctaAthlete": "Commencer gratuitement",
+          "ctaCoach": "Créer mon compte coach"
+        },
+        "findCoach": {
+          "title": "Trouvez le coach qui vous correspond",
+          "description": "Filtrez par sport et langue, comparez les formules et envoyez votre demande.",
+          "ctaAthlete": "Commencer gratuitement",
+          "ctaCoach": "Créer mon compte coach"
+        },
+        "calendarCoach": {
+          "title": "Pilotez le calendrier de chaque athlète",
+          "description": "Plan prévu vs réalisé, disponibilités et notes — un espace dédié par athlète.",
+          "ctaAthlete": "Commencer gratuitement",
+          "ctaCoach": "Créer mon compte coach"
+        },
+        "planSession": {
+          "title": "Créez des séances sur mesure",
+          "description": "Multi-sports, objectifs détaillés : durée, distance, allure, D+ et consignes.",
+          "ctaAthlete": "Commencer gratuitement",
+          "ctaCoach": "Créer mon compte coach"
+        },
+        "coachOffers": {
+          "title": "Publiez vos formules de coaching",
+          "description": "Offres bilingues, tarifs et badge recommandé — visibles par les athlètes.",
+          "ctaAthlete": "Commencer gratuitement",
+          "ctaCoach": "Créer mon compte coach"
+        }
+      },
+      "screenshots": {
+        "calendar-athlete": {
+          "alt": "Calendrier d'entraînement athlète My Sport Ally"
+        },
+        "workout-feedback": {
+          "alt": "Modale séance réalisée avec retour ressenti"
+        },
+        "stats": {
+          "alt": "Page statistiques de volume réalisé"
+        },
+        "find-coach": {
+          "alt": "Recherche et fiches coachs"
+        },
+        "calendar-coach": {
+          "alt": "Calendrier coach pour un athlète"
+        },
+        "workout-create": {
+          "alt": "Modale de création de séance"
+        },
+        "coach-offers": {
+          "alt": "Gestion des offres de coaching"
+        }
+      }
+    },
+    "audience": {
+      "title": "Pour qui ?",
+      "athlete": {
+        "title": "Je suis athlète",
+        "bullet1": "Calendrier et séances détaillées",
+        "bullet2": "Statistiques de volume réalisé",
+        "bullet3": "Objectifs et retour après séance",
+        "cta": "Créer mon compte athlète"
+      },
+      "coach": {
+        "title": "Je suis coach",
+        "bullet1": "Gestion multi-athlètes et planification",
+        "bullet2": "Offres et souscriptions",
+        "bullet3": "Messagerie et suivi de progression",
+        "cta": "Créer mon compte coach"
+      }
+    },
     "preview": {
       "title": "Une interface intuitive et complète",
       "subtitle": "Accédez à tous vos entraînements, objectifs et échanges depuis un tableau de bord moderne",
@@ -1210,10 +1311,6 @@
       "progressTracking": {
         "title": "Suivi de Progression",
         "description": "Totaux hebdomadaires par sport, historique de vos séances et comparaison avec votre plan pour mesurer vos progrès."
-      },
-      "certifiedCoaches": {
-        "title": "Coachs Certifiés",
-        "description": "Parcourez les profils détaillés, consultez les avis et notes des athlètes, et choisissez le coach qui correspond à vos besoins."
       }
     },
     "howItWorks": {
@@ -1247,7 +1344,7 @@
     },
     "cta": {
       "title": "Prêt à passer au niveau supérieur ?",
-      "subtitle": "Rejoignez les athlètes qui progressent chaque jour avec My Sport Ally"
+      "subtitle": "Rejoignez les athlètes et coachs qui progressent avec My Sport Ally"
     },
     "footer": {
       "copyright": "Tous droits réservés.",

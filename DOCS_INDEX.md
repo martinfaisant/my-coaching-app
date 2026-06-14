@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 13 juin 2026 (**PublicHeader** mobile hamburger + drawer visiteurs ; précédent : page publique tarifs coach `/pricing`…)
+**Dernière mise à jour :** 14 juin 2026 (**landing** refonte Option B : captures produit, showcase onglets ; précédent : **PublicHeader** mobile hamburger + drawer visiteurs…)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -9,16 +9,16 @@
 ## 🎯 Documentation Active (à utiliser en priorité)
 
 ### **README.md** ⭐
-- **Contenu :** Setup projet, stack technique, quick start, structure du projet, **URL production https://mysportally.com**, **accueil `/` et `/en`** : utilisateurs connectés redirigés vers l’entrée dashboard (voir **Project_context.md** §4.0, **`lib/dashboardEntryPath.ts`**), **connexion Google OAuth** (voir **DEPLOYMENT_NOTES.md** § Connexion Google), variables **Stripe coach plateforme** (…), **Strava devices athlète** : `NEXT_PUBLIC_ENABLE_ATHLETE_STRAVA_DEVICES` (off par défaut, voir § Intégration Strava)
+- **Contenu :** Setup projet, stack technique, quick start, structure du projet, **URL production https://mysportally.com**, **accueil `/` et `/en`** (landing marketing visiteurs, §4.13 ; connectés redirigés vers dashboard — **Project_context.md** §4.0, **`lib/dashboardEntryPath.ts`**), **connexion Google OAuth** (voir **DEPLOYMENT_NOTES.md** § Connexion Google), variables **Stripe coach plateforme** (…), **Strava devices athlète** : `NEXT_PUBLIC_ENABLE_ATHLETE_STRAVA_DEVICES` (off par défaut, voir § Intégration Strava)
 - **Utiliser pour :** Onboarding, démarrage rapide, vue d'ensemble technique
 - **Taille :** ~200 lignes
-- **Dernière mise à jour :** 12 juin 2026 (page publique `/pricing` ; précédent : connexion Google OAuth…)
+- **Dernière mise à jour :** 14 juin 2026 (landing marketing §4.13 ; précédent : page publique `/pricing`…)
 
 ### **Project_context.md** ⭐
-- **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (…), **§4.1 Authentication** (email/password, **politique mot de passe + checklist**, **Google OAuth**), **§4.9 Strava** (feature flag `NEXT_PUBLIC_ENABLE_ATHLETE_STRAVA_DEVICES`, off par défaut au lancement)
+- **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (…), **§4.1 Authentication** (email/password, **politique mot de passe + checklist**, **Google OAuth**), **§4.13 Marketing landing** (captures produit, showcase onglets), **§4.9 Strava** (feature flag `NEXT_PUBLIC_ENABLE_ATHLETE_STRAVA_DEVICES`, off par défaut au lancement)
 - **Utiliser pour :** Comprendre le projet, les features, les rôles, l'architecture globale
 - **Taille :** ~450 lignes
-- **Dernière mise à jour :** 13 juin 2026 (§4.0 **PublicHeader** mobile drawer visiteurs ; précédent : §4.12 page publique tarifs coach `/pricing`…)
+- **Dernière mise à jour :** 14 juin 2026 (§4.13 **landing** refonte ; précédent : §4.0 **PublicHeader** mobile drawer visiteurs…)
 
 ### **docs/CALENDAR_MONTH_VIEW.md**
 - **Contenu :** Récap **vue mois** (desktop) vs **vue semaine** (mobile), règles semaines ISO / mois civil étendu, **totaux hebdo** (liste sports `PERSISTED_WORKOUT_SPORT_TYPES`, `SPORT_WEEKLY_SUMMARY_BAR`), chargement données, liste des fichiers et tests unitaires, **tuiles disponibilité** (réf. design + `CalendarView`), liens vers maquettes archivées
@@ -27,16 +27,16 @@
 - **Dernière mise à jour :** 13 mai 2026 (tuiles dispo grille + ligne tableau fichiers ; précédent : résumé hebdo…)
 
 ### **docs/DESIGN_SYSTEM.md** ⭐
-- **Contenu :** Tokens (couleurs, typo, espacements ; **sports** : `SPORT_CARD_STYLES`, `SPORT_BADGE_STYLES`, **`SPORT_WEEKLY_SUMMARY_BAR`** résumé hebdo), composants (Button, Input, Badge, TileCard, DashboardPageShell, **DashboardTopBar**, **AthleteAccountMenu**, **AthleteStatsVolumeChart**, **AthleteStatsChartSkeleton**, Modal, **MonthSelector**, **`CoachPlatformBillingAddressSection`** — titre sous-section sur la page + **`FORM_LABEL_CLASSES`**, etc.), guidelines UI, exemples de code, §7 breakpoints (**calendrier** mois étendu desktop + WeekSelector mobile, **tuiles disponibilité grille** : bandeau haut, `training-card`, typo alignée séance compacte, chat, Trouver mon coach, My offers)
+- **Contenu :** Tokens (couleurs, typo, espacements ; **sports** : `SPORT_CARD_STYLES`, `SPORT_BADGE_STYLES`, **`SPORT_WEEKLY_SUMMARY_BAR`** résumé hebdo), composants (Button, Input, Badge, TileCard, DashboardPageShell, **DashboardTopBar**, **Landing** page d'accueil marketing, **AthleteAccountMenu**, **AthleteStatsVolumeChart**, **AthleteStatsChartSkeleton**, Modal, **MonthSelector**, **`CoachPlatformBillingAddressSection`** — titre sous-section sur la page + **`FORM_LABEL_CLASSES`**, etc.), guidelines UI, exemples de code, §7 breakpoints (**calendrier** mois étendu desktop + WeekSelector mobile, **tuiles disponibilité grille** : bandeau haut, `training-card`, typo alignée séance compacte, chat, Trouver mon coach, My offers)
 - **Utiliser pour :** Créer ou modifier des composants UI, choisir des couleurs, appliquer le design system, règles responsive par page
 - **Taille :** ~2010 lignes
-- **Dernière mise à jour :** 13 juin 2026 (**PublicHeader** mobile drawer visiteurs, **`AuthButtons`** variant `drawer` ; précédent : nav Accueil/Tarifs, **CoachPlatformOfferGrid**…)
+- **Dernière mise à jour :** 14 juin 2026 (**Landing** § composants `components/landing/*`, **`AuthButtons`** variant `ctaBand` ; précédent : **PublicHeader** mobile drawer…)
 
 ### **docs/I18N.md** ⭐
 - **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces (dont **`calendar.weekly.sportVolumeHint`**), utilisation dans composants et server actions, **checklist pour nouvelles features** (toujours penser bilingue) ; **`coachMsaSubscription`** (dont **`billingInfoTitle`**, **`billingAddress`**)
 - **Utiliser pour :** Toute nouvelle feature ou texte visible, ajout de clés de traduction, dépannage i18n
 - **Taille :** ~195 lignes
-- **Dernière mise à jour :** 12 juin 2026 (**`coachPricingPublic`** ; précédent : **`auth.passwordRequirements`**…)
+- **Dernière mise à jour :** 14 juin 2026 (**`landing`** showcase/audience/pricingLink ; précédent : **`PublicHeader` mobile**…)
 
 ### **docs/AUTH_EMAIL_TEMPLATES.md**
 - **Contenu :** Guide de configuration des emails d’auth Supabase (sujet, i18n FR/EN, variables, dépannage logo). **Les fichiers HTML des templates** (Confirm signup, puis Magic Link, Reset Password, etc.) sont dans **docs/email-templates/**.
@@ -116,6 +116,11 @@
 - **Utiliser pour :** Contexte UI historique ; détail produit / technique à jour : **`Project_context.md`** §4.12, **`docs/DESIGN_SYSTEM.md`** § PublicHeader / CoachPlatformOfferGrid.
 - **Archivé le :** 12 juin 2026 (fusion vers docs actives ci-dessus).
 
+### **docs/archive/design-landing-revamp/** (design feature — archivé juin 2026)
+- **Contenu :** Maquettes HTML **US-LANDING-01…04** + **MOCKUP_US_LANDING_FULL_PAGE.html**, README, captures PNG source (`screenshots/fr/`). Option B validée (hero split, 6 onglets, cartes audience).
+- **Utiliser pour :** Contexte UI historique ; détail produit / technique à jour : **`Project_context.md`** §4.13, **`docs/DESIGN_SYSTEM.md`** § Landing, assets **`public/landing/`**.
+- **Archivé le :** 14 juin 2026 (fusion vers docs actives ci-dessus).
+
 ## 🚀 Documentation Opérationnelle
 
 ### **DEPLOYMENT_NOTES.md**
@@ -152,6 +157,7 @@
 - `docs/archive/design-auth-social-login/` — maquettes HTML US1–US5 (login Google, signup, finalisation rôle+CGU, liaison compte, modale signup) ; **livré** : Google OAuth v1 (pas Apple, pas photo Google). Référence produit : **`Project_context.md`** §4.1 ; déploiement : **`DEPLOYMENT_NOTES.md`** § Connexion Google ; UI : **`docs/DESIGN_SYSTEM.md`** § SocialAuthButtons.
 - `docs/archive/design-contact-public-form/` — `us1-contact-page.html`, `us2-landing-footer-contact.html`, `us3-athlete-account-menu-contact.html`, `us4-coach-account-menu-contact.html`, `README.md`
 - `docs/archive/design-coach-pricing-public/` — `MOCKUP_US_PRICING_PUB_01…05` (page publique `/pricing`, header Accueil/Tarifs), `README.md` — **livré** juin 2026 ; référence : **`Project_context.md`** §4.12
+- `docs/archive/design-landing-revamp/` — `MOCKUP_US_LANDING_01…04`, `MOCKUP_US_LANDING_FULL_PAGE.html`, `screenshots/fr/`, `README.md` — **livré** juin 2026 ; référence : **`Project_context.md`** §4.13, **`docs/DESIGN_SYSTEM.md`** § Landing
 - **Raison :** feature livrée ; comportement et données décrits dans **Project_context.md §4.11**, **README.md** (Resend), **DEPLOYMENT_NOTES.md** (migrations 066–067).
 
 **Abonnement plateforme coach — maquette « grâce 3 jours » (archivée 13 mai 2026) :**

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Landing B — Vue complète desktop</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        colors: {
+          'palette-forest-dark': '#627e59',
+          'palette-forest-light': '#f0f4ef',
+          'palette-olive': '#8e9856',
+        }
+      }}
+    }
+  </script>
+  <style>
+    .tab-panel { display: none; } .tab-panel.active { display: block; }
+    .tab-btn.active { background: #627e59; color: white; border-color: #627e59; }
+  </style>
+</head>
+<body class="bg-white text-stone-800 antialiased">
+  <p class="sticky top-0 z-[100] bg-amber-50 border-b border-amber-200 px-4 py-2 text-xs text-amber-900 text-center font-medium">
+    Vue d'ensemble — Option B validée · Ouvrir les US individuelles pour le détail mobile / transitions
+  </p>
+
+  <!-- Header -->
+  <header class="border-b border-stone-200 bg-white/95 backdrop-blur-md sticky top-8 z-50">
+    <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-8">
+      <span class="font-bold">My Sport Ally</span>
+      <nav class="flex gap-6 text-sm"><a href="#" class="border-b-2 border-palette-forest-dark font-medium">Accueil</a><a href="#">Tarifs</a></nav>
+      <div class="flex gap-2 text-sm"><button class="px-4 py-2">Se connecter</button><button class="px-4 py-2 rounded-lg bg-palette-forest-dark text-white">S'inscrire</button></div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="bg-gradient-to-b from-palette-forest-light/40 to-white py-16">
+    <div class="mx-auto grid max-w-7xl grid-cols-2 gap-12 px-8 items-center">
+      <div class="space-y-6">
+        <span class="inline-block rounded-full bg-palette-forest-light px-4 py-1.5 text-sm text-palette-forest-dark font-medium">La plateforme de coaching sportif personnalisé</span>
+        <h1 class="text-5xl font-bold leading-tight">Atteignez vos objectifs avec un <span class="text-palette-forest-dark">coach dédié</span></h1>
+        <p class="text-stone-600 text-lg">Plans d'entraînement personnalisés, suivi en temps réel et messagerie directe.</p>
+        <div class="flex gap-3"><button class="rounded-xl bg-palette-forest-dark text-white px-6 py-3 font-semibold">Commencer gratuitement</button><button class="rounded-xl border-2 border-stone-200 px-6 py-3 font-semibold">Se connecter</button></div>
+        <a href="#" class="text-sm text-palette-forest-dark font-medium">Vous êtes coach ? Voir les tarifs →</a>
+      </div>
+      <div class="relative h-[400px]">
+        <div class="absolute right-0 top-10 w-[75%] rotate-1 rounded-2xl border border-stone-200 bg-white p-1 shadow-xl"><img src="screenshots/fr/calendar-coach.png" class="rounded-xl w-full max-h-[280px] object-cover object-top" alt="" /></div>
+        <div class="absolute left-0 top-0 w-[82%] -rotate-1 rounded-2xl border border-stone-200 bg-white p-1 shadow-2xl z-10"><img src="screenshots/fr/calendar-athlete.png" class="rounded-xl w-full max-h-[320px] object-cover object-top" alt="" /></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tabs -->
+  <section class="py-16 bg-stone-50">
+    <div class="mx-auto max-w-7xl px-8">
+      <h2 class="text-3xl font-bold text-center mb-8">Découvrez la plateforme</h2>
+      <div class="flex flex-wrap justify-center gap-2 mb-8">
+        <button class="tab-btn active tab-btn rounded-lg border px-3 py-1.5 text-sm" data-tab="t1">Calendrier</button>
+        <button class="tab-btn rounded-lg border px-3 py-1.5 text-sm" data-tab="t2">Statistiques</button>
+        <button class="tab-btn rounded-lg border px-3 py-1.5 text-sm" data-tab="t3">Trouver un coach</button>
+        <button class="tab-btn rounded-lg border px-3 py-1.5 text-sm" data-tab="t4">Mes athlètes</button>
+        <button class="tab-btn rounded-lg border px-3 py-1.5 text-sm" data-tab="t5">Planifier</button>
+        <button class="tab-btn rounded-lg border px-3 py-1.5 text-sm" data-tab="t6">Mon offre</button>
+      </div>
+      <div class="rounded-2xl border bg-white p-8">
+        <div id="t1" class="tab-panel active grid grid-cols-2 gap-8 items-center">
+          <div><span class="text-xs font-bold text-palette-forest-dark uppercase">Athlète</span><h3 class="text-xl font-bold mt-1">Votre semaine en un coup d'œil</h3><p class="text-stone-600 text-sm mt-2">Séances, disponibilités et volumes.</p></div>
+          <img src="screenshots/fr/calendar-athlete.png" class="rounded-xl border shadow-lg" alt="" />
+        </div>
+        <div id="t2" class="tab-panel grid grid-cols-2 gap-8 items-center">
+          <div><span class="text-xs font-bold text-palette-forest-dark uppercase">Athlète</span><h3 class="text-xl font-bold mt-1">Volume réalisé</h3></div>
+          <img src="screenshots/fr/stats.png" class="rounded-xl border shadow-lg" alt="" />
+        </div>
+        <div id="t3" class="tab-panel grid grid-cols-2 gap-8 items-center">
+          <div><span class="text-xs font-bold text-palette-forest-dark uppercase">Athlète</span><h3 class="text-xl font-bold mt-1">Trouvez votre coach</h3></div>
+          <img src="screenshots/fr/find-coach.png" class="rounded-xl border shadow-lg" alt="" />
+        </div>
+        <div id="t4" class="tab-panel grid grid-cols-2 gap-8 items-center">
+          <div><span class="text-xs font-bold text-palette-olive uppercase">Coach</span><h3 class="text-xl font-bold mt-1">Calendrier par athlète</h3></div>
+          <img src="screenshots/fr/calendar-coach.png" class="rounded-xl border shadow-lg" alt="" />
+        </div>
+        <div id="t5" class="tab-panel grid grid-cols-2 gap-8 items-center">
+          <div><span class="text-xs font-bold text-palette-olive uppercase">Coach</span><h3 class="text-xl font-bold mt-1">Séances sur mesure</h3></div>
+          <img src="screenshots/fr/workout-create.png" class="rounded-xl border shadow-lg max-h-72 object-cover object-top w-full" alt="" />
+        </div>
+        <div id="t6" class="tab-panel grid grid-cols-2 gap-8 items-center">
+          <div><span class="text-xs font-bold text-palette-olive uppercase">Coach</span><h3 class="text-xl font-bold mt-1">Vos formules</h3></div>
+          <img src="screenshots/fr/coach-offers.png" class="rounded-xl border shadow-lg" alt="" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Audience -->
+  <section class="py-16">
+    <div class="mx-auto max-w-7xl px-8">
+      <h2 class="text-3xl font-bold text-center mb-10">Pour qui ?</h2>
+      <div class="grid grid-cols-2 gap-8">
+        <div class="rounded-2xl border p-6"><h3 class="font-bold text-lg mb-3">Je suis athlète</h3><ul class="text-sm text-stone-600 space-y-1 mb-4"><li>✓ Calendrier & stats</li><li>✓ Objectifs & retour séance</li></ul><button class="w-full rounded-xl bg-palette-forest-dark text-white py-3 text-sm font-semibold">Créer mon compte athlète</button></div>
+        <div class="rounded-2xl border p-6"><h3 class="font-bold text-lg mb-3">Je suis coach</h3><ul class="text-sm text-stone-600 space-y-1 mb-4"><li>✓ Multi-athlètes & offres</li><li>✓ Planification détaillée</li></ul><button class="w-full rounded-xl bg-palette-forest-dark text-white py-3 text-sm font-semibold mb-2">Créer mon compte coach</button><a href="#" class="block text-center text-sm text-palette-forest-dark">Voir les tarifs plateforme</a></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How + CTA + Footer abbreviated -->
+  <section class="py-12 bg-stone-50 text-center"><h2 class="text-2xl font-bold mb-8">Comment ça marche ?</h2><p class="text-sm text-stone-500">3 étapes · voir US-LANDING-04</p></section>
+  <section class="py-16 bg-gradient-to-br from-palette-forest-dark to-palette-olive text-white text-center">
+    <h2 class="text-3xl font-bold mb-6">Prêt à passer au niveau supérieur ?</h2>
+    <button class="rounded-xl bg-white text-palette-forest-dark px-8 py-4 font-semibold">Commencer gratuitement</button>
+  </section>
+  <footer class="py-8 bg-stone-50 text-center text-sm text-stone-600">© 2026 My Sport Ally</footer>
+
+  <script>
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.tab).classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>

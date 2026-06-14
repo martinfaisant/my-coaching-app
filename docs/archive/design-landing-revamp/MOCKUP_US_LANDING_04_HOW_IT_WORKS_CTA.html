@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>US-LANDING-04 — How it works + CTA + Footer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        colors: {
+          'palette-forest-dark': '#627e59',
+          'palette-forest-default': '#627e59',
+          'palette-forest-light': '#f0f4ef',
+          'palette-olive': '#8e9856',
+        }
+      }}
+    }
+  </script>
+</head>
+<body class="bg-white text-stone-800 antialiased">
+  <p class="bg-stone-100 border-b border-stone-200 px-4 py-2 text-xs text-stone-600 text-center">
+    Mockup non fonctionnel — US-LANDING-04 · Bas de page landing
+  </p>
+
+  <!-- How it works — compact -->
+  <section class="py-16 bg-stone-50" aria-labelledby="how-title">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12 max-w-2xl mx-auto">
+        <h2 id="how-title" class="text-3xl font-bold text-stone-900 mb-2">Comment ça marche ?</h2>
+        <p class="text-stone-600">Trois étapes pour commencer</p>
+      </div>
+      <div class="grid md:grid-cols-3 gap-8 relative">
+        <div class="hidden md:block absolute top-8 left-[16%] right-[16%] h-0.5 bg-gradient-to-r from-palette-forest-light via-palette-forest-dark/30 to-palette-forest-light"></div>
+        <div class="text-center relative">
+          <div class="inline-flex h-14 w-14 items-center justify-center rounded-full bg-palette-forest-dark text-white text-xl font-bold shadow-lg relative z-10 mb-4">1</div>
+          <h3 class="font-semibold text-stone-900 mb-2">Créez votre profil</h3>
+          <p class="text-sm text-stone-600">Sports, niveau et objectifs en quelques clics.</p>
+        </div>
+        <div class="text-center relative">
+          <div class="inline-flex h-14 w-14 items-center justify-center rounded-full bg-palette-forest-dark text-white text-xl font-bold shadow-lg relative z-10 mb-4">2</div>
+          <h3 class="font-semibold text-stone-900 mb-2">Trouvez votre coach</h3>
+          <p class="text-sm text-stone-600">Filtres sport et langue, profils et demandes.</p>
+        </div>
+        <div class="text-center relative">
+          <div class="inline-flex h-14 w-14 items-center justify-center rounded-full bg-palette-forest-dark text-white text-xl font-bold shadow-lg relative z-10 mb-4">3</div>
+          <h3 class="font-semibold text-stone-900 mb-2">Commencez à progresser</h3>
+          <p class="text-sm text-stone-600">Plan personnalisé et échanges avec votre coach.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Final -->
+  <section class="py-16 lg:py-20 bg-gradient-to-br from-palette-forest-dark to-palette-olive text-white" aria-labelledby="cta-title">
+    <div class="mx-auto max-w-4xl px-4 text-center">
+      <h2 id="cta-title" class="text-3xl sm:text-4xl font-bold mb-4">Prêt à passer au niveau supérieur ?</h2>
+      <p class="text-lg text-white/90 mb-8 max-w-xl mx-auto">Rejoignez les athlètes et coachs qui progressent avec My Sport Ally.</p>
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">
+        <button class="w-full sm:w-auto rounded-xl bg-white px-8 py-4 text-lg font-semibold text-palette-forest-dark shadow-lg hover:bg-stone-50">
+          Commencer gratuitement
+        </button>
+        <button class="w-full sm:w-auto rounded-xl border-2 border-white/40 px-8 py-4 text-lg font-semibold text-white hover:bg-white/10">
+          Se connecter
+        </button>
+      </div>
+      <a href="/pricing" class="text-sm text-white/80 hover:text-white underline underline-offset-4">
+        Découvrir les tarifs coach
+      </a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="border-t border-stone-200 bg-stone-50 py-12">
+    <div class="mx-auto max-w-7xl px-4 text-center text-stone-600 space-y-3">
+      <div class="flex flex-wrap justify-center gap-6 text-sm">
+        <a href="#" class="underline underline-offset-4 hover:text-stone-900">Politique de confidentialité</a>
+        <a href="#" class="underline underline-offset-4 hover:text-stone-900">Conditions d'utilisation</a>
+        <a href="#" class="underline underline-offset-4 hover:text-stone-900">Contact</a>
+      </div>
+      <p class="text-sm">© 2026 My Sport Ally. Tous droits réservés.</p>
+    </div>
+  </footer>
+
+  <section class="mx-auto max-w-3xl p-8 text-xs text-stone-600 space-y-2">
+    <h3 class="font-bold text-stone-900 text-sm">Notes implémentation</h3>
+    <ul class="list-disc pl-5 space-y-1">
+      <li>CTA bandeau : bouton primary inversé (fond blanc) pour contraste sur fond vert.</li>
+      <li>Lien tarifs sous les boutons, discret (texte souligné, pas bouton outline).</li>
+      <li>Footer inchangé fonctionnellement ; liens légaux + contact.</li>
+      <li>Section « features icônes » et preview Unsplash de l'actuel page.tsx : <strong>supprimées</strong>.</li>
+      <li>Strava : aucune mention landing (clés i18n conservées mais non utilisées).</li>
+    </ul>
+  </section>
+</body>
+</html>
