@@ -120,6 +120,8 @@ The same **default path** logic is centralized in **`lib/dashboardEntryPath.ts`*
 
 **Marketing home (logged-in):** On the **landing routes only** — default locale home **`/`** and English home **`/en`** (`app/[locale]/page.tsx`) — if a **session** exists, the server **redirects immediately** to the role-specific path above (no marketing content rendered). **Athlete without `coach_id`** still goes to **`/dashboard/find-coach`**. Flows with query params on the home page (e.g. **`?code=`** for password reset, **`?emailConfirmed=1`** for email confirmation) are evaluated **before** this redirect so those links keep working.
 
+**Marketing home (visitors) — refonte juin 2026 :** Page d'accueil **Option B** — hero split (copy + stack visuel calendrier athlète/coach), **showcase 6 onglets** (Calendrier, Statistiques, Trouver un coach | Mes athlètes, Planifier, Mon offre), cartes **« Je suis athlète / coach »**, **Comment ça marche** (3 étapes), bandeau CTA final. **Captures produit** dans **`public/landing/{fr|en}/*.webp`** (helper **`getLandingScreenshotSrc`**). CTAs : **`AuthButtons`** (`hero`, **`ctaBand`**) + **`LandingSignupButton`** ; lien secondaire **Tarifs** → **`/pricing`**. Pas de mention Strava. Composants : **`components/landing/*`**, config **`lib/landingConfig.ts`**. i18n : namespace **`landing`**. Maquettes archivées : **`docs/archive/design-landing-revamp/`**. Détail UI : **`docs/DESIGN_SYSTEM.md`** § Landing. *(Assets EN : remplacer les placeholders FR avant prod.)*
+
 The dashboard uses a **top bar** (logo My Sport Ally left, nav links center on tablet/desktop, account area right). **Mobile:** page title centered, hamburger right; tap opens a **drawer from the right**. **Athlete (tablet/desktop):** **primary** links centered — if the athlete has no `coach_id`, **Find a coach** is included, then **My calendar**, **Statistics** (`/dashboard/stats`, volume « fait » charts), and **My goals**; **right:** **account menu** (avatar + name + chevron) opens a panel: **connected devices** (only when `NEXT_PUBLIC_ENABLE_ATHLETE_STRAVA_DEVICES=true`, see §4.9), **My coach** (only when `coach_id` is set), subscription history; separator; **My details** (route `/dashboard/profile`); **Log out**. **Athlete (mobile drawer):** same grouping with horizontal separators — primary links, then secondary links, then **My details**, then **Log out** (no separate large profile card). **Coach** nav: Mes athlètes, Mon offre, Souscriptions; **profile** remains a direct top-bar link (avatar + name) to `/dashboard/profile`. **Admin** nav: Gestion des membres, Design System only (no « Mes athlètes »). The pages **« Trouver mon coach »** and **« Mes athlètes »** are separate routes (`/dashboard/find-coach`, `/dashboard/athletes`), each with its own loading skeleton. The dashboard layout and `DashboardPageShell` (padding only, no in-page title nor card container) are used for all pages. **Navigation config** is split in `lib/dashboardNavConfig.ts` (`getAthletePrimaryNavItems`, `getAthleteAccountNavItems` — devices item conditional on `isAthleteStravaDevicesEnabled()` in `lib/featureFlags.ts`, `getAthleteProfileNavItem`, merged list for mobile page titles). **Stats icon** in the top bar / drawer: `components/DashboardNavIcons.tsx` (`/dashboard/stats`).
 
 **Public / marketing / legal header:** On **contact** (`/contact`), **pricing** (`/pricing`), **privacy** (`/privacy`), **terms** (`/terms`), and **reset-password** (`/reset-password`), `PublicOrDashboardHeader` (server) renders **`PublicHeader`** when there is **no session**, and the same **`DashboardTopBar`** as in the app when the user is **logged in** (role-based nav and account menus). On the **landing** (`/` and `/en`), **logged-in** users are **redirected** to the app (see « Marketing home (logged-in) » above), so only **visitors** see the marketing page with **`PublicHeader`**. **Visitor header — desktop (`md`+):** logo, inline nav **Accueil** + **Tarifs**, `LanguageSwitcher`, sign-in / sign-up (`AuthButtons`). **Visitor header — mobile (`< md`):** same pattern as the dashboard top bar — compact bar (`h-14`: logo, centered page title, hamburger); tap opens a **drawer from the right** with nav links, full-width auth buttons, and language switcher (`lib/publicHeaderPageTitle.ts` for page titles). The top bar is **sticky** (`sticky top-0`, `z-50`, `border-b border-stone-200`) on the routes where it appears with long scroll. See `docs/DESIGN_SYSTEM.md` (§ PublicOrDashboardHeader, § PublicHeader, § DashboardTopBar).
@@ -454,6 +456,31 @@ The athlete picker uses these as **selected** state (`FEELING_PICKER_SELECTED_BG
 **Grille :** **`CoachPlatformOfferGrid`** mode **`marketing`** (réutilise le rendu checkout ; CTA adapté). Essai campagne : badge visiteur si **`COACH_PLATFORM_SUBSCRIPTION_TRIAL_DAYS > 0`** ; coach sans abo : éligibilité via **`resolveCoachPlatformTrialPresentationForCoach`**.
 
 **Références design :** maquettes archivées **`docs/archive/design-coach-pricing-public/`**.
+
+---
+
+### 4.13 Marketing landing page (`/` and `/en`) ✅
+
+**Besoin produit :** page d'accueil marketing pour **visiteurs non connectés**, mettant en avant les fonctionnalités réelles (captures produit) et incitant à **créer un compte** (athlète ou coach, équilibre 50/50).
+
+**Routes :** `/` (FR) et `/en` (`app/[locale]/page.tsx`). **Connectés :** redirect immédiat (§4.0). **Header :** `PublicHeader` via `PublicOrDashboardHeader`.
+
+**Sections (Option B livrée) :**
+
+| Section | Contenu |
+|---------|---------|
+| Hero | Titre existant, `AuthButtons` hero, lien tarifs secondaire, stack visuel desktop (calendrier athlète + coach) |
+| Showcase | 6 onglets client (`LandingShowcaseTabs`) — 3 athlète / 3 coach |
+| Audience | Cartes « Je suis athlète / coach » + mini-captures |
+| How it works | 3 étapes numérotées |
+| CTA final | Bandeau vert, `AuthButtons` **`ctaBand`**, lien tarifs |
+| Footer | Privacy, Terms, Contact |
+
+**Assets :** `public/landing/fr/` et `public/landing/en/` — 7 fichiers WebP (`calendar-athlete`, `workout-feedback`, `stats`, `find-coach`, `calendar-coach`, `workout-create`, `coach-offers`). **EN :** v1 = copies FR — à remplacer par captures UI locale EN.
+
+**Hors scope landing :** Strava, anciennes images Unsplash, grille features icônes.
+
+**Références :** **`docs/DESIGN_SYSTEM.md`** § Landing ; maquettes **`docs/archive/design-landing-revamp/`** ; i18n **`landing.*`** (`docs/I18N.md`).
 
 ---
 

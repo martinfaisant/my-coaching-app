@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>US-LANDING-02 — Showcase onglets</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        colors: {
+          'palette-forest-dark': '#627e59',
+          'palette-forest-light': '#f0f4ef',
+          'palette-olive': '#8e9856',
+        }
+      }}
+    }
+  </script>
+  <style>
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+    .tab-btn.active { background: #627e59; color: white; }
+    @media (prefers-reduced-motion: reduce) {
+      .tab-panel { transition: none !important; }
+    }
+  </style>
+</head>
+<body class="bg-stone-50 text-stone-800 antialiased">
+  <p class="bg-stone-100 border-b border-stone-200 px-4 py-2 text-xs text-stone-600 text-center">
+    Mockup interactif (JS minimal) — US-LANDING-02 · 6 onglets · équilibre 50/50 athlète / coach
+  </p>
+
+  <section class="py-16 lg:py-20" aria-labelledby="showcase-title">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-10 max-w-2xl mx-auto">
+        <h2 id="showcase-title" class="text-3xl sm:text-4xl font-bold text-stone-900 mb-3">Découvrez la plateforme</h2>
+        <p class="text-stone-600">Athlètes et coachs : tout ce qu'il faut pour planifier, suivre et progresser.</p>
+      </div>
+
+      <!-- Segmented tabs — scroll horizontal mobile -->
+      <div class="mb-8 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
+        <div class="flex gap-2 min-w-max sm:min-w-0 sm:flex-wrap sm:justify-center" role="tablist">
+          <button type="button" class="tab-btn active rounded-lg px-4 py-2 text-sm font-medium bg-white border border-stone-200 text-stone-700 whitespace-nowrap" data-tab="calendar-athlete" role="tab">Calendrier</button>
+          <button type="button" class="tab-btn rounded-lg px-4 py-2 text-sm font-medium bg-white border border-stone-200 text-stone-700 whitespace-nowrap" data-tab="stats" role="tab">Statistiques</button>
+          <button type="button" class="tab-btn rounded-lg px-4 py-2 text-sm font-medium bg-white border border-stone-200 text-stone-700 whitespace-nowrap" data-tab="find-coach" role="tab">Trouver un coach</button>
+          <button type="button" class="tab-btn rounded-lg px-4 py-2 text-sm font-medium bg-white border border-stone-200 text-stone-700 whitespace-nowrap" data-tab="calendar-coach" role="tab">Mes athlètes</button>
+          <button type="button" class="tab-btn rounded-lg px-4 py-2 text-sm font-medium bg-white border border-stone-200 text-stone-700 whitespace-nowrap" data-tab="workout-create" role="tab">Planifier</button>
+          <button type="button" class="tab-btn rounded-lg px-4 py-2 text-sm font-medium bg-white border border-stone-200 text-stone-700 whitespace-nowrap" data-tab="coach-offers" role="tab">Mon offre</button>
+        </div>
+      </div>
+
+      <!-- Panels -->
+      <div class="rounded-2xl border border-stone-200 bg-white p-6 lg:p-10 shadow-sm">
+        <div id="calendar-athlete" class="tab-panel active" role="tabpanel">
+          <div class="grid lg:grid-cols-2 gap-8 items-center">
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wider text-palette-forest-dark">Athlète</span>
+              <h3 class="text-2xl font-bold text-stone-900 mt-1 mb-2">Votre semaine d'entraînement en un coup d'œil</h3>
+              <p class="text-stone-600 mb-6">Séances planifiées, disponibilités et volumes par sport — tout est centralisé.</p>
+              <button class="rounded-xl bg-palette-forest-dark px-6 py-3 text-sm font-semibold text-white">Commencer gratuitement</button>
+            </div>
+            <div class="rounded-xl border border-stone-200 p-1 shadow-lg overflow-hidden">
+              <img src="screenshots/fr/calendar-athlete.png" alt="Calendrier athlète" class="w-full object-cover object-top rounded-lg" />
+            </div>
+          </div>
+        </div>
+
+        <div id="stats" class="tab-panel" role="tabpanel">
+          <div class="grid lg:grid-cols-2 gap-8 items-center">
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wider text-palette-forest-dark">Athlète</span>
+              <h3 class="text-2xl font-bold text-stone-900 mt-1 mb-2">Visualisez votre volume réalisé</h3>
+              <p class="text-stone-600 mb-6">Courbes par semaine ou mois, comparaison sur 3 années, filtres par sport et métrique.</p>
+              <button class="rounded-xl bg-palette-forest-dark px-6 py-3 text-sm font-semibold text-white">Commencer gratuitement</button>
+            </div>
+            <div class="rounded-xl border border-stone-200 p-1 shadow-lg overflow-hidden">
+              <img src="screenshots/fr/stats.png" alt="Statistiques volume" class="w-full object-cover object-top rounded-lg" />
+            </div>
+          </div>
+        </div>
+
+        <div id="find-coach" class="tab-panel" role="tabpanel">
+          <div class="grid lg:grid-cols-2 gap-8 items-center">
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wider text-palette-forest-dark">Athlète</span>
+              <h3 class="text-2xl font-bold text-stone-900 mt-1 mb-2">Trouvez le coach qui vous correspond</h3>
+              <p class="text-stone-600 mb-6">Filtrez par sport et langue, comparez les formules et envoyez votre demande.</p>
+              <button class="rounded-xl bg-palette-forest-dark px-6 py-3 text-sm font-semibold text-white">Commencer gratuitement</button>
+            </div>
+            <div class="rounded-xl border border-stone-200 p-1 shadow-lg overflow-hidden">
+              <img src="screenshots/fr/find-coach.png" alt="Trouver un coach" class="w-full object-cover object-top rounded-lg" />
+            </div>
+          </div>
+        </div>
+
+        <div id="calendar-coach" class="tab-panel" role="tabpanel">
+          <div class="grid lg:grid-cols-2 gap-8 items-center">
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wider text-palette-olive">Coach</span>
+              <h3 class="text-2xl font-bold text-stone-900 mt-1 mb-2">Pilotez le calendrier de chaque athlète</h3>
+              <p class="text-stone-600 mb-6">Plan prévu vs réalisé, disponibilités et notes — un espace dédié par athlète.</p>
+              <button class="rounded-xl bg-palette-forest-dark px-6 py-3 text-sm font-semibold text-white">Créer mon compte coach</button>
+            </div>
+            <div class="rounded-xl border border-stone-200 p-1 shadow-lg overflow-hidden">
+              <img src="screenshots/fr/calendar-coach.png" alt="Calendrier coach" class="w-full object-cover object-top rounded-lg" />
+            </div>
+          </div>
+        </div>
+
+        <div id="workout-create" class="tab-panel" role="tabpanel">
+          <div class="grid lg:grid-cols-2 gap-8 items-center">
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wider text-palette-olive">Coach</span>
+              <h3 class="text-2xl font-bold text-stone-900 mt-1 mb-2">Créez des séances sur mesure</h3>
+              <p class="text-stone-600 mb-6">Multi-sports, objectifs détaillés : durée, distance, allure, D+ et consignes.</p>
+              <button class="rounded-xl bg-palette-forest-dark px-6 py-3 text-sm font-semibold text-white">Créer mon compte coach</button>
+            </div>
+            <div class="rounded-xl border border-stone-200 p-1 shadow-lg overflow-hidden">
+              <img src="screenshots/fr/workout-create.png" alt="Création séance" class="w-full object-cover object-top rounded-lg max-h-[400px]" />
+            </div>
+          </div>
+        </div>
+
+        <div id="coach-offers" class="tab-panel" role="tabpanel">
+          <div class="grid lg:grid-cols-2 gap-8 items-center">
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wider text-palette-olive">Coach</span>
+              <h3 class="text-2xl font-bold text-stone-900 mt-1 mb-2">Publiez vos formules de coaching</h3>
+              <p class="text-stone-600 mb-6">Offres bilingues, tarifs et badge recommandé — visibles par les athlètes.</p>
+              <a href="/pricing" class="inline-flex items-center gap-1 text-sm font-medium text-palette-forest-dark hover:underline mr-4">Voir les tarifs plateforme</a>
+              <button class="rounded-xl bg-palette-forest-dark px-6 py-3 text-sm font-semibold text-white">Créer mon compte coach</button>
+            </div>
+            <div class="rounded-xl border border-stone-200 p-1 shadow-lg overflow-hidden">
+              <img src="screenshots/fr/coach-offers.png" alt="Offres coach" class="w-full object-cover object-top rounded-lg" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bonus panel : séance réalisée (athlète) — affiché sous les tabs ou intégré au tab Calendrier en note -->
+      <p class="mt-6 text-center text-xs text-stone-500">
+        La modale « séance réalisée + retour ressenti » (<code>workout-feedback.png</code>) peut apparaître en vignette secondaire sous le panneau Calendrier ou dans la carte audience athlète (US-LANDING-03). Strava : non affiché.
+      </p>
+    </div>
+  </section>
+
+  <script>
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.tab).classList.add('active');
+      });
+    });
+  </script>
+
+  <section class="mx-auto max-w-3xl p-8 text-xs text-stone-600 space-y-2 border-t border-stone-200">
+    <h3 class="font-bold text-stone-900 text-sm">Transitions</h3>
+    <p><strong>Clic onglet :</strong> panneau précédent masqué, nouveau panneau visible (fade optionnel, pas d'auto-play).</p>
+    <p><strong>Mobile :</strong> onglets scrollables horizontalement ; panneau en colonne (texte puis image).</p>
+    <p><strong>Reduced motion :</strong> pas d'animation de carousel.</p>
+  </section>
+</body>
+</html>

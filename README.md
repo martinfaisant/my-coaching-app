@@ -12,7 +12,7 @@ My Sport Ally est une marketplace + plateforme de coaching permettant aux athlè
 - Consulter leurs **statistiques** de volume réalisé (`/dashboard/stats`)
 - *(Optionnel, feature flag)* synchroniser Strava — voir § Intégration Strava ci-dessous
 
-Les **visiteurs** peuvent consulter les **tarifs coach plateforme** sur **`/pricing`** (abonnement MySportAlly requis seulement à l’acceptation d’un athlète — voir **Project_context.md** §4.12). Ils peuvent aussi contacter le support via **Contact** (`/contact`), avec accusé de réception (référence MSA) et notification e-mail côté équipe (voir variables Resend ci-dessous). Les utilisateurs **connectés** qui ouvrent l’accueil marketing **`/`** ou **`/en`** sont **redirigés** vers la page d’entrée du tableau de bord selon leur rôle (détail : **Project_context.md** §4.0, code **`lib/dashboardEntryPath.ts`**).
+Les **visiteurs** voient une **page d'accueil marketing** (`/` et `/en`) avec captures produit (calendrier, stats, recherche coach, espace coach), onglets de découverte et invitation à créer un compte — détail **Project_context.md** §4.13. Ils peuvent aussi consulter les **tarifs coach plateforme** sur **`/pricing`** (abonnement MySportAlly requis seulement à l’acceptation d’un athlète — voir **Project_context.md** §4.12). Ils peuvent aussi contacter le support via **Contact** (`/contact`), avec accusé de réception (référence MSA) et notification e-mail côté équipe (voir variables Resend ci-dessous). Les utilisateurs **connectés** qui ouvrent l’accueil marketing **`/`** ou **`/en`** sont **redirigés** vers la page d’entrée du tableau de bord selon leur rôle (détail : **Project_context.md** §4.0, code **`lib/dashboardEntryPath.ts`**).
 
 ## 🚀 Quick Start
 

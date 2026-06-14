@@ -7,7 +7,7 @@ import { LoginModal } from '@/components/LoginModal'
 import { ArrowRight } from 'lucide-react'
 
 interface AuthButtonsProps {
-  variant?: 'default' | 'hero' | 'drawer'
+  variant?: 'default' | 'hero' | 'drawer' | 'ctaBand'
   /** Appelé avant ouverture de la modale (ex. fermer le drawer mobile). */
   onBeforeOpen?: () => void
 }
@@ -65,6 +65,35 @@ export function AuthButtons({ variant = 'default', onBeforeOpen }: AuthButtonsPr
           <button
             onClick={openLogin}
             className="w-full sm:w-auto px-8 py-4 bg-white text-stone-900 rounded-xl font-semibold text-lg border-2 border-stone-200 hover:border-stone-300 transition-all duration-300"
+          >
+            {t('login')}
+          </button>
+        </div>
+
+        <LoginModal
+          isOpen={modalOpen}
+          mode={modalMode}
+          onClose={() => setModalOpen(false)}
+          onModeChange={setModalMode}
+        />
+      </>
+    )
+  }
+
+  if (variant === 'ctaBand') {
+    return (
+      <>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <button
+            onClick={openSignup}
+            className="group w-full sm:w-auto px-8 py-4 bg-white text-palette-forest-dark rounded-xl font-semibold text-lg shadow-lg hover:bg-stone-50 transition-all duration-300 flex items-center justify-center gap-2"
+          >
+            {t('startFree')}
+            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+          </button>
+          <button
+            onClick={openLogin}
+            className="w-full sm:w-auto px-8 py-4 text-white rounded-xl font-semibold text-lg border-2 border-white/40 hover:bg-white/10 transition-all duration-300"
           >
             {t('login')}
           </button>
