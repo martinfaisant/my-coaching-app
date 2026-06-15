@@ -38,6 +38,7 @@ alwaysApply: true
 - **Backend**: Supabase (Auth, DB, RLS)
 - **Auth**: Server-side `getCurrentUserWithProfile()`, `requireRole()`, helpers from `lib/authHelpers.ts`
 - **Google OAuth (login/signup)**: `SocialAuthButtons` → `startGoogleOAuth` ; callback `/auth/callback` ; pages `/[locale]/auth/complete-signup` (rôle + CGU) et `/[locale]/auth/link-account` ; helpers `lib/authOAuth.ts`, `lib/googleUserMetadata.ts` (prénom/nom/photo depuis métadonnées Google : `full_name`, `avatar_url` / `picture`) ; `proxy.ts` exclut i18n **uniquement** pour `/auth/callback`. Déploiement : `DEPLOYMENT_NOTES.md` § Connexion Google.
+- **Submit connexion / inscription email** : `AuthSubmitButton` (`useFormStatus`, `auth.loggingIn` / `auth.signingUp`) sur page/modale `/login` et `EmailValidatedModal` ; seul le bouton passe en loading (champs restent éditables).
 - **Mot de passe (inscription email + reset)** : politique Supabase ≥ 8 car., minuscule, majuscule, chiffre, caractère spécial ; checklist `PasswordRequirements` / `NewPasswordField` ; validation `lib/passwordValidation.ts` + `isSupabasePasswordPolicyError` ; submit client désactivé tant que critères incomplets.
 - **Security**: RLS policies on all tables
 - **Error Handling**: Error boundaries (`app/error.tsx`, `app/dashboard/error.tsx`) + structured errors (`lib/errors.ts`)

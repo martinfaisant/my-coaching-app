@@ -29,6 +29,8 @@
     "loginSubtitle": "Connectez-vous ou créez un compte",
     "logout": "Se déconnecter",
     "loggingOut": "Déconnexion…",
+    "loggingIn": "Connexion…",
+    "signingUp": "Inscription…",
     "signup": "Créer un compte",
     "signupButton": "S'inscrire",
     "createAccount": "Créer mon compte",

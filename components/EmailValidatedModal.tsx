@@ -1,10 +1,9 @@
 'use client'
 
 import { useActionState } from 'react'
-import { useFormStatus } from 'react-dom'
 import { useTranslations } from 'next-intl'
 import { Modal } from '@/components/Modal'
-import { Button } from '@/components/Button'
+import { AuthSubmitButton } from '@/components/AuthSubmitButton'
 import { Input } from '@/components/Input'
 import { login, type LoginState } from '@/app/[locale]/login/actions'
 
@@ -14,23 +13,6 @@ type EmailValidatedModalProps = {
 }
 
 const initialLoginState: LoginState = {}
-
-function SubmitButton() {
-  const t = useTranslations('auth')
-  const { pending } = useFormStatus()
-  return (
-    <Button
-      type="submit"
-      variant="primaryDark"
-      fullWidth
-      className="mt-2"
-      loading={pending}
-      loadingText={t('login')}
-    >
-      {t('login')}
-    </Button>
-  )
-}
 
 export function EmailValidatedModal({ isOpen, onClose }: EmailValidatedModalProps) {
   const t = useTranslations('auth')
@@ -94,7 +76,14 @@ export function EmailValidatedModal({ isOpen, onClose }: EmailValidatedModalProp
               {loginState.error}
             </p>
           )}
-          <SubmitButton />
+          <AuthSubmitButton
+            variant="primaryDark"
+            fullWidth
+            className="mt-2"
+            loadingText={t('loggingIn')}
+          >
+            {t('login')}
+          </AuthSubmitButton>
         </form>
       </div>
     </Modal>
