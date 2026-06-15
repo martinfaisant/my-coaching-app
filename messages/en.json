@@ -2362,7 +2362,10 @@
       "badgePersonal": "Added"
     },
     "form": {
-      "activityRealized": "Completed activity"
+      "activityRealized": "Completed activity",
+      "activityRealizedMandatoryTime": "Completed activity — Duration required",
+      "activityRealizedMandatoryTimeOrDistance": "Completed activity — Duration or distance required",
+      "activityRealizedMandatoryDistanceAndTime": "Completed activity — Distance and duration required"
     },
     "coachReadOnly": {
       "headerBadge": "Added by athlete",

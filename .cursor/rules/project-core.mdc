@@ -326,7 +326,7 @@ if ('error' in result) return result
 ## Activités saisies par l’athlète (athlete-logged workouts)
 
 - **Modèle :** colonne `workouts.planned_by` = `'coach'` (défaut) | `'athlete'` ; migration **078**. Toujours `status = 'completed'`, pas de `target_*`, métriques en `actual_*` ; incluses dans le total « fait », exclues des totaux « prévu ».
-- **Athlète :** bouton « + » — jour passé ou aujourd’hui → `AthleteLoggedActivityModal` (création/édition/suppression) ; jour futur → `AvailabilityModal`. Tuile calendrier : badge pill ambre **« Ajouté »** (`ATHLETE_LOGGED_TILE_BADGE_CLASSNAME` dans `lib/athleteLoggedWorkout.ts`).
+- **Athlète :** bouton « + » — jour passé ou aujourd’hui → `AthleteLoggedActivityModal` (création/édition/suppression) ; jour futur → `AvailabilityModal`. Tuile calendrier : badge pill ambre **« Ajouté »** (`ATHLETE_LOGGED_TILE_BADGE_CLASSNAME` dans `lib/athleteLoggedWorkout.ts`). Modale : bloc **« Activité réalisée — … obligatoire »** (`getAthleteLoggedActivityMetricsUi`) + champs requis accentués (`CoachWorkoutForm.requiredFields`, `FORM_PRIMARY_FIELD_*`).
 - **Coach :** lecture seule via `AthleteLoggedCoachReadOnlyView` (en-tête sport + titre + badge « Ajouté par l'athlète », carte Réalisé sans deltas de comparaison, `WorkoutFeedbackSummary`).
 - **Helpers :** `lib/athleteLoggedWorkout.ts`, `lib/athleteLoggedActivityValidation.ts` ; actions `app/[locale]/dashboard/athlete-logged-activity/actions.ts`.
 - **i18n :** namespace `athleteLoggedActivity`. Référence : `Project_context.md` §4.5.

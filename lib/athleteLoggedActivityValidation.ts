@@ -1,15 +1,7 @@
 import type { SportType, WorkoutTimeOfDay } from '@/types/database'
 import { workoutIsTimeOnlySport } from '@/lib/sportsRegistry'
-import {
-  WORKOUT_VALIDATION_ERROR_CODES,
-  type WorkoutFormValidationError,
-  type WorkoutValidationMessageKey,
-  parseWorkoutTargetParams,
-} from '@/lib/workoutValidation'
 
-const VALID_TIME_OF_DAY: WorkoutTimeOfDay[] = ['morning', 'noon', 'evening']
-
-const PACE_REQUIRED_SPORTS: SportType[] = [
+export const ATHLETE_LOGGED_PACE_REQUIRED_SPORTS: SportType[] = [
   'course',
   'trail',
   'velo',
@@ -19,6 +11,52 @@ const PACE_REQUIRED_SPORTS: SportType[] = [
   'backcountry_ski',
   'randonnee',
 ]
+
+export type AthleteLoggedActivityMetricsHeadingKey =
+  | 'form.activityRealizedMandatoryTime'
+  | 'form.activityRealizedMandatoryTimeOrDistance'
+  | 'form.activityRealizedMandatoryDistanceAndTime'
+
+export type AthleteLoggedActivityRequiredFields = {
+  duration: boolean
+  distance: boolean
+  pace: boolean
+}
+
+export type AthleteLoggedActivityMetricsUi = {
+  headingKey: AthleteLoggedActivityMetricsHeadingKey
+  requiredFields: AthleteLoggedActivityRequiredFields
+}
+
+/** Libellé de bloc + champs accentués pour la modale activité athlète (aligné validation). */
+export function getAthleteLoggedActivityMetricsUi(sportType: SportType): AthleteLoggedActivityMetricsUi {
+  if (workoutIsTimeOnlySport(sportType)) {
+    return {
+      headingKey: 'form.activityRealizedMandatoryTime',
+      requiredFields: { duration: true, distance: false, pace: false },
+    }
+  }
+
+  if (ATHLETE_LOGGED_PACE_REQUIRED_SPORTS.includes(sportType)) {
+    return {
+      headingKey: 'form.activityRealizedMandatoryDistanceAndTime',
+      requiredFields: { duration: true, distance: true, pace: false },
+    }
+  }
+
+  return {
+    headingKey: 'form.activityRealizedMandatoryTimeOrDistance',
+    requiredFields: { duration: true, distance: true, pace: false },
+  }
+}
+import {
+  WORKOUT_VALIDATION_ERROR_CODES,
+  type WorkoutFormValidationError,
+  type WorkoutValidationMessageKey,
+  parseWorkoutTargetParams,
+} from '@/lib/workoutValidation'
+
+const VALID_TIME_OF_DAY: WorkoutTimeOfDay[] = ['morning', 'noon', 'evening']
 
 export const ATHLETE_LOGGED_ACTIVITY_EXTRA_ERROR_CODES = {
   TITLE_REQUIRED: 'titleRequired',
@@ -99,7 +137,7 @@ function getAthleteLoggedActivityMetricsValidationError(
       }
     }
 
-    if (PACE_REQUIRED_SPORTS.includes(sportType) && (target_pace == null || target_pace <= 0)) {
+    if (ATHLETE_LOGGED_PACE_REQUIRED_SPORTS.includes(sportType) && (target_pace == null || target_pace <= 0)) {
       const hasDur =
         parsed.target_duration_minutes != null &&
         parsed.target_duration_minutes !== undefined &&

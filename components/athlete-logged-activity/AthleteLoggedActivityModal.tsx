@@ -26,7 +26,7 @@ import {
   workoutHasTimeDistanceTargets,
   workoutIsTimeOnlySport,
 } from '@/lib/sportsRegistry'
-import { isAthleteLoggedActivityFormValid } from '@/lib/athleteLoggedActivityValidation'
+import { isAthleteLoggedActivityFormValid, getAthleteLoggedActivityMetricsUi } from '@/lib/athleteLoggedActivityValidation'
 import { ATHLETE_LOGGED_MODAL_BADGE_CLASSNAME } from '@/lib/athleteLoggedWorkout'
 import {
   SPORT_BADGE_STYLES,
@@ -177,6 +177,11 @@ export function AthleteLoggedActivityModal({
         targetPace,
       }),
     [sportType, title, targetDurationMinutes, targetDistanceKm, targetElevationM, targetPace]
+  )
+
+  const metricsUi = useMemo(
+    () => (sportType != null ? getAthleteLoggedActivityMetricsUi(sportType) : null),
+    [sportType]
   )
 
   const openDatePicker = useCallback(() => {
@@ -369,7 +374,8 @@ export function AthleteLoggedActivityModal({
               workoutForm.setValue('timeOfDaySegment', (value || null) as WorkoutTimeOfDay | null)
             }
             tWorkouts={tWorkouts}
-            metricsHeading={t('form.activityRealized')}
+            metricsHeading={metricsUi ? t(metricsUi.headingKey) : t('form.activityRealized')}
+            requiredFields={metricsUi?.requiredFields}
             titleRequired
             showAthleteCommentReadOnly={false}
             formId="athlete-logged-activity-form"

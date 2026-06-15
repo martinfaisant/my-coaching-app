@@ -7,7 +7,7 @@ import { Segments } from '@/components/Segments'
 import { Input } from '@/components/Input'
 import { Textarea } from '@/components/Textarea'
 import { ClockIcon, LightningIcon, MountainIcon, RulerIcon } from '@/components/workout-modal/icons'
-import { FORM_BASE_CLASSES, FORM_LABEL_CLASSES, TEXTAREA_SPECIFIC_CLASSES } from '@/lib/formStyles'
+import { FORM_BASE_CLASSES, FORM_LABEL_CLASSES, TEXTAREA_SPECIFIC_CLASSES, FORM_PRIMARY_FIELD_BORDER_CLASSES, FORM_PRIMARY_FIELD_ICON_CLASSES } from '@/lib/formStyles'
 import { workoutHasPaceField, workoutPaceIsRunningStyle } from '@/lib/sportsRegistry'
 
 type Props = {
@@ -46,6 +46,8 @@ type Props = {
   metricsHeading?: string
   /** Titre obligatoire (défaut true). */
   titleRequired?: boolean
+  /** Champs métriques obligatoires (activité athlète) ; si absent, logique coach via targetMode. */
+  requiredFields?: { duration: boolean; distance: boolean; pace: boolean }
   /** Afficher le commentaire athlète lecture seule (coach édition). */
   showAthleteCommentReadOnly?: boolean
   formId?: string
@@ -67,6 +69,41 @@ const TIME_OF_DAY_OPTIONS = [
   { value: 'noon', labelKey: 'form.timeOfDayNoon' },
   { value: 'evening', labelKey: 'form.timeOfDayEvening' },
 ] as const
+
+type MetricRequiredFlags = { duration: boolean; distance: boolean; pace: boolean }
+
+function resolveDurationRequired(
+  requiredFields: MetricRequiredFlags | undefined,
+  targetMode: 'time' | 'distance',
+  isTimeOnly: boolean
+): boolean {
+  if (requiredFields) return requiredFields.duration
+  return isTimeOnly || targetMode === 'time'
+}
+
+function resolveDistanceRequired(
+  requiredFields: MetricRequiredFlags | undefined,
+  targetMode: 'time' | 'distance'
+): boolean {
+  if (requiredFields) return requiredFields.distance
+  return targetMode === 'distance'
+}
+
+function resolvePaceRequired(requiredFields: MetricRequiredFlags | undefined): boolean {
+  return requiredFields?.pace ?? false
+}
+
+function metricBorderClass(isRequired: boolean): string {
+  return isRequired ? FORM_PRIMARY_FIELD_BORDER_CLASSES : ''
+}
+
+function metricIconClass(isRequired: boolean, optionalClass = 'text-stone-500'): string {
+  return isRequired ? FORM_PRIMARY_FIELD_ICON_CLASSES : optionalClass
+}
+
+function metricUnitClass(isRequired: boolean): string {
+  return isRequired ? 'text-xs text-stone-600 font-medium' : 'text-xs text-stone-500'
+}
 
 export const CoachWorkoutForm = memo(function CoachWorkoutForm({
   action,
@@ -98,12 +135,16 @@ export const CoachWorkoutForm = memo(function CoachWorkoutForm({
   onSubmit,
   metricsHeading,
   titleRequired = true,
+  requiredFields,
   showAthleteCommentReadOnly = true,
   formId = 'workout-form',
   extraContent,
 }: Props) {
   const paceVisible = sportType != null && workoutHasPaceField(sportType)
   const paceIsCycling = sportType === 'velo' || sportType === 'triathlon'
+  const durationRequired = resolveDurationRequired(requiredFields, targetMode, isTimeOnly)
+  const distanceRequired = resolveDistanceRequired(requiredFields, targetMode)
+  const paceRequired = resolvePaceRequired(requiredFields)
   const resolvedMetricsHeading =
     metricsHeading ??
     (isTimeOnly
@@ -182,13 +223,13 @@ export const CoachWorkoutForm = memo(function CoachWorkoutForm({
                     onChange={(e) => onTargetDurationChange(e.target.value)}
                     onWheel={preventWheelNumberChange}
                     placeholder="22"
-                    className={`${FORM_BASE_CLASSES} ${DISABLED_NUMBER_CLASSES} font-semibold pl-10 pr-12`}
+                    className={`${FORM_BASE_CLASSES} ${DISABLED_NUMBER_CLASSES} font-semibold pl-10 pr-12 ${metricBorderClass(durationRequired)}`}
                   />
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <ClockIcon className="h-4 w-4 text-stone-400" />
+                    <ClockIcon className={`h-4 w-4 ${metricIconClass(durationRequired, 'text-stone-400')}`} />
                   </div>
                   <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                    <span className="text-xs text-stone-400">{tWorkouts('form.durationUnit')}</span>
+                    <span className={metricUnitClass(durationRequired)}>{tWorkouts('form.durationUnit')}</span>
                   </div>
                   <input type="hidden" name="target_distance_km" value="" />
                   <input type="hidden" name="target_elevation_m" value="" />
@@ -215,12 +256,12 @@ export const CoachWorkoutForm = memo(function CoachWorkoutForm({
                           }
                           onWheel={preventWheelNumberChange}
                           placeholder="1500"
-                          className={`${FORM_BASE_CLASSES} ${DISABLED_NUMBER_CLASSES} font-semibold pl-10 pr-10 border-stone-400`}
+                          className={`${FORM_BASE_CLASSES} ${DISABLED_NUMBER_CLASSES} font-semibold pl-10 pr-10 ${metricBorderClass(distanceRequired)}`}
                         />
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <RulerIcon className="h-4 w-4 text-stone-600" />
+                          <RulerIcon className={`h-4 w-4 ${metricIconClass(distanceRequired)}`} />
                         </div>
-                        <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-xs text-stone-600 font-medium">
+                        <div className={`absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none ${metricUnitClass(distanceRequired)}`}>
                           m
                         </div>
                       </>
@@ -235,12 +276,12 @@ export const CoachWorkoutForm = memo(function CoachWorkoutForm({
                           onChange={(e) => onTargetDistanceChange(e.target.value)}
                           onWheel={preventWheelNumberChange}
                           placeholder="14,3"
-                          className={`${FORM_BASE_CLASSES} ${DISABLED_NUMBER_CLASSES} font-semibold pl-10 pr-10 border-stone-400`}
+                          className={`${FORM_BASE_CLASSES} ${DISABLED_NUMBER_CLASSES} font-semibold pl-10 pr-10 ${metricBorderClass(distanceRequired)}`}
                         />
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <RulerIcon className="h-4 w-4 text-stone-600" />
+                          <RulerIcon className={`h-4 w-4 ${metricIconClass(distanceRequired)}`} />
                         </div>
-                        <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-xs text-stone-600 font-medium">
+                        <div className={`absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none ${metricUnitClass(distanceRequired)}`}>
                           km
                         </div>
                       </>
@@ -256,13 +297,13 @@ export const CoachWorkoutForm = memo(function CoachWorkoutForm({
                       onChange={(e) => onTargetDurationChange(e.target.value)}
                       onWheel={preventWheelNumberChange}
                       placeholder="22"
-                      className={`${FORM_BASE_CLASSES} ${DISABLED_NUMBER_CLASSES} font-semibold pl-10 pr-12 border-stone-400`}
+                      className={`${FORM_BASE_CLASSES} ${DISABLED_NUMBER_CLASSES} font-semibold pl-10 pr-12 ${metricBorderClass(durationRequired)}`}
                     />
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <ClockIcon className="h-4 w-4 text-stone-600" />
+                      <ClockIcon className={`h-4 w-4 ${metricIconClass(durationRequired)}`} />
                     </div>
                     <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                      <span className="text-xs text-stone-600 font-medium">{tWorkouts('form.durationUnit')}</span>
+                      <span className={metricUnitClass(durationRequired)}>{tWorkouts('form.durationUnit')}</span>
                     </div>
                   </div>
                 )}
@@ -279,13 +320,13 @@ export const CoachWorkoutForm = memo(function CoachWorkoutForm({
                         onChange={(e) => onTargetDurationChange(e.target.value)}
                         onWheel={preventWheelNumberChange}
                         placeholder="22"
-                        className={`${FORM_BASE_CLASSES} ${DISABLED_NUMBER_CLASSES} font-semibold pl-10 pr-12`}
+                        className={`${FORM_BASE_CLASSES} ${DISABLED_NUMBER_CLASSES} font-semibold pl-10 pr-12 ${metricBorderClass(durationRequired)}`}
                       />
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <ClockIcon className="h-4 w-4 text-stone-500" />
+                        <ClockIcon className={`h-4 w-4 ${metricIconClass(durationRequired)}`} />
                       </div>
                       <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                        <span className="text-xs text-stone-500">{tWorkouts('form.durationUnit')}</span>
+                        <span className={metricUnitClass(durationRequired)}>{tWorkouts('form.durationUnit')}</span>
                       </div>
                     </div>
                   ) : (
@@ -303,12 +344,12 @@ export const CoachWorkoutForm = memo(function CoachWorkoutForm({
                             }
                             onWheel={preventWheelNumberChange}
                             placeholder="1500"
-                            className={`${FORM_BASE_CLASSES} ${DISABLED_NUMBER_CLASSES} font-semibold pl-10 pr-10`}
+                            className={`${FORM_BASE_CLASSES} ${DISABLED_NUMBER_CLASSES} font-semibold pl-10 pr-10 ${metricBorderClass(distanceRequired)}`}
                           />
                           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <RulerIcon className="h-4 w-4 text-stone-500" />
+                            <RulerIcon className={`h-4 w-4 ${metricIconClass(distanceRequired)}`} />
                           </div>
-                          <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-xs text-stone-500">
+                          <div className={`absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none ${metricUnitClass(distanceRequired)}`}>
                             m
                           </div>
                         </>
@@ -323,12 +364,12 @@ export const CoachWorkoutForm = memo(function CoachWorkoutForm({
                             onChange={(e) => onTargetDistanceChange(e.target.value)}
                             onWheel={preventWheelNumberChange}
                             placeholder="14,3"
-                            className={`${FORM_BASE_CLASSES} ${DISABLED_NUMBER_CLASSES} font-semibold pl-10 pr-10`}
+                            className={`${FORM_BASE_CLASSES} ${DISABLED_NUMBER_CLASSES} font-semibold pl-10 pr-10 ${metricBorderClass(distanceRequired)}`}
                           />
                           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <RulerIcon className="h-4 w-4 text-stone-500" />
+                            <RulerIcon className={`h-4 w-4 ${metricIconClass(distanceRequired)}`} />
                           </div>
-                          <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-xs text-stone-500">
+                          <div className={`absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none ${metricUnitClass(distanceRequired)}`}>
                             km
                           </div>
                         </>
@@ -347,12 +388,12 @@ export const CoachWorkoutForm = memo(function CoachWorkoutForm({
                         onChange={(e) => onTargetPaceChange(e.target.value)}
                         onWheel={preventWheelNumberChange}
                         placeholder={workoutPaceIsRunningStyle(sportType) ? '5.0' : paceIsCycling ? '39' : '2.0'}
-                        className={`${FORM_BASE_CLASSES} ${DISABLED_NUMBER_CLASSES} font-semibold pl-10 pr-16`}
+                        className={`${FORM_BASE_CLASSES} ${DISABLED_NUMBER_CLASSES} font-semibold pl-10 pr-16 ${metricBorderClass(paceRequired)}`}
                       />
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <LightningIcon className="h-4 w-4 text-stone-500" />
+                        <LightningIcon className={`h-4 w-4 ${metricIconClass(paceRequired)}`} />
                       </div>
-                      <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-xs text-stone-500">
+                      <div className={`absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none ${metricUnitClass(paceRequired)}`}>
                         {workoutPaceIsRunningStyle(sportType)
                           ? tWorkouts('form.paceUnitRunning')
                           : paceIsCycling

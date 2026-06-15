@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 15 juin 2026 (**activités saisies par l’athlète** — calendrier, migration 078 ; précédent : CI tests Vitest + parité i18n)
+**Dernière mise à jour :** 15 juin 2026 (**activité athlète — champs obligatoires modale** ; précédent : activités saisies calendrier, migration 078)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -14,7 +14,7 @@
 
 ### **Project_context.md** ⭐
 - **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (…), **§4.16 Annuaire coach public** (`/coaches`, gate visiteur, deep link find-coach), **§4.15 FAQ publiques** (athlète/coach, SEO JSON-LD), **§4.13 Marketing landing** (…), **§4.14 SEO** (sitemap, robots, **llms.txt**, og:image, JSON-LD, noindex, **`buildPublicPageMetadata`**, canonical/hreflang, proxy), **§4.9 Strava** (…), **§6 Quality gates & CI** (Vitest, parité i18n, GitHub Actions)
-- **Dernière mise à jour :** 15 juin 2026 (§4.5 activités athlète `planned_by` ; précédent : §6 CI/tests)
+- **Dernière mise à jour :** 15 juin 2026 (§4.5 activité athlète champs obligatoires modale ; précédent : `planned_by` migration 078)
 
 ### **docs/CALENDAR_MONTH_VIEW.md**
 - **Contenu :** Récap **vue mois** (desktop) vs **vue semaine** (mobile), règles semaines ISO / mois civil étendu, **totaux hebdo** (liste sports `PERSISTED_WORKOUT_SPORT_TYPES`, `SPORT_WEEKLY_SUMMARY_BAR`), chargement données, liste des fichiers et tests unitaires, **tuiles disponibilité** (réf. design + `CalendarView`), liens vers maquettes archivées
@@ -24,11 +24,11 @@
 
 ### **docs/DESIGN_SYSTEM.md** ⭐
 - **Contenu :** Tokens (…), composants (…, **Landing**, **`components/public/*`** FAQ + **`PublicMarketingFooter`**, …)
-- **Dernière mise à jour :** 15 juin 2026 (activités athlète calendrier + `AthleteLogged*` ; précédent : AuthSubmitButton)
+- **Dernière mise à jour :** 15 juin 2026 (activité athlète champs obligatoires + `CoachWorkoutForm.requiredFields` ; précédent : calendrier `AthleteLogged*`)
 
 ### **docs/I18N.md** ⭐
 - **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces (dont **`publicCoaches`**, **`publicFooter`**, **`faqAthlete`**, **`faqCoach`**, **`metadata.*`** SEO dont **`siteTitle`**, **`termsDescription`**, **`ogImageAlt`**, **`buildPublicPageMetadata`**), **`proxy.ts`** (exclusion sitemap/robots/llms), **checklist nouvelles features**, **parité automatisée FR/EN** (`lib/i18n/*`, `npm run check:i18n`, gate CI via `npm run test`) ; …
-- **Dernière mise à jour :** 15 juin 2026 (namespace **`athleteLoggedActivity`** ; précédent : parité automatisée + CI)
+- **Dernière mise à jour :** 15 juin 2026 (clés **`activityRealizedMandatory*`** ; précédent : namespace **`athleteLoggedActivity`**)
 
 ### **docs/AUTH_EMAIL_TEMPLATES.md**
 - **Contenu :** Guide de configuration des emails d’auth Supabase (sujet, i18n FR/EN, variables, dépannage logo). **Les fichiers HTML des templates** (Confirm signup, puis Magic Link, Reset Password, etc.) sont dans **docs/email-templates/**.
@@ -65,7 +65,7 @@
 - **Utiliser pour :** Conventions de code, règles automatiques Cursor AI
 - **Type :** Always-applied workspace rule
 - **Taille :** ~230 lignes
-- **Dernière mise à jour :** 15 juin 2026 (activités athlète calendrier ; précédent : CI Vitest + parité i18n)
+- **Dernière mise à jour :** 15 juin 2026 (activité athlète champs obligatoires modale ; précédent : CI Vitest + parité i18n)
 
 ### **.cursor/rules/save-button-pattern.mdc**
 - **Contenu :** Règle Cursor pour pattern de bouton de sauvegarde
@@ -541,9 +541,15 @@
 **Fréquence de mise à jour :** À chaque ajout/suppression de documentation
 
 **Dernier scan :** 15 juin 2026  
-**Dernier nettoyage :** 15 juin 2026 (entrée Changements récents : activités saisies par l’athlète)
+**Dernier nettoyage :** 15 juin 2026 (entrée Changements récents : champs obligatoires modale activité athlète)
 
 ### Changements récents :
+
+✅ **15 juin 2026 – Modale activité athlète : champs obligatoires (UI) – Mode Analyste :**
+- **Livraison (réf. code) :** `getAthleteLoggedActivityMetricsUi()` (`lib/athleteLoggedActivityValidation.ts`) ; prop **`requiredFields`** sur **`CoachWorkoutForm`** ; constantes **`FORM_PRIMARY_FIELD_*`** (`lib/formStyles.ts`) ; i18n **`athleteLoggedActivity.form.activityRealizedMandatory*`** (FR/EN) ; tests **`lib/athleteLoggedActivityValidation.test.ts`**.
+- **Doc :** `Project_context.md` §4.5 ; `docs/DESIGN_SYSTEM.md` (Input / calendrier / fichiers clés) ; `docs/I18N.md` ; `.cursor/rules/project-core.mdc` ; `DOCS_INDEX.md`.
+- **Archivage :** aucun.
+- **Pages légales / confidentialité :** aucune modification (évolution UX formulaire uniquement).
 
 ✅ **15 juin 2026 – Activités saisies par l’athlète (calendrier) – Mode Analyste :**
 - **Livraison (réf. code) :** migration **078** (`workouts.planned_by`, RLS, totaux « prévu ») ; **`AthleteLoggedActivityModal`**, **`AthleteLoggedCoachReadOnlyView`** ; intégration **`CalendarView`** (badge « Ajouté », ordre jour coach → perso → Strava, bouton « + » passé/aujourd’hui → activité, futur → dispo) ; **`WorkoutTargetActualCards`** (`hideTargetCard`, pas de deltas comparaison) ; actions **`athlete-logged-activity/actions.ts`** ; libs **`athleteLoggedWorkout`**, **`athleteLoggedActivityValidation`** ; i18n **`athleteLoggedActivity`** (FR/EN).
