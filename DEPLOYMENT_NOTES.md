@@ -22,11 +22,11 @@
 | `lib/siteUrl.ts` | URL publique canonique (env ou repli `https://mysportally.com`) |
 | `lib/seoPublicRoutes.ts` | Liste `SEO_PUBLIC_PATHS` + génération entrées sitemap (hreflang FR/EN) |
 | `lib/seoMetadata.ts` | **`buildPublicPageMetadata`** — title/description, **`canonical`**, **`hreflang`**, Open Graph de base |
-| `app/sitemap.ts` | `/sitemap.xml` — **10 URLs** (5 pages × FR + EN) |
+| `app/sitemap.ts` | `/sitemap.xml` — **14 URLs** (7 pages × FR + EN) |
 | `app/robots.ts` | `/robots.txt` — autorise le public, `disallow` dashboard / auth / API |
 | `proxy.ts` | Middleware next-intl + auth : **ne pas** faire passer `/sitemap.xml` ni `/robots.txt` (matcher + bypass ; sinon **404** Google Search Console) |
 
-**Pages dans le sitemap :** `/`, `/pricing`, `/contact`, `/terms`, `/privacy` (+ préfixe `/en` pour l’anglais).
+**Pages dans le sitemap :** `/`, `/pricing`, `/contact`, `/terms`, `/privacy`, `/faq/athlete`, `/faq/coach` (+ préfixe `/en` pour l’anglais).
 
 **Métadonnées HTML (pages publiques) :** `generateMetadata` sur chaque route de `SEO_PUBLIC_PATHS` via **`buildPublicPageMetadata`**. i18n namespace **`metadata`** — clés **`homeTitle`** / **`homeDescription`** (accueil), **`pricingTitle`** / **`pricingDescription`**, etc. Le **texte visible** de la landing reste dans **`landing.*`** (onglet navigateur ≠ hero H1).
 
@@ -36,7 +36,7 @@
 
 ### Vérification post-déploiement
 
-1. `https://mysportally.com/sitemap.xml` — 10 entrées, URLs en `https://mysportally.com/...` (pas `www`).
+1. `https://mysportally.com/sitemap.xml` — 14 entrées, URLs en `https://mysportally.com/...` (pas `www`).
 2. `https://mysportally.com/robots.txt` — ligne `Sitemap: https://mysportally.com/sitemap.xml`.
 3. `https://www.mysportally.com/` → redirection 301 vers `https://mysportally.com/`.
 

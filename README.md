@@ -12,7 +12,7 @@ My Sport Ally est une marketplace + plateforme de coaching permettant aux athlè
 - Consulter leurs **statistiques** de volume réalisé (`/dashboard/stats`)
 - *(Optionnel, feature flag)* synchroniser Strava — voir § Intégration Strava ci-dessous
 
-Les **visiteurs** voient une **page d'accueil marketing** (`/` et `/en`) avec captures produit (calendrier, stats, recherche coach, espace coach), onglets de découverte et invitation à créer un compte — détail **Project_context.md** §4.13. Ils peuvent aussi consulter les **tarifs coach plateforme** sur **`/pricing`** (abonnement MySportAlly requis seulement à l’acceptation d’un athlète — voir **Project_context.md** §4.12). Ils peuvent aussi contacter le support via **Contact** (`/contact`), avec accusé de réception (référence MSA) et notification e-mail côté équipe (voir variables Resend ci-dessous). Les utilisateurs **connectés** qui ouvrent l’accueil marketing **`/`** ou **`/en`** sont **redirigés** vers la page d’entrée du tableau de bord selon leur rôle (détail : **Project_context.md** §4.0, code **`lib/dashboardEntryPath.ts`**).
+Les **visiteurs** voient une **page d'accueil marketing** (`/` et `/en`) avec captures produit (calendrier, stats, recherche coach, espace coach), onglets de découverte et invitation à créer un compte — détail **Project_context.md** §4.13. Ils peuvent consulter les **tarifs coach plateforme** sur **`/pricing`** (abonnement MySportAlly requis seulement à l’acceptation d’un athlète — §4.12) et les **FAQ publiques** **`/faq/athlete`** et **`/faq/coach`** (§4.15). Ils peuvent aussi contacter le support via **Contact** (`/contact`), avec accusé de réception (référence MSA) et notification e-mail côté équipe (voir variables Resend ci-dessous). Les utilisateurs **connectés** qui ouvrent l’accueil marketing **`/`** ou **`/en`** sont **redirigés** vers la page d’entrée du tableau de bord selon leur rôle (détail : **Project_context.md** §4.0, code **`lib/dashboardEntryPath.ts`**).
 
 ## 🚀 Quick Start
 
@@ -267,7 +267,7 @@ Voir [DEPLOYMENT_NOTES.md](./DEPLOYMENT_NOTES.md) et [MISE_EN_PROD.md](./MISE_EN
 
 - **Sitemap :** `https://mysportally.com/sitemap.xml` — pages publiques FR/EN. Source : `app/sitemap.ts`, `lib/seoPublicRoutes.ts`.
 - **Robots :** `https://mysportally.com/robots.txt` — exclusion dashboard / auth / API (`app/robots.ts`).
-- **Métadonnées publiques :** `lib/seoMetadata.ts` (`buildPublicPageMetadata`) — title/description i18n (`metadata.homeTitle`, etc.), **canonical** + **hreflang** sur les 5 pages de `SEO_PUBLIC_PATHS`. Texte visible landing = namespace **`landing`** (distinct du SEO).
+- **Métadonnées publiques :** `lib/seoMetadata.ts` (`buildPublicPageMetadata`) — title/description i18n (`metadata.homeTitle`, `metadata.faqAthleteTitle`, etc.), **canonical** + **hreflang** sur les **7 pages** de `SEO_PUBLIC_PATHS`. Texte visible landing = namespace **`landing`** (distinct du SEO). FAQ : JSON-LD `FAQPage` via `lib/faqPublicConfig.ts`.
 - **Middleware :** `proxy.ts` exclut `/sitemap.xml` et `/robots.txt` du next-intl (évite 404 Search Console).
 - **URL canonique prod :** `https://mysportally.com` (sans `www`) ; `www` → redirection 301 sur Vercel.
 - **Search Console :** soumettre `sitemap.xml` ; dépannage 404 : **DEPLOYMENT_NOTES.md** § Référencement.

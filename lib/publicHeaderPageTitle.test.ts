@@ -23,6 +23,14 @@ describe('getPublicHeaderPageTitleI18n', () => {
       namespace: 'metadata',
       key: 'privacyTitle',
     })
+    expect(getPublicHeaderPageTitleI18n('/faq/athlete')).toEqual({
+      namespace: 'metadata',
+      key: 'faqAthleteTitle',
+    })
+    expect(getPublicHeaderPageTitleI18n('/faq/coach')).toEqual({
+      namespace: 'metadata',
+      key: 'faqCoachTitle',
+    })
     expect(getPublicHeaderPageTitleI18n('/reset-password')).toEqual({
       namespace: 'auth',
       key: 'resetPassword',

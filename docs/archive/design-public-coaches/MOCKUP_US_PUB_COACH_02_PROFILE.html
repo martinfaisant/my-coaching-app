@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>US-PUB-COACH-02 — Fiche /coaches/[id]</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { colors: {
+      'palette-forest-dark': '#627e59', 'palette-forest-light': '#f0f4ef', 'palette-amber': '#c9a227'
+    }}}}
+  </script>
+</head>
+<body class="bg-stone-50 text-stone-800 antialiased">
+  <p class="sticky top-0 z-[100] bg-amber-50 border-b border-amber-200 px-4 py-2 text-xs text-amber-900 text-center font-medium">
+    US-PUB-COACH-02 · Fiche coach publique · Visiteur · CTA « Demander cette formule » actif
+  </p>
+
+  <header class="border-b border-stone-200 bg-white/95 sticky top-8 z-50">
+    <div class="mx-auto flex h-16 max-w-4xl items-center justify-between px-6">
+      <span class="font-bold">My Sport Ally</span>
+      <nav class="hidden md:flex gap-6 text-sm"><a href="#">Accueil</a><a href="#" class="font-semibold text-palette-forest-dark">Trouver un coach</a><a href="#">Tarifs</a></nav>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-4xl px-4 sm:px-6 py-8 space-y-8">
+    <a href="MOCKUP_US_PUB_COACH_01_DIRECTORY.html" class="inline-flex items-center gap-1 text-sm text-palette-forest-dark font-medium">← Retour à l'annuaire</a>
+
+    <section class="bg-white rounded-2xl border border-stone-200 p-6 md:p-8">
+      <div class="flex flex-col sm:flex-row gap-6">
+        <div class="w-20 h-20 rounded-full bg-palette-olive text-white flex items-center justify-center text-2xl font-bold shrink-0">ML</div>
+        <div class="min-w-0 flex-1">
+          <h1 class="text-2xl font-bold text-stone-900">Marie Lambert</h1>
+          <p class="text-sm text-stone-500 mt-1">★ 4,8 · <button class="underline text-palette-forest-dark">12 avis</button></p>
+          <div class="flex flex-wrap gap-2 mt-3">
+            <span class="text-xs px-2 py-0.5 rounded-full border border-palette-forest-dark text-palette-forest-dark">Course</span>
+            <span class="text-xs px-2 py-0.5 rounded-full border border-stone-300 text-stone-600">Trail</span>
+            <span class="text-xs px-2 py-0.5 rounded-full bg-stone-100 text-stone-600">FR · EN</span>
+          </div>
+          <p class="mt-4 text-stone-700 leading-relaxed text-sm">Coach trail et course à pied depuis 10 ans. J'accompagne les athlètes du 10 km à l'ultra, avec un suivi personnalisé sur My Sport Ally : planification, retours après séance et messagerie directe.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="space-y-4">
+      <h2 class="text-lg font-bold">Formules disponibles</h2>
+      <article class="bg-white rounded-2xl border-2 border-palette-amber p-6 relative">
+        <span class="absolute top-4 right-4 text-[10px] font-bold uppercase bg-palette-amber/20 text-palette-amber px-2 py-0.5 rounded-full">Recommandé</span>
+        <h3 class="font-bold text-lg pr-24">Suivi mensuel</h3>
+        <p class="text-2xl font-bold text-palette-forest-dark mt-1">89 €<span class="text-sm font-normal text-stone-500">/mois</span></p>
+        <p class="text-sm text-stone-600 mt-2">Plan hebdomadaire, ajustements et messagerie illimitée.</p>
+        <button type="button" class="mt-4 w-full sm:w-auto px-6 py-3 rounded-xl bg-palette-forest-dark text-white font-semibold text-sm">Demander cette formule</button>
+      </article>
+      <article class="bg-white rounded-2xl border border-stone-200 p-6">
+        <h3 class="font-bold text-lg">Plan découverte</h3>
+        <p class="text-xl font-bold text-stone-900 mt-1">Gratuit</p>
+        <p class="text-sm text-stone-600 mt-2">Échange initial et première semaine d'essai.</p>
+        <button type="button" class="mt-4 w-full sm:w-auto px-6 py-3 rounded-xl border-2 border-palette-forest-dark text-palette-forest-dark font-semibold text-sm">Demander cette formule</button>
+      </article>
+    </section>
+
+    <section class="bg-white rounded-2xl border border-stone-200 p-6">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-lg font-bold">Avis</h2>
+        <button class="text-sm text-palette-forest-dark font-medium">Voir tous les avis</button>
+      </div>
+      <div class="space-y-4 text-sm">
+        <div class="border-b border-stone-100 pb-3"><p class="font-medium">★★★★★ · janv. 2026</p><p class="text-stone-600 mt-1">Super accompagnement pour mon premier marathon.</p></div>
+        <div class="border-b border-stone-100 pb-3"><p class="font-medium">★★★★☆ · déc. 2025</p><p class="text-stone-500 italic">Pas de commentaire</p></div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>US-PUB-COACH-03 — Gate compte</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { colors: { 'palette-forest-dark': '#627e59' }}}}
+  </script>
+</head>
+<body class="bg-stone-900/40 min-h-screen antialiased">
+  <p class="fixed top-0 left-0 right-0 z-[200] bg-amber-50 border-b border-amber-200 px-4 py-2 text-xs text-amber-900 text-center font-medium">
+    US-PUB-COACH-03 · Transition : clic « Demander cette formule » (visiteur) → gate → LoginModal signup → redirect dashboard
+  </p>
+
+  <div class="fixed inset-0 flex items-center justify-center p-4 pt-12">
+    <div class="bg-white rounded-2xl shadow-xl max-w-md w-full overflow-hidden" role="dialog" aria-labelledby="gate-title">
+      <div class="p-6 border-b border-stone-100">
+        <h2 id="gate-title" class="text-xl font-bold text-stone-900">Contacter ce coach</h2>
+        <p class="text-sm text-stone-600 mt-2">Créez un compte athlète gratuit pour envoyer votre demande à <strong>Marie Lambert</strong> (formule <strong>Suivi mensuel</strong>).</p>
+      </div>
+      <div class="p-6 flex flex-col gap-3">
+        <button type="button" class="w-full py-3 rounded-xl bg-palette-forest-dark text-white font-semibold">Créer mon compte athlète</button>
+        <button type="button" class="w-full py-3 rounded-xl border-2 border-stone-200 font-semibold text-stone-700">J'ai déjà un compte</button>
+      </div>
+      <p class="px-6 pb-6 text-xs text-stone-500 text-center">→ Ouvre <code class="bg-stone-100 px-1 rounded">LoginModal</code> (mode signup ou login)</p>
+    </div>
+  </div>
+
+  <div class="fixed inset-0 -z-10 bg-stone-100 p-8 opacity-30 pointer-events-none">
+    <p class="text-xs font-bold text-stone-400 mb-4">APRÈS AUTH RÉUSSIE (athlète sans coach)</p>
+    <p class="text-sm text-stone-600">Redirect → <code>/dashboard/find-coach?coach={uuid}&amp;offer={uuid}</code></p>
+    <p class="text-sm text-stone-600 mt-2">→ Modale demande coach ouverte, offre présélectionnée (flux existant <code>FindCoachSection</code>)</p>
+  </div>
+</body>
+</html>

@@ -9,6 +9,8 @@ export const SEO_PUBLIC_PATHS = [
   '/contact',
   '/terms',
   '/privacy',
+  '/faq/athlete',
+  '/faq/coach',
 ] as const
 
 export type SeoPublicPath = (typeof SEO_PUBLIC_PATHS)[number]
@@ -16,6 +18,7 @@ export type SeoPublicPath = (typeof SEO_PUBLIC_PATHS)[number]
 function priorityForPath(path: SeoPublicPath): number {
   if (path === '/') return 1
   if (path === '/pricing') return 0.8
+  if (path === '/faq/athlete' || path === '/faq/coach') return 0.7
   return 0.5
 }
 

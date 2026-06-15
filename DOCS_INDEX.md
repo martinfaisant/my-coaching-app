@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 14 juin 2026 (**SEO** métadonnées home canonical/hreflang + fix middleware sitemap 404 ; précédent : sitemap/robots Search Console…)
+**Dernière mise à jour :** 15 juin 2026 (**FAQ publiques** `/faq/athlete` + `/faq/coach`, footer `PublicMarketingFooter` ; précédent : SEO metadata home…)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -9,16 +9,12 @@
 ## 🎯 Documentation Active (à utiliser en priorité)
 
 ### **README.md** ⭐
-- **Contenu :** Setup projet, stack technique, quick start, structure du projet, **URL production https://mysportally.com**, **accueil `/` et `/en`** (landing marketing visiteurs, §4.13 ; connectés redirigés vers dashboard — **Project_context.md** §4.0, **`lib/dashboardEntryPath.ts`**), **SEO** (`/sitemap.xml`, `/robots.txt`, **`lib/seoPublicRoutes.ts`**, **`lib/seoMetadata.ts`**, **`metadata.homeTitle`** / **`homeDescription`**, exclusion sitemap dans **`proxy.ts`**), **connexion Google OAuth** (voir **DEPLOYMENT_NOTES.md** § Connexion Google), variables **Stripe coach plateforme** (…), **Strava devices athlète** : `NEXT_PUBLIC_ENABLE_ATHLETE_STRAVA_DEVICES` (off par défaut, voir § Intégration Strava)
-- **Utiliser pour :** Onboarding, démarrage rapide, vue d'ensemble technique
-- **Taille :** ~200 lignes
-- **Dernière mise à jour :** 14 juin 2026 (SEO metadata + proxy sitemap ; précédent : SEO sitemap/robots…)
+- **Contenu :** Setup projet, stack technique, quick start, structure du projet, **URL production https://mysportally.com**, **accueil `/` et `/en`** (landing marketing visiteurs, §4.13), **FAQ publiques** **`/faq/athlete`** / **`/faq/coach`** (§4.15), **SEO** (`/sitemap.xml` 14 URLs, `/robots.txt`, **`lib/seoPublicRoutes.ts`**, **`lib/seoMetadata.ts`**, **`lib/faqPublicConfig.ts`**, exclusion sitemap dans **`proxy.ts`**), **connexion Google OAuth** (…)
+- **Dernière mise à jour :** 15 juin 2026 (FAQ publiques + footer partagé ; précédent : SEO metadata…)
 
 ### **Project_context.md** ⭐
-- **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (…), **§4.1 Authentication** (email/password, **politique mot de passe + checklist**, **Google OAuth**), **§4.13 Marketing landing** (captures produit, showcase onglets), **§4.14 SEO** (sitemap, robots, **`buildPublicPageMetadata`**, canonical/hreflang, proxy sitemap), **§4.9 Strava** (feature flag `NEXT_PUBLIC_ENABLE_ATHLETE_STRAVA_DEVICES`, off par défaut au lancement)
-- **Utiliser pour :** Comprendre le projet, les features, les rôles, l'architecture globale
-- **Taille :** ~450 lignes
-- **Dernière mise à jour :** 14 juin 2026 (§4.14 SEO metadata + proxy ; précédent : §4.14 sitemap/robots…)
+- **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (…), **§4.15 FAQ publiques** (athlète/coach, SEO JSON-LD), **§4.13 Marketing landing** (…), **§4.14 SEO** (sitemap 14 URLs, robots, **`buildPublicPageMetadata`**, canonical/hreflang, proxy sitemap), **§4.9 Strava** (…)
+- **Dernière mise à jour :** 15 juin 2026 (§4.15 FAQ publiques ; précédent : §4.14 SEO…)
 
 ### **docs/CALENDAR_MONTH_VIEW.md**
 - **Contenu :** Récap **vue mois** (desktop) vs **vue semaine** (mobile), règles semaines ISO / mois civil étendu, **totaux hebdo** (liste sports `PERSISTED_WORKOUT_SPORT_TYPES`, `SPORT_WEEKLY_SUMMARY_BAR`), chargement données, liste des fichiers et tests unitaires, **tuiles disponibilité** (réf. design + `CalendarView`), liens vers maquettes archivées
@@ -27,16 +23,12 @@
 - **Dernière mise à jour :** 13 mai 2026 (tuiles dispo grille + ligne tableau fichiers ; précédent : résumé hebdo…)
 
 ### **docs/DESIGN_SYSTEM.md** ⭐
-- **Contenu :** Tokens (couleurs, typo, espacements ; **sports** : `SPORT_CARD_STYLES`, `SPORT_BADGE_STYLES`, **`SPORT_WEEKLY_SUMMARY_BAR`** résumé hebdo), composants (Button, Input, Badge, TileCard, DashboardPageShell, **DashboardTopBar**, **Landing** page d'accueil marketing, **AthleteAccountMenu**, **AthleteStatsVolumeChart**, **AthleteStatsChartSkeleton**, Modal, **MonthSelector**, **`CoachPlatformBillingAddressSection`** — titre sous-section sur la page + **`FORM_LABEL_CLASSES`**, etc.), guidelines UI, exemples de code, §7 breakpoints (**calendrier** mois étendu desktop + WeekSelector mobile, **tuiles disponibilité grille** : bandeau haut, `training-card`, typo alignée séance compacte, chat, Trouver mon coach, My offers)
-- **Utiliser pour :** Créer ou modifier des composants UI, choisir des couleurs, appliquer le design system, règles responsive par page
-- **Taille :** ~2010 lignes
-- **Dernière mise à jour :** 14 juin 2026 (**Landing** § composants `components/landing/*`, **`AuthButtons`** variant `ctaBand` ; précédent : **PublicHeader** mobile drawer…)
+- **Contenu :** Tokens (…), composants (…, **Landing**, **`components/public/*`** FAQ + **`PublicMarketingFooter`**, …)
+- **Dernière mise à jour :** 15 juin 2026 (**Pages FAQ publiques** § + footer marketing ; précédent : Landing…)
 
 ### **docs/I18N.md** ⭐
-- **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces (dont **`metadata.homeTitle`** / **`homeDescription`**, **`buildPublicPageMetadata`**), **`proxy.ts`** (exclusion sitemap/robots), **checklist nouvelles features** ; **`coachMsaSubscription`** (dont **`billingInfoTitle`**, **`billingAddress`**)
-- **Utiliser pour :** Toute nouvelle feature ou texte visible, ajout de clés de traduction, dépannage i18n
-- **Taille :** ~195 lignes
-- **Dernière mise à jour :** 14 juin 2026 (**metadata** SEO home + proxy sitemap ; précédent : **`landing`** showcase…)
+- **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces (dont **`publicFooter`**, **`faqAthlete`**, **`faqCoach`**, **`metadata.faqAthleteTitle`** / **`faqCoachTitle`**, **`buildPublicPageMetadata`**), **`proxy.ts`** (exclusion sitemap/robots), **checklist nouvelles features** ; …
+- **Dernière mise à jour :** 15 juin 2026 (**publicFooter**, **faqAthlete**, **faqCoach** ; suppression **`landing.footer`**)
 
 ### **docs/AUTH_EMAIL_TEMPLATES.md**
 - **Contenu :** Guide de configuration des emails d’auth Supabase (sujet, i18n FR/EN, variables, dépannage logo). **Les fichiers HTML des templates** (Confirm signup, puis Magic Link, Reset Password, etc.) sont dans **docs/email-templates/**.
@@ -116,6 +108,11 @@
 - **Utiliser pour :** Contexte UI historique ; détail produit / technique à jour : **`Project_context.md`** §4.12, **`docs/DESIGN_SYSTEM.md`** § PublicHeader / CoachPlatformOfferGrid.
 - **Archivé le :** 12 juin 2026 (fusion vers docs actives ci-dessus).
 
+### **docs/archive/design-faq-public/** (design feature — archivé juin 2026)
+- **Contenu :** Maquettes HTML **US-FAQ-01…03** + README (pages `/faq/athlete` et `/faq/coach`, footer partagé, CTA croisé, liste sports).
+- **Utiliser pour :** Contexte UI historique ; détail produit / technique à jour : **`Project_context.md`** §4.15, **`docs/DESIGN_SYSTEM.md`** § Pages FAQ publiques.
+- **Archivé le :** 15 juin 2026 (fusion vers docs actives ci-dessus).
+
 ### **docs/archive/design-landing-revamp/** (design feature — archivé juin 2026)
 - **Contenu :** Maquettes HTML **US-LANDING-01…04** + **MOCKUP_US_LANDING_FULL_PAGE.html**, README, captures PNG source (`screenshots/fr/`). Option B validée (hero split, 6 onglets, cartes audience).
 - **Utiliser pour :** Contexte UI historique ; détail produit / technique à jour : **`Project_context.md`** §4.13, **`docs/DESIGN_SYSTEM.md`** § Landing, assets **`public/landing/`**.
@@ -158,6 +155,7 @@
 - `docs/archive/design-contact-public-form/` — `us1-contact-page.html`, `us2-landing-footer-contact.html`, `us3-athlete-account-menu-contact.html`, `us4-coach-account-menu-contact.html`, `README.md`
 - `docs/archive/design-coach-pricing-public/` — `MOCKUP_US_PRICING_PUB_01…05` (page publique `/pricing`, header Accueil/Tarifs), `README.md` — **livré** juin 2026 ; référence : **`Project_context.md`** §4.12
 - `docs/archive/design-landing-revamp/` — `MOCKUP_US_LANDING_01…04`, `MOCKUP_US_LANDING_FULL_PAGE.html`, `screenshots/fr/`, `README.md` — **livré** juin 2026 ; référence : **`Project_context.md`** §4.13, **`docs/DESIGN_SYSTEM.md`** § Landing
+- `docs/archive/design-faq-public/` — `MOCKUP_US_FAQ_01…03`, `README.md` — **livré** juin 2026 ; référence : **`Project_context.md`** §4.15, **`docs/DESIGN_SYSTEM.md`** § Pages FAQ publiques
 - **Raison :** feature livrée ; comportement et données décrits dans **Project_context.md §4.11**, **README.md** (Resend), **DEPLOYMENT_NOTES.md** (migrations 066–067).
 
 **Abonnement plateforme coach — maquette « grâce 3 jours » (archivée 13 mai 2026) :**

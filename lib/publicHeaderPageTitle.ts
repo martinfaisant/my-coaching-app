@@ -20,6 +20,10 @@ export function getPublicHeaderPageTitleI18n(pathname: string): PublicHeaderTitl
       return { namespace: 'metadata', key: 'termsTitle' }
     case '/privacy':
       return { namespace: 'metadata', key: 'privacyTitle' }
+    case '/faq/athlete':
+      return { namespace: 'metadata', key: 'faqAthleteTitle' }
+    case '/faq/coach':
+      return { namespace: 'metadata', key: 'faqCoachTitle' }
     case '/reset-password':
       return { namespace: 'auth', key: 'resetPassword' }
     default:

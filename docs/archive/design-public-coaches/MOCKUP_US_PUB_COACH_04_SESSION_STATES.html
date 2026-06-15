@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>US-PUB-COACH-04 — États session</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { colors: {
+      'palette-forest-dark': '#627e59', 'palette-forest-light': '#f0f4ef', 'palette-sage': '#a8b89a'
+    }}}}
+  </script>
+  <style>.panel { display: none; } .panel.active { display: block; } .tab.active { background: #627e59; color: white; }</style>
+</head>
+<body class="bg-stone-100 text-stone-800 antialiased">
+  <p class="sticky top-0 z-[100] bg-amber-50 border-b border-amber-200 px-4 py-2 text-xs text-amber-900 text-center font-medium">
+    US-PUB-COACH-04 · États selon session · Choisir un onglet
+  </p>
+
+  <div class="flex flex-wrap gap-2 p-4 bg-white border-b justify-center">
+    <button class="tab active text-xs px-3 py-1.5 rounded-lg border" data-p="p1">A · Athlète sans coach → redirect</button>
+    <button class="tab text-xs px-3 py-1.5 rounded-lg border" data-p="p2">B · Déjà un coach</button>
+    <button class="tab text-xs px-3 py-1.5 rounded-lg border" data-p="p3">C · Coach connecté</button>
+  </div>
+
+  <div id="p1" class="panel active max-w-2xl mx-auto p-8">
+    <h2 class="font-bold text-lg mb-4">A — Athlète connecté sans coach visite /coaches</h2>
+    <div class="bg-white border border-stone-200 rounded-xl p-6 text-sm space-y-3">
+      <p><strong>Action serveur :</strong> redirect immédiat vers <code>/dashboard/find-coach</code> (avec locale).</p>
+      <p>Pas d'affichage de l'annuaire public — même logique que landing connectée → dashboard.</p>
+      <p class="text-stone-500">Option : si URL contient <code>?coach=</code> avant redirect, préserver query sur la route dashboard.</p>
+    </div>
+  </div>
+
+  <div id="p2" class="panel max-w-2xl mx-auto p-8">
+    <h2 class="font-bold text-lg mb-4">B — Athlète avec coach sur fiche /coaches/[id]</h2>
+    <div class="bg-palette-sage/30 border border-palette-sage rounded-xl p-4 mb-6 text-sm">
+      <p class="font-semibold text-stone-900">Vous avez déjà un coach</p>
+      <p class="text-stone-600 mt-1">Vous ne pouvez pas envoyer une nouvelle demande. Accédez à votre espace pour suivre votre coaching.</p>
+      <a href="#" class="inline-block mt-3 text-sm font-semibold text-palette-forest-dark">Mon coach →</a>
+    </div>
+    <p class="text-sm text-stone-500">Boutons « Demander cette formule » masqués ou désactivés. Fiche reste lisible (SEO / partage).</p>
+  </div>
+
+  <div id="p3" class="panel max-w-2xl mx-auto p-8">
+    <h2 class="font-bold text-lg mb-4">C — Compte coach ou admin sur fiche publique</h2>
+    <div class="bg-white border border-stone-200 rounded-xl p-6 text-sm">
+      <p>Fiche en <strong>lecture seule</strong>. Pas de CTA demande.</p>
+      <p class="mt-2 text-stone-500">Header : <code>PublicOrDashboardHeader</code> → barre dashboard si session.</p>
+    </div>
+  </div>
+
+  <script>
+    document.querySelectorAll('.tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.p).classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>
