@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>US-FAQ-01 — Pied de page marketing partagé</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            stone: { 50: '#fafaf9', 200: '#e7e5e4', 600: '#57534e', 900: '#1c1917' },
+          },
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-white min-h-screen text-stone-900">
+  <p class="text-xs text-stone-500 p-4 max-w-3xl mx-auto border-b border-stone-200 bg-stone-50">
+    <strong>US-FAQ-01</strong> — Composant <code>PublicMarketingFooter</code> (nom probable).
+    i18n namespace <code>publicFooter</code> (ou extension <code>landing.footer</code>).
+    Même rendu sur <code>/</code>, <code>/pricing</code>, <code>/faq/athlete</code>, <code>/faq/coach</code>.
+  </p>
+
+  <!-- État A : footer sur page d'accueil -->
+  <section class="max-w-3xl mx-auto p-6 space-y-3" aria-labelledby="state-a">
+    <h2 id="state-a" class="text-sm font-bold uppercase tracking-wider text-stone-700">État A — Pied de page (accueil / tarifs / FAQ)</h2>
+    <p class="text-xs text-stone-500">Liens en ligne, centrés, wrap mobile. Ordre : Confidentialité · CGU · Contact · FAQ Athlète · FAQ Coach.</p>
+  </section>
+
+  <div class="min-h-[40vh] flex flex-col">
+    <main class="flex-1 bg-gradient-to-b from-palette-forest-dark/5 to-white flex items-center justify-center text-stone-400 text-sm">
+      (contenu page — hero, tarifs, FAQ…)
+    </main>
+
+    <footer class="border-t border-stone-200 bg-stone-50 py-12">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="space-y-3 text-center text-stone-600">
+          <nav class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm" aria-label="Liens légaux et aide">
+            <a href="/privacy" class="underline underline-offset-4 hover:text-stone-900">Politique de confidentialité</a>
+            <a href="/terms" class="underline underline-offset-4 hover:text-stone-900">Conditions d'utilisation</a>
+            <a href="/contact" class="underline underline-offset-4 hover:text-stone-900">Contact</a>
+            <a href="/faq/athlete" class="underline underline-offset-4 hover:text-stone-900 font-medium text-palette-forest-dark">FAQ Athlète</a>
+            <a href="/faq/coach" class="underline underline-offset-4 hover:text-stone-900 font-medium text-palette-forest-dark">FAQ Coach</a>
+          </nav>
+          <p class="text-sm">© 2026 My Sport Ally. Tous droits réservés.</p>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- État B : responsive mobile (wrap) -->
+  <section class="max-w-sm mx-auto p-4 mt-8 border border-stone-200 rounded-xl" aria-labelledby="state-b">
+    <h2 id="state-b" class="text-xs font-bold text-stone-700 mb-3">État B — Mobile (&lt; md), liens sur 2–3 lignes</h2>
+    <footer class="border-t border-stone-200 bg-stone-50 py-8">
+      <nav class="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-stone-600 text-center">
+        <a href="#" class="underline underline-offset-4">Confidentialité</a>
+        <a href="#" class="underline underline-offset-4">CGU</a>
+        <a href="#" class="underline underline-offset-4">Contact</a>
+        <a href="/faq/athlete" class="underline underline-offset-4 text-palette-forest-dark font-medium">FAQ Athlète</a>
+        <a href="/faq/coach" class="underline underline-offset-4 text-palette-forest-dark font-medium">FAQ Coach</a>
+      </nav>
+      <p class="text-xs text-center mt-3 text-stone-600">© 2026 My Sport Ally.</p>
+    </footer>
+  </section>
+
+  <!-- Transition : pricing n'avait pas de footer → ajout identique -->
+  <section class="max-w-3xl mx-auto p-6 mt-8 border-t border-stone-200" aria-labelledby="flow-pricing">
+    <h2 id="flow-pricing" class="text-sm font-bold uppercase tracking-wider text-stone-700">Transition — Page /pricing après CTA final</h2>
+    <p class="text-xs text-stone-500 mt-2">Avant : fin de page sur bandeau CTA vert, pas de footer. Après : même <code>PublicMarketingFooter</code> que l'accueil, scroll naturel sous le bandeau final.</p>
+  </section>
+</body>
+</html>

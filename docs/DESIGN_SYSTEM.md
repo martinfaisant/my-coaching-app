@@ -1745,6 +1745,27 @@ Sections composées pour visiteurs non connectés (Option B validée). Captures 
 
 ---
 
+### Pages FAQ publiques (`/faq/athlete`, `/faq/coach`)
+
+**Fichiers :** `components/public/*`, `app/[locale]/faq/*/page.tsx`, `lib/faqPublicConfig.ts`
+
+Pages marketing indexables pour athlètes et coachs : hero, bandeau réponses rapides, accordéon FAQ, bandeau croisé vers l’autre audience, CTA inscription, footer partagé.
+
+| Composant | Rôle |
+|-----------|------|
+| **`PublicMarketingFooter`** | Pied de page partagé (`/`, `/pricing`, FAQ) — liens légaux + FAQ Athlète / FAQ Coach ; prop `activeFaq?: 'athlete' \| 'coach'` |
+| **`FaqPublicPage`** | Corps de page FAQ (server) — hero, bandeau, accordéon, JSON-LD `FAQPage` |
+| **`FaqAccordion`** | Client — un seul panneau ouvert, `aria-expanded` |
+| **`FaqSportsList`** | Server — grille badges sports (`PERSISTED_WORKOUT_SPORT_TYPES`, `SPORT_ICONS`, `SPORT_BADGE_STYLES`) |
+| **`FaqCrossAudienceBanner`** | Bandeau CTA vers l’autre FAQ |
+| **`FaqFinalCta`** | CTA inscription ; coach = bouton + lien `/pricing` |
+
+**i18n :** `publicFooter`, `faqAthlete`, `faqCoach`, `metadata.faqAthlete*` / `faqCoach*`.
+
+**Mockups :** `docs/archive/design-faq-public/MOCKUP_US_FAQ_*.html`
+
+---
+
 ### PublicHeader
 
 **Fichier :** `components/PublicHeader.tsx`
@@ -1763,7 +1784,7 @@ En-tête public pour **visiteurs** : logo My Sport Ally (lien vers `/`), nav **A
   3. **`AuthButtons`** `variant="drawer"` (boutons pleine largeur ; fermeture drawer avant ouverture **`LoginModal`**) ;
   4. séparateur ;
   5. **`LanguageSwitcher`**.
-- **Titres mobile** : mapping pathname → i18n via **`getPublicHeaderPageTitleI18n`** (`lib/publicHeaderPageTitle.ts`) — `coachPricingPublic.navHome` / `navPricing`, `metadata.contactTitle` / `termsTitle` / `privacyTitle`, `auth.resetPassword`.
+- **Titres mobile** : mapping pathname → i18n via **`getPublicHeaderPageTitleI18n`** (`lib/publicHeaderPageTitle.ts`) — `coachPricingPublic.navHome` / `navPricing`, `metadata.contactTitle` / `termsTitle` / `privacyTitle` / **`faqAthleteTitle`** / **`faqCoachTitle`**, `auth.resetPassword`.
 - **État drawer** : ouverture liée au `pathname` courant (même logique que `DashboardTopBar`) ; fermeture sur navigation, auth, overlay, ✕ ou Escape.
 
 ```tsx
@@ -2259,6 +2280,7 @@ Actuellement, utiliser un span custom :
 - **Stats athlète (Nivo)** : `lib/athleteStatsNivoTheme.ts`, `lib/athleteStatsColors.ts`, `components/athlete/AthleteStatsVolumeChart.tsx`
 - **Entrée dashboard / accueil connecté** : `lib/dashboardEntryPath.ts` (`getDashboardEntryPath`), `lib/pathWithLocale.ts`, `lib/publicHeaderPageTitle.ts` (`getPublicHeaderPageTitleI18n` — titres barre mobile `PublicHeader`), `app/[locale]/page.tsx`, `app/[locale]/dashboard/page.tsx`
 - **Landing marketing (visiteurs)** : `components/landing/*`, `lib/landingConfig.ts`, `lib/landingScreenshots.ts`, `public/landing/{fr|en}/*.webp` — voir § Landing
+- **FAQ publiques** : `components/public/*`, `lib/faqPublicConfig.ts`, `app/[locale]/faq/athlete/page.tsx`, `app/[locale]/faq/coach/page.tsx` — voir § Pages FAQ publiques
 - **Horaires modale workout (coach)** : `lib/workoutFacilityHours.ts` (filtre sport ↔ type d’installation, jour, tri alphabétique)
 - **Modale workout — formats & couleurs** : `lib/workoutFormatting.ts` (format absolu et delta des métriques workout — durée, distance, allure mm:ss, vitesse km/h, dénivelé ; tests Vitest `lib/workoutFormatting.test.ts`), `lib/workoutFeedbackColors.ts` (dégradé sémantique tuiles + picker feedback : Ressenti / Intensité RPE / Plaisir)
 - **Design system page** : `app/dashboard/admin/design-system/page.tsx`

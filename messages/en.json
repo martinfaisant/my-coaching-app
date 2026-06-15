@@ -948,7 +948,129 @@
     "homeTitle": "Find a sports coach — running, triathlon, swimming, trail",
     "homeDescription": "Find an online sports coach for running, triathlon, swimming or trail. Personalized training plans, progress tracking and direct messaging with your coach.",
     "pricingTitle": "Coach pricing",
-    "pricingDescription": "Explore MySportAlly subscriptions for coaches. A subscription is only required once you start coaching an athlete."
+    "pricingDescription": "Explore MySportAlly subscriptions for coaches. A subscription is only required once you start coaching an athlete.",
+    "faqAthleteTitle": "Athlete FAQ — My Sport Ally",
+    "faqAthleteDescription": "Frequently asked questions for athletes: free platform, available sports, features and coaching support.",
+    "faqCoachTitle": "Coach FAQ — My Sport Ally",
+    "faqCoachDescription": "Frequently asked questions for coaches: free signup, platform subscription, features and coachable sports."
+  },
+  "publicFooter": {
+    "navAriaLabel": "Legal and help links",
+    "privacyLink": "Privacy Policy",
+    "termsLink": "Terms of Use",
+    "contactLink": "Contact",
+    "faqAthleteLink": "Athlete FAQ",
+    "faqCoachLink": "Coach FAQ",
+    "copyright": "All rights reserved."
+  },
+  "faqAthlete": {
+    "hero": {
+      "title": "Frequently asked questions — Athletes",
+      "subtitle": "Everything you need to know before getting started."
+    },
+    "quickBanner": {
+      "item1": "Free signup",
+      "item2": "{count} sports",
+      "item3": "Coach optional"
+    },
+    "listAriaLabel": "Athlete frequently asked questions",
+    "crossCta": {
+      "title": "Are you a coach?",
+      "subtitle": "See how My Sport Ally helps you manage your athletes.",
+      "button": "View Coach FAQ →"
+    },
+    "finalCta": {
+      "title": "Ready to get started?",
+      "subtitle": "Create your athlete account in minutes.",
+      "button": "Create my athlete account"
+    },
+    "items": {
+      "platformFree": {
+        "question": "Is the platform free for athletes?",
+        "answer": "Yes, the platform is free for athletes. Coaches offer free or paid services."
+      },
+      "availableSports": {
+        "question": "Which sports are available?",
+        "intro": "My Sport Ally supports the following sports:"
+      },
+      "whyCoach": {
+        "question": "Why work with a coach?",
+        "answer": "A coach adapts your training load to your level and goals. You often progress faster with personalized guidance."
+      },
+      "injuryPrevention": {
+        "question": "Can a coach help me avoid injuries?",
+        "answer": "Tailored follow-up often limits overtraining and common training mistakes. This does not replace medical advice."
+      },
+      "withoutCoach": {
+        "question": "Can I use the app without a coach?",
+        "answer": "Yes. You can track workouts, goals and stats on your own, then join a coach whenever you want."
+      },
+      "features": {
+        "question": "What features are available for athletes?",
+        "answer": "Training calendar, completed volume stats, race goals, post-workout feedback, messaging with your coach and availability management."
+      },
+      "findCoach": {
+        "question": "How do I find a coach?",
+        "answer": "Search by sport and language, browse profiles and offers, then send a coaching request from the platform."
+      },
+      "bilingual": {
+        "question": "Is the platform available in French?",
+        "answer": "Yes. My Sport Ally is available in French and English."
+      }
+    }
+  },
+  "faqCoach": {
+    "hero": {
+      "title": "Frequently asked questions — Coaches",
+      "subtitle": "Understand the platform before launching your coaching business."
+    },
+    "quickBanner": {
+      "item1": "Free signup",
+      "item2": "Subscribe on acceptance",
+      "item3": "Unlimited athletes"
+    },
+    "listAriaLabel": "Coach frequently asked questions",
+    "crossCta": {
+      "title": "Are you an athlete?",
+      "subtitle": "See how to progress with or without a coach on My Sport Ally.",
+      "button": "View Athlete FAQ →"
+    },
+    "finalCta": {
+      "title": "Ready to coach?",
+      "subtitle": "Create your coach account for free.",
+      "button": "Create my coach account"
+    },
+    "items": {
+      "payOnSignup": {
+        "question": "Do I have to pay when I sign up?",
+        "answer": "No. Create your profile and offers for free. A platform subscription is only required when you accept your first athlete.",
+        "pricingLink": "View platform pricing →"
+      },
+      "vsCoachOffers": {
+        "question": "Is this the same as my coaching offers to athletes?",
+        "answer": "No. The My Sport Ally subscription covers platform access. Your coaching prices remain separate and visible on your profile."
+      },
+      "includedFeatures": {
+        "question": "What features are included?",
+        "answer": "Multi-athlete calendar, workout planning, messaging, goal tracking, private notes and offer management."
+      },
+      "coachableSports": {
+        "question": "Which sports can I coach?",
+        "intro": "You can coach the following sports on the platform:"
+      },
+      "whyPlatform": {
+        "question": "Why use My Sport Ally?",
+        "answer": "Centralize planning, follow-up and communication with your athletes — without spreadsheets or scattered tools."
+      },
+      "athleteDiscovery": {
+        "question": "How do athletes find me?",
+        "answer": "Your profile and published offers appear in coach search. Athletes filter by sport and language before sending a request."
+      },
+      "unlimitedAthletes": {
+        "question": "Is there a limit on athletes?",
+        "answer": "No. Every platform plan includes unlimited athlete management."
+      }
+    }
   },
   "coachPricingPublic": {
     "navHome": "Home",
@@ -1222,12 +1344,6 @@
     "cta": {
       "title": "Ready to take it to the next level?",
       "subtitle": "Join athletes and coaches who progress with My Sport Ally"
-    },
-    "footer": {
-      "copyright": "All rights reserved.",
-      "privacyLink": "Privacy Policy",
-      "termsLink": "Terms of Use",
-      "contactLink": "Contact"
     }
   },
   "legal": {

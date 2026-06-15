@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
 import { CheckCircle2 } from 'lucide-react'
 import { PublicOrDashboardHeader } from '@/components/PublicOrDashboardHeader'
+import { PublicMarketingFooter } from '@/components/public/PublicMarketingFooter'
 import { CoachPricingPublicManageBanner } from '@/components/CoachPricingPublicManageBanner'
 import { CoachPricingPublicOffers } from '@/components/CoachPricingPublicOffers'
 import { CoachPricingPublicFinalCta } from '@/components/CoachPricingPublicFinalCta'
@@ -184,6 +185,8 @@ export default async function PricingPage({ params }: PricingPageProps) {
           {showFinalCta ? <CoachPricingPublicFinalCta /> : null}
         </main>
       </CoachPricingPublicSignupProvider>
+
+      <PublicMarketingFooter />
     </div>
   )
 }

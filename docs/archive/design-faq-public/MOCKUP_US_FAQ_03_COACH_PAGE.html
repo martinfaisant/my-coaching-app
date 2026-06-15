@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>US-FAQ-03 — Page FAQ Coach</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            'palette-forest-light': '#a8c4a0',
+            stone: { 50: '#fafaf9', 200: '#e7e5e4', 600: '#57534e', 900: '#1c1917' },
+          },
+        },
+      },
+    }
+  </script>
+  <style>
+    details summary { list-style: none; cursor: pointer; }
+    details summary::-webkit-details-marker { display: none; }
+    details[open] .chevron { transform: rotate(180deg); }
+    .chevron { transition: transform 0.2s; }
+  </style>
+</head>
+<body class="bg-white min-h-screen text-stone-900">
+  <p class="text-xs text-stone-500 p-4 max-w-3xl mx-auto border-b border-stone-200 bg-stone-50">
+    <strong>US-FAQ-03</strong> — Route <code>/faq/coach</code> · i18n <code>faqCoach</code> + <code>metadata.faqCoachTitle/Description</code>.
+    Lien tarifs = <code>LandingPricingLink</code> ou lien i18n vers <code>/pricing</code>.
+  </p>
+
+  <div class="min-h-screen bg-white flex flex-col">
+    <header class="sticky top-0 z-50 border-b border-stone-200 bg-white/95 backdrop-blur">
+      <div class="mx-auto flex h-14 md:h-16 max-w-7xl items-center justify-between px-4">
+        <span class="font-semibold text-stone-900">My Sport Ally</span>
+        <nav class="hidden md:flex gap-6 text-sm text-stone-600">
+          <a href="/">Accueil</a>
+          <a href="/pricing" class="font-semibold text-palette-forest-dark border-b-2 border-palette-forest-dark pb-0.5">Tarifs</a>
+        </nav>
+        <button type="button" class="rounded-lg bg-palette-forest-dark px-3 py-1.5 text-white text-sm font-medium">Créer un compte</button>
+      </div>
+    </header>
+
+    <main class="flex-1">
+      <section class="py-10 sm:py-14 bg-gradient-to-b from-palette-forest-light/15 to-white">
+        <div class="mx-auto max-w-3xl px-4 text-center">
+          <h1 class="text-3xl sm:text-4xl font-bold text-stone-900">Questions fréquentes — Coachs</h1>
+          <p class="mt-3 text-base text-stone-600 max-w-xl mx-auto">Comprendre la plateforme avant de lancer votre activité.</p>
+        </div>
+      </section>
+
+      <section class="mx-auto max-w-3xl px-4 -mt-2 mb-8">
+        <div class="rounded-2xl border border-palette-forest-light/50 bg-palette-forest-light/10 p-5">
+          <ul class="grid sm:grid-cols-3 gap-3 text-sm text-stone-700">
+            <li class="flex gap-2"><span class="text-palette-forest-dark font-bold" aria-hidden>✓</span> Inscription gratuite</li>
+            <li class="flex gap-2"><span class="text-palette-forest-dark font-bold" aria-hidden>✓</span> Abo à l'acceptation</li>
+            <li class="flex gap-2"><span class="text-palette-forest-dark font-bold" aria-hidden>✓</span> Athlètes illimités</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="mx-auto max-w-3xl px-4 pb-10">
+        <div class="space-y-3">
+          <details class="rounded-xl border border-stone-200 bg-white" open>
+            <summary class="flex items-center justify-between gap-3 p-4 font-semibold text-sm text-stone-900">
+              Dois-je payer dès l'inscription ?
+              <svg class="chevron w-5 h-5 text-stone-400 shrink-0 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </summary>
+            <div class="px-4 pb-4 text-sm text-stone-600 border-t border-stone-100 pt-3">
+              Non. Créez votre profil et vos offres gratuitement. L'abonnement plateforme n'est requis qu'au moment d'accepter votre premier athlète.
+              <a href="/pricing" class="block mt-2 text-palette-forest-dark font-medium underline underline-offset-4">Voir les tarifs plateforme →</a>
+            </div>
+          </details>
+
+          <details class="rounded-xl border border-stone-200 bg-white">
+            <summary class="flex items-center justify-between gap-3 p-4 font-semibold text-sm text-stone-900">
+              Est-ce le même prix que mes offres aux athlètes ?
+              <svg class="chevron w-5 h-5 text-stone-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </summary>
+            <div class="px-4 pb-4 text-sm text-stone-600 border-t border-stone-100 pt-3">
+              Non. L'abonnement My Sport Ally couvre l'accès à la plateforme. Vos tarifs de coaching restent libres et visibles sur votre profil.
+            </div>
+          </details>
+
+          <details class="rounded-xl border border-stone-200 bg-white">
+            <summary class="flex items-center justify-between gap-3 p-4 font-semibold text-sm text-stone-900">
+              Quelles fonctionnalités sont incluses ?
+              <svg class="chevron w-5 h-5 text-stone-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </summary>
+            <div class="px-4 pb-4 text-sm text-stone-600 border-t border-stone-100 pt-3">
+              Calendrier multi-athlètes, planification de séances, messagerie, suivi des objectifs, notes privées et gestion de vos offres.
+            </div>
+          </details>
+
+          <!-- État : item ouvert — même pattern que FAQ athlète « Quels sports sont disponibles ? » -->
+          <details class="rounded-xl border border-stone-200 bg-white" open>
+            <summary class="flex items-center justify-between gap-3 p-4 font-semibold text-sm text-stone-900">
+              Quels sports puis-je coacher ?
+              <svg class="chevron w-5 h-5 text-stone-400 shrink-0 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </summary>
+            <div class="px-4 pb-4 text-sm text-stone-600 border-t border-stone-100 pt-3 space-y-3">
+              <p>Course, trail, vélo, natation, triathlon, musculation, ski de fond, ski de randonnée, patinage, randonnée, escalade, yoga, méditation, canot, surf, golf.</p>
+              <div class="flex flex-wrap gap-2" aria-hidden>
+                <span class="px-2.5 py-1 rounded-lg border border-stone-200 text-xs bg-stone-50">Course</span>
+                <span class="px-2.5 py-1 rounded-lg border border-stone-200 text-xs bg-stone-50">Trail</span>
+                <span class="px-2.5 py-1 rounded-lg border border-stone-200 text-xs bg-stone-50">Vélo</span>
+                <span class="px-2.5 py-1 rounded-lg border border-stone-200 text-xs bg-stone-50">Natation</span>
+                <span class="px-2.5 py-1 rounded-lg border border-stone-200 text-xs bg-stone-50">Triathlon</span>
+                <span class="px-2.5 py-1 rounded-lg border border-stone-200 text-xs bg-stone-50">Musculation</span>
+                <span class="px-2.5 py-1 rounded-lg border border-stone-200 text-xs bg-stone-50">Ski de fond</span>
+                <span class="px-2.5 py-1 rounded-lg border border-stone-200 text-xs bg-stone-50">Ski de randonnée</span>
+                <span class="px-2.5 py-1 rounded-lg border border-stone-200 text-xs bg-stone-50">Patinage</span>
+                <span class="px-2.5 py-1 rounded-lg border border-stone-200 text-xs bg-stone-50">Randonnée</span>
+                <span class="px-2.5 py-1 rounded-lg border border-stone-200 text-xs bg-stone-50">Escalade</span>
+                <span class="px-2.5 py-1 rounded-lg border border-stone-200 text-xs bg-stone-50">Yoga</span>
+                <span class="px-2.5 py-1 rounded-lg border border-stone-200 text-xs bg-stone-50">Méditation</span>
+                <span class="px-2.5 py-1 rounded-lg border border-stone-200 text-xs bg-stone-50">Canot</span>
+                <span class="px-2.5 py-1 rounded-lg border border-stone-200 text-xs bg-stone-50">Surf</span>
+                <span class="px-2.5 py-1 rounded-lg border border-stone-200 text-xs bg-stone-50">Golf</span>
+              </div>
+              <p class="text-xs text-stone-500">Implémentation : liste issue de <code>PERSISTED_WORKOUT_SPORT_TYPES</code> ; badges via <code>SPORT_ICONS</code> + i18n <code>sports.*</code> — identique au bloc sports FAQ athlète.</p>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <!-- US-FAQ-04 : CTA croisé vers FAQ athlète -->
+      <section class="bg-stone-50 border-y border-stone-200 py-10">
+        <div class="mx-auto max-w-3xl px-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h2 class="text-base font-semibold text-stone-900">Vous êtes athlète ?</h2>
+            <p class="text-sm text-stone-600 mt-1">Découvrez comment progresser avec ou sans coach sur My Sport Ally.</p>
+          </div>
+          <a href="/faq/athlete" class="inline-flex items-center justify-center shrink-0 rounded-xl border border-stone-200 bg-white px-5 py-2.5 text-sm font-semibold text-palette-forest-dark hover:bg-stone-50 transition-colors">
+            Voir la FAQ Athlète →
+          </a>
+        </div>
+      </section>
+
+      <section class="py-14 mx-auto max-w-3xl px-4 text-center">
+        <h2 class="text-xl font-bold text-stone-900">Prêt à coacher ?</h2>
+        <p class="text-sm text-stone-600 mt-2 mb-4">Créez votre compte coach gratuitement.</p>
+        <div class="flex flex-col sm:flex-row gap-3 justify-center">
+          <button type="button" class="rounded-xl bg-palette-forest-dark px-6 py-3 text-white font-semibold text-sm">Créer mon compte coach</button>
+          <a href="/pricing" class="rounded-xl border border-stone-200 bg-white px-6 py-3 text-sm font-semibold text-palette-forest-dark">Voir les tarifs</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="border-t border-stone-200 bg-stone-50 py-12">
+      <div class="mx-auto max-w-7xl px-4 text-center text-sm text-stone-600 space-y-3">
+        <nav class="flex flex-wrap justify-center gap-6">
+          <a href="#" class="underline">Confidentialité</a>
+          <a href="#" class="underline">CGU</a>
+          <a href="#" class="underline">Contact</a>
+          <a href="/faq/athlete" class="underline">FAQ Athlète</a>
+          <a href="/faq/coach" class="underline font-medium text-palette-forest-dark">FAQ Coach</a>
+        </nav>
+        <p>© 2026 My Sport Ally.</p>
+      </div>
+    </footer>
+  </div>
+
+  <section class="max-w-3xl mx-auto p-6 mt-8 border-t border-stone-200 space-y-4">
+    <h2 class="text-sm font-bold uppercase text-stone-700">Transitions</h2>
+    <div class="text-xs text-stone-600 space-y-2">
+      <p><strong>1.</strong> Clic « Voir la FAQ Athlète » → <code>/faq/athlete</code>.</p>
+      <p><strong>2.</strong> Lien « Voir les tarifs plateforme » dans une réponse → <code>/pricing</code> (pas de doublon catalogue).</p>
+      <p><strong>3.</strong> Arrivée depuis footer accueil « FAQ Coach » → page coach, item paiement ouvert optionnel (non requis).</p>
+    </div>
+  </section>
+</body>
+</html>

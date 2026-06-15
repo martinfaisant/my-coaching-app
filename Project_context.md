@@ -124,7 +124,7 @@ The same **default path** logic is centralized in **`lib/dashboardEntryPath.ts`*
 
 The dashboard uses a **top bar** (logo My Sport Ally left, nav links center on tablet/desktop, account area right). **Mobile:** page title centered, hamburger right; tap opens a **drawer from the right**. **Athlete (tablet/desktop):** **primary** links centered — if the athlete has no `coach_id`, **Find a coach** is included, then **My calendar**, **Statistics** (`/dashboard/stats`, volume « fait » charts), and **My goals**; **right:** **account menu** (avatar + name + chevron) opens a panel: **connected devices** (only when `NEXT_PUBLIC_ENABLE_ATHLETE_STRAVA_DEVICES=true`, see §4.9), **My coach** (only when `coach_id` is set), subscription history; separator; **My details** (route `/dashboard/profile`); **Log out**. **Athlete (mobile drawer):** same grouping with horizontal separators — primary links, then secondary links, then **My details**, then **Log out** (no separate large profile card). **Coach** nav: Mes athlètes, Mon offre, Souscriptions; **profile** remains a direct top-bar link (avatar + name) to `/dashboard/profile`. **Admin** nav: Gestion des membres, Design System only (no « Mes athlètes »). The pages **« Trouver mon coach »** and **« Mes athlètes »** are separate routes (`/dashboard/find-coach`, `/dashboard/athletes`), each with its own loading skeleton. The dashboard layout and `DashboardPageShell` (padding only, no in-page title nor card container) are used for all pages. **Navigation config** is split in `lib/dashboardNavConfig.ts` (`getAthletePrimaryNavItems`, `getAthleteAccountNavItems` — devices item conditional on `isAthleteStravaDevicesEnabled()` in `lib/featureFlags.ts`, `getAthleteProfileNavItem`, merged list for mobile page titles). **Stats icon** in the top bar / drawer: `components/DashboardNavIcons.tsx` (`/dashboard/stats`).
 
-**Public / marketing / legal header:** On **contact** (`/contact`), **pricing** (`/pricing`), **privacy** (`/privacy`), **terms** (`/terms`), and **reset-password** (`/reset-password`), `PublicOrDashboardHeader` (server) renders **`PublicHeader`** when there is **no session**, and the same **`DashboardTopBar`** as in the app when the user is **logged in** (role-based nav and account menus). On the **landing** (`/` and `/en`), **logged-in** users are **redirected** to the app (see « Marketing home (logged-in) » above), so only **visitors** see the marketing page with **`PublicHeader`**. **Visitor header — desktop (`md`+):** logo, inline nav **Accueil** + **Tarifs**, `LanguageSwitcher`, sign-in / sign-up (`AuthButtons`). **Visitor header — mobile (`< md`):** same pattern as the dashboard top bar — compact bar (`h-14`: logo, centered page title, hamburger); tap opens a **drawer from the right** with nav links, full-width auth buttons, and language switcher (`lib/publicHeaderPageTitle.ts` for page titles). The top bar is **sticky** (`sticky top-0`, `z-50`, `border-b border-stone-200`) on the routes where it appears with long scroll. See `docs/DESIGN_SYSTEM.md` (§ PublicOrDashboardHeader, § PublicHeader, § DashboardTopBar).
+**Public / marketing / legal header:** On **contact** (`/contact`), **pricing** (`/pricing`), **FAQ** (`/faq/athlete`, `/faq/coach`), **privacy** (`/privacy`), **terms** (`/terms`), and **reset-password** (`/reset-password`), `PublicOrDashboardHeader` (server) renders **`PublicHeader`** when there is **no session**, and the same **`DashboardTopBar`** as in the app when the user is **logged in** (role-based nav and account menus). On the **landing** (`/` and `/en`), **logged-in** users are **redirected** to the app (see « Marketing home (logged-in) » above), so only **visitors** see the marketing page with **`PublicHeader`**. **Visitor header — desktop (`md`+):** logo, inline nav **Accueil** + **Tarifs**, `LanguageSwitcher`, sign-in / sign-up (`AuthButtons`). **Visitor header — mobile (`< md`):** same pattern as the dashboard top bar — compact bar (`h-14`: logo, centered page title, hamburger); tap opens a **drawer from the right** with nav links, full-width auth buttons, and language switcher (`lib/publicHeaderPageTitle.ts` for page titles, including **`metadata.faqAthleteTitle`** / **`faqCoachTitle`** on FAQ routes). The top bar is **sticky** (`sticky top-0`, `z-50`, `border-b border-stone-200`) on the routes where it appears with long scroll. See `docs/DESIGN_SYSTEM.md` (§ PublicOrDashboardHeader, § PublicHeader, § DashboardTopBar).
 
 ---
 
@@ -455,7 +455,7 @@ The athlete picker uses these as **selected** state (`FEELING_PICKER_SELECTED_BG
 
 **Grille :** **`CoachPlatformOfferGrid`** mode **`marketing`** (réutilise le rendu checkout ; CTA adapté). Essai campagne : badge visiteur si **`COACH_PLATFORM_SUBSCRIPTION_TRIAL_DAYS > 0`** ; coach sans abo : éligibilité via **`resolveCoachPlatformTrialPresentationForCoach`**.
 
-**Références design :** maquettes archivées **`docs/archive/design-coach-pricing-public/`**.
+**Références design :** maquettes archivées **`docs/archive/design-coach-pricing-public/`**. **Footer :** **`PublicMarketingFooter`** (liens FAQ inclus), identique à l’accueil.
 
 ---
 
@@ -474,7 +474,7 @@ The athlete picker uses these as **selected** state (`FEELING_PICKER_SELECTED_BG
 | Audience | Cartes « Je suis athlète / coach » + mini-captures |
 | How it works | 3 étapes numérotées |
 | CTA final | Bandeau vert, `AuthButtons` **`ctaBand`**, lien tarifs |
-| Footer | Privacy, Terms, Contact |
+| Footer | **`PublicMarketingFooter`** — Confidentialité, CGU, Contact, **FAQ Athlète**, **FAQ Coach** (i18n **`publicFooter`**) |
 
 **Assets :** `public/landing/fr/` et `public/landing/en/` — 7 fichiers WebP (`calendar-athlete`, `workout-feedback`, `stats`, `find-coach`, `calendar-coach`, `workout-create`, `coach-offers`). **EN :** v1 = copies FR — à remplacer par captures UI locale EN.
 
@@ -492,12 +492,12 @@ The athlete picker uses these as **selected** state (`FEELING_PICKER_SELECTED_BG
 
 | Route | Contenu |
 |-------|---------|
-| `/sitemap.xml` | 10 URLs : home, pricing, contact, terms, privacy (FR + EN), avec alternates hreflang |
+| `/sitemap.xml` | **14 URLs** : home, pricing, contact, terms, privacy, **faq/athlete**, **faq/coach** (FR + EN), avec alternates hreflang |
 | `/robots.txt` | `allow: /` ; `disallow` dashboard, admin, login, auth, reset-password, API ; lien vers le sitemap |
 
 **Pages listées :** définies dans **`SEO_PUBLIC_PATHS`** (`lib/seoPublicRoutes.ts`). URL de base via **`getSiteUrl()`** (`lib/siteUrl.ts`) ← `NEXT_PUBLIC_SITE_URL` / `NEXT_PUBLIC_APP_URL`.
 
-**Métadonnées HTML (head, non visibles dans le corps de page) :** chaque page de `SEO_PUBLIC_PATHS` utilise **`buildPublicPageMetadata`** (`lib/seoMetadata.ts`) dans `generateMetadata` — title/description i18n (**`metadata.homeTitle`**, **`metadata.homeDescription`**, etc.), **`alternates.canonical`**, **`alternates.languages`** (fr, en, x-default). L’accueil marketing visible reste **`landing.hero.*`** (H1 / sous-titre) ; le title navigateur suit le template layout `%s | My Sport Ally`.
+**Métadonnées HTML (head, non visibles dans le corps de page) :** chaque page de `SEO_PUBLIC_PATHS` utilise **`buildPublicPageMetadata`** (`lib/seoMetadata.ts`) dans `generateMetadata` — title/description i18n (**`metadata.homeTitle`**, **`metadata.faqAthleteTitle`**, etc.), **`alternates.canonical`**, **`alternates.languages`** (fr, en, x-default). L’accueil marketing visible reste **`landing.hero.*`** (H1 / sous-titre) ; le title navigateur suit le template layout `%s | My Sport Ally`. Pages FAQ : JSON-LD **`FAQPage`** en plus (`buildFaqPageJsonLd`).
 
 **Middleware :** **`proxy.ts`** ne doit **pas** appliquer next-intl à `/sitemap.xml` ni `/robots.txt` (sinon 404 en prod / Search Console). Voir **`DEPLOYMENT_NOTES.md`** § Référencement → Dépannage.
 
@@ -506,6 +506,26 @@ The athlete picker uses these as **selected** state (`FEELING_PICKER_SELECTED_BG
 **Domaine :** `www.mysportally.com` doit rediriger vers l’apex (Vercel). Procédure Search Console : **`DEPLOYMENT_NOTES.md`** § Référencement.
 
 **Évolutions SEO non livrées :** image Open Graph dédiée (`og:image`) ; annuaire coach public ; landing pages par sport.
+
+---
+
+### 4.15 Public FAQ pages (athlete & coach) ✅
+
+**Besoin produit :** pages **publiques indexables** répondant aux questions fréquentes **athlètes** et **coachs** (fonctionnalités, gratuité, sports, valeur du coaching), pour aider au choix de la plateforme et renforcer le **référencement**.
+
+**Routes :** `/faq/athlete`, `/faq/coach` (+ `/en/...`) — `app/[locale]/faq/athlete/page.tsx`, `app/[locale]/faq/coach/page.tsx`.
+
+**Contenu (par page) :** hero, bandeau 3 réponses rapides (compteur sports dynamique via **`PERSISTED_WORKOUT_SPORT_TYPES`** côté athlète), accordéon FAQ (`FaqAccordion`), **bandeau CTA croisé** vers l’autre FAQ (`FaqCrossAudienceBanner`), CTA inscription (`FaqFinalCta` ; coach = signup + lien **`/pricing`**), **`PublicMarketingFooter`**.
+
+**Sports :** liste exhaustive partagée (`FaqSportsList` — badges **`SPORT_ICONS`** + i18n **`sports.*`**). Même rendu sur les questions « sports disponibles » (athlète) et « sports coachables » (coach).
+
+**Message clé athlète (gratuité) :** la plateforme est gratuite pour les athlètes ; les coachs proposent des services gratuits ou payants.
+
+**SEO :** entrées dans **`SEO_PUBLIC_PATHS`** ; **`buildPublicPageMetadata`** ; JSON-LD **`FAQPage`** (`lib/faqPublicConfig.ts` → `buildFaqPageJsonLd`). i18n : **`faqAthlete`**, **`faqCoach`**, **`metadata.faqAthleteTitle`** / **`faqCoachTitle`**.
+
+**Navigation :** liens FAQ dans le **footer partagé** (`/`, `/pricing`, les deux FAQ) — pas dans le header public.
+
+**Références :** **`docs/DESIGN_SYSTEM.md`** § Pages FAQ publiques ; maquettes **`docs/archive/design-faq-public/`**.
 
 ---
 

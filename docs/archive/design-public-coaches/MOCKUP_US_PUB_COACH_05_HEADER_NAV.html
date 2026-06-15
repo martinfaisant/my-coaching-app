@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>US-PUB-COACH-05 — PublicHeader nav</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { colors: { 'palette-forest-dark': '#627e59' }}}}
+  </script>
+  <style>.view { display: none; } .view.active { display: block; }</style>
+</head>
+<body class="bg-stone-50 antialiased">
+  <p class="sticky top-0 z-[100] bg-amber-50 border-b border-amber-200 px-4 py-2 text-xs text-amber-900 text-center font-medium">
+    US-PUB-COACH-05 · PublicHeader — lien Trouver un coach (desktop + mobile drawer)
+  </p>
+
+  <div class="flex justify-center gap-2 p-4">
+    <button class="text-xs px-3 py-1 rounded border bg-palette-forest-dark text-white" data-v="desktop">Desktop md+</button>
+    <button class="text-xs px-3 py-1 rounded border" data-v="mobile">Mobile &lt; md</button>
+  </div>
+
+  <div id="desktop" class="view active">
+    <header class="border-b border-stone-200 bg-white mx-auto max-w-5xl mt-4 rounded-t-xl">
+      <div class="flex h-16 items-center justify-between px-8">
+        <span class="font-bold">My Sport Ally</span>
+        <nav class="flex gap-8 text-sm">
+          <a href="#" class="text-stone-600">Accueil</a>
+          <a href="/coaches" class="font-semibold text-palette-forest-dark border-b-2 border-palette-forest-dark pb-0.5">Trouver un coach</a>
+          <a href="#" class="text-stone-600">Tarifs</a>
+        </nav>
+        <div class="flex gap-2 text-sm items-center">
+          <button class="px-3 py-2">Se connecter</button>
+          <button class="px-3 py-2 rounded-lg bg-palette-forest-dark text-white">Créer un compte</button>
+          <span class="w-px h-6 bg-stone-200"></span>
+          <span class="text-xs">FR</span>
+        </div>
+      </div>
+    </header>
+    <p class="text-center text-xs text-stone-500 mt-2">i18n : <code>coachPricingPublic.navFindCoach</code> ou <code>navigation.findCoachPublic</code> · actif si pathname /coaches*</p>
+  </div>
+
+  <div id="mobile" class="view max-w-sm mx-auto">
+    <header class="border-b border-stone-200 bg-white flex h-14 items-center px-4 gap-3">
+      <span class="font-bold text-sm">MSA</span>
+      <span class="flex-1 text-center text-sm font-semibold truncate">Trouver un coach</span>
+      <button class="p-2 text-stone-500" aria-label="Menu">☰</button>
+    </header>
+    <aside class="bg-white border-l border-stone-200 w-72 ml-auto min-h-[320px] p-4 shadow-xl">
+      <p class="text-xs text-stone-400 mb-3">Drawer (pattern PublicHeader mobile)</p>
+      <a href="#" class="block px-3 py-3 rounded-xl text-stone-600">Accueil</a>
+      <a href="/coaches" class="block px-3 py-3 rounded-xl bg-palette-forest-dark text-white font-medium">Trouver un coach</a>
+      <a href="#" class="block px-3 py-3 rounded-xl text-stone-600">Tarifs</a>
+      <hr class="my-4 border-stone-100" />
+      <button class="w-full py-2.5 rounded-xl bg-palette-forest-dark text-white text-sm font-medium mb-2">Créer un compte</button>
+      <button class="w-full py-2.5 rounded-xl border text-sm">Se connecter</button>
+    </aside>
+    <p class="text-xs text-stone-500 p-4 text-center"><code>lib/publicHeaderPageTitle.ts</code> : cas <code>/coaches</code></p>
+  </div>
+
+  <script>
+    document.querySelectorAll('[data-v]').forEach(b => b.addEventListener('click', () => {
+      document.querySelectorAll('[data-v]').forEach(x => x.classList.remove('bg-palette-forest-dark', 'text-white'));
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      b.classList.add('bg-palette-forest-dark', 'text-white');
+      document.getElementById(b.dataset.v).classList.add('active');
+    }));
+  </script>
+</body>
+</html>

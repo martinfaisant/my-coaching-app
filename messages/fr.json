@@ -1073,7 +1073,129 @@
     "homeTitle": "Trouvez un coach sportif — course, triathlon, natation, trail",
     "homeDescription": "Trouvez un coach sportif en ligne : course à pied, triathlon, natation, trail. Plans personnalisés, suivi des progrès et messagerie directe avec votre coach.",
     "pricingTitle": "Tarifs coach",
-    "pricingDescription": "Découvrez les abonnements MySportAlly pour les coachs. L’abonnement n’est requis qu’à partir du moment où vous commencez à coacher un athlète."
+    "pricingDescription": "Découvrez les abonnements MySportAlly pour les coachs. L’abonnement n’est requis qu’à partir du moment où vous commencez à coacher un athlète.",
+    "faqAthleteTitle": "FAQ Athlète — My Sport Ally",
+    "faqAthleteDescription": "Questions fréquentes pour les athlètes : plateforme gratuite, sports disponibles, fonctionnalités et accompagnement par un coach.",
+    "faqCoachTitle": "FAQ Coach — My Sport Ally",
+    "faqCoachDescription": "Questions fréquentes pour les coachs : inscription gratuite, abonnement plateforme, fonctionnalités et sports coachables."
+  },
+  "publicFooter": {
+    "navAriaLabel": "Liens légaux et aide",
+    "privacyLink": "Politique de confidentialité",
+    "termsLink": "Conditions d’utilisation",
+    "contactLink": "Contact",
+    "faqAthleteLink": "FAQ Athlète",
+    "faqCoachLink": "FAQ Coach",
+    "copyright": "Tous droits réservés."
+  },
+  "faqAthlete": {
+    "hero": {
+      "title": "Questions fréquentes — Athlètes",
+      "subtitle": "Tout pour comprendre la plateforme avant de vous lancer."
+    },
+    "quickBanner": {
+      "item1": "Inscription gratuite",
+      "item2": "{count} sports",
+      "item3": "Coach en option"
+    },
+    "listAriaLabel": "Liste des questions fréquentes athlète",
+    "crossCta": {
+      "title": "Vous êtes coach ?",
+      "subtitle": "Découvrez comment My Sport Ally vous aide à gérer vos athlètes.",
+      "button": "Voir la FAQ Coach →"
+    },
+    "finalCta": {
+      "title": "Prêt à commencer ?",
+      "subtitle": "Créez votre compte athlète en quelques minutes.",
+      "button": "Créer mon compte athlète"
+    },
+    "items": {
+      "platformFree": {
+        "question": "La plateforme est-elle gratuite pour les athlètes ?",
+        "answer": "Oui, la plateforme est gratuite pour les athlètes. Les coachs proposent des services gratuits ou payants."
+      },
+      "availableSports": {
+        "question": "Quels sports sont disponibles ?",
+        "intro": "My Sport Ally prend en charge les sports suivants :"
+      },
+      "whyCoach": {
+        "question": "Pourquoi travailler avec un coach ?",
+        "answer": "Un coach adapte votre charge d’entraînement à votre niveau et vos objectifs. Vous progressez souvent plus vite, avec un encadrement personnalisé."
+      },
+      "injuryPrevention": {
+        "question": "Un coach peut-il m’aider à éviter les blessures ?",
+        "answer": "Un suivi adapté limite souvent le surmenage et les erreurs d’entraînement fréquentes. Cela ne remplace pas un avis médical."
+      },
+      "withoutCoach": {
+        "question": "Puis-je utiliser l’app sans coach ?",
+        "answer": "Oui. Vous pouvez suivre vos séances, objectifs et statistiques en autonomie, puis rejoindre un coach quand vous le souhaitez."
+      },
+      "features": {
+        "question": "Quelles fonctionnalités pour les athlètes ?",
+        "answer": "Calendrier d’entraînement, statistiques de volume réalisé, objectifs de course, retour après séance, messagerie avec votre coach et gestion des disponibilités."
+      },
+      "findCoach": {
+        "question": "Comment trouver un coach ?",
+        "answer": "Recherchez par sport et langue, consultez les profils et les offres, puis envoyez une demande de coaching depuis la plateforme."
+      },
+      "bilingual": {
+        "question": "La plateforme est-elle disponible en anglais ?",
+        "answer": "Oui. My Sport Ally est bilingue français et anglais."
+      }
+    }
+  },
+  "faqCoach": {
+    "hero": {
+      "title": "Questions fréquentes — Coachs",
+      "subtitle": "Comprendre la plateforme avant de lancer votre activité."
+    },
+    "quickBanner": {
+      "item1": "Inscription gratuite",
+      "item2": "Abonnement à l’acceptation",
+      "item3": "Athlètes illimités"
+    },
+    "listAriaLabel": "Liste des questions fréquentes coach",
+    "crossCta": {
+      "title": "Vous êtes athlète ?",
+      "subtitle": "Découvrez comment progresser avec ou sans coach sur My Sport Ally.",
+      "button": "Voir la FAQ Athlète →"
+    },
+    "finalCta": {
+      "title": "Prêt à coacher ?",
+      "subtitle": "Créez votre compte coach gratuitement.",
+      "button": "Créer mon compte coach"
+    },
+    "items": {
+      "payOnSignup": {
+        "question": "Dois-je payer dès l’inscription ?",
+        "answer": "Non. Créez votre profil et vos offres gratuitement. L’abonnement plateforme n’est requis qu’au moment d’accepter votre premier athlète.",
+        "pricingLink": "Voir les tarifs plateforme →"
+      },
+      "vsCoachOffers": {
+        "question": "Est-ce le même prix que mes offres aux athlètes ?",
+        "answer": "Non. L’abonnement My Sport Ally couvre l’accès à la plateforme. Vos tarifs de coaching restent libres et visibles sur votre profil."
+      },
+      "includedFeatures": {
+        "question": "Quelles fonctionnalités sont incluses ?",
+        "answer": "Calendrier multi-athlètes, planification de séances, messagerie, suivi des objectifs, notes privées et gestion de vos offres."
+      },
+      "coachableSports": {
+        "question": "Quels sports puis-je coacher ?",
+        "intro": "Vous pouvez coacher les sports suivants sur la plateforme :"
+      },
+      "whyPlatform": {
+        "question": "Pourquoi utiliser My Sport Ally ?",
+        "answer": "Centralisez la planification, le suivi et la communication avec vos athlètes — sans tableurs ni outils dispersés."
+      },
+      "athleteDiscovery": {
+        "question": "Comment les athlètes me trouvent-ils ?",
+        "answer": "Votre profil et vos offres publiées sont visibles dans la recherche coach. Les athlètes filtrent par sport et langue avant d’envoyer une demande."
+      },
+      "unlimitedAthletes": {
+        "question": "Y a-t-il une limite d’athlètes ?",
+        "answer": "Non. Toutes les formules plateforme incluent une gestion illimitée d’athlètes."
+      }
+    }
   },
   "coachPricingPublic": {
     "navHome": "Accueil",
@@ -1347,12 +1469,6 @@
     "cta": {
       "title": "Prêt à passer au niveau supérieur ?",
       "subtitle": "Rejoignez les athlètes et coachs qui progressent avec My Sport Ally"
-    },
-    "footer": {
-      "copyright": "Tous droits réservés.",
-      "privacyLink": "Politique de confidentialité",
-      "termsLink": "Conditions d’utilisation",
-      "contactLink": "Contact"
     }
   },
   "legal": {
