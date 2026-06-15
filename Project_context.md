@@ -124,7 +124,7 @@ The same **default path** logic is centralized in **`lib/dashboardEntryPath.ts`*
 
 The dashboard uses a **top bar** (logo My Sport Ally left, nav links center on tablet/desktop, account area right). **Mobile:** page title centered, hamburger right; tap opens a **drawer from the right**. **Athlete (tablet/desktop):** **primary** links centered — if the athlete has no `coach_id`, **Find a coach** is included, then **My calendar**, **Statistics** (`/dashboard/stats`, volume « fait » charts), and **My goals**; **right:** **account menu** (avatar + name + chevron) opens a panel: **connected devices** (only when `NEXT_PUBLIC_ENABLE_ATHLETE_STRAVA_DEVICES=true`, see §4.9), **My coach** (only when `coach_id` is set), subscription history; separator; **My details** (route `/dashboard/profile`); **Log out**. **Athlete (mobile drawer):** same grouping with horizontal separators — primary links, then secondary links, then **My details**, then **Log out** (no separate large profile card). **Coach** nav: Mes athlètes, Mon offre, Souscriptions; **profile** remains a direct top-bar link (avatar + name) to `/dashboard/profile`. **Admin** nav: Gestion des membres, Design System only (no « Mes athlètes »). The pages **« Trouver mon coach »** and **« Mes athlètes »** are separate routes (`/dashboard/find-coach`, `/dashboard/athletes`), each with its own loading skeleton. The dashboard layout and `DashboardPageShell` (padding only, no in-page title nor card container) are used for all pages. **Navigation config** is split in `lib/dashboardNavConfig.ts` (`getAthletePrimaryNavItems`, `getAthleteAccountNavItems` — devices item conditional on `isAthleteStravaDevicesEnabled()` in `lib/featureFlags.ts`, `getAthleteProfileNavItem`, merged list for mobile page titles). **Stats icon** in the top bar / drawer: `components/DashboardNavIcons.tsx` (`/dashboard/stats`).
 
-**Public / marketing / legal header:** On **contact** (`/contact`), **pricing** (`/pricing`), **FAQ** (`/faq/athlete`, `/faq/coach`), **privacy** (`/privacy`), **terms** (`/terms`), and **reset-password** (`/reset-password`), `PublicOrDashboardHeader` (server) renders **`PublicHeader`** when there is **no session**, and the same **`DashboardTopBar`** as in the app when the user is **logged in** (role-based nav and account menus). On the **landing** (`/` and `/en`), **logged-in** users are **redirected** to the app (see « Marketing home (logged-in) » above), so only **visitors** see the marketing page with **`PublicHeader`**. **Visitor header — desktop (`md`+):** logo, inline nav **Accueil** + **Tarifs**, `LanguageSwitcher`, sign-in / sign-up (`AuthButtons`). **Visitor header — mobile (`< md`):** same pattern as the dashboard top bar — compact bar (`h-14`: logo, centered page title, hamburger); tap opens a **drawer from the right** with nav links, full-width auth buttons, and language switcher (`lib/publicHeaderPageTitle.ts` for page titles, including **`metadata.faqAthleteTitle`** / **`faqCoachTitle`** on FAQ routes). The top bar is **sticky** (`sticky top-0`, `z-50`, `border-b border-stone-200`) on the routes where it appears with long scroll. See `docs/DESIGN_SYSTEM.md` (§ PublicOrDashboardHeader, § PublicHeader, § DashboardTopBar).
+**Public / marketing / legal header:** On **contact** (`/contact`), **pricing** (`/pricing`), **annuaire coach** (`/coaches`, fiches `/coaches/[id]`), **FAQ** (`/faq/athlete`, `/faq/coach`), **privacy** (`/privacy`), **terms** (`/terms`), and **reset-password** (`/reset-password`), `PublicOrDashboardHeader` (server) renders **`PublicHeader`** when there is **no session**, and the same **`DashboardTopBar`** as in the app when the user is **logged in** (role-based nav and account menus). On the **landing** (`/` and `/en`), **logged-in** users are **redirected** to the app (see « Marketing home (logged-in) » above), so only **visitors** see the marketing page with **`PublicHeader`**. **Visitor header — desktop (`md`+):** logo, inline nav **Accueil** + **Trouver un coach** (`/coaches`) + **Tarifs**, `LanguageSwitcher`, sign-in / sign-up (`AuthButtons`). **Visitor header — mobile (`< md`):** same pattern as the dashboard top bar — compact bar (`h-14`: logo, centered page title, hamburger); tap opens a **drawer from the right** with nav links, full-width auth buttons, and language switcher (`lib/publicHeaderPageTitle.ts` for page titles, including **`coachPricingPublic.navFindCoach`** on `/coaches`, **`metadata.faqAthleteTitle`** / **`faqCoachTitle`** on FAQ routes). The top bar is **sticky** (`sticky top-0`, `z-50`, `border-b border-stone-200`) on the routes where it appears with long scroll. See `docs/DESIGN_SYSTEM.md` (§ PublicOrDashboardHeader, § PublicHeader, § DashboardTopBar).
 
 ---
 
@@ -224,7 +224,11 @@ On the **Mon profil** page (`/dashboard/profile`), the athlete can manage a sect
 
 ### 4.3 Search & Discovery ✅
 
-**Page « Trouver mon coach »** (`/dashboard/find-coach`, athlète sans `profiles.coach_id`) : filtres par **nom ou prénom**, **sport coaché**, **langue** ; grille de tuiles coach (`CoachTile`) avec présentation, offres publiées (max 3 affichées), note moyenne et **nombre d’avis** lorsque `review_count > 0` (sinon badge « Nouveau »). Les **stats agrégées** (moyenne + nombre d’avis) viennent de la RPC **`get_coach_rating_stats`** (SECURITY DEFINER, migration **022**). Un clic sur **« (N avis) »** ouvre une modale **`CoachReviewsModal`** listant les avis (note 1–5, date, commentaire ou libellé sans commentaire) ; les **identités des athlètes noteurs ne sont pas exposées**. Les lignes sont chargées via la RPC **`get_coach_public_reviews(p_coach_id)`** (SECURITY DEFINER, migration **063**), nécessaire car la RLS sur `coach_ratings` ne permet pas aux athlètes de lire les notes des *autres* athlètes. Même liste accessible depuis l’en-tête de la **modale détail coach** (« Voir le détail »). **Clavier :** lorsque la modale liste d’avis est ouverte **au-dessus** de la modale détail, la touche **Échap** ferme d’abord uniquement la liste d’avis (pas toute la modale détail).
+**Annuaire coach public** (`/coaches`, fiches `/coaches/[id]`) — accessible à **tous les visiteurs** sans compte ; détail produit §4.16. **Page dashboard « Trouver mon coach »** (`/dashboard/find-coach`, athlète sans `profiles.coach_id`) : même logique de filtres et tuiles, réservée aux athlètes connectés sans coach (l’annuaire public redirige ces utilisateurs vers cette page).
+
+**Page « Trouver mon coach »** (`/dashboard/find-coach`, athlète sans `profiles.coach_id`) : filtres par **nom ou prénom**, **sport coaché**, **langue** ; grille de tuiles coach (`CoachTile`) avec présentation, offres publiées (max 3 affichées), note moyenne et **nombre d’avis** lorsque `review_count > 0` (sinon badge « Nouveau »). Filtres et libellés i18n partagés avec l’annuaire public via **`lib/coachListingUtils.ts`** (`filterCoachesForDisplay`, `getDisplayPresentation`, etc.). Les **stats agrégées** (moyenne + nombre d’avis) viennent de la RPC **`get_coach_rating_stats`** (SECURITY DEFINER, migration **022**). Un clic sur **« (N avis) »** ouvre une modale **`CoachReviewsModal`** listant les avis (note 1–5, date, commentaire ou libellé sans commentaire) ; les **identités des athlètes noteurs ne sont pas exposées**. Les lignes sont chargées via la RPC **`get_coach_public_reviews(p_coach_id)`** (SECURITY DEFINER, migration **063**), nécessaire car la RLS sur `coach_ratings` ne permet pas aux athlètes de lire les notes des *autres* athlètes. Même liste accessible depuis l’en-tête de la **modale détail coach** (« Voir le détail ») et depuis les **fiches publiques** `/coaches/[id]`. **Clavier :** lorsque la modale liste d’avis est ouverte **au-dessus** de la modale détail, la touche **Échap** ferme d’abord uniquement la liste d’avis (pas toute la modale détail).
+
+**Deep link annuaire → demande :** depuis une fiche publique, un visiteur peut ouvrir la gate compte puis être renvoyé vers **`/dashboard/find-coach?coach={id}&offer={offerId}`** (cookie `post_auth_redirect`, helpers **`lib/postAuthRedirect.ts`** / **`lib/postAuthRedirect.server.ts`**). OAuth Google depuis cette gate : rôle **athlète verrouillé** sur **`/auth/complete-signup`** si le redirect cible find-coach.
 
 Athletes filter coaches by:
 
@@ -492,20 +496,20 @@ The athlete picker uses these as **selected** state (`FEELING_PICKER_SELECTED_BG
 
 | Route | Contenu |
 |-------|---------|
-| `/sitemap.xml` | **14 URLs** : home, pricing, contact, terms, privacy, **faq/athlete**, **faq/coach** (FR + EN), avec alternates hreflang |
+| `/sitemap.xml` | **16 URLs statiques** (8 pages × FR/EN) : home, **coaches** (annuaire), pricing, contact, terms, privacy, faq/athlete, faq/coach — **+ fiches coach dynamiques** `/coaches/[id]` (FR/EN, une entrée par coach éligible) ; alternates hreflang |
 | `/robots.txt` | `allow: /` ; `disallow` dashboard, admin, login, auth, reset-password, API ; lien vers le sitemap |
 
-**Pages listées :** définies dans **`SEO_PUBLIC_PATHS`** (`lib/seoPublicRoutes.ts`). URL de base via **`getSiteUrl()`** (`lib/siteUrl.ts`) ← `NEXT_PUBLIC_SITE_URL` / `NEXT_PUBLIC_APP_URL`.
+**Pages listées (statiques) :** définies dans **`SEO_PUBLIC_PATHS`** (`lib/seoPublicRoutes.ts`) — inclut **`/coaches`** (priority **0.9**). **Fiches coach :** fusion dans **`app/sitemap.ts`** via **`buildPublicCoachProfileSitemapEntries`** (`lib/seoPublicCoachProfiles.ts`, RPC **`get_public_coach_sitemap_entries`**, migration **077**). URL de base via **`getSiteUrl()`** (`lib/siteUrl.ts`) ← `NEXT_PUBLIC_SITE_URL` / `NEXT_PUBLIC_APP_URL`.
 
-**Métadonnées HTML (head, non visibles dans le corps de page) :** chaque page de `SEO_PUBLIC_PATHS` utilise **`buildPublicPageMetadata`** (`lib/seoMetadata.ts`) dans `generateMetadata` — title/description i18n (**`metadata.homeTitle`**, **`metadata.faqAthleteTitle`**, etc.), **`alternates.canonical`**, **`alternates.languages`** (fr, en, x-default). L’accueil marketing visible reste **`landing.hero.*`** (H1 / sous-titre) ; le title navigateur suit le template layout `%s | My Sport Ally`. Pages FAQ : JSON-LD **`FAQPage`** en plus (`buildFaqPageJsonLd`).
+**Métadonnées HTML (head, non visibles dans le corps de page) :** chaque page de `SEO_PUBLIC_PATHS` utilise **`buildPublicPageMetadata`** (`lib/seoMetadata.ts`) dans `generateMetadata` — title/description i18n (**`metadata.homeTitle`**, **`publicCoaches.pageTitle`** / **`pageDescription`** pour l’annuaire, **`metadata.faqAthleteTitle`**, etc.), **`alternates.canonical`**, **`alternates.languages`** (fr, en, x-default). Les fiches coach utilisent **`buildDynamicPublicPageMetadata`** (titre `{name} — Coach sportif`, description tronquée depuis la présentation). L’accueil marketing visible reste **`landing.hero.*`** (H1 / sous-titre) ; le title navigateur suit le template layout `%s | My Sport Ally`. Pages FAQ : JSON-LD **`FAQPage`** en plus (`buildFaqPageJsonLd`).
 
 **Middleware :** **`proxy.ts`** ne doit **pas** appliquer next-intl à `/sitemap.xml` ni `/robots.txt` (sinon 404 en prod / Search Console). Voir **`DEPLOYMENT_NOTES.md`** § Référencement → Dépannage.
 
-**Non indexé (volontaire) :** espace connecté (`/dashboard/*`), auth, API. **Trouver un coach** reste sous `/dashboard/find-coach` (auth requise) — pas dans le sitemap.
+**Non indexé (volontaire) :** espace connecté (`/dashboard/*`), auth, API. **`/dashboard/find-coach`** reste derrière auth — pas dans le sitemap ; le parcours de demande y est atteint via deep link post-inscription depuis l’annuaire public.
 
 **Domaine :** `www.mysportally.com` doit rediriger vers l’apex (Vercel). Procédure Search Console : **`DEPLOYMENT_NOTES.md`** § Référencement.
 
-**Évolutions SEO non livrées :** image Open Graph dédiée (`og:image`) ; annuaire coach public ; landing pages par sport.
+**Évolutions SEO non livrées :** image Open Graph dédiée (`og:image`) ; landing pages par sport.
 
 ---
 
@@ -526,6 +530,35 @@ The athlete picker uses these as **selected** state (`FEELING_PICKER_SELECTED_BG
 **Navigation :** liens FAQ dans le **footer partagé** (`/`, `/pricing`, les deux FAQ) — pas dans le header public.
 
 **Références :** **`docs/DESIGN_SYSTEM.md`** § Pages FAQ publiques ; maquettes **`docs/archive/design-faq-public/`**.
+
+---
+
+### 4.16 Public coaches directory (`/coaches`) ✅
+
+**Besoin produit :** permettre à **tout visiteur** (sans compte) de **découvrir les coachs** et leurs offres publiées, avec des pages **indexables** pour le référencement, tout en conservant le flux de **demande** dans l’espace athlète connecté.
+
+**Routes :** `/coaches` et `/en/coaches` (annuaire) ; `/coaches/[id]` et `/en/coaches/[id]` (fiche coach). Pages : `app/[locale]/coaches/page.tsx`, `app/[locale]/coaches/[id]/page.tsx`. **ISR :** `revalidate = 300`.
+
+**Éligibilité d’un coach (liste + fiche + sitemap) :** fonction **`is_coach_publicly_listable`** (migration **077**) — rôle coach, nom renseigné, au moins un sport coaché, au moins une langue, présentation FR ou EN, et **au moins une offre `published`**. Données exposées via RPC **SECURITY DEFINER** (`get_public_coaches`, `get_public_coach_offers`, `get_public_coach_profile`, `get_public_coach_sitemap_entries`) — **GRANT EXECUTE** à `anon` ; pas de policy RLS anon directe sur `profiles` / `coach_offers`. Loaders app : **`lib/publicCoachesData.ts`** ; filtres partagés dashboard : **`lib/coachListingUtils.ts`**.
+
+**Contenu annuaire :** hero, filtres (nom, sport, langue — même logique que dashboard), grille **`CoachTile`** (lien « Voir la fiche » → `/coaches/[id]`, pas d’email). **Fiche :** présentation, sports, langues (libellés **`LANGUAGES_OPTIONS`**), offres publiées triées par `display_order`, aperçu avis + **`CoachReviewsModal`**.
+
+**Comportements selon session :**
+
+| Utilisateur | Annuaire `/coaches` | Fiche `/coaches/[id]` |
+|-------------|---------------------|------------------------|
+| Visiteur | Accès lecture | CTA **Demander cette formule** → gate **`PublicCoachAuthGateProvider`** + **`LoginModal`** (signup athlète ou connexion) |
+| Athlète sans coach | **Redirect** → `/dashboard/find-coach` | CTA → lien direct `/dashboard/find-coach?coach&offer` |
+| Athlète avec coach | Accès lecture | Bannière **« Vous avez déjà un coach »** (`PublicCoachAlreadyHasCoachBanner`), pas de CTA demande |
+| Coach / admin connecté | Accès lecture | Lecture seule, pas de CTA demande |
+
+**Post-auth / deep link :** cookie httpOnly **`post_auth_redirect`** (10 min) ; validation **`validatePostAuthRedirect`** (chemins `/dashboard` uniquement). Gate visiteur enregistre **`/dashboard/find-coach?coach={id}&offer={offerId}`** ; consommation après login email, OAuth et **`completeOAuthSignup`**. Inscription OAuth depuis cette gate : **`lockSignupRole`** sur **`OAuthCompleteSignupForm`** (rôle athlète forcé, pas de choix coach). Helpers : **`lib/postAuthRedirect.ts`**, **`lib/postAuthRedirect.server.ts`**, action **`savePostAuthRedirect`**.
+
+**Navigation :** lien **Trouver un coach** dans **`PublicHeader`** (desktop + drawer mobile) → `/coaches` ; i18n **`coachPricingPublic.navFindCoach`**. Footer : **`PublicMarketingFooter`** (comme pricing / FAQ).
+
+**SEO :** annuaire dans **`SEO_PUBLIC_PATHS`** (priority **0.9**) ; fiches dynamiques dans **`/sitemap.xml`** (priority **0.7**, `changeFrequency: weekly`). Métadonnées : **`buildPublicPageMetadata`** / **`buildDynamicPublicPageMetadata`** ; i18n **`publicCoaches`**.
+
+**Références :** **`docs/DESIGN_SYSTEM.md`** § Annuaire coach public ; maquettes archivées **`docs/archive/design-public-coaches/`** ; déploiement migration **077** : **`DEPLOYMENT_NOTES.md`**.
 
 ---
 

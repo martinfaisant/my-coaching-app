@@ -1199,6 +1199,7 @@
   },
   "coachPricingPublic": {
     "navHome": "Accueil",
+    "navFindCoach": "Trouver un coach",
     "navPricing": "Tarifs",
     "publicNavAriaLabel": "Navigation principale",
     "heroTitle": "Tarifs coach MySportAlly",
@@ -1809,6 +1810,31 @@
     "subscriptionDetail": {
       "title": "Détail de la souscription",
       "athleteLabel": "Athlète"
+    }
+  },
+  "publicCoaches": {
+    "pageTitle": "Trouver un coach sportif",
+    "pageDescription": "Découvrez des coachs en course, triathlon, natation, trail et plus. Filtrez par sport et langue.",
+    "heroTitle": "Trouvez un coach sportif",
+    "heroSubtitle": "Course, triathlon, natation, trail… Filtrez par sport et langue.",
+    "noCoaches": "Aucun coach disponible pour le moment. Revenez plus tard.",
+    "viewProfile": "Voir la fiche",
+    "backToDirectory": "Retour à l'annuaire",
+    "offersTitle": "Formules disponibles",
+    "requestOffer": "Demander cette formule",
+    "reviewsTitle": "Avis",
+    "seeAllReviews": "Voir tous les avis",
+    "profileNotFound": "Coach introuvable",
+    "profileMetaTitle": "{name} — Coach sportif",
+    "gate": {
+      "title": "Contacter ce coach",
+      "description": "Créez un compte athlète gratuit pour envoyer votre demande à {coachName} (formule {offerTitle}).",
+      "signupAthlete": "Créer mon compte athlète",
+      "login": "J'ai déjà un compte"
+    },
+    "alreadyHasCoach": {
+      "title": "Vous avez déjà un coach",
+      "description": "Vous ne pouvez pas envoyer une nouvelle demande. Accédez à votre espace pour suivre votre coaching."
     }
   },
   "findCoach": {

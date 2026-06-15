@@ -13,9 +13,10 @@ import {
 
 type OAuthCompleteSignupFormProps = {
   email: string
+  lockSignupRole?: boolean
 }
 
-export function OAuthCompleteSignupForm({ email }: OAuthCompleteSignupFormProps) {
+export function OAuthCompleteSignupForm({ email, lockSignupRole = false }: OAuthCompleteSignupFormProps) {
   const t = useTranslations('auth')
   const tErrors = useTranslations('auth.errors')
   const locale = useLocale()
@@ -23,7 +24,7 @@ export function OAuthCompleteSignupForm({ email }: OAuthCompleteSignupFormProps)
     completeOAuthSignup,
     {}
   )
-  const [signupRole, setSignupRole] = useState<SignupRole | null>(null)
+  const [signupRole, setSignupRole] = useState<SignupRole | null>(lockSignupRole ? 'athlete' : null)
   const [termsAccepted, setTermsAccepted] = useState(false)
   const [roleError, setRoleError] = useState<string | null>(null)
   const [termsError, setTermsError] = useState<string | null>(null)
@@ -62,15 +63,19 @@ export function OAuthCompleteSignupForm({ email }: OAuthCompleteSignupFormProps)
         {t('oauthConnectedAs', { email })}
       </p>
 
-      <AuthRolePicker
-        value={signupRole}
-        onChange={(role) => {
-          setSignupRole(role)
-          setRoleError(null)
-        }}
-        error={displayedRoleError}
-        idPrefix="oauth-complete-role"
-      />
+      {lockSignupRole ? (
+        <input type="hidden" name="role" value="athlete" />
+      ) : (
+        <AuthRolePicker
+          value={signupRole}
+          onChange={(role) => {
+            setSignupRole(role)
+            setRoleError(null)
+          }}
+          error={displayedRoleError}
+          idPrefix="oauth-complete-role"
+        />
+      )}
 
       <input type="hidden" name="_locale" value={locale} />
       <input type="hidden" name="termsAccepted" value={termsAccepted ? 'true' : 'false'} />

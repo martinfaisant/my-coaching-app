@@ -25,15 +25,25 @@ type LoginFormProps = {
   mode: AuthModalMode
   onModeChange?: (mode: AuthModalMode) => void
   onClose?: () => void
+  redirectPath?: string
+  defaultSignupRole?: SignupRole
+  lockSignupRole?: boolean
 }
 
-export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
+export function LoginForm({
+  mode,
+  onModeChange,
+  onClose,
+  redirectPath,
+  defaultSignupRole,
+  lockSignupRole = false,
+}: LoginFormProps) {
   const t = useTranslations('auth')
   const tCommon = useTranslations('common')
   const locale = useLocale()
   const [loginState, loginAction] = useActionState<LoginState, FormData>(login, {})
   const [signupState, signupAction] = useActionState<SignupState, FormData>(signup, {})
-  const [signupRole, setSignupRole] = useState<SignupRole | null>(null)
+  const [signupRole, setSignupRole] = useState<SignupRole | null>(defaultSignupRole ?? null)
   const [roleError, setRoleError] = useState<string | null>(null)
   const [showForgotPassword, setShowForgotPassword] = useState(false)
   const [prefilledEmail, setPrefilledEmail] = useState<string>('')
@@ -112,6 +122,7 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
         <AuthDivider />
 
         <form action={loginAction} className="space-y-5">
+          {redirectPath ? <input type="hidden" name="_redirect" value={redirectPath} /> : null}
           <Input
             ref={emailInputRef}
             id="modal-email"
@@ -288,15 +299,19 @@ export function LoginForm({ mode, onModeChange, onClose }: LoginFormProps) {
           if (hasError) e.preventDefault()
         }}
       >
-        <AuthRolePicker
-          value={signupRole}
-          onChange={(role) => {
-            setSignupRole(role)
-            setRoleError(null)
-          }}
-          error={displayedRoleError}
-          idPrefix="modal-signup-role"
-        />
+        {lockSignupRole && signupRole ? (
+          <input type="hidden" name="role" value={signupRole} />
+        ) : (
+          <AuthRolePicker
+            value={signupRole}
+            onChange={(role) => {
+              setSignupRole(role)
+              setRoleError(null)
+            }}
+            error={displayedRoleError}
+            idPrefix="modal-signup-role"
+          />
+        )}
         <Input
           key={signupState?.existingEmail ? `signup-email-${signupState.existingEmail}` : 'signup-email'}
           id="modal-signup-email"

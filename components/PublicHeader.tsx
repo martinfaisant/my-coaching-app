@@ -34,11 +34,14 @@ export function PublicHeader() {
   const [drawerOpenPathname, setDrawerOpenPathname] = useState<string | null>(null)
 
   const isHome = pathname === '/'
+  const isCoaches = pathname === '/coaches' || pathname.startsWith('/coaches/')
   const isPricing = pathname === '/pricing'
   const isDrawerOpen = drawerOpenPathname === pathname
   const closeDrawer = () => setDrawerOpenPathname(null)
 
-  const { namespace, key } = getPublicHeaderPageTitleI18n(pathname)
+  const { namespace, key } = getPublicHeaderPageTitleI18n(
+    pathname === '/coaches' || pathname.startsWith('/coaches/') ? '/coaches' : pathname
+  )
   const pageTitle =
     namespace === 'coachPricingPublic'
       ? tPricing(key)
@@ -110,6 +113,13 @@ export function PublicHeader() {
                 {tPricing('navHome')}
               </I18nLink>
               <I18nLink
+                href="/coaches"
+                aria-current={isCoaches ? 'page' : undefined}
+                className={navLinkClass(isCoaches)}
+              >
+                {tPricing('navFindCoach')}
+              </I18nLink>
+              <I18nLink
                 href="/pricing"
                 aria-current={isPricing ? 'page' : undefined}
                 className={navLinkClass(isPricing)}
@@ -152,6 +162,14 @@ export function PublicHeader() {
                 className={`${drawerLinkBase} ${isHome ? drawerLinkActive : drawerLinkInactive}`}
               >
                 {tPricing('navHome')}
+              </I18nLink>
+              <I18nLink
+                href="/coaches"
+                aria-current={isCoaches ? 'page' : undefined}
+                onClick={closeDrawer}
+                className={`${drawerLinkBase} ${isCoaches ? drawerLinkActive : drawerLinkInactive}`}
+              >
+                {tPricing('navFindCoach')}
               </I18nLink>
               <I18nLink
                 href="/pricing"

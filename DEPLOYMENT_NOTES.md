@@ -1,7 +1,7 @@
 # Notes de déploiement
 
 **Production :** https://mysportally.com (voir `docs/DOMAIN_MYSPORTALLY_SETUP.md` pour la configuration domaine, Vercel, Resend, Supabase).  
-**Dernière mise à jour doc :** 14 juin 2026 (SEO : métadonnées home canonical/hreflang, correctif middleware sitemap 404 ; précédent : sitemap/robots Search Console).
+**Dernière mise à jour doc :** 14 juin 2026 (annuaire coach public `/coaches` + migration 077 ; précédent : SEO metadata home canonical/hreflang…)
 
 ---
 
@@ -22,21 +22,21 @@
 | `lib/siteUrl.ts` | URL publique canonique (env ou repli `https://mysportally.com`) |
 | `lib/seoPublicRoutes.ts` | Liste `SEO_PUBLIC_PATHS` + génération entrées sitemap (hreflang FR/EN) |
 | `lib/seoMetadata.ts` | **`buildPublicPageMetadata`** — title/description, **`canonical`**, **`hreflang`**, Open Graph de base |
-| `app/sitemap.ts` | `/sitemap.xml` — **14 URLs** (7 pages × FR + EN) |
+| `app/sitemap.ts` | `/sitemap.xml` — **16 URLs statiques** (8 pages × FR/EN) + **fiches coach dynamiques** (`lib/seoPublicCoachProfiles.ts`) |
 | `app/robots.ts` | `/robots.txt` — autorise le public, `disallow` dashboard / auth / API |
 | `proxy.ts` | Middleware next-intl + auth : **ne pas** faire passer `/sitemap.xml` ni `/robots.txt` (matcher + bypass ; sinon **404** Google Search Console) |
 
-**Pages dans le sitemap :** `/`, `/pricing`, `/contact`, `/terms`, `/privacy`, `/faq/athlete`, `/faq/coach` (+ préfixe `/en` pour l’anglais).
+**Pages dans le sitemap (statiques) :** `/`, **`/coaches`**, `/pricing`, `/contact`, `/terms`, `/privacy`, `/faq/athlete`, `/faq/coach` (+ préfixe `/en` pour l’anglais). **Fiches coach :** une paire FR/EN par coach éligible (`/coaches/{uuid}`), alimentées par RPC **`get_public_coach_sitemap_entries`** (migration **077**).
 
-**Métadonnées HTML (pages publiques) :** `generateMetadata` sur chaque route de `SEO_PUBLIC_PATHS` via **`buildPublicPageMetadata`**. i18n namespace **`metadata`** — clés **`homeTitle`** / **`homeDescription`** (accueil), **`pricingTitle`** / **`pricingDescription`**, etc. Le **texte visible** de la landing reste dans **`landing.*`** (onglet navigateur ≠ hero H1).
+**Métadonnées HTML (pages publiques) :** `generateMetadata` sur chaque route de `SEO_PUBLIC_PATHS` via **`buildPublicPageMetadata`**. Fiches coach : **`buildDynamicPublicPageMetadata`**. i18n namespace **`metadata`** — clés **`homeTitle`** / **`homeDescription`** (accueil), **`pricingTitle`** / **`pricingDescription`**, etc. ; annuaire : namespace **`publicCoaches`** (`pageTitle`, `pageDescription`, `profileMetaTitle`). Le **texte visible** de la landing reste dans **`landing.*`** (onglet navigateur ≠ hero H1).
 
-**Hors sitemap (volontaire) :** `/dashboard/*`, `/login`, `/auth/*`, `/reset-password`, `/api/*`. La recherche coach reste derrière auth (`/dashboard/find-coach`) — non indexable tant qu’il n’y a pas d’annuaire public.
+**Hors sitemap (volontaire) :** `/dashboard/*`, `/login`, `/auth/*`, `/reset-password`, `/api/*`. Le flux de **demande** coach reste sous **`/dashboard/find-coach`** (auth requise) ; l’annuaire public y redirige via deep link post-inscription.
 
 **Nouvelle page marketing publique :** ajouter le chemin dans `SEO_PUBLIC_PATHS` (`lib/seoPublicRoutes.ts`) et utiliser **`buildPublicPageMetadata`** dans `generateMetadata`.
 
 ### Vérification post-déploiement
 
-1. `https://mysportally.com/sitemap.xml` — 14 entrées, URLs en `https://mysportally.com/...` (pas `www`).
+1. `https://mysportally.com/sitemap.xml` — au minimum **16 entrées statiques** + fiches coach éligibles ; URLs en `https://mysportally.com/...` (pas `www`).
 2. `https://mysportally.com/robots.txt` — ligne `Sitemap: https://mysportally.com/sitemap.xml`.
 3. `https://www.mysportally.com/` → redirection 301 vers `https://mysportally.com/`.
 
@@ -55,9 +55,9 @@
 | **Code non déployé** | Fichiers absents sur la branche prod Vercel | Merger/déployer `app/sitemap.ts`, `app/robots.ts`, `proxy.ts` |
 | **URL www dans le sitemap** | Entrées `https://www.mysportally.com/...` | `NEXT_PUBLIC_SITE_URL` = `https://mysportally.com` (sans www) |
 
-**Référence produit :** `Project_context.md` §4.14.
+**Référence produit :** `Project_context.md` §4.14, §4.16.
 
-**Hors scope livré (évolutions futures) :** image Open Graph dédiée (`og:image`) ; annuaire coach public ; pages landing par sport.
+**Hors scope livré (évolutions futures) :** image Open Graph dédiée (`og:image`) ; landing pages par sport.
 
 ---
 
@@ -271,3 +271,23 @@ Ces scripts ne sont **pas nécessaires** pour le déploiement en production, mai
 **Fichier :** `supabase/migrations/063_get_coach_public_reviews.sql`
 
 **Description :** crée la fonction **`get_coach_public_reviews(p_coach_id uuid)`** (SECURITY DEFINER, `RETURNS` id, rating, comment, created_at) pour alimenter la modale liste d’avis côté athlète. **À exécuter en production** lorsque cette fonctionnalité est déployée. Dépend de la table **`coach_ratings`** (migration **021**).
+
+---
+
+## Migration 077 — Annuaire coach public (RPC + sitemap fiches)
+
+**Fichier :** `supabase/migrations/077_public_coaches_rpc.sql`
+
+**Description :** expose la lecture publique des coachs **éligibles** (profil complet + au moins une offre **`published`**) via RPC **SECURITY DEFINER** :
+
+- **`is_coach_publicly_listable(p_coach_id)`**
+- **`get_public_coaches()`** — liste annuaire
+- **`get_public_coach_offers()`** — offres publiées des coachs listables
+- **`get_public_coach_profile(p_coach_id)`** — fiche + offres JSON
+- **`get_public_coach_sitemap_entries()`** — `coach_id` + `last_modified` pour le sitemap
+
+**GRANT EXECUTE** à **`anon`** sur ces RPC + réutilisation **`get_coach_rating_stats`** / **`get_coach_public_reviews`** (avis sur fiches publiques).
+
+**À exécuter en production** avant ou en même temps que le déploiement des routes **`/coaches`** et **`/coaches/[id]`**. Sans cette migration, l’annuaire et le sitemap dynamique renvoient des listes vides / erreurs RPC.
+
+**Référence produit :** **`Project_context.md`** §4.16 ; UI : **`docs/DESIGN_SYSTEM.md`** § Annuaire coach public.

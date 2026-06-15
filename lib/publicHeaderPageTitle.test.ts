@@ -11,6 +11,10 @@ describe('getPublicHeaderPageTitleI18n', () => {
       namespace: 'coachPricingPublic',
       key: 'navPricing',
     })
+    expect(getPublicHeaderPageTitleI18n('/coaches')).toEqual({
+      namespace: 'coachPricingPublic',
+      key: 'navFindCoach',
+    })
     expect(getPublicHeaderPageTitleI18n('/contact')).toEqual({
       namespace: 'metadata',
       key: 'contactTitle',

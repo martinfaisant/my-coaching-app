@@ -1074,6 +1074,7 @@
   },
   "coachPricingPublic": {
     "navHome": "Home",
+    "navFindCoach": "Find a coach",
     "navPricing": "Pricing",
     "publicNavAriaLabel": "Main navigation",
     "heroTitle": "MySportAlly coach pricing",
@@ -1684,6 +1685,31 @@
     "subscriptionDetail": {
       "title": "Subscription details",
       "athleteLabel": "Athlete"
+    }
+  },
+  "publicCoaches": {
+    "pageTitle": "Find a sports coach",
+    "pageDescription": "Discover coaches for running, triathlon, swimming, trail and more. Filter by sport and language.",
+    "heroTitle": "Find a sports coach",
+    "heroSubtitle": "Running, triathlon, swimming, trail… Filter by sport and language.",
+    "noCoaches": "No coaches available at the moment. Please check back later.",
+    "viewProfile": "View profile",
+    "backToDirectory": "Back to directory",
+    "offersTitle": "Available plans",
+    "requestOffer": "Request this plan",
+    "reviewsTitle": "Reviews",
+    "seeAllReviews": "See all reviews",
+    "profileNotFound": "Coach not found",
+    "profileMetaTitle": "{name} — Sports coach",
+    "gate": {
+      "title": "Contact this coach",
+      "description": "Create a free athlete account to send your request to {coachName} ({offerTitle} plan).",
+      "signupAthlete": "Create my athlete account",
+      "login": "I already have an account"
+    },
+    "alreadyHasCoach": {
+      "title": "You already have a coach",
+      "description": "You cannot send a new request. Go to your dashboard to follow your coaching."
     }
   },
   "findCoach": {
