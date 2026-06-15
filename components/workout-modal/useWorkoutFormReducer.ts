@@ -267,6 +267,10 @@ export function workoutFormReducer(state: State, action: Action): State {
             }
           }
         } else if (!isJustLoaded && (!distOk || !paceOk)) {
+          const userEnteredDuration = state.lastMetricEdit === 'duration' && durOk
+          if (userEnteredDuration) {
+            return { ...state, justLoaded: false }
+          }
           return { ...state, values: { ...state.values, targetDurationMinutes: '' } }
         }
       } else {
@@ -290,7 +294,19 @@ export function workoutFormReducer(state: State, action: Action): State {
               values: { ...state.values, targetPace: '' },
             }
           }
+        } else if (state.lastMetricEdit === 'duration' && !durOk) {
+          // Durée vidée en mode temps : retirer aussi distance dérivée et allure / vitesse saisie.
+          return {
+            ...state,
+            justLoaded: false,
+            lastMetricEdit: null,
+            values: { ...state.values, targetDistanceKm: '', targetPace: '' },
+          }
         } else if (!isJustLoaded && (!durOk || !paceOk)) {
+          const userEnteredDistance = state.lastMetricEdit === 'distance' && distOk
+          if (userEnteredDistance) {
+            return { ...state, justLoaded: false }
+          }
           return { ...state, values: { ...state.values, targetDistanceKm: '' } }
         }
       }

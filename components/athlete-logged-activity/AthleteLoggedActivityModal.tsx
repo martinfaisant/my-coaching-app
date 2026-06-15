@@ -91,9 +91,8 @@ export function AthleteLoggedActivityModal({
   const tCommon = useTranslations('common')
 
   const isEdit = workout != null
-  const [currentWorkout, setCurrentWorkout] = useState<Workout | null>(workout)
   const workoutForm = useWorkoutFormReducer({
-    workout: currentWorkout,
+    workout,
     date,
     coachPrimaryMetrics: null,
   })
@@ -110,41 +109,45 @@ export function AthleteLoggedActivityModal({
   const [deleteError, setDeleteError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showSavedFeedback, setShowSavedFeedback] = useState(false)
-
-  const boundCreate = createAthleteLoggedActivity.bind(null, athleteId, pathToRevalidate)
-  const boundUpdate =
-    isEdit && currentWorkout
-      ? updateAthleteLoggedActivity.bind(null, currentWorkout.id, athleteId, pathToRevalidate)
-      : boundCreate
+  const successTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const noopAction = async (_prev: AthleteLoggedActivityFormState): Promise<AthleteLoggedActivityFormState> => ({})
 
+  const actionWithUiSync = useCallback(
+    async (prevState: AthleteLoggedActivityFormState, formData: FormData) => {
+      const result =
+        isEdit && workout
+          ? await updateAthleteLoggedActivity(workout.id, athleteId, pathToRevalidate, prevState, formData)
+          : await createAthleteLoggedActivity(athleteId, pathToRevalidate, prevState, formData)
+
+      setIsSubmitting(false)
+
+      if (result?.success && result.workout) {
+        setShowSavedFeedback(true)
+        if (successTimerRef.current) clearTimeout(successTimerRef.current)
+        successTimerRef.current = setTimeout(() => {
+          setShowSavedFeedback(false)
+          onClose(true, result.workout)
+        }, 1200)
+      } else if (result?.error) {
+        setShowSavedFeedback(false)
+      }
+
+      return result
+    },
+    [athleteId, pathToRevalidate, isEdit, workout, onClose]
+  )
+
   const [state, action] = useActionState(
-    readOnly ? noopAction : isEdit ? boundUpdate : boundCreate,
+    readOnly ? noopAction : actionWithUiSync,
     {} as AthleteLoggedActivityFormState
   )
 
   useEffect(() => {
-    if (!isOpen) return
-    setCurrentWorkout(workout ?? null)
-    setPerceivedFeeling(workout?.perceived_feeling ?? null)
-    setPerceivedIntensity(workout?.perceived_intensity ?? null)
-    setPerceivedPleasure(workout?.perceived_pleasure ?? null)
-    setCommentText(workout?.athlete_comment?.trim() ?? '')
-    setDeleteError(null)
-    setShowSavedFeedback(false)
-  }, [isOpen, workout])
-
-  useEffect(() => {
-    if (state?.success && state.workout) {
-      setShowSavedFeedback(true)
-      const timer = setTimeout(() => {
-        setShowSavedFeedback(false)
-        onClose(true, state.workout)
-      }, 1200)
-      return () => clearTimeout(timer)
+    return () => {
+      if (successTimerRef.current) clearTimeout(successTimerRef.current)
     }
-  }, [state?.success, state?.workout, onClose])
+  }, [])
 
   const {
     sportType,
@@ -188,10 +191,10 @@ export function AthleteLoggedActivityModal({
   }, [])
 
   const handleDelete = async () => {
-    if (!currentWorkout) return
+    if (!workout) return
     setDeleteLoading(true)
     setDeleteError(null)
-    const result = await deleteAthleteLoggedActivity(currentWorkout.id, athleteId, pathToRevalidate)
+    const result = await deleteAthleteLoggedActivity(workout.id, athleteId, pathToRevalidate)
     setDeleteLoading(false)
     if (result.error) {
       setDeleteError(result.error)
@@ -265,20 +268,20 @@ export function AthleteLoggedActivityModal({
     )
   }
 
-  if (readOnly && currentWorkout) {
+  if (readOnly && workout) {
     return (
       <Modal
         isOpen={isOpen}
         onClose={() => onClose()}
         size="workout"
-        title={currentWorkout.title}
-        icon={buildSportHeaderPill(currentWorkout)}
+        title={workout.title}
+        icon={buildSportHeaderPill(workout)}
         iconRaw
         titleWrap
         headerRight={coachAthleteAddedBadge}
         contentClassName="px-0"
       >
-        <AthleteLoggedCoachReadOnlyView workout={currentWorkout} locale={locale} tWorkouts={tWorkouts} />
+        <AthleteLoggedCoachReadOnlyView workout={workout} locale={locale} tWorkouts={tWorkouts} />
       </Modal>
     )
   }
@@ -339,7 +342,7 @@ export function AthleteLoggedActivityModal({
             action={action}
             canEdit
             isEdit={isEdit}
-            currentWorkout={currentWorkout}
+            currentWorkout={workout}
             workoutStatus="completed"
             editableDate={editableDate}
             sportType={sportType}
