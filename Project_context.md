@@ -484,6 +484,27 @@ The athlete picker uses these as **selected** state (`FEELING_PICKER_SELECTED_BG
 
 ---
 
+### 4.14 Référencement public (sitemap & robots) ✅
+
+**Besoin :** permettre à Google (et autres crawlers) de découvrir les **pages marketing et légales** indexables, avec URLs canoniques sur l’apex `https://mysportally.com` et variantes FR/EN.
+
+**Routes générées (Next.js metadata) :**
+
+| Route | Contenu |
+|-------|---------|
+| `/sitemap.xml` | 10 URLs : home, pricing, contact, terms, privacy (FR + EN), avec alternates hreflang |
+| `/robots.txt` | `allow: /` ; `disallow` dashboard, admin, login, auth, reset-password, API ; lien vers le sitemap |
+
+**Pages listées :** définies dans **`SEO_PUBLIC_PATHS`** (`lib/seoPublicRoutes.ts`). URL de base via **`getSiteUrl()`** (`lib/siteUrl.ts`) ← `NEXT_PUBLIC_SITE_URL` / `NEXT_PUBLIC_APP_URL`.
+
+**Non indexé (volontaire) :** espace connecté (`/dashboard/*`), auth, API. **Trouver un coach** reste sous `/dashboard/find-coach` (auth requise) — pas dans le sitemap.
+
+**Domaine :** `www.mysportally.com` doit rediriger vers l’apex (Vercel). Procédure Search Console : **`DEPLOYMENT_NOTES.md`** § Référencement.
+
+**Évolutions SEO non livrées :** metadata `canonical`/`hreflang` par page, annuaire coach public, landing pages par sport.
+
+---
+
 ## 5. Data Model (Current)
 
 **Main entities:**

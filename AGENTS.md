@@ -39,6 +39,7 @@
 ## 5) Conventions de developpement (pour etre coherent avec le code existant)
 - Reutiliser un composant existant si il couvre au moins ~80% du besoin. Sinon, modifier/etendre le composant existant plutot que re-creer.
 - Si tu ajoutes un nouveau composant reusable dans `components/`, documente-le dans `docs/DESIGN_SYSTEM.md`.
+- Page marketing / legale publique indexable : ajouter le chemin dans `SEO_PUBLIC_PATHS` (`lib/seoPublicRoutes.ts`) ; voir `DEPLOYMENT_NOTES.md` § Referencement.
 - Form styles: utiliser `lib/formStyles.ts` (`FORM_BASE_CLASSES`, `FORM_ERROR_CLASSES`, etc.).
 - Errors: utiliser `lib/errors.ts` (et les boundaries prevues dans `app/error.tsx` / `app/dashboard/error.tsx`).
 - Server actions:

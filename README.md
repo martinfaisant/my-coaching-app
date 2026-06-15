@@ -263,6 +263,14 @@ npm run build
 
 Voir [DEPLOYMENT_NOTES.md](./DEPLOYMENT_NOTES.md) et [MISE_EN_PROD.md](./MISE_EN_PROD.md) pour plus de détails.
 
+### Référencement (SEO)
+
+- **Sitemap :** `https://mysportally.com/sitemap.xml` — pages publiques FR/EN (accueil, tarifs, contact, CGU, confidentialité). Source : `app/sitemap.ts`, `lib/seoPublicRoutes.ts`.
+- **Robots :** `https://mysportally.com/robots.txt` — exclusion dashboard / auth / API (`app/robots.ts`).
+- **URL canonique prod :** `https://mysportally.com` (sans `www`) ; `www` → redirection 301 sur Vercel.
+- **Search Console :** soumettre `sitemap.xml` ; voir **DEPLOYMENT_NOTES.md** § Référencement.
+- **Nouvelle page publique indexable :** ajouter le chemin dans `SEO_PUBLIC_PATHS` (`lib/seoPublicRoutes.ts`).
+
 ## 📊 État du Projet
 
 **Score qualité actuel : 8.3/10**

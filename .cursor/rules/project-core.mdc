@@ -328,6 +328,7 @@ if ('error' in result) return result
 - **Calendrier :** ordre du jour = disponibilités → objectifs → entraînements → Strava. **Tuiles disponibilité (grille) :** bandeau couleur **en haut** (vert / orange), bordure neutre, badge calendrier teinté, titre pierre comme tuile séance compacte ; métriques horaires / note alignées sur la tuile séance — voir **`docs/DESIGN_SYSTEM.md`**. Modales : `AvailabilityModal` (création/édition), `AvailabilityDetailModal` (lecture seule coach).
 - **Référence :** `Project_context.md` §4.5 (Athlete availability), `docs/DESIGN_SYSTEM.md` §7, i18n namespace `availability`.
 
+
 ---
 
 ## Performance
@@ -338,6 +339,15 @@ if ('error' in result) return result
 - Use `Promise.all()` for parallel queries
 - Images: Use Next.js `<Image>` component
 - Dynamic imports for heavy components when appropriate
+
+---
+
+## Référencement public (SEO)
+
+- **Sitemap / robots :** `app/sitemap.ts`, `app/robots.ts` ; pages listées dans **`SEO_PUBLIC_PATHS`** (`lib/seoPublicRoutes.ts`) ; URL de base **`getSiteUrl()`** (`lib/siteUrl.ts`).
+- **Nouvelle page marketing ou légale publique indexable :** ajouter le chemin dans `SEO_PUBLIC_PATHS`.
+- **URL canonique prod :** `https://mysportally.com` (sans `www`) ; `www` → redirection 301 (Vercel). Search Console : **`DEPLOYMENT_NOTES.md`** § Référencement.
+- **Hors sitemap volontaire :** `/dashboard/*`, auth, API. Référence : `Project_context.md` §4.14.
 
 ---
 
@@ -384,8 +394,8 @@ if ('error' in result) return result
 
 ---
 
-**Version:** 2.9
-**Last updated:** 13 juin 2026
+**Version:** 2.10
+**Last updated:** 14 juin 2026
 **Refactoring status:** 13/17 tasks completed (76%)  
 **i18n:** Bilingue FR/EN complété — toujours penser bilingue pour les nouvelles features  
-**Offres/souscriptions:** Snapshot à la demande (frozen_* dans coach_requests), souscription à l’acceptation depuis coach_requests ; statuts offre draft / published / archived (voir Project_context.md). **Workouts:** Statut planifié / réalisé / non réalisé ; retour athlète (ressenti, intensité, plaisir) optionnel quand réalisé ; total « fait » avec déduplication Strava (voir Project_context.md §4.5). **Strava devices (athlète):** feature flag `NEXT_PUBLIC_ENABLE_ATHLETE_STRAVA_DEVICES` (off par défaut) — `lib/featureFlags.ts`, nav conditionnelle `getAthleteAccountNavItems` ; activités déjà importées visibles calendrier/stats si flag off (Project_context.md §4.9). **Profil athlète – Volumes hebdomadaires :** weekly_current_hours (Volume actuel), weekly_target_hours (Volume maximum), weekly_volume_by_sport ; disposition 2 colonnes ; triathlon → 3 tuiles, trail → D+ dans tuile Course (voir Project_context.md §4.2.1). **Installations athlète :** table `athlete_facilities` (type, adresse, horaires JSONB), modal add/edit, code postal normalisé à la sauvegarde ; RLS athlète CRUD insert own ; coach SELECT + UPDATE/DELETE (même périmètre, migration 061) ; onglet calendrier coach (voir Project_context.md §4.2.2). **Notes privées coach :** table `coach_athlete_notes`, onglet Notes calendrier coach, RLS migration 062 ; i18n `coachAthleteNotes`. **Disponibilités athlète :** créneaux par jour (table athlete_availability_slots), pas de récurrence ; athlète CRUD, coach lecture seule (voir Project_context.md §4.5). **Statistiques athlète :** page `/dashboard/stats`, volume réalisé (Nivo), filtres années/sport/granularité/métrique ; voir Project_context.md §4.2.3. **Connexion Google :** OAuth login/signup, finalisation rôle+CGU, prénom/nom/photo Google ; voir Project_context.md §4.1 et DEPLOYMENT_NOTES.md. **Mot de passe :** checklist critères inscription/reset, politique 8 car.+complexité, `lib/passwordValidation.ts` ; voir Project_context.md §4.1. **Tarifs coach publics :** page `/pricing`, nav Accueil/Tarifs dans `PublicHeader` (desktop inline ; mobile `< md` : hamburger + drawer, voir `docs/DESIGN_SYSTEM.md` § PublicHeader), abonnement plateforme requis à l’acceptation d’un athlète ; voir Project_context.md §4.12. **Landing marketing :** page `/` et `/en` (visiteurs) — captures produit, showcase onglets, cartes athlète/coach ; voir Project_context.md §4.13.
+**Offres/souscriptions:** Snapshot à la demande (frozen_* dans coach_requests), souscription à l’acceptation depuis coach_requests ; statuts offre draft / published / archived (voir Project_context.md). **Workouts:** Statut planifié / réalisé / non réalisé ; retour athlète (ressenti, intensité, plaisir) optionnel quand réalisé ; total « fait » avec déduplication Strava (voir Project_context.md §4.5). **Strava devices (athlète):** feature flag `NEXT_PUBLIC_ENABLE_ATHLETE_STRAVA_DEVICES` (off par défaut) — `lib/featureFlags.ts`, nav conditionnelle `getAthleteAccountNavItems` ; activités déjà importées visibles calendrier/stats si flag off (Project_context.md §4.9). **Profil athlète – Volumes hebdomadaires :** weekly_current_hours (Volume actuel), weekly_target_hours (Volume maximum), weekly_volume_by_sport ; disposition 2 colonnes ; triathlon → 3 tuiles, trail → D+ dans tuile Course (voir Project_context.md §4.2.1). **Installations athlète :** table `athlete_facilities` (type, adresse, horaires JSONB), modal add/edit, code postal normalisé à la sauvegarde ; RLS athlète CRUD insert own ; coach SELECT + UPDATE/DELETE (même périmètre, migration 061) ; onglet calendrier coach (voir Project_context.md §4.2.2). **Notes privées coach :** table `coach_athlete_notes`, onglet Notes calendrier coach, RLS migration 062 ; i18n `coachAthleteNotes`. **Disponibilités athlète :** créneaux par jour (table athlete_availability_slots), pas de récurrence ; athlète CRUD, coach lecture seule (voir Project_context.md §4.5). **Statistiques athlète :** page `/dashboard/stats`, volume réalisé (Nivo), filtres années/sport/granularité/métrique ; voir Project_context.md §4.2.3. **Connexion Google :** OAuth login/signup, finalisation rôle+CGU, prénom/nom/photo Google ; voir Project_context.md §4.1 et DEPLOYMENT_NOTES.md. **Mot de passe :** checklist critères inscription/reset, politique 8 car.+complexité, `lib/passwordValidation.ts` ; voir Project_context.md §4.1. **Tarifs coach publics :** page `/pricing`, nav Accueil/Tarifs dans `PublicHeader` (desktop inline ; mobile `< md` : hamburger + drawer, voir `docs/DESIGN_SYSTEM.md` § PublicHeader), abonnement plateforme requis à l’acceptation d’un athlète ; voir Project_context.md §4.12. **Landing marketing :** page `/` et `/en` (visiteurs) — captures produit, showcase onglets, cartes athlète/coach ; voir Project_context.md §4.13. **SEO public :** `/sitemap.xml`, `/robots.txt`, `SEO_PUBLIC_PATHS` ; voir Project_context.md §4.14 et DEPLOYMENT_NOTES.md § Référencement.
