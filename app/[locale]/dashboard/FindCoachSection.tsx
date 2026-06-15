@@ -111,22 +111,30 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
   const [selectedSports, setSelectedSports] = useState<string[]>([])
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([])
   const [presentationModalCoach, setPresentationModalCoach] = useState<CoachForList | null>(null)
-  const [detailModalCoach, setDetailModalCoach] = useState<CoachForList | null>(null)
-  const [detailModalInitialOfferId, setDetailModalInitialOfferId] = useState<string | null>(null)
+  const [detailModalCoach, setDetailModalCoach] = useState<CoachForList | null>(() => {
+    if (!initialCoachId) return null
+    return coaches.find((c) => c.user_id === initialCoachId) ?? null
+  })
+  const [detailModalInitialOfferId, setDetailModalInitialOfferId] = useState<string | null>(
+    initialOfferId ?? null
+  )
   const [reviewsModalCoach, setReviewsModalCoach] = useState<{ id: string; name: string } | null>(null)
+  const [prevDeepLink, setPrevDeepLink] = useState({
+    coachId: initialCoachId,
+    offerId: initialOfferId,
+  })
   const getStatus = (coachId: string): 'pending' | 'declined' | null =>
     statusByCoach[coachId] ?? null
   const getRequestId = (coachId: string): string | null => requestIdByCoach[coachId] ?? null
 
-  useEffect(() => {
-    if (!initialCoachId) return
-    const coach = coaches.find((c) => c.user_id === initialCoachId)
-    if (!coach) return
-    setDetailModalCoach(coach)
-    if (initialOfferId) {
-      setDetailModalInitialOfferId(initialOfferId)
+  if (initialCoachId !== prevDeepLink.coachId || initialOfferId !== prevDeepLink.offerId) {
+    setPrevDeepLink({ coachId: initialCoachId, offerId: initialOfferId })
+    if (initialCoachId) {
+      const coach = coaches.find((c) => c.user_id === initialCoachId) ?? null
+      setDetailModalCoach(coach)
+      setDetailModalInitialOfferId(initialOfferId ?? null)
     }
-  }, [initialCoachId, initialOfferId, coaches])
+  }
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
