@@ -1,7 +1,51 @@
 # Notes de déploiement
 
 **Production :** https://mysportally.com (voir `docs/DOMAIN_MYSPORTALLY_SETUP.md` pour la configuration domaine, Vercel, Resend, Supabase).  
-**Dernière mise à jour doc :** 12 juin 2026 (politique mot de passe Supabase ; précédent : connexion Google OAuth).
+**Dernière mise à jour doc :** 14 juin 2026 (référencement : sitemap, robots, Search Console ; précédent : politique mot de passe Supabase).
+
+---
+
+## Référencement (SEO) — sitemap, robots et Search Console
+
+**Aucune migration BDD** — routes Next.js metadata + config domaine Vercel.
+
+### URL canonique
+
+- **Production :** `https://mysportally.com` (apex, **sans** `www`).
+- **Vercel → Domains :** `www.mysportally.com` doit **rediriger** (301) vers `mysportally.com` ; un seul domaine en **Production** sert l’app.
+- **Variables :** `NEXT_PUBLIC_SITE_URL` et `NEXT_PUBLIC_APP_URL` = `https://mysportally.com` (prod).
+
+### Fichiers applicatifs
+
+| Fichier | Rôle |
+|---------|------|
+| `lib/siteUrl.ts` | URL publique canonique (env ou repli `https://mysportally.com`) |
+| `lib/seoPublicRoutes.ts` | Liste `SEO_PUBLIC_PATHS` + génération entrées sitemap (hreflang FR/EN) |
+| `app/sitemap.ts` | `/sitemap.xml` — **10 URLs** (5 pages × FR + EN) |
+| `app/robots.ts` | `/robots.txt` — autorise le public, `disallow` dashboard / auth / API |
+
+**Pages dans le sitemap :** `/`, `/pricing`, `/contact`, `/terms`, `/privacy` (+ préfixe `/en` pour l’anglais).
+
+**Hors sitemap (volontaire) :** `/dashboard/*`, `/login`, `/auth/*`, `/reset-password`, `/api/*`. La recherche coach reste derrière auth (`/dashboard/find-coach`) — non indexable tant qu’il n’y a pas d’annuaire public.
+
+**Nouvelle page marketing publique :** ajouter le chemin dans `SEO_PUBLIC_PATHS` (`lib/seoPublicRoutes.ts`).
+
+### Vérification post-déploiement
+
+1. `https://mysportally.com/sitemap.xml` — 10 entrées, URLs en `https://mysportally.com/...` (pas `www`).
+2. `https://mysportally.com/robots.txt` — ligne `Sitemap: https://mysportally.com/sitemap.xml`.
+3. `https://www.mysportally.com/` → redirection 301 vers `https://mysportally.com/`.
+
+### Google Search Console
+
+1. Propriété recommandée : type **Domaine** `mysportally.com` (couvre http/https et www).
+2. **Sitemaps** → soumettre `sitemap.xml` (URL complète : `https://mysportally.com/sitemap.xml`).
+3. **Inspection d’URL** → demander l’indexation de `https://mysportally.com/`, `/en`, `/pricing` après deploy ou changement de redirection www.
+4. Les URLs `http://` ou `www` marquées « Page avec redirection » sont **normales** ; l’index cible est l’apex HTTPS.
+
+**Référence produit :** `Project_context.md` §4.14.
+
+**Hors scope livré (évolutions futures) :** balises `canonical` / `hreflang` dans les métadonnées HTML par page ; annuaire coach public ; pages landing par sport.
 
 ---
 
