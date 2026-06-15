@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
 import { PublicOrDashboardHeader } from '@/components/PublicOrDashboardHeader'
 import { ContactForm } from '@/components/ContactForm'
+import { buildPublicPageMetadata } from '@/lib/seoMetadata'
 import { getOptionalUserWithProfile } from '@/utils/auth'
 
 type ContactPageProps = {
@@ -12,10 +13,12 @@ export async function generateMetadata({ params }: ContactPageProps): Promise<Me
   const { locale } = await params
   const t = await getTranslations({ locale, namespace: 'metadata' })
 
-  return {
+  return buildPublicPageMetadata({
+    locale,
+    path: '/contact',
     title: t('contactTitle'),
     description: t('contactDescription'),
-  }
+  })
 }
 
 export default async function ContactPage({ params }: ContactPageProps) {

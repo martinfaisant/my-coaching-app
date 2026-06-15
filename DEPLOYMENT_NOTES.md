@@ -1,7 +1,7 @@
 # Notes de déploiement
 
 **Production :** https://mysportally.com (voir `docs/DOMAIN_MYSPORTALLY_SETUP.md` pour la configuration domaine, Vercel, Resend, Supabase).  
-**Dernière mise à jour doc :** 14 juin 2026 (référencement : sitemap, robots, Search Console ; précédent : politique mot de passe Supabase).
+**Dernière mise à jour doc :** 14 juin 2026 (SEO : métadonnées home canonical/hreflang, correctif middleware sitemap 404 ; précédent : sitemap/robots Search Console).
 
 ---
 
@@ -21,14 +21,18 @@
 |---------|------|
 | `lib/siteUrl.ts` | URL publique canonique (env ou repli `https://mysportally.com`) |
 | `lib/seoPublicRoutes.ts` | Liste `SEO_PUBLIC_PATHS` + génération entrées sitemap (hreflang FR/EN) |
+| `lib/seoMetadata.ts` | **`buildPublicPageMetadata`** — title/description, **`canonical`**, **`hreflang`**, Open Graph de base |
 | `app/sitemap.ts` | `/sitemap.xml` — **10 URLs** (5 pages × FR + EN) |
 | `app/robots.ts` | `/robots.txt` — autorise le public, `disallow` dashboard / auth / API |
+| `proxy.ts` | Middleware next-intl + auth : **ne pas** faire passer `/sitemap.xml` ni `/robots.txt` (matcher + bypass ; sinon **404** Google Search Console) |
 
 **Pages dans le sitemap :** `/`, `/pricing`, `/contact`, `/terms`, `/privacy` (+ préfixe `/en` pour l’anglais).
 
+**Métadonnées HTML (pages publiques) :** `generateMetadata` sur chaque route de `SEO_PUBLIC_PATHS` via **`buildPublicPageMetadata`**. i18n namespace **`metadata`** — clés **`homeTitle`** / **`homeDescription`** (accueil), **`pricingTitle`** / **`pricingDescription`**, etc. Le **texte visible** de la landing reste dans **`landing.*`** (onglet navigateur ≠ hero H1).
+
 **Hors sitemap (volontaire) :** `/dashboard/*`, `/login`, `/auth/*`, `/reset-password`, `/api/*`. La recherche coach reste derrière auth (`/dashboard/find-coach`) — non indexable tant qu’il n’y a pas d’annuaire public.
 
-**Nouvelle page marketing publique :** ajouter le chemin dans `SEO_PUBLIC_PATHS` (`lib/seoPublicRoutes.ts`).
+**Nouvelle page marketing publique :** ajouter le chemin dans `SEO_PUBLIC_PATHS` (`lib/seoPublicRoutes.ts`) et utiliser **`buildPublicPageMetadata`** dans `generateMetadata`.
 
 ### Vérification post-déploiement
 
@@ -43,9 +47,17 @@
 3. **Inspection d’URL** → demander l’indexation de `https://mysportally.com/`, `/en`, `/pricing` après deploy ou changement de redirection www.
 4. Les URLs `http://` ou `www` marquées « Page avec redirection » sont **normales** ; l’index cible est l’apex HTTPS.
 
+### Dépannage : sitemap « Erreur HTTP 404 » dans Search Console
+
+| Cause | Vérification | Action |
+|-------|----------------|--------|
+| **Middleware next-intl** | `/sitemap.xml` renvoie une page HTML 404 | `proxy.ts` : bypass + matcher excluant `sitemap.xml` et `robots.txt` (voir tableau fichiers ci-dessus) |
+| **Code non déployé** | Fichiers absents sur la branche prod Vercel | Merger/déployer `app/sitemap.ts`, `app/robots.ts`, `proxy.ts` |
+| **URL www dans le sitemap** | Entrées `https://www.mysportally.com/...` | `NEXT_PUBLIC_SITE_URL` = `https://mysportally.com` (sans www) |
+
 **Référence produit :** `Project_context.md` §4.14.
 
-**Hors scope livré (évolutions futures) :** balises `canonical` / `hreflang` dans les métadonnées HTML par page ; annuaire coach public ; pages landing par sport.
+**Hors scope livré (évolutions futures) :** image Open Graph dédiée (`og:image`) ; annuaire coach public ; pages landing par sport.
 
 ---
 
@@ -116,7 +128,7 @@ Répéter la config Google provider sur le **projet Supabase de dev/preview** av
 3. Compte existant lié → dashboard direct.
 4. Erreurs typiques : `redirect_uri_mismatch` (Google) = URI Supabase manquante ; échec après Google = Redirect URL app absente dans Supabase ; mauvaises données = variables Vercel pointant vers le mauvais projet Supabase.
 
-**Code clé :** `lib/authOAuth.ts`, `app/[locale]/login/oauthActions.ts`, `app/auth/callback/route.ts`, `lib/googleUserMetadata.ts`, `proxy.ts` (i18n : exclure uniquement `/auth/callback`).
+**Code clé :** `lib/authOAuth.ts`, `app/[locale]/login/oauthActions.ts`, `app/auth/callback/route.ts`, `lib/googleUserMetadata.ts`, `proxy.ts` (i18n : exclure `/auth/callback`, **`/sitemap.xml`**, **`/robots.txt`**).
 
 ---
 

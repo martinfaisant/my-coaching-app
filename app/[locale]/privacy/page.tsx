@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
+import { buildPublicPageMetadata } from '@/lib/seoMetadata'
 import { PublicOrDashboardHeader } from '@/components/PublicOrDashboardHeader'
 
 type PrivacyPageProps = {
@@ -12,9 +13,11 @@ export async function generateMetadata({
   const { locale } = await params
   const t = await getTranslations({ locale, namespace: 'metadata' })
 
-  return {
+  return buildPublicPageMetadata({
+    locale,
+    path: '/privacy',
     title: t('privacyTitle'),
-  }
+  })
 }
 
 export default async function PrivacyPage({ params }: PrivacyPageProps) {

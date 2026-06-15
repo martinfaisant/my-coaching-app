@@ -484,9 +484,9 @@ The athlete picker uses these as **selected** state (`FEELING_PICKER_SELECTED_BG
 
 ---
 
-### 4.14 Référencement public (sitemap & robots) ✅
+### 4.14 Référencement public (sitemap, robots & métadonnées) ✅
 
-**Besoin :** permettre à Google (et autres crawlers) de découvrir les **pages marketing et légales** indexables, avec URLs canoniques sur l’apex `https://mysportally.com` et variantes FR/EN.
+**Besoin :** permettre à Google (et autres crawlers) de découvrir les **pages marketing et légales** indexables, avec URLs canoniques sur l’apex `https://mysportally.com`, variantes FR/EN, et balises HTML **`canonical`** / **`hreflang`**.
 
 **Routes générées (Next.js metadata) :**
 
@@ -497,11 +497,15 @@ The athlete picker uses these as **selected** state (`FEELING_PICKER_SELECTED_BG
 
 **Pages listées :** définies dans **`SEO_PUBLIC_PATHS`** (`lib/seoPublicRoutes.ts`). URL de base via **`getSiteUrl()`** (`lib/siteUrl.ts`) ← `NEXT_PUBLIC_SITE_URL` / `NEXT_PUBLIC_APP_URL`.
 
+**Métadonnées HTML (head, non visibles dans le corps de page) :** chaque page de `SEO_PUBLIC_PATHS` utilise **`buildPublicPageMetadata`** (`lib/seoMetadata.ts`) dans `generateMetadata` — title/description i18n (**`metadata.homeTitle`**, **`metadata.homeDescription`**, etc.), **`alternates.canonical`**, **`alternates.languages`** (fr, en, x-default). L’accueil marketing visible reste **`landing.hero.*`** (H1 / sous-titre) ; le title navigateur suit le template layout `%s | My Sport Ally`.
+
+**Middleware :** **`proxy.ts`** ne doit **pas** appliquer next-intl à `/sitemap.xml` ni `/robots.txt` (sinon 404 en prod / Search Console). Voir **`DEPLOYMENT_NOTES.md`** § Référencement → Dépannage.
+
 **Non indexé (volontaire) :** espace connecté (`/dashboard/*`), auth, API. **Trouver un coach** reste sous `/dashboard/find-coach` (auth requise) — pas dans le sitemap.
 
 **Domaine :** `www.mysportally.com` doit rediriger vers l’apex (Vercel). Procédure Search Console : **`DEPLOYMENT_NOTES.md`** § Référencement.
 
-**Évolutions SEO non livrées :** metadata `canonical`/`hreflang` par page, annuaire coach public, landing pages par sport.
+**Évolutions SEO non livrées :** image Open Graph dédiée (`og:image`) ; annuaire coach public ; landing pages par sport.
 
 ---
 
