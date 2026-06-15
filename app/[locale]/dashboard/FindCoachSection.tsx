@@ -563,6 +563,13 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
     return a.display_order - b.display_order
   })
 
+  const offerGridColsClass =
+    sortedOffers.length <= 1
+      ? 'grid-cols-1'
+      : sortedOffers.length === 2
+        ? 'grid-cols-1 md:grid-cols-2'
+        : 'grid-cols-1 md:grid-cols-3'
+
   const toggleSport = (value: string) => {
     setSports((prev) =>
       prev.includes(value) ? prev.filter((s) => s !== value) : [...prev, value]
@@ -824,7 +831,7 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
                 ) : (
                   <>
                     {/* GRID OFFRES */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+                    <div className={`grid ${offerGridColsClass} gap-5 mb-8`}>
                       {sortedOffers.map((offer) => {
                         const isSelected = selectedOfferId === offer.id
                         const isFeatured = offer.is_featured
