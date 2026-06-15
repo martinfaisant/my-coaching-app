@@ -29,6 +29,8 @@
     "loginSubtitle": "Log in or create an account",
     "logout": "Log out",
     "loggingOut": "Logging out…",
+    "loggingIn": "Signing in…",
+    "signingUp": "Signing up…",
     "signup": "Sign up",
     "signupButton": "Sign up",
     "createAccount": "Create my account",

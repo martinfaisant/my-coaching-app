@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 15 juin 2026 (**SEO P1** : og:image, JSON-LD, noindex, llms.txt ; précédent : annuaire coach public `/coaches` + fiches SEO)
+**Dernière mise à jour :** 15 juin 2026 (**boutons auth submit loading** ; précédent : SEO P1)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -14,7 +14,7 @@
 
 ### **Project_context.md** ⭐
 - **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (…), **§4.16 Annuaire coach public** (`/coaches`, gate visiteur, deep link find-coach), **§4.15 FAQ publiques** (athlète/coach, SEO JSON-LD), **§4.13 Marketing landing** (…), **§4.14 SEO** (sitemap, robots, **llms.txt**, og:image, JSON-LD, noindex, **`buildPublicPageMetadata`**, canonical/hreflang, proxy), **§4.9 Strava** (…)
-- **Dernière mise à jour :** 15 juin 2026 (§4.14 SEO P1 ; précédent : §4.16 annuaire coach public)
+- **Dernière mise à jour :** 15 juin 2026 (§4.1 **AuthSubmitButton** loading ; précédent : §4.14 SEO P1)
 
 ### **docs/CALENDAR_MONTH_VIEW.md**
 - **Contenu :** Récap **vue mois** (desktop) vs **vue semaine** (mobile), règles semaines ISO / mois civil étendu, **totaux hebdo** (liste sports `PERSISTED_WORKOUT_SPORT_TYPES`, `SPORT_WEEKLY_SUMMARY_BAR`), chargement données, liste des fichiers et tests unitaires, **tuiles disponibilité** (réf. design + `CalendarView`), liens vers maquettes archivées
@@ -24,7 +24,7 @@
 
 ### **docs/DESIGN_SYSTEM.md** ⭐
 - **Contenu :** Tokens (…), composants (…, **Landing**, **`components/public/*`** FAQ + **`PublicMarketingFooter`**, …)
-- **Dernière mise à jour :** 14 juin 2026 (**Annuaire coach public** § + `PublicCoach*` ; précédent : Pages FAQ publiques)
+- **Dernière mise à jour :** 15 juin 2026 (**AuthSubmitButton** loading connexion/inscription ; précédent : Annuaire coach public § + PublicCoach*)
 
 ### **docs/I18N.md** ⭐
 - **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces (dont **`publicCoaches`**, **`publicFooter`**, **`faqAthlete`**, **`faqCoach`**, **`metadata.*`** SEO dont **`siteTitle`**, **`termsDescription`**, **`ogImageAlt`**, **`buildPublicPageMetadata`**), **`proxy.ts`** (exclusion sitemap/robots/llms), **checklist nouvelles features** ; …
@@ -113,6 +113,11 @@
 - **Utiliser pour :** Contexte UI historique ; détail produit / technique à jour : **`Project_context.md`** §4.15, **`docs/DESIGN_SYSTEM.md`** § Pages FAQ publiques.
 - **Archivé le :** 15 juin 2026 (fusion vers docs actives ci-dessus).
 
+### **docs/archive/design-auth-submit-loading/** (design feature — archivé juin 2026)
+- **Contenu :** Maquette HTML **MOCKUP_US_AUTH_SUBMIT_LOADING.html** + README (états loading boutons connexion/inscription).
+- **Utiliser pour :** Contexte UI historique ; détail produit / technique à jour : **`Project_context.md`** §4.1, **`docs/DESIGN_SYSTEM.md`** § AuthSubmitButton, **`components/AuthSubmitButton.tsx`**.
+- **Archivé le :** 15 juin 2026 (fusion vers docs actives ci-dessus).
+
 ### **docs/archive/design-public-coaches/** (design feature — archivé juin 2026)
 - **Contenu :** Maquettes HTML **US-PUB-COACH-01…05** + README (annuaire `/coaches`, fiches `/coaches/[id]`, gate auth visiteur, états session, nav header).
 - **Utiliser pour :** Contexte UI historique ; détail produit / technique à jour : **`Project_context.md`** §4.16, **`docs/DESIGN_SYSTEM.md`** § Annuaire coach public.
@@ -152,6 +157,7 @@
 - **Raison :** feature livrée ; comportement décrit dans **`Project_context.md`** §4.0, **`docs/DESIGN_SYSTEM.md`** § PublicHeader, helper **`lib/publicHeaderPageTitle.ts`**.
 
 **Checklist critères mot de passe (maquettes HTML, archivées 12 juin 2026) :**
+- `docs/archive/design-auth-submit-loading/` — `MOCKUP_US_AUTH_SUBMIT_LOADING.html` (loading boutons Se connecter / S'inscrire).
 - `docs/archive/design-auth-password-requirements/` — `MOCKUP_US_AUTH_PWD_01_SIGNUP_CHECKLIST.html`, `MOCKUP_US_AUTH_PWD_02_RESET_CHECKLIST.html` (inscription + reset, checklist 5 critères).
 - **Raison :** feature livrée ; règles et composants décrits dans **`Project_context.md`** §4.1, **`docs/DESIGN_SYSTEM.md`** § PasswordRequirements / NewPasswordField, **`docs/I18N.md`** (`auth.passwordRequirements`), **`lib/passwordValidation.ts`**.
 

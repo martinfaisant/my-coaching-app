@@ -10,6 +10,7 @@ import {
   type SignupState,
   type ResetPasswordState,
 } from '@/app/[locale]/login/actions'
+import { AuthSubmitButton } from '@/components/AuthSubmitButton'
 import { Button } from '@/components/Button'
 import { Input } from '@/components/Input'
 import { PasswordInput } from '@/components/PasswordInput'
@@ -147,9 +148,9 @@ export function LoginForm({
               {loginState.error}
             </p>
           )}
-          <Button type="submit" fullWidth>
+          <AuthSubmitButton fullWidth loadingText={t('loggingIn')}>
             {t('login')}
-          </Button>
+          </AuthSubmitButton>
           <Button
             type="button"
             variant="muted"
@@ -371,9 +372,9 @@ export function LoginForm({
             )}
           </p>
         )}
-        <Button type="submit" fullWidth disabled={!canSignup}>
+        <AuthSubmitButton fullWidth disabled={!canSignup} loadingText={t('signingUp')}>
           {t('signup')}
-        </Button>
+        </AuthSubmitButton>
       </form>
     </div>
   )

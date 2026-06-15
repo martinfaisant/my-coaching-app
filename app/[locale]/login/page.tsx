@@ -4,7 +4,7 @@ import { useState, useActionState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useTranslations, useLocale } from 'next-intl'
 import { login, signup, type LoginState, type SignupState } from './actions'
-import { Button } from '@/components/Button'
+import { AuthSubmitButton } from '@/components/AuthSubmitButton'
 import { Input } from '@/components/Input'
 import { PasswordInput } from '@/components/PasswordInput'
 import { NewPasswordField } from '@/components/NewPasswordField'
@@ -116,9 +116,9 @@ function LoginPageContent() {
                   {loginState.error}
                 </p>
               )}
-              <Button type="submit" variant="primary" fullWidth>
+              <AuthSubmitButton variant="primary" fullWidth loadingText={t('loggingIn')}>
                 {t('login')}
-              </Button>
+              </AuthSubmitButton>
             </form>
 
             <AuthDivider />
@@ -241,9 +241,14 @@ function LoginPageContent() {
                       {signupState.error}
                     </p>
                   )}
-                  <Button type="submit" variant="primary" fullWidth disabled={!canSignup}>
+                  <AuthSubmitButton
+                    variant="primary"
+                    fullWidth
+                    disabled={!canSignup}
+                    loadingText={t('signingUp')}
+                  >
                     {t('signupButton')}
-                  </Button>
+                  </AuthSubmitButton>
                 </form>
               </>
             )}

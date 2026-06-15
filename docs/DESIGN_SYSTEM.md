@@ -1,7 +1,7 @@
 # 🎨 Design System
 
-**Version :** 1.46  
-**Dernière mise à jour :** 12 juin 2026 (**PasswordRequirements**, **NewPasswordField** — checklist mot de passe inscription/reset ; précédent : prérequis Checkout…)
+**Version :** 1.47  
+**Dernière mise à jour :** 15 juin 2026 (**AuthSubmitButton** — loading connexion/inscription ; précédent : PasswordRequirements, NewPasswordField…)
 
 ---
 
@@ -1337,6 +1337,28 @@ const [isOpen, setIsOpen] = useState(false)
   - Footer optionnel (fixe, ne scroll pas)
 ```
 
+#### AuthSubmitButton
+
+**Fichier :** `components/AuthSubmitButton.tsx`
+
+Bouton submit pour formulaires auth (`login`, `signup`) avec état loading via `useFormStatus().pending`. À placer **en enfant direct** du `<form action={serverAction}>`.
+
+```tsx
+import { AuthSubmitButton } from '@/components/AuthSubmitButton'
+
+<form action={loginAction}>
+  {/* champs */}
+  <AuthSubmitButton fullWidth loadingText={t('loggingIn')}>
+    {t('login')}
+  </AuthSubmitButton>
+</form>
+```
+
+- Props : `children` (libellé repos), `loadingText` (libellé pendant soumission), `variant`, `fullWidth`, `disabled`, `className`
+- i18n loading : `auth.loggingIn`, `auth.signingUp` (aligné sur `auth.loggingOut`, `auth.oauthRedirecting`)
+- Surfaces : page `/login`, modale `LoginForm`, `EmailValidatedModal`
+- Champs du formulaire restent éditables pendant le loading (seul le bouton change d'état)
+
 #### SocialAuthButtons
 
 **Fichier :** `components/SocialAuthButtons.tsx`
@@ -1358,7 +1380,7 @@ import { SocialAuthButtons, AuthDivider } from '@/components/SocialAuthButtons'
 
 #### Modales auth dérivées
 
-- **EmailValidatedModal** (`components/EmailValidatedModal.tsx`) : modale affichée après confirmation d’email (landing avec `?emailConfirmed=1`). Taille `md`, titre i18n « Email validé », message « Vous pouvez vous connecter », formulaire de connexion (email, mot de passe, bouton Se connecter) dans la modale. Utilise `Modal`, `Input`, `Button`, action `login` ; fermeture par overlay/Escape. i18n : `auth.emailValidatedTitle`, `auth.emailValidatedMessage`.
+- **EmailValidatedModal** (`components/EmailValidatedModal.tsx`) : modale affichée après confirmation d’email (landing avec `?emailConfirmed=1`). Taille `md`, titre i18n « Email validé », message « Vous pouvez vous connecter », formulaire de connexion (email, mot de passe, `AuthSubmitButton` avec `auth.loggingIn`) dans la modale. Utilise `Modal`, `Input`, `AuthSubmitButton`, action `login` ; fermeture par overlay/Escape. i18n : `auth.emailValidatedTitle`, `auth.emailValidatedMessage`.
 - **HomeEmailConfirmedTrigger** (`components/HomeEmailConfirmedTrigger.tsx`) : composant client rendu sur la page d’accueil ; reçoit `showEmailConfirmedModal={true}` quand l’URL contient `emailConfirmed=1` ; ouvre `EmailValidatedModal` à l’affichage. Utilisé par `app/[locale]/page.tsx`.
 
 ```tsx
@@ -2287,7 +2309,7 @@ Actuellement, utiliser un span custom :
 
 - **Tokens couleurs** : `tailwind.config.ts`, `app/globals.css`
 - **Styles formulaires** : `lib/formStyles.ts` (FORM_BASE_CLASSES, FORM_INPUT_TEXT_SIZE, FORM_INPUT_HEIGHT, etc.)
-- **Composants** : `components/Button.tsx`, `components/AuthButtons.tsx` (variants `default`, `hero`, **`drawer`**, **`ctaBand`**), `components/landing/*` (page d'accueil marketing), `components/SocialAuthButtons.tsx`, `components/AuthRolePicker.tsx`, `components/AuthLegalConsent.tsx`, `components/Input.tsx`, `components/PasswordInput.tsx`, `components/PasswordRequirements.tsx`, `components/NewPasswordField.tsx`, `components/SearchInput.tsx`, `components/Textarea.tsx`, `components/Badge.tsx`, `components/Avatar.tsx`, `components/AvatarImage.tsx`, `components/SportTileSelectable.tsx`, `components/ActivityTile.tsx`, `components/Modal.tsx`, `components/CoachReviewsModal.tsx`, `components/workout-modal/WorkoutFacilityHoursStrip.tsx`, `components/workout-modal/WorkoutTargetActualCards.tsx`, `components/workout-modal/WorkoutFeedbackSummary.tsx`, `components/workout-modal/WorkoutFeedbackSection.tsx`, `components/AthleteFacilityDetails.tsx`, `components/CoachAthleteNotesSection.tsx`, `components/CoachAthleteNoteModal.tsx`, `components/DashboardPageShell.tsx`, `components/DashboardTopBar.tsx`, `components/AthleteAccountMenu.tsx`, `components/CoachAccountMenu.tsx`, `components/ContactForm.tsx`, `components/Drawer.tsx`, `components/PublicOrDashboardHeader.tsx`, `components/PublicHeader.tsx`, `components/EmailValidatedModal.tsx`, `components/HomeEmailConfirmedTrigger.tsx`, `components/Dropdown.tsx`, `components/Segments.tsx`, `components/DatePickerPopup.tsx`, `components/MonthSelector.tsx`, `components/CalendarView.tsx`, `components/CalendarViewWithNavigation.tsx`, `lib/calendarViewDayHeights.ts`, `components/AvailabilityModal.tsx`, `components/AvailabilityDetailModal.tsx`, `components/ChatAthleteListItem.tsx`, `components/ChatConversationSidebar.tsx`, `components/CoachPlatformSubscriptionOffers.tsx`, `components/CoachPlatformBillingAddressSection.tsx`, **`components/CoachPlatformBillingAddressFields.tsx`**, **`components/CoachPlatformCheckoutPrerequisitesForm.tsx`**, **`components/CoachPlatformCheckoutPrerequisitesModal.tsx`**, `components/CoachPlatformOfferGrid.tsx`, `components/CoachPlatformSubscribeOffersModal.tsx`, **`components/CoachPlatformCurrentOfferCard.tsx`**, **`components/CoachPlatformManageSubscriptionFlow.tsx`**, **`components/CoachPlatformSubscriptionStatusSection.tsx`**, **`components/CoachPlatformUnpaidSubscriptionBanner.tsx`**
+- **Composants** : `components/Button.tsx`, `components/AuthButtons.tsx` (variants `default`, `hero`, **`drawer`**, **`ctaBand`**), `components/landing/*` (page d'accueil marketing), `components/SocialAuthButtons.tsx`, `components/AuthSubmitButton.tsx`, `components/AuthRolePicker.tsx`, `components/AuthLegalConsent.tsx`, `components/Input.tsx`, `components/PasswordInput.tsx`, `components/PasswordRequirements.tsx`, `components/NewPasswordField.tsx`, `components/SearchInput.tsx`, `components/Textarea.tsx`, `components/Badge.tsx`, `components/Avatar.tsx`, `components/AvatarImage.tsx`, `components/SportTileSelectable.tsx`, `components/ActivityTile.tsx`, `components/Modal.tsx`, `components/CoachReviewsModal.tsx`, `components/workout-modal/WorkoutFacilityHoursStrip.tsx`, `components/workout-modal/WorkoutTargetActualCards.tsx`, `components/workout-modal/WorkoutFeedbackSummary.tsx`, `components/workout-modal/WorkoutFeedbackSection.tsx`, `components/AthleteFacilityDetails.tsx`, `components/CoachAthleteNotesSection.tsx`, `components/CoachAthleteNoteModal.tsx`, `components/DashboardPageShell.tsx`, `components/DashboardTopBar.tsx`, `components/AthleteAccountMenu.tsx`, `components/CoachAccountMenu.tsx`, `components/ContactForm.tsx`, `components/Drawer.tsx`, `components/PublicOrDashboardHeader.tsx`, `components/PublicHeader.tsx`, `components/EmailValidatedModal.tsx`, `components/HomeEmailConfirmedTrigger.tsx`, `components/Dropdown.tsx`, `components/Segments.tsx`, `components/DatePickerPopup.tsx`, `components/MonthSelector.tsx`, `components/CalendarView.tsx`, `components/CalendarViewWithNavigation.tsx`, `lib/calendarViewDayHeights.ts`, `components/AvailabilityModal.tsx`, `components/AvailabilityDetailModal.tsx`, `components/ChatAthleteListItem.tsx`, `components/ChatConversationSidebar.tsx`, `components/CoachPlatformSubscriptionOffers.tsx`, `components/CoachPlatformBillingAddressSection.tsx`, **`components/CoachPlatformBillingAddressFields.tsx`**, **`components/CoachPlatformCheckoutPrerequisitesForm.tsx`**, **`components/CoachPlatformCheckoutPrerequisitesModal.tsx`**, `components/CoachPlatformOfferGrid.tsx`, `components/CoachPlatformSubscribeOffersModal.tsx`, **`components/CoachPlatformCurrentOfferCard.tsx`**, **`components/CoachPlatformManageSubscriptionFlow.tsx`**, **`components/CoachPlatformSubscriptionStatusSection.tsx`**, **`components/CoachPlatformUnpaidSubscriptionBanner.tsx`**
 - **Page Mon Abonnement MySportAlly (coach)** : `app/[locale]/dashboard/coach-platform-subscription/page.tsx`, `loading.tsx`, **`coachPlatformBillingAddressActions.ts`**, **`coachPlatformCheckoutPrerequisitesActions.ts`**, **`coachPlatformCancellationActions.ts`** ; libs **`lib/coachPlatformCheckoutPrerequisites.ts`**, **`lib/stripeCoachPlatformCatalog.ts`**, **`lib/coachPlatformSubscriptionTrial.ts`**, **`lib/coachPlatformTrialEligibility.ts`**, **`lib/stripeCoachPlatformBillingHistory.ts`**, **`lib/stripeCoachPlatformBillingAddress.ts`**, **`lib/stripeCoachPlatformCancellation.ts`**, **`lib/coachPlatformSubscriptionSync.ts`**, **`lib/coachPlatformSubscriptionDisplay.ts`**, **`lib/formatMoney.ts`**, **`lib/stripeCoachPlatformCustomer.ts`**, **`lib/coachPlatformCheckoutReturnPath.ts`**, **`lib/coachMsaOfferDisplay.ts`** ; migrations **`075`**, **`076`**
 - **Page Mes athlètes (coach)** : `app/[locale]/dashboard/athletes/page.tsx` (bandeaux profil / offre publiée, erreur chargement liste), `components/CoachPlatformStripeBanner.tsx`, `components/CoachPlatformCheckoutVerification.tsx`, `CoachAthletesListWithFilter.tsx`, `PendingRequestTile.tsx` ; actions Checkout **`app/[locale]/dashboard/athletes/coachPlatformActions.ts`**
 - **Sports** : `lib/sportStyles.ts` (`SPORT_CARD_STYLES`, `SPORT_BADGE_STYLES`, **`SPORT_WEEKLY_SUMMARY_BAR`**, `SPORT_ICONS`, `SPORT_TRANSLATION_KEYS`), `lib/sportsRegistry.ts` (`PERSISTED_WORKOUT_SPORT_TYPES`, `workoutIsTimeOnlySport`), `lib/sportsOptions.ts`, `components/SportIcons.tsx`
