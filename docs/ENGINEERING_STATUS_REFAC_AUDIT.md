@@ -1,6 +1,6 @@
 # Engineering status – Refactoring (P1/P2) & Audit (P3)
 
-**Dernière mise à jour :** 18 mars 2026  
+**Dernière mise à jour :** 15 juin 2026  
 **Source canonique :** ce document (les anciens `REFACTORING_P1_P2_COMPLETE.md` et `docs/AUDIT_CODEBASE_P3.md` pointent ici).
 
 ---
@@ -49,6 +49,12 @@ Ce chapitre résume les chantiers **P1/P2** terminés (error boundaries, loading
   - `CoachWorkoutForm.tsx`, `WorkoutFeedbackSection.tsx` (memo), `DatePickerPopover.tsx`, `icons.tsx`
 - **Validation** : `npm run build` OK après refactor.
 
+### ✅ CI & qualité (juin 2026)
+
+- **Tests Vitest en CI** : `.github/workflows/ci.yml` exécute `npm run test` (lint → typecheck → test → build) sur PR et push `main`. ~45 fichiers de tests unitaires/intégration légers (jsdom), hors `e2e/`.
+- **Parité i18n automatisée** : `lib/i18n/collectMessageKeys.ts`, `lib/i18n/assertMessageParity.ts`, gate `lib/i18n/messageParity.test.ts` ; commande ciblée `npm run check:i18n` (incluse dans `npm run test`). Voir `docs/I18N.md`.
+- **Scripts locaux** : `npm run check` (typecheck + test), `npm run check:full` (+ lint).
+
 ---
 
 ## 3) Reste à faire (P3 – priorités)
@@ -59,12 +65,15 @@ Ce chapitre résume les chantiers **P1/P2** terminés (error boundaries, loading
 | Modales custom | `createPortal` “maison” dans certaines pages (ex. `FindCoachSection`, `AthleteSentRequestDetailModal`) | Haute | Migrer vers `components/Modal` quand possible |
 | Palette Strava / statuts | `orange-*`, `emerald-*` encore présents | Moyenne | Remplacer par tokens `palette-*` (Strava/danger/forest) + fonds `.../10` |
 | Typage i18n nav | `as any` dans nav (DashboardTopBar/NavLinks) | Moyenne | Typer les clés i18n (union de clés / mapping) pour supprimer les casts |
+| E2E Playwright en CI | Smoke tests locaux (`e2e/smoke.spec.ts`) non exécutés en CI | Basse | Workflow dédié (secrets optionnels, install browsers) si besoin |
 
 ---
 
 ## 4) Checklist cohérence (état réel vs docs)
 
 - **Build** : `npm run build` doit rester vert après chaque lot P3.
+- **Tests** : `npm run test` (Vitest) vert en local ; CI exécute la même commande avant le build.
+- **Parité i18n** : `npm run check:i18n` vert après toute modification de `messages/fr.json` ou `messages/en.json`.
 - **Design tokens** : pas de couleurs hex/arbitraires dans les composants UI (hors tokens/tailwind config).
 - **i18n** : aucun texte visible en dur (FR/EN) dans UI/actions ; tout via next-intl.
 

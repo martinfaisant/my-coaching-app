@@ -63,6 +63,27 @@ function normalizeFromWorkout(
   fallbackDate: string,
   coachPrimaryMetrics: WorkoutPrimaryMetricBySport | null
 ): WorkoutFormValues {
+  if (workout.planned_by === 'athlete') {
+    const durationStr =
+      workout.actual_duration_minutes != null ? String(workout.actual_duration_minutes) : ''
+    const distanceStr = workout.actual_distance_km != null ? String(workout.actual_distance_km) : ''
+    const elevationStr = workout.actual_elevation_m != null ? String(workout.actual_elevation_m) : ''
+    const paceStr = workout.target_pace != null ? String(workout.target_pace) : ''
+
+    return {
+      sportType: workout.sport_type,
+      title: workout.title,
+      description: workout.description,
+      targetDurationMinutes: durationStr,
+      targetDistanceKm: distanceStr,
+      targetElevationM: elevationStr,
+      targetPace: paceStr,
+      targetMode: modeForSport(workout.sport_type, null),
+      editableDate: workout.date ?? fallbackDate,
+      timeOfDaySegment: workout.time_of_day ?? null,
+    }
+  }
+
   const durationStr = workout.target_duration_minutes != null ? String(workout.target_duration_minutes) : ''
   const distanceStr = workout.target_distance_km != null ? String(workout.target_distance_km) : ''
   const elevationStr = workout.target_elevation_m != null ? String(workout.target_elevation_m) : ''

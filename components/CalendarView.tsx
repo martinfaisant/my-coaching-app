@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useCallback, useEffect, type ReactNode } from 'react'
+import { useState, useMemo, useCallback, useEffect, type ReactNode, type MouseEvent } from 'react'
 import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
 import { useLocale, useTranslations } from 'next-intl'
@@ -9,10 +9,12 @@ import { IconClose } from './icons/IconClose'
 import { WorkoutModal } from './WorkoutModal'
 import { AvailabilityModal } from './AvailabilityModal'
 import { AvailabilityDetailModal } from './AvailabilityDetailModal'
+import { AthleteLoggedActivityModal } from './athlete-logged-activity/AthleteLoggedActivityModal'
 import { Modal } from './Modal'
 import { SPORT_ICONS, SPORT_CARD_STYLES, SPORT_TRANSLATION_KEYS, SPORT_WEEKLY_SUMMARY_BAR } from '@/lib/sportStyles'
 import { workoutPaceIsRunningStyle, PERSISTED_WORKOUT_SPORT_TYPES, workoutIsTimeOnlySport, type PersistedWorkoutSportType } from '@/lib/sportsRegistry'
 import { getCalendarWorkoutTileMetrics } from '@/lib/workoutFormatting'
+import { isAthleteLoggedWorkout, ATHLETE_LOGGED_TILE_BADGE_CLASSNAME } from '@/lib/athleteLoggedWorkout'
 import { ActivityTile } from './ActivityTile'
 import type {
   AthleteFacility,
@@ -357,8 +359,14 @@ export function CalendarView({
           : 'rounded-full bg-stone-100 text-stone-500 font-semibold'
     return { label, className }
   }
+
+  const getAthleteLoggedBadge = () => ({
+    label: tAthleteLogged('tile.badgePersonal'),
+    className: ATHLETE_LOGGED_TILE_BADGE_CLASSNAME,
+  })
   const tCommon = useTranslations('common')
   const tSports = useTranslations('sports')
+  const tAthleteLogged = useTranslations('athleteLoggedActivity')
   const router = useRouter()
   const [modalOpen, setModalOpen] = useState(false)
   const [modalDate, setModalDate] = useState<string>('')
@@ -381,6 +389,12 @@ export function CalendarView({
   const [availabilityDetailOpen, setAvailabilityDetailOpen] = useState(false)
   const [availabilityDetailSlot, setAvailabilityDetailSlot] = useState<AthleteAvailabilitySlot | null>(null)
   const [availabilityDetailDateStr, setAvailabilityDetailDateStr] = useState<string>('')
+
+  const [athleteLoggedModalOpen, setAthleteLoggedModalOpen] = useState(false)
+  const [athleteLoggedModalDate, setAthleteLoggedModalDate] = useState('')
+  const [athleteLoggedModalWorkout, setAthleteLoggedModalWorkout] = useState<Workout | null>(null)
+  const [athleteLoggedModalReadOnly, setAthleteLoggedModalReadOnly] = useState(false)
+  const [athleteLoggedModalKey, setAthleteLoggedModalKey] = useState(0)
 
   const [isMobileView, setIsMobileView] = useState(false)
 
@@ -599,7 +613,7 @@ export function CalendarView({
     return map
   }, [availabilities])
 
-  /** Liste du jour ordonnée : dispos/indispos → objectifs → entraînements → Strava. */
+  /** Liste du jour ordonnée : dispos → objectifs → séances coach → activités perso → Strava. */
   function buildDayListWithSections(
     dateStr: string,
     dayAvailabilities: AthleteAvailabilitySlot[],
@@ -608,17 +622,20 @@ export function CalendarView({
     dayImported: ImportedActivity[]
   ): DayListItem[] {
     const out: DayListItem[] = []
+    const isCoachPlanned = (w: Workout) => !isAthleteLoggedWorkout(w)
+    const isLogged = (w: Workout) => isAthleteLoggedWorkout(w)
+    const matchesSection = (w: Workout, section: WorkoutTimeOfDay | null) =>
+      section === null ? !w.time_of_day : w.time_of_day === section
+
     dayAvailabilities.forEach((a) => out.push({ type: 'availability', item: a, dateStr, section: null }))
     dayGoals.forEach((g) => out.push({ type: 'goal', item: g, dateStr, section: null }))
-    const workoutsNoMoment = dayWorkouts.filter((w) => !w.time_of_day)
-    workoutsNoMoment.forEach((w) => out.push({ type: 'workout', item: w, dateStr, section: null }))
+    dayWorkouts.filter((w) => isCoachPlanned(w) && matchesSection(w, null)).forEach((w) => out.push({ type: 'workout', item: w, dateStr, section: null }))
+    dayWorkouts.filter((w) => isLogged(w) && matchesSection(w, null)).forEach((w) => out.push({ type: 'workout', item: w, dateStr, section: null }))
     dayImported.forEach((a) => out.push({ type: 'imported', item: a, dateStr, section: null }))
-    const morning = dayWorkouts.filter((w) => w.time_of_day === 'morning')
-    const noon = dayWorkouts.filter((w) => w.time_of_day === 'noon')
-    const evening = dayWorkouts.filter((w) => w.time_of_day === 'evening')
-    morning.forEach((w) => out.push({ type: 'workout', item: w, dateStr, section: 'morning' }))
-    noon.forEach((w) => out.push({ type: 'workout', item: w, dateStr, section: 'noon' }))
-    evening.forEach((w) => out.push({ type: 'workout', item: w, dateStr, section: 'evening' }))
+    for (const section of ['morning', 'noon', 'evening'] as const) {
+      dayWorkouts.filter((w) => isCoachPlanned(w) && w.time_of_day === section).forEach((w) => out.push({ type: 'workout', item: w, dateStr, section }))
+      dayWorkouts.filter((w) => isLogged(w) && w.time_of_day === section).forEach((w) => out.push({ type: 'workout', item: w, dateStr, section }))
+    }
     return out
   }
 
@@ -731,19 +748,52 @@ export function CalendarView({
     setModalOpen(true)
   }
 
-  const openDayForAvailability = (dateStr: string, isPast: boolean) => {
-    if (!athleteView || isPast) return
+  const openDayForAvailability = (dateStr: string) => {
+    if (!athleteView || dateStr <= todayStr) return
     setAvailabilityModalEditSlot(null)
     setAvailabilityModalDate(dateStr)
     setAvailabilityModalOpen(true)
   }
 
+  const openAthleteLoggedModal = (dateStr: string, workout: Workout | null, readOnly = false) => {
+    setAthleteLoggedModalDate(dateStr)
+    setAthleteLoggedModalWorkout(workout)
+    setAthleteLoggedModalReadOnly(readOnly)
+    setAthleteLoggedModalKey((k) => k + 1)
+    setAthleteLoggedModalOpen(true)
+  }
+
+  const handleAthleteDayAddClick = (e: MouseEvent, dateStr: string, isPast: boolean, isToday: boolean) => {
+    e.stopPropagation()
+    if (athleteView) {
+      if (isPast || isToday) {
+        openAthleteLoggedModal(dateStr, null, false)
+      } else {
+        openDayForAvailability(dateStr)
+      }
+      return
+    }
+    openDay(dateStr, isPast)
+  }
+
   const openWorkout = (dateStr: string, workout: Workout) => {
+    if (isAthleteLoggedWorkout(workout)) {
+      openAthleteLoggedModal(dateStr, workout, !athleteView)
+      return
+    }
     setModalDate(dateStr)
     setModalWorkout(workout)
     setWorkoutModalKey((k) => k + 1)
     setModalOpen(true)
   }
+
+  const handleAthleteLoggedModalClose = useCallback((closedBySuccess?: boolean, updatedWorkout?: Workout) => {
+    setAthleteLoggedModalOpen(false)
+    if (closedBySuccess) {
+      onWorkoutSaved?.(updatedWorkout)
+      setTimeout(() => router.refresh(), 150)
+    }
+  }, [router, onWorkoutSaved])
 
   const handleWorkoutModalClose = useCallback((closedBySuccess?: boolean, updatedWorkout?: Workout) => {
     setModalOpen(false)
@@ -832,8 +882,10 @@ export function CalendarView({
     const paceStr = formatPace(tile.paceForDisplay, w.sport_type)
     const showCommentIcon = hasAthleteComment(w)
     const athleteCommentLabel = tCalendar('tile.athleteCommentLabel')
+    const isPersonal = isAthleteLoggedWorkout(w)
     const status = (w as Workout).status ?? 'planned'
     const statusBadge = getStatusBadge(status)
+    const athleteLoggedBadge = getAthleteLoggedBadge()
 
     return (
       <div
@@ -916,9 +968,15 @@ export function CalendarView({
           {(hasDuration || hasDistance || hasPace || hasElevation || showCommentIcon) && (
             <div className="w-px h-2.5 bg-stone-300" aria-hidden />
           )}
-          <span className={`shrink-0 px-1.5 py-0.5 text-[10px] font-semibold ${statusBadge.className}`} aria-label={statusBadge.label}>
-            {statusBadge.label}
-          </span>
+          {isPersonal ? (
+            <span className={`shrink-0 px-1.5 py-0.5 text-[10px] font-semibold ${athleteLoggedBadge.className}`} aria-label={athleteLoggedBadge.label}>
+              {athleteLoggedBadge.label}
+            </span>
+          ) : (
+            <span className={`shrink-0 px-1.5 py-0.5 text-[10px] font-semibold ${statusBadge.className}`} aria-label={statusBadge.label}>
+              {statusBadge.label}
+            </span>
+          )}
         </div>
       </div>
     )
@@ -933,8 +991,10 @@ export function CalendarView({
     const paceStr = formatPace(tile.paceForDisplay, w.sport_type)
     const showCommentIcon = hasAthleteComment(w)
     const athleteCommentLabel = tCalendar('tile.athleteCommentLabel')
+    const isPersonal = isAthleteLoggedWorkout(w)
     const status = (w as Workout).status ?? 'planned'
     const statusBadge = getStatusBadge(status)
+    const athleteLoggedBadge = getAthleteLoggedBadge()
 
     return (
       <div
@@ -1035,9 +1095,15 @@ export function CalendarView({
             (tile.mode === 'completed' && hasElevation) ||
             (tile.mode !== 'completed' && target.secondary) ||
             showCommentIcon) && <div className="w-px h-3 bg-stone-300" aria-hidden />}
-          <span className={`shrink-0 px-1.5 py-0.5 text-[10px] font-semibold ${statusBadge.className}`} aria-label={statusBadge.label}>
-            {statusBadge.label}
-          </span>
+          {isPersonal ? (
+            <span className={`shrink-0 px-1.5 py-0.5 text-[10px] font-semibold ${athleteLoggedBadge.className}`} aria-label={athleteLoggedBadge.label}>
+              {athleteLoggedBadge.label}
+            </span>
+          ) : (
+            <span className={`shrink-0 px-1.5 py-0.5 text-[10px] font-semibold ${statusBadge.className}`} aria-label={statusBadge.label}>
+              {statusBadge.label}
+            </span>
+          )}
         </div>
       </div>
     )
@@ -1130,9 +1196,15 @@ export function CalendarView({
                     const firstImported = firstEntry?.type === 'imported' ? firstEntry.item : undefined
                     const firstGoal = firstEntry?.type === 'goal' ? firstEntry.item : undefined
                     const isEmpty = !firstAvailability && !firstWorkout && !firstImported && !firstGoal
-                    const showAddInCondensed = (canEdit || athleteView) && !day.isPast && isEmpty
-                    const showAddAtBottom = (canEdit || athleteView) && !day.isPast && !isEmpty
-                    const onAddClick = () => athleteView ? openDayForAvailability(day.dateStr, day.isPast) : openDay(day.dateStr, day.isPast)
+                    const canShowDayAdd = athleteView || (canEdit && !day.isPast)
+                    const showAddInCondensed = canShowDayAdd && isEmpty
+                    const showAddAtBottom = canShowDayAdd && !isEmpty
+                    const onDayAddClick = (e: MouseEvent) => handleAthleteDayAddClick(e, day.dateStr, day.isPast, day.isToday)
+                    const dayAddAriaLabel = athleteView
+                      ? day.isPast || day.isToday
+                        ? tAthleteLogged('addMenu.loggedActivity')
+                        : tAvailability('addLabel')
+                      : tWorkouts('addWorkout')
                     return (
                       <section key={day.dateStr} className="rounded-lg border border-stone-200 overflow-hidden">
                         <div className={`flex items-center gap-2 px-3 py-2 border-b border-stone-200 ${isEmpty ? 'bg-stone-100/50' : 'bg-white'}`}>
@@ -1145,8 +1217,9 @@ export function CalendarView({
                           )}
                         </div>
                         <div
-                          onClick={showAddInCondensed ? onAddClick : undefined}
+                          onClick={showAddInCondensed ? onDayAddClick : undefined}
                           role={showAddInCondensed ? 'button' : undefined}
+                          aria-label={showAddInCondensed ? dayAddAriaLabel : undefined}
                           className={`${CALENDAR_VIEW_DAY_MIN_HEIGHT_CLASS.mobileCondensedDayBody} p-3 flex flex-col gap-2 ${
                             showAddInCondensed
                               ? 'border-2 border-dashed border-stone-300 justify-center items-center cursor-pointer hover:border-palette-forest-dark hover:bg-palette-forest-dark/5 transition-all'
@@ -1299,9 +1372,9 @@ export function CalendarView({
                               )}
                               <div
                                 className="shrink-0 w-full flex justify-center pt-1"
-                                onClick={(e) => { e.stopPropagation(); onAddClick() }}
+                                onClick={(e) => { e.stopPropagation(); onDayAddClick(e) }}
                                 role="button"
-                                aria-label={athleteView ? tAvailability('addLabel') : tWorkouts('addWorkout')}
+                                aria-label={dayAddAriaLabel}
                               >
                                 <div className="w-6 h-6 rounded-full bg-white border border-stone-300 flex items-center justify-center text-stone-400 hover:text-white hover:bg-palette-forest-dark hover:border-palette-forest-dark transition-all cursor-pointer">
                                   <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1500,16 +1573,23 @@ export function CalendarView({
                     const firstImported = firstEntry?.type === 'imported' ? firstEntry.item : undefined
                     const firstGoal = firstEntry?.type === 'goal' ? firstEntry.item : undefined
                     const isEmpty = !firstAvailability && !firstWorkout && !firstImported && !firstGoal
+                    const canShowDayAdd = athleteView || (canEdit && !day.isPast)
                     const showAddInCondensed =
-                      (isMonthLayout || wi === 0 || wi === 2) && (canEdit || athleteView) && !day.isPast && isEmpty
+                      (isMonthLayout || wi === 0 || wi === 2) && canShowDayAdd && isEmpty
                     const showAddAtBottom =
-                      (isMonthLayout || wi === 0 || wi === 2) && (canEdit || athleteView) && !day.isPast && !isEmpty
-                    const onAddClickCondensed = () => athleteView ? openDayForAvailability(day.dateStr, day.isPast) : openDay(day.dateStr, day.isPast)
+                      (isMonthLayout || wi === 0 || wi === 2) && canShowDayAdd && !isEmpty
+                    const onDayAddClickCondensed = (e: MouseEvent) => handleAthleteDayAddClick(e, day.dateStr, day.isPast, day.isToday)
+                    const dayAddAriaLabelCondensed = athleteView
+                      ? day.isPast || day.isToday
+                        ? tAthleteLogged('addMenu.loggedActivity')
+                        : tAvailability('addLabel')
+                      : tWorkouts('addWorkout')
                     return (
                       <div
                         key={day.dateStr}
-                        onClick={showAddInCondensed ? onAddClickCondensed : undefined}
+                        onClick={showAddInCondensed ? onDayAddClickCondensed : undefined}
                         role={showAddInCondensed ? 'button' : undefined}
+                        aria-label={showAddInCondensed ? dayAddAriaLabelCondensed : undefined}
                         className={`${CALENDAR_VIEW_DAY_MIN_HEIGHT_CLASS.desktopCondensedDayCell} rounded-lg border border-stone-200 p-1.5 flex flex-col ${
                           showAddInCondensed
                             ? 'border-2 border-dashed border-stone-300 justify-center items-center cursor-pointer hover:border-palette-forest-dark hover:bg-palette-forest-dark/5 transition-all group'
@@ -1636,9 +1716,9 @@ export function CalendarView({
                             )}
                             <div
                               className="shrink-0 w-full flex justify-center pt-1"
-                              onClick={(e) => { e.stopPropagation(); onAddClickCondensed() }}
+                              onClick={(e) => { e.stopPropagation(); onDayAddClickCondensed(e) }}
                               role="button"
-                              aria-label={athleteView ? tAvailability('addLabel') : tWorkouts('addWorkout')}
+                              aria-label={dayAddAriaLabelCondensed}
                             >
                               <div className="w-6 h-6 rounded-full bg-white border border-stone-300 flex items-center justify-center text-stone-400 hover:text-white hover:bg-palette-forest-dark hover:border-palette-forest-dark transition-all cursor-pointer">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1839,8 +1919,13 @@ export function CalendarView({
                     const dayAvailabilities = availabilitiesByDate[day.dateStr] ?? []
                     const dayFullList = buildDayListWithSections(day.dateStr, dayAvailabilities, dayGoals, dayWorkouts, dayImported)
                     const hasContent = dayFullList.length > 0
-                    const canAddWorkout = (canEdit || athleteView) && !day.isPast
-                    const onAddClickDetailed = () => athleteView ? openDayForAvailability(day.dateStr, day.isPast) : openDay(day.dateStr, day.isPast)
+                    const canAddWorkout = athleteView || (canEdit && !day.isPast)
+                    const onDayAddClickDetailed = (e: MouseEvent) => handleAthleteDayAddClick(e, day.dateStr, day.isPast, day.isToday)
+                    const dayAddAriaLabelDetailed = athleteView
+                      ? day.isPast || day.isToday
+                        ? tAthleteLogged('addMenu.loggedActivity')
+                        : tAvailability('addLabel')
+                      : tWorkouts('addWorkout')
                     return (
                       <div
                         key={day.dateStr}
@@ -1864,8 +1949,9 @@ export function CalendarView({
                                 ? 'bg-white border-stone-200'
                                 : 'bg-stone-50 border-stone-200 border-dashed'
                           } ${canAddWorkout && !hasContent ? 'border-2 border-dashed border-stone-300 cursor-pointer hover:border-palette-forest-dark hover:bg-palette-forest-dark/5 transition-all group' : ''}`}
-                          onClick={() => canAddWorkout && !hasContent && onAddClickDetailed()}
+                          onClick={(e) => canAddWorkout && !hasContent && onDayAddClickDetailed(e)}
                           role={canAddWorkout && !hasContent ? 'button' : undefined}
+                          aria-label={canAddWorkout && !hasContent ? dayAddAriaLabelDetailed : undefined}
                         >
                           {hasContent ? (
                             <>
@@ -1976,9 +2062,9 @@ export function CalendarView({
                               {canAddWorkout && (
                                 <div
                                   className="flex-1 min-h-0 flex items-center justify-center"
-                                  onClick={(e) => { e.stopPropagation(); onAddClickDetailed() }}
+                                  onClick={(e) => { e.stopPropagation(); onDayAddClickDetailed(e) }}
                                   role="button"
-                                  aria-label={athleteView ? tAvailability('addLabel') : tWorkouts('addWorkout')}
+                                  aria-label={dayAddAriaLabelDetailed}
                                 >
                                   <div className="w-10 h-10 rounded-full bg-white border border-stone-300 flex items-center justify-center text-stone-400 shadow-sm hover:text-white hover:bg-palette-forest-dark hover:border-palette-forest-dark transition-all transform hover:scale-110 cursor-pointer">
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1989,7 +2075,7 @@ export function CalendarView({
                               )}
                             </>
                           ) : canAddWorkout ? (
-                            <div className={`flex-1 flex items-center justify-center ${CALENDAR_VIEW_DAY_MIN_HEIGHT_CLASS.desktopDetailedEmptyAddZone}`} onClick={(e) => { e.stopPropagation(); onAddClickDetailed() }} role="button" aria-label={athleteView ? tAvailability('addLabel') : tWorkouts('addWorkout')}>
+                            <div className={`flex-1 flex items-center justify-center ${CALENDAR_VIEW_DAY_MIN_HEIGHT_CLASS.desktopDetailedEmptyAddZone}`} onClick={(e) => { e.stopPropagation(); onDayAddClickDetailed(e) }} role="button" aria-label={dayAddAriaLabelDetailed}>
                               <div className="w-10 h-10 rounded-full bg-white border border-stone-300 flex items-center justify-center text-stone-300 shadow-sm group-hover:text-white group-hover:bg-palette-forest-dark group-hover:border-palette-forest-dark transition-all transform group-hover:scale-110">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
@@ -2009,21 +2095,23 @@ export function CalendarView({
       </div>
       )}
 
-      <WorkoutModal
-        key={workoutModalKey}
-        isOpen={modalOpen}
-        onClose={handleWorkoutModalClose}
-        date={modalDate}
-        athleteId={athleteId}
-        pathToRevalidate={pathToRevalidate}
-        canEdit={canEdit}
-        athleteView={athleteView}
-        workout={modalWorkout}
-        athleteFacilities={athleteFacilities}
-        coachWorkoutPrimaryMetrics={coachWorkoutPrimaryMetrics}
-      />
+      {modalOpen && (
+        <WorkoutModal
+          key={workoutModalKey}
+          isOpen={modalOpen}
+          onClose={handleWorkoutModalClose}
+          date={modalDate}
+          athleteId={athleteId}
+          pathToRevalidate={pathToRevalidate}
+          canEdit={canEdit}
+          athleteView={athleteView}
+          workout={modalWorkout}
+          athleteFacilities={athleteFacilities}
+          coachWorkoutPrimaryMetrics={coachWorkoutPrimaryMetrics}
+        />
+      )}
 
-      {athleteView && (
+      {athleteView && availabilityModalOpen && (
         <AvailabilityModal
           isOpen={availabilityModalOpen}
           onClose={(closedBySuccess) => {
@@ -2038,6 +2126,19 @@ export function CalendarView({
           athleteId={athleteId}
           pathToRevalidate={pathToRevalidate}
           editSlot={availabilityModalEditSlot}
+        />
+      )}
+
+      {athleteLoggedModalOpen && (
+        <AthleteLoggedActivityModal
+          key={athleteLoggedModalKey}
+          isOpen={athleteLoggedModalOpen}
+          onClose={handleAthleteLoggedModalClose}
+          date={athleteLoggedModalDate}
+          athleteId={athleteId}
+          pathToRevalidate={pathToRevalidate}
+          workout={athleteLoggedModalWorkout}
+          readOnly={athleteLoggedModalReadOnly}
         />
       )}
 
@@ -2127,6 +2228,8 @@ export function CalendarView({
                         title={w.title}
                         metadata={formatWorkoutMetadata(w)}
                         date={dateLabel}
+                        badgeLabel={isAthleteLoggedWorkout(w) ? tAthleteLogged('tile.badgePersonal') : undefined}
+                        badgeClassName={isAthleteLoggedWorkout(w) ? ATHLETE_LOGGED_TILE_BADGE_CLASSNAME : undefined}
                         onClick={() => {
                           setExtraActivitiesModalOpen(false)
                           setExtraActivitiesModalDate(null)

@@ -1,6 +1,6 @@
 'use client'
 
-import { memo, type FormEventHandler } from 'react'
+import { memo, type FormEventHandler, type ReactNode } from 'react'
 import type { SportType, Workout, WorkoutStatus } from '@/types/database'
 import { SportTileSelectable } from '@/components/SportTileSelectable'
 import { Segments } from '@/components/Segments'
@@ -42,6 +42,14 @@ type Props = {
   onTimeOfDayChange: (value: string) => void
   tWorkouts: (key: string) => string
   onSubmit: FormEventHandler<HTMLFormElement>
+  /** Libellé du bloc métriques (défaut : objectifs séance coach). */
+  metricsHeading?: string
+  /** Titre obligatoire (défaut true). */
+  titleRequired?: boolean
+  /** Afficher le commentaire athlète lecture seule (coach édition). */
+  showAthleteCommentReadOnly?: boolean
+  formId?: string
+  extraContent?: ReactNode
 }
 
 function preventWheelNumberChange(e: React.WheelEvent<HTMLInputElement>) {
@@ -88,11 +96,25 @@ export const CoachWorkoutForm = memo(function CoachWorkoutForm({
   onTimeOfDayChange,
   tWorkouts,
   onSubmit,
+  metricsHeading,
+  titleRequired = true,
+  showAthleteCommentReadOnly = true,
+  formId = 'workout-form',
+  extraContent,
 }: Props) {
   const paceVisible = sportType != null && workoutHasPaceField(sportType)
   const paceIsCycling = sportType === 'velo' || sportType === 'triathlon'
+  const resolvedMetricsHeading =
+    metricsHeading ??
+    (isTimeOnly
+      ? tWorkouts('form.sessionGoalsMandatoryTime')
+      : hasCvNTargets
+        ? targetMode === 'distance'
+          ? tWorkouts('form.sessionGoalsMandatoryDistance')
+          : tWorkouts('form.sessionGoalsMandatoryTime')
+        : tWorkouts('form.sessionGoals'))
   return (
-    <form id="workout-form" action={action} className="flex flex-col flex-1 min-h-0" onSubmit={onSubmit}>
+    <form id={formId} action={action} className="flex flex-col flex-1 min-h-0" onSubmit={onSubmit}>
       <input type="hidden" name="date" value={editableDate} />
       {isEdit && currentWorkout && <input type="hidden" name="workout_id" value={currentWorkout.id} />}
       <div className="flex-1 overflow-y-auto min-h-0">
@@ -121,7 +143,7 @@ export const CoachWorkoutForm = memo(function CoachWorkoutForm({
               type="text"
               value={title}
               onChange={(e) => onTitleChange(e.target.value)}
-              required
+              required={titleRequired}
               placeholder={tWorkouts('form.titlePlaceholder')}
             />
           </div>
@@ -145,13 +167,7 @@ export const CoachWorkoutForm = memo(function CoachWorkoutForm({
           <div className="bg-stone-50 p-4 rounded-xl border border-stone-100">
             <div className="flex flex-col gap-1 mb-3">
               <div className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
-                {isTimeOnly
-                  ? tWorkouts('form.sessionGoalsMandatoryTime')
-                  : hasCvNTargets
-                    ? targetMode === 'distance'
-                      ? tWorkouts('form.sessionGoalsMandatoryDistance')
-                      : tWorkouts('form.sessionGoalsMandatoryTime')
-                    : tWorkouts('form.sessionGoals')}
+                {resolvedMetricsHeading}
               </div>
             </div>
 
@@ -384,7 +400,7 @@ export const CoachWorkoutForm = memo(function CoachWorkoutForm({
             />
           </div>
 
-          {currentWorkout && (
+          {currentWorkout && showAthleteCommentReadOnly && (
             <div className="border-t border-stone-200 pt-4">
               <div className="flex items-center gap-3 mb-2">
                 <div className="p-2 bg-stone-200/80 rounded-full text-stone-600">
@@ -401,6 +417,7 @@ export const CoachWorkoutForm = memo(function CoachWorkoutForm({
               </p>
             </div>
           )}
+          {extraContent}
             </>
           ) : null}
         </div>

@@ -1,6 +1,6 @@
 # Calendrier — vue mois (desktop) et vue semaine (mobile)
 
-**Dernière mise à jour :** 13 mai 2026 — **tuiles disponibilité** grille : bandeau haut, typo alignée séance compacte (`CalendarView` ; maquette `docs/design-availability-tile-top-accent/`).
+**Dernière mise à jour :** 15 juin 2026 — **activités saisies par l’athlète** (`planned_by = 'athlete'`, badge « Ajouté », ordre jour coach → perso → Strava) ; précédent : tuiles disponibilité grille (13 mai 2026).
 
 ## Besoin produit (rappel)
 
@@ -18,7 +18,7 @@
 - **i18n :** `calendar.prevMonth`, `calendar.nextMonth` (aria des chevrons), `calendar.weekRangeSeparator` (mobile), **`calendar.weekly.sportVolumeHint`** (tooltip générique par sport sur le bandeau compact).
 - **Hauteurs min. des cellules jour (desktop / mobile condensé) :** constantes Tailwind centralisées dans `lib/calendarViewDayHeights.ts` (tests dans `lib/calendarViewDayHeights.test.ts`).
 - **Tuiles disponibilité (grille jour) :** bandeau couleur supérieur, titre comme séance compacte, plage horaire / note alignées sur les métriques et la description séance — voir **`docs/DESIGN_SYSTEM.md`** et maquette **`docs/design-availability-tile-top-accent/`**.
-- **Tuiles entraînement (grille jour, compacte ou détaillée) :** si la séance est **`completed`**, la rangée durée / distance / allure (ou vitesse km/h pour vélo, triathlon, **canot**) / D+ affiche uniquement les métriques **`actual_*`** présentes (pas de repli sur les cibles) ; l’allure ou la vitesse réalisée est dérivée quand durée et distance réelles le permettent (`getCalendarWorkoutTileMetrics` dans `lib/workoutFormatting.ts`). Sinon (`planned`, `not_completed`) : affichage des **objectifs** comme avant. La modale au clic et les `ActivityTile` de la liste « Activités du jour » ne suivent pas cette règle (voir **Project_context.md** §4.5).
+- **Tuiles entraînement (grille jour, compacte ou détaillée) :** si la séance est **`completed`**, la rangée durée / distance / allure (ou vitesse km/h pour vélo, triathlon, **canot**) / D+ affiche uniquement les métriques **`actual_*`** présentes (pas de repli sur les cibles) ; l’allure ou la vitesse réalisée est dérivée quand durée et distance réelles le permettent (`getCalendarWorkoutTileMetrics` dans `lib/workoutFormatting.ts`). Sinon (`planned`, `not_completed`) : affichage des **objectifs** comme avant. **Activités athlète** (`planned_by = 'athlete'`) : badge pill ambre **« Ajouté »** à la place du statut planifié/réalisé. La modale au clic et les `ActivityTile` de la liste « Activités du jour » ne suivent pas toutes les règles de la grille (voir **Project_context.md** §4.5).
 
 ## Données et chargement
 
@@ -30,7 +30,8 @@
 
 | Rôle | Fichier |
 |------|---------|
-| Grille + modes condensé / détaillé + métriques tuile séance + **tuiles disponibilité** | `components/CalendarView.tsx`, `lib/workoutFormatting.ts` (`getCalendarWorkoutTileMetrics`) |
+| Grille + modes condensé / détaillé + métriques tuile séance + **tuiles disponibilité** + **activités athlète** | `components/CalendarView.tsx`, `lib/workoutFormatting.ts` (`getCalendarWorkoutTileMetrics`), `lib/athleteLoggedWorkout.ts` |
+| Modale activité athlète (création/édition / lecture coach) | `components/athlete-logged-activity/AthleteLoggedActivityModal.tsx`, `AthleteLoggedCoachReadOnlyView.tsx`, `app/[locale]/dashboard/athlete-logged-activity/actions.ts` |
 | Navigation, `matchMedia` md, refetch mois | `components/CalendarViewWithNavigation.tsx` |
 | Sélecteur mois | `components/MonthSelector.tsx` |
 | Pages shell athlète / coach | `components/AthleteCalendarPage.tsx`, `components/CoachAthleteCalendarPage.tsx` |

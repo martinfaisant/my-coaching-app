@@ -1,7 +1,7 @@
 # Notes de déploiement
 
 **Production :** https://mysportally.com (voir `docs/DOMAIN_MYSPORTALLY_SETUP.md` pour la configuration domaine, Vercel, Resend, Supabase).  
-**Dernière mise à jour doc :** 15 juin 2026 (SEO P1 : og:image, Twitter Card, JSON-LD home/pricing, noindex, llms.txt, layout i18n ; précédent : annuaire coach public `/coaches` + migration 077)
+**Dernière mise à jour doc :** 15 juin 2026 (migration **078** activités saisies par l’athlète ; précédent : SEO P1 + migration 077)
 
 ---
 
@@ -302,3 +302,20 @@ Ces scripts ne sont **pas nécessaires** pour le déploiement en production, mai
 **À exécuter en production** avant ou en même temps que le déploiement des routes **`/coaches`** et **`/coaches/[id]`**. Sans cette migration, l’annuaire et le sitemap dynamique renvoient des listes vides / erreurs RPC.
 
 **Référence produit :** **`Project_context.md`** §4.16 ; UI : **`docs/DESIGN_SYSTEM.md`** § Annuaire coach public.
+
+---
+
+## Migration 078 — Activités saisies par l’athlète (`planned_by`)
+
+**Fichier :** `supabase/migrations/078_athlete_logged_workouts.sql`
+
+**Description :**
+
+- Colonne **`workouts.planned_by`** : `'coach'` (défaut) | `'athlete'`
+- Contraintes : activités athlète toujours **`status = 'completed'`**, pas de **`target_*`**
+- **RLS :** athlète INSERT/UPDATE/DELETE sur ses lignes `planned_by = 'athlete'` ; policies coach update/delete limitées à `planned_by = 'coach'`
+- Trigger **`sync_workout_weekly_totals`** : exclut les activités athlète des totaux « prévu »
+
+**À exécuter en production** avant ou avec le déploiement de la feature calendrier (modale `AthleteLoggedActivityModal`, badge « Ajouté »).
+
+**Référence produit :** **`Project_context.md`** §4.5 ; UI : **`docs/DESIGN_SYSTEM.md`** (calendrier), maquettes archivées **`docs/archive/design-athlete-logged-activity/`**.

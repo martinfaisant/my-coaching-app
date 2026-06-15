@@ -243,7 +243,7 @@ function resolveTargetsWithCoachPrimary(
   }
 }
 
-function parseWorkoutTargetParams(
+export function parseWorkoutTargetParams(
   sportType: SportType,
   durationRaw: string,
   distanceRaw: string,
