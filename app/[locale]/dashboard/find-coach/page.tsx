@@ -6,6 +6,7 @@ import { getTranslations } from 'next-intl/server'
 import { pathWithLocale } from '@/lib/pathWithLocale'
 import { DashboardPageShell } from '@/components/DashboardPageShell'
 import { FindCoachSection } from '@/app/[locale]/dashboard/FindCoachSection'
+import type { CoachOfferForDisplay } from '@/lib/coachListingUtils'
 import { getMyCoachRequests } from '@/app/[locale]/dashboard/actions'
 import type { Goal } from '@/types/database'
 
@@ -17,8 +18,15 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   }
 }
 
-export default async function FindCoachPage({ params }: { params: Promise<{ locale: string }> }) {
+export default async function FindCoachPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ locale: string }>
+  searchParams: Promise<{ coach?: string; offer?: string }>
+}) {
   const { locale } = await params
+  const { coach: initialCoachId, offer: initialOfferId } = await searchParams
   const current = await getCurrentUserWithProfile()
 
   if (current.profile.role !== 'athlete' || current.profile.coach_id) {
@@ -66,13 +74,14 @@ export default async function FindCoachPage({ params }: { params: Promise<{ loca
     }
   }
 
-  const offersByCoach: Record<string, Array<{ id: string; title: string; description: string | null; title_fr?: string | null; title_en?: string | null; description_fr?: string | null; description_en?: string | null; price: number; price_type: string; is_featured: boolean; display_order: number }>> = {}
+  const offersByCoach: Record<string, Array<CoachOfferForDisplay>> = {}
   for (const offer of allOffers) {
     if (!offersByCoach[offer.coach_id]) {
       offersByCoach[offer.coach_id] = []
     }
     offersByCoach[offer.coach_id].push({
       id: offer.id,
+      coach_id: offer.coach_id,
       title: offer.title,
       description: offer.description ?? null,
       title_fr: offer.title_fr ?? null,
@@ -122,6 +131,8 @@ export default async function FindCoachPage({ params }: { params: Promise<{ loca
           coaches={coachesForList}
           statusByCoach={statusByCoach}
           requestIdByCoach={requestIdByCoach}
+          initialCoachId={initialCoachId}
+          initialOfferId={initialOfferId}
           initialPracticedSports={current.profile.practiced_sports ?? []}
           initialWeeklyCurrentHours={current.profile.weekly_current_hours ?? undefined}
           initialWeeklyTargetHours={current.profile.weekly_target_hours ?? undefined}

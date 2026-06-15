@@ -3,6 +3,8 @@ import { getTranslations } from 'next-intl/server'
 import { OAuthCompleteSignupForm } from '@/components/OAuthCompleteSignupForm'
 import { requireOAuthCompleteSignupUser } from '@/app/[locale]/login/oauthActions'
 import { pathWithLocale } from '@/lib/pathWithLocale'
+import { readPostAuthRedirectCookie } from '@/lib/postAuthRedirect.server'
+import { isFindCoachDeepLinkRedirect } from '@/lib/postAuthRedirect'
 
 type PageProps = {
   params: Promise<{ locale: string }>
@@ -17,6 +19,9 @@ export default async function CompleteSignupPage({ params }: PageProps) {
     redirect(pathWithLocale(locale, '/login'))
   }
 
+  const postAuthRedirect = await readPostAuthRedirectCookie()
+  const lockSignupRole = isFindCoachDeepLinkRedirect(postAuthRedirect)
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-stone-50 to-stone-200 p-4">
       <div className="w-full max-w-md">
@@ -28,7 +33,7 @@ export default async function CompleteSignupPage({ params }: PageProps) {
             <p className="text-stone-400 text-sm text-center mb-8">
               {t('finalizeAccountSubtitle')}
             </p>
-            <OAuthCompleteSignupForm email={pendingUser.email} />
+            <OAuthCompleteSignupForm email={pendingUser.email} lockSignupRole={lockSignupRole} />
           </div>
         </div>
       </div>

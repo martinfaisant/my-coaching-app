@@ -23,6 +23,7 @@ import {
   type AppLocale,
   type OAuthIntent,
 } from '@/lib/authOAuth'
+import { consumePostAuthRedirectCookie } from '@/lib/postAuthRedirect.server'
 
 const OAUTH_COOKIE_MAX_AGE = 60 * 10
 
@@ -105,13 +106,18 @@ export async function completeOAuthSignup(
     return { error: t('accessDenied') }
   }
 
-  const existingProfile = await getProfile(supabase, user.id, 'user_id')
+  const existingProfile = await getProfile(supabase, user.id, 'role, coach_id, preferred_locale')
   if (existingProfile) {
-    const dashboardPath = getDashboardEntryPath({
-      role: roleRaw,
-      coach_id: null,
-    })
-    redirect(pathWithLocale(locale, dashboardPath))
+    const postAuthRedirect = await consumePostAuthRedirectCookie()
+    if (postAuthRedirect && existingProfile.role === 'athlete') {
+      redirect(postAuthRedirect)
+    }
+    redirect(
+      pathWithLocale(
+        locale,
+        getDashboardEntryPath(existingProfile as Pick<Profile, 'role' | 'coach_id'>)
+      )
+    )
   }
 
   const preferredLocale = locale === 'en' || locale === 'fr' ? locale : null
@@ -130,6 +136,10 @@ export async function completeOAuthSignup(
     if (profileError.code === '23505') {
       const profile = await getProfile(supabase, user.id, 'role, coach_id, preferred_locale')
       if (profile?.role === 'athlete' || profile?.role === 'coach' || profile?.role === 'admin') {
+        const postAuthRedirect = await consumePostAuthRedirectCookie()
+        if (postAuthRedirect && profile.role === 'athlete') {
+          redirect(postAuthRedirect)
+        }
         redirect(
           pathWithLocale(
             locale,
@@ -155,6 +165,12 @@ export async function completeOAuthSignup(
   }
 
   revalidatePath('/dashboard')
+
+  const postAuthRedirect = await consumePostAuthRedirectCookie()
+  if (postAuthRedirect && roleRaw === 'athlete') {
+    redirect(postAuthRedirect)
+  }
+
   redirect(pathWithLocale(locale, getDashboardEntryPath({ role: roleRaw, coach_id: null })))
 }
 

@@ -14,6 +14,8 @@ export function getPublicHeaderPageTitleI18n(pathname: string): PublicHeaderTitl
       return { namespace: 'coachPricingPublic', key: 'navHome' }
     case '/pricing':
       return { namespace: 'coachPricingPublic', key: 'navPricing' }
+    case '/coaches':
+      return { namespace: 'coachPricingPublic', key: 'navFindCoach' }
     case '/contact':
       return { namespace: 'metadata', key: 'contactTitle' }
     case '/terms':

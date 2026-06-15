@@ -5,6 +5,7 @@ import { getSiteUrl } from '@/lib/siteUrl'
 /** Chemins publics indexables (hors dashboard, auth, etc.). */
 export const SEO_PUBLIC_PATHS = [
   '/',
+  '/coaches',
   '/pricing',
   '/contact',
   '/terms',
@@ -17,6 +18,7 @@ export type SeoPublicPath = (typeof SEO_PUBLIC_PATHS)[number]
 
 function priorityForPath(path: SeoPublicPath): number {
   if (path === '/') return 1
+  if (path === '/coaches') return 0.9
   if (path === '/pricing') return 0.8
   if (path === '/faq/athlete' || path === '/faq/coach') return 0.7
   return 0.5

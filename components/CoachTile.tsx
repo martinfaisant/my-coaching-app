@@ -23,9 +23,10 @@ export type CoachTileOffer = {
 export type CoachTileProps = {
   /** URL de l’avatar ou null pour initiales */
   avatarUrl?: string | null
-  /** Nom affiché (fallback: email) */
+  /** Nom affiché */
   fullName: string | null
-  email: string
+  /** Email — fallback d’affichage (dashboard uniquement) */
+  email?: string
   /** Sports coachés (valeurs pour Badge) */
   coachedSports: string[]
   /** Bio courte (3 lignes max en line-clamp) */
@@ -57,7 +58,7 @@ const cardClasses =
 export function CoachTile({
   avatarUrl,
   fullName,
-  email,
+  email = '',
   coachedSports,
   bio,
   rating,

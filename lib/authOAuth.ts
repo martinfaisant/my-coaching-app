@@ -4,6 +4,7 @@ import { getDashboardEntryPath } from '@/lib/dashboardEntryPath'
 import { pathWithLocale } from '@/lib/pathWithLocale'
 import { getProfile } from '@/lib/authHelpers'
 import { extractGoogleProfileFieldsFromUser } from '@/lib/googleUserMetadata'
+import { consumePostAuthRedirectCookie } from '@/lib/postAuthRedirect.server'
 
 export const AUTH_OAUTH_LOCALE_COOKIE = 'auth_oauth_locale'
 export const AUTH_OAUTH_INTENT_COOKIE = 'auth_oauth_intent'
@@ -170,6 +171,10 @@ export async function resolvePostOAuthRedirect(
 
   if (profile?.role) {
     await backfillGoogleProfileFieldsIfEmpty(supabase, user, profile)
+    const postAuthRedirect = await consumePostAuthRedirectCookie()
+    if (postAuthRedirect) {
+      return { kind: 'dashboard', path: postAuthRedirect }
+    }
     const profileLocale = normalizeAppLocale(profile.preferred_locale ?? locale)
     const dashboardPath = getDashboardEntryPath(profile)
     return { kind: 'dashboard', path: pathWithLocale(profileLocale, dashboardPath) }

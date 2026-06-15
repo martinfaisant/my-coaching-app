@@ -39,6 +39,13 @@ import { RequestGoalsListModal } from '@/app/[locale]/dashboard/RequestGoalsList
 import { formatGoalDateBlock } from '@/lib/dateUtils'
 import { FORM_ERROR_BOX_CLASSES } from '@/lib/formStyles'
 import {
+  filterCoachesForDisplay,
+  getDisplayPresentation,
+  getOfferDisplayDescription,
+  getOfferDisplayTitle,
+  type CoachOfferForDisplay,
+} from '@/lib/coachListingUtils'
+import {
   hasGoalResult,
   hasTargetTime,
   formatTargetTime,
@@ -66,57 +73,21 @@ export type CoachForList = {
   avatar_url?: string | null
 }
 
-/** Retourne la présentation à afficher selon la locale (FR prioritaire en fr, EN en en, avec repli sur l'autre langue). */
-function getDisplayPresentation(coach: CoachForList, locale: string): string {
-  const fr = (coach.presentation_fr ?? '').trim()
-  const en = (coach.presentation_en ?? '').trim()
-  const legacy = (coach.presentation ?? '').trim()
-  if (locale === 'fr') return fr || en || legacy
-  return en || fr || legacy
-}
-
-type OfferForDisplay = {
-  id: string
-  title?: string | null
-  description?: string | null
-  title_fr?: string | null
-  title_en?: string | null
-  description_fr?: string | null
-  description_en?: string | null
-  price: number
-  price_type: string
-  is_featured: boolean
-  display_order: number
-}
-
-function getOfferDisplayTitle(offer: OfferForDisplay, locale: string): string {
-  const fr = (offer.title_fr ?? '').trim()
-  const en = (offer.title_en ?? '').trim()
-  const legacy = (offer.title ?? '').trim()
-  if (locale === 'fr') return fr || en || legacy
-  return en || fr || legacy
-}
-
-function getOfferDisplayDescription(offer: OfferForDisplay, locale: string): string {
-  const fr = (offer.description_fr ?? '').trim()
-  const en = (offer.description_en ?? '').trim()
-  const legacy = (offer.description ?? '').trim()
-  if (locale === 'fr') return fr || en || legacy
-  return en || fr || legacy
-}
-
 type FindCoachSectionProps = {
   coaches: CoachForList[]
   /** coach_id -> status (serializable from server) */
   statusByCoach: Record<string, 'pending' | 'declined'>
   /** coach_id -> request id (for pending requests, to allow cancel) */
   requestIdByCoach?: Record<string, string>
+  /** Deep link depuis l'annuaire public */
+  initialCoachId?: string
+  initialOfferId?: string
   /** Sports déjà renseignés dans le profil (pour préremplir le formulaire de demande) */
   initialPracticedSports?: string[]
   /** coach_id -> { averageRating, reviewCount } pour afficher la note et le nombre d'avis */
   ratingsByCoach?: Record<string, { averageRating: number; reviewCount: number }>
   /** coach_id -> offres du coach */
-  offersByCoach?: Record<string, Array<OfferForDisplay>>
+  offersByCoach?: Record<string, Array<CoachOfferForDisplay>>
   /** Prénom de l'athlète (pour afficher les champs nom/prénom dans la modale si vide) */
   athleteFirstName?: string
   /** Nom de l'athlète (pour afficher les champs nom/prénom dans la modale si vide) */
@@ -131,38 +102,7 @@ type FindCoachSectionProps = {
   initialGoals?: Goal[]
 }
 
-function matchesSport(coach: CoachForList, selectedSports: string[]): boolean {
-  if (selectedSports.length === 0) return true
-  const coachSports = coach.coached_sports ?? []
-  return selectedSports.some((s) => coachSports.includes(s))
-}
-
-function matchesLanguage(coach: CoachForList, selectedLanguages: string[]): boolean {
-  if (selectedLanguages.length === 0) return true
-  const coachLangs = coach.languages ?? []
-  return selectedLanguages.some((l) => coachLangs.includes(l))
-}
-
-function matchesName(coach: CoachForList, query: string): boolean {
-  const q = query.trim().toLowerCase();
-  if (q === '') return true;
-
-  const first = (coach.first_name ?? '').trim().toLowerCase();
-  const last = (coach.last_name ?? '').trim().toLowerCase();
-  
-  // On crée des combinaisons pour tester le nom complet
-  const fullName = `${first} ${last}`;
-  const fullNameReverse = `${last} ${first}`;
-
-  return (
-    first.includes(q) || 
-    last.includes(q) || 
-    fullName.includes(q) || 
-    fullNameReverse.includes(q)
-  );
-}
-
-export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}, initialPracticedSports = [], ratingsByCoach = {}, offersByCoach = {}, athleteFirstName = '', athleteLastName = '', initialWeeklyCurrentHours, initialWeeklyTargetHours, initialWeeklyVolumeBySport, initialGoals = [] }: FindCoachSectionProps) {
+export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}, initialCoachId, initialOfferId, initialPracticedSports = [], ratingsByCoach = {}, offersByCoach = {}, athleteFirstName = '', athleteLastName = '', initialWeeklyCurrentHours, initialWeeklyTargetHours, initialWeeklyVolumeBySport, initialGoals = [] }: FindCoachSectionProps) {
   const t = useTranslations('findCoach')
   const tCommon = useTranslations('common')
   const locale = useLocale()
@@ -171,11 +111,30 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
   const [selectedSports, setSelectedSports] = useState<string[]>([])
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([])
   const [presentationModalCoach, setPresentationModalCoach] = useState<CoachForList | null>(null)
-  const [detailModalCoach, setDetailModalCoach] = useState<CoachForList | null>(null)
+  const [detailModalCoach, setDetailModalCoach] = useState<CoachForList | null>(() => {
+    if (!initialCoachId) return null
+    return coaches.find((c) => c.user_id === initialCoachId) ?? null
+  })
+  const [detailModalInitialOfferId, setDetailModalInitialOfferId] = useState<string | null>(
+    initialOfferId ?? null
+  )
   const [reviewsModalCoach, setReviewsModalCoach] = useState<{ id: string; name: string } | null>(null)
+  const [prevDeepLink, setPrevDeepLink] = useState({
+    coachId: initialCoachId,
+    offerId: initialOfferId,
+  })
   const getStatus = (coachId: string): 'pending' | 'declined' | null =>
     statusByCoach[coachId] ?? null
   const getRequestId = (coachId: string): string | null => requestIdByCoach[coachId] ?? null
+
+  if (initialCoachId !== prevDeepLink.coachId || initialOfferId !== prevDeepLink.offerId) {
+    setPrevDeepLink({ coachId: initialCoachId, offerId: initialOfferId })
+    if (initialCoachId) {
+      const coach = coaches.find((c) => c.user_id === initialCoachId) ?? null
+      setDetailModalCoach(coach)
+      setDetailModalInitialOfferId(initialOfferId ?? null)
+    }
+  }
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -191,14 +150,15 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
     }
   }, [presentationModalCoach])
 
-  const filteredCoaches = useMemo(() => {
-    return coaches.filter(
-      (c) =>
-        matchesName(c, searchName) &&
-        matchesSport(c, selectedSports) &&
-        matchesLanguage(c, selectedLanguages)
-    )
-  }, [coaches, searchName, selectedSports, selectedLanguages])
+  const filteredCoaches = useMemo(
+    () =>
+      filterCoachesForDisplay(coaches, {
+        searchName,
+        selectedSports,
+        selectedLanguages,
+      }),
+    [coaches, searchName, selectedSports, selectedLanguages]
+  )
 
   const toggleSport = (value: string) => {
     setSelectedSports((prev) =>
@@ -380,7 +340,11 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
           coach={detailModalCoach}
           offers={offersByCoach[detailModalCoach.user_id] ?? []}
           ratings={ratingsByCoach[detailModalCoach.user_id]}
-          onClose={() => setDetailModalCoach(null)}
+          onClose={() => {
+            setDetailModalCoach(null)
+            setDetailModalInitialOfferId(null)
+          }}
+          initialSelectedOfferId={detailModalInitialOfferId}
           requestStatus={getStatus(detailModalCoach.user_id)}
           requestId={getRequestId(detailModalCoach.user_id)}
           initialPracticedSports={initialPracticedSports}
@@ -466,7 +430,7 @@ export function FindCoachSection({ coaches, statusByCoach, requestIdByCoach = {}
 
 type CoachDetailModalProps = {
   coach: CoachForList
-  offers: Array<OfferForDisplay>
+  offers: Array<CoachOfferForDisplay>
   ratings?: { averageRating: number; reviewCount: number }
   onClose: () => void
   requestStatus: 'pending' | 'declined' | null
@@ -481,6 +445,8 @@ type CoachDetailModalProps = {
   athleteLastName?: string
   /** Objectifs de l'athlète (section objectifs/résultats dans le formulaire de demande) */
   initialGoals?: Goal[]
+  /** Offre présélectionnée (deep link annuaire public) */
+  initialSelectedOfferId?: string | null
 }
 
 const MapIconSmall = ({ className = 'w-3.5 h-3.5' }: { className?: string }) => (
@@ -499,7 +465,7 @@ const ClockIconSmall = ({ className = 'w-3.5 h-3.5' }: { className?: string }) =
   </svg>
 )
 
-function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requestId: _requestId, initialPracticedSports = [], initialWeeklyCurrentHours, initialWeeklyTargetHours, initialWeeklyVolumeBySport, showNameFields = false, athleteFirstName = '', athleteLastName = '', initialGoals = [] }: CoachDetailModalProps) {
+function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requestId: _requestId, initialPracticedSports = [], initialWeeklyCurrentHours, initialWeeklyTargetHours, initialWeeklyVolumeBySport, showNameFields = false, athleteFirstName = '', athleteLastName = '', initialGoals = [], initialSelectedOfferId = null }: CoachDetailModalProps) {
   const t = useTranslations('findCoach')
   const tGoals = useTranslations('goals')
   const tCommon = useTranslations('common')
@@ -511,7 +477,14 @@ function CoachDetailModal({ coach, offers, ratings, onClose, requestStatus, requ
   const localeTag = locale === 'fr' ? 'fr-FR' : 'en-US'
   const router = useRouter()
   const practicedSportsOptions = usePracticedSportsOptions()
-  const [selectedOfferId, setSelectedOfferId] = useState<string | null>(null)
+  const [selectedOfferId, setSelectedOfferId] = useState<string | null>(initialSelectedOfferId)
+
+  useEffect(() => {
+    if (initialSelectedOfferId) {
+      setSelectedOfferId(initialSelectedOfferId)
+    }
+  }, [initialSelectedOfferId, coach.user_id])
+
   const [addGoalModalOpen, setAddGoalModalOpen] = useState(false)
   const [seeMoreGoalsModalOpen, setSeeMoreGoalsModalOpen] = useState(false)
   const [goalForFullModal, setGoalForFullModal] = useState<Goal | null>(null)

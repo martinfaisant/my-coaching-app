@@ -1,8 +1,10 @@
 import type { Metadata } from 'next'
+import { pathWithLocale } from '@/lib/pathWithLocale'
 import {
   type SeoPublicPath,
   getPublicPageAbsoluteUrls,
 } from '@/lib/seoPublicRoutes'
+import { getSiteUrl } from '@/lib/siteUrl'
 
 function resolveCanonicalLocale(locale: string): 'fr' | 'en' {
   return locale === 'en' ? 'en' : 'fr'
@@ -52,6 +54,56 @@ export function buildPublicPageMetadata({
     title,
     ...(description ? { description } : {}),
     alternates: buildPublicPageAlternates(locale, path),
+    openGraph: {
+      title,
+      ...(description ? { description } : {}),
+      url: canonical,
+    },
+  }
+}
+
+function toAbsolutePublicUrl(base: string, localePath: string): string {
+  const normalizedPath = localePath === '/en/' ? '/en' : localePath
+  return `${base}${normalizedPath}`
+}
+
+function dynamicPublicUrls(path: string): { fr: string; en: string } {
+  const base = getSiteUrl()
+  return {
+    fr: toAbsolutePublicUrl(base, pathWithLocale('fr', path)),
+    en: toAbsolutePublicUrl(base, pathWithLocale('en', path)),
+  }
+}
+
+type DynamicPublicPageMetadataInput = {
+  locale: string
+  /** Chemin sans locale, ex. /coaches/uuid */
+  path: string
+  title: string
+  description?: string
+}
+
+/** Métadonnées SEO pour routes publiques dynamiques (fiches coach). */
+export function buildDynamicPublicPageMetadata({
+  locale,
+  path,
+  title,
+  description,
+}: DynamicPublicPageMetadataInput): Metadata {
+  const urls = dynamicPublicUrls(path)
+  const canonical = urls[resolveCanonicalLocale(locale)]
+
+  return {
+    title,
+    ...(description ? { description } : {}),
+    alternates: {
+      canonical,
+      languages: {
+        fr: urls.fr,
+        en: urls.en,
+        'x-default': urls.fr,
+      },
+    },
     openGraph: {
       title,
       ...(description ? { description } : {}),

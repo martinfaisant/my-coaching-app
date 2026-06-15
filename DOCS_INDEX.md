@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 15 juin 2026 (**FAQ publiques** `/faq/athlete` + `/faq/coach`, footer `PublicMarketingFooter` ; précédent : SEO metadata home…)
+**Dernière mise à jour :** 14 juin 2026 (**Annuaire coach public** `/coaches` + fiches SEO ; précédent : FAQ publiques…)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -9,12 +9,12 @@
 ## 🎯 Documentation Active (à utiliser en priorité)
 
 ### **README.md** ⭐
-- **Contenu :** Setup projet, stack technique, quick start, structure du projet, **URL production https://mysportally.com**, **accueil `/` et `/en`** (landing marketing visiteurs, §4.13), **FAQ publiques** **`/faq/athlete`** / **`/faq/coach`** (§4.15), **SEO** (`/sitemap.xml` 14 URLs, `/robots.txt`, **`lib/seoPublicRoutes.ts`**, **`lib/seoMetadata.ts`**, **`lib/faqPublicConfig.ts`**, exclusion sitemap dans **`proxy.ts`**), **connexion Google OAuth** (…)
-- **Dernière mise à jour :** 15 juin 2026 (FAQ publiques + footer partagé ; précédent : SEO metadata…)
+- **Contenu :** Setup projet, stack technique, quick start, structure du projet, **URL production https://mysportally.com**, **accueil `/` et `/en`** (landing marketing visiteurs, §4.13), **annuaire coach public** **`/coaches`** (§4.16), **FAQ publiques** **`/faq/athlete`** / **`/faq/coach`** (§4.15), **SEO** (`/sitemap.xml` 16 URLs statiques + fiches coach, `/robots.txt`, **`lib/seoPublicRoutes.ts`**, **`lib/seoMetadata.ts`**, **`lib/seoPublicCoachProfiles.ts`**, **`lib/faqPublicConfig.ts`**, exclusion sitemap dans **`proxy.ts`**), **connexion Google OAuth** (…)
+- **Dernière mise à jour :** 14 juin 2026 (annuaire coach public ; précédent : FAQ publiques + footer partagé)
 
 ### **Project_context.md** ⭐
-- **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (…), **§4.15 FAQ publiques** (athlète/coach, SEO JSON-LD), **§4.13 Marketing landing** (…), **§4.14 SEO** (sitemap 14 URLs, robots, **`buildPublicPageMetadata`**, canonical/hreflang, proxy sitemap), **§4.9 Strava** (…)
-- **Dernière mise à jour :** 15 juin 2026 (§4.15 FAQ publiques ; précédent : §4.14 SEO…)
+- **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (…), **§4.16 Annuaire coach public** (`/coaches`, gate visiteur, deep link find-coach), **§4.15 FAQ publiques** (athlète/coach, SEO JSON-LD), **§4.13 Marketing landing** (…), **§4.14 SEO** (sitemap 16 URLs statiques + fiches coach, robots, **`buildPublicPageMetadata`**, canonical/hreflang, proxy sitemap), **§4.9 Strava** (…)
+- **Dernière mise à jour :** 14 juin 2026 (§4.16 annuaire coach public ; précédent : §4.15 FAQ publiques)
 
 ### **docs/CALENDAR_MONTH_VIEW.md**
 - **Contenu :** Récap **vue mois** (desktop) vs **vue semaine** (mobile), règles semaines ISO / mois civil étendu, **totaux hebdo** (liste sports `PERSISTED_WORKOUT_SPORT_TYPES`, `SPORT_WEEKLY_SUMMARY_BAR`), chargement données, liste des fichiers et tests unitaires, **tuiles disponibilité** (réf. design + `CalendarView`), liens vers maquettes archivées
@@ -24,11 +24,11 @@
 
 ### **docs/DESIGN_SYSTEM.md** ⭐
 - **Contenu :** Tokens (…), composants (…, **Landing**, **`components/public/*`** FAQ + **`PublicMarketingFooter`**, …)
-- **Dernière mise à jour :** 15 juin 2026 (**Pages FAQ publiques** § + footer marketing ; précédent : Landing…)
+- **Dernière mise à jour :** 14 juin 2026 (**Annuaire coach public** § + `PublicCoach*` ; précédent : Pages FAQ publiques)
 
 ### **docs/I18N.md** ⭐
-- **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces (dont **`publicFooter`**, **`faqAthlete`**, **`faqCoach`**, **`metadata.faqAthleteTitle`** / **`faqCoachTitle`**, **`buildPublicPageMetadata`**), **`proxy.ts`** (exclusion sitemap/robots), **checklist nouvelles features** ; …
-- **Dernière mise à jour :** 15 juin 2026 (**publicFooter**, **faqAthlete**, **faqCoach** ; suppression **`landing.footer`**)
+- **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces (dont **`publicCoaches`**, **`publicFooter`**, **`faqAthlete`**, **`faqCoach`**, **`metadata.faqAthleteTitle`** / **`faqCoachTitle`**, **`buildPublicPageMetadata`**), **`proxy.ts`** (exclusion sitemap/robots), **checklist nouvelles features** ; …
+- **Dernière mise à jour :** 14 juin 2026 (**publicCoaches** ; précédent : publicFooter, faqAthlete/faqCoach)
 
 ### **docs/AUTH_EMAIL_TEMPLATES.md**
 - **Contenu :** Guide de configuration des emails d’auth Supabase (sujet, i18n FR/EN, variables, dépannage logo). **Les fichiers HTML des templates** (Confirm signup, puis Magic Link, Reset Password, etc.) sont dans **docs/email-templates/**.
@@ -113,6 +113,11 @@
 - **Utiliser pour :** Contexte UI historique ; détail produit / technique à jour : **`Project_context.md`** §4.15, **`docs/DESIGN_SYSTEM.md`** § Pages FAQ publiques.
 - **Archivé le :** 15 juin 2026 (fusion vers docs actives ci-dessus).
 
+### **docs/archive/design-public-coaches/** (design feature — archivé juin 2026)
+- **Contenu :** Maquettes HTML **US-PUB-COACH-01…05** + README (annuaire `/coaches`, fiches `/coaches/[id]`, gate auth visiteur, états session, nav header).
+- **Utiliser pour :** Contexte UI historique ; détail produit / technique à jour : **`Project_context.md`** §4.16, **`docs/DESIGN_SYSTEM.md`** § Annuaire coach public.
+- **Archivé le :** 14 juin 2026 (fusion vers docs actives ci-dessus ; maquettes déjà dans `docs/archive/` — pas de `git mv` nécessaire).
+
 ### **docs/archive/design-landing-revamp/** (design feature — archivé juin 2026)
 - **Contenu :** Maquettes HTML **US-LANDING-01…04** + **MOCKUP_US_LANDING_FULL_PAGE.html**, README, captures PNG source (`screenshots/fr/`). Option B validée (hero split, 6 onglets, cartes audience).
 - **Utiliser pour :** Contexte UI historique ; détail produit / technique à jour : **`Project_context.md`** §4.13, **`docs/DESIGN_SYSTEM.md`** § Landing, assets **`public/landing/`**.
@@ -121,9 +126,9 @@
 ## 🚀 Documentation Opérationnelle
 
 ### **DEPLOYMENT_NOTES.md**
-- **Contenu :** Notes et procédures de déploiement, **URL production https://mysportally.com**, section **Référencement (SEO)** — sitemap, robots, **métadonnées home canonical/hreflang**, **dépannage 404 sitemap** (`proxy.ts`), Search Console, redirection www → apex, section **Connexion Google (OAuth login/signup)** (…), section **Connexion Strava — appareils athlète (feature flag)**, section **Abonnement plateforme coach (Stripe)** (…)
+- **Contenu :** Notes et procédures de déploiement, **URL production https://mysportally.com**, section **Référencement (SEO)** — sitemap (16 URLs statiques + fiches coach), robots, **métadonnées home canonical/hreflang**, **dépannage 404 sitemap** (`proxy.ts`), Search Console, redirection www → apex, **migration 077 annuaire coach public**, section **Connexion Google (OAuth login/signup)** (…), section **Connexion Strava — appareils athlète (feature flag)**, section **Abonnement plateforme coach (Stripe)** (…)
 - **Utiliser pour :** Déployer l'application, résoudre des problèmes de déploiement, configurer le référencement post-deploy
-- **Dernière mise à jour :** 14 juin 2026 (SEO metadata + fix middleware sitemap 404 ; précédent : SEO sitemap/robots Search Console…)
+- **Dernière mise à jour :** 14 juin 2026 (annuaire coach public + migration 077 ; précédent : SEO metadata + fix middleware sitemap 404)
 
 ### **MISE_EN_PROD.md**
 - **Contenu :** Checklist et étapes pour mise en production, **URL production https://mysportally.com**, rappel migrations postérieures (dont **073** + **074** Stripe coach plateforme — voir `DEPLOYMENT_NOTES.md`)
@@ -156,6 +161,7 @@
 - `docs/archive/design-coach-pricing-public/` — `MOCKUP_US_PRICING_PUB_01…05` (page publique `/pricing`, header Accueil/Tarifs), `README.md` — **livré** juin 2026 ; référence : **`Project_context.md`** §4.12
 - `docs/archive/design-landing-revamp/` — `MOCKUP_US_LANDING_01…04`, `MOCKUP_US_LANDING_FULL_PAGE.html`, `screenshots/fr/`, `README.md` — **livré** juin 2026 ; référence : **`Project_context.md`** §4.13, **`docs/DESIGN_SYSTEM.md`** § Landing
 - `docs/archive/design-faq-public/` — `MOCKUP_US_FAQ_01…03`, `README.md` — **livré** juin 2026 ; référence : **`Project_context.md`** §4.15, **`docs/DESIGN_SYSTEM.md`** § Pages FAQ publiques
+- `docs/archive/design-public-coaches/` — `MOCKUP_US_PUB_COACH_01…05`, `README.md` — **livré** juin 2026 ; référence : **`Project_context.md`** §4.16, **`docs/DESIGN_SYSTEM.md`** § Annuaire coach public
 - **Raison :** feature livrée ; comportement et données décrits dans **Project_context.md §4.11**, **README.md** (Resend), **DEPLOYMENT_NOTES.md** (migrations 066–067).
 
 **Abonnement plateforme coach — maquette « grâce 3 jours » (archivée 13 mai 2026) :**
@@ -518,10 +524,16 @@
 
 **Fréquence de mise à jour :** À chaque ajout/suppression de documentation
 
-**Dernier scan :** 13 juin 2026  
-**Dernier nettoyage :** 13 juin 2026 (entrée Changements récents : PublicHeader mobile visiteurs)
+**Dernier scan :** 14 juin 2026  
+**Dernier nettoyage :** 14 juin 2026 (entrée Changements récents : annuaire coach public)
 
 ### Changements récents :
+
+✅ **14 juin 2026 – Annuaire coach public (`/coaches`) – Mode Analyste :**
+- **Livraison (réf. code) :** routes **`/coaches`** + **`/coaches/[id]`** ; RPC migration **077** ; composants **`PublicCoachesDirectorySection`**, **`PublicCoachProfileSection`**, **`PublicCoachAuthGateProvider`** ; deep link post-auth **`/dashboard/find-coach?coach&offer`** ; nav **`PublicHeader`** « Trouver un coach » ; sitemap dynamique fiches coach ; filtres partagés **`lib/coachListingUtils.ts`**.
+- **Doc :** `Project_context.md` §4.3, §4.14, **§4.16** ; `docs/DESIGN_SYSTEM.md` § Annuaire coach public ; `docs/I18N.md` (`publicCoaches`) ; `README.md`, `DEPLOYMENT_NOTES.md` (migration 077) ; `DOCS_INDEX.md`.
+- **Archivage :** `docs/archive/design-public-coaches/` (maquettes US-PUB-COACH-01…05 + README — déjà en archive).
+- **Pages légales / confidentialité :** aucune modification proposée (parcours inscription existant ; pas de nouvelle finalité de traitement au-delà de l’inscription athlète déjà couverte).
 
 ✅ **13 juin 2026 – PublicHeader mobile (hamburger + drawer visiteurs) – Mode Analyste :**
 - **Livraison (réf. code) :** **`components/PublicHeader.tsx`** — barre mobile `h-14` (logo, titre centré, hamburger `< md`) + **`Drawer`** droit (nav Accueil/Tarifs, **`AuthButtons`** `variant="drawer"`, **`LanguageSwitcher`**) ; **`components/AuthButtons.tsx`** — variant **`drawer`**, prop **`onBeforeOpen`** ; **`lib/publicHeaderPageTitle.ts`** + tests. Breakpoint **`md`** (aligné **`DashboardTopBar`**). Périmètre : toutes les routes **`PublicOrDashboardHeader`** visiteur (accueil, tarifs, contact, CGU, confidentialité, reset-password).
@@ -988,7 +1000,8 @@
 | **Objectifs de course / résultats passés dans la demande** (Ajouter, Modifier résultat, Voir plus) | `Project_context.md` §4.4 (Objectifs de course dans la demande), Modal layer | `docs/DESIGN_SYSTEM.md` § Modal |
 | **Prix offre non modifiable après publication** (trigger BDD, UI read-only, modale) | **`Project_context.md` §4.4**, **`docs/DESIGN_SYSTEM.md`** (formulaire offres) |
 | Grilles responsive (Trouver mon coach, My offers, Mes athlètes) | `docs/DESIGN_SYSTEM.md` §7 |
-| Filtre par nom/prénom (Trouver mon coach) | `Project_context.md` (Athlete), `docs/DESIGN_SYSTEM.md` §7 |
+| Filtre par nom/prénom (Trouver mon coach, annuaire public) | `Project_context.md` §4.3, §4.16, `docs/DESIGN_SYSTEM.md` §7, `lib/coachListingUtils.ts` |
+| **Annuaire coach public** (`/coaches`, fiches SEO, gate visiteur) | **`Project_context.md` §4.16**, **`docs/DESIGN_SYSTEM.md`** § Annuaire coach public, **`DEPLOYMENT_NOTES.md`** migration **077** |
 | Filtre par nom (Mes athlètes, coach) | `Project_context.md` (§ Coach), `docs/DESIGN_SYSTEM.md` §7 |
 | **Bandeaux Mes athlètes coach** (profil / offre publiée, erreur chargement liste) | **`Project_context.md` §4.4**, **`docs/DESIGN_SYSTEM.md` §7**, **`docs/I18N.md`** (`athletes.publishOfferPrompt`, `athletes.listLoadError`) |
 | **Tri liste athlètes (nom / date planifiée), SearchInput, Dropdown** | **`Project_context.md`** (§ Coach), **`docs/DESIGN_SYSTEM.md`** (§ SearchInput, § Dropdown) |

@@ -14,6 +14,8 @@ import {
 import { isPasswordValid } from '@/lib/passwordValidation'
 import { getExistingAuthUserConfirmationStatus } from '@/lib/authHelpers'
 import { getTranslations, getLocale } from 'next-intl/server'
+import { validatePostAuthRedirect } from '@/lib/postAuthRedirect'
+import { consumePostAuthRedirectCookie } from '@/lib/postAuthRedirect.server'
 
 export type LoginState = {
   error?: string
@@ -42,6 +44,16 @@ export async function login(_prevState: LoginState, formData: FormData) {
   const localePrefix = locale === 'en' ? '/en' : ''
   const defaultDashboardPath =
     locale === 'en' ? '/en/dashboard' : '/dashboard'
+
+  const fromCookie = await consumePostAuthRedirectCookie()
+  if (fromCookie) {
+    redirect(fromCookie)
+  }
+
+  const formRedirect = validatePostAuthRedirect(formData.get('_redirect') as string | null)
+  if (formRedirect) {
+    redirect(formRedirect)
+  }
 
   const headersList = await headers()
   const referer = headersList.get('referer')

@@ -1706,7 +1706,7 @@ import { Drawer } from '@/components/Drawer'
 
 **Fichier :** `components/PublicOrDashboardHeader.tsx`
 
-Composant **serveur** : si session active (`getOptionalUserWithProfile`), rendu de `DashboardTopBar` (même barre que le dashboard) ; sinon `PublicHeader`. Utilisé sur **contact**, **politique de confidentialité**, **CGU** et **réinitialisation mot de passe**. Sur l’**accueil** (`/` et `/en`), les utilisateurs **connectés** sont **redirigés** vers l’app avant le rendu (`app/[locale]/page.tsx` + `getDashboardEntryPath` / `pathWithLocale`) : **`PublicOrDashboardHeader`** ne s’applique donc à la landing que pour les **visiteurs** (toujours `PublicHeader` côté marketing).
+Composant **serveur** : si session active (`getOptionalUserWithProfile`), rendu de `DashboardTopBar` (même barre que le dashboard) ; sinon `PublicHeader`. Utilisé sur **contact**, **annuaire coach** (`/coaches`, `/coaches/[id]`), **pricing**, **FAQ**, **politique de confidentialité**, **CGU** et **réinitialisation mot de passe**. Sur l’**accueil** (`/` et `/en`), les utilisateurs **connectés** sont **redirigés** vers l’app avant le rendu (`app/[locale]/page.tsx` + `getDashboardEntryPath` / `pathWithLocale`) : **`PublicOrDashboardHeader`** ne s’applique donc à la landing que pour les **visiteurs** (toujours `PublicHeader` côté marketing).
 
 ```tsx
 import { PublicOrDashboardHeader } from '@/components/PublicOrDashboardHeader'
@@ -1766,25 +1766,39 @@ Pages marketing indexables pour athlètes et coachs : hero, bandeau réponses ra
 
 ---
 
+### Annuaire coach public (`/coaches`)
+
+**Pages :** `app/[locale]/coaches/page.tsx`, `app/[locale]/coaches/[id]/page.tsx`  
+**Composants :** `PublicCoachesDirectorySection`, `PublicCoachProfileSection`, `PublicCoachAuthGateProvider`, `PublicCoachAlreadyHasCoachBanner`  
+**Données :** RPC Supabase `get_public_coaches`, `get_public_coach_offers`, `get_public_coach_profile`, `get_public_coach_sitemap_entries` (migration `077_public_coaches_rpc.sql`) ; loaders `lib/publicCoachesData.ts` ; filtres partagés `lib/coachListingUtils.ts` (même logique que `FindCoachSection`).  
+**Éligibilité :** coach avec nom, sports, langues, présentation FR ou EN, et **≥ 1 offre `published`** (`is_coach_publicly_listable`).  
+**Réutilisation :** `CoachTile` (footer lien fiche, sans email), `CoachReviewsModal`, `PublicOrDashboardHeader`, `PublicMarketingFooter`, `LoginModal` (gate visiteur → cookie `post_auth_redirect` → deep link `/dashboard/find-coach?coach&offer`).  
+**États session :** athlète sans coach sur `/coaches` → redirect dashboard find-coach ; athlète avec coach → bannière `alreadyHasCoach` ; visiteur → gate signup athlète (`lockSignupRole` sur OAuth complete-signup si deep link).  
+**SEO :** `/coaches` dans `SEO_PUBLIC_PATHS` (priority 0.9) ; fiches dans sitemap via `lib/seoPublicCoachProfiles.ts` ; métadonnées `buildPublicPageMetadata` / `buildDynamicPublicPageMetadata`.  
+**i18n :** namespace `publicCoaches` ; nav header `coachPricingPublic.navFindCoach` ; filtres = `findCoach.filters.*`.  
+**Mockups :** `docs/archive/design-public-coaches/`. **Produit :** `Project_context.md` §4.16.
+
+---
+
 ### PublicHeader
 
 **Fichier :** `components/PublicHeader.tsx`
 
-En-tête public pour **visiteurs** : logo My Sport Ally (lien vers `/`), nav **Accueil** (`/`) et **Tarifs** (`/pricing`, i18n `coachPricingPublic.navHome` / `navPricing`, état actif via `usePathname`), **`AuthButtons`**, séparateur vertical, **`LanguageSwitcher`**. Classes communes : `sticky top-0 z-50 border-b border-stone-200 bg-background/95 backdrop-blur-md`.
+En-tête public pour **visiteurs** : logo My Sport Ally (lien vers `/`), nav **Accueil** (`/`), **Trouver un coach** (`/coaches`, i18n `coachPricingPublic.navFindCoach`), **Tarifs** (`/pricing`, i18n `coachPricingPublic.navHome` / `navPricing` / `navFindCoach`, état actif via `usePathname`), **`AuthButtons`**, séparateur vertical, **`LanguageSwitcher`**. Classes communes : `sticky top-0 z-50 border-b border-stone-200 bg-background/95 backdrop-blur-md`.
 
-**Usage :** Rendu indirectement via `PublicOrDashboardHeader` sur les pages marketing (accueil visiteur, **/pricing**, contact, CGU, confidentialité, reset-password) ; ne pas l’utiliser seul sur ces routes sauf cas exceptionnel. Maquettes archivées : `docs/archive/design-public-header-mobile/` ; historique nav tarifs : `docs/archive/design-coach-pricing-public/`, reset-password : `docs/archive/design-reset-password-header/`.
+**Usage :** Rendu indirectement via `PublicOrDashboardHeader` sur les pages marketing (accueil visiteur, **`/coaches`**, **/pricing**, contact, CGU, confidentialité, reset-password, FAQ) ; ne pas l’utiliser seul sur ces routes sauf cas exceptionnel. Maquettes archivées : `docs/archive/design-public-header-mobile/`, **`docs/archive/design-public-coaches/`** ; historique nav tarifs : `docs/archive/design-coach-pricing-public/`, reset-password : `docs/archive/design-reset-password-header/`.
 
 #### Comportement attendu
 
-- **Desktop / tablette (`md`+, ≥ 768 px)** : barre `h-16`, conteneur `max-w-7xl` — logo + nom « My Sport Ally » (à partir de `sm`), nav inline Accueil/Tarifs (lien actif : `border-b-2`), **`AuthButtons`** (`variant` défaut), séparateur vertical, **`LanguageSwitcher`**. **Inchangé** par rapport au layout historique.
+- **Desktop / tablette (`md`+, ≥ 768 px)** : barre `h-16`, conteneur `max-w-7xl` — logo + nom « My Sport Ally » (à partir de `sm`), nav inline Accueil / Trouver un coach / Tarifs (lien actif : `border-b-2`), **`AuthButtons`** (`variant` défaut), séparateur vertical, **`LanguageSwitcher`**. **Inchangé** par rapport au layout historique.
 - **Mobile (`< md`)** : même pattern que **`DashboardTopBar`** — barre **`h-14`** : logo seul (`h-7`), **titre de page centré** (tronqué), bouton **hamburger** à droite (`navigation.openMenu`). Aucun lien nav, auth ni langue dans la barre.
 - **Drawer mobile** : `Drawer` `placement="right"` ; en-tête avec bouton fermer (`navigation.collapseMenu`, `IconClose`) ; contenu scrollable :
-  1. Nav **Accueil** / **Tarifs** (style liste dashboard : tuile active `bg-palette-forest-dark`) ;
+  1. Nav **Accueil** / **Trouver un coach** / **Tarifs** (style liste dashboard : tuile active `bg-palette-forest-dark`) ;
   2. séparateur ;
   3. **`AuthButtons`** `variant="drawer"` (boutons pleine largeur ; fermeture drawer avant ouverture **`LoginModal`**) ;
   4. séparateur ;
   5. **`LanguageSwitcher`**.
-- **Titres mobile** : mapping pathname → i18n via **`getPublicHeaderPageTitleI18n`** (`lib/publicHeaderPageTitle.ts`) — `coachPricingPublic.navHome` / `navPricing`, `metadata.contactTitle` / `termsTitle` / `privacyTitle` / **`faqAthleteTitle`** / **`faqCoachTitle`**, `auth.resetPassword`.
+- **Titres mobile** : mapping pathname → i18n via **`getPublicHeaderPageTitleI18n`** (`lib/publicHeaderPageTitle.ts`) — `coachPricingPublic.navHome` / `navFindCoach` / `navPricing`, `metadata.contactTitle` / `termsTitle` / `privacyTitle` / **`faqAthleteTitle`** / **`faqCoachTitle`**, `auth.resetPassword`.
 - **État drawer** : ouverture liée au `pathname` courant (même logique que `DashboardTopBar`) ; fermeture sur navigation, auth, overlay, ✕ ou Escape.
 
 ```tsx

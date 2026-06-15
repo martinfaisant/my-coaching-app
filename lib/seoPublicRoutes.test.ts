@@ -31,5 +31,7 @@ describe('seoPublicRoutes', () => {
     expect(homeEn?.alternates?.languages?.en).toBe('https://mysportally.com/en')
     expect(homeFr?.priority).toBe(1)
     expect(entries.find((e) => e.url === 'https://mysportally.com/pricing')?.priority).toBe(0.8)
+    expect(entries.find((e) => e.url === 'https://mysportally.com/coaches')?.priority).toBe(0.9)
+    expect(entries.find((e) => e.url === 'https://mysportally.com/en/coaches')?.priority).toBe(0.9)
   })
 })
