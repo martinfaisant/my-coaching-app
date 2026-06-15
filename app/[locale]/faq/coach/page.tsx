@@ -18,6 +18,7 @@ export async function generateMetadata({ params }: FaqCoachPageProps): Promise<M
     path: '/faq/coach',
     title: t('faqCoachTitle'),
     description: t('faqCoachDescription'),
+    imageAlt: t('ogImageAlt'),
   })
 }
 

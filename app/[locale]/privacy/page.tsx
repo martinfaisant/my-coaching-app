@@ -17,6 +17,8 @@ export async function generateMetadata({
     locale,
     path: '/privacy',
     title: t('privacyTitle'),
+    description: t('privacyDescription'),
+    imageAlt: t('ogImageAlt'),
   })
 }
 

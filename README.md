@@ -266,12 +266,13 @@ Voir [DEPLOYMENT_NOTES.md](./DEPLOYMENT_NOTES.md) et [MISE_EN_PROD.md](./MISE_EN
 ### Référencement (SEO)
 
 - **Sitemap :** `https://mysportally.com/sitemap.xml` — **16 URLs statiques** (8 pages × FR/EN, dont **`/coaches`**) + **fiches coach dynamiques**. Source : `app/sitemap.ts`, `lib/seoPublicRoutes.ts`, `lib/seoPublicCoachProfiles.ts`.
-- **Robots :** `https://mysportally.com/robots.txt` — exclusion dashboard / auth / API (`app/robots.ts`).
-- **Métadonnées publiques :** `lib/seoMetadata.ts` (`buildPublicPageMetadata`, **`buildDynamicPublicPageMetadata`** pour fiches coach) — title/description i18n (`metadata.homeTitle`, **`publicCoaches.pageTitle`**, `metadata.faqAthleteTitle`, etc.), **canonical** + **hreflang** sur les pages de `SEO_PUBLIC_PATHS`. Texte visible landing = namespace **`landing`** (distinct du SEO). FAQ : JSON-LD `FAQPage` via `lib/faqPublicConfig.ts`.
-- **Middleware :** `proxy.ts` exclut `/sitemap.xml` et `/robots.txt` du next-intl (évite 404 Search Console).
+- **Robots :** `https://mysportally.com/robots.txt` — exclusion dashboard / auth / admin / API (`app/robots.ts`).
+- **llms.txt :** `https://mysportally.com/llms.txt` — guide IA, URLs synchronisées sur `SEO_PUBLIC_PATHS` (`lib/llmsTxt.ts`, `app/llms.txt/route.ts`).
+- **Métadonnées publiques :** `lib/seoMetadata.ts` + `lib/seoSocial.ts` — canonical, hreflang, **og:image** (`public/og/default.jpg`), Twitter Card ; layout i18n (`metadata.siteTitle`, etc.). JSON-LD : home (`lib/seoJsonLd.ts`), FAQ + `/pricing` (`buildFaqPageJsonLd`). **Noindex** : `lib/seoRobots.ts` sur pages privées.
+- **Middleware :** `proxy.ts` exclut `/sitemap.xml`, `/robots.txt` et `/llms.txt` du next-intl (évite 404 Search Console).
 - **URL canonique prod :** `https://mysportally.com` (sans `www`) ; `www` → redirection 301 sur Vercel.
 - **Search Console :** soumettre `sitemap.xml` ; dépannage 404 : **DEPLOYMENT_NOTES.md** § Référencement.
-- **Nouvelle page publique indexable :** `SEO_PUBLIC_PATHS` + `buildPublicPageMetadata` dans `generateMetadata`.
+- **Nouvelle page publique indexable :** `SEO_PUBLIC_PATHS` + `buildPublicPageMetadata` dans `generateMetadata` (sitemap + llms.txt synchronisés).
 
 ## 📊 État du Projet
 

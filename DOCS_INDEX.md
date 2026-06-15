@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 14 juin 2026 (**Annuaire coach public** `/coaches` + fiches SEO ; précédent : FAQ publiques…)
+**Dernière mise à jour :** 15 juin 2026 (**SEO P1** : og:image, JSON-LD, noindex, llms.txt ; précédent : annuaire coach public `/coaches` + fiches SEO)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -9,12 +9,12 @@
 ## 🎯 Documentation Active (à utiliser en priorité)
 
 ### **README.md** ⭐
-- **Contenu :** Setup projet, stack technique, quick start, structure du projet, **URL production https://mysportally.com**, **accueil `/` et `/en`** (landing marketing visiteurs, §4.13), **annuaire coach public** **`/coaches`** (§4.16), **FAQ publiques** **`/faq/athlete`** / **`/faq/coach`** (§4.15), **SEO** (`/sitemap.xml` 16 URLs statiques + fiches coach, `/robots.txt`, **`lib/seoPublicRoutes.ts`**, **`lib/seoMetadata.ts`**, **`lib/seoPublicCoachProfiles.ts`**, **`lib/faqPublicConfig.ts`**, exclusion sitemap dans **`proxy.ts`**), **connexion Google OAuth** (…)
-- **Dernière mise à jour :** 14 juin 2026 (annuaire coach public ; précédent : FAQ publiques + footer partagé)
+- **Contenu :** Setup projet, stack technique, quick start, structure du projet, **URL production https://mysportally.com**, **accueil `/` et `/en`** (landing marketing visiteurs, §4.13), **annuaire coach public** **`/coaches`** (§4.16), **FAQ publiques** **`/faq/athlete`** / **`/faq/coach`** (§4.15), **SEO** (`/sitemap.xml`, `/robots.txt`, **`/llms.txt`**, og:image, JSON-LD, noindex, **`lib/seoMetadata.ts`**, **`lib/seoSocial.ts`**, **`lib/seoJsonLd.ts`**, **`lib/llmsTxt.ts`**, exclusion sitemap/robots/llms dans **`proxy.ts`**), **connexion Google OAuth** (…)
+- **Dernière mise à jour :** 15 juin 2026 (SEO P1 ; précédent : annuaire coach public)
 
 ### **Project_context.md** ⭐
-- **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (…), **§4.16 Annuaire coach public** (`/coaches`, gate visiteur, deep link find-coach), **§4.15 FAQ publiques** (athlète/coach, SEO JSON-LD), **§4.13 Marketing landing** (…), **§4.14 SEO** (sitemap 16 URLs statiques + fiches coach, robots, **`buildPublicPageMetadata`**, canonical/hreflang, proxy sitemap), **§4.9 Strava** (…)
-- **Dernière mise à jour :** 14 juin 2026 (§4.16 annuaire coach public ; précédent : §4.15 FAQ publiques)
+- **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (…), **§4.16 Annuaire coach public** (`/coaches`, gate visiteur, deep link find-coach), **§4.15 FAQ publiques** (athlète/coach, SEO JSON-LD), **§4.13 Marketing landing** (…), **§4.14 SEO** (sitemap, robots, **llms.txt**, og:image, JSON-LD, noindex, **`buildPublicPageMetadata`**, canonical/hreflang, proxy), **§4.9 Strava** (…)
+- **Dernière mise à jour :** 15 juin 2026 (§4.14 SEO P1 ; précédent : §4.16 annuaire coach public)
 
 ### **docs/CALENDAR_MONTH_VIEW.md**
 - **Contenu :** Récap **vue mois** (desktop) vs **vue semaine** (mobile), règles semaines ISO / mois civil étendu, **totaux hebdo** (liste sports `PERSISTED_WORKOUT_SPORT_TYPES`, `SPORT_WEEKLY_SUMMARY_BAR`), chargement données, liste des fichiers et tests unitaires, **tuiles disponibilité** (réf. design + `CalendarView`), liens vers maquettes archivées
@@ -27,7 +27,7 @@
 - **Dernière mise à jour :** 14 juin 2026 (**Annuaire coach public** § + `PublicCoach*` ; précédent : Pages FAQ publiques)
 
 ### **docs/I18N.md** ⭐
-- **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces (dont **`publicCoaches`**, **`publicFooter`**, **`faqAthlete`**, **`faqCoach`**, **`metadata.faqAthleteTitle`** / **`faqCoachTitle`**, **`buildPublicPageMetadata`**), **`proxy.ts`** (exclusion sitemap/robots), **checklist nouvelles features** ; …
+- **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces (dont **`publicCoaches`**, **`publicFooter`**, **`faqAthlete`**, **`faqCoach`**, **`metadata.*`** SEO dont **`siteTitle`**, **`termsDescription`**, **`ogImageAlt`**, **`buildPublicPageMetadata`**), **`proxy.ts`** (exclusion sitemap/robots/llms), **checklist nouvelles features** ; …
 - **Dernière mise à jour :** 14 juin 2026 (**publicCoaches** ; précédent : publicFooter, faqAthlete/faqCoach)
 
 ### **docs/AUTH_EMAIL_TEMPLATES.md**
@@ -126,14 +126,14 @@
 ## 🚀 Documentation Opérationnelle
 
 ### **DEPLOYMENT_NOTES.md**
-- **Contenu :** Notes et procédures de déploiement, **URL production https://mysportally.com**, section **Référencement (SEO)** — sitemap (16 URLs statiques + fiches coach), robots, **métadonnées home canonical/hreflang**, **dépannage 404 sitemap** (`proxy.ts`), Search Console, redirection www → apex, **migration 077 annuaire coach public**, section **Connexion Google (OAuth login/signup)** (…), section **Connexion Strava — appareils athlète (feature flag)**, section **Abonnement plateforme coach (Stripe)** (…)
+- **Contenu :** Notes et procédures de déploiement, **URL production https://mysportally.com**, section **Référencement (SEO)** — sitemap, robots, **llms.txt**, og:image, JSON-LD, noindex, **dépannage 404 sitemap/llms** (`proxy.ts`), Search Console, redirection www → apex, **migration 077 annuaire coach public**, section **Connexion Google (OAuth login/signup)** (…), section **Connexion Strava — appareils athlète (feature flag)**, section **Abonnement plateforme coach (Stripe)** (…)
 - **Utiliser pour :** Déployer l'application, résoudre des problèmes de déploiement, configurer le référencement post-deploy
-- **Dernière mise à jour :** 14 juin 2026 (annuaire coach public + migration 077 ; précédent : SEO metadata + fix middleware sitemap 404)
+- **Dernière mise à jour :** 15 juin 2026 (SEO P1 ; précédent : annuaire coach public + migration 077)
 
 ### **MISE_EN_PROD.md**
 - **Contenu :** Checklist et étapes pour mise en production, **URL production https://mysportally.com**, rappel migrations postérieures (dont **073** + **074** Stripe coach plateforme — voir `DEPLOYMENT_NOTES.md`)
 - **Utiliser pour :** Préparer une release production
-- **Dernière mise à jour :** 14 juin 2026 (vérif SEO post-deploy ; précédent : étape Google OAuth…)
+- **Dernière mise à jour :** 15 juin 2026 (vérif SEO post-deploy llms.txt + og:image ; précédent : étape Google OAuth…)
 
 ### **DOCUMENTATION_UPDATE_2026-02-13.md**
 - **Contenu :** Récapitulatif de la mise à jour complète de la documentation (13 février 2026)

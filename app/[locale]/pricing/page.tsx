@@ -20,6 +20,8 @@ import { pathWithLocale } from '@/lib/pathWithLocale'
 import { getOptionalUserWithProfile } from '@/utils/auth'
 import { createClient } from '@/utils/supabase/server'
 import { buildPublicPageMetadata } from '@/lib/seoMetadata'
+import { buildFaqPageJsonLd } from '@/lib/faqPublicConfig'
+import { JsonLdScript } from '@/components/JsonLdScript'
 import type { CoachPlatformSubscription } from '@/types/database'
 
 type PricingPageProps = {
@@ -46,6 +48,7 @@ export async function generateMetadata({ params }: PricingPageProps): Promise<Me
     path: '/pricing',
     title: t('pricingTitle'),
     description: t('pricingDescription'),
+    imageAlt: t('ogImageAlt'),
   })
 }
 
@@ -90,8 +93,15 @@ export default async function PricingPage({ params }: PricingPageProps) {
   const contactPath = pathWithLocale(locale, '/contact')
   const subscribePath = '/dashboard/coach-platform-subscription'
 
+  const faqJsonLdItems = FAQ_KEYS.map((key) => ({
+    question: t(`faq.${key}.question`),
+    answer: t(`faq.${key}.answer`),
+  }))
+  const faqJsonLd = buildFaqPageJsonLd({ locale, path: '/pricing', items: faqJsonLdItems })
+
   return (
     <div className="min-h-screen bg-background">
+      <JsonLdScript json={faqJsonLd} />
       <PublicOrDashboardHeader />
 
       <CoachPricingPublicSignupProvider>

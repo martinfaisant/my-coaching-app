@@ -4,6 +4,7 @@ import {
   type SeoPublicPath,
   getPublicPageAbsoluteUrls,
 } from '@/lib/seoPublicRoutes'
+import { buildSocialMetadata } from '@/lib/seoSocial'
 import { getSiteUrl } from '@/lib/siteUrl'
 
 function resolveCanonicalLocale(locale: string): 'fr' | 'en' {
@@ -39,26 +40,31 @@ type PublicPageMetadataInput = {
   path: SeoPublicPath
   title: string
   description?: string
+  imageAlt?: string
 }
 
-/** Métadonnées SEO communes (title, description optionnelle, canonical, hreflang, Open Graph de base). */
+/** Métadonnées SEO communes (title, description, canonical, hreflang, Open Graph, Twitter). */
 export function buildPublicPageMetadata({
   locale,
   path,
   title,
   description,
+  imageAlt,
 }: PublicPageMetadataInput): Metadata {
   const canonical = getCanonicalPublicPageUrl(locale, path)
+  const social = buildSocialMetadata({
+    locale,
+    title,
+    description,
+    url: canonical,
+    imageAlt,
+  })
 
   return {
     title,
     ...(description ? { description } : {}),
     alternates: buildPublicPageAlternates(locale, path),
-    openGraph: {
-      title,
-      ...(description ? { description } : {}),
-      url: canonical,
-    },
+    ...social,
   }
 }
 
@@ -81,6 +87,7 @@ type DynamicPublicPageMetadataInput = {
   path: string
   title: string
   description?: string
+  imageAlt?: string
 }
 
 /** Métadonnées SEO pour routes publiques dynamiques (fiches coach). */
@@ -89,9 +96,17 @@ export function buildDynamicPublicPageMetadata({
   path,
   title,
   description,
+  imageAlt,
 }: DynamicPublicPageMetadataInput): Metadata {
   const urls = dynamicPublicUrls(path)
   const canonical = urls[resolveCanonicalLocale(locale)]
+  const social = buildSocialMetadata({
+    locale,
+    title,
+    description,
+    url: canonical,
+    imageAlt,
+  })
 
   return {
     title,
@@ -104,10 +119,6 @@ export function buildDynamicPublicPageMetadata({
         'x-default': urls.fr,
       },
     },
-    openGraph: {
-      title,
-      ...(description ? { description } : {}),
-      url: canonical,
-    },
+    ...social,
   }
 }

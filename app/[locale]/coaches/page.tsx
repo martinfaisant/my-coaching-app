@@ -18,12 +18,14 @@ type CoachesPageProps = {
 export async function generateMetadata({ params }: CoachesPageProps): Promise<Metadata> {
   const { locale } = await params
   const t = await getTranslations({ locale, namespace: 'publicCoaches' })
+  const tMeta = await getTranslations({ locale, namespace: 'metadata' })
 
   return buildPublicPageMetadata({
     locale,
     path: '/coaches',
     title: t('pageTitle'),
     description: t('pageDescription'),
+    imageAlt: tMeta('ogImageAlt'),
   })
 }
 

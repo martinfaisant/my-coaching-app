@@ -10,13 +10,13 @@ export async function generateMetadata({
   const { locale } = await params
   const t = await getTranslations({ locale, namespace: 'metadata' })
   return {
-    title: t('loginTitle'),
-    description: t('loginDescription'),
+    title: t('resetPasswordTitle'),
+    description: t('resetPasswordDescription'),
     ...NOINDEX_METADATA,
   }
 }
 
-export default function LoginLayout({
+export default function ResetPasswordLayout({
   children,
 }: {
   children: React.ReactNode

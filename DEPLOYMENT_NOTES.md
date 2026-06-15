@@ -1,7 +1,7 @@
 # Notes de déploiement
 
 **Production :** https://mysportally.com (voir `docs/DOMAIN_MYSPORTALLY_SETUP.md` pour la configuration domaine, Vercel, Resend, Supabase).  
-**Dernière mise à jour doc :** 14 juin 2026 (annuaire coach public `/coaches` + migration 077 ; précédent : SEO metadata home canonical/hreflang…)
+**Dernière mise à jour doc :** 15 juin 2026 (SEO P1 : og:image, Twitter Card, JSON-LD home/pricing, noindex, llms.txt, layout i18n ; précédent : annuaire coach public `/coaches` + migration 077)
 
 ---
 
@@ -21,24 +21,35 @@
 |---------|------|
 | `lib/siteUrl.ts` | URL publique canonique (env ou repli `https://mysportally.com`) |
 | `lib/seoPublicRoutes.ts` | Liste `SEO_PUBLIC_PATHS` + génération entrées sitemap (hreflang FR/EN) |
-| `lib/seoMetadata.ts` | **`buildPublicPageMetadata`** — title/description, **`canonical`**, **`hreflang`**, Open Graph de base |
+| `lib/seoMetadata.ts` | **`buildPublicPageMetadata`** / **`buildDynamicPublicPageMetadata`** — title/description, canonical, hreflang, OG, Twitter |
+| `lib/seoSocial.ts` | Image OG par défaut (`public/og/default.jpg`), `buildSocialMetadata` (OG + Twitter Card) |
+| `lib/seoJsonLd.ts` | JSON-LD home : Organization + WebSite (`buildHomeJsonLdGraph`) |
+| `lib/seoRobots.ts` | `NOINDEX_METADATA` pour pages privées (dashboard, auth, login, admin) |
+| `lib/llmsTxt.ts` | Contenu `/llms.txt` synchronisé sur `SEO_PUBLIC_PATHS` |
+| `lib/faqPublicConfig.ts` | JSON-LD `FAQPage` (`buildFaqPageJsonLd`) — FAQ publiques + `/pricing` |
 | `app/sitemap.ts` | `/sitemap.xml` — **16 URLs statiques** (8 pages × FR/EN) + **fiches coach dynamiques** (`lib/seoPublicCoachProfiles.ts`) |
-| `app/robots.ts` | `/robots.txt` — autorise le public, `disallow` dashboard / auth / API |
-| `proxy.ts` | Middleware next-intl + auth : **ne pas** faire passer `/sitemap.xml` ni `/robots.txt` (matcher + bypass ; sinon **404** Google Search Console) |
+| `app/robots.ts` | `/robots.txt` — autorise le public, `disallow` dashboard / auth / admin / API |
+| `app/llms.txt/route.ts` | `/llms.txt` — guide IA (texte brut, URLs FR/EN + lien sitemap) |
+| `public/og/default.jpg` | Image Open Graph 1200×630 (partages réseaux) ; régénération : `node scripts/generate-og-image.mjs` |
+| `proxy.ts` | Middleware next-intl + auth : **ne pas** faire passer `/sitemap.xml`, `/robots.txt` ni `/llms.txt` (matcher + bypass ; sinon **404**) |
 
 **Pages dans le sitemap (statiques) :** `/`, **`/coaches`**, `/pricing`, `/contact`, `/terms`, `/privacy`, `/faq/athlete`, `/faq/coach` (+ préfixe `/en` pour l’anglais). **Fiches coach :** une paire FR/EN par coach éligible (`/coaches/{uuid}`), alimentées par RPC **`get_public_coach_sitemap_entries`** (migration **077**).
 
-**Métadonnées HTML (pages publiques) :** `generateMetadata` sur chaque route de `SEO_PUBLIC_PATHS` via **`buildPublicPageMetadata`**. Fiches coach : **`buildDynamicPublicPageMetadata`**. i18n namespace **`metadata`** — clés **`homeTitle`** / **`homeDescription`** (accueil), **`pricingTitle`** / **`pricingDescription`**, etc. ; annuaire : namespace **`publicCoaches`** (`pageTitle`, `pageDescription`, `profileMetaTitle`). Le **texte visible** de la landing reste dans **`landing.*`** (onglet navigateur ≠ hero H1).
+**Métadonnées HTML (pages publiques) :** `generateMetadata` sur chaque route de `SEO_PUBLIC_PATHS` via **`buildPublicPageMetadata`**. Fiches coach : **`buildDynamicPublicPageMetadata`**. i18n namespace **`metadata`** — **`siteTitle`** / **`siteDescription`** / **`siteKeywords`** (layout), **`homeTitle`** / **`homeDescription`**, **`pricingTitle`** / **`pricingDescription`**, **`termsDescription`** / **`privacyDescription`**, **`ogImageAlt`**, etc. ; annuaire : namespace **`publicCoaches`**. OG image : **`public/og/default.jpg`** ; Twitter : `summary_large_image`. JSON-LD : home (Organization + WebSite), `/pricing` et FAQ (`FAQPage`). Le **texte visible** de la landing reste dans **`landing.*`**.
 
-**Hors sitemap (volontaire) :** `/dashboard/*`, `/login`, `/auth/*`, `/reset-password`, `/api/*`. Le flux de **demande** coach reste sous **`/dashboard/find-coach`** (auth requise) ; l’annuaire public y redirige via deep link post-inscription.
+**Noindex (metadata) :** layouts dashboard, login, reset-password, auth, admin — **`NOINDEX_METADATA`** (`lib/seoRobots.ts`), en complément de `robots.txt`.
 
-**Nouvelle page marketing publique :** ajouter le chemin dans `SEO_PUBLIC_PATHS` (`lib/seoPublicRoutes.ts`) et utiliser **`buildPublicPageMetadata`** dans `generateMetadata`.
+**Hors sitemap (volontaire) :** `/dashboard/*`, `/login`, `/auth/*`, `/reset-password`, `/admin/*`, `/api/*`. Le flux de **demande** coach reste sous **`/dashboard/find-coach`** (auth requise) ; l’annuaire public y redirige via deep link post-inscription.
+
+**Nouvelle page marketing publique :** ajouter le chemin dans `SEO_PUBLIC_PATHS` (`lib/seoPublicRoutes.ts`) et utiliser **`buildPublicPageMetadata`** dans `generateMetadata` — reflété automatiquement dans sitemap et **`/llms.txt`**.
 
 ### Vérification post-déploiement
 
 1. `https://mysportally.com/sitemap.xml` — au minimum **16 entrées statiques** + fiches coach éligibles ; URLs en `https://mysportally.com/...` (pas `www`).
 2. `https://mysportally.com/robots.txt` — ligne `Sitemap: https://mysportally.com/sitemap.xml`.
-3. `https://www.mysportally.com/` → redirection 301 vers `https://mysportally.com/`.
+3. `https://mysportally.com/llms.txt` — liste des pages de `SEO_PUBLIC_PATHS` (FR + EN) + lien sitemap.
+4. Page d’accueil (view source) : `og:image`, `twitter:card`, JSON-LD Organization/WebSite.
+5. `https://www.mysportally.com/` → redirection 301 vers `https://mysportally.com/`.
 
 ### Google Search Console
 
@@ -51,13 +62,13 @@
 
 | Cause | Vérification | Action |
 |-------|----------------|--------|
-| **Middleware next-intl** | `/sitemap.xml` renvoie une page HTML 404 | `proxy.ts` : bypass + matcher excluant `sitemap.xml` et `robots.txt` (voir tableau fichiers ci-dessus) |
+| **Middleware next-intl** | `/sitemap.xml`, `/robots.txt` ou `/llms.txt` renvoie une page HTML 404 | `proxy.ts` : bypass + matcher excluant `sitemap.xml`, `robots.txt` et `llms.txt` (voir tableau fichiers ci-dessus) |
 | **Code non déployé** | Fichiers absents sur la branche prod Vercel | Merger/déployer `app/sitemap.ts`, `app/robots.ts`, `proxy.ts` |
 | **URL www dans le sitemap** | Entrées `https://www.mysportally.com/...` | `NEXT_PUBLIC_SITE_URL` = `https://mysportally.com` (sans www) |
 
 **Référence produit :** `Project_context.md` §4.14, §4.16.
 
-**Hors scope livré (évolutions futures) :** image Open Graph dédiée (`og:image`) ; landing pages par sport.
+**Hors scope livré (évolutions futures) :** image OG par fiche coach (avatar) ; landing pages par sport.
 
 ---
 
