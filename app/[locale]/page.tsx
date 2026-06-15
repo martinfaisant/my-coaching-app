@@ -1,8 +1,10 @@
 import Link from 'next/link'
+import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
 import { getDashboardEntryPath } from '@/lib/dashboardEntryPath'
 import { pathWithLocale } from '@/lib/pathWithLocale'
+import { buildPublicPageMetadata } from '@/lib/seoMetadata'
 import { createClient } from '@/utils/supabase/server'
 import { getOptionalUserWithProfile } from '@/utils/auth'
 import { HomeEmailConfirmedTrigger } from '@/components/HomeEmailConfirmedTrigger'
@@ -16,6 +18,18 @@ import { LandingFinalCta } from '@/components/landing/LandingFinalCta'
 type HomePageProps = {
   params: Promise<{ locale: string }>
   searchParams: Promise<{ emailConfirmed?: string; code?: string }>
+}
+
+export async function generateMetadata({ params }: HomePageProps): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: 'metadata' })
+
+  return buildPublicPageMetadata({
+    locale,
+    path: '/',
+    title: t('homeTitle'),
+    description: t('homeDescription'),
+  })
 }
 
 export default async function Home({ params, searchParams }: HomePageProps) {

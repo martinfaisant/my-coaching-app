@@ -9,15 +9,17 @@ const intlMiddleware = createIntlMiddleware(routing)
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Skip i18n uniquement pour les API et le callback OAuth racine (pas /auth/complete-signup)
+  // Skip i18n pour API, callback OAuth, sitemap et robots (sinon 404 — next-intl réécrit ces URLs)
   const isApiRoute =
     pathname.startsWith('/api') ||
     pathname === '/auth/callback' ||
     pathname.startsWith('/auth/callback/')
+
+  const isSeoMetadataRoute = pathname === '/sitemap.xml' || pathname === '/robots.txt'
   
-  // Handle i18n first (unless it's an API route)
+  // Handle i18n first (unless it's an API route or SEO metadata file)
   let response: NextResponse
-  if (isApiRoute) {
+  if (isApiRoute || isSeoMetadataRoute) {
     response = NextResponse.next({ request })
   } else {
     response = intlMiddleware(request)
@@ -162,6 +164,7 @@ export const config = {
   matcher: [
     // Match all pathnames except for:
     // - Static files and assets
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    // - sitemap.xml / robots.txt (must not pass through next-intl middleware)
+    '/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }

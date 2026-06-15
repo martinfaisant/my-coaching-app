@@ -80,6 +80,6 @@ Détail complet : **`DEPLOYMENT_NOTES.md`** § Connexion Google. **Pas de migrat
 | 2 | Exécuter les 6 migrations SQL (024 → 025 → 026 → 027 → 028 → 029) sur la base Supabase **production** dans l’ordre. |
 | 3 | Configurer Google OAuth (Supabase prod + Google Cloud + Vercel) si la feature est livrée. |
 | 4 | Tester l’app en prod (dont `/login` Google) et les imports Strava si besoin. |
-| 5 | Vérifier le SEO : `https://mysportally.com/sitemap.xml`, `/robots.txt`, redirection `www` → apex ; soumettre `sitemap.xml` dans Google Search Console (`DEPLOYMENT_NOTES.md` § Référencement). |
+| 5 | Vérifier le SEO : `https://mysportally.com/sitemap.xml` et `/robots.txt` répondent **200** (pas 404 — voir exclusion `proxy.ts`) ; redirection `www` → apex ; resoumettre `sitemap.xml` dans Google Search Console si besoin (`DEPLOYMENT_NOTES.md` § Référencement). |
 
 Une fois ces étapes faites, tout est en prod.

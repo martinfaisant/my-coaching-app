@@ -265,11 +265,13 @@ Voir [DEPLOYMENT_NOTES.md](./DEPLOYMENT_NOTES.md) et [MISE_EN_PROD.md](./MISE_EN
 
 ### Référencement (SEO)
 
-- **Sitemap :** `https://mysportally.com/sitemap.xml` — pages publiques FR/EN (accueil, tarifs, contact, CGU, confidentialité). Source : `app/sitemap.ts`, `lib/seoPublicRoutes.ts`.
+- **Sitemap :** `https://mysportally.com/sitemap.xml` — pages publiques FR/EN. Source : `app/sitemap.ts`, `lib/seoPublicRoutes.ts`.
 - **Robots :** `https://mysportally.com/robots.txt` — exclusion dashboard / auth / API (`app/robots.ts`).
+- **Métadonnées publiques :** `lib/seoMetadata.ts` (`buildPublicPageMetadata`) — title/description i18n (`metadata.homeTitle`, etc.), **canonical** + **hreflang** sur les 5 pages de `SEO_PUBLIC_PATHS`. Texte visible landing = namespace **`landing`** (distinct du SEO).
+- **Middleware :** `proxy.ts` exclut `/sitemap.xml` et `/robots.txt` du next-intl (évite 404 Search Console).
 - **URL canonique prod :** `https://mysportally.com` (sans `www`) ; `www` → redirection 301 sur Vercel.
-- **Search Console :** soumettre `sitemap.xml` ; voir **DEPLOYMENT_NOTES.md** § Référencement.
-- **Nouvelle page publique indexable :** ajouter le chemin dans `SEO_PUBLIC_PATHS` (`lib/seoPublicRoutes.ts`).
+- **Search Console :** soumettre `sitemap.xml` ; dépannage 404 : **DEPLOYMENT_NOTES.md** § Référencement.
+- **Nouvelle page publique indexable :** `SEO_PUBLIC_PATHS` + `buildPublicPageMetadata` dans `generateMetadata`.
 
 ## 📊 État du Projet
 

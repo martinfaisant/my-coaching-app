@@ -18,6 +18,7 @@ import { loadCoachPlatformCatalogForEnv } from '@/lib/stripeCoachPlatformCatalog
 import { pathWithLocale } from '@/lib/pathWithLocale'
 import { getOptionalUserWithProfile } from '@/utils/auth'
 import { createClient } from '@/utils/supabase/server'
+import { buildPublicPageMetadata } from '@/lib/seoMetadata'
 import type { CoachPlatformSubscription } from '@/types/database'
 
 type PricingPageProps = {
@@ -39,10 +40,12 @@ export async function generateMetadata({ params }: PricingPageProps): Promise<Me
   const { locale } = await params
   const t = await getTranslations({ locale, namespace: 'metadata' })
 
-  return {
+  return buildPublicPageMetadata({
+    locale,
+    path: '/pricing',
     title: t('pricingTitle'),
     description: t('pricingDescription'),
-  }
+  })
 }
 
 export default async function PricingPage({ params }: PricingPageProps) {

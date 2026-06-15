@@ -38,6 +38,11 @@ function localizedUrlsForPath(base: string, path: SeoPublicPath): { fr: string; 
   }
 }
 
+/** URLs absolues FR/EN d'une page publique (sitemap, canonical, hreflang). */
+export function getPublicPageAbsoluteUrls(path: SeoPublicPath): { fr: string; en: string } {
+  return localizedUrlsForPath(getSiteUrl(), path)
+}
+
 /**
  * Entrées sitemap pour toutes les pages marketing / légales (FR + EN + hreflang).
  */

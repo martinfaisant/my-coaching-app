@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 14 juin 2026 (**SEO** sitemap/robots + Search Console ; précédent : **landing** refonte Option B…)
+**Dernière mise à jour :** 14 juin 2026 (**SEO** métadonnées home canonical/hreflang + fix middleware sitemap 404 ; précédent : sitemap/robots Search Console…)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -9,16 +9,16 @@
 ## 🎯 Documentation Active (à utiliser en priorité)
 
 ### **README.md** ⭐
-- **Contenu :** Setup projet, stack technique, quick start, structure du projet, **URL production https://mysportally.com**, **accueil `/` et `/en`** (landing marketing visiteurs, §4.13 ; connectés redirigés vers dashboard — **Project_context.md** §4.0, **`lib/dashboardEntryPath.ts`**), **SEO** (`/sitemap.xml`, `/robots.txt`, **`lib/seoPublicRoutes.ts`**), **connexion Google OAuth** (voir **DEPLOYMENT_NOTES.md** § Connexion Google), variables **Stripe coach plateforme** (…), **Strava devices athlète** : `NEXT_PUBLIC_ENABLE_ATHLETE_STRAVA_DEVICES` (off par défaut, voir § Intégration Strava)
+- **Contenu :** Setup projet, stack technique, quick start, structure du projet, **URL production https://mysportally.com**, **accueil `/` et `/en`** (landing marketing visiteurs, §4.13 ; connectés redirigés vers dashboard — **Project_context.md** §4.0, **`lib/dashboardEntryPath.ts`**), **SEO** (`/sitemap.xml`, `/robots.txt`, **`lib/seoPublicRoutes.ts`**, **`lib/seoMetadata.ts`**, **`metadata.homeTitle`** / **`homeDescription`**, exclusion sitemap dans **`proxy.ts`**), **connexion Google OAuth** (voir **DEPLOYMENT_NOTES.md** § Connexion Google), variables **Stripe coach plateforme** (…), **Strava devices athlète** : `NEXT_PUBLIC_ENABLE_ATHLETE_STRAVA_DEVICES` (off par défaut, voir § Intégration Strava)
 - **Utiliser pour :** Onboarding, démarrage rapide, vue d'ensemble technique
 - **Taille :** ~200 lignes
-- **Dernière mise à jour :** 14 juin 2026 (SEO sitemap/robots ; précédent : landing marketing §4.13…)
+- **Dernière mise à jour :** 14 juin 2026 (SEO metadata + proxy sitemap ; précédent : SEO sitemap/robots…)
 
 ### **Project_context.md** ⭐
-- **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (…), **§4.1 Authentication** (email/password, **politique mot de passe + checklist**, **Google OAuth**), **§4.13 Marketing landing** (captures produit, showcase onglets), **§4.14 SEO** (sitemap, robots, pages publiques indexables), **§4.9 Strava** (feature flag `NEXT_PUBLIC_ENABLE_ATHLETE_STRAVA_DEVICES`, off par défaut au lancement)
+- **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (…), **§4.1 Authentication** (email/password, **politique mot de passe + checklist**, **Google OAuth**), **§4.13 Marketing landing** (captures produit, showcase onglets), **§4.14 SEO** (sitemap, robots, **`buildPublicPageMetadata`**, canonical/hreflang, proxy sitemap), **§4.9 Strava** (feature flag `NEXT_PUBLIC_ENABLE_ATHLETE_STRAVA_DEVICES`, off par défaut au lancement)
 - **Utiliser pour :** Comprendre le projet, les features, les rôles, l'architecture globale
 - **Taille :** ~450 lignes
-- **Dernière mise à jour :** 14 juin 2026 (§4.14 **SEO** sitemap/robots ; précédent : §4.13 **landing** refonte…)
+- **Dernière mise à jour :** 14 juin 2026 (§4.14 SEO metadata + proxy ; précédent : §4.14 sitemap/robots…)
 
 ### **docs/CALENDAR_MONTH_VIEW.md**
 - **Contenu :** Récap **vue mois** (desktop) vs **vue semaine** (mobile), règles semaines ISO / mois civil étendu, **totaux hebdo** (liste sports `PERSISTED_WORKOUT_SPORT_TYPES`, `SPORT_WEEKLY_SUMMARY_BAR`), chargement données, liste des fichiers et tests unitaires, **tuiles disponibilité** (réf. design + `CalendarView`), liens vers maquettes archivées
@@ -33,10 +33,10 @@
 - **Dernière mise à jour :** 14 juin 2026 (**Landing** § composants `components/landing/*`, **`AuthButtons`** variant `ctaBand` ; précédent : **PublicHeader** mobile drawer…)
 
 ### **docs/I18N.md** ⭐
-- **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces (dont **`calendar.weekly.sportVolumeHint`**), utilisation dans composants et server actions, **checklist pour nouvelles features** (toujours penser bilingue) ; **`coachMsaSubscription`** (dont **`billingInfoTitle`**, **`billingAddress`**)
+- **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces (dont **`metadata.homeTitle`** / **`homeDescription`**, **`buildPublicPageMetadata`**), **`proxy.ts`** (exclusion sitemap/robots), **checklist nouvelles features** ; **`coachMsaSubscription`** (dont **`billingInfoTitle`**, **`billingAddress`**)
 - **Utiliser pour :** Toute nouvelle feature ou texte visible, ajout de clés de traduction, dépannage i18n
 - **Taille :** ~195 lignes
-- **Dernière mise à jour :** 14 juin 2026 (**`landing`** showcase/audience/pricingLink ; précédent : **`PublicHeader` mobile**…)
+- **Dernière mise à jour :** 14 juin 2026 (**metadata** SEO home + proxy sitemap ; précédent : **`landing`** showcase…)
 
 ### **docs/AUTH_EMAIL_TEMPLATES.md**
 - **Contenu :** Guide de configuration des emails d’auth Supabase (sujet, i18n FR/EN, variables, dépannage logo). **Les fichiers HTML des templates** (Confirm signup, puis Magic Link, Reset Password, etc.) sont dans **docs/email-templates/**.
@@ -124,9 +124,9 @@
 ## 🚀 Documentation Opérationnelle
 
 ### **DEPLOYMENT_NOTES.md**
-- **Contenu :** Notes et procédures de déploiement, **URL production https://mysportally.com**, section **Référencement (SEO)** — sitemap, robots, Search Console, redirection www → apex, section **Connexion Google (OAuth login/signup)** (…), section **Connexion Strava — appareils athlète (feature flag)**, section **Abonnement plateforme coach (Stripe)** (…)
+- **Contenu :** Notes et procédures de déploiement, **URL production https://mysportally.com**, section **Référencement (SEO)** — sitemap, robots, **métadonnées home canonical/hreflang**, **dépannage 404 sitemap** (`proxy.ts`), Search Console, redirection www → apex, section **Connexion Google (OAuth login/signup)** (…), section **Connexion Strava — appareils athlète (feature flag)**, section **Abonnement plateforme coach (Stripe)** (…)
 - **Utiliser pour :** Déployer l'application, résoudre des problèmes de déploiement, configurer le référencement post-deploy
-- **Dernière mise à jour :** 14 juin 2026 (SEO sitemap/robots/Search Console ; précédent : connexion Google OAuth…)
+- **Dernière mise à jour :** 14 juin 2026 (SEO metadata + fix middleware sitemap 404 ; précédent : SEO sitemap/robots Search Console…)
 
 ### **MISE_EN_PROD.md**
 - **Contenu :** Checklist et étapes pour mise en production, **URL production https://mysportally.com**, rappel migrations postérieures (dont **073** + **074** Stripe coach plateforme — voir `DEPLOYMENT_NOTES.md`)
