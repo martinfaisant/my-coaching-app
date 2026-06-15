@@ -4,6 +4,7 @@ import {
   buildPublicPageMetadata,
   getCanonicalPublicPageUrl,
 } from '@/lib/seoMetadata'
+import { getDefaultOgImageUrl } from '@/lib/seoSocial'
 
 describe('seoMetadata', () => {
   const originalSiteUrl = process.env.NEXT_PUBLIC_SITE_URL
@@ -34,17 +35,33 @@ describe('seoMetadata', () => {
     )
   })
 
-  it('buildPublicPageMetadata includes title, description and alternates', () => {
+  it('buildPublicPageMetadata includes title, description, alternates, OG and Twitter', () => {
     const metadata = buildPublicPageMetadata({
       locale: 'fr',
       path: '/contact',
       title: 'Contact',
       description: 'Contactez-nous',
+      imageAlt: 'My Sport Ally',
     })
 
     expect(metadata.title).toBe('Contact')
     expect(metadata.description).toBe('Contactez-nous')
     expect(metadata.alternates?.canonical).toBe('https://mysportally.com/contact')
     expect(metadata.openGraph?.url).toBe('https://mysportally.com/contact')
+    expect(metadata.openGraph?.siteName).toBe('My Sport Ally')
+    expect(metadata.openGraph?.locale).toBe('fr_FR')
+    expect(metadata.openGraph?.alternateLocale).toEqual(['en_US'])
+    expect(metadata.openGraph?.images).toEqual([
+      {
+        url: getDefaultOgImageUrl(),
+        width: 1200,
+        height: 630,
+        alt: 'My Sport Ally',
+      },
+    ])
+    expect(metadata.twitter).toMatchObject({
+      card: 'summary_large_image',
+      images: [getDefaultOgImageUrl()],
+    })
   })
 })

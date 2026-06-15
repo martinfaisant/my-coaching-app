@@ -18,6 +18,7 @@ export async function generateMetadata({ params }: FaqAthletePageProps): Promise
     path: '/faq/athlete',
     title: t('faqAthleteTitle'),
     description: t('faqAthleteDescription'),
+    imageAlt: t('ogImageAlt'),
   })
 }
 

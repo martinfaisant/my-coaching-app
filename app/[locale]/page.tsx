@@ -4,6 +4,8 @@ import { getTranslations } from 'next-intl/server'
 import { getDashboardEntryPath } from '@/lib/dashboardEntryPath'
 import { pathWithLocale } from '@/lib/pathWithLocale'
 import { buildPublicPageMetadata } from '@/lib/seoMetadata'
+import { buildHomeJsonLdGraph } from '@/lib/seoJsonLd'
+import { JsonLdScript } from '@/components/JsonLdScript'
 import { createClient } from '@/utils/supabase/server'
 import { getOptionalUserWithProfile } from '@/utils/auth'
 import { HomeEmailConfirmedTrigger } from '@/components/HomeEmailConfirmedTrigger'
@@ -29,6 +31,7 @@ export async function generateMetadata({ params }: HomePageProps): Promise<Metad
     path: '/',
     title: t('homeTitle'),
     description: t('homeDescription'),
+    imageAlt: t('ogImageAlt'),
   })
 }
 
@@ -64,6 +67,7 @@ export default async function Home({ params, searchParams }: HomePageProps) {
 
   return (
     <div className="min-h-screen bg-background">
+      <JsonLdScript json={buildHomeJsonLdGraph()} />
       <HomeEmailConfirmedTrigger showEmailConfirmedModal={emailConfirmed} />
       <PublicOrDashboardHeader />
 

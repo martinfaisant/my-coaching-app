@@ -15,7 +15,8 @@ export async function proxy(request: NextRequest) {
     pathname === '/auth/callback' ||
     pathname.startsWith('/auth/callback/')
 
-  const isSeoMetadataRoute = pathname === '/sitemap.xml' || pathname === '/robots.txt'
+  const isSeoMetadataRoute =
+    pathname === '/sitemap.xml' || pathname === '/robots.txt' || pathname === '/llms.txt'
   
   // Handle i18n first (unless it's an API route or SEO metadata file)
   let response: NextResponse
@@ -164,7 +165,7 @@ export const config = {
   matcher: [
     // Match all pathnames except for:
     // - Static files and assets
-    // - sitemap.xml / robots.txt (must not pass through next-intl middleware)
-    '/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    // - sitemap.xml / robots.txt / llms.txt (must not pass through next-intl middleware)
+    '/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|llms.txt|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }

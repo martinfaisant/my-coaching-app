@@ -497,19 +497,26 @@ The athlete picker uses these as **selected** state (`FEELING_PICKER_SELECTED_BG
 | Route | Contenu |
 |-------|---------|
 | `/sitemap.xml` | **16 URLs statiques** (8 pages × FR/EN) : home, **coaches** (annuaire), pricing, contact, terms, privacy, faq/athlete, faq/coach — **+ fiches coach dynamiques** `/coaches/[id]` (FR/EN, une entrée par coach éligible) ; alternates hreflang |
-| `/robots.txt` | `allow: /` ; `disallow` dashboard, admin, login, auth, reset-password, API ; lien vers le sitemap |
+| `/robots.txt` | `allow: /` ; `disallow` dashboard, admin (`/admin`, `/en/admin`), login, auth, reset-password, API ; lien vers le sitemap |
+| `/llms.txt` | Guide IA (texte brut) : URLs FR/EN synchronisées sur **`SEO_PUBLIC_PATHS`** + renvoi vers le sitemap (fiches coach dynamiques) |
 
 **Pages listées (statiques) :** définies dans **`SEO_PUBLIC_PATHS`** (`lib/seoPublicRoutes.ts`) — inclut **`/coaches`** (priority **0.9**). **Fiches coach :** fusion dans **`app/sitemap.ts`** via **`buildPublicCoachProfileSitemapEntries`** (`lib/seoPublicCoachProfiles.ts`, RPC **`get_public_coach_sitemap_entries`**, migration **077**). URL de base via **`getSiteUrl()`** (`lib/siteUrl.ts`) ← `NEXT_PUBLIC_SITE_URL` / `NEXT_PUBLIC_APP_URL`.
 
-**Métadonnées HTML (head, non visibles dans le corps de page) :** chaque page de `SEO_PUBLIC_PATHS` utilise **`buildPublicPageMetadata`** (`lib/seoMetadata.ts`) dans `generateMetadata` — title/description i18n (**`metadata.homeTitle`**, **`publicCoaches.pageTitle`** / **`pageDescription`** pour l’annuaire, **`metadata.faqAthleteTitle`**, etc.), **`alternates.canonical`**, **`alternates.languages`** (fr, en, x-default). Les fiches coach utilisent **`buildDynamicPublicPageMetadata`** (titre `{name} — Coach sportif`, description tronquée depuis la présentation). L’accueil marketing visible reste **`landing.hero.*`** (H1 / sous-titre) ; le title navigateur suit le template layout `%s | My Sport Ally`. Pages FAQ : JSON-LD **`FAQPage`** en plus (`buildFaqPageJsonLd`).
+**Métadonnées HTML (head, non visibles dans le corps de page) :** chaque page de `SEO_PUBLIC_PATHS` utilise **`buildPublicPageMetadata`** (`lib/seoMetadata.ts`) dans `generateMetadata` — title/description i18n (**`metadata.homeTitle`**, **`publicCoaches.pageTitle`** / **`pageDescription`** pour l’annuaire, **`metadata.faqAthleteTitle`**, **`metadata.termsDescription`** / **`privacyDescription`**, etc.), **`alternates.canonical`**, **`alternates.languages`** (fr, en, x-default), **Open Graph** (`og:image` 1200×630 via **`lib/seoSocial.ts`**, `og:locale` / `alternateLocale`, `siteName`), **Twitter Card** (`summary_large_image`). Les fiches coach utilisent **`buildDynamicPublicPageMetadata`**. Layout racine **`app/[locale]/layout.tsx`** : defaults localisés (**`metadata.siteTitle`**, **`siteDescription`**, **`siteKeywords`**). L’accueil marketing visible reste **`landing.hero.*`** (H1 / sous-titre) ; le title navigateur suit le template layout `%s | My Sport Ally`.
 
-**Middleware :** **`proxy.ts`** ne doit **pas** appliquer next-intl à `/sitemap.xml` ni `/robots.txt` (sinon 404 en prod / Search Console). Voir **`DEPLOYMENT_NOTES.md`** § Référencement → Dépannage.
+**JSON-LD Schema.org :** accueil — **`Organization`** + **`WebSite`** (`lib/seoJsonLd.ts` → `buildHomeJsonLdGraph`) ; **`/pricing`** et pages FAQ — **`FAQPage`** (`lib/faqPublicConfig.ts` → `buildFaqPageJsonLd`, texte identique au contenu visible). Rendu via **`JsonLdScript`** (`components/JsonLdScript.tsx`).
 
-**Non indexé (volontaire) :** espace connecté (`/dashboard/*`), auth, API. **`/dashboard/find-coach`** reste derrière auth — pas dans le sitemap ; le parcours de demande y est atteint via deep link post-inscription depuis l’annuaire public.
+**Image OG :** `public/og/default.jpg` (1200×630, montage logo + palette) ; régénération optionnelle : `node scripts/generate-og-image.mjs`.
+
+**Noindex (metadata, en plus de robots.txt) :** **`NOINDEX_METADATA`** (`lib/seoRobots.ts`) sur layouts dashboard, login, reset-password, auth, admin — évite l’indexation si un lien externe pointe vers ces URLs.
+
+**Middleware :** **`proxy.ts`** ne doit **pas** appliquer next-intl à `/sitemap.xml`, `/robots.txt` ni **`/llms.txt`** (sinon 404 en prod / Search Console). Voir **`DEPLOYMENT_NOTES.md`** § Référencement → Dépannage.
+
+**Non indexé (volontaire) :** espace connecté (`/dashboard/*`), auth, admin, login, reset-password, API. **`/dashboard/find-coach`** reste derrière auth — pas dans le sitemap ; le parcours de demande y est atteint via deep link post-inscription depuis l’annuaire public.
 
 **Domaine :** `www.mysportally.com` doit rediriger vers l’apex (Vercel). Procédure Search Console : **`DEPLOYMENT_NOTES.md`** § Référencement.
 
-**Évolutions SEO non livrées :** image Open Graph dédiée (`og:image`) ; landing pages par sport.
+**Évolutions SEO non livrées :** image OG par fiche coach (avatar) ; landing pages par sport.
 
 ---
 

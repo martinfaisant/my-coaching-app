@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { getCurrentUserWithProfile } from '@/utils/auth'
 import { Suspense } from 'react'
 import type { ChatRoleResult } from '@/app/[locale]/actions/chat'
@@ -5,6 +6,11 @@ import { DashboardChatWrapper } from '@/app/[locale]/dashboard/DashboardChatWrap
 import { DashboardTopBar } from '@/components/DashboardTopBar'
 import { CoachPlatformCheckoutVerification } from '@/components/CoachPlatformCheckoutVerification'
 import { CoachPlatformStripeBanner } from '@/components/CoachPlatformStripeBanner'
+import { NOINDEX_METADATA } from '@/lib/seoRobots'
+
+export async function generateMetadata(): Promise<Metadata> {
+  return NOINDEX_METADATA
+}
 
 function getChatRoleFromProfile(profile: { role: string }, userId: string): ChatRoleResult {
   if (profile.role === 'coach') return { role: 'coach', userId }

@@ -1057,6 +1057,10 @@
     }
   },
   "metadata": {
+    "siteTitle": "My Sport Ally - Coaching sportif personnalisé",
+    "siteDescription": "Plateforme de coaching sportif : programmes d'entraînement sur mesure, suivi en temps réel, synchronisation Strava et messagerie directe avec votre coach.",
+    "siteKeywords": "coaching sportif, entraînement, running, cyclisme, triathlon, Strava, programme sportif",
+    "ogImageAlt": "My Sport Ally — plateforme de coaching sportif en ligne",
     "loginTitle": "Connexion",
     "loginDescription": "Connectez-vous à votre compte My Sport Ally pour accéder à vos entraînements et suivre vos performances.",
     "dashboardTitle": "Tableau de bord",
@@ -1067,7 +1071,11 @@
     "profileTitle": "Mon profil",
     "devicesTitle": "Appareils connectés",
     "termsTitle": "Conditions d’utilisation",
+    "termsDescription": "Conditions d’utilisation de My Sport Ally : règles d’accès, responsabilités et cadre d’utilisation de la plateforme de coaching sportif.",
     "privacyTitle": "Politique de confidentialité",
+    "privacyDescription": "Politique de confidentialité My Sport Ally : données collectées, finalités, durée de conservation et vos droits sur la plateforme.",
+    "resetPasswordTitle": "Réinitialiser le mot de passe",
+    "resetPasswordDescription": "Réinitialisez le mot de passe de votre compte My Sport Ally.",
     "contactTitle": "Contact",
     "contactDescription": "Contactez l’équipe My Sport Ally : formulaire de demande et support.",
     "homeTitle": "Trouvez un coach sportif — course, triathlon, natation, trail",

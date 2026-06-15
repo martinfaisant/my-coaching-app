@@ -27,6 +27,7 @@ export async function generateMetadata({ params }: CoachProfilePageProps): Promi
   }
 
   const t = await getTranslations({ locale, namespace: 'publicCoaches' })
+  const tMeta = await getTranslations({ locale, namespace: 'metadata' })
   const name = getDisplayName(data.coach)
   const presentation = getDisplayPresentation(data.coach, locale)
   const description =
@@ -37,6 +38,7 @@ export async function generateMetadata({ params }: CoachProfilePageProps): Promi
     path: `/coaches/${id}`,
     title: t('profileMetaTitle', { name }),
     description: description || t('pageDescription'),
+    imageAlt: tMeta('ogImageAlt'),
   })
 }
 

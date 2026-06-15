@@ -17,6 +17,8 @@ export async function generateMetadata({
     locale,
     path: '/terms',
     title: t('termsTitle'),
+    description: t('termsDescription'),
+    imageAlt: t('ogImageAlt'),
   })
 }
 
