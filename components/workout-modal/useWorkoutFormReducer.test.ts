@@ -82,6 +82,67 @@ describe('workoutFormReducer — cascades objectifs (durée / distance / allure)
     expect(s.values.targetPace).toBe('')
   })
 
+  it('mode temps : vidage de la durée retire aussi l’allure', () => {
+    let s = makeState({
+      targetMode: 'time',
+      targetDurationMinutes: '60',
+      targetDistanceKm: '10',
+      targetPace: '6',
+    })
+    s = workoutFormReducer(s, { type: 'SET_VALUE', key: 'targetDurationMinutes', value: '' })
+    s = workoutFormReducer(s, AUTO)
+    expect(s.values.targetDurationMinutes).toBe('')
+    expect(s.values.targetDistanceKm).toBe('')
+    expect(s.values.targetPace).toBe('')
+  })
+
+  it('mode temps : après vidage durée, resaisie temps puis distance recalcule l’allure', () => {
+    let s = makeState({
+      targetMode: 'time',
+      targetDurationMinutes: '60',
+      targetDistanceKm: '10',
+      targetPace: '6',
+    })
+    s = workoutFormReducer(s, { type: 'SET_VALUE', key: 'targetDurationMinutes', value: '' })
+    s = workoutFormReducer(s, AUTO)
+    expect(s.values.targetPace).toBe('')
+    s = workoutFormReducer(s, { type: 'SET_VALUE', key: 'targetDurationMinutes', value: '45' })
+    s = workoutFormReducer(s, AUTO)
+    s = workoutFormReducer(s, { type: 'SET_VALUE', key: 'targetDistanceKm', value: '12' })
+    s = workoutFormReducer(s, AUTO)
+    expect(s.values.targetDurationMinutes).toBe('45')
+    expect(s.values.targetDistanceKm).toBe('12')
+    expect(s.values.targetPace).not.toBe('')
+  })
+
+  it('mode temps : saisie distance seule conservée', () => {
+    let s = makeState({
+      targetMode: 'time',
+      targetDistanceKm: '',
+      targetDurationMinutes: '',
+      targetPace: '',
+    })
+    s = workoutFormReducer(s, { type: 'SET_VALUE', key: 'targetDistanceKm', value: '10' })
+    s = workoutFormReducer(s, AUTO)
+    expect(s.values.targetDistanceKm).toBe('10')
+  })
+
+  it('mode temps : distance puis durée recalcule l’allure', () => {
+    let s = makeState({
+      targetMode: 'time',
+      targetDistanceKm: '',
+      targetDurationMinutes: '',
+      targetPace: '',
+    })
+    s = workoutFormReducer(s, { type: 'SET_VALUE', key: 'targetDistanceKm', value: '10' })
+    s = workoutFormReducer(s, AUTO)
+    s = workoutFormReducer(s, { type: 'SET_VALUE', key: 'targetDurationMinutes', value: '60' })
+    s = workoutFormReducer(s, AUTO)
+    expect(s.values.targetDistanceKm).toBe('10')
+    expect(s.values.targetDurationMinutes).toBe('60')
+    expect(s.values.targetPace).not.toBe('')
+  })
+
   it('deux AUTO_CALC consécutifs restent stables après vidage allure (mode distance)', () => {
     let s = makeState({
       targetMode: 'distance',

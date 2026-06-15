@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 15 juin 2026 (**boutons auth submit loading** ; précédent : SEO P1)
+**Dernière mise à jour :** 15 juin 2026 (**activité athlète — champs obligatoires modale** ; précédent : activités saisies calendrier, migration 078)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -9,12 +9,12 @@
 ## 🎯 Documentation Active (à utiliser en priorité)
 
 ### **README.md** ⭐
-- **Contenu :** Setup projet, stack technique, quick start, structure du projet, **URL production https://mysportally.com**, **accueil `/` et `/en`** (landing marketing visiteurs, §4.13), **annuaire coach public** **`/coaches`** (§4.16), **FAQ publiques** **`/faq/athlete`** / **`/faq/coach`** (§4.15), **SEO** (`/sitemap.xml`, `/robots.txt`, **`/llms.txt`**, og:image, JSON-LD, noindex, **`lib/seoMetadata.ts`**, **`lib/seoSocial.ts`**, **`lib/seoJsonLd.ts`**, **`lib/llmsTxt.ts`**, exclusion sitemap/robots/llms dans **`proxy.ts`**), **connexion Google OAuth** (…)
-- **Dernière mise à jour :** 15 juin 2026 (SEO P1 ; précédent : annuaire coach public)
+- **Contenu :** Setup projet, stack technique, quick start, structure du projet, **URL production https://mysportally.com**, **accueil `/` et `/en`** (landing marketing visiteurs, §4.13), **annuaire coach public** **`/coaches`** (§4.16), **FAQ publiques** **`/faq/athlete`** / **`/faq/coach`** (§4.15), **SEO** (`/sitemap.xml`, `/robots.txt`, **`/llms.txt`**, og:image, JSON-LD, noindex, **`lib/seoMetadata.ts`**, **`lib/seoSocial.ts`**, **`lib/seoJsonLd.ts`**, **`lib/llmsTxt.ts`**, exclusion sitemap/robots/llms dans **`proxy.ts`**), **connexion Google OAuth** (…), **tests & CI** (`npm run check`, `check:full`, `check:i18n`, `.github/workflows/ci.yml` : lint + typecheck + test + build)
+- **Dernière mise à jour :** 15 juin 2026 (activités athlète + migration 078 ; précédent : CI tests + parité i18n)
 
 ### **Project_context.md** ⭐
-- **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (…), **§4.16 Annuaire coach public** (`/coaches`, gate visiteur, deep link find-coach), **§4.15 FAQ publiques** (athlète/coach, SEO JSON-LD), **§4.13 Marketing landing** (…), **§4.14 SEO** (sitemap, robots, **llms.txt**, og:image, JSON-LD, noindex, **`buildPublicPageMetadata`**, canonical/hreflang, proxy), **§4.9 Strava** (…)
-- **Dernière mise à jour :** 15 juin 2026 (§4.1 **AuthSubmitButton** loading ; précédent : §4.14 SEO P1)
+- **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (…), **§4.16 Annuaire coach public** (`/coaches`, gate visiteur, deep link find-coach), **§4.15 FAQ publiques** (athlète/coach, SEO JSON-LD), **§4.13 Marketing landing** (…), **§4.14 SEO** (sitemap, robots, **llms.txt**, og:image, JSON-LD, noindex, **`buildPublicPageMetadata`**, canonical/hreflang, proxy), **§4.9 Strava** (…), **§6 Quality gates & CI** (Vitest, parité i18n, GitHub Actions)
+- **Dernière mise à jour :** 15 juin 2026 (§4.5 activité athlète champs obligatoires modale ; précédent : `planned_by` migration 078)
 
 ### **docs/CALENDAR_MONTH_VIEW.md**
 - **Contenu :** Récap **vue mois** (desktop) vs **vue semaine** (mobile), règles semaines ISO / mois civil étendu, **totaux hebdo** (liste sports `PERSISTED_WORKOUT_SPORT_TYPES`, `SPORT_WEEKLY_SUMMARY_BAR`), chargement données, liste des fichiers et tests unitaires, **tuiles disponibilité** (réf. design + `CalendarView`), liens vers maquettes archivées
@@ -24,11 +24,11 @@
 
 ### **docs/DESIGN_SYSTEM.md** ⭐
 - **Contenu :** Tokens (…), composants (…, **Landing**, **`components/public/*`** FAQ + **`PublicMarketingFooter`**, …)
-- **Dernière mise à jour :** 15 juin 2026 (**AuthSubmitButton** loading connexion/inscription ; précédent : Annuaire coach public § + PublicCoach*)
+- **Dernière mise à jour :** 15 juin 2026 (activité athlète champs obligatoires + `CoachWorkoutForm.requiredFields` ; précédent : calendrier `AthleteLogged*`)
 
 ### **docs/I18N.md** ⭐
-- **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces (dont **`publicCoaches`**, **`publicFooter`**, **`faqAthlete`**, **`faqCoach`**, **`metadata.*`** SEO dont **`siteTitle`**, **`termsDescription`**, **`ogImageAlt`**, **`buildPublicPageMetadata`**), **`proxy.ts`** (exclusion sitemap/robots/llms), **checklist nouvelles features** ; …
-- **Dernière mise à jour :** 14 juin 2026 (**publicCoaches** ; précédent : publicFooter, faqAthlete/faqCoach)
+- **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces (dont **`publicCoaches`**, **`publicFooter`**, **`faqAthlete`**, **`faqCoach`**, **`metadata.*`** SEO dont **`siteTitle`**, **`termsDescription`**, **`ogImageAlt`**, **`buildPublicPageMetadata`**), **`proxy.ts`** (exclusion sitemap/robots/llms), **checklist nouvelles features**, **parité automatisée FR/EN** (`lib/i18n/*`, `npm run check:i18n`, gate CI via `npm run test`) ; …
+- **Dernière mise à jour :** 15 juin 2026 (clés **`activityRealizedMandatory*`** ; précédent : namespace **`athleteLoggedActivity`**)
 
 ### **docs/AUTH_EMAIL_TEMPLATES.md**
 - **Contenu :** Guide de configuration des emails d’auth Supabase (sujet, i18n FR/EN, variables, dépannage logo). **Les fichiers HTML des templates** (Confirm signup, puis Magic Link, Reset Password, etc.) sont dans **docs/email-templates/**.
@@ -37,10 +37,10 @@
 
 ### **docs/email-templates/** (dossier)
 ### **docs/ENGINEERING_STATUS_REFAC_AUDIT.md**
-- **Contenu :** Source canonique de l’**état d’avancement engineering** : refactoring P1/P2 (historique) + audit P3 (Quick Wins faits, refactors, reste à faire) + checklist de cohérence.
+- **Contenu :** Source canonique de l’**état d’avancement engineering** : refactoring P1/P2 (historique) + audit P3 (Quick Wins faits, refactors, reste à faire) + **CI Vitest + parité i18n** (juin 2026) + checklist de cohérence.
 - **Utiliser pour :** Savoir ce qui est fait / à faire sans ambiguïté ; éviter les doublons entre “refactoring” et “audit”.
-- **Taille :** ~65 lignes
-- **Dernière mise à jour :** 18 mars 2026
+- **Taille :** ~80 lignes
+- **Dernière mise à jour :** 15 juin 2026 (CI tests + parité i18n ; précédent : 18 mars 2026)
 
 - **Contenu :** Templates HTML des emails Supabase (confirm-signup.html, etc.), index dans README.md. Un seul dossier pour tous les types d’emails pour faciliter le suivi.
 - **Utiliser pour :** Récupérer le Body à coller dans Supabase pour chaque type d’email (Confirm signup, Magic Link, Reset Password, etc.).
@@ -55,12 +55,17 @@
 - **Utiliser pour :** Implémenter des boutons de sauvegarde cohérents
 - **Taille :** 441 lignes
 
+### **AGENTS.md** ⭐
+- **Contenu :** Guide rapide agents de code : stack, commandes (`check`, `check:full`, **`check:i18n`**, CI), contraintes absolues, DoD (dont parité i18n en CI)
+- **Utiliser pour :** Onboarding agents Cursor / checklist qualité avant livraison
+- **Dernière mise à jour :** 15 juin 2026 (CI tests + parité i18n)
+
 ### **.cursor/rules/project-core.mdc** ⭐
 - **Contenu :** Règles de code principales, philosophie MVP-first, design tokens, **i18n (toujours penser bilingue)**, conventions, patterns (Error boundaries, Logger, DashboardPageShell, etc.)
 - **Utiliser pour :** Conventions de code, règles automatiques Cursor AI
 - **Type :** Always-applied workspace rule
 - **Taille :** ~230 lignes
-- **Dernière mise à jour :** 20 mars 2026 (section Objectifs : résultat temps non obligatoire champ par champ, effacement si tous vides)
+- **Dernière mise à jour :** 15 juin 2026 (activité athlète champs obligatoires modale ; précédent : CI Vitest + parité i18n)
 
 ### **.cursor/rules/save-button-pattern.mdc**
 - **Contenu :** Règle Cursor pour pattern de bouton de sauvegarde
@@ -92,6 +97,11 @@
 - **Contenu :** **DESIGN_RPE_PLANNED_INTENSITY.md** (solution validée, hypothèses, **US-RPE-01 à US-RPE-05**, critères d’acceptation, table RPE FR + proposition EN, composants, points ouverts) ; **SPEC_ARCHITECTE_RPE_PLANNED_INTENSITY.md** (migration `planned_intensity`, table des fichiers, `saveWorkoutStatusAndComment`, RLS, edge cases, tests manuels) ; **README.md** (index fichiers) ; maquettes HTML **MOCKUP_US1** … **US5** + **MOCKUP_OPTION_A_RPE_MODAL.html** (interactif) ; **MOCKUP_OPTION_B_RPE_INLINE.html** (option non retenue).
 - **Utiliser pour :** Cadrage produit/UI puis **spec technique** **intensité prévisionnelle coach** (RPE 1–10), badge tuile, validation athlète ; **Mode Développeur** ensuite.
 - **Créé le :** 11 mai 2026
+
+### **docs/archive/design-athlete-logged-activity/** (design feature — archivé juin 2026)
+- **Contenu :** README + maquettes HTML **US-ATH-LOG-01…03** (menu « + » obsolète, modale athlète, tuiles coach).
+- **Utiliser pour :** Contexte UI historique ; détail produit / technique à jour : **`Project_context.md`** §4.5, **`docs/DESIGN_SYSTEM.md`** (calendrier), **`docs/CALENDAR_MONTH_VIEW.md`**.
+- **Archivé le :** 15 juin 2026 (fusion vers docs actives ci-dessus).
 
 ### **docs/design-availability-tile-top-accent/** (design feature — référence UI livrée)
 - **Contenu :** **README.md** (index) ; **MOCKUP_US1_CALENDAR_AVAILABILITY_TILES.html** (tuiles Disponible / Indisponible : bandeau haut, typo alignée tuile séance compacte). Implémentation : **`components/CalendarView.tsx`** (`renderAvailabilityTile`).
@@ -530,10 +540,28 @@
 
 **Fréquence de mise à jour :** À chaque ajout/suppression de documentation
 
-**Dernier scan :** 14 juin 2026  
-**Dernier nettoyage :** 14 juin 2026 (entrée Changements récents : annuaire coach public)
+**Dernier scan :** 15 juin 2026  
+**Dernier nettoyage :** 15 juin 2026 (entrée Changements récents : champs obligatoires modale activité athlète)
 
 ### Changements récents :
+
+✅ **15 juin 2026 – Modale activité athlète : champs obligatoires (UI) – Mode Analyste :**
+- **Livraison (réf. code) :** `getAthleteLoggedActivityMetricsUi()` (`lib/athleteLoggedActivityValidation.ts`) ; prop **`requiredFields`** sur **`CoachWorkoutForm`** ; constantes **`FORM_PRIMARY_FIELD_*`** (`lib/formStyles.ts`) ; i18n **`athleteLoggedActivity.form.activityRealizedMandatory*`** (FR/EN) ; tests **`lib/athleteLoggedActivityValidation.test.ts`**.
+- **Doc :** `Project_context.md` §4.5 ; `docs/DESIGN_SYSTEM.md` (Input / calendrier / fichiers clés) ; `docs/I18N.md` ; `.cursor/rules/project-core.mdc` ; `DOCS_INDEX.md`.
+- **Archivage :** aucun.
+- **Pages légales / confidentialité :** aucune modification (évolution UX formulaire uniquement).
+
+✅ **15 juin 2026 – Activités saisies par l’athlète (calendrier) – Mode Analyste :**
+- **Livraison (réf. code) :** migration **078** (`workouts.planned_by`, RLS, totaux « prévu ») ; **`AthleteLoggedActivityModal`**, **`AthleteLoggedCoachReadOnlyView`** ; intégration **`CalendarView`** (badge « Ajouté », ordre jour coach → perso → Strava, bouton « + » passé/aujourd’hui → activité, futur → dispo) ; **`WorkoutTargetActualCards`** (`hideTargetCard`, pas de deltas comparaison) ; actions **`athlete-logged-activity/actions.ts`** ; libs **`athleteLoggedWorkout`**, **`athleteLoggedActivityValidation`** ; i18n **`athleteLoggedActivity`** (FR/EN).
+- **Doc :** `Project_context.md` §4.5 + §5 `workouts` ; `docs/DESIGN_SYSTEM.md` ; `docs/CALENDAR_MONTH_VIEW.md` ; `docs/I18N.md` ; `DEPLOYMENT_NOTES.md` (migration 078) ; `README.md`, `AGENTS.md`, `.cursor/rules/project-core.mdc`, `DOCS_INDEX.md`.
+- **Archivage :** `docs/archive/design-athlete-logged-activity/` (maquettes US-ATH-LOG-01…03 + README ; US-01 menu « + » obsolète).
+- **Pages légales / confidentialité :** aucune modification proposée (données d’entraînement déjà couvertes par les CGU / politique existantes).
+
+✅ **15 juin 2026 – CI Vitest + parité i18n FR/EN (D2/D6) – Mode Analyste :**
+- **Livraison (réf. code) :** `.github/workflows/ci.yml` — étape `npm run test` (lint → typecheck → test → build) ; utilitaires **`lib/i18n/collectMessageKeys.ts`**, **`lib/i18n/assertMessageParity.ts`**, gate **`lib/i18n/messageParity.test.ts`** ; script **`npm run check:i18n`** ; clé FR **`workouts.validation.onlyCoachCanDelete`**.
+- **Doc :** `Project_context.md` §6 (quality gates & CI), `docs/I18N.md` (parité automatisée), `docs/ENGINEERING_STATUS_REFAC_AUDIT.md` (§ CI & qualité), `README.md`, `AGENTS.md`, `.cursor/rules/project-core.mdc`, `MISE_EN_PROD.md` (§0 check:full), `DOCS_INDEX.md`.
+- **Archivage :** aucun (pas de doc feature temporaire).
+- **Pages légales / confidentialité :** aucune modification (pas de changement produit visible côté utilisateur).
 
 ✅ **14 juin 2026 – Annuaire coach public (`/coaches`) – Mode Analyste :**
 - **Livraison (réf. code) :** routes **`/coaches`** + **`/coaches/[id]`** ; RPC migration **077** ; composants **`PublicCoachesDirectorySection`**, **`PublicCoachProfileSection`**, **`PublicCoachAuthGateProvider`** ; deep link post-auth **`/dashboard/find-coach?coach&offer`** ; nav **`PublicHeader`** « Trouver un coach » ; sitemap dynamique fiches coach ; filtres partagés **`lib/coachListingUtils.ts`**.

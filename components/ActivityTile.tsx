@@ -19,6 +19,10 @@ type WorkoutTileProps = ActivityTileBaseProps & {
   sportType: SportType
   /** Métadonnées optionnelles (ex: "45'", "10 km", "120m D+") */
   metadata?: string[]
+  /** Badge optionnel (ex. activité perso athlète) */
+  badgeLabel?: string
+  /** Classes du pill badge (défaut : style neutre stone) */
+  badgeClassName?: string
 }
 
 type StravaActivityTileProps = ActivityTileBaseProps & {
@@ -88,7 +92,7 @@ export function ActivityTile(props: ActivityTileProps) {
 
   // Rendu entraînement planifié
   if (props.type === 'workout') {
-    const { sportType, metadata = [] } = props
+    const { sportType, metadata = [], badgeLabel, badgeClassName } = props
     const style = SPORT_CARD_STYLES[sportType]
     const SportIcon = SPORT_ICONS[sportType]
 
@@ -102,7 +106,18 @@ export function ActivityTile(props: ActivityTileProps) {
           <SportIcon className="w-4 h-4" />
         </span>
         <div className="min-w-0 flex-1">
-          <div className="font-semibold text-stone-900 break-words">{title}</div>
+          <div className="font-semibold text-stone-900 break-words flex items-start gap-2">
+            <span className="min-w-0 flex-1">{title}</span>
+            {badgeLabel && (
+              <span
+                className={`shrink-0 px-1.5 py-0.5 text-[10px] font-semibold ${
+                  badgeClassName ?? 'rounded bg-stone-100 text-stone-500 border border-stone-200'
+                }`}
+              >
+                {badgeLabel}
+              </span>
+            )}
+          </div>
           {(metadata.length > 0 || date) && (
             <div className="text-xs text-stone-500 font-semibold mt-0.5 flex items-center gap-1.5 flex-wrap">
               {date && <span>{date}</span>}

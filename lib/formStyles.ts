@@ -38,3 +38,9 @@ export const FORM_ERROR_TEXT_CLASSES = 'text-sm text-palette-danger-dark'
 /** Classes pour un bloc d'erreur (alert box) standard. */
 export const FORM_ERROR_BOX_CLASSES =
   'p-3 rounded-lg text-sm bg-palette-danger-light border border-palette-danger text-palette-danger-dark'
+
+/** Contour renforcé pour un champ métrique obligatoire (séance coach / activité athlète). */
+export const FORM_PRIMARY_FIELD_BORDER_CLASSES = 'border-stone-400'
+
+/** Icône associée à un champ métrique obligatoire. */
+export const FORM_PRIMARY_FIELD_ICON_CLASSES = 'text-stone-600'

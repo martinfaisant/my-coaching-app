@@ -11,7 +11,7 @@
 - Typecheck: `npm run typecheck`
 - Lint: `npm run lint`
 - Fix auto: `npm run lint:fix`
-- Gate qualite: `npm run check` (typecheck + tests Vitest) ; gate complet: `npm run check:full` (lint + typecheck + tests)
+- Gate qualite: `npm run check` (typecheck + tests Vitest) ; gate complet: `npm run check:full` (lint + typecheck + tests) ; parite i18n: `npm run check:i18n` (inclus dans `npm run test` / CI)
 - Tests unitaires: `npm run test` (Vitest en pool **`threads`** — `vitest.config.ts`, `**/*.{test,spec}.{ts,tsx}`, jsdom + `@testing-library/react`, cleanup `vitest.setup.ts` ; dossier `e2e/` exclu)
 - Build verification: `npm run build`
 
@@ -33,6 +33,7 @@
 - Sports: couleurs + icones doivent venir des utilitaires design system:
   - couleurs/tuiles: `lib/sportStyles.ts` (ex `SPORT_CARD_STYLES`)
   - icones: `components/SportIcons.tsx` (via `SPORT_ICONS`)
+- Activites saisies par l'athlete (`planned_by = 'athlete'`): `lib/athleteLoggedWorkout.ts`, modale `AthleteLoggedActivityModal` ; pas de modification statut via `saveWorkoutStatusAndComment`
 - DB: toute operation doit respecter RLS + acces role-based:
   - utiliser les helpers `lib/authHelpers.ts` (ex `requireUser`, `requireRole`, `requireCoachOrAthleteAccess`)
 
@@ -59,7 +60,7 @@ Toutes les cases doivent être vraies avant de considérer la tâche "terminée"
 2. i18n (FR/EN) :
   - aucun texte utilisateur en dur (composants + server actions)
   - traductions via `useTranslations` / `getTranslations`
-  - clés ajoutées/modifiées dans `messages/fr.json` et `messages/en.json` (mêmes structures)
+  - clés ajoutées/modifiées dans `messages/fr.json` et `messages/en.json` (mêmes structures ; gate `npm run check:i18n` / CI)
 3. Design system :
   - aucune couleur hardcodée (pas de hex) : utiliser tokens Tailwind + composants existants
   - sports : couleurs + icônes via `lib/sportStyles.ts` et `components/SportIcons.tsx` (pas ailleurs)

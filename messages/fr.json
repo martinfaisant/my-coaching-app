@@ -678,6 +678,7 @@
       "invalidSport": "Type de sport invalide.",
       "onlyCoachCanCreate": "Seul le coach peut créer un entraînement.",
       "onlyCoachCanEdit": "Seul le coach peut modifier l'entraînement.",
+      "onlyCoachCanDelete": "Seul le coach peut supprimer un entraînement.",
       "notFound": "Entraînement introuvable.",
       "deleteSuccess": "Entraînement supprimé avec succès.",
       "notAuthenticated": "Non connecté.",
@@ -691,7 +692,8 @@
       "workoutUnitsNotConfigured": "Configurez les unités des séances (profil coach) avant de créer une séance.",
       "actualDurationRequired": "Indiquez un temps réalisé.",
       "actualDistanceRequired": "Indiquez une distance réalisée.",
-      "actualElevationRequired": "Indiquez un dénivelé réalisé."
+      "actualElevationRequired": "Indiquez un dénivelé réalisé.",
+      "athleteLoggedReadOnly": "Cette activité est gérée via le formulaire activité perso."
     }
   },
   "goals": {
@@ -2472,6 +2474,40 @@
       "missingFacilityId": "ID du centre manquant.",
       "facilityNotFound": "Centre introuvable.",
       "serverError": "Une erreur est survenue. Veuillez réessayer."
+    }
+  },
+  "athleteLoggedActivity": {
+    "badgePersonal": "Ajouté",
+    "addMenu": {
+      "addLabel": "Ajouter",
+      "availability": "Disponibilité",
+      "loggedActivity": "Activité réalisée",
+      "availabilityPastHint": "Indisponible sur les jours passés"
+    },
+    "tile": {
+      "badgePersonal": "Ajouté"
+    },
+    "form": {
+      "activityRealized": "Activité réalisée",
+      "activityRealizedMandatoryTime": "Activité réalisée — Durée obligatoire",
+      "activityRealizedMandatoryTimeOrDistance": "Activité réalisée — Durée ou distance obligatoire",
+      "activityRealizedMandatoryDistanceAndTime": "Activité réalisée — Distance et durée obligatoire"
+    },
+    "coachReadOnly": {
+      "headerBadge": "Ajouté par l'athlète",
+      "banner": "Ajoutée par l'athlète · non planifiée",
+      "feedbackTitle": "Retour athlète"
+    },
+    "validation": {
+      "titleRequired": "Saisissez un titre.",
+      "allFieldsRequired": "Tous les champs sont obligatoires.",
+      "invalidSport": "Type de sport invalide.",
+      "targetRequired": "Indiquez au moins une métrique (temps ou distance selon le sport).",
+      "durationRequiredForSport": "Indiquez une durée pour ce sport.",
+      "paceRequired": "La vitesse (allure ou km/h) est obligatoire pour ce sport.",
+      "primaryMetricDistanceRequired": "Indiquez une distance.",
+      "primaryMetricTimeRequired": "Indiquez une durée.",
+      "workoutUnitsNotConfigured": "Configurez les unités des séances (profil coach) avant de créer une séance."
     }
   }
 }

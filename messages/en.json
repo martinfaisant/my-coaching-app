@@ -566,7 +566,8 @@
       "workoutUnitsNotConfigured": "Configure session units in your coach profile before creating a workout.",
       "actualDurationRequired": "Enter completed time.",
       "actualDistanceRequired": "Enter completed distance.",
-      "actualElevationRequired": "Enter completed elevation."
+      "actualElevationRequired": "Enter completed elevation.",
+      "athleteLoggedReadOnly": "This activity is managed via the personal activity form."
     }
   },
   "goals": {
@@ -2347,6 +2348,40 @@
       "missingFacilityId": "Facility ID is missing.",
       "facilityNotFound": "Facility not found.",
       "serverError": "An error occurred. Please try again."
+    }
+  },
+  "athleteLoggedActivity": {
+    "badgePersonal": "Added",
+    "addMenu": {
+      "addLabel": "Add",
+      "availability": "Availability",
+      "loggedActivity": "Completed activity",
+      "availabilityPastHint": "Not available on past days"
+    },
+    "tile": {
+      "badgePersonal": "Added"
+    },
+    "form": {
+      "activityRealized": "Completed activity",
+      "activityRealizedMandatoryTime": "Completed activity — Duration required",
+      "activityRealizedMandatoryTimeOrDistance": "Completed activity — Duration or distance required",
+      "activityRealizedMandatoryDistanceAndTime": "Completed activity — Distance and duration required"
+    },
+    "coachReadOnly": {
+      "headerBadge": "Added by athlete",
+      "banner": "Added by athlete · unplanned",
+      "feedbackTitle": "Athlete feedback"
+    },
+    "validation": {
+      "titleRequired": "Enter a title.",
+      "allFieldsRequired": "All required fields must be filled in.",
+      "invalidSport": "Invalid sport type.",
+      "targetRequired": "Enter at least one metric (time or distance depending on sport).",
+      "durationRequiredForSport": "Enter a duration for this sport.",
+      "paceRequired": "Pace or speed is required for this sport.",
+      "primaryMetricDistanceRequired": "Enter a distance.",
+      "primaryMetricTimeRequired": "Enter a duration.",
+      "workoutUnitsNotConfigured": "Configure workout units (coach profile) before creating a session."
     }
   }
 }

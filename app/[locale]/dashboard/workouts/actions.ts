@@ -600,7 +600,7 @@ export async function saveWorkoutStatusAndComment(
   const { data: existingWorkout, error: existingError } = await supabase
     .from('workouts')
     .select(
-      'id, athlete_id, target_duration_minutes, target_distance_km, target_elevation_m, actual_duration_minutes, actual_distance_km, actual_elevation_m'
+      'id, athlete_id, planned_by, target_duration_minutes, target_distance_km, target_elevation_m, actual_duration_minutes, actual_distance_km, actual_elevation_m'
     )
     .eq('id', workoutId)
     .eq('athlete_id', athleteId)
@@ -612,6 +612,10 @@ export async function saveWorkoutStatusAndComment(
       athleteId,
     })
     return { error: tErrors('supabaseGeneric') }
+  }
+
+  if (existingWorkout.planned_by === 'athlete') {
+    return { error: t('athleteLoggedReadOnly') }
   }
 
   const targetDuration = existingWorkout.target_duration_minutes as number | null | undefined

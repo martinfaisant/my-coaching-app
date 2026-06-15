@@ -6,6 +6,19 @@ Tout fonctionne sur **preview**. Voici quoi faire pour tout mettre en **prod**.
 
 ---
 
+## 0. Vérifications avant merge (recommandé)
+
+Avant de merger vers la branche de prod :
+
+```bash
+npm run check:full   # lint + typecheck + tests Vitest (inclut parité i18n)
+npm run build
+```
+
+La CI GitHub (`.github/workflows/ci.yml`) exécute les mêmes étapes (sans `check:full` regroupé) sur chaque PR et push `main`.
+
+---
+
 ## 1. Mettre le code en production (Git)
 
 Selon votre workflow :
@@ -76,6 +89,7 @@ Détail complet : **`DEPLOYMENT_NOTES.md`** § Connexion Google. **Pas de migrat
 
 | Étape | Action |
 |-------|--------|
+| 0 | *(Recommandé)* `npm run check:full` + `npm run build` avant merge. |
 | 1 | Merger `preview` dans la branche de prod et pousser (ou déclencher le déploiement). |
 | 2 | Exécuter les 6 migrations SQL (024 → 025 → 026 → 027 → 028 → 029) sur la base Supabase **production** dans l’ordre. |
 | 3 | Configurer Google OAuth (Supabase prod + Google Cloud + Vercel) si la feature est livrée. |

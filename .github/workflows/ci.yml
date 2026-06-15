@@ -39,6 +39,8 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
-      # Aucun script de test n'est défini dans `package.json` pour le moment.
+      - name: Test
+        run: npm run test
+
       - name: Build
         run: npm run build

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>US-ATH-LOG-02 — Modale Activité réalisée (layout coach + retour)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              'palette-forest-dark': '#627e59',
+              'palette-olive': '#8e9856',
+              stone: { 50: '#fafaf9', 100: '#f5f5f4', 200: '#e7e5e4', 300: '#d6d3d1', 400: '#a8a29e', 500: '#78716c', 600: '#57534e', 700: '#44403c', 900: '#1c1917' },
+            },
+          },
+        },
+      }
+    </script>
+    <style>
+      .sport-pill { @apply inline-flex flex-col items-center gap-1 px-3 py-2 rounded-full border-2 border-stone-200 bg-white text-[11px] font-semibold text-stone-600 cursor-pointer; }
+      .sport-pill.on { @apply border-palette-forest-dark bg-palette-forest-dark text-white shadow-md; }
+      .seg { @apply flex-1 py-2 text-xs font-medium rounded-md text-stone-600; }
+      .seg.on { @apply bg-palette-forest-dark text-white shadow-sm; }
+      .metric { @apply w-full rounded-lg border border-stone-300 bg-white py-2.5 pl-10 pr-12 text-sm font-semibold text-stone-900 outline-none; }
+      .metric.primary { @apply border-stone-400; }
+      .feel { @apply flex-1 flex flex-col items-center gap-1.5 p-2 rounded-xl border-2 border-stone-200 bg-white text-[10px] font-medium text-stone-600; }
+      .feel.on { @apply border-palette-forest-dark bg-emerald-50 text-palette-forest-dark; }
+      .int { @apply flex-1 h-10 rounded-lg border border-stone-200 text-xs font-semibold text-stone-500 bg-white; }
+      .int.on { @apply bg-amber-100 border-amber-400 text-amber-900; }
+    </style>
+  </head>
+  <body class="bg-stone-800/90 min-h-screen p-4 py-8">
+    <div class="max-w-xl mx-auto space-y-10">
+      <header class="text-stone-300 space-y-2">
+        <p class="text-xs font-semibold text-emerald-400 uppercase tracking-wider">US-ATH-LOG-02 · v2</p>
+        <h1 class="text-lg font-bold text-white">Modale activité — layout coach + retour athlète</h1>
+        <p class="text-sm leading-relaxed">
+          Reprend la <strong>modale coach</strong> (date, sports, titre, moment, bloc métriques stone-50, détails)
+          + le <strong>bloc retour</strong> athlète en dessous. <strong>Une seule saisie</strong> temps / distance / allure / D+
+          — pas de segment Statut, pas de « Temps réalisé » / « Distance réalisée » en double.
+        </p>
+      </header>
+
+      <!-- RÈGLE DE FUSION -->
+      <section class="rounded-xl border border-stone-600 bg-stone-900/50 p-4 text-stone-300 text-sm space-y-2">
+        <h2 class="font-bold text-white text-sm">Règle de fusion (PO validée)</h2>
+        <ul class="list-disc list-inside space-y-1 text-stone-400">
+          <li>Bloc métriques = <strong>même composant / mise en page</strong> que <code>CoachWorkoutForm</code> (icônes, grille, textarea détails dans le bloc).</li>
+          <li>Libellé du bloc : <strong>« Activité réalisée »</strong> (pas « Objectif de la séance »).</li>
+          <li>Champs = valeurs <strong>réalisées</strong> stockées directement (pas target_* + actual_*).</li>
+          <li>Sous le bloc stone-50 : <code>WorkoutFeedbackSection</code> + commentaire coach (comme capture athlète).</li>
+          <li><strong>Exclu</strong> : onglets Planifié / Réalisé / Non réalisé ; <code>WorkoutTargetActualCards</code>.</li>
+        </ul>
+      </section>
+
+      <!-- ÉTAT PRINCIPAL — Vélo, création -->
+      <section>
+        <p class="text-xs text-stone-400 mb-3"><strong>État principal</strong> — Création · Vélo · aligné captures produit</p>
+        <div class="bg-white rounded-2xl shadow-2xl flex flex-col max-h-[92vh] overflow-hidden w-full max-w-lg mx-auto">
+          <!-- Header Modal (iconRaw = date à gauche) -->
+          <div class="px-5 py-4 border-b border-stone-200 flex items-center justify-between gap-3 shrink-0">
+            <button type="button" class="flex items-center gap-2 text-left min-w-0 group">
+              <svg class="h-5 w-5 text-stone-400 shrink-0 group-hover:text-palette-forest-dark" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+              <span class="text-sm font-bold text-stone-900 truncate">Vendredi 19 juin 2026</span>
+            </button>
+            <div class="flex items-center gap-2 shrink-0">
+              <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-stone-100 text-stone-600 border border-dashed border-stone-300">Perso</span>
+              <button type="button" class="p-1 text-stone-400 hover:text-stone-600" aria-label="Fermer">
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="overflow-y-auto flex-1 min-h-0">
+            <div class="px-6 py-4 space-y-5">
+              <!-- Sports (SportTileSelectable) -->
+              <div class="flex flex-wrap gap-2">
+                <span class="sport-pill">Course</span>
+                <span class="sport-pill on">
+                  <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="5.5" cy="17.5" r="2.5"/><circle cx="18.5" cy="17.5" r="2.5"/><path d="M15 6a1 1 0 100-2 1 1 0 000 2zm-3 11.5V9l-3-3 2-2 4 4v7"/></svg>
+                  Vélo
+                </span>
+                <span class="sport-pill">Trail</span>
+                <span class="sport-pill">Natation</span>
+                <span class="sport-pill">Musculation</span>
+                <span class="sport-pill text-[10px]">…</span>
+              </div>
+
+              <!-- Titre -->
+              <div>
+                <label class="block text-sm font-medium text-stone-700 mb-1.5">Titre de la séance</label>
+                <input type="text" placeholder="Ex : Sortie longue" class="w-full rounded-lg border border-stone-300 px-4 py-2.5 text-sm" />
+              </div>
+
+              <!-- Moment de la journée -->
+              <div>
+                <label class="block text-sm font-medium text-stone-700 mb-1.5">Moment de la journée</label>
+                <div class="flex bg-stone-200 p-0.5 rounded-lg w-full">
+                  <button type="button" class="seg on">Non précisé</button>
+                  <button type="button" class="seg">Matin</button>
+                  <button type="button" class="seg">Midi</button>
+                  <button type="button" class="seg">Soir</button>
+                </div>
+              </div>
+
+              <!-- Bloc métriques = layout coach, libellé adapté, champs uniques -->
+              <div class="bg-stone-50 p-4 rounded-xl border border-stone-100">
+                <p class="text-[11px] font-semibold text-stone-500 uppercase tracking-wider mb-3">Activité réalisée</p>
+
+                <!-- Distance pleine largeur (sport vélo : primaire visuelle, sans ref coach) -->
+                <div class="relative mb-3">
+                  <input type="text" value="14,3" class="metric primary" />
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-4 w-4 text-stone-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M4 20h16M6 4h12v16H6z"/><path d="M10 8h4M10 12h4M10 16h4"/></svg>
+                  </div>
+                  <span class="absolute inset-y-0 right-0 pr-3 flex items-center text-xs text-stone-600 font-medium">km</span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 mb-3">
+                  <div class="relative">
+                    <input type="text" value="22" class="metric" />
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <svg class="h-4 w-4 text-stone-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v6l4 2"/></svg>
+                    </div>
+                    <span class="absolute inset-y-0 right-0 pr-3 flex items-center text-xs text-stone-500">min</span>
+                  </div>
+                  <div class="relative">
+                    <input type="text" value="39" class="metric" />
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <svg class="h-4 w-4 text-stone-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                    </div>
+                    <span class="absolute inset-y-0 right-0 pr-3 flex items-center text-xs text-stone-500">km/h</span>
+                  </div>
+                </div>
+
+                <div class="relative mb-3">
+                  <input type="text" value="200" class="metric" />
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-4 w-4 text-stone-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                  </div>
+                  <span class="absolute inset-y-0 right-0 pr-3 flex items-center text-xs text-stone-500">m D+</span>
+                </div>
+
+                <hr class="my-3 border-stone-200" />
+                <textarea rows="3" placeholder="Détails de la séance…" class="w-full rounded-lg border border-stone-300 px-3 py-2 text-sm resize-none min-h-[80px]"></textarea>
+              </div>
+
+              <!-- Retour athlète — SOUS le bloc métriques, pas de champs temps/distance ici -->
+              <div class="space-y-4 pt-1 border-t border-stone-100">
+                <div>
+                  <label class="block text-sm font-medium text-stone-700 mb-2">Comment vous êtes-vous senti ?</label>
+                  <div class="flex gap-2">
+                    <div class="feel"><span class="text-lg">😠</span><span class="text-center leading-tight">Très mal</span></div>
+                    <div class="feel"><span class="text-lg">🙁</span><span class="text-center leading-tight">Mal</span></div>
+                    <div class="feel"><span class="text-lg">😐</span><span class="text-center leading-tight">Neutre</span></div>
+                    <div class="feel on"><span class="text-lg">🙂</span><span class="text-center leading-tight">Bien</span></div>
+                    <div class="feel"><span class="text-lg">😄</span><span class="text-center leading-tight">Très bien</span></div>
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-stone-700 mb-2">Intensité de l'effort ressenti :</label>
+                  <div class="flex gap-1">
+                    <div class="int">1</div><div class="int">2</div><div class="int">3</div><div class="int">4</div><div class="int">5</div>
+                    <div class="int on">6</div><div class="int">7</div><div class="int">8</div><div class="int">9</div><div class="int">10</div>
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-stone-700 mb-2">Plaisir pris pendant la séance :</label>
+                  <div class="flex gap-2">
+                    <div class="feel"><span class="text-lg">😠</span><span class="text-[9px] text-center">Aucun plaisir</span></div>
+                    <div class="feel"><span class="text-lg">🙁</span><span class="text-[9px] text-center">Un peu</span></div>
+                    <div class="feel on"><span class="text-lg">😐</span><span class="text-[9px] text-center">Moyen</span></div>
+                    <div class="feel"><span class="text-lg">🙂</span><span class="text-[9px] text-center">Agréable</span></div>
+                    <div class="feel"><span class="text-lg">😄</span><span class="text-[9px] text-center">Très agréable</span></div>
+                  </div>
+                </div>
+                <div>
+                  <textarea rows="3" placeholder="Commentaires sur la séance pour votre coach" class="w-full rounded-lg border border-stone-300 px-3 py-2.5 text-sm resize-none"></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Footer coach-style -->
+          <div class="px-6 py-4 border-t border-stone-100 shrink-0">
+            <button type="button" class="w-full rounded-xl bg-palette-forest-dark text-white py-3 text-sm font-semibold hover:opacity-95 transition">Enregistrer</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Schéma structure -->
+      <section class="text-stone-400 text-sm">
+        <h2 class="font-bold text-stone-200 mb-3">Structure verticale cible</h2>
+        <pre class="bg-stone-900 rounded-lg p-4 text-xs leading-relaxed overflow-x-auto text-stone-300">Modal (size=workout)
+├─ Header : DatePicker + badge « Perso » + fermer
+├─ SportTileSelectable (wrap)
+├─ Titre de la séance
+├─ Segments moment de la journée
+├─ [stone-50] Activité réalisée
+│   ├─ champs métriques (layout CoachWorkoutForm)
+│   ├─ hr
+│   └─ Textarea détails
+├─ WorkoutFeedbackSection (ressenti, intensité, plaisir)
+├─ Textarea commentaire coach
+└─ Footer : Enregistrer (+ Supprimer si édition)</pre>
+      </section>
+
+      <!-- État édition -->
+      <section>
+        <p class="text-xs text-stone-400 mb-2"><strong>Édition</strong> — Même structure · footer avec Supprimer</p>
+        <div class="bg-white rounded-2xl p-4 border border-stone-200 text-sm text-stone-600 max-w-lg mx-auto">
+          <p>Formulaire identique, prérempli. Footer : <span class="text-red-700 font-medium">Supprimer</span> + <span class="font-medium text-palette-forest-dark">Enregistrer ✓</span> (pattern save).</p>
+        </div>
+      </section>
+
+      <!-- Transitions -->
+      <section class="text-stone-400 text-sm space-y-2 border-t border-stone-600 pt-6">
+        <h2 class="font-bold text-stone-300">Transitions inchangées</h2>
+        <ul class="list-disc list-inside space-y-1">
+          <li>US-ATH-LOG-01 → cette modale (date du jour).</li>
+          <li>Save → tuile US-ATH-LOG-03.</li>
+          <li>Musculation : bloc métriques = durée seule (même règle coach, libellé « Activité réalisée »).</li>
+          <li>Sans coach : pas de mention « distance obligatoire » liée au profil coach ; champs selon sport uniquement.</li>
+        </ul>
+      </section>
+    </div>
+  </body>
+</html>

@@ -141,7 +141,7 @@ Voir [docs/DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md) pour tous les détails.
 **Athlète**
 - Chercher un coach et envoyer une demande (avec choix d’une offre ; l’offre est figée au moment de la demande) ; sur la page **Trouver mon coach**, consulter la **liste des avis** d’un coach (note et commentaire ; pas d’identité des noteurs)
 - Chatter avec les coachs liés par demande (`pending`/`accepted`) ; certaines conversations peuvent être en lecture seule selon le statut
-- Consulter son calendrier d'entraînement
+- Consulter son calendrier d'entraînement et **saisir des activités réalisées** (jours passés ou aujourd'hui)
 - Consulter ses **statistiques** de volume réalisé (`/dashboard/stats` : années, sport, courbe Nivo, même logique « fait » que le calendrier)
 - Gérer ses objectifs
 - Noter son coach
@@ -236,8 +236,17 @@ my-coaching-app/
 ## 🧪 Tests
 
 ```bash
-# Quality gate local
+# Quality gate local (typecheck + tests Vitest, inclut parité i18n)
 npm run check
+
+# Gate complet (lint + typecheck + tests)
+npm run check:full
+
+# Parité clés fr.json / en.json uniquement
+npm run check:i18n
+
+# Tests unitaires Vitest
+npm run test
 
 # TypeScript uniquement
 npm run typecheck
@@ -247,9 +256,12 @@ npm run lint:fix
 
 # Build de vérification
 npm run build
+
+# E2E Playwright (local, secrets optionnels)
+npm run test:e2e
 ```
 
-> Note : Les tests unitaires et E2E sont à implémenter (voir P3 de l'audit)
+La CI GitHub (`.github/workflows/ci.yml`) exécute `lint`, `typecheck`, `test` et `build` sur chaque PR et push sur `main`.
 
 ## 🚢 Déploiement
 

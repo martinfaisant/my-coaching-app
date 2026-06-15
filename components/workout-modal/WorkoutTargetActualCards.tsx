@@ -39,6 +39,8 @@ type Props = {
   athleteComment?: string | null
   locale: WorkoutLocale
   tWorkouts: TWorkouts
+  /** Masque la carte Objectif (ex. activité saisie par l'athlète sans plan coach). */
+  hideTargetCard?: boolean
 }
 
 /** Label "Allure" vs "Vitesse" selon sport. */
@@ -63,6 +65,7 @@ export const WorkoutTargetActualCards = memo(function WorkoutTargetActualCards({
   athleteComment,
   locale,
   tWorkouts,
+  hideTargetCard = false,
 }: Props) {
   const sport = workout.sport_type
   const isTimeOnly = workoutIsTimeOnlySport(sport)
@@ -102,10 +105,13 @@ export const WorkoutTargetActualCards = memo(function WorkoutTargetActualCards({
 
   const paceLabels = getPaceLabels(sport, tWorkouts)
   const paceUnit = getPaceUnit(sport, tWorkouts)
+  const showTargetCard = !hideTargetCard
+  const showComparisonDeltas = showTargetCard
 
   return (
-    <div className={`grid grid-cols-1 ${showActualCard ? 'md:grid-cols-2' : ''} gap-4`}>
+    <div className={`grid grid-cols-1 ${showActualCard && showTargetCard ? 'md:grid-cols-2' : ''} gap-4`}>
       {/* Carte Objectif */}
+      {showTargetCard && (
       <div className="bg-stone-50 rounded-2xl p-6 border border-stone-100">
         <div className="flex items-center gap-2 mb-4 text-stone-400">
           <Target className="h-3.5 w-3.5" strokeWidth={2.5} aria-hidden />
@@ -154,6 +160,7 @@ export const WorkoutTargetActualCards = memo(function WorkoutTargetActualCards({
           </div>
         )}
       </div>
+      )}
 
       {/* Carte Réalisé (hero) */}
       {showActualCard && (
@@ -167,20 +174,33 @@ export const WorkoutTargetActualCards = memo(function WorkoutTargetActualCards({
               {tWorkouts('summary.actualTitle')}
             </span>
           </div>
+          {hideTargetCard && showDescription && (
+            <div className={`relative z-10 ${hasActualMetrics ? 'pb-4 border-b border-white/20 mb-4' : ''}`}>
+              <p className="text-xs text-white/80 italic leading-relaxed whitespace-pre-wrap">{description}</p>
+            </div>
+          )}
           {hasActualMetrics && (
             <div className="space-y-3.5 relative z-10">
               {showActualDuration && (
                 <ActualRow
                   label={tWorkouts('summary.actualDurationLabel')}
                   value={formatDurationHM(effective.durationMinutes ?? 0)}
-                  delta={formatDurationDelta(targetDuration, effective.durationMinutes)}
+                  delta={
+                    showComparisonDeltas
+                      ? formatDurationDelta(targetDuration, effective.durationMinutes)
+                      : null
+                  }
                 />
               )}
               {showActualDistance && (
                 <ActualRow
                   label={tWorkouts('summary.distanceLabel')}
                   value={formatDistance(effective.distanceKm ?? 0, sport, locale)}
-                  delta={formatDistanceDelta(targetDistance, effective.distanceKm, sport, locale)}
+                  delta={
+                    showComparisonDeltas
+                      ? formatDistanceDelta(targetDistance, effective.distanceKm, sport, locale)
+                      : null
+                  }
                 />
               )}
               {showActualPace && actualPace !== null && (
@@ -188,14 +208,22 @@ export const WorkoutTargetActualCards = memo(function WorkoutTargetActualCards({
                   label={paceLabels.actual}
                   value={formatPaceValue(actualPace, sport, locale)}
                   unit={paceUnit}
-                  delta={formatPaceDelta(targetPace, actualPace, sport, locale)}
+                  delta={
+                    showComparisonDeltas
+                      ? formatPaceDelta(targetPace, actualPace, sport, locale)
+                      : null
+                  }
                 />
               )}
               {showActualElevation && (
                 <ActualRow
                   label={tWorkouts('summary.elevationLabel')}
                   value={formatElevation(effective.elevationM ?? 0)}
-                  delta={formatElevationDelta(targetElevation, effective.elevationM)}
+                  delta={
+                    showComparisonDeltas
+                      ? formatElevationDelta(targetElevation, effective.elevationM)
+                      : null
+                  }
                 />
               )}
             </div>

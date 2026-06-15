@@ -182,6 +182,8 @@ export type Goal = {
 }
 
 /** Statut de réalisation d'une séance (affichage i18n : Planifié, Réalisé, Non réalisé). */
+export type WorkoutPlannedBy = 'coach' | 'athlete'
+
 export type WorkoutStatus = 'planned' | 'completed' | 'not_completed'
 
 /** Moment de la journée pour structurer le calendrier par sections (Matin / Midi / Soir). Null = non précisé (premier bloc). */
@@ -194,6 +196,8 @@ export type Workout = {
   sport_type: SportType
   title: string
   description: string
+  /** coach = séance planifiée par le coach ; athlete = activité saisie par l'athlète. Défaut coach si absent. */
+  planned_by?: WorkoutPlannedBy
   /** Statut de réalisation (planifié / réalisé / non réalisé). Modifiable par l'athlète. Défaut 'planned' si absent (avant migration). */
   status?: WorkoutStatus
   /** Moment de la journée (section calendrier). Null = non précisé (premier bloc). */
