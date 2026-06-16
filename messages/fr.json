@@ -1093,6 +1093,9 @@
   },
   "publicFooter": {
     "navAriaLabel": "Liens légaux et aide",
+    "socialAriaLabel": "Réseaux sociaux",
+    "linkedinAriaLabel": "My Sport Ally sur LinkedIn (ouvre un nouvel onglet)",
+    "facebookAriaLabel": "My Sport Ally sur Facebook (ouvre un nouvel onglet)",
     "privacyLink": "Politique de confidentialité",
     "termsLink": "Conditions d’utilisation",
     "contactLink": "Contact",
@@ -1287,6 +1290,10 @@
     },
     "submit": "Envoyer",
     "submitting": "Envoi en cours…",
+    "linkedinFollow": "Suivez-nous sur LinkedIn",
+    "linkedinAriaLabel": "My Sport Ally sur LinkedIn (ouvre un nouvel onglet)",
+    "facebookFollow": "Suivez-nous sur Facebook",
+    "facebookAriaLabel": "My Sport Ally sur Facebook (ouvre un nouvel onglet)",
     "privacyConsentNotice": "En soumettant ce formulaire, vous consentez à ce que My Sport Ally utilise vos renseignements pour répondre à votre demande. Pour plus de détails, consultez notre <privacy>Politique de confidentialité</privacy>.",
     "success": {
       "title": "Demande enregistrée",

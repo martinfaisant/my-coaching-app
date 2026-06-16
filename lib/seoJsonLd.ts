@@ -1,3 +1,4 @@
+import { OFFICIAL_SAME_AS_URLS } from '@/lib/socialLinks'
 import { SITE_NAME } from '@/lib/seoSocial'
 import { getSiteUrl } from '@/lib/siteUrl'
 
@@ -14,6 +15,7 @@ export function buildHomeJsonLdGraph(): string {
         name: SITE_NAME,
         url: siteUrl,
         logo: logoUrl,
+        sameAs: [...OFFICIAL_SAME_AS_URLS],
       },
       {
         '@type': 'WebSite',
