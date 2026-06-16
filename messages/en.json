@@ -967,6 +967,9 @@
   },
   "publicFooter": {
     "navAriaLabel": "Legal and help links",
+    "socialAriaLabel": "Social media",
+    "linkedinAriaLabel": "My Sport Ally on LinkedIn (opens in a new tab)",
+    "facebookAriaLabel": "My Sport Ally on Facebook (opens in a new tab)",
     "privacyLink": "Privacy Policy",
     "termsLink": "Terms of Use",
     "contactLink": "Contact",
@@ -1161,6 +1164,10 @@
     },
     "submit": "Send",
     "submitting": "Sending…",
+    "linkedinFollow": "Follow us on LinkedIn",
+    "linkedinAriaLabel": "My Sport Ally on LinkedIn (opens in a new tab)",
+    "facebookFollow": "Follow us on Facebook",
+    "facebookAriaLabel": "My Sport Ally on Facebook (opens in a new tab)",
     "privacyConsentNotice": "By submitting this form, you consent to My Sport Ally using your information to respond to your request. For more details, see our <privacy>Privacy Policy</privacy>.",
     "success": {
       "title": "Request recorded",

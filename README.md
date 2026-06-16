@@ -279,8 +279,8 @@ Voir [DEPLOYMENT_NOTES.md](./DEPLOYMENT_NOTES.md) et [MISE_EN_PROD.md](./MISE_EN
 
 - **Sitemap :** `https://mysportally.com/sitemap.xml` — **16 URLs statiques** (8 pages × FR/EN, dont **`/coaches`**) + **fiches coach dynamiques**. Source : `app/sitemap.ts`, `lib/seoPublicRoutes.ts`, `lib/seoPublicCoachProfiles.ts`.
 - **Robots :** `https://mysportally.com/robots.txt` — exclusion dashboard / auth / admin / API (`app/robots.ts`).
-- **llms.txt :** `https://mysportally.com/llms.txt` — guide IA, URLs synchronisées sur `SEO_PUBLIC_PATHS` (`lib/llmsTxt.ts`, `app/llms.txt/route.ts`).
-- **Métadonnées publiques :** `lib/seoMetadata.ts` + `lib/seoSocial.ts` — canonical, hreflang, **og:image** (`public/og/default.jpg`), Twitter Card ; layout i18n (`metadata.siteTitle`, etc.). JSON-LD : home (`lib/seoJsonLd.ts`), FAQ + `/pricing` (`buildFaqPageJsonLd`). **Noindex** : `lib/seoRobots.ts` sur pages privées.
+- **llms.txt :** `https://mysportally.com/llms.txt` — guide IA, URLs synchronisées sur `SEO_PUBLIC_PATHS` + section **Social** (LinkedIn, Facebook via `lib/socialLinks.ts`, `lib/llmsTxt.ts`, `app/llms.txt/route.ts`).
+- **Métadonnées publiques :** `lib/seoMetadata.ts` + `lib/seoSocial.ts` — canonical, hreflang, **og:image** (`public/og/default.jpg`), Twitter Card ; layout i18n (`metadata.siteTitle`, etc.). JSON-LD : home (`lib/seoJsonLd.ts`, **`sameAs`** réseaux sociaux), FAQ + `/pricing` (`buildFaqPageJsonLd`). **Noindex** : `lib/seoRobots.ts` sur pages privées.
 - **Middleware :** `proxy.ts` exclut `/sitemap.xml`, `/robots.txt` et `/llms.txt` du next-intl (évite 404 Search Console).
 - **URL canonique prod :** `https://mysportally.com` (sans `www`) ; `www` → redirection 301 sur Vercel.
 - **Search Console :** soumettre `sitemap.xml` ; dépannage 404 : **DEPLOYMENT_NOTES.md** § Référencement.

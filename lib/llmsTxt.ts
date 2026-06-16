@@ -1,4 +1,5 @@
 import { SEO_PUBLIC_PATHS, getPublicPageAbsoluteUrls } from '@/lib/seoPublicRoutes'
+import { FACEBOOK_PAGE_URL, LINKEDIN_COMPANY_URL } from '@/lib/socialLinks'
 import { getSiteUrl } from '@/lib/siteUrl'
 
 /** Contenu llms.txt synchronisé sur SEO_PUBLIC_PATHS. */
@@ -16,6 +17,10 @@ export function buildLlmsTxtContent(): string {
     '',
     '## Key pages (EN)',
     ...enUrls.map((url) => `- ${url}`),
+    '',
+    '## Social',
+    `- LinkedIn: ${LINKEDIN_COMPANY_URL}`,
+    `- Facebook: ${FACEBOOK_PAGE_URL}`,
     '',
     '## Full index',
     `Sitemap: ${siteUrl}/sitemap.xml`,

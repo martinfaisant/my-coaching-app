@@ -28,5 +28,8 @@ describe('llmsTxt', () => {
     }
 
     expect(content).toContain('Sitemap: https://mysportally.com/sitemap.xml')
+    expect(content).toContain('## Social')
+    expect(content).toContain('- LinkedIn: https://www.linkedin.com/company/mysportally')
+    expect(content).toContain('- Facebook: https://www.facebook.com/people/My-Sport-Ally/61591055243808/')
   })
 })

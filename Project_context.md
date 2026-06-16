@@ -442,6 +442,8 @@ The athlete picker uses these as **selected** state (`FEELING_PICKER_SELECTED_BG
 
 **E-mail :** envoi via **API Resend** depuis le serveur (`lib/contactSupportEmail.ts`), **pas** via les templates Supabase Auth : variable **`RESEND_API_KEY`** (alias toléré `RESEND_KEY`) ; `CONTACT_EMAIL_FROM` / `CONTACT_SUPPORT_TO` optionnels ; **Reply-To** = e-mail du formulaire. En cas d’échec d’envoi après insert, message dédié (`emailSendFailed` / `emailNotifyUnavailable` si clé absente). Champ `email_delivered_at` mis à jour après envoi réussi.
 
+**Réseaux sociaux :** sous le formulaire, liens discrets **LinkedIn** et **Facebook** (icône + libellé, nouvel onglet) — URLs centralisées dans **`lib/socialLinks.ts`** ; i18n **`contact.linkedinFollow`** / **`contact.facebookFollow`**.
+
 **Références design :** maquettes archivées `docs/archive/design-contact-public-form/` (anciennement `docs/design/contact/`).
 
 ---
@@ -484,7 +486,7 @@ The athlete picker uses these as **selected** state (`FEELING_PICKER_SELECTED_BG
 | Audience | Cartes « Je suis athlète / coach » + mini-captures |
 | How it works | 3 étapes numérotées |
 | CTA final | Bandeau vert, `AuthButtons` **`ctaBand`**, lien tarifs |
-| Footer | **`PublicMarketingFooter`** — Confidentialité, CGU, Contact, **FAQ Athlète**, **FAQ Coach** (i18n **`publicFooter`**) |
+| Footer | **`PublicMarketingFooter`** — Confidentialité, CGU, Contact, **FAQ Athlète**, **FAQ Coach**, icônes **LinkedIn** / **Facebook** (i18n **`publicFooter`**, URLs **`lib/socialLinks.ts`**) |
 
 **Assets :** `public/landing/fr/` et `public/landing/en/` — 7 fichiers WebP (`calendar-athlete`, `workout-feedback`, `stats`, `find-coach`, `calendar-coach`, `workout-create`, `coach-offers`). **EN :** v1 = copies FR — à remplacer par captures UI locale EN.
 
@@ -504,13 +506,13 @@ The athlete picker uses these as **selected** state (`FEELING_PICKER_SELECTED_BG
 |-------|---------|
 | `/sitemap.xml` | **16 URLs statiques** (8 pages × FR/EN) : home, **coaches** (annuaire), pricing, contact, terms, privacy, faq/athlete, faq/coach — **+ fiches coach dynamiques** `/coaches/[id]` (FR/EN, une entrée par coach éligible) ; alternates hreflang |
 | `/robots.txt` | `allow: /` ; `disallow` dashboard, admin (`/admin`, `/en/admin`), login, auth, reset-password, API ; lien vers le sitemap |
-| `/llms.txt` | Guide IA (texte brut) : URLs FR/EN synchronisées sur **`SEO_PUBLIC_PATHS`** + renvoi vers le sitemap (fiches coach dynamiques) |
+| `/llms.txt` | Guide IA (texte brut) : URLs FR/EN synchronisées sur **`SEO_PUBLIC_PATHS`** + section **Social** (LinkedIn, Facebook via **`lib/socialLinks.ts`**) + renvoi vers le sitemap (fiches coach dynamiques) |
 
 **Pages listées (statiques) :** définies dans **`SEO_PUBLIC_PATHS`** (`lib/seoPublicRoutes.ts`) — inclut **`/coaches`** (priority **0.9**). **Fiches coach :** fusion dans **`app/sitemap.ts`** via **`buildPublicCoachProfileSitemapEntries`** (`lib/seoPublicCoachProfiles.ts`, RPC **`get_public_coach_sitemap_entries`**, migration **077**). URL de base via **`getSiteUrl()`** (`lib/siteUrl.ts`) ← `NEXT_PUBLIC_SITE_URL` / `NEXT_PUBLIC_APP_URL`.
 
 **Métadonnées HTML (head, non visibles dans le corps de page) :** chaque page de `SEO_PUBLIC_PATHS` utilise **`buildPublicPageMetadata`** (`lib/seoMetadata.ts`) dans `generateMetadata` — title/description i18n (**`metadata.homeTitle`**, **`publicCoaches.pageTitle`** / **`pageDescription`** pour l’annuaire, **`metadata.faqAthleteTitle`**, **`metadata.termsDescription`** / **`privacyDescription`**, etc.), **`alternates.canonical`**, **`alternates.languages`** (fr, en, x-default), **Open Graph** (`og:image` 1200×630 via **`lib/seoSocial.ts`**, `og:locale` / `alternateLocale`, `siteName`), **Twitter Card** (`summary_large_image`). Les fiches coach utilisent **`buildDynamicPublicPageMetadata`**. Layout racine **`app/[locale]/layout.tsx`** : defaults localisés (**`metadata.siteTitle`**, **`siteDescription`**, **`siteKeywords`**). L’accueil marketing visible reste **`landing.hero.*`** (H1 / sous-titre) ; le title navigateur suit le template layout `%s | My Sport Ally`.
 
-**JSON-LD Schema.org :** accueil — **`Organization`** + **`WebSite`** (`lib/seoJsonLd.ts` → `buildHomeJsonLdGraph`) ; **`/pricing`** et pages FAQ — **`FAQPage`** (`lib/faqPublicConfig.ts` → `buildFaqPageJsonLd`, texte identique au contenu visible). Rendu via **`JsonLdScript`** (`components/JsonLdScript.tsx`).
+**JSON-LD Schema.org :** accueil — **`Organization`** + **`WebSite`** (`lib/seoJsonLd.ts` → `buildHomeJsonLdGraph`) ; **`Organization.sameAs`** = profils officiels LinkedIn + Facebook (**`OFFICIAL_SAME_AS_URLS`** dans **`lib/socialLinks.ts`**) ; **`/pricing`** et pages FAQ — **`FAQPage`** (`lib/faqPublicConfig.ts` → `buildFaqPageJsonLd`, texte identique au contenu visible). Rendu via **`JsonLdScript`** (`components/JsonLdScript.tsx`).
 
 **Image OG :** `public/og/default.jpg` (1200×630, montage logo + palette) ; régénération optionnelle : `node scripts/generate-og-image.mjs`.
 

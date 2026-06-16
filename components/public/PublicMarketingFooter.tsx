@@ -1,6 +1,9 @@
 import { getTranslations } from 'next-intl/server'
+import { IconFacebook } from '@/components/icons/IconFacebook'
+import { IconLinkedIn } from '@/components/icons/IconLinkedIn'
 import { Link } from '@/i18n/navigation'
 import type { FaqAudience } from '@/lib/faqPublicConfig'
+import { FACEBOOK_PAGE_URL, LINKEDIN_COMPANY_URL } from '@/lib/socialLinks'
 
 type PublicMarketingFooterProps = {
   activeFaq?: FaqAudience
@@ -39,6 +42,29 @@ export async function PublicMarketingFooter({ activeFaq }: PublicMarketingFooter
             <Link href="/faq/coach" className={linkClass(activeFaq === 'coach')}>
               {t('faqCoachLink')}
             </Link>
+          </nav>
+          <nav
+            className="flex items-center justify-center gap-1"
+            aria-label={t('socialAriaLabel')}
+          >
+            <a
+              href={LINKEDIN_COMPANY_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex rounded-lg p-2 text-stone-500 transition-colors hover:bg-stone-200/60 hover:text-palette-forest-dark"
+              aria-label={t('linkedinAriaLabel')}
+            >
+              <IconLinkedIn />
+            </a>
+            <a
+              href={FACEBOOK_PAGE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex rounded-lg p-2 text-stone-500 transition-colors hover:bg-stone-200/60 hover:text-palette-forest-dark"
+              aria-label={t('facebookAriaLabel')}
+            >
+              <IconFacebook />
+            </a>
           </nav>
           <p className="text-sm">
             © {new Date().getFullYear()} My Sport Ally. {t('copyright')}

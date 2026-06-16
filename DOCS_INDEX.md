@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 15 juin 2026 (**activité athlète — champs obligatoires modale** ; précédent : activités saisies calendrier, migration 078)
+**Dernière mise à jour :** 16 juin 2026 (**réseaux sociaux LinkedIn + Facebook** — footer, contact, JSON-LD, `llms.txt` ; précédent : activité athlète champs obligatoires modale)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -9,12 +9,12 @@
 ## 🎯 Documentation Active (à utiliser en priorité)
 
 ### **README.md** ⭐
-- **Contenu :** Setup projet, stack technique, quick start, structure du projet, **URL production https://mysportally.com**, **accueil `/` et `/en`** (landing marketing visiteurs, §4.13), **annuaire coach public** **`/coaches`** (§4.16), **FAQ publiques** **`/faq/athlete`** / **`/faq/coach`** (§4.15), **SEO** (`/sitemap.xml`, `/robots.txt`, **`/llms.txt`**, og:image, JSON-LD, noindex, **`lib/seoMetadata.ts`**, **`lib/seoSocial.ts`**, **`lib/seoJsonLd.ts`**, **`lib/llmsTxt.ts`**, exclusion sitemap/robots/llms dans **`proxy.ts`**), **connexion Google OAuth** (…), **tests & CI** (`npm run check`, `check:full`, `check:i18n`, `.github/workflows/ci.yml` : lint + typecheck + test + build)
-- **Dernière mise à jour :** 15 juin 2026 (activités athlète + migration 078 ; précédent : CI tests + parité i18n)
+- **Contenu :** Setup projet, stack technique, quick start, structure du projet, **URL production https://mysportally.com**, **accueil `/` et `/en`** (landing marketing visiteurs, §4.13), **annuaire coach public** **`/coaches`** (§4.16), **FAQ publiques** **`/faq/athlete`** / **`/faq/coach`** (§4.15), **SEO** (`/sitemap.xml`, `/robots.txt`, **`/llms.txt`** + section Social, og:image, JSON-LD **`sameAs`** LinkedIn/Facebook via **`lib/socialLinks.ts`**, noindex, **`lib/seoMetadata.ts`**, **`lib/seoSocial.ts`**, **`lib/seoJsonLd.ts`**, **`lib/llmsTxt.ts`**, exclusion sitemap/robots/llms dans **`proxy.ts`**), **connexion Google OAuth** (…), **tests & CI** (`npm run check`, `check:full`, `check:i18n`, `.github/workflows/ci.yml` : lint + typecheck + test + build)
+- **Dernière mise à jour :** 16 juin 2026 (réseaux sociaux LinkedIn + Facebook ; précédent : activités athlète + migration 078)
 
 ### **Project_context.md** ⭐
-- **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (…), **§4.16 Annuaire coach public** (`/coaches`, gate visiteur, deep link find-coach), **§4.15 FAQ publiques** (athlète/coach, SEO JSON-LD), **§4.13 Marketing landing** (…), **§4.14 SEO** (sitemap, robots, **llms.txt**, og:image, JSON-LD, noindex, **`buildPublicPageMetadata`**, canonical/hreflang, proxy), **§4.9 Strava** (…), **§6 Quality gates & CI** (Vitest, parité i18n, GitHub Actions)
-- **Dernière mise à jour :** 15 juin 2026 (§4.5 activité athlète champs obligatoires modale ; précédent : `planned_by` migration 078)
+- **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (…), **§4.16 Annuaire coach public** (`/coaches`, gate visiteur, deep link find-coach), **§4.15 FAQ publiques** (athlète/coach, SEO JSON-LD), **§4.13 Marketing landing** (footer + réseaux sociaux), **§4.14 SEO** (sitemap, robots, **llms.txt** + Social, og:image, JSON-LD **`sameAs`**, noindex, **`buildPublicPageMetadata`**, canonical/hreflang, proxy), **§4.11 Contact** (liens LinkedIn/Facebook), **§4.9 Strava** (…), **§6 Quality gates & CI** (Vitest, parité i18n, GitHub Actions)
+- **Dernière mise à jour :** 16 juin 2026 (réseaux sociaux LinkedIn + Facebook ; précédent : §4.5 activité athlète champs obligatoires modale)
 
 ### **docs/CALENDAR_MONTH_VIEW.md**
 - **Contenu :** Récap **vue mois** (desktop) vs **vue semaine** (mobile), règles semaines ISO / mois civil étendu, **totaux hebdo** (liste sports `PERSISTED_WORKOUT_SPORT_TYPES`, `SPORT_WEEKLY_SUMMARY_BAR`), chargement données, liste des fichiers et tests unitaires, **tuiles disponibilité** (réf. design + `CalendarView`), liens vers maquettes archivées
@@ -28,7 +28,7 @@
 
 ### **docs/I18N.md** ⭐
 - **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces (dont **`publicCoaches`**, **`publicFooter`**, **`faqAthlete`**, **`faqCoach`**, **`metadata.*`** SEO dont **`siteTitle`**, **`termsDescription`**, **`ogImageAlt`**, **`buildPublicPageMetadata`**), **`proxy.ts`** (exclusion sitemap/robots/llms), **checklist nouvelles features**, **parité automatisée FR/EN** (`lib/i18n/*`, `npm run check:i18n`, gate CI via `npm run test`) ; …
-- **Dernière mise à jour :** 15 juin 2026 (clés **`activityRealizedMandatory*`** ; précédent : namespace **`athleteLoggedActivity`**)
+- **Dernière mise à jour :** 16 juin 2026 (clés réseaux sociaux `publicFooter` / `contact` ; précédent : clés **`activityRealizedMandatory*`**)
 
 ### **docs/AUTH_EMAIL_TEMPLATES.md**
 - **Contenu :** Guide de configuration des emails d’auth Supabase (sujet, i18n FR/EN, variables, dépannage logo). **Les fichiers HTML des templates** (Confirm signup, puis Magic Link, Reset Password, etc.) sont dans **docs/email-templates/**.
@@ -141,9 +141,9 @@
 ## 🚀 Documentation Opérationnelle
 
 ### **DEPLOYMENT_NOTES.md**
-- **Contenu :** Notes et procédures de déploiement, **URL production https://mysportally.com**, section **Référencement (SEO)** — sitemap, robots, **llms.txt**, og:image, JSON-LD, noindex, **dépannage 404 sitemap/llms** (`proxy.ts`), Search Console, redirection www → apex, **migration 077 annuaire coach public**, section **Connexion Google (OAuth login/signup)** (…), section **Connexion Strava — appareils athlète (feature flag)**, section **Abonnement plateforme coach (Stripe)** (…)
+- **Contenu :** Notes et procédures de déploiement, **URL production https://mysportally.com**, section **Référencement (SEO)** — sitemap, robots, **llms.txt** (+ section Social), og:image, JSON-LD **`sameAs`** (**`lib/socialLinks.ts`**), noindex, **dépannage 404 sitemap/llms** (`proxy.ts`), Search Console, redirection www → apex, **migration 077 annuaire coach public**, section **Connexion Google (OAuth login/signup)** (…), section **Connexion Strava — appareils athlète (feature flag)**, section **Abonnement plateforme coach (Stripe)** (…)
 - **Utiliser pour :** Déployer l'application, résoudre des problèmes de déploiement, configurer le référencement post-deploy
-- **Dernière mise à jour :** 15 juin 2026 (SEO P1 ; précédent : annuaire coach public + migration 077)
+- **Dernière mise à jour :** 16 juin 2026 (réseaux sociaux LinkedIn + Facebook ; précédent : SEO P1 + migration 077)
 
 ### **MISE_EN_PROD.md**
 - **Contenu :** Checklist et étapes pour mise en production, **URL production https://mysportally.com**, rappel migrations postérieures (dont **073** + **074** Stripe coach plateforme — voir `DEPLOYMENT_NOTES.md`)

@@ -1,7 +1,7 @@
 # 🎨 Design System
 
 **Version :** 1.47  
-**Dernière mise à jour :** 15 juin 2026 (**activité athlète — champs obligatoires modale**, `FORM_PRIMARY_FIELD_*`, `CoachWorkoutForm.requiredFields` ; précédent : AuthSubmitButton)
+**Dernière mise à jour :** 16 juin 2026 (**réseaux sociaux** — `IconLinkedIn` / `IconFacebook`, `lib/socialLinks.ts`, footer social ; précédent : activité athlète champs obligatoires modale)
 
 ---
 
@@ -1776,7 +1776,7 @@ Pages marketing indexables pour athlètes et coachs : hero, bandeau réponses ra
 
 | Composant | Rôle |
 |-----------|------|
-| **`PublicMarketingFooter`** | Pied de page partagé (`/`, `/pricing`, FAQ) — liens légaux + FAQ Athlète / FAQ Coach ; prop `activeFaq?: 'athlete' \| 'coach'` |
+| **`PublicMarketingFooter`** | Pied de page partagé (`/`, `/pricing`, FAQ, annuaire coach) — liens légaux + FAQ Athlète / FAQ Coach + icônes **LinkedIn** et **Facebook** (`lib/socialLinks.ts`) ; prop `activeFaq?: 'athlete' \| 'coach'` |
 | **`FaqPublicPage`** | Corps de page FAQ (server) — hero, bandeau, accordéon, JSON-LD `FAQPage` |
 | **`FaqAccordion`** | Client — un seul panneau ouvert, `aria-expanded` |
 | **`FaqSportsList`** | Server — grille badges sports (`PERSISTED_WORKOUT_SPORT_TYPES`, `SPORT_ICONS`, `SPORT_BADGE_STYLES`) |
@@ -2160,6 +2160,7 @@ Toutes les icônes de sports sont définies dans `components/SportIcons.tsx` et 
 - **`components/icons/IconClose`** : fermeture (X). Utilisée dans les modales, headers.
 - **`components/icons/IconHourglass`** : sablier (en attente). Utilisée dans la modale détail demande envoyée (pill « En attente »).
 - **`components/icons/IconSend`** : envoi (avion). Utilisée dans le bouton « Demande envoyée » de la tuile coach (Trouver un coach).
+- **`components/icons/IconLinkedIn`** / **`components/icons/IconFacebook`** : réseaux sociaux officiels My Sport Ally. Utilisées dans **`PublicMarketingFooter`** et la page **Contact** ; URLs dans **`lib/socialLinks.ts`**.
 - Utiliser des SVG inline pour les icônes custom (CheckIcon, CrossIcon, CrownIcon, etc.)
 - Pour les icônes génériques, Heroicons est disponible si besoin
 

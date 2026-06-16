@@ -28,8 +28,11 @@ describe('seoJsonLd', () => {
       name: 'My Sport Ally',
       url: 'https://mysportally.com',
       logo: 'https://mysportally.com/logo.png',
+      sameAs: [
+        'https://www.linkedin.com/company/mysportally',
+        'https://www.facebook.com/people/My-Sport-Ally/61591055243808/',
+      ],
     })
-    expect(organization).not.toHaveProperty('sameAs')
 
     expect(website).toMatchObject({
       name: 'My Sport Ally',

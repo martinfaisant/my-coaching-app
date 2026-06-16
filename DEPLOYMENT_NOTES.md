@@ -1,7 +1,7 @@
 # Notes de déploiement
 
 **Production :** https://mysportally.com (voir `docs/DOMAIN_MYSPORTALLY_SETUP.md` pour la configuration domaine, Vercel, Resend, Supabase).  
-**Dernière mise à jour doc :** 15 juin 2026 (migration **078** activités saisies par l’athlète ; précédent : SEO P1 + migration 077)
+**Dernière mise à jour doc :** 16 juin 2026 (réseaux sociaux LinkedIn + Facebook : footer, contact, JSON-LD `sameAs`, `llms.txt` ; précédent : migration **078** activités saisies par l’athlète)
 
 ---
 
@@ -23,9 +23,10 @@
 | `lib/seoPublicRoutes.ts` | Liste `SEO_PUBLIC_PATHS` + génération entrées sitemap (hreflang FR/EN) |
 | `lib/seoMetadata.ts` | **`buildPublicPageMetadata`** / **`buildDynamicPublicPageMetadata`** — title/description, canonical, hreflang, OG, Twitter |
 | `lib/seoSocial.ts` | Image OG par défaut (`public/og/default.jpg`), `buildSocialMetadata` (OG + Twitter Card) |
-| `lib/seoJsonLd.ts` | JSON-LD home : Organization + WebSite (`buildHomeJsonLdGraph`) |
+| `lib/seoJsonLd.ts` | JSON-LD home : Organization + WebSite (`buildHomeJsonLdGraph`) ; **`sameAs`** via **`lib/socialLinks.ts`** |
+| `lib/socialLinks.ts` | URLs officielles LinkedIn / Facebook + **`OFFICIAL_SAME_AS_URLS`** (footer, contact, JSON-LD, `llms.txt`) |
 | `lib/seoRobots.ts` | `NOINDEX_METADATA` pour pages privées (dashboard, auth, login, admin) |
-| `lib/llmsTxt.ts` | Contenu `/llms.txt` synchronisé sur `SEO_PUBLIC_PATHS` |
+| `lib/llmsTxt.ts` | Contenu `/llms.txt` synchronisé sur `SEO_PUBLIC_PATHS` + section **Social** |
 | `lib/faqPublicConfig.ts` | JSON-LD `FAQPage` (`buildFaqPageJsonLd`) — FAQ publiques + `/pricing` |
 | `app/sitemap.ts` | `/sitemap.xml` — **16 URLs statiques** (8 pages × FR/EN) + **fiches coach dynamiques** (`lib/seoPublicCoachProfiles.ts`) |
 | `app/robots.ts` | `/robots.txt` — autorise le public, `disallow` dashboard / auth / admin / API |
@@ -47,8 +48,8 @@
 
 1. `https://mysportally.com/sitemap.xml` — au minimum **16 entrées statiques** + fiches coach éligibles ; URLs en `https://mysportally.com/...` (pas `www`).
 2. `https://mysportally.com/robots.txt` — ligne `Sitemap: https://mysportally.com/sitemap.xml`.
-3. `https://mysportally.com/llms.txt` — liste des pages de `SEO_PUBLIC_PATHS` (FR + EN) + lien sitemap.
-4. Page d’accueil (view source) : `og:image`, `twitter:card`, JSON-LD Organization/WebSite.
+3. `https://mysportally.com/llms.txt` — liste des pages de `SEO_PUBLIC_PATHS` (FR + EN), section **Social** (LinkedIn + Facebook), lien sitemap.
+4. Page d’accueil (view source) : `og:image`, `twitter:card`, JSON-LD Organization/WebSite (**`sameAs`** LinkedIn + Facebook).
 5. `https://www.mysportally.com/` → redirection 301 vers `https://mysportally.com/`.
 
 ### Google Search Console
