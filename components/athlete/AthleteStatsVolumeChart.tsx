@@ -11,6 +11,7 @@ import {
 } from '@/lib/athleteStatsChartUi'
 import {
   ActiveSlicePointsLayer,
+  AdaptiveSlicesLayer,
   createRecentYearAreaLayer,
   StyledLinesLayer,
 } from '@/lib/athleteStatsNivoLayers'
@@ -36,7 +37,7 @@ const CHART_LAYERS = [
   'recentYearArea',
   'crosshair',
   'styledLines',
-  'slices',
+  'adaptiveSlices',
   'activeSlicePoints',
   'mesh',
   'legends',
@@ -92,6 +93,7 @@ export function AthleteStatsVolumeChart({
       CHART_LAYERS.map((id) => {
         if (id === 'recentYearArea') return recentYearAreaLayer
         if (id === 'styledLines') return StyledLinesLayer
+        if (id === 'adaptiveSlices') return AdaptiveSlicesLayer
         if (id === 'activeSlicePoints') return ActiveSlicePointsLayer
         return id
       }),
@@ -181,7 +183,7 @@ export function AthleteStatsVolumeChart({
     <div className="space-y-4">
       <AthleteStatsChartHeader series={series} />
 
-      <div className="relative h-[min(400px,50vh)] w-full min-h-[280px] overflow-hidden rounded-xl border border-stone-100 bg-gradient-to-b from-stone-50/80 to-white">
+      <div className="relative h-[min(400px,50vh)] w-full min-h-[280px] overflow-visible rounded-xl border border-stone-100 bg-gradient-to-b from-stone-50/80 to-white">
         {chartReady ? (
           <ResponsiveLine
             data={nivoData}

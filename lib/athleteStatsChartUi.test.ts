@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { getSliceTooltipAnchor } from '@/lib/athleteStatsNivoLayers'
 import {
   buildAnnualVolumeRows,
   getMostRecentChartYearId,
@@ -45,5 +46,13 @@ describe('getSeriesLineStrokeDasharray', () => {
     expect(getSeriesLineStrokeDasharray(2, 3)).toBe('6 4')
     expect(getSeriesLineStrokeDasharray(1, 3)).toBeUndefined()
     expect(getSeriesLineStrokeDasharray(2, 2)).toBeUndefined()
+  })
+})
+
+describe('getSliceTooltipAnchor', () => {
+  it('anchors right on the left edge and left on the right edge', () => {
+    expect(getSliceTooltipAnchor(50, 400)).toBe('right')
+    expect(getSliceTooltipAnchor(350, 400)).toBe('left')
+    expect(getSliceTooltipAnchor(200, 400)).toBe('center')
   })
 })
