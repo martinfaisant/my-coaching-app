@@ -29,7 +29,7 @@ export default async function FaqCoachPage({ params }: FaqCoachPageProps) {
     <div className="flex min-h-screen flex-col bg-background">
       <PublicOrDashboardHeader />
       <FaqPublicPage audience="coach" locale={locale} />
-      <PublicMarketingFooter activeFaq="coach" />
+      <PublicMarketingFooter activeLink="coach" />
     </div>
   )
 }

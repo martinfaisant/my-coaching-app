@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>US-PUB-FOOTER-03 – Page Privacy</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            background: '#fafaf9',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="flex min-h-screen flex-col bg-background text-stone-900">
+
+  <!-- PublicOrDashboardHeader (visiteur) -->
+  <header class="sticky top-0 z-50 border-b border-stone-200 bg-background/95 backdrop-blur-md shrink-0">
+    <div class="mx-auto flex h-14 items-center justify-between px-4 sm:px-6 max-w-7xl">
+      <div class="flex items-center gap-2 font-semibold text-palette-forest-dark text-sm">My Sport Ally</div>
+      <div class="hidden md:flex gap-5 text-sm text-stone-600">
+        <span>Accueil</span><span>Tarifs</span><span>Trouver un coach</span>
+      </div>
+      <div class="flex gap-2 text-sm"><span class="text-stone-500">FR</span><button class="px-3 py-1.5 border rounded-lg text-stone-700">Connexion</button></div>
+    </div>
+  </header>
+
+  <main class="flex-1 mx-auto max-w-4xl w-full px-4 sm:px-6 lg:px-8 py-14">
+    <header class="mb-10">
+      <h1 class="text-3xl sm:text-4xl font-bold text-stone-900">Politique de confidentialité</h1>
+      <p class="mt-2 text-sm text-stone-600">Dernière mise à jour : 1er janvier 2026</p>
+    </header>
+
+    <div class="space-y-8 text-stone-800">
+      <section class="space-y-2">
+        <h2 class="text-xl font-semibold text-stone-900">Notre engagement</h2>
+        <p class="leading-relaxed text-sm">My Sport Ally s'engage à protéger vos données personnelles…</p>
+      </section>
+      <section class="space-y-2">
+        <h2 class="text-xl font-semibold text-stone-900">Données collectées</h2>
+        <ul class="list-disc pl-6 text-sm space-y-1 leading-relaxed">
+          <li>Identité et coordonnées</li>
+          <li>Données sportives et d'entraînement</li>
+          <li>Données de connexion Strava (si activée)</li>
+        </ul>
+      </section>
+      <section class="space-y-2 opacity-60">
+        <h2 class="text-xl font-semibold">… sections suivantes (scroll) …</h2>
+        <p class="text-sm">Droits RGPD · Cookies · Sécurité · etc.</p>
+      </section>
+    </div>
+  </main>
+
+  <footer class="border-t border-stone-200 bg-stone-50 py-12 shrink-0">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="space-y-3 text-center text-stone-600">
+        <nav class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm" aria-label="Liens légaux et aide">
+          <span class="font-medium text-palette-forest-dark" aria-current="page">Politique de confidentialité</span>
+          <a href="#" class="text-stone-600 transition-colors hover:text-stone-900">Conditions d'utilisation</a>
+          <a href="#" class="text-stone-600 transition-colors hover:text-stone-900">Contact</a>
+          <a href="#" class="text-stone-600 transition-colors hover:text-stone-900">FAQ Athlète</a>
+          <a href="#" class="text-stone-600 transition-colors hover:text-stone-900">FAQ Coach</a>
+        </nav>
+        <nav class="flex items-center justify-center gap-1" aria-label="Réseaux sociaux">
+          <span class="inline-flex rounded-lg p-2 text-stone-500 hover:bg-stone-200/60">LinkedIn</span>
+          <span class="inline-flex rounded-lg p-2 text-stone-500 hover:bg-stone-200/60">Facebook</span>
+        </nav>
+        <p class="text-sm">© 2026 My Sport Ally. Tous droits réservés.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Annotations -->
+  <div class="fixed bottom-4 right-4 max-w-xs bg-white border border-stone-200 rounded-xl shadow-lg p-4 text-xs text-stone-600 space-y-2 hidden lg:block">
+    <p class="font-bold text-stone-900">US-PUB-FOOTER-03</p>
+    <p><code>PublicPageShell</code> + <code>activeLink=&quot;privacy&quot;</code></p>
+    <p><strong>Transition :</strong> scroll bas → footer visible après contenu légal.</p>
+    <p><strong>Clic CGU</strong> → /terms, lien actif bascule.</p>
+  </div>
+
+</body>
+</html>

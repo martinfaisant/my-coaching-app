@@ -130,8 +130,32 @@ export function CoachAthletesListWithFilter({ athletes, showDivider = false }: P
         </div>
       </div>
       {filteredAthletes.length === 0 ? (
-        <div className="rounded-xl border border-stone-200 bg-stone-50 p-6">
-          <p className="text-stone-600 font-medium text-center">{t('noMatchForSearch')}</p>
+        <div className="rounded-xl border border-stone-200 bg-stone-50 p-8 text-center">
+          {searchQuery.trim() ? (
+            <>
+              <div
+                className="w-12 h-12 rounded-full bg-stone-200/80 flex items-center justify-center mx-auto mb-3 text-stone-500"
+                aria-hidden
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <circle cx="11" cy="11" r="8" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="m21 21-4.3-4.3" />
+                </svg>
+              </div>
+              <p className="text-stone-700 font-medium">
+                {t('searchNoMatchWithQuery', { query: searchQuery.trim() })}
+              </p>
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                className="mt-4 text-sm font-medium text-palette-forest-dark hover:text-palette-olive underline-offset-2 hover:underline"
+              >
+                {t('searchClear')}
+              </button>
+            </>
+          ) : (
+            <p className="text-stone-600 font-medium">{t('noMatchForSearch')}</p>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">

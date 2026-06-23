@@ -3,7 +3,7 @@
  */
 
 const PLOT_CONTAINER =
-  'relative h-[min(400px,50vh)] w-full min-h-[280px] overflow-hidden rounded-lg border border-stone-100 bg-stone-50/80'
+  'relative h-[min(400px,50vh)] w-full min-h-[280px] overflow-hidden rounded-xl border border-stone-100 bg-gradient-to-b from-stone-50/80 to-white'
 
 type AthleteStatsChartPlotSkeletonProps =
   | { decorative?: false; 'aria-label': string }
@@ -89,22 +89,17 @@ type AthleteStatsAnnualPanelSkeletonProps = {
 function AthleteStatsAnnualPanelSkeleton({ rowCount }: AthleteStatsAnnualPanelSkeletonProps) {
   const n = Math.min(Math.max(rowCount, 1), 3)
   return (
-    <div
-      className="rounded-xl border border-stone-200 bg-stone-50 px-4 py-3"
-      aria-hidden
-    >
+    <div className="rounded-xl border border-stone-200 bg-white px-4 py-3" aria-hidden>
       <div className="h-4 w-36 max-w-[55%] animate-pulse rounded bg-stone-200" />
       <ul className="mt-3 space-y-2.5">
         {Array.from({ length: n }).map((_, i) => (
-          <li
-            key={i}
-            className="flex items-center justify-between gap-3 border-b border-stone-200/80 pb-2 last:border-0"
-          >
-            <span className="flex items-center gap-2">
-              <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-stone-200 animate-pulse" />
-              <span className="h-3.5 w-24 animate-pulse rounded bg-stone-200/90" />
+          <li key={i} className="flex items-center gap-3">
+            <span className="h-2 w-2 shrink-0 rounded-full bg-stone-200 animate-pulse" />
+            <span className="h-3.5 w-10 shrink-0 animate-pulse rounded bg-stone-200/90" />
+            <span className="h-1.5 min-w-0 flex-1 animate-pulse rounded-full bg-stone-100">
+              <span className="block h-full w-2/3 rounded-full bg-stone-200/80" />
             </span>
-            <span className="h-3.5 w-16 shrink-0 animate-pulse rounded bg-stone-200/90" />
+            <span className="h-3.5 w-14 shrink-0 animate-pulse rounded bg-stone-200/90" />
           </li>
         ))}
       </ul>

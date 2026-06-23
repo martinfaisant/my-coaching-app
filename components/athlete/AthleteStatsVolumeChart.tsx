@@ -6,6 +6,16 @@ import { ResponsiveLine } from '@nivo/line'
 import type { LineSeries, SliceData } from '@nivo/line'
 import { ATHLETE_STATS_LINE_COLORS } from '@/lib/athleteStatsColors'
 import {
+  buildAnnualVolumeRows,
+  getMostRecentChartYearId,
+} from '@/lib/athleteStatsChartUi'
+import {
+  ActiveSlicePointsLayer,
+  AdaptiveSlicesLayer,
+  createRecentYearAreaLayer,
+  StyledLinesLayer,
+} from '@/lib/athleteStatsNivoLayers'
+import {
   type AthleteStatsGranularity,
   type AthleteStatsMetric,
   type VolumeChartSeries,
@@ -14,8 +24,24 @@ import type { SportType } from '@/types/database'
 import { formatAthleteStatsMetricValue } from '@/lib/athleteStatsFormat'
 import { ATHLETE_STATS_NIVO_THEME } from '@/lib/athleteStatsNivoTheme'
 import { AthleteStatsChartPlotSkeleton } from '@/components/athlete/AthleteStatsChartSkeleton'
+import { AthleteStatsAnnualSummary } from '@/components/athlete/AthleteStatsAnnualSummary'
+import { AthleteStatsChartHeader } from '@/components/athlete/AthleteStatsChartHeader'
+import { AthleteStatsSliceTooltip } from '@/components/athlete/AthleteStatsSliceTooltip'
 
 type ChartSeries = LineSeries & { data: { x: number; y: number }[] }
+
+const CHART_LAYERS = [
+  'grid',
+  'markers',
+  'axes',
+  'recentYearArea',
+  'crosshair',
+  'styledLines',
+  'adaptiveSlices',
+  'activeSlicePoints',
+  'mesh',
+  'legends',
+] as const
 
 function toNivoSeries(raw: VolumeChartSeries[]): ChartSeries[] {
   return raw.map((s) => ({
@@ -32,7 +58,7 @@ export type AthleteStatsVolumeChartProps = {
 }
 
 /**
- * Courbe volume réalisé (Nivo) + encart sous le graphe : volume total par année civile sélectionnée.
+ * Courbe volume réalisé (Nivo A1) + encart volumes annuels (A2).
  */
 export function AthleteStatsVolumeChart({
   series,
@@ -54,6 +80,25 @@ export function AthleteStatsVolumeChart({
   }, [])
 
   const nivoData = useMemo(() => toNivoSeries(series), [series])
+  const mostRecentYearId = useMemo(() => getMostRecentChartYearId(series), [series])
+  const annualRows = useMemo(() => buildAnnualVolumeRows(series), [series])
+
+  const recentYearAreaLayer = useMemo(
+    () => createRecentYearAreaLayer(mostRecentYearId),
+    [mostRecentYearId],
+  )
+
+  const layers = useMemo(
+    () =>
+      CHART_LAYERS.map((id) => {
+        if (id === 'recentYearArea') return recentYearAreaLayer
+        if (id === 'styledLines') return StyledLinesLayer
+        if (id === 'adaptiveSlices') return AdaptiveSlicesLayer
+        if (id === 'activeSlicePoints') return ActiveSlicePointsLayer
+        return id
+      }),
+    [recentYearAreaLayer],
+  )
 
   const formatWeekOrMonthLabel = useCallback(
     (v: number) => {
@@ -109,37 +154,21 @@ export function AthleteStatsVolumeChart({
   const sliceTooltip = useCallback(
     ({ slice }: { slice: SliceData<LineSeries> }) => {
       const idx = slice.points[0]?.data.x as number
-      const idxLabel =
+      const periodLabel =
         granularity === 'month'
           ? new Intl.DateTimeFormat(locale, { month: 'long' }).format(new Date(2000, idx - 1, 1))
           : tSlice('weekTooltip', { n: idx })
 
       return (
-        <div className="rounded-lg border border-stone-200 bg-white px-3 py-2 text-xs shadow-lg">
-          <div className="font-semibold text-stone-800">{idxLabel}</div>
-          <ul className="mt-1 space-y-0.5">
-            {slice.points.map((p) => (
-              <li key={p.seriesId} className="flex items-center gap-2 text-stone-700">
-                <span className="h-2 w-2 rounded-full" style={{ background: p.seriesColor }} />
-                <span>{p.seriesId}</span>
-                <span className="font-medium">{formatTooltipValue(Number(p.data.y))}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <AthleteStatsSliceTooltip
+          slice={slice}
+          mostRecentYearId={mostRecentYearId}
+          periodLabel={periodLabel}
+          formatTooltipValue={formatTooltipValue}
+        />
       )
     },
-    [formatTooltipValue, granularity, locale, tSlice],
-  )
-
-  const annualRows = useMemo(
-    () =>
-      series.map((s, idx) => ({
-        year: s.id,
-        total: s.data.reduce((acc, d) => acc + d.y, 0),
-        color: ATHLETE_STATS_LINE_COLORS[idx % ATHLETE_STATS_LINE_COLORS.length],
-      })),
-    [series],
+    [formatTooltipValue, granularity, locale, mostRecentYearId, tSlice],
   )
 
   if (series.length === 0 || series.every((s) => s.data.length === 0)) {
@@ -152,7 +181,9 @@ export function AthleteStatsVolumeChart({
 
   return (
     <div className="space-y-4">
-      <div className="relative h-[min(400px,50vh)] w-full min-h-[280px]">
+      <AthleteStatsChartHeader series={series} />
+
+      <div className="relative h-[min(400px,50vh)] w-full min-h-[280px] overflow-visible rounded-xl border border-stone-100 bg-gradient-to-b from-stone-50/80 to-white">
         {chartReady ? (
           <ResponsiveLine
             data={nivoData}
@@ -164,9 +195,14 @@ export function AthleteStatsVolumeChart({
               return ATHLETE_STATS_LINE_COLORS[i % ATHLETE_STATS_LINE_COLORS.length]
             }}
             margin={{ top: 20, right: 16, bottom: 64, left: 72 }}
+            curve="monotoneX"
             xScale={{ type: 'linear', min: 'auto', max: 'auto' }}
             yScale={{ type: 'linear', min: 0, max: 'auto', stacked: false }}
             yFormat={formatYTickSafe}
+            layers={layers}
+            enableArea={false}
+            enableGridX={false}
+            enableGridY={true}
             legends={[]}
             axisTop={null}
             axisRight={null}
@@ -187,10 +223,8 @@ export function AthleteStatsVolumeChart({
               legendPosition: 'middle',
               format: formatYTickSafe,
             }}
-            pointSize={10}
-            pointColor={{ from: 'series.color' }}
-            pointBorderWidth={2}
-            pointBorderColor={{ from: 'series.color', modifiers: [['darker', 0.3]] }}
+            enablePoints={false}
+            pointSize={0}
             enableTouchCrosshair
             useMesh={false}
             enableSlices="x"
@@ -204,29 +238,7 @@ export function AthleteStatsVolumeChart({
         )}
       </div>
 
-      <div
-        className="rounded-xl border border-stone-200 bg-stone-50 px-4 py-3 text-sm"
-        role="region"
-        aria-label={tSlice('panelAria')}
-      >
-        <p className="font-semibold text-stone-800">{tSlice('annualVolumeTitle')}</p>
-        <ul className="mt-2 space-y-1.5">
-          {annualRows.map((row) => (
-            <li
-              key={row.year}
-              className="flex items-center justify-between gap-3 border-b border-stone-200/80 pb-1.5 last:border-0"
-            >
-              <span className="flex items-center gap-2 text-stone-700">
-                <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: row.color }} />
-                {tSlice('yearValue', { year: row.year })}
-              </span>
-              <span className="font-medium text-stone-900 tabular-nums">
-                {formatTooltipValue(row.total)}
-              </span>
-            </li>
-          ))}
-        </ul>
-      </div>
+      <AthleteStatsAnnualSummary rows={annualRows} formatValue={formatTooltipValue} />
     </div>
   )
 }

@@ -1643,15 +1643,47 @@
     "allMembers": "All members",
     "dashboard": "Dashboard",
     "manageMembers": "Manage members and roles",
-    "completeProfilePrompt": {
-      "title": "Make yourself known to athletes",
-      "description": "Complete your profile to appear in their searches and receive your first coaching requests.",
-      "button": "Complete my profile"
-    },
-    "publishOfferPrompt": {
-      "title": "Make your coaching visible",
-      "description": "Publish at least one offer so athletes can send you a request from \"Find a coach\".",
-      "button": "Manage my offers"
+    "onboarding": {
+      "panel": {
+        "titleInProgress": "Set up your coach space",
+        "subtitleInProgress": "Complete these steps to appear in searches and receive your first requests.",
+        "subtitleOneStepLeft": "One more step to be visible to athletes.",
+        "titleReady": "Your space is ready",
+        "subtitleReady": "Athletes can find you and send you a request.",
+        "progressDone": "2/2 complete"
+      },
+      "stepProfile": {
+        "title": "Complete your profile",
+        "description": "Photo, sports, languages and bio",
+        "button": "Complete my profile",
+        "done": "Done",
+        "doneLabel": "Profile complete"
+      },
+      "stepOffer": {
+        "title": "Publish an offer",
+        "description": "At least one offer visible to athletes",
+        "button": "Manage my offers",
+        "done": "Done",
+        "doneLabel": "Offer published"
+      },
+      "stepRequests": {
+        "title": "Receive your first requests",
+        "description": "Requests will appear here, then your athletes once accepted",
+        "waitingTitle": "Waiting for your first requests",
+        "waitingDescription": "When an athlete chooses you, their request will appear above this list.",
+        "requestPlaceholder": "Pending request…"
+      },
+      "preview": {
+        "athletesTitle": "Preview — your future athletes",
+        "athletesDescription": "This is what your list will look like once your first athletes join."
+      },
+      "links": {
+        "editProfile": "Edit my profile",
+        "manageOffers": "Manage my offers"
+      },
+      "stepVisual": {
+        "offerPriceSample": "€45 / month"
+      }
     },
     "pendingRequests": {
       "title": "Pending requests",
@@ -1673,15 +1705,13 @@
       "noGoalsResults": "No results",
       "seeMore": "See more ({count})"
     },
-    "noAthletes": {
-      "title": "Your coaching requests will appear on this page.",
-      "description": "Athletes who choose you will appear here. You can accept or decline them."
-    },
     "listLoadError": "Unable to load the athlete list.",
     "myAthletes": "My athletes",
     "myAthletesWithCount": "My Athletes ({count})",
     "nameFilterPlaceholder": "Search for an athlete",
     "noMatchForSearch": "No athlete matches your search.",
+    "searchNoMatchWithQuery": "No results for \"{query}\"",
+    "searchClear": "Clear search",
     "sortByLabel": "Sort by",
     "sortByNameAsc": "Name (A–Z)",
     "sortByPlannedDate": "Planned date",

@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 16 juin 2026 (**réseaux sociaux LinkedIn + Facebook** — footer, contact, JSON-LD, `llms.txt` ; précédent : activité athlète champs obligatoires modale)
+**Dernière mise à jour :** 23 juin 2026 (**pied de page unifié** privacy / terms / contact — `PublicPageShell`, `activeLink` ; précédent : réseaux sociaux LinkedIn + Facebook)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -13,8 +13,8 @@
 - **Dernière mise à jour :** 16 juin 2026 (réseaux sociaux LinkedIn + Facebook ; précédent : activités athlète + migration 078)
 
 ### **Project_context.md** ⭐
-- **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (…), **§4.16 Annuaire coach public** (`/coaches`, gate visiteur, deep link find-coach), **§4.15 FAQ publiques** (athlète/coach, SEO JSON-LD), **§4.13 Marketing landing** (footer + réseaux sociaux), **§4.14 SEO** (sitemap, robots, **llms.txt** + Social, og:image, JSON-LD **`sameAs`**, noindex, **`buildPublicPageMetadata`**, canonical/hreflang, proxy), **§4.11 Contact** (liens LinkedIn/Facebook), **§4.9 Strava** (…), **§6 Quality gates & CI** (Vitest, parité i18n, GitHub Actions)
-- **Dernière mise à jour :** 16 juin 2026 (réseaux sociaux LinkedIn + Facebook ; précédent : §4.5 activité athlète champs obligatoires modale)
+- **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (…), **§4.16 Annuaire coach public** (`/coaches`, gate visiteur, deep link find-coach), **§4.15 FAQ publiques** (athlète/coach, SEO JSON-LD), **§4.13 Marketing landing** (footer + réseaux sociaux, **`PublicPageShell`** sur pages légales/contact), **§4.14 SEO** (sitemap, robots, **llms.txt** + Social, og:image, JSON-LD **`sameAs`**, noindex, **`buildPublicPageMetadata`**, canonical/hreflang, proxy), **§4.11 Contact** (formulaire, footer partagé), **§4.9 Strava** (…), **§6 Quality gates & CI** (Vitest, parité i18n, GitHub Actions)
+- **Dernière mise à jour :** 23 juin 2026 (pied de page unifié privacy / terms / contact ; précédent : réseaux sociaux LinkedIn + Facebook)
 
 ### **docs/CALENDAR_MONTH_VIEW.md**
 - **Contenu :** Récap **vue mois** (desktop) vs **vue semaine** (mobile), règles semaines ISO / mois civil étendu, **totaux hebdo** (liste sports `PERSISTED_WORKOUT_SPORT_TYPES`, `SPORT_WEEKLY_SUMMARY_BAR`), chargement données, liste des fichiers et tests unitaires, **tuiles disponibilité** (réf. design + `CalendarView`), liens vers maquettes archivées
@@ -23,8 +23,8 @@
 - **Dernière mise à jour :** 13 mai 2026 (tuiles dispo grille + ligne tableau fichiers ; précédent : résumé hebdo…)
 
 ### **docs/DESIGN_SYSTEM.md** ⭐
-- **Contenu :** Tokens (…), composants (…, **Landing**, **`components/public/*`** FAQ + **`PublicMarketingFooter`**, …)
-- **Dernière mise à jour :** 15 juin 2026 (activité athlète champs obligatoires + `CoachWorkoutForm.requiredFields` ; précédent : calendrier `AthleteLogged*`)
+- **Contenu :** Tokens (…), composants (…, **Landing**, **`components/public/*`** (`PublicPageShell`, `PublicMarketingFooter`, FAQ), …)
+- **Dernière mise à jour :** 23 juin 2026 (pied de page unifié pages légales + contact — `PublicPageShell`, `activeLink` ; précédent : activité athlète champs obligatoires)
 
 ### **docs/I18N.md** ⭐
 - **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces (dont **`publicCoaches`**, **`publicFooter`**, **`faqAthlete`**, **`faqCoach`**, **`metadata.*`** SEO dont **`siteTitle`**, **`termsDescription`**, **`ogImageAlt`**, **`buildPublicPageMetadata`**), **`proxy.ts`** (exclusion sitemap/robots/llms), **checklist nouvelles features**, **parité automatisée FR/EN** (`lib/i18n/*`, `npm run check:i18n`, gate CI via `npm run test`) ; …
@@ -98,6 +98,11 @@
 - **Utiliser pour :** Cadrage produit/UI puis **spec technique** **intensité prévisionnelle coach** (RPE 1–10), badge tuile, validation athlète ; **Mode Développeur** ensuite.
 - **Créé le :** 11 mai 2026
 
+### **docs/archive/design-public-footer/** (design feature — archivé juin 2026)
+- **Contenu :** Maquettes HTML **US-PUB-FOOTER-01…05** + README (footer unifié `/privacy`, `/terms`, `/contact`, `PublicPageShell`, `activeLink`, sans soulignement).
+- **Utiliser pour :** Contexte UI historique ; détail produit / technique à jour : **`Project_context.md`** §4.11, §4.13, **`docs/DESIGN_SYSTEM.md`** § `PublicPageShell` / `PublicMarketingFooter`.
+- **Archivé le :** 23 juin 2026 (fusion vers docs actives ci-dessus).
+
 ### **docs/archive/design-athlete-logged-activity/** (design feature — archivé juin 2026)
 - **Contenu :** README + maquettes HTML **US-ATH-LOG-01…03** (menu « + » obsolète, modale athlète, tuiles coach).
 - **Utiliser pour :** Contexte UI historique ; détail produit / technique à jour : **`Project_context.md`** §4.5, **`docs/DESIGN_SYSTEM.md`** (calendrier), **`docs/CALENDAR_MONTH_VIEW.md`**.
@@ -163,6 +168,7 @@
 > L’état courant canonique est dans **`docs/ENGINEERING_STATUS_REFAC_AUDIT.md`**.
 
 **PublicHeader mobile visiteurs (maquettes HTML, archivées 13 juin 2026) :**
+- `docs/archive/design-public-footer/` — `MOCKUP_US_PUB_FOOTER_01…05`, `README.md` — **livré** juin 2026 ; référence : **`Project_context.md`** §4.11, §4.13, **`docs/DESIGN_SYSTEM.md`**
 - `docs/archive/design-public-header-mobile/` — `MOCKUP_US_PUB_HDR_01_MOBILE_BAR.html`, `MOCKUP_US_PUB_HDR_02_DRAWER.html`, `MOCKUP_US_PUB_HDR_03_DESKTOP.html`, `README.md`
 - **Raison :** feature livrée ; comportement décrit dans **`Project_context.md`** §4.0, **`docs/DESIGN_SYSTEM.md`** § PublicHeader, helper **`lib/publicHeaderPageTitle.ts`**.
 
@@ -355,7 +361,13 @@
 **Page statistiques athlète (graphiques) — maquettes Designer 4 mai 2026 :**
 - `docs/archive/design-athlete-stats/README_DESIGN_ATHLETE_STATS.md` — Index des US et fichiers HTML.
 - `docs/archive/design-athlete-stats/us-00-page-nav-filtres.html` … `us-06-graph-ressenti-intensite.html` — Wireframes : nav entre Calendrier et Objectifs, filtres (années **multi** + sport **unique** + granularité + métrique), courbe **volume réalisé** (1 sport, N années = N lignes), plan vs réalisé, écart %, taux séances, timeline objectifs, ressenti/intensité.
-- **Statut :** **US-STATS-00 / US-STATS-01 (volume réalisé en courbes, filtres, nav)** livrés en produit (`/dashboard/stats`, `AthleteStatsPageClient`, `AthleteStatsVolumeChart`, `loadAthleteVolumeChartData`, encart volume annuel, skeletons, thème Nivo). Les US-STATS-02 à **06** restent **non implémentés** (maquettes uniquement). Comportement courant : **Project_context.md** §4.2.3, **docs/DESIGN_SYSTEM.md** (AthleteStatsVolumeChart), **docs/I18N.md** (`athleteStats`).
+- **Statut :** **US-STATS-00 / US-STATS-01 (volume réalisé en courbes, filtres, nav)** livrés en produit (`/dashboard/stats`, `AthleteStatsPageClient`, `AthleteStatsVolumeChart`, `loadAthleteVolumeChartData`, encart volume annuel, skeletons, thème Nivo). **US-STATS-01b/01c (modernisation graphique #119, juin 2026)** livrés : courbe A1 + encart A2 (`AthleteStatsAnnualSummary`, `lib/athleteStatsChartUi.ts`, `lib/athleteStatsNivoLayers.tsx`) — maquettes archivées `docs/archive/design-stats-charts-modern/`. Les US-STATS-02 à **06** restent **non implémentés** (maquettes uniquement). Comportement courant : **Project_context.md** §4.2.3, **docs/DESIGN_SYSTEM.md** (AthleteStatsVolumeChart, AthleteStatsAnnualSummary), **docs/I18N.md** (`athleteStats`).
+
+**Modernisation graphiques stats athlète (#119) — archivés 23 juin 2026 :**
+- `docs/archive/design-stats-charts-modern/README.md` — Index ; solution validée **courbe A1 + encart volumes A2**.
+- `MOCKUP_STATS_CHART_VALIDATED_A1_A2.html` — Mockup combiné de référence.
+- `MOCKUP_STATS_CHART_A1_GRADIENT_RECENT.html`, `MOCKUP_STATS_CHART_A2_NO_GRADIENT.html`, `MOCKUP_STATS_CHART_A3_GRADIENT_ALL.html` — Explorations non retenues (A3) ou sources partielles (A1/A2).
+- **Raison :** Issue **#119** livrée ; courbe lissée, dégradé sous l’année la plus récente, légende inline, tooltip pill, barres annuelles fines. Issue doublon **#118** fermée. Comportement : **Project_context.md** §4.2.3, **docs/DESIGN_SYSTEM.md**.
 
 **Retour athlète après séance (workout feedback) (archivés 3 mars 2026) :**
 - `docs/archive/design-workout-feedback/` — DESIGN.md (besoin, échelles 1–5 / 1–10, Lucide, harmonisation visuelle), SPEC_ARCHITECTURE.md (migration 054, champs perceived_*), MOCKUP_WORKOUT_FEEDBACK_MODAL_A.html, MOCKUP_WORKOUT_FEEDBACK_MODAL_B.html.
@@ -405,9 +417,13 @@
 - `docs/archive/design-coach-workout-facility-hours/` — `MOCKUP_COACH_WORKOUT_MODAL_FACILITY_HOURS.html`, `MOCKUP_COACH_WORKOUT_MODAL_FACILITY_HOURS_EDGE_CASES.html`.
 - **Raison :** Feature livrée ; sous le bloc date dans l’en-tête de la modale workout (coach), bandeau lecture seule : installations `athlete_facilities` filtrées par sport ↔ type et par jour local, tri A→Z du nom, icône bâtiment commune, créneaux ou fermé. Comportement décrit dans **Project_context.md §4.5** (Workouts), **docs/DESIGN_SYSTEM.md** (WorkoutFacilityHoursStrip), **docs/I18N.md** (`workouts.facilityHoursStripAriaLabel`, `facilities.hours`). RLS : migrations **059** (`facilities_used`), **060** (SELECT coach via `profiles.coach_id`).
 
-**Bandeau offre publiée — Mes athlètes coach (archivés 20 mars 2026) :**
+**Bandeau offre publiée — Mes athlètes coach (archivés 20 mars 2026, remplacé juin 2026) :**
 - `docs/archive/design-coach-athletes-publish-offer/MOCKUP_COACH_ATHLETES_PUBLISH_OFFER_BANNER.html` — mockup HTML (bandeaux profil / offre, ordre, demandes en attente, erreur liste).
-- **Raison :** Feature livrée ; bandeau si aucune offre `published`, bandeau profil au-dessus, message erreur si échec chargement liste athlètes. Comportement décrit dans **Project_context.md §4.4**, **docs/DESIGN_SYSTEM.md** §7, **docs/I18N.md** (`athletes.publishOfferPrompt`, `athletes.listLoadError`).
+- **Raison :** Remplacé par **`CoachAthletesOnboardingPanel`** (issue **#116**) ; voir **`docs/archive/design-coach-athletes-onboarding/`** et **Project_context.md** §4.4.
+
+**Onboarding coach — empty state Mes athlètes (archivés 23 juin 2026) :**
+- `docs/archive/design-coach-athletes-onboarding/` — `README.md`, maquettes **`MOCKUP_US_COACH_ONB_01…05`** (checklist, visuels par étape, fantômes athlètes, recherche vide).
+- **Raison :** Feature livrée ; panneau checklist si 0 athlète actif et 0 demande en attente ; masqué si demande en attente. Comportement : **Project_context.md** §4.4, **docs/DESIGN_SYSTEM.md** (composants + §7), **docs/I18N.md** (`athletes.onboarding.*`).
 
 **Séparation pages dashboard – find-coach / Mes athlètes (archivé 23 février 2026) :**
 - `docs/archive/dashboard-pages-separation/SPEC_ARCHI_DASHBOARD_PAGES_SEPARATION.md` — Spec architecture (redirections depuis /dashboard, pages dédiées, skeletons)
@@ -540,10 +556,16 @@
 
 **Fréquence de mise à jour :** À chaque ajout/suppression de documentation
 
-**Dernier scan :** 15 juin 2026  
-**Dernier nettoyage :** 15 juin 2026 (entrée Changements récents : champs obligatoires modale activité athlète)
+**Dernier scan :** 23 juin 2026  
+**Dernier nettoyage :** 23 juin 2026 (entrée Changements récents : pied de page unifié pages légales + contact)
 
 ### Changements récents :
+
+✅ **23 juin 2026 – Pied de page unifié pages publiques (issue #115) – Mode Analyste :**
+- **Livraison (réf. code) :** **`PublicPageShell`** ; **`PublicMarketingFooter`** avec prop **`activeLink`** (remplace `activeFaq`) et liens nav **sans soulignement** ; pages **`/privacy`**, **`/terms`**, **`/contact`** ; suppression liens sociaux inline sous le formulaire contact.
+- **Doc :** `Project_context.md` §4.11, §4.13 ; `docs/DESIGN_SYSTEM.md` ; `docs/I18N.md` ; `DOCS_INDEX.md`.
+- **Archivage :** `docs/design-public-footer/` → **`docs/archive/design-public-footer/`** (maquettes US-PUB-FOOTER-01…05 + README).
+- **Pages légales / confidentialité :** aucune modification de contenu légal (évolution navigation / layout uniquement).
 
 ✅ **15 juin 2026 – Modale activité athlète : champs obligatoires (UI) – Mode Analyste :**
 - **Livraison (réf. code) :** `getAthleteLoggedActivityMetricsUi()` (`lib/athleteLoggedActivityValidation.ts`) ; prop **`requiredFields`** sur **`CoachWorkoutForm`** ; constantes **`FORM_PRIMARY_FIELD_*`** (`lib/formStyles.ts`) ; i18n **`athleteLoggedActivity.form.activityRealizedMandatory*`** (FR/EN) ; tests **`lib/athleteLoggedActivityValidation.test.ts`**.
@@ -587,6 +609,12 @@
 - **Archivage :** aucun.
 - **Pages légales / confidentialité :** aucune modification proposée (collecte identité / adresse déjà couverte par profil et facturation Stripe ; pas de nouvelle finalité sans validation PO).
 - **Suite pipeline :** **Architecte** → **Développeur** → **Reviewer Tech** → mise à jour doc post-implémentation.
+
+✅ **23 juin 2026 – Onboarding coach Mes athlètes (empty state, issue #116) – Mode Analyste :**
+- **Livraison (réf. code) :** `CoachAthletesOnboardingPanel`, `CoachOnboardingStepVisual`, `CoachOnboardingGhostAthleteTiles`, `lib/coachProfileCompletion.ts` ; page `athletes/page.tsx` (masqué si demande en attente) ; recherche vide `searchClear` dans `CoachAthletesListWithFilter` ; i18n `athletes.onboarding.*` (clés legacy `completeProfilePrompt` / `publishOfferPrompt` / `noAthletes` retirées).
+- **Doc :** `Project_context.md` §4.4, `docs/DESIGN_SYSTEM.md` (v1.48), `docs/I18N.md`, `DOCS_INDEX.md`.
+- **Archivage :** `docs/design-coach-athletes-onboarding/` → `docs/archive/design-coach-athletes-onboarding/` (`git mv`).
+- **Pages légales / confidentialité :** aucune modification proposée (parcours coach existant, pas de nouvelle collecte).
 
 ✅ **20 mai 2026 – Abonnement plateforme coach (résiliation + tuile moderne) – Mode Analyste :**
 - **Livraison (réf. code) :** migration **`076_coach_platform_subscription_cancel_mirror.sql`** ; **`lib/coachPlatformSubscriptionSync.ts`**, **`lib/stripeCoachPlatformCancellation.ts`**, **`lib/coachPlatformSubscriptionDisplay.ts`** ; **`coachPlatformCancellationActions.ts`** ; composants **`CoachPlatformCurrentOfferCard`**, **`CoachPlatformManageSubscriptionFlow`**, **`CoachPlatformSubscriptionStatusSection`**, **`CoachPlatformUnpaidSubscriptionBanner`** ; page **`coach-platform-subscription/page.tsx`** ; i18n **`coachMsaSubscription.cancellation`**, **`currentOfferCard`** (FR/EN).
@@ -639,6 +667,11 @@
 - **Doc :** `Project_context.md` §4.0 (paragraphe public / marketing / legal header), §4.1 (password reset), `docs/DESIGN_SYSTEM.md` § **PublicOrDashboardHeader**, § **DashboardTopBar**, § **PublicHeader**, `docs/I18N.md` (en-tête + tableau `navigation`), `DOCS_INDEX.md`.
 - **Archivage :** aucun.
 - **Pages légales / confidentialité :** aucune modification de fond des textes juridiques (changement **UI** uniquement).
+
+✅ **23 juin 2026 – Modernisation graphiques stats athlète (#119) – Mode Analyste :**
+- **Livraison (réf. code) :** courbe volume **A1** (spline `monotoneX`, area sous l’année la plus récente, légende inline `AthleteStatsChartHeader`, tooltip pill `AthleteStatsSliceTooltip`, layers Nivo `lib/athleteStatsNivoLayers.tsx`, points au survol slice) ; encart **volume annuel A2** (`AthleteStatsAnnualSummary`, barres fines inline via `lib/athleteStatsChartUi.ts`) ; skeletons alignés ; fix rendu (layers custom en fonctions plain, pas `memo()`). Pas de changement données / i18n.
+- **Doc :** `Project_context.md` §4.2.3, `docs/DESIGN_SYSTEM.md` (AthleteStatsVolumeChart, AthleteStatsAnnualSummary, note layers Nivo), `DOCS_INDEX.md` (archive **design-stats-charts-modern**), `.cursor/rules/project-core.mdc`, `README.md`, `docs/archive/design-athlete-stats/README_DESIGN_ATHLETE_STATS.md`.
+- **Archivage :** `docs/design-stats-charts-modern/` → **`docs/archive/design-stats-charts-modern/`** (mockups HTML + README).
 
 ✅ **6 mai 2026 – Formulaire contact public (`/contact`) – Mode Analyste :**
 - **Livraison (réf. besoin initial) :** page publique pour **contacter le support** (visiteurs et connectés) : prénom, nom, e-mail, téléphone optionnel, **motif** (liste), message ; référence **MSA-YYYY-NNNNNN** après enregistrement ; e-mail support via **API Resend** (`RESEND_API_KEY`) avec Reply-To visiteur ; persistance **`contact_submissions`** + compteur annuel, RPC **`insert_contact_submission`** (migrations **066**–**067**, client admin `SUPABASE_SECRET_KEY`). Entrées : footer landing, menus compte athlète/coach, drawer. Validation **vide / trop long** distincte (`lib/contactFormConstraints.ts`, `contact.errors.*`).
@@ -1036,8 +1069,8 @@
 | Grilles responsive (Trouver mon coach, My offers, Mes athlètes) | `docs/DESIGN_SYSTEM.md` §7 |
 | Filtre par nom/prénom (Trouver mon coach, annuaire public) | `Project_context.md` §4.3, §4.16, `docs/DESIGN_SYSTEM.md` §7, `lib/coachListingUtils.ts` |
 | **Annuaire coach public** (`/coaches`, fiches SEO, gate visiteur) | **`Project_context.md` §4.16**, **`docs/DESIGN_SYSTEM.md`** § Annuaire coach public, **`DEPLOYMENT_NOTES.md`** migration **077** |
+| **Onboarding coach — Mes athlètes** (checklist profil/offre/demandes, fantômes, masqué si demande en attente) | **`Project_context.md` §4.4**, **`docs/DESIGN_SYSTEM.md`** §7 + composants onboarding, **`docs/I18N.md`** (`athletes.onboarding.*`), **`docs/archive/design-coach-athletes-onboarding/`** |
 | Filtre par nom (Mes athlètes, coach) | `Project_context.md` (§ Coach), `docs/DESIGN_SYSTEM.md` §7 |
-| **Bandeaux Mes athlètes coach** (profil / offre publiée, erreur chargement liste) | **`Project_context.md` §4.4**, **`docs/DESIGN_SYSTEM.md` §7**, **`docs/I18N.md`** (`athletes.publishOfferPrompt`, `athletes.listLoadError`) |
 | **Tri liste athlètes (nom / date planifiée), SearchInput, Dropdown** | **`Project_context.md`** (§ Coach), **`docs/DESIGN_SYSTEM.md`** (§ SearchInput, § Dropdown) |
 | Tuile archivée / offres archivées / historique souscriptions (issue #43) | `docs/DESIGN_SYSTEM.md` § TileCard (stone, badge) |
 | **Vue souscription, résiliation, « En résiliation »** | **`Project_context.md` §4.10** |

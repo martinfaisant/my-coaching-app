@@ -1,7 +1,8 @@
 import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
 import { buildPublicPageMetadata } from '@/lib/seoMetadata'
-import { PublicOrDashboardHeader } from '@/components/PublicOrDashboardHeader'
+import { PublicMarketingFooter } from '@/components/public/PublicMarketingFooter'
+import { PublicPageShell } from '@/components/public/PublicPageShell'
 
 type PrivacyPageProps = {
   params: Promise<{ locale: string }>
@@ -27,10 +28,8 @@ export default async function PrivacyPage({ params }: PrivacyPageProps) {
   const t = await getTranslations({ locale, namespace: 'legal' })
 
   return (
-    <div className="min-h-screen bg-background">
-      <PublicOrDashboardHeader />
-
-      <main className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-14">
+    <PublicPageShell footer={<PublicMarketingFooter activeLink="privacy" />}>
+      <main className="flex-1 mx-auto max-w-4xl w-full px-4 sm:px-6 lg:px-8 py-14">
         <header className="mb-10">
           <h1 className="text-3xl sm:text-4xl font-bold text-stone-900">
             {t('privacy.title')}
@@ -155,7 +154,7 @@ export default async function PrivacyPage({ params }: PrivacyPageProps) {
           </section>
         </div>
       </main>
-    </div>
+    </PublicPageShell>
   )
 }
 

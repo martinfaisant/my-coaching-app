@@ -27,4 +27,4 @@
 
 - `app/[locale]/faq/athlete/page.tsx`, `app/[locale]/faq/coach/page.tsx`
 - `components/public/*`, `lib/faqPublicConfig.ts`
-- Footer : `PublicMarketingFooter` sur `/`, `/pricing`, FAQ
+- Footer : `PublicMarketingFooter` sur `/`, `/pricing`, FAQ, **`/privacy`**, **`/terms`**, **`/contact`** ; prop `activeLink` (sans soulignement sur les liens nav)

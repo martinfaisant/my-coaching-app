@@ -48,6 +48,8 @@ Si tu ne précises pas le mode, l’IA te demandera : Designer, Architecte, Dév
 
 Les designs et mockups doivent être **modernes, épurés et agréables à l'œil** : esthétique actuelle et soignée, respiration, hiérarchie visuelle claire, pas de surcharge visuelle ni d’ornements inutiles.
 
+**Référence marketplace :** My Sport Ally est une marketplace coach/athlète. Le Designer s’inspire des standards UX des marketplaces de référence (**Airbnb**, **Uber**) : parcours clairs entre les deux parties, découverte et choix rapide, confiance et transparence, friction minimale sur les actions clés, hiérarchie mobile-first.
+
 **Texte à l’écran :** minimiser le volume de texte visible — titres et libellés courts, éviter les longs paragraphes ; privilégier progressive disclosure, micro-copy concis et icônes du design system quand cela clarifie. Conserver le strict nécessaire pour la compréhension, l’accessibilité et les messages d’erreur utiles.
 
 ### Références obligatoires
@@ -74,6 +76,7 @@ Les designs et mockups doivent être **modernes, épurés et agréables à l'œi
 
 - [ ] Design system et composants existants consultés ; composants à réutiliser / à faire évoluer listés dans le doc.
 - [ ] Proposition **moderne et épurée** ; **peu de texte** à l’écran (libellés courts, pas de blocs verbeux inutiles).
+- [ ] Patterns marketplace (Airbnb, Uber) pris en compte si le parcours touche découverte, confiance ou transaction.
 - [ ] Mockup ouvert dans un navigateur et validé visuellement.
 - [ ] Chaque user story comporte une **référence au mockup** (quelle zone ou écran correspond).
 - [ ] Pour chaque US qui concerne une **page** ou une **modale**, le mockup associé montre bien **l’écran complet** (page entière ou modale entière) avec la modification intégrée dans le contexte du design existant.

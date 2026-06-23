@@ -2,46 +2,84 @@ import { getTranslations } from 'next-intl/server'
 import { IconFacebook } from '@/components/icons/IconFacebook'
 import { IconLinkedIn } from '@/components/icons/IconLinkedIn'
 import { Link } from '@/i18n/navigation'
-import type { FaqAudience } from '@/lib/faqPublicConfig'
 import { FACEBOOK_PAGE_URL, LINKEDIN_COMPANY_URL } from '@/lib/socialLinks'
 
+export type PublicFooterActiveLink =
+  | 'privacy'
+  | 'terms'
+  | 'contact'
+  | 'athlete'
+  | 'coach'
+
 type PublicMarketingFooterProps = {
-  activeFaq?: FaqAudience
+  activeLink?: PublicFooterActiveLink
 }
 
-function linkClass(isActive: boolean): string {
+function navLinkClass(isActive: boolean): string {
   if (isActive) {
-    return 'underline underline-offset-4 font-medium text-palette-forest-dark'
+    return 'font-medium text-palette-forest-dark'
   }
-  return 'underline underline-offset-4 hover:text-stone-900'
+  return 'text-stone-600 transition-colors hover:text-stone-900'
 }
 
-export async function PublicMarketingFooter({ activeFaq }: PublicMarketingFooterProps) {
+type FooterNavItemProps = {
+  href: '/privacy' | '/terms' | '/contact' | '/faq/athlete' | '/faq/coach'
+  label: string
+  isActive: boolean
+}
+
+function FooterNavItem({ href, label, isActive }: FooterNavItemProps) {
+  if (isActive) {
+    return (
+      <span aria-current="page" className={navLinkClass(true)}>
+        {label}
+      </span>
+    )
+  }
+
+  return (
+    <Link href={href} className={navLinkClass(false)}>
+      {label}
+    </Link>
+  )
+}
+
+export async function PublicMarketingFooter({ activeLink }: PublicMarketingFooterProps) {
   const t = await getTranslations('publicFooter')
 
   return (
-    <footer className="border-t border-stone-200 bg-stone-50 py-12">
+    <footer className="border-t border-stone-200 bg-stone-50 py-12 shrink-0">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="space-y-3 text-center text-stone-600">
           <nav
             className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm"
             aria-label={t('navAriaLabel')}
           >
-            <Link href="/privacy" className={linkClass(false)}>
-              {t('privacyLink')}
-            </Link>
-            <Link href="/terms" className={linkClass(false)}>
-              {t('termsLink')}
-            </Link>
-            <Link href="/contact" className={linkClass(false)}>
-              {t('contactLink')}
-            </Link>
-            <Link href="/faq/athlete" className={linkClass(activeFaq === 'athlete')}>
-              {t('faqAthleteLink')}
-            </Link>
-            <Link href="/faq/coach" className={linkClass(activeFaq === 'coach')}>
-              {t('faqCoachLink')}
-            </Link>
+            <FooterNavItem
+              href="/privacy"
+              label={t('privacyLink')}
+              isActive={activeLink === 'privacy'}
+            />
+            <FooterNavItem
+              href="/terms"
+              label={t('termsLink')}
+              isActive={activeLink === 'terms'}
+            />
+            <FooterNavItem
+              href="/contact"
+              label={t('contactLink')}
+              isActive={activeLink === 'contact'}
+            />
+            <FooterNavItem
+              href="/faq/athlete"
+              label={t('faqAthleteLink')}
+              isActive={activeLink === 'athlete'}
+            />
+            <FooterNavItem
+              href="/faq/coach"
+              label={t('faqCoachLink')}
+              isActive={activeLink === 'coach'}
+            />
           </nav>
           <nav
             className="flex items-center justify-center gap-1"

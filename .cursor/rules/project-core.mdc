@@ -277,7 +277,7 @@ if ('error' in result) return result
 
 - **Rôle :** athlète uniquement ; entrée nav **entre Calendrier et Objectifs** (`lib/dashboardNavConfig.ts`, icône `components/DashboardNavIcons.tsx`). i18n : `navigation.stats`, `metadata.statsTitle`, namespace **`athleteStats`**.
 - **Données :** volume **réalisé** via **`getEffectiveWeeklyTotalsFait`** (Strava + séances `completed`, déduplication même jour / même type) ; agrégation côté client `lib/athleteStatsVolume.ts` ; chargement **`loadAthleteVolumeChartData`** (`app/[locale]/dashboard/stats/actions.ts`).
-- **UI :** courbe Nivo (`AthleteStatsVolumeChart`), skeletons (`AthleteStatsChartSkeleton`), thème `lib/athleteStatsNivoTheme.ts` + variables **`--chart-*`** dans `app/globals.css` ; panneau volume annuel ; pas de légende Nivo sous le graphe (voir **docs/DESIGN_SYSTEM.md**).
+- **UI :** courbe Nivo modernisée (`AthleteStatsVolumeChart` : spline, area année récente, légende inline, tooltip pill, layers `lib/athleteStatsNivoLayers.tsx`) ; encart volumes annuels (`AthleteStatsAnnualSummary`, barres fines inline) ; skeletons (`AthleteStatsChartSkeleton`) ; thème `lib/athleteStatsNivoTheme.ts` + variables **`--chart-*`** dans `app/globals.css` ; pas de légende Nivo sous le graphe (voir **docs/DESIGN_SYSTEM.md**).
 - **Sports :** libellés via `SPORT_TRANSLATION_KEYS` dans `lib/sportStyles.ts` (ex. `backcountry_ski` → `sports.ski_randonnee`, `ice_skating` → `sports.patinage_glace`).
 - **Référence :** `Project_context.md` §4.2.3.
 

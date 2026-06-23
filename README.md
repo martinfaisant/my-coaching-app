@@ -142,7 +142,7 @@ Voir [docs/DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md) pour tous les détails.
 - Chercher un coach et envoyer une demande (avec choix d’une offre ; l’offre est figée au moment de la demande) ; sur la page **Trouver mon coach**, consulter la **liste des avis** d’un coach (note et commentaire ; pas d’identité des noteurs)
 - Chatter avec les coachs liés par demande (`pending`/`accepted`) ; certaines conversations peuvent être en lecture seule selon le statut
 - Consulter son calendrier d'entraînement et **saisir des activités réalisées** (jours passés ou aujourd'hui)
-- Consulter ses **statistiques** de volume réalisé (`/dashboard/stats` : années, sport, courbe Nivo, même logique « fait » que le calendrier)
+- Consulter ses **statistiques** de volume réalisé (`/dashboard/stats` : années, sport, courbe Nivo modernisée + encart volumes annuels en barres, même logique « fait » que le calendrier)
 - Gérer ses objectifs
 - Noter son coach
 - *(Si feature flag activé)* synchroniser Strava — voir **Intégration Strava**
