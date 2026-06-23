@@ -1,5 +1,4 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
 import { createClient } from '@/utils/supabase/server'
 import { getCurrentUserWithProfile } from '@/utils/auth'
 import { redirect } from 'next/navigation'
@@ -19,6 +18,8 @@ import { getDisplayName } from '@/lib/displayName'
 import { logger } from '@/lib/logger'
 import { fetchCoachPlatformAccessGranted } from '@/lib/coachPlatformSubscription'
 import { CoachAthletesBillingOverlay } from '@/components/CoachAthletesBillingOverlay'
+import { CoachAthletesOnboardingPanel } from '@/components/CoachAthletesOnboardingPanel'
+import { isCoachProfileComplete } from '@/lib/coachProfileCompletion'
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params
@@ -97,11 +98,9 @@ export default async function CoachAthletesPage({ params }: { params: Promise<{ 
     }
   }
 
-  const isCoachProfileComplete =
-    ([(current.profile.first_name ?? '').trim(), (current.profile.last_name ?? '').trim()].filter(Boolean).join(' ').trim() !== '') &&
-    (current.profile.coached_sports ?? []).length > 0 &&
-    (current.profile.languages ?? []).length > 0 &&
-    (((current.profile.presentation_fr ?? '').trim() !== '' || (current.profile.presentation_en ?? '').trim() !== ''))
+  const profileComplete = isCoachProfileComplete(current.profile)
+  const showOnboardingPanel =
+    !athletesListLoadFailed && visibleProfiles.length === 0 && pendingRequests.length === 0
 
   const coachAthleteData: Record<string, CoachAthleteData> = {}
   const subscriptionByAthleteId: Record<string, CoachSubscriptionRow> = {}
@@ -212,39 +211,13 @@ export default async function CoachAthletesPage({ params }: { params: Promise<{ 
 
   return (
     <DashboardPageShell>
-      {!isCoachProfileComplete && (
-        <div className="rounded-xl border border-palette-olive/40 bg-section p-6 mb-8">
-          <p className="text-stone-800 font-medium mb-1">
-            {t('completeProfilePrompt.title')}
-          </p>
-          <p className="text-sm text-stone-600 mb-4">
-            {t('completeProfilePrompt.description')}
-          </p>
-          <Link
-            href="/dashboard/profile"
-            className="inline-flex items-center rounded-lg bg-palette-forest-dark px-4 py-2.5 text-sm font-medium text-white hover:bg-palette-olive transition-colors focus:outline-none focus:ring-2 focus:ring-palette-olive focus:ring-offset-2"
-          >
-            {t('completeProfilePrompt.button')}
-          </Link>
-        </div>
-      )}
-
-      {!hasPublishedOffer && (
-        <div className="rounded-xl border border-palette-olive/40 bg-section p-6 mb-8">
-          <p className="text-stone-800 font-medium mb-1">
-            {t('publishOfferPrompt.title')}
-          </p>
-          <p className="text-sm text-stone-600 mb-4">
-            {t('publishOfferPrompt.description')}
-          </p>
-          <Link
-            href="/dashboard/profile/offers"
-            className="inline-flex items-center rounded-lg bg-palette-forest-dark px-4 py-2.5 text-sm font-medium text-white hover:bg-palette-olive transition-colors focus:outline-none focus:ring-2 focus:ring-palette-olive focus:ring-offset-2"
-          >
-            {t('publishOfferPrompt.button')}
-          </Link>
-        </div>
-      )}
+      {showOnboardingPanel ? (
+        <CoachAthletesOnboardingPanel
+          locale={locale}
+          isProfileComplete={profileComplete}
+          hasPublishedOffer={hasPublishedOffer}
+        />
+      ) : null}
 
       {pendingRequests.length > 0 && (
         <section className="mb-8">
@@ -274,15 +247,6 @@ export default async function CoachAthletesPage({ params }: { params: Promise<{ 
             role="alert"
           >
             <p className="text-palette-danger-dark font-medium">{t('listLoadError')}</p>
-          </div>
-        ) : visibleProfiles.length === 0 && pendingRequests.length === 0 ? (
-          <div className="rounded-2xl border border-stone-200 bg-section border-dashed p-12 text-center">
-            <p className="text-stone-600 font-medium">
-              {t('noAthletes.title')}
-            </p>
-            <p className="text-sm text-stone-500 mt-2">
-              {t('noAthletes.description')}
-            </p>
           </div>
         ) : visibleProfiles.length === 0 ? null : (
           <>

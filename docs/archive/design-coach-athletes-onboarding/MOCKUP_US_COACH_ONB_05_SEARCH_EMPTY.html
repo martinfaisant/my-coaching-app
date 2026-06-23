@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>US-COACH-ONB-05 — Recherche sans résultat</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            'palette-olive': '#8e9856',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-stone-100 p-6 md:p-10">
+  <header class="mb-8">
+    <h1 class="text-2xl font-bold">US-COACH-ONB-05 — Recherche sans résultat</h1>
+    <p class="text-sm text-stone-600 mt-1">CoachAthletesListWithFilter · amélioration légère cohérente</p>
+  </header>
+
+  <section class="max-w-3xl bg-white rounded-2xl border border-stone-200 p-6 space-y-4">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-stone-700">Mes athlètes (3)</h2>
+      <input type="search" value="xyz" class="w-full sm:w-64 px-4 py-2.5 rounded-xl border border-stone-200 text-sm" placeholder="Rechercher…" readonly />
+    </div>
+
+    <!-- Avant -->
+    <div class="space-y-2">
+      <p class="text-xs font-bold uppercase text-stone-400">Avant</p>
+      <div class="rounded-xl border border-stone-200 bg-stone-50 p-6">
+        <p class="text-stone-600 font-medium text-center">Aucun athlète ne correspond à votre recherche.</p>
+      </div>
+    </div>
+
+    <!-- Après -->
+    <div class="space-y-2">
+      <p class="text-xs font-bold uppercase text-palette-forest-dark">Après (recommandé)</p>
+      <div class="rounded-xl border border-stone-200 bg-stone-50 p-8 text-center">
+        <div class="w-12 h-12 rounded-full bg-stone-200/80 flex items-center justify-center mx-auto mb-3 text-stone-500">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        </div>
+        <p class="text-stone-700 font-medium">Aucun résultat pour « xyz »</p>
+        <button type="button" class="mt-4 text-sm font-medium text-palette-forest-dark hover:text-palette-olive underline-offset-2 hover:underline">
+          Effacer la recherche
+        </button>
+      </div>
+    </div>
+  </section>
+</body>
+</html>

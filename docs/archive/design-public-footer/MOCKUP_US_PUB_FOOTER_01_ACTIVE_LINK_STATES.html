@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>US-PUB-FOOTER-01 – Footer lien actif</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-stone-100 text-stone-900 min-h-screen p-6 space-y-12">
+
+  <div class="max-w-3xl mx-auto">
+    <h1 class="text-xl font-bold">US-PUB-FOOTER-01 — Footer avec lien actif</h1>
+    <p class="text-sm text-stone-600 mt-2">
+      Extension de <code>PublicMarketingFooter</code> : prop <code>activeLink</code>.
+      Style actif : <strong>sans soulignement</strong> — <code>font-medium text-palette-forest-dark</code>.
+      Liens inactifs : <code>text-stone-600 hover:text-stone-900 transition-colors</code>, sans underline.
+    </p>
+  </div>
+
+  <!-- État : privacy active -->
+  <section class="max-w-3xl mx-auto space-y-2">
+    <p class="text-xs font-bold uppercase tracking-wide text-stone-500">État — activeLink=&quot;privacy&quot; (page /privacy)</p>
+    <footer class="border-t border-stone-200 bg-stone-50 py-12 rounded-lg">
+      <div class="mx-auto max-w-7xl px-4 text-center text-stone-600 space-y-3">
+        <nav class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm" aria-label="Liens légaux et aide">
+          <span class="font-medium text-palette-forest-dark">Politique de confidentialité</span>
+          <a href="#" class="text-stone-600 transition-colors hover:text-stone-900">Conditions d'utilisation</a>
+          <a href="#" class="text-stone-600 transition-colors hover:text-stone-900">Contact</a>
+          <a href="#" class="text-stone-600 transition-colors hover:text-stone-900">FAQ Athlète</a>
+          <a href="#" class="text-stone-600 transition-colors hover:text-stone-900">FAQ Coach</a>
+        </nav>
+        <nav class="flex items-center justify-center gap-1" aria-label="Réseaux sociaux">
+          <span class="inline-flex rounded-lg p-2 text-stone-500">in</span>
+          <span class="inline-flex rounded-lg p-2 text-stone-500">fb</span>
+        </nav>
+        <p class="text-sm">© 2026 My Sport Ally. Tous droits réservés.</p>
+      </div>
+    </footer>
+  </section>
+
+  <!-- État : terms active -->
+  <section class="max-w-3xl mx-auto space-y-2">
+    <p class="text-xs font-bold uppercase tracking-wide text-stone-500">État — activeLink=&quot;terms&quot; (page /terms)</p>
+    <footer class="border-t border-stone-200 bg-stone-50 py-12 rounded-lg">
+      <div class="mx-auto max-w-7xl px-4 text-center text-stone-600 space-y-3">
+        <nav class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm">
+          <a href="#" class="text-stone-600 transition-colors hover:text-stone-900">Politique de confidentialité</a>
+          <span class="font-medium text-palette-forest-dark">Conditions d'utilisation</span>
+          <a href="#" class="text-stone-600 transition-colors hover:text-stone-900">Contact</a>
+          <a href="#" class="text-stone-600 transition-colors hover:text-stone-900">FAQ Athlète</a>
+          <a href="#" class="text-stone-600 transition-colors hover:text-stone-900">FAQ Coach</a>
+        </nav>
+        <nav class="flex items-center justify-center gap-1"><span class="p-2 text-stone-500">in</span><span class="p-2 text-stone-500">fb</span></nav>
+        <p class="text-sm">© 2026 My Sport Ally. Tous droits réservés.</p>
+      </div>
+    </footer>
+  </section>
+
+  <!-- État : contact active -->
+  <section class="max-w-3xl mx-auto space-y-2">
+    <p class="text-xs font-bold uppercase tracking-wide text-stone-500">État — activeLink=&quot;contact&quot; (page /contact)</p>
+    <footer class="border-t border-stone-200 bg-stone-50 py-12 rounded-lg">
+      <div class="mx-auto max-w-7xl px-4 text-center text-stone-600 space-y-3">
+        <nav class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm">
+          <a href="#" class="text-stone-600 transition-colors hover:text-stone-900">Politique de confidentialité</a>
+          <a href="#" class="text-stone-600 transition-colors hover:text-stone-900">Conditions d'utilisation</a>
+          <span class="font-medium text-palette-forest-dark">Contact</span>
+          <a href="#" class="text-stone-600 transition-colors hover:text-stone-900">FAQ Athlète</a>
+          <a href="#" class="text-stone-600 transition-colors hover:text-stone-900">FAQ Coach</a>
+        </nav>
+        <nav class="flex items-center justify-center gap-1"><span class="p-2 text-stone-500">in</span><span class="p-2 text-stone-500">fb</span></nav>
+        <p class="text-sm">© 2026 My Sport Ally. Tous droits réservés.</p>
+      </div>
+    </footer>
+  </section>
+
+  <!-- Transitions -->
+  <div class="max-w-3xl mx-auto border-t border-stone-300 pt-8 pb-8">
+    <h2 class="text-lg font-bold mb-4">États & transitions</h2>
+    <ol class="text-sm space-y-2 list-decimal list-inside text-stone-700">
+      <li><strong>Affichage initial</strong> : footer identique à la page d'accueil ; un seul lien en style actif selon <code>activeLink</code>.</li>
+      <li><strong>Clic lien inactif</strong> : navigation i18n vers la route cible ; le footer de la page destination met à jour le lien actif.</li>
+      <li><strong>Clic lien actif</strong> : pas de navigation (lien courant = <code>&lt;span&gt;</code> ou <code>aria-current=&quot;page&quot;</code> sur implémentation).</li>
+      <li><strong>Compatibilité FAQ</strong> : <code>activeFaq</code> existant reste supporté ; <code>activeLink=&quot;athlete&quot;|&quot;coach&quot;</code> équivalent pour migration optionnelle ultérieure.</li>
+      <li><strong>Responsive</strong> : liens en wrap centré ; aucun changement vs footer actuel.</li>
+    </ol>
+  </div>
+
+</body>
+</html>

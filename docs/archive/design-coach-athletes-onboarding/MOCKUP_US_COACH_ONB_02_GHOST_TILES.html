@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>US-COACH-ONB-02 — Tuiles fantômes athlètes (spec détaillée)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            'palette-olive': '#8e9856',
+            section: '#f7f6f3',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .ghost { pointer-events: none; user-select: none; opacity: 0.55; }
+  </style>
+</head>
+<body class="bg-stone-100 text-stone-800 p-4 md:p-8 space-y-10">
+  <header>
+    <h1 class="text-2xl font-bold">US-COACH-ONB-02 — Tuiles fantômes athlètes</h1>
+    <p class="text-sm text-stone-600 mt-1">Uniquement des AthleteTile fantômes · pas de fiche coach · zone « Aperçu » en bas du panneau</p>
+  </header>
+
+  <section class="max-w-5xl rounded-2xl border border-stone-200 bg-section p-6 md:p-8 space-y-6">
+    <div>
+      <p class="text-xs font-bold uppercase tracking-wider text-stone-500">Aperçu — vos futurs athlètes</p>
+      <p class="text-sm text-stone-600 mt-1">Structure alignée sur <code class="text-xs bg-stone-200/60 px-1 rounded">AthleteTile</code> · non cliquable · <code class="text-xs bg-stone-200/60 px-1 rounded">aria-hidden</code></p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+      <article class="ghost bg-white/80 rounded-2xl border border-dashed border-stone-300 flex flex-col overflow-hidden h-full" aria-hidden="true">
+        <div class="p-6 flex flex-col flex-grow">
+          <div class="flex items-start justify-between mb-4">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-full bg-stone-200 ring-2 ring-stone-100"></div>
+              <div class="space-y-2">
+                <div class="h-4 w-28 bg-stone-200 rounded"></div>
+                <div class="h-3 w-24 bg-stone-100 rounded"></div>
+              </div>
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-2 mb-4">
+            <div class="h-6 w-16 bg-stone-100 rounded-full"></div>
+            <div class="h-6 w-14 bg-stone-100 rounded-full"></div>
+          </div>
+          <div class="grid grid-cols-2 gap-4 text-sm flex-1">
+            <div class="space-y-1">
+              <div class="h-3 w-20 bg-stone-100 rounded"></div>
+              <div class="h-4 w-24 bg-stone-200 rounded"></div>
+            </div>
+            <div class="space-y-1">
+              <div class="h-3 w-24 bg-stone-100 rounded"></div>
+              <div class="h-4 w-20 bg-stone-200 rounded"></div>
+              <div class="flex items-center gap-1 mt-1">
+                <div class="w-1.5 h-1.5 rounded-full bg-stone-200"></div>
+                <div class="h-3 w-12 bg-stone-100 rounded"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="p-4 border-t border-stone-100 bg-stone-50/80">
+          <div class="h-3 w-28 bg-stone-200 rounded ml-auto"></div>
+        </div>
+      </article>
+
+      <article class="ghost bg-white/80 rounded-2xl border border-dashed border-stone-300 flex flex-col overflow-hidden h-full hidden sm:flex" aria-hidden="true">
+        <div class="p-6 flex flex-col flex-grow">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-12 h-12 rounded-full bg-stone-200"></div>
+            <div class="space-y-2 flex-1">
+              <div class="h-4 w-24 bg-stone-200 rounded"></div>
+              <div class="h-3 w-20 bg-stone-100 rounded"></div>
+            </div>
+          </div>
+          <div class="flex gap-2 mb-4">
+            <div class="h-5 w-14 bg-stone-100 rounded-full"></div>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="space-y-1"><div class="h-3 w-16 bg-stone-100 rounded"></div><div class="h-4 w-20 bg-stone-200 rounded"></div></div>
+            <div class="space-y-1"><div class="h-3 w-20 bg-stone-100 rounded"></div><div class="h-4 w-16 bg-stone-200 rounded"></div></div>
+          </div>
+        </div>
+        <div class="p-4 border-t border-stone-100 bg-stone-50/80">
+          <div class="h-3 w-28 bg-stone-200 rounded ml-auto"></div>
+        </div>
+      </article>
+
+      <article class="ghost bg-white/80 rounded-2xl border border-dashed border-stone-300 flex flex-col overflow-hidden h-full hidden xl:flex" aria-hidden="true">
+        <div class="p-6 flex flex-col flex-grow">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-12 h-12 rounded-full bg-stone-200"></div>
+            <div class="space-y-2 flex-1"><div class="h-4 w-20 bg-stone-200 rounded"></div><div class="h-3 w-28 bg-stone-100 rounded"></div></div>
+          </div>
+          <div class="flex gap-2 mb-4">
+            <div class="h-5 w-12 bg-stone-100 rounded-full"></div>
+            <div class="h-5 w-14 bg-stone-100 rounded-full"></div>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="space-y-1"><div class="h-3 w-14 bg-stone-100 rounded"></div><div class="h-4 w-16 bg-stone-200 rounded"></div></div>
+            <div class="space-y-1"><div class="h-3 w-18 bg-stone-100 rounded"></div><div class="h-4 w-14 bg-stone-200 rounded"></div></div>
+          </div>
+        </div>
+        <div class="p-4 border-t border-stone-100 bg-stone-50/80"><div class="h-3 w-28 bg-stone-200 rounded ml-auto"></div></div>
+      </article>
+    </div>
+
+    <ul class="text-xs text-stone-500 border-t border-stone-200 pt-4 space-y-1 list-disc pl-4">
+      <li>Mobile : 1 tuile · tablette : 2 · desktop large : 3</li>
+      <li>Pas de noms, emails ni données réelles</li>
+      <li>Opacité ~55 % · bordure dashed · pas d’animation pulse (accessibilité)</li>
+      <li>Les mini-visuels d’étape (US-01) restent distincts de cette zone aperçu</li>
+    </ul>
+  </section>
+</body>
+</html>

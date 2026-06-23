@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Validé #119 — Courbe A1 + volumes annuels A2</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            'palette-olive': '#8e9856',
+            'palette-sage': '#aaaa51',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .chart-grid line { stroke: #e7e5e4; stroke-width: 1; }
+    .curve-2026 { fill: none; stroke: #627e59; stroke-width: 2.5; stroke-linecap: round; }
+    .curve-2025 { fill: none; stroke: #8e9856; stroke-width: 2; stroke-linecap: round; }
+    .curve-2024 { fill: none; stroke: #aaaa51; stroke-width: 2; stroke-linecap: round; stroke-dasharray: 6 4; }
+    .area-2026 { fill: url(#grad2026); }
+  </style>
+</head>
+<body class="bg-stone-100 p-4 md:p-6">
+
+  <div class="max-w-5xl mx-auto mb-6 space-y-2">
+    <p class="text-xs font-semibold uppercase tracking-wide text-palette-forest-dark">Solution validée PO — issue #119</p>
+    <h1 class="text-xl font-bold text-stone-900">Courbe <strong>A1</strong> + encart volumes annuels <strong>A2</strong></h1>
+    <p class="text-sm text-stone-600 max-w-3xl">
+      Graphique : spline, dégradé sous l'année la plus récente, tooltip pill au survol.
+      Encart : une ligne par année, barre fine inline, total à droite (fond blanc).
+    </p>
+  </div>
+
+  <div class="max-w-5xl mx-auto flex flex-col gap-6">
+
+    <section class="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm">
+      <p class="text-xs font-semibold uppercase tracking-wide text-stone-500 mb-2">Années</p>
+      <div class="flex flex-wrap gap-2 text-sm">
+        <label class="inline-flex items-center gap-2 rounded-lg border border-palette-forest-dark bg-palette-forest-dark/10 px-3 py-2"><input type="checkbox" checked disabled /> 2026</label>
+        <label class="inline-flex items-center gap-2 rounded-lg border border-palette-forest-dark bg-palette-forest-dark/10 px-3 py-2"><input type="checkbox" checked disabled /> 2025</label>
+        <label class="inline-flex items-center gap-2 rounded-lg border border-palette-forest-dark bg-palette-forest-dark/10 px-3 py-2"><input type="checkbox" checked disabled /> 2024</label>
+      </div>
+      <div class="mt-4 flex flex-col sm:flex-row gap-3 text-sm">
+        <div class="flex-1"><span class="text-xs font-semibold uppercase text-stone-500">Sport</span><div class="mt-1 rounded-lg border border-stone-200 px-3 py-2">Course</div></div>
+        <div class="flex-1"><span class="text-xs font-semibold uppercase text-stone-500">Granularité</span><div class="mt-1 flex rounded-lg overflow-hidden"><span class="flex-1 bg-palette-forest-dark text-white text-center py-2 text-xs">Semaine</span><span class="flex-1 bg-white text-stone-600 text-center py-2 text-xs border border-stone-200">Mois</span></div></div>
+        <div class="flex-1"><span class="text-xs font-semibold uppercase text-stone-500">Métrique</span><div class="mt-1 flex rounded-lg overflow-hidden"><span class="flex-1 bg-palette-forest-dark text-white text-center py-2 text-xs">Temps</span><span class="flex-1 bg-white text-stone-600 text-center py-2 text-xs border border-stone-200">Distance</span><span class="flex-1 bg-white text-stone-600 text-center py-2 text-xs border border-stone-200">D+</span></div></div>
+      </div>
+    </section>
+
+    <section class="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm">
+      <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+        <h2 class="text-base font-bold text-stone-800">Volume réalisé</h2>
+        <div class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-stone-600">
+          <span class="flex items-center gap-1.5"><span class="w-3 h-0.5 rounded-full bg-palette-forest-dark"></span> 2026</span>
+          <span class="flex items-center gap-1.5"><span class="w-3 h-0.5 rounded-full bg-palette-olive"></span> 2025</span>
+          <span class="flex items-center gap-1.5"><span class="w-3 h-0.5 rounded-full bg-palette-sage"></span> 2024</span>
+        </div>
+      </header>
+
+      <div class="grid lg:grid-cols-2 gap-6 mb-4">
+        <div>
+          <p class="text-[10px] font-semibold uppercase tracking-wide text-stone-400 mb-2">Courbe A1 · repos</p>
+          <div class="relative h-52 rounded-xl border border-stone-100 bg-gradient-to-b from-stone-50/80 to-white px-2 pt-3 pb-8">
+            <svg class="w-full h-full" viewBox="0 0 400 140" preserveAspectRatio="none" aria-hidden="true">
+              <defs>
+                <linearGradient id="grad2026" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#627e59" stop-opacity="0.22"/>
+                  <stop offset="100%" stop-color="#627e59" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <g class="chart-grid">
+                <line x1="48" y1="20" x2="400" y2="20"/><line x1="48" y1="50" x2="400" y2="50"/>
+                <line x1="48" y1="80" x2="400" y2="80"/><line x1="48" y1="110" x2="400" y2="110"/>
+              </g>
+              <path class="area-2026" d="M48,95 C90,88 130,72 170,78 S250,42 290,48 S350,28 392,32 L392,120 L48,120 Z"/>
+              <path class="curve-2024" d="M48,105 C100,98 150,92 200,88 S300,78 350,72 392,65"/>
+              <path class="curve-2025" d="M48,100 C95,85 145,70 195,75 S285,55 335,58 392,45"/>
+              <path class="curve-2026" d="M48,95 C90,88 130,72 170,78 S250,42 290,48 S350,28 392,32"/>
+            </svg>
+            <div class="absolute bottom-2 left-12 right-2 flex justify-between text-[10px] text-stone-400"><span>S1</span><span>S26</span><span>S52</span></div>
+          </div>
+        </div>
+        <div>
+          <p class="text-[10px] font-semibold uppercase tracking-wide text-stone-400 mb-2">Courbe A1 · survol S26</p>
+          <div class="relative h-52 rounded-xl border border-stone-100 bg-gradient-to-b from-stone-50/80 to-white px-2 pt-3 pb-8">
+            <svg class="w-full h-full" viewBox="0 0 400 140" preserveAspectRatio="none" aria-hidden="true">
+              <g class="chart-grid">
+                <line x1="48" y1="20" x2="400" y2="20"/><line x1="48" y1="50" x2="400" y2="50"/>
+                <line x1="48" y1="80" x2="400" y2="80"/><line x1="48" y1="110" x2="400" y2="110"/>
+              </g>
+              <line x1="200" y1="12" x2="200" y2="120" stroke="#d6d3d1" stroke-width="1" stroke-dasharray="4 3"/>
+              <path class="area-2026" d="M48,95 C90,88 130,72 170,78 S250,42 290,48 S350,28 392,32 L392,120 L48,120 Z"/>
+              <path class="curve-2024" d="M48,105 C100,98 150,92 200,88 S300,78 350,72 392,65"/>
+              <path class="curve-2025" d="M48,100 C95,85 145,70 195,75 S285,55 335,58 392,45"/>
+              <path class="curve-2026" d="M48,95 C90,88 130,72 170,78 S250,42 290,48 S350,28 392,32"/>
+              <circle cx="200" cy="55" r="5" fill="#fff" stroke="#627e59" stroke-width="2.5"/>
+              <circle cx="200" cy="62" r="4" fill="#fff" stroke="#8e9856" stroke-width="2"/>
+              <circle cx="200" cy="88" r="4" fill="#fff" stroke="#aaaa51" stroke-width="2"/>
+            </svg>
+            <div class="absolute top-6 left-1/2 -translate-x-1/2 rounded-full bg-palette-forest-dark text-white text-xs font-semibold px-3 py-1 shadow-md">6 h 20</div>
+            <div class="absolute top-14 left-1/2 translate-x-1 rounded-lg border border-stone-200 bg-white px-2.5 py-1.5 text-[10px] shadow-lg">
+              <div class="font-semibold text-stone-800 mb-1">Semaine 26</div>
+              <div class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-palette-forest-dark"></span> 2026 · <strong>6 h 20</strong></div>
+              <div class="flex items-center gap-1.5 text-stone-500"><span class="w-1.5 h-1.5 rounded-full bg-palette-olive"></span> 2025 · 5 h 10</div>
+              <div class="flex items-center gap-1.5 text-stone-500"><span class="w-1.5 h-1.5 rounded-full bg-palette-sage"></span> 2024 · 4 h 45</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Encart A2 -->
+      <div class="rounded-xl border border-stone-200 bg-white px-4 py-3">
+        <p class="text-sm font-semibold text-stone-800 mb-3">Volume annuel</p>
+        <p class="text-[10px] font-semibold uppercase tracking-wide text-stone-400 mb-2">Encart A2 · barres fines inline</p>
+        <div class="space-y-2.5">
+          <div class="flex items-center gap-3">
+            <span class="w-2 h-2 shrink-0 rounded-full bg-palette-forest-dark"></span>
+            <span class="text-xs text-stone-700 w-10">2026</span>
+            <div class="flex-1 h-1.5 rounded-full bg-stone-100"><div class="h-full rounded-full bg-palette-forest-dark/70" style="width:100%"></div></div>
+            <span class="text-xs font-medium tabular-nums w-14 text-right">142 h</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="w-2 h-2 shrink-0 rounded-full bg-palette-olive"></span>
+            <span class="text-xs text-stone-700 w-10">2025</span>
+            <div class="flex-1 h-1.5 rounded-full bg-stone-100"><div class="h-full rounded-full bg-palette-olive/70" style="width:83%"></div></div>
+            <span class="text-xs font-medium tabular-nums w-14 text-right">118 h</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="w-2 h-2 shrink-0 rounded-full bg-palette-sage"></span>
+            <span class="text-xs text-stone-700 w-10">2024</span>
+            <div class="flex-1 h-1.5 rounded-full bg-stone-100"><div class="h-full rounded-full bg-palette-sage/70" style="width:68%"></div></div>
+            <span class="text-xs font-medium tabular-nums w-14 text-right">96 h</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <section class="max-w-5xl mx-auto mt-6 rounded-lg border border-stone-200 bg-white p-4 text-xs text-stone-600 space-y-1">
+    <p><strong>Transitions :</strong> changement filtre → skeleton pleine carte → nouveau rendu ; survol slice → crosshair + points + tooltip ; 1 seule année → dégradé sur cette année.</p>
+    <p><strong>Vide :</strong> bordure dashed + message inchangé. <strong>Erreur :</strong> bandeau danger au-dessus du graphique.</p>
+  </section>
+</body>
+</html>

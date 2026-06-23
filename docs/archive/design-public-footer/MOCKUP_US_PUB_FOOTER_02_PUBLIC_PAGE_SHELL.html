@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>US-PUB-FOOTER-02 – PublicPageShell</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            background: '#fafaf9',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-stone-200 p-4 md:p-8">
+
+  <div class="max-w-4xl mx-auto mb-8 text-sm text-stone-700 space-y-2">
+    <h1 class="text-xl font-bold text-stone-900">US-PUB-FOOTER-02 — PublicPageShell</h1>
+    <p>Composant layout : <code>flex min-h-screen flex-col bg-background</code> + header + <code>main flex-1</code> + footer.</p>
+    <p><strong>Usage phase 1 :</strong> privacy, terms, contact. Migration des autres pages publiques hors périmètre issue #115.</p>
+  </div>
+
+  <!-- Shell annoté -->
+  <div class="max-w-5xl mx-auto flex min-h-[80vh] flex-col bg-background border border-stone-300 shadow-lg rounded-xl overflow-hidden">
+
+    <!-- HEADER slot -->
+    <header class="sticky top-0 z-50 border-b border-stone-200 bg-background/95 backdrop-blur-md shrink-0">
+      <div class="mx-auto flex h-14 items-center justify-between px-4 sm:px-6">
+        <div class="flex items-center gap-6">
+          <span class="font-bold text-palette-forest-dark text-sm">My Sport Ally</span>
+          <nav class="hidden md:flex gap-4 text-sm text-stone-600">
+            <span>Accueil</span><span>Tarifs</span><span>Trouver un coach</span>
+          </nav>
+        </div>
+        <div class="flex items-center gap-3 text-sm">
+          <span class="text-stone-500">FR</span>
+          <span class="px-3 py-1.5 rounded-lg border border-stone-200">Connexion</span>
+        </div>
+      </div>
+      <div class="bg-amber-50 border-b border-amber-200 px-4 py-1 text-xs text-amber-800 text-center">
+        ↳ slot <code>PublicOrDashboardHeader</code> (inchangé)
+      </div>
+    </header>
+
+    <!-- MAIN slot -->
+    <main class="flex-1 mx-auto w-full max-w-4xl px-4 sm:px-6 lg:px-8 py-14">
+      <div class="rounded-lg border-2 border-dashed border-stone-300 bg-stone-50/50 p-8 text-center text-stone-500 text-sm min-h-[200px] flex items-center justify-center">
+        ↳ slot <code>children</code> — contenu page (légal, contact, etc.)
+      </div>
+    </main>
+
+    <!-- FOOTER slot -->
+    <div class="relative">
+      <div class="absolute top-0 left-0 right-0 bg-amber-50 border-t border-amber-200 px-4 py-1 text-xs text-amber-800 text-center z-10">
+        ↳ slot <code>footer</code> — <code>&lt;PublicMarketingFooter activeLink=&quot;…&quot; /&gt;</code>
+      </div>
+      <footer class="border-t border-stone-200 bg-stone-50 py-12 pt-8">
+        <div class="mx-auto max-w-7xl px-4 text-center text-stone-600 space-y-3 text-sm">
+          <nav class="flex flex-wrap justify-center gap-x-6 gap-y-2">
+            <span class="font-medium text-palette-forest-dark">… lien actif …</span>
+            <span class="text-stone-600">…</span>
+          </nav>
+          <p>© 2026 My Sport Ally</p>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <!-- États fonctionnels -->
+  <div class="max-w-4xl mx-auto mt-10 text-sm text-stone-700 space-y-4 pb-8">
+    <h2 class="text-lg font-bold">États & transitions</h2>
+    <ol class="list-decimal list-inside space-y-2">
+      <li><strong>Chargement page</strong> : shell rendu SSR ; footer toujours visible en bas après scroll du contenu long.</li>
+      <li><strong>Contenu court</strong> : <code>flex-1</code> sur <code>main</code> pousse le footer en bas du viewport (<code>min-h-screen</code>).</li>
+      <li><strong>Contenu long</strong> (privacy/terms) : scroll naturel ; footer après la dernière section — pas de footer sticky.</li>
+      <li><strong>Utilisateur connecté</strong> : header bascule sur <code>DashboardTopBar</code> via <code>PublicOrDashboardHeader</code> ; shell inchangé.</li>
+    </ol>
+    <p class="text-xs text-stone-500">API suggérée : <code>&lt;PublicPageShell footer={&lt;PublicMarketingFooter activeLink=&quot;privacy&quot; /&gt;}&gt;…&lt;/PublicPageShell&gt;</code></p>
+  </div>
+
+</body>
+</html>

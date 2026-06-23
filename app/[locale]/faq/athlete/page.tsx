@@ -29,7 +29,7 @@ export default async function FaqAthletePage({ params }: FaqAthletePageProps) {
     <div className="flex min-h-screen flex-col bg-background">
       <PublicOrDashboardHeader />
       <FaqPublicPage audience="athlete" locale={locale} />
-      <PublicMarketingFooter activeFaq="athlete" />
+      <PublicMarketingFooter activeLink="athlete" />
     </div>
   )
 }

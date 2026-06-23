@@ -225,8 +225,6 @@ export function AthleteStatsPageClient({
         </section>
 
         <section className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm">
-          <h2 className="mb-4 text-base font-bold text-stone-800">{t('chart.sectionTitle')}</h2>
-
           {error && (
             <p className="mb-3 rounded-lg border border-palette-danger/40 bg-palette-danger/5 px-3 py-2 text-sm text-stone-800">
               {error}

@@ -1769,15 +1769,47 @@
     "allMembers": "Tous les membres",
     "dashboard": "Tableau de bord",
     "manageMembers": "Gérer les membres et les rôles",
-    "completeProfilePrompt": {
-      "title": "Faites-vous connaître auprès des athlètes",
-      "description": "Complétez votre profil pour apparaître dans leurs recherches et recevoir vos premières demandes de coaching.",
-      "button": "Compléter mon profil"
-    },
-    "publishOfferPrompt": {
-      "title": "Rendez votre coaching visible",
-      "description": "Publiez au moins une offre pour que les athlètes puissent vous envoyer une demande depuis « Trouver un coach ».",
-      "button": "Gérer mes offres"
+    "onboarding": {
+      "panel": {
+        "titleInProgress": "Préparez votre espace coach",
+        "subtitleInProgress": "Complétez ces étapes pour apparaître dans les recherches et recevoir vos premières demandes.",
+        "subtitleOneStepLeft": "Encore une étape pour être visible des athlètes.",
+        "titleReady": "Votre espace est prêt",
+        "subtitleReady": "Les athlètes peuvent vous trouver et vous envoyer une demande.",
+        "progressDone": "2/2 terminé"
+      },
+      "stepProfile": {
+        "title": "Compléter votre profil",
+        "description": "Photo, sports, langues et présentation",
+        "button": "Compléter mon profil",
+        "done": "Terminé",
+        "doneLabel": "Profil complet"
+      },
+      "stepOffer": {
+        "title": "Publier une offre",
+        "description": "Au moins une offre visible pour les athlètes",
+        "button": "Gérer mes offres",
+        "done": "Terminé",
+        "doneLabel": "Offre publiée"
+      },
+      "stepRequests": {
+        "title": "Recevoir vos premières demandes",
+        "description": "Les demandes apparaîtront ici, puis vos athlètes une fois acceptés",
+        "waitingTitle": "En attente de vos premières demandes",
+        "waitingDescription": "Dès qu'un athlète vous choisit, sa demande apparaîtra au-dessus de cette liste.",
+        "requestPlaceholder": "Demande en attente…"
+      },
+      "preview": {
+        "athletesTitle": "Aperçu — vos futurs athlètes",
+        "athletesDescription": "Voici à quoi ressemblera votre liste une fois vos premiers athlètes inscrits."
+      },
+      "links": {
+        "editProfile": "Modifier mon profil",
+        "manageOffers": "Gérer mes offres"
+      },
+      "stepVisual": {
+        "offerPriceSample": "45 € / mois"
+      }
     },
     "pendingRequests": {
       "title": "Demandes en attente",
@@ -1799,15 +1831,13 @@
       "noGoalsResults": "Aucun résultat",
       "seeMore": "Voir plus ({count})"
     },
-    "noAthletes": {
-      "title": "Vos demandes de coaching apparaîtront sur cette page.",
-      "description": "Les athlètes qui vous choisiront apparaitront ici. Vous pourrez l'accepter ou la refuser."
-    },
     "listLoadError": "Impossible de charger la liste des athlètes.",
     "myAthletes": "Mes athlètes",
     "myAthletesWithCount": "Mes athlètes ({count})",
     "nameFilterPlaceholder": "Rechercher un athlète",
     "noMatchForSearch": "Aucun athlète ne correspond à votre recherche.",
+    "searchNoMatchWithQuery": "Aucun résultat pour « {query} »",
+    "searchClear": "Effacer la recherche",
     "sortByLabel": "Trier par",
     "sortByNameAsc": "Nom (A–Z)",
     "sortByPlannedDate": "Date planifiée",

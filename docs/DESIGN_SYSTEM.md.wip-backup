@@ -1,7 +1,7 @@
 # 🎨 Design System
 
-**Version :** 1.48  
-**Dernière mise à jour :** 23 juin 2026 (**graphiques stats athlète #119** — courbe A1 + encart A2 ; précédent : onboarding coach Mes athlètes)
+**Version :** 1.47  
+**Dernière mise à jour :** 16 juin 2026 (**réseaux sociaux** — `IconLinkedIn` / `IconFacebook`, `lib/socialLinks.ts`, footer social ; précédent : activité athlète champs obligatoires modale)
 
 ---
 
@@ -1469,13 +1469,13 @@ Liste des **notes privées coach** sur l’onglet **Notes** du calendrier athlè
 
 **Fichier :** `components/CoachAthletesOnboardingPanel.tsx`
 
-Panneau **onboarding coach** sur `/dashboard/athletes` : checklist 3 étapes (profil, offre, premières demandes) avec **un CTA par étape incomplète**, mini-visuels (`CoachOnboardingStepVisual`) et zone aperçu (`CoachOnboardingGhostAthleteTiles`). Variante **prête** quand profil complet + offre `published`. Affiché seulement si **0 athlète actif**, **0 demande en attente**, pas d’erreur de chargement. i18n : `athletes.onboarding`.
+Panneau **onboarding coach** sur `/dashboard/athletes` quand le coach n’a aucun athlète actif : checklist 3 étapes (profil, offre, demandes) avec **un CTA par étape incomplète**, mini-visuels (`CoachOnboardingStepVisual`) et zone aperçu (`CoachOnboardingGhostAthleteTiles`). Variante `readyWaiting` quand profil + offre publiée. Remplace les anciens bandeaux profil/offre et l’empty state `noAthletes`. i18n : `athletes.onboarding`.
 
 #### Props
 
 | Prop | Type | Description |
 |------|------|-------------|
-| `locale` | `string` | Locale active |
+| `locale` | `string` | Locale active (traductions serveur) |
 | `isProfileComplete` | `boolean` | `isCoachProfileComplete(profile)` |
 | `hasPublishedOffer` | `boolean` | Au moins une offre `published` |
 
@@ -1485,7 +1485,7 @@ Panneau **onboarding coach** sur `/dashboard/athletes` : checklist 3 étapes (pr
 
 **Fichier :** `components/CoachOnboardingStepVisual.tsx`
 
-Mini-visuel décoratif par étape : `profile` (fiche), `offer` (carte offre), `requests` (tuile demande + micro-fantômes athlètes). États : `current`, `done` (compact), `upcoming` (atténué). `aria-hidden`, non interactif. Aligné sur **`docs/archive/design-coach-athletes-onboarding/MOCKUP_US_COACH_ONB_01_CHECKLIST.html`**.
+Mini-visuel décoratif par étape d’onboarding : `profile` (fiche), `offer` (carte offre), `requests` (demande en attente + micro-tuiles). États : `current`, `done` (compact), `upcoming` (atténué). `aria-hidden`, non interactif.
 
 #### Props
 
@@ -1493,8 +1493,7 @@ Mini-visuel décoratif par étape : `profile` (fiche), `offer` (carte offre), `r
 |------|------|-------------|
 | `variant` | `'profile' \| 'offer' \| 'requests'` | Type de visuel |
 | `state` | `'current' \| 'done' \| 'upcoming'` | Style |
-| `offerPriceSampleLabel` | `string` (optionnel) | Exemple prix décoratif (`athletes.onboarding.stepVisual.offerPriceSample`) |
-| `requestPlaceholderLabel` | `string` (optionnel) | Sous-texte visuel demande (étape 3 active) |
+| `requestPlaceholderLabel` | `string` (optionnel) | Sous-texte visuel demande (étape 3) |
 | `className` | `string` (optionnel) | Classes conteneur |
 
 ---
@@ -1503,7 +1502,7 @@ Mini-visuel décoratif par étape : `profile` (fiche), `offer` (carte offre), `r
 
 **Fichier :** `components/CoachOnboardingGhostAthleteTiles.tsx`
 
-Grille de **1 à 3** tuiles fantômes alignées sur `AthleteTile` (skeleton, bordure dashed, opacité réduite). Preview non cliquable sous la checklist.
+Grille de **1 à 3** tuiles fantômes alignées sur `AthleteTile` (skeleton, bordure dashed, opacité réduite). Preview non cliquable sous la checklist onboarding.
 
 ---
 
@@ -1822,7 +1821,8 @@ Pages marketing indexables pour athlètes et coachs : hero, bandeau réponses ra
 
 | Composant | Rôle |
 |-----------|------|
-| **`PublicMarketingFooter`** | Pied de page partagé (`/`, `/pricing`, FAQ, annuaire coach) — liens légaux + FAQ Athlète / FAQ Coach + icônes **LinkedIn** et **Facebook** (`lib/socialLinks.ts`) ; prop `activeFaq?: 'athlete' \| 'coach'` |
+| **`PublicPageShell`** | Layout pages publiques — `flex min-h-screen flex-col` + `PublicOrDashboardHeader` + `children` + slot `footer` (souvent `PublicMarketingFooter`) |
+| **`PublicMarketingFooter`** | Pied de page partagé (`/`, `/pricing`, FAQ, annuaire coach, pages légales, contact) — liens légaux + FAQ Athlète / FAQ Coach + icônes **LinkedIn** et **Facebook** (`lib/socialLinks.ts`) ; prop `activeLink?: 'privacy' \| 'terms' \| 'contact' \| 'athlete' \| 'coach'` (lien actif : `font-medium text-palette-forest-dark`, sans soulignement ; inactif : `text-stone-600 hover:text-stone-900`) |
 | **`FaqPublicPage`** | Corps de page FAQ (server) — hero, bandeau, accordéon, JSON-LD `FAQPage` |
 | **`FaqAccordion`** | Client — un seul panneau ouvert, `aria-expanded` |
 | **`FaqSportsList`** | Server — grille badges sports (`PERSISTED_WORKOUT_SPORT_TYPES`, `SPORT_ICONS`, `SPORT_BADGE_STYLES`) |
@@ -2179,13 +2179,13 @@ Référence : `docs/CHAT_COACH_START_CONVERSATION_DESIGN.md`, mockup états 2a e
 
 **Fichier :** `components/athlete/AthleteStatsVolumeChart.tsx`
 
-Graphique **volume réalisé** (Nivo `ResponsiveLine`, import client ; montage après première frame pour mesure). **Courbe A1 (#119)** : spline `monotoneX`, quadrillage horizontal seul, dégradé area sous l’**année la plus récente** (`lib/athleteStatsNivoLayers.tsx`), lignes stylées (3e année pointillée), points au survol slice, tooltip pill (`AthleteStatsSliceTooltip`). **Légende inline** en en-tête (`AthleteStatsChartHeader`). Plusieurs années = plusieurs lignes (`ATHLETE_STATS_LINE_COLORS`). **Pas de légende Nivo** sous le graphe. **Tranches verticales** (`enableSlices="x"`) : survol = `sliceTooltip`. **Encart A2** : `AthleteStatsAnnualSummary` (barres fines inline, total à droite). Helpers : `lib/athleteStatsChartUi.ts`.
+Graphique **volume réalisé** (Nivo `ResponsiveLine`, import client ; montage après première frame pour mesure). **Courbe A1** : spline `monotoneX`, quadrillage horizontal seul, dégradé area sous l’**année la plus récente** (`lib/athleteStatsNivoLayers.tsx`), lignes stylées (3e année pointillée), points au survol slice, tooltip pill (`AthleteStatsSliceTooltip`). **Légende inline** en en-tête (`AthleteStatsChartHeader`). Plusieurs années = plusieurs lignes (`ATHLETE_STATS_LINE_COLORS`). **Pas de légende Nivo** sous le graphe. **Tranches verticales** (`enableSlices="x"`) : survol = `sliceTooltip`. **Encart A2** (`AthleteStatsAnnualSummary`) : une ligne par année, barre fine inline (% du max), total à droite, fond blanc. Helpers : `lib/athleteStatsChartUi.ts`.
 
 **Filtre sport (page `/dashboard/stats`) :** la liste d’options est **dynamique** : uniquement les sports persistés qui ont des données sur la période sélectionnée (totaux « fait » non nuls). La liste est dérivée du registre (`PERSISTED_WORKOUT_SPORT_TYPES`) filtré par les totaux (`getStatsAvailableSportsFromWeeklyTotals`).
 
-**Skeletons :** `components/athlete/AthleteStatsChartSkeleton.tsx` — `AthleteStatsChartPlotSkeleton` (zone courbe gradient + courbes factices) ; `AthleteStatsChartFullSkeleton` (+ encart annuel A2 factice) lors du refetch.
+**Skeletons :** `components/athlete/AthleteStatsChartSkeleton.tsx` — `AthleteStatsChartPlotSkeleton` (zone courbe avec gouttière Y, quadrillage, courbes factices, axe X) pendant l’hydratation du graphique ; `AthleteStatsChartFullSkeleton` (+ message `statusMessage`, encart annuel factice à *n* lignes selon les années sélectionnées) lors du refetch sur la page stats.
 
-**Thème Nivo :** `lib/athleteStatsNivoTheme.ts` + variables `--chart-*` dans `app/globals.css` (quadrillage / axes / tooltip / area), sans hex dans le composant. **Layers custom :** fonctions plain dans `lib/athleteStatsNivoLayers.tsx` (pas `React.memo()` — Nivo exige `typeof layer === 'function'`).
+**Thème Nivo :** `lib/athleteStatsNivoTheme.ts` + variables `--chart-*` dans `app/globals.css` (quadrillage / axes / tooltip / area), sans hex dans le composant.
 
 ---
 
@@ -2193,7 +2193,7 @@ Graphique **volume réalisé** (Nivo `ResponsiveLine`, import client ; montage a
 
 **Fichier :** `components/athlete/AthleteStatsAnnualSummary.tsx`
 
-Encart **volume annuel** sous la courbe stats (variante A2, #119) : pastille couleur, année, barre de progression fine (`h-1.5`, % du max des totaux affichés), total formaté à droite. Fond `bg-white`, bordure `stone-200`. Données via `buildAnnualVolumeRows` (`lib/athleteStatsChartUi.ts`).
+Encart **volume annuel** sous la courbe stats (variante A2) : pastille couleur, année, barre de progression fine (`h-1.5`, % du max des totaux affichés), total formaté à droite. Fond `bg-white`, bordure `stone-200`. Données via `buildAnnualVolumeRows` (`lib/athleteStatsChartUi.ts`).
 
 ---
 
@@ -2214,7 +2214,7 @@ Toutes les icônes de sports sont définies dans `components/SportIcons.tsx` et 
 - **`components/icons/IconClose`** : fermeture (X). Utilisée dans les modales, headers.
 - **`components/icons/IconHourglass`** : sablier (en attente). Utilisée dans la modale détail demande envoyée (pill « En attente »).
 - **`components/icons/IconSend`** : envoi (avion). Utilisée dans le bouton « Demande envoyée » de la tuile coach (Trouver un coach).
-- **`components/icons/IconLinkedIn`** / **`components/icons/IconFacebook`** : réseaux sociaux officiels My Sport Ally. Utilisées dans **`PublicMarketingFooter`** et la page **Contact** ; URLs dans **`lib/socialLinks.ts`**.
+- **`components/icons/IconLinkedIn`** / **`components/icons/IconFacebook`** : réseaux sociaux officiels My Sport Ally. Utilisées dans **`PublicMarketingFooter`** ; URLs dans **`lib/socialLinks.ts`**.
 - Utiliser des SVG inline pour les icônes custom (CheckIcon, CrossIcon, CrownIcon, etc.)
 - Pour les icônes génériques, Heroicons est disponible si besoin
 
@@ -2287,7 +2287,7 @@ Ce breakpoint `md` est le breakpoint de référence pour les bascules de layout 
 - **Chat coach (overlay)** : sous `md`, navigation mobile en 2 écrans (liste des conversations puis conversation avec bouton Retour) ; à partir de `md`, layout desktop avec sidebar + panneau conversation.
 - **Page « Trouver mon coach »** (`/dashboard/find-coach`, athlète sans coach) : page dédiée avec son propre skeleton (filtres + grille). Bloc Filtres avec recherche par nom ou prénom (temps réel), grille Sport coaché / Langue parlée en 2 colonnes à partir de `md` (768px) ; liste des tuiles : 1 colonne par défaut, 2 colonnes à partir de `md`, 3 colonnes à partir de `xl` (1280px). Fichiers : `app/[locale]/dashboard/find-coach/page.tsx`, `FindCoachSection.tsx`.
 - **Page « My offers »** (offres du coach) : 1 colonne en tout temps (toutes largeurs). Fichier : `app/[locale]/dashboard/profile/offers/OffersForm.tsx`.
-- **Page « Mes athlètes » (My Athletes)** (`/dashboard/athletes`, coach) : page dédiée avec son propre skeleton (titre, filtre, grille). Titre de page : « My Athletes » / « Mes Athlètes » (namespace `navigation.athletes`). **Onboarding coach (empty state) :** si **0 athlète actif**, **0 demande en attente** et liste chargée OK → **`CoachAthletesOnboardingPanel`** (checklist profil / offre / demandes, CTA par étape incomplète, visuels par étape, fantômes athlètes) ; **masqué** dès qu’une demande est en attente ou qu’un athlète est actif. Puis section **Demandes en attente** (si présente), puis liste. Filtre par nom (champ de recherche inline à côté du titre « Mes athlètes (X) », temps réel, insensible à la casse et aux accents ; si aucune correspondance : icône loupe, `athletes.searchNoMatchWithQuery`, bouton **Effacer la recherche** `athletes.searchClear`). Effectifs à côté des titres de section (« Mes athlètes (X) », « Demandes en attente (X) »). **Erreur chargement liste athlètes :** message dans un encart `bg-palette-danger-light`, bordure `palette-danger`, texte `palette-danger-dark` (`athletes.listLoadError`), pas le panneau onboarding. **Demandes en attente (PendingRequestTile)** : bordure gauche ambre ; en-tête : avatar, **nom · offre** (offre en police plus petite), badges sport, boutons Discuter / Refuser / Accepter ; corps en **2 colonnes** : « Message de l’athlète » (coaching_need) | « Objectifs et volume (athlète) » (temps à allouer + volumes par sport depuis le profil : lignes « Sport : valeur unité » avec bordure gauche et icône par sport, D+ dans le même bloc que Course ; si vide « Non renseigné »). Modales de confirmation avant Refuser/Accepter ; sur mobile les boutons sont en bas de la tuile. Grille des tuiles athlètes : 1 colonne par défaut, 2 colonnes à partir de `sm`, **3 colonnes à partir de `xl` uniquement**. Fichiers : `app/[locale]/dashboard/athletes/page.tsx`, `CoachAthletesOnboardingPanel.tsx`, `CoachAthletesListWithFilter.tsx`, `PendingRequestTile.tsx`, `lib/coachProfileCompletion.ts`.
+- **Page « Mes athlètes » (My Athletes)** (`/dashboard/athletes`, coach) : page dédiée avec son propre skeleton (titre, filtre, grille). Titre de page : « My Athletes » / « Mes Athlètes » (namespace `navigation.athletes`). **Bandeaux en tête de page :** si profil coach incomplet → bandeau « Compléter le profil » (lien profil) ; si **aucune** offre `published` → bandeau invitant à gérer les offres (lien `/dashboard/profile/offers`) — le bandeau profil est **au-dessus** du bandeau offre. Puis section **Demandes en attente** (si présente), puis liste. Filtre par nom (champ de recherche inline à côté du titre « Mes athlètes (X) », temps réel, insensible à la casse et aux accents ; message « aucun résultat » si aucune correspondance). Effectifs à côté des titres de section (« Mes athlètes (X) », « Demandes en attente (X) »). **Erreur chargement liste athlètes :** message dans un encart `bg-palette-danger-light`, bordure `palette-danger`, texte `palette-danger-dark` (`athletes.listLoadError`), pas l’état vide. **Demandes en attente (PendingRequestTile)** : bordure gauche ambre ; en-tête : avatar, **nom · offre** (offre en police plus petite), badges sport, boutons Discuter / Refuser / Accepter ; corps en **2 colonnes** : « Message de l’athlète » (coaching_need) | « Objectifs et volume (athlète) » (temps à allouer + volumes par sport depuis le profil : lignes « Sport : valeur unité » avec bordure gauche et icône par sport, D+ dans le même bloc que Course ; si vide « Non renseigné »). Modales de confirmation avant Refuser/Accepter ; sur mobile les boutons sont en bas de la tuile. Grille des tuiles athlètes : 1 colonne par défaut, 2 colonnes à partir de `sm`, **3 colonnes à partir de `xl` uniquement**. Fichiers : `app/[locale]/dashboard/athletes/page.tsx`, `CoachAthletesListWithFilter.tsx`, `PendingRequestTile.tsx`.
 
 ### 8. Sports et labels
 
@@ -2367,12 +2367,12 @@ Actuellement, utiliser un span custom :
 - **Styles formulaires** : `lib/formStyles.ts` (FORM_BASE_CLASSES, FORM_INPUT_TEXT_SIZE, FORM_INPUT_HEIGHT, **FORM_PRIMARY_FIELD_BORDER_CLASSES**, **FORM_PRIMARY_FIELD_ICON_CLASSES**, etc.)
 - **Composants** : `components/Button.tsx`, `components/AuthButtons.tsx` (variants `default`, `hero`, **`drawer`**, **`ctaBand`**), `components/landing/*` (page d'accueil marketing), `components/SocialAuthButtons.tsx`, `components/AuthSubmitButton.tsx`, `components/AuthRolePicker.tsx`, `components/AuthLegalConsent.tsx`, `components/Input.tsx`, `components/PasswordInput.tsx`, `components/PasswordRequirements.tsx`, `components/NewPasswordField.tsx`, `components/SearchInput.tsx`, `components/Textarea.tsx`, `components/Badge.tsx`, `components/Avatar.tsx`, `components/AvatarImage.tsx`, `components/SportTileSelectable.tsx`, `components/ActivityTile.tsx`, `components/Modal.tsx`, `components/CoachReviewsModal.tsx`, `components/workout-modal/CoachWorkoutForm.tsx`, `components/workout-modal/WorkoutFacilityHoursStrip.tsx`, `components/workout-modal/WorkoutTargetActualCards.tsx`, `components/workout-modal/WorkoutFeedbackSummary.tsx`, `components/workout-modal/WorkoutFeedbackSection.tsx`, `components/AthleteFacilityDetails.tsx`, `components/CoachAthleteNotesSection.tsx`, `components/CoachAthleteNoteModal.tsx`, `components/DashboardPageShell.tsx`, `components/DashboardTopBar.tsx`, `components/AthleteAccountMenu.tsx`, `components/CoachAccountMenu.tsx`, `components/ContactForm.tsx`, `components/Drawer.tsx`, `components/PublicOrDashboardHeader.tsx`, `components/PublicHeader.tsx`, `components/EmailValidatedModal.tsx`, `components/HomeEmailConfirmedTrigger.tsx`, `components/Dropdown.tsx`, `components/Segments.tsx`, `components/DatePickerPopup.tsx`, `components/MonthSelector.tsx`, `components/CalendarView.tsx`, `components/CalendarViewWithNavigation.tsx`, `lib/calendarViewDayHeights.ts`, `components/AvailabilityModal.tsx`, `components/AvailabilityDetailModal.tsx`, `components/athlete-logged-activity/AthleteLoggedActivityModal.tsx`, `components/athlete-logged-activity/AthleteLoggedCoachReadOnlyView.tsx`, `lib/athleteLoggedWorkout.ts`, `lib/athleteLoggedActivityValidation.ts`, `components/ChatAthleteListItem.tsx`, `components/ChatConversationSidebar.tsx`, `components/CoachPlatformSubscriptionOffers.tsx`, `components/CoachPlatformBillingAddressSection.tsx`, **`components/CoachPlatformBillingAddressFields.tsx`**, **`components/CoachPlatformCheckoutPrerequisitesForm.tsx`**, **`components/CoachPlatformCheckoutPrerequisitesModal.tsx`**, `components/CoachPlatformOfferGrid.tsx`, `components/CoachPlatformSubscribeOffersModal.tsx`, **`components/CoachPlatformCurrentOfferCard.tsx`**, **`components/CoachPlatformManageSubscriptionFlow.tsx`**, **`components/CoachPlatformSubscriptionStatusSection.tsx`**, **`components/CoachPlatformUnpaidSubscriptionBanner.tsx`**
 - **Page Mon Abonnement MySportAlly (coach)** : `app/[locale]/dashboard/coach-platform-subscription/page.tsx`, `loading.tsx`, **`coachPlatformBillingAddressActions.ts`**, **`coachPlatformCheckoutPrerequisitesActions.ts`**, **`coachPlatformCancellationActions.ts`** ; libs **`lib/coachPlatformCheckoutPrerequisites.ts`**, **`lib/stripeCoachPlatformCatalog.ts`**, **`lib/coachPlatformSubscriptionTrial.ts`**, **`lib/coachPlatformTrialEligibility.ts`**, **`lib/stripeCoachPlatformBillingHistory.ts`**, **`lib/stripeCoachPlatformBillingAddress.ts`**, **`lib/stripeCoachPlatformCancellation.ts`**, **`lib/coachPlatformSubscriptionSync.ts`**, **`lib/coachPlatformSubscriptionDisplay.ts`**, **`lib/formatMoney.ts`**, **`lib/stripeCoachPlatformCustomer.ts`**, **`lib/coachPlatformCheckoutReturnPath.ts`**, **`lib/coachMsaOfferDisplay.ts`** ; migrations **`075`**, **`076`**
-- **Page Mes athlètes (coach)** : `app/[locale]/dashboard/athletes/page.tsx` (**CoachAthletesOnboardingPanel**, erreur chargement liste), `components/CoachAthletesOnboardingPanel.tsx`, `components/CoachOnboardingStepVisual.tsx`, `components/CoachOnboardingGhostAthleteTiles.tsx`, `lib/coachProfileCompletion.ts`, `components/CoachPlatformStripeBanner.tsx`, `components/CoachPlatformCheckoutVerification.tsx`, `CoachAthletesListWithFilter.tsx`, `PendingRequestTile.tsx` ; actions Checkout **`app/[locale]/dashboard/athletes/coachPlatformActions.ts`**
+- **Page Mes athlètes (coach)** : `app/[locale]/dashboard/athletes/page.tsx` (bandeaux profil / offre publiée, erreur chargement liste), `components/CoachPlatformStripeBanner.tsx`, `components/CoachPlatformCheckoutVerification.tsx`, `CoachAthletesListWithFilter.tsx`, `PendingRequestTile.tsx` ; actions Checkout **`app/[locale]/dashboard/athletes/coachPlatformActions.ts`**
 - **Sports** : `lib/sportStyles.ts` (`SPORT_CARD_STYLES`, `SPORT_BADGE_STYLES`, **`SPORT_WEEKLY_SUMMARY_BAR`**, `SPORT_ICONS`, `SPORT_TRANSLATION_KEYS`), `lib/sportsRegistry.ts` (`PERSISTED_WORKOUT_SPORT_TYPES`, `workoutIsTimeOnlySport`), `lib/sportsOptions.ts`, `components/SportIcons.tsx`
-- **Stats athlète (Nivo)** : `lib/athleteStatsNivoTheme.ts`, `lib/athleteStatsColors.ts`, `lib/athleteStatsChartUi.ts`, `lib/athleteStatsNivoLayers.tsx`, `components/athlete/AthleteStatsVolumeChart.tsx`, `components/athlete/AthleteStatsAnnualSummary.tsx`, `components/athlete/AthleteStatsChartHeader.tsx`, `components/athlete/AthleteStatsSliceTooltip.tsx`
+- **Stats athlète (Nivo)** : `lib/athleteStatsNivoTheme.ts`, `lib/athleteStatsColors.ts`, `lib/athleteStatsChartUi.ts`, `lib/athleteStatsNivoLayers.tsx`, `components/athlete/AthleteStatsVolumeChart.tsx`, `components/athlete/AthleteStatsAnnualSummary.tsx`
 - **Entrée dashboard / accueil connecté** : `lib/dashboardEntryPath.ts` (`getDashboardEntryPath`), `lib/pathWithLocale.ts`, `lib/publicHeaderPageTitle.ts` (`getPublicHeaderPageTitleI18n` — titres barre mobile `PublicHeader`), `app/[locale]/page.tsx`, `app/[locale]/dashboard/page.tsx`
 - **Landing marketing (visiteurs)** : `components/landing/*`, `lib/landingConfig.ts`, `lib/landingScreenshots.ts`, `public/landing/{fr|en}/*.webp` — voir § Landing
-- **FAQ publiques** : `components/public/*`, `lib/faqPublicConfig.ts`, `app/[locale]/faq/athlete/page.tsx`, `app/[locale]/faq/coach/page.tsx` — voir § Pages FAQ publiques
+- **FAQ publiques** : `components/public/PublicPageShell.tsx`, `components/public/PublicMarketingFooter.tsx`, `lib/faqPublicConfig.ts`, `app/[locale]/faq/athlete/page.tsx`, `app/[locale]/faq/coach/page.tsx`, `app/[locale]/privacy/page.tsx`, `app/[locale]/terms/page.tsx`, `app/[locale]/contact/page.tsx` — voir § Pages FAQ publiques
 - **Horaires modale workout (coach)** : `lib/workoutFacilityHours.ts` (filtre sport ↔ type d’installation, jour, tri alphabétique)
 - **Modale workout — formats & couleurs** : `lib/workoutFormatting.ts` (format absolu et delta des métriques workout — durée, distance, allure mm:ss, vitesse km/h, dénivelé ; tests Vitest `lib/workoutFormatting.test.ts`), `lib/workoutFeedbackColors.ts` (dégradé sémantique tuiles + picker feedback : Ressenti / Intensité RPE / Plaisir)
 - **Design system page** : `app/dashboard/admin/design-system/page.tsx`

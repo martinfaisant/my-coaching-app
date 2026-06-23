@@ -24,6 +24,7 @@
   --chart-axis-tick: #57534e;
   --chart-legend-text: #44403c;
   --chart-tooltip-bg: #ffffff;
+  --chart-area-opacity: 0.2;
 }
 
 @theme inline {

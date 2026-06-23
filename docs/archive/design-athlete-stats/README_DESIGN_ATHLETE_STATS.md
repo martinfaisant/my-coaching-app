@@ -4,7 +4,7 @@
 
 **Contexte :** page **entre Calendrier et Objectifs**, visible **avec ou sans coach** ; **années civiles** ; filtres globaux. Livraison des graphiques possible **par étapes**.
 
-**Implémentation produit (mai 2026) :** **US-STATS-00** (page, nav, filtres) et **US-STATS-01** (courbe volume réalisé, 1 sport, N années) sont **livrés** — voir `Project_context.md` §4.2.3. Les US-STATS-02 à **06** restent sur maquettes uniquement.
+**Implémentation produit (mai 2026) :** **US-STATS-00** (page, nav, filtres) et **US-STATS-01** (courbe volume réalisé, 1 sport, N années) sont **livrés** — voir `Project_context.md` §4.2.3. **US-STATS-01b/01c (modernisation UI #119, juin 2026)** : courbe premium + encart barres annuelles — livré ; maquettes `docs/archive/design-stats-charts-modern/`. Les US-STATS-02 à **06** restent sur maquettes uniquement.
 
 
 
