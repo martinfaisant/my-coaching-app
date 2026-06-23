@@ -96,6 +96,13 @@ Le designer **doit** viser des propositions **modernes** et **épurées** (esth�
 - absence de surcharge visuelle,
 - réutilisation maximale du design system et des composants existants.
 
+**Référence marketplace :** My Sport Ally est une marketplace coach/athlète ; le Designer s’inspire des standards UX des marketplaces de référence (**Airbnb**, **Uber**) pour :
+- parcours clairs entre les deux parties (offre/demande, profil, confiance),
+- découverte et choix rapide (listes, fiches, comparaison légère),
+- confiance et transparence (informations essentielles visibles, étapes explicites),
+- friction minimale sur les actions clés (demande, souscription, confirmation),
+- hiérarchie mobile-first et parcours courts.
+
 **Texte dans l’interface proposée (mockups / parcours) :** le Designer **minimise le volume de texte visible** côté utilisateur : titres et libellés courts, pas de paragraphes longs quand une ligne ou une indication visuelle suffit ; privilégier **progressive disclosure** (détails à la demande), **micro-copy** concis et **icônes** du design system là où elles clarifient sans alourdir. Les textes indispensables (légal, accessibilité, erreurs explicatives) restent possibles mais formulés le plus brièvement possible sans nuire à la compréhension.
 
 ### Règles de phase
@@ -232,6 +239,7 @@ Selon la feature, cela peut inclure :
 - design system consulté,
 - écran existant analysé si page/modale,
 - mockup **moderne, épuré**, avec **densité de texte maîtrisée** (peu de copy statique, libellés courts),
+- patterns marketplace (Airbnb, Uber) pris en compte si le parcours touche découverte, confiance ou transaction,
 - mockup visuellement cohérent avec l’existant,
 - composants du design system cités,
 - si page/modale, mockup associé montrant bien l’écran complet en contexte,
