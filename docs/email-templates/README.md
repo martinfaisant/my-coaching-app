@@ -1,15 +1,17 @@
-# Templates emails Supabase
+# Templates emails (Supabase Auth + transactionnels app)
 
-**Dernière mise à jour :** 26 février 2026
+**Dernière mise à jour :** 25 juin 2026
 
-Ce dossier centralise **tous les templates HTML** des emails envoyés par Supabase (Authentication → Email Templates), pour faciliter la maintenance et la cohérence.
+Ce dossier centralise les **templates HTML** des e-mails :
+
+- **Supabase Auth** (Authentication → Email Templates) — confirmation, reset password, etc.
+- **Application (Resend)** — e-mails transactionnels envoyés par le serveur Next.js (ex. alerte coach nouvelle demande).
 
 ---
 
-## Où configurer
+## E-mails Supabase Auth
 
 Dashboard Supabase → **Authentication** → **Email Templates** → choisir le type d’email (Confirm signup, Magic Link, Reset Password, etc.).
-
 **Pour chaque template, il faut toujours renseigner les deux champs :**
 - **Subject** (sujet de l’email) : indiqué en en-tête de chaque fichier `.html` de ce dossier (commentaire au début du fichier) ou dans [AUTH_EMAIL_TEMPLATES.md](../AUTH_EMAIL_TEMPLATES.md).
 - **Body** (corps HTML) : contenu du fichier `.html` correspondant (à copier en entier à partir de `<!DOCTYPE html>`).
@@ -22,8 +24,20 @@ Dashboard Supabase → **Authentication** → **Email Templates** → choisir le
 |----------------------|----------------------|----------|-------------------------------------------------|
 | **Confirm signup**   | `confirm-signup.html` | À jour   | `{{ .ConfirmationURL }}`, `{{ .Data.locale }}`, `{{ .SiteURL }}` |
 | **Magic Link**       | *(à créer)*          | À venir  | `{{ .ConfirmationURL }}`, `{{ .SiteURL }}`      |
-| **Reset Password**   | *(à créer)*          | À venir  | `{{ .ConfirmationURL }}`, `{{ .SiteURL }}`     |
-| **Change Email**     | *(à créer)*          | À venir  | Variables Supabase selon le type               |
+| **Reset Password**   | `reset-password.html` | À jour   | `{{ .ConfirmationURL }}`, `{{ .Data.locale }}`, `{{ .SiteURL }}`     |
+| **Coach request (Resend app)** | `coaching-request-coach.html` | À jour | Placeholders `{{key}}` — rendu par `lib/coachRequestNotificationEmail.ts` ; i18n **`coachNotifications.email`** ; **non** collé dans Supabase |
+
+---
+
+## E-mails transactionnels (Resend, application)
+
+Envoyés par le serveur Next.js via **`lib/resendClient.ts`** (variables **`RESEND_API_KEY`**, **`CONTACT_EMAIL_FROM`**).
+
+| Cas d’usage | Fichier | Code |
+|-------------|---------|------|
+| Nouvelle demande de coaching (coach) | `coaching-request-coach.html` | `lib/coachRequestNotificationEmail.ts` (déclenché après `createCoachRequest`) |
+
+**Configuration :** pas de dashboard Supabase — le HTML est lu depuis ce dossier par **`lib/emailTemplate.ts`**. Même charte visuelle que les e-mails auth (en-tête logo, couleurs design system). **Click tracking Resend :** recommandé **désactivé** (voir **`docs/AUTH_EMAIL_TEMPLATES.md`**).
 
 ---
 

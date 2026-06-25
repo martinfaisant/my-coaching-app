@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 23 juin 2026 (**pied de page unifié** privacy / terms / contact — `PublicPageShell`, `activeLink` ; précédent : réseaux sociaux LinkedIn + Facebook)
+**Dernière mise à jour :** 25 juin 2026 (**notifications e-mail coach** — alerte nouvelle demande, page Mes notifications ; précédent : pied de page unifié privacy / terms / contact)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -13,8 +13,8 @@
 - **Dernière mise à jour :** 16 juin 2026 (réseaux sociaux LinkedIn + Facebook ; précédent : activités athlète + migration 078)
 
 ### **Project_context.md** ⭐
-- **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (…), **§4.16 Annuaire coach public** (`/coaches`, gate visiteur, deep link find-coach), **§4.15 FAQ publiques** (athlète/coach, SEO JSON-LD), **§4.13 Marketing landing** (footer + réseaux sociaux, **`PublicPageShell`** sur pages légales/contact), **§4.14 SEO** (sitemap, robots, **llms.txt** + Social, og:image, JSON-LD **`sameAs`**, noindex, **`buildPublicPageMetadata`**, canonical/hreflang, proxy), **§4.11 Contact** (formulaire, footer partagé), **§4.9 Strava** (…), **§6 Quality gates & CI** (Vitest, parité i18n, GitHub Actions)
-- **Dernière mise à jour :** 23 juin 2026 (pied de page unifié privacy / terms / contact ; précédent : réseaux sociaux LinkedIn + Facebook)
+- **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (…), **§4.17 Notifications e-mail coach** (alerte nouvelle demande, `/dashboard/notifications`, migration 079), **§4.16 Annuaire coach public** (`/coaches`, gate visiteur, deep link find-coach), **§4.15 FAQ publiques** (athlète/coach, SEO JSON-LD), **§4.13 Marketing landing** (footer + réseaux sociaux, **`PublicPageShell`** sur pages légales/contact), **§4.14 SEO** (sitemap, robots, **llms.txt** + Social, og:image, JSON-LD **`sameAs`**, noindex, **`buildPublicPageMetadata`**, canonical/hreflang, proxy), **§4.11 Contact** (formulaire, footer partagé), **§4.9 Strava** (…), **§6 Quality gates & CI** (Vitest, parité i18n, GitHub Actions)
+- **Dernière mise à jour :** 25 juin 2026 (§4.17 notifications e-mail coach ; précédent : pied de page unifié privacy / terms / contact)
 
 ### **docs/CALENDAR_MONTH_VIEW.md**
 - **Contenu :** Récap **vue mois** (desktop) vs **vue semaine** (mobile), règles semaines ISO / mois civil étendu, **totaux hebdo** (liste sports `PERSISTED_WORKOUT_SPORT_TYPES`, `SPORT_WEEKLY_SUMMARY_BAR`), chargement données, liste des fichiers et tests unitaires, **tuiles disponibilité** (réf. design + `CalendarView`), liens vers maquettes archivées
@@ -23,28 +23,28 @@
 - **Dernière mise à jour :** 13 mai 2026 (tuiles dispo grille + ligne tableau fichiers ; précédent : résumé hebdo…)
 
 ### **docs/DESIGN_SYSTEM.md** ⭐
-- **Contenu :** Tokens (…), composants (…, **Landing**, **`components/public/*`** (`PublicPageShell`, `PublicMarketingFooter`, FAQ), …)
-- **Dernière mise à jour :** 23 juin 2026 (pied de page unifié pages légales + contact — `PublicPageShell`, `activeLink` ; précédent : activité athlète champs obligatoires)
+- **Contenu :** Tokens (…), composants (…, **Switch**, **NotificationPreferenceRow**, **Landing**, **`components/public/*`** (`PublicPageShell`, `PublicMarketingFooter`, FAQ), …)
+- **Dernière mise à jour :** 25 juin 2026 (Switch, NotificationPreferenceRow — notifications coach ; précédent : pied de page unifié pages légales + contact)
 
 ### **docs/I18N.md** ⭐
-- **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces (dont **`publicCoaches`**, **`publicFooter`**, **`faqAthlete`**, **`faqCoach`**, **`metadata.*`** SEO dont **`siteTitle`**, **`termsDescription`**, **`ogImageAlt`**, **`buildPublicPageMetadata`**), **`proxy.ts`** (exclusion sitemap/robots/llms), **checklist nouvelles features**, **parité automatisée FR/EN** (`lib/i18n/*`, `npm run check:i18n`, gate CI via `npm run test`) ; …
-- **Dernière mise à jour :** 16 juin 2026 (clés réseaux sociaux `publicFooter` / `contact` ; précédent : clés **`activityRealizedMandatory*`**)
+- **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces (dont **`coachNotifications`** + **`coachNotifications.email`**, **`navigation.myNotifications`**, **`metadata.notificationsTitle`**, **`publicCoaches`**, **`publicFooter`**, **`faqAthlete`**, **`faqCoach`**, **`metadata.*`** SEO dont **`siteTitle`**, **`termsDescription`**, **`ogImageAlt`**, **`buildPublicPageMetadata`**), **`proxy.ts`** (exclusion sitemap/robots/llms), **checklist nouvelles features**, **parité automatisée FR/EN** (`lib/i18n/*`, `npm run check:i18n`, gate CI via `npm run test`) ; …
+- **Dernière mise à jour :** 25 juin 2026 (namespace **`coachNotifications`** ; précédent : clés réseaux sociaux `publicFooter` / `contact`)
 
 ### **docs/AUTH_EMAIL_TEMPLATES.md**
-- **Contenu :** Guide de configuration des emails d’auth Supabase (sujet, i18n FR/EN, variables, dépannage logo). **Les fichiers HTML des templates** (Confirm signup, puis Magic Link, Reset Password, etc.) sont dans **docs/email-templates/**.
-- **Utiliser pour :** Configurer les templates dans le dashboard Supabase (Auth → Email Templates) ; copier le contenu des fichiers depuis **docs/email-templates/**.
-- **Dernière mise à jour :** 26 février 2026
+- **Contenu :** Guide de configuration des emails d’auth Supabase (sujet, i18n FR/EN, variables, dépannage logo). **Les fichiers HTML des templates** (Confirm signup, puis Magic Link, Reset Password, etc.) sont dans **docs/email-templates/**. Section **e-mails transactionnels Resend** (alerte coach nouvelle demande).
+- **Utiliser pour :** Configurer les templates dans le dashboard Supabase (Auth → Email Templates) ; copier le contenu des fichiers depuis **docs/email-templates/** ; distinguer Auth vs e-mails app Resend.
+- **Dernière mise à jour :** 25 juin 2026
 
 ### **docs/email-templates/** (dossier)
+- **Contenu :** Templates HTML — **Supabase Auth** (confirm-signup.html, reset-password.html, etc.) et **transactionnels app Resend** (`coaching-request-coach.html`) ; index dans README.md.
+- **Utiliser pour :** Coller le Body dans Supabase (Auth) ; référence runtime pour e-mails Resend (`lib/emailTemplate.ts`).
+- **Dernière mise à jour :** 25 juin 2026
+
 ### **docs/ENGINEERING_STATUS_REFAC_AUDIT.md**
 - **Contenu :** Source canonique de l’**état d’avancement engineering** : refactoring P1/P2 (historique) + audit P3 (Quick Wins faits, refactors, reste à faire) + **CI Vitest + parité i18n** (juin 2026) + checklist de cohérence.
 - **Utiliser pour :** Savoir ce qui est fait / à faire sans ambiguïté ; éviter les doublons entre “refactoring” et “audit”.
 - **Taille :** ~80 lignes
 - **Dernière mise à jour :** 15 juin 2026 (CI tests + parité i18n ; précédent : 18 mars 2026)
-
-- **Contenu :** Templates HTML des emails Supabase (confirm-signup.html, etc.), index dans README.md. Un seul dossier pour tous les types d’emails pour faciliter le suivi.
-- **Utiliser pour :** Récupérer le Body à coller dans Supabase pour chaque type d’email (Confirm signup, Magic Link, Reset Password, etc.).
-- **Dernière mise à jour :** 26 février 2026
 
 ---
 
@@ -65,7 +65,7 @@
 - **Utiliser pour :** Conventions de code, règles automatiques Cursor AI
 - **Type :** Always-applied workspace rule
 - **Taille :** ~230 lignes
-- **Dernière mise à jour :** 15 juin 2026 (activité athlète champs obligatoires modale ; précédent : CI Vitest + parité i18n)
+- **Dernière mise à jour :** 25 juin 2026 (notifications e-mail coach §4.17 ; précédent : CI Vitest + parité i18n)
 
 ### **.cursor/rules/save-button-pattern.mdc**
 - **Contenu :** Règle Cursor pour pattern de bouton de sauvegarde
@@ -107,6 +107,11 @@
 - **Contenu :** README + maquettes HTML **US-ATH-LOG-01…03** (menu « + » obsolète, modale athlète, tuiles coach).
 - **Utiliser pour :** Contexte UI historique ; détail produit / technique à jour : **`Project_context.md`** §4.5, **`docs/DESIGN_SYSTEM.md`** (calendrier), **`docs/CALENDAR_MONTH_VIEW.md`**.
 - **Archivé le :** 15 juin 2026 (fusion vers docs actives ci-dessus).
+
+### **docs/archive/design-coach-notifications/** (design feature — archivé juin 2026)
+- **Contenu :** README + maquettes HTML **MOCKUP_US_NOTIF_01…03** (entrée menu Mes notifications, page préférences états, aperçu e-mail coach).
+- **Utiliser pour :** Contexte UI historique ; détail produit / technique à jour : **`Project_context.md`** §4.17, **`docs/DESIGN_SYSTEM.md`** (Switch, NotificationPreferenceRow), **`docs/email-templates/coaching-request-coach.html`**.
+- **Archivé le :** 25 juin 2026 (fusion vers docs actives ci-dessus).
 
 ### **docs/design-availability-tile-top-accent/** (design feature — référence UI livrée)
 - **Contenu :** **README.md** (index) ; **MOCKUP_US1_CALENDAR_AVAILABILITY_TILES.html** (tuiles Disponible / Indisponible : bandeau haut, typo alignée tuile séance compacte). Implémentation : **`components/CalendarView.tsx`** (`renderAvailabilityTile`).
@@ -184,6 +189,7 @@
 - `docs/archive/design-landing-revamp/` — `MOCKUP_US_LANDING_01…04`, `MOCKUP_US_LANDING_FULL_PAGE.html`, `screenshots/fr/`, `README.md` — **livré** juin 2026 ; référence : **`Project_context.md`** §4.13, **`docs/DESIGN_SYSTEM.md`** § Landing
 - `docs/archive/design-faq-public/` — `MOCKUP_US_FAQ_01…03`, `README.md` — **livré** juin 2026 ; référence : **`Project_context.md`** §4.15, **`docs/DESIGN_SYSTEM.md`** § Pages FAQ publiques
 - `docs/archive/design-public-coaches/` — `MOCKUP_US_PUB_COACH_01…05`, `README.md` — **livré** juin 2026 ; référence : **`Project_context.md`** §4.16, **`docs/DESIGN_SYSTEM.md`** § Annuaire coach public
+- `docs/archive/design-coach-notifications/` — `MOCKUP_US_NOTIF_01_NAV_ENTRY.html`, `MOCKUP_US_NOTIF_02_PAGE_STATES.html`, `MOCKUP_US_NOTIF_03_EMAIL.html`, `README.md` — **livré** juin 2026 ; référence : **`Project_context.md`** §4.17, **`docs/DESIGN_SYSTEM.md`** (Switch, NotificationPreferenceRow)
 - **Raison :** feature livrée ; comportement et données décrits dans **Project_context.md §4.11**, **README.md** (Resend), **DEPLOYMENT_NOTES.md** (migrations 066–067).
 
 **Abonnement plateforme coach — maquette « grâce 3 jours » (archivée 13 mai 2026) :**
@@ -556,10 +562,16 @@
 
 **Fréquence de mise à jour :** À chaque ajout/suppression de documentation
 
-**Dernier scan :** 23 juin 2026  
-**Dernier nettoyage :** 23 juin 2026 (entrée Changements récents : pied de page unifié pages légales + contact)
+**Dernier scan :** 25 juin 2026  
+**Dernier nettoyage :** 25 juin 2026 (entrée Changements récents : notifications e-mail coach)
 
 ### Changements récents :
+
+✅ **25 juin 2026 – Notifications e-mail coach (nouvelle demande) – Mode Analyste :**
+- **Livraison (réf. code) :** migration **079** (`profiles.email_notify_coaching_request`) ; e-mail Resend post-`createCoachRequest` (`lib/coachRequestNotificationEmail.ts`, template **`coaching-request-coach.html`**) ; page **`/dashboard/notifications`** (`CoachNotificationsPreferences`, toggle auto-save) ; menu compte coach **Mes notifications** ; composants **`Switch`**, **`NotificationPreferenceRow`** ; i18n **`coachNotifications`** (FR/EN).
+- **Doc :** `Project_context.md` §4.4 (flow), **§4.17**, §5 `profiles` ; `DEPLOYMENT_NOTES.md` (migration 079) ; `docs/DESIGN_SYSTEM.md` ; `docs/I18N.md` ; `docs/email-templates/README.md` ; `docs/AUTH_EMAIL_TEMPLATES.md` ; `.cursor/rules/project-core.mdc` ; `DOCS_INDEX.md`.
+- **Archivage :** `docs/design-coach-notifications/` → **`docs/archive/design-coach-notifications/`** (`git mv`).
+- **Pages légales / confidentialité :** **proposition au PO** (voir § Écarts ci-dessous) — non appliquée sans validation explicite.
 
 ✅ **23 juin 2026 – Pied de page unifié pages publiques (issue #115) – Mode Analyste :**
 - **Livraison (réf. code) :** **`PublicPageShell`** ; **`PublicMarketingFooter`** avec prop **`activeLink`** (remplace `activeFaq`) et liens nav **sans soulignement** ; pages **`/privacy`**, **`/terms`**, **`/contact`** ; suppression liens sociaux inline sous le formulaire contact.

@@ -1,7 +1,7 @@
 # Notes de déploiement
 
 **Production :** https://mysportally.com (voir `docs/DOMAIN_MYSPORTALLY_SETUP.md` pour la configuration domaine, Vercel, Resend, Supabase).  
-**Dernière mise à jour doc :** 16 juin 2026 (réseaux sociaux LinkedIn + Facebook : footer, contact, JSON-LD `sameAs`, `llms.txt` ; précédent : migration **078** activités saisies par l’athlète)
+**Dernière mise à jour doc :** 25 juin 2026 (migration **079** — alertes e-mail coach nouvelle demande ; précédent : réseaux sociaux LinkedIn + Facebook)
 
 ---
 
@@ -320,3 +320,20 @@ Ces scripts ne sont **pas nécessaires** pour le déploiement en production, mai
 **À exécuter en production** avant ou avec le déploiement de la feature calendrier (modale `AthleteLoggedActivityModal`, badge « Ajouté »).
 
 **Référence produit :** **`Project_context.md`** §4.5 ; UI : **`docs/DESIGN_SYSTEM.md`** (calendrier), maquettes archivées **`docs/archive/design-athlete-logged-activity/`**.
+
+---
+
+## Migration 079 — Alertes e-mail coach (nouvelle demande)
+
+**Fichier :** `supabase/migrations/079_profiles_email_notify_coaching_request.sql`
+
+**Description :**
+
+- Colonne **`profiles.email_notify_coaching_request`** : `BOOLEAN NOT NULL DEFAULT true` (coach uniquement en produit ; opt-out via **Mes notifications**)
+- Aucune policy RLS supplémentaire : la préférence est lue/écrite par le coach sur sa propre ligne `profiles` (policies existantes)
+
+**À exécuter en production** avant ou avec le déploiement de la page **`/dashboard/notifications`** et de l’envoi Resend post-`createCoachRequest`.
+
+**Variables d’environnement (Vercel / local) :** **`RESEND_API_KEY`** et **`CONTACT_EMAIL_FROM`** (déjà requis pour le formulaire contact). Recommandation : **désactiver le click tracking Resend** pour ces e-mails transactionnels (comme pour les e-mails auth — voir **`docs/AUTH_EMAIL_TEMPLATES.md`**).
+
+**Référence produit :** **`Project_context.md`** §4.4 (flow demande), **§4.17** ; template : **`docs/email-templates/coaching-request-coach.html`** ; code : **`lib/coachRequestNotificationEmail.ts`**.

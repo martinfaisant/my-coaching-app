@@ -7,6 +7,7 @@ import { logger } from '@/lib/logger'
 import { getTranslations, getLocale } from 'next-intl/server'
 import { getFrozenTitleForLocale } from '@/lib/frozenOfferI18n'
 import { getDisplayName } from '@/lib/displayName'
+import { sendCoachRequestNotificationEmail } from '@/lib/coachRequestNotificationEmail'
 import {
   getWeeklyVolumeDisplaySports,
   getWeeklyVolumeTileElevationJsonKey,
@@ -221,6 +222,46 @@ export async function createCoachRequest(
     if (error) {
       logger.error('createCoachRequest insert failed', error, { coachId, offerId: offerId ?? null })
       return { error: tErrors('supabaseGeneric') }
+    }
+
+    const { data: coachProfile } = await supabase
+      .from('profiles')
+      .select('email, first_name, preferred_locale, email_notify_coaching_request')
+      .eq('user_id', coachId)
+      .single()
+
+    if (coachProfile?.email_notify_coaching_request !== false && coachProfile?.email?.trim()) {
+      const { data: athleteProfile } = await supabase
+        .from('profiles')
+        .select('first_name, last_name, email')
+        .eq('user_id', user.id)
+        .single()
+
+      const athleteDisplayName = getDisplayName(
+        athleteProfile ?? {
+          first_name: firstTrim || profile.first_name,
+          last_name: lastTrim || profile.last_name,
+          email: user.email,
+        },
+      )
+
+      try {
+        await sendCoachRequestNotificationEmail({
+          coachEmail: coachProfile.email,
+          coachFirstName: coachProfile.first_name,
+          coachPreferredLocale: coachProfile.preferred_locale,
+          athleteDisplayName,
+          sportPracticed: sportPracticedValue,
+          coachingNeed: need,
+          frozenOffer: {
+            frozen_title: insertPayload.frozen_title,
+            frozen_title_fr: insertPayload.frozen_title_fr,
+            frozen_title_en: insertPayload.frozen_title_en,
+          },
+        })
+      } catch (emailErr) {
+        logger.error('createCoachRequest notification email failed', emailErr, { coachId })
+      }
     }
 
     revalidatePath('/dashboard')

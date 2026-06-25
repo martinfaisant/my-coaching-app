@@ -36,15 +36,23 @@ export type NavigationI18nKey =
   | 'publicTerms'
   | 'resetPasswordPage'
   | 'coachPlatformSubscription'
+  | 'myNotifications'
 
 export type ProfileNavInput = {
   role: string
   coach_id?: string | null
 }
 
+export const COACH_NOTIFICATIONS_PATH = '/dashboard/notifications'
+
 /** Lien « Mes informations » (page profil) — menu compte athlète. */
 export function getAthleteProfileNavItem(): NavItem {
   return { href: '/dashboard/profile', i18nKey: 'myInformation' }
+}
+
+/** Lien « Mes notifications » (e-mail coach). */
+export function getCoachNotificationsNavItem(): NavItem {
+  return { href: COACH_NOTIFICATIONS_PATH, i18nKey: 'myNotifications' }
 }
 
 /** Lien « Mon Abonnement MySportAlly » (abonnement plateforme coach). */
@@ -149,9 +157,10 @@ export function isAthleteAccountMenuTriggerActive(
   return isAthleteAccountSectionActive(pathname, profile, options)
 }
 
-/** Trigger menu compte coach : profil, abonnement plateforme ou contact. */
+/** Trigger menu compte coach : profil, notifications, abonnement plateforme ou contact. */
 export function isCoachAccountMenuTriggerActive(pathname: string): boolean {
   if (pathname === '/dashboard/profile' || pathname === '/contact') return true
+  if (isNavItemActive(pathname, getCoachNotificationsNavItem())) return true
   return isNavItemActive(pathname, getCoachPlatformSubscriptionNavItem())
 }
 
@@ -179,6 +188,10 @@ export function getPageTitleI18nKey(
     return 'myInformation'
   }
   if (pathname === '/dashboard/profile') return 'profile'
+
+  if (isNavItemActive(pathname, getCoachNotificationsNavItem())) {
+    return 'myNotifications'
+  }
 
   if (isNavItemActive(pathname, getCoachPlatformSubscriptionNavItem())) {
     return 'coachPlatformSubscription'
