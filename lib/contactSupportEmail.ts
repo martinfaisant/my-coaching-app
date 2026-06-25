@@ -1,20 +1,13 @@
 import { logger } from '@/lib/logger'
+import {
+  RESEND_KEY_MISSING_ERROR,
+  getResendApiKey,
+  sendResendEmail,
+} from '@/lib/resendClient'
 
-const RESEND_API_URL = 'https://api.resend.com/emails'
+export { RESEND_KEY_MISSING_ERROR }
 
-const DEFAULT_FROM = 'My Sport Ally <no-reply@mysportally.com>'
 const DEFAULT_TO = 'support@mysportally.com'
-
-/** Jeté si aucune clé API n’est trouvée (voir `getResendApiKey`). */
-export const RESEND_KEY_MISSING_ERROR = 'RESEND_API_KEY_MISSING'
-
-function getResendApiKey(): string {
-  const primary = process.env.RESEND_API_KEY?.trim()
-  if (primary) return primary
-  // Alias toléré (évite les .env mal nommés) — préférer RESEND_API_KEY (doc Resend).
-  const alias = process.env.RESEND_KEY?.trim()
-  return alias ?? ''
-}
 
 export type ContactSupportEmailPayload = {
   reference: string
@@ -47,7 +40,6 @@ export async function sendContactSupportEmail(payload: ContactSupportEmailPayloa
     throw new Error(RESEND_KEY_MISSING_ERROR)
   }
 
-  const from = process.env.CONTACT_EMAIL_FROM ?? DEFAULT_FROM
   const to = process.env.CONTACT_SUPPORT_TO ?? DEFAULT_TO
 
   const subject = `[Contact ${payload.reference}] ${payload.reasonLabel}`
@@ -84,27 +76,11 @@ export async function sendContactSupportEmail(payload: ContactSupportEmailPayloa
   <pre style="white-space:pre-wrap;font-family:inherit;">${escapeHtml(payload.message)}</pre>
   `.trim()
 
-  const res = await fetch(RESEND_API_URL, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      from,
-      to: [to],
-      reply_to: payload.email,
-      subject,
-      text,
-      html,
-    }),
+  await sendResendEmail({
+    to: [to],
+    replyTo: payload.email,
+    subject,
+    text,
+    html,
   })
-
-  if (!res.ok) {
-    const errBody = await res.text()
-    logger.error('Resend contact email failed', new Error(errBody.slice(0, 500)), {
-      status: res.status,
-    })
-    throw new Error('RESEND_FAILED')
-  }
 }

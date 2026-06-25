@@ -982,7 +982,7 @@ export function ProfileForm({
                   defaultValue={presentationEn}
                   onChange={(e) => setPresentationEnLength(e.target.value.length)}
                   rows={5}
-                  placeholder={tProfile('presentationPlaceholder')}
+                  placeholder={tProfile('presentationPlaceholderEn')}
                   className="min-h-[120px]"
                 />
                 <div className="absolute bottom-3 right-3 text-[10px] text-stone-400 font-medium bg-white/80 px-2 py-1 rounded">
@@ -997,7 +997,7 @@ export function ProfileForm({
                   defaultValue={presentationFr}
                   onChange={(e) => setPresentationFrLength(e.target.value.length)}
                   rows={5}
-                  placeholder={tProfile('presentationPlaceholder')}
+                  placeholder={tProfile('presentationPlaceholderFr')}
                   className="min-h-[120px]"
                 />
                 <div className="absolute bottom-3 right-3 text-[10px] text-stone-400 font-medium bg-white/80 px-2 py-1 rounded">

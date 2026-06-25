@@ -58,6 +58,8 @@
    - [LanguageSwitcher](#languageswitcher)
    - [Dropdown](#dropdown)
    - [Segments](#segments)
+   - [Switch](#switch)
+   - [NotificationPreferenceRow](#notificationpreferencerow)
    - [DatePickerPopup](#datepickerpopup)
    - [MonthSelector](#monthselector)
    - [ChatAthleteListItem](#chatathletelistitem)
@@ -2018,6 +2020,33 @@ import { Segments } from '@/components/Segments'
 - **size="lg"** : `text-base font-bold`, disposition `gap-2` pour libellé + icône (onglets sous le calendrier coach).
 - Sur petits écrans, les labels peuvent être rendus sur 2 lignes (ex. types d’installation) ; à partir de `sm`, rendu compact sur une ligne.
 - Les segments gardent une hauteur interne homogène via `min-h-*` même si un libellé tient sur une seule ligne.
+
+---
+
+### Switch
+
+**Fichier :** `components/Switch.tsx`
+
+Interrupteur on/off compact pour préférences (ex. page **Mes notifications** coach). Taille **`h-6 w-11`**, thumb **`h-5 w-5`**. États : `bg-palette-forest-dark` (on), `bg-stone-300` (off). Accessibilité : `role="switch"`, `aria-checked`, `aria-label` = libellé de la préférence (pas de texte « Activé » / « Désactivé » sous le switch).
+
+```tsx
+import { Switch } from '@/components/Switch'
+
+<Switch
+  checked={enabled}
+  onCheckedChange={setEnabled}
+  label={t('preferences.coachingRequest.title')}
+  disabled={saving}
+/>
+```
+
+---
+
+### NotificationPreferenceRow
+
+**Fichier :** `components/NotificationPreferenceRow.tsx`
+
+Ligne préférence e-mail : titre + description à gauche, **`Switch`** à droite, **auto-save** au toggle (états saving / « ✓ Préférence enregistrée » / erreur). Utilisé sur `/dashboard/notifications` (coach).
 
 ---
 

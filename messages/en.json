@@ -153,7 +153,8 @@
     "publicPrivacy": "Privacy Policy",
     "publicTerms": "Terms of Use",
     "resetPasswordPage": "Reset password",
-    "coachPlatformSubscription": "MySportAlly subscription"
+    "coachPlatformSubscription": "MySportAlly subscription",
+    "myNotifications": "My notifications"
   },
   "athleteStats": {
     "title": "Statistics",
@@ -700,7 +701,8 @@
     "presentationSubtitle": "For your public profile (shown according to visitor language)",
     "presentationFr": "Presentation (French)",
     "presentationEn": "Presentation (English)",
-    "presentationPlaceholder": "Describe your experience...",
+    "presentationPlaceholderEn": "Describe your experience...",
+    "presentationPlaceholderFr": "Décrivez votre expérience...",
     "checking": "Checking…",
     "deleteConfirmTitle": "Delete my account",
     "deleteConfirmMessage": "You will lose all your data. This action is irreversible. Are you sure you want to delete your account?",
@@ -947,6 +949,7 @@
     "statsTitle": "Statistics",
     "goalsTitle": "My Goals",
     "profileTitle": "My profile",
+    "notificationsTitle": "My notifications",
     "devicesTitle": "Connected devices",
     "termsTitle": "Terms of Use",
     "termsDescription": "My Sport Ally terms of use: access rules, responsibilities and platform usage guidelines for sports coaching.",
@@ -1883,6 +1886,44 @@
       "weeklyTargetInvalid": "Time to allocate must be a number between 0 and 168 h.",
       "weeklyVolumeInvalid": "Please check volumes per sport (number ≥ 0, within allowed limit).",
       "platformSubscriptionRequired": "An active coach subscription is required to accept a request."
+    }
+  },
+  "coachNotifications": {
+    "pageTitle": "My notifications",
+    "sections": {
+      "emails": "Emails"
+    },
+    "preferences": {
+      "coachingRequest": {
+        "title": "New coaching request",
+        "description": "Recieve an email when an athlete sends you a coaching request."
+      }
+    },
+    "saving": "Saving…",
+    "saved": "✓ Preference saved",
+    "errors": {
+      "notAuthenticated": "You must be signed in.",
+      "saveFailed": "Could not save your preference. Please try again."
+    },
+    "email": {
+      "subject": "New coaching request — {athleteName}",
+      "pageTitle": "New coaching request",
+      "tagline": "Your coaching partner",
+      "heading": "New coaching request",
+      "greetingWithName": "Hi {coachFirstName},",
+      "greetingWithoutName": "Hi,",
+      "introSuffix": "sent you a coaching request.",
+      "offerLabel": "Offer",
+      "sportsLabel": "Sports",
+      "dateLabel": "Date",
+      "noOffer": "Not specified",
+      "ctaLabel": "View request",
+      "homeLink": "Home",
+      "loginLink": "Log in",
+      "notificationsLink": "My notifications",
+      "footerNotificationsPrefix": "Manage email alerts in",
+      "footerNotificationsSuffix": ".",
+      "copyright": "© 2026 My Sport Ally. All rights reserved."
     }
   },
   "coachMsaSubscription": {

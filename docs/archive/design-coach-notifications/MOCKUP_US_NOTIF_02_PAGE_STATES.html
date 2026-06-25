@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>US-NOTIF-02 — Page Mes notifications (toggle visible)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            'palette-forest-darker': '#506648',
+            'palette-danger': '#c0564b',
+            'palette-danger-light': '#fdf2f1',
+            stone: { 50: '#fafaf9', 100: '#f5f5f4', 200: '#e7e5e4', 400: '#a8a29e', 500: '#78716c', 600: '#57534e', 700: '#44403c', 800: '#292524' },
+          },
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-stone-200 min-h-screen p-4 sm:p-8 space-y-10">
+  <header class="max-w-lg mx-auto text-center space-y-2">
+    <h1 class="text-lg font-bold text-stone-900">US-NOTIF-02 — Page Mes notifications</h1>
+    <p class="text-xs text-stone-600 leading-relaxed">
+      Toggle compact (<strong>h-6 w-11</strong>) à droite de chaque ligne — sans libellé Activé/Désactivé.
+      État porté par la couleur du switch + <code>aria-label</code>. Clic = sauvegarde immédiate.
+    </p>
+  </header>
+
+  <section class="max-w-md mx-auto space-y-3">
+    <p class="text-[10px] font-bold uppercase tracking-wider text-palette-forest-darker text-center">Vue principale</p>
+
+    <div class="rounded-2xl border-2 border-palette-forest-dark/40 bg-white shadow-lg overflow-hidden relative">
+      <div class="absolute -right-1 top-[6.75rem] z-10 hidden sm:flex items-center gap-1 translate-x-full pr-2">
+        <svg class="w-8 h-8 text-palette-forest-dark shrink-0 rotate-180" fill="currentColor" viewBox="0 0 24 24" aria-hidden><path d="M14 4l-10 8 10 8V4z"/></svg>
+        <span class="text-xs font-bold text-palette-forest-darker bg-white border border-palette-forest-dark/30 rounded-lg px-2 py-1 shadow-sm whitespace-nowrap">Toggle ici →</span>
+      </div>
+
+      <div class="h-11 border-b border-stone-200 flex items-center justify-center px-4 bg-white">
+        <span class="text-sm font-bold text-stone-800">Mes notifications</span>
+      </div>
+
+      <div class="p-4 sm:p-5">
+        <div class="rounded-2xl border border-stone-200 bg-stone-50/50 overflow-hidden">
+          <div class="px-4 py-3 border-b border-stone-200 bg-white">
+            <h2 class="text-xs font-bold uppercase tracking-wider text-stone-500">E-mails</h2>
+          </div>
+
+          <div class="flex items-center gap-3 px-4 py-3.5 bg-white">
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-semibold text-stone-900">Nouvelle demande de coaching</p>
+              <p class="text-xs text-stone-500 mt-0.5 leading-snug">E-mail quand un athlète vous envoie une demande.</p>
+            </div>
+
+            <button
+              type="button"
+              role="switch"
+              aria-checked="true"
+              aria-label="Nouvelle demande de coaching"
+              class="relative inline-flex h-6 w-11 shrink-0 items-center rounded-full bg-palette-forest-dark transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-palette-forest-dark focus-visible:ring-offset-2"
+            >
+              <span class="inline-block h-5 w-5 translate-x-[1.375rem] rounded-full bg-white shadow transition-transform" aria-hidden></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="max-w-md mx-auto grid sm:grid-cols-2 gap-4">
+    <div class="space-y-2">
+      <p class="text-[10px] font-bold uppercase tracking-wider text-stone-500 text-center">ON (défaut)</p>
+      <div class="rounded-xl border border-stone-200 bg-white p-4 flex items-center gap-3">
+        <div class="flex-1 text-sm font-semibold text-stone-800">Nouvelle demande…</div>
+        <div class="relative h-6 w-11 shrink-0 rounded-full bg-palette-forest-dark">
+          <span class="absolute top-0.5 right-0.5 h-5 w-5 rounded-full bg-white shadow"></span>
+        </div>
+      </div>
+    </div>
+    <div class="space-y-2">
+      <p class="text-[10px] font-bold uppercase tracking-wider text-stone-500 text-center">OFF</p>
+      <div class="rounded-xl border border-stone-200 bg-white p-4 flex items-center gap-3">
+        <div class="flex-1 text-sm font-semibold text-stone-800">Nouvelle demande…</div>
+        <div class="relative h-6 w-11 shrink-0 rounded-full bg-stone-300">
+          <span class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="max-w-md mx-auto space-y-6">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-stone-500 text-center">Après clic</h2>
+
+    <div class="rounded-xl border border-stone-200 bg-white p-4 space-y-3">
+      <p class="text-[10px] font-semibold text-stone-500">Enregistrement…</p>
+      <div class="flex items-center gap-3 opacity-70">
+        <div class="flex-1 text-sm font-semibold">Nouvelle demande de coaching</div>
+        <div class="h-6 w-11 rounded-full bg-stone-300 animate-pulse shrink-0"></div>
+      </div>
+      <p class="text-xs text-stone-400 flex items-center gap-2">
+        <span class="w-3 h-3 border-2 border-stone-300 border-t-palette-forest-dark rounded-full animate-spin"></span>
+        Enregistrement…
+      </p>
+    </div>
+
+    <div class="rounded-xl border border-stone-200 bg-white p-4 space-y-2">
+      <p class="text-[10px] font-semibold text-stone-500">Succès (~2 s)</p>
+      <div class="flex items-center gap-3">
+        <div class="flex-1 text-sm font-semibold">Nouvelle demande de coaching</div>
+        <div class="h-6 w-11 rounded-full bg-stone-300 relative shrink-0"><span class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow"></span></div>
+      </div>
+      <p class="text-xs font-medium text-palette-forest-dark">✓ Préférence enregistrée</p>
+    </div>
+
+    <div class="rounded-xl border border-stone-200 bg-white p-4 space-y-2">
+      <p class="text-[10px] font-semibold text-stone-500">Erreur</p>
+      <div class="rounded-lg border border-palette-danger/30 bg-palette-danger-light px-3 py-2 text-xs text-palette-danger" role="alert">
+        Impossible d'enregistrer. Réessayez.
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="flex-1 text-sm font-semibold">Nouvelle demande de coaching</div>
+        <div class="h-6 w-11 rounded-full bg-palette-forest-dark relative shrink-0"><span class="absolute top-0.5 right-0.5 h-5 w-5 rounded-full bg-white shadow"></span></div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="max-w-md mx-auto text-xs text-stone-600 bg-white rounded-xl border border-stone-200 p-4 space-y-2">
+    <p><strong>Switch</strong> : <code>h-6 w-11</code>, thumb <code>h-5 w-5</code> — pas de texte sous le toggle.</p>
+    <p class="text-stone-500">Accessibilité : <code>role="switch"</code>, <code>aria-checked</code>, <code>aria-label</code> = titre de la préférence.</p>
+  </footer>
+</body>
+</html>

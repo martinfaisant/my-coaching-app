@@ -66,6 +66,8 @@ export type Profile = {
    * Clés : course | velo | natation ; valeurs : time | distance.
    */
   workout_primary_metric_by_sport?: WorkoutPrimaryMetricBySport | null
+  /** Coach uniquement : e-mail à chaque nouvelle demande de coaching (défaut true). */
+  email_notify_coaching_request?: boolean | null
 }
 
 export type SportType =

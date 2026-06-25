@@ -1,8 +1,10 @@
 # Templates email d'authentification (Supabase)
 
-**Dernière mise à jour :** 12 mars 2026
+**Dernière mise à jour :** 25 juin 2026
 
 Ce document décrit comment configurer les emails d’auth Supabase (confirmation d’inscription, etc.) avec des **templates HTML** et le **bilinguisme FR/EN**. Les fichiers HTML des templates sont centralisés dans **[docs/email-templates/](email-templates/)**.
+
+Pour les **e-mails transactionnels envoyés par l’application** (Resend, hors Auth Supabase), voir la section **E-mails transactionnels (Resend)** dans **[docs/email-templates/README.md](email-templates/README.md)** et **`Project_context.md`** §4.17.
 
 ---
 
@@ -95,6 +97,25 @@ Deux causes fréquentes :
 ### 2. Vérifier l’URL du site (Site URL)
 
 Si **Site URL** dans Supabase (Authentication → URL Configuration) pointe vers `http://localhost:3000`, les images ne chargeront pas dans les vrais emails (les clients email ne peuvent pas accéder à ton localhost). En production, définir **Site URL** sur l’URL publique de l’app (ex. `https://mysportally.com`).
+
+---
+
+## E-mails transactionnels Resend (application)
+
+En plus des e-mails **Auth** configurés dans Supabase, l’app envoie des e-mails **transactionnels** via l’API **Resend** (`lib/resendClient.ts`, variables **`RESEND_API_KEY`** et **`CONTACT_EMAIL_FROM`**).
+
+| Cas | Template | Déclencheur |
+|-----|----------|-------------|
+| Alerte coach — nouvelle demande | `docs/email-templates/coaching-request-coach.html` | Après insert réussi dans `createCoachRequest`, si `profiles.email_notify_coaching_request = true` |
+
+**Différences avec les templates Supabase :**
+
+- **Syntaxe :** placeholders `{{key}}` remplacés côté app (`lib/emailTemplate.ts`), pas la syntaxe Go `{{ .Variable }}`.
+- **i18n :** textes depuis **`coachNotifications.email`** selon `preferred_locale` du coach.
+- **Configuration :** aucun collage dans le dashboard Supabase ; le fichier HTML est lu au runtime.
+- **Click tracking :** même recommandation que pour l’auth — **désactiver** sur Resend pour ne pas corrompre les liens CTA (Mes athlètes, Mes notifications).
+
+Référence produit : **`Project_context.md`** §4.17 ; index : **`docs/email-templates/README.md`**.
 
 ---
 
