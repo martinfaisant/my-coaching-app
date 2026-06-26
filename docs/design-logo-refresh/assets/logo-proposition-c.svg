@@ -1,0 +1,36 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="c-body" x1="32" y1="6" x2="32" y2="58" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#8e9856"/>
+      <stop offset="42%" stop-color="#627e59"/>
+      <stop offset="100%" stop-color="#506648"/>
+    </linearGradient>
+    <radialGradient id="c-shine" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(26 20) rotate(18) scale(22 16)">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.42"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="c-gem" x1="32" y1="30" x2="32" y2="46" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#e0c96a"/>
+      <stop offset="55%" stop-color="#c9a544"/>
+      <stop offset="100%" stop-color="#9a7a2e"/>
+    </linearGradient>
+    <radialGradient id="c-gem-shine" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(28 34) scale(8)">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="c-shadow" x="4" y="4" width="56" height="58" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="2.5" stdDeviation="2.2" flood-color="#3d5238" flood-opacity="0.28"/>
+    </filter>
+  </defs>
+  <path
+    filter="url(#c-shadow)"
+    d="M32 7C23.5 7 16.5 13.2 14 22.5C12.2 29 13 36.5 16 42.5C18.2 46.8 21.5 50.5 25.5 53.2C27.4 54.5 29.6 55.5 32 55.8C34.4 55.5 36.6 54.5 38.5 53.2C42.5 50.5 45.8 46.8 48 42.5C51 36.5 51.8 29 50 22.5C47.5 13.2 40.5 7 32 7Z"
+    fill="url(#c-body)"
+  />
+  <path
+    d="M32 7C23.5 7 16.5 13.2 14 22.5C12.2 29 13 36.5 16 42.5C18.2 46.8 21.5 50.5 25.5 53.2C27.4 54.5 29.6 55.5 32 55.8C34.4 55.5 36.6 54.5 38.5 53.2C42.5 50.5 45.8 46.8 48 42.5C51 36.5 51.8 29 50 22.5C47.5 13.2 40.5 7 32 7Z"
+    fill="url(#c-shine)"
+  />
+  <ellipse cx="32" cy="38" rx="10.5" ry="8" fill="url(#c-gem)"/>
+  <ellipse cx="32" cy="38" rx="10.5" ry="8" fill="url(#c-gem-shine)"/>
+</svg>

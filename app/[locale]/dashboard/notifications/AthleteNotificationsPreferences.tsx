@@ -3,23 +3,23 @@
 import { useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import { NotificationPreferenceRow } from '@/components/NotificationPreferenceRow'
-import { updateCoachEmailNotifyCoachingRequest } from '@/app/[locale]/dashboard/notifications/actions'
+import { updateAthleteEmailNotifyCoachingRequestResponse } from '@/app/[locale]/dashboard/notifications/actions'
 import { createSuccess, type ApiResult } from '@/lib/errors'
 
-type CoachNotificationsPreferencesProps = {
-  emailNotifyCoachingRequest: boolean
+type AthleteNotificationsPreferencesProps = {
+  emailNotifyCoachingRequestResponse: boolean
 }
 
-export function CoachNotificationsPreferences({
-  emailNotifyCoachingRequest,
-}: CoachNotificationsPreferencesProps) {
-  const t = useTranslations('coachNotifications')
+export function AthleteNotificationsPreferences({
+  emailNotifyCoachingRequestResponse,
+}: AthleteNotificationsPreferencesProps) {
+  const t = useTranslations('athleteNotifications')
 
   const savePreference = useCallback(
     async (enabled: boolean, locale: string): Promise<ApiResult<{ enabled: boolean }>> => {
-      const result = await updateCoachEmailNotifyCoachingRequest(enabled, locale)
+      const result = await updateAthleteEmailNotifyCoachingRequestResponse(enabled, locale)
       if ('error' in result) return result
-      return createSuccess({ enabled: result.data.emailNotifyCoachingRequest })
+      return createSuccess({ enabled: result.data.emailNotifyCoachingRequestResponse })
     },
     [],
   )
@@ -32,11 +32,11 @@ export function CoachNotificationsPreferences({
           <h2 className="text-xs font-bold uppercase tracking-wider text-stone-500">{t('sections.emails')}</h2>
         </div>
         <NotificationPreferenceRow
-          preferenceId="coaching-request"
-          title={t('preferences.coachingRequest.title')}
-          description={t('preferences.coachingRequest.description')}
-          initialEnabled={emailNotifyCoachingRequest}
-          feedbackNamespace="coachNotifications"
+          preferenceId="coaching-request-response"
+          title={t('preferences.coachingRequestResponse.title')}
+          description={t('preferences.coachingRequestResponse.description')}
+          initialEnabled={emailNotifyCoachingRequestResponse}
+          feedbackNamespace="athleteNotifications"
           onSave={savePreference}
         />
       </div>

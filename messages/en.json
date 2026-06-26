@@ -1371,7 +1371,7 @@
   "legal": {
     "common": {
       "lastUpdated": "Last updated: {date}",
-      "lastUpdatedFull": "Last updated: June 12, 2026"
+      "lastUpdatedFull": "Last updated: June 25, 2026"
     },
     "terms": {
       "title": "Terms of Use",
@@ -1410,6 +1410,11 @@
           "oneAccount": {
             "title": "3.5 One account per person",
             "p1": "Each natural person must maintain only one active account on the Platform unless Mysportally authorizes otherwise in writing. Creating multiple accounts, including through multiple email addresses or Google accounts, to circumvent these terms (including free-trial or Platform access rules) is prohibited and may result in suspension or closure of the affected accounts, in accordance with Section 6.3 of these terms."
+          },
+          "communications": {
+            "title": "3.6 Email communications",
+            "p1": "By using the Platform, you agree that Mysportally may contact you at the email address associated with your account for service-related communications, including account security and operation of the Platform.",
+            "p2": "Email alerts related to your activity on the Platform may be offered. Where configurable, you may manage them in My notifications. Mysportally may change the types of alerts offered over time; the settings available in your account prevail."
           }
         },
         "role": {
@@ -1487,7 +1492,7 @@
     },
     "privacy": {
       "title": "Privacy Policy",
-      "lastUpdatedFull": "Last updated: June 12, 2026",
+      "lastUpdatedFull": "Last updated: June 25, 2026",
       "sections": {
         "commitment": {
           "title": "1. OUR COMMITMENT",
@@ -1502,7 +1507,8 @@
           "li5": "Contact form (dedicated page, with or without an account): first name, last name, email address, phone number if provided, reason for contact, message content; assignment of a tracking reference; if you are signed in, an account identifier may be linked to the request.",
           "li6": "Coach paid Platform subscription data: technical transaction or subscription identifiers, access status, free-trial consumption history per campaign (if applicable), processed when paying through an external payment service provider; Mysportally does not store your full card details on its own servers.",
           "li7": "Abuse-prevention data: technical elements used to detect duplicate accounts or circumvention (e.g. email address, account identifiers, session or login data, payment-provider identifiers), as necessary to enforce the Terms of Use.",
-          "li8": "Google authentication data: when you use \"Continue with Google\", we receive from Google, through our authentication provider, your email address, your name (first and last name when Google provides them, including as a full name), your Google profile photo URL when available, and a technical identifier used to recognize your Google account. We do not receive your Google password. The photo URL is stored in your Mysportally profile to display your avatar; you may change or remove it from My profile."
+          "li8": "Google authentication data: when you use \"Continue with Google\", we receive from Google, through our authentication provider, your email address, your name (first and last name when Google provides them, including as a full name), your Google profile photo URL when available, and a technical identifier used to recognize your Google account. We do not receive your Google password. The photo URL is stored in your Mysportally profile to display your avatar; you may change or remove it from My profile.",
+          "li9": "Email notification preferences: choices stored in your account to enable or disable email alerts offered on the Platform."
         },
         "useOfData": {
           "title": "3. USE OF DATA",
@@ -1513,13 +1519,15 @@
           "li5": "Process and respond to support requests submitted through the Contact form, including by email, and retain those requests for as long as needed to handle them and for customer support follow-up.",
           "li6": "Manage Coaches’ paid Platform subscription and related access status (including through an external payment service provider, as strictly necessary).",
           "li7": "Prevent abuse (including duplicate accounts or unauthorized use of a free trial) and enforce our Terms of Use.",
-          "li8": "Create, authenticate, and secure your account, including when signing in or signing up with Google, and manage linking between an existing account and Google."
+          "li8": "Create, authenticate, and secure your account, including when signing in or signing up with Google, and manage linking between an existing account and Google.",
+          "li9": "Send you email alerts about events related to your use of the Platform (for example activity concerning a coaching request or coaching relationship), when such alerts are offered and according to your preferences where they are configurable."
         },
         "consent": {
           "title": "4. CONSENT AND SENSITIVE DATA",
           "p1": "When you connect a third-party service (when this feature is available), you provide your express consent to the processing of your activity data. You may withdraw this consent at any time via your account settings, which will stop importing new data.",
           "p2": "For the Contact form, submitting the form constitutes consent to process the information you provide for the purpose of responding to your request, within the limits described in Sections 2 and 3.",
-          "p3": "For a first-time signup via Google, accepting these terms and the Privacy Policy, selecting your profile (Athlete or Coach), and completing the signup process constitute your consent to process the information received from Google for the purpose of creating and managing your account. You may withdraw this consent by deleting your account or ceasing to use the Platform; deletion may however limit or prevent access to the service."
+          "p3": "For a first-time signup via Google, accepting these terms and the Privacy Policy, selecting your profile (Athlete or Coach), and completing the signup process constitute your consent to process the information received from Google for the purpose of creating and managing your account. You may withdraw this consent by deleting your account or ceasing to use the Platform; deletion may however limit or prevent access to the service.",
+          "p4": "Service emails and alerts. Mysportally may send communications to the email address associated with your account that are necessary to operate or secure the service (including authentication and account management). We may also send email alerts about events related to your activity on the Platform. Where an alert is configurable, you may enable or disable it at any time in My notifications (account menu). Disabling an alert does not affect emails strictly necessary for account management or security. Processing is based on performance of our contract (essential emails) and, for configurable alerts, our legitimate interest in informing you of events relevant to your use of the Platform, subject to your right to object through your preferences."
         },
         "sharing": {
           "title": "5. SHARING AND DISCLOSURE",
@@ -1528,7 +1536,7 @@
           "li1": "Your Coach: for the execution of the service.",
           "li2": "Technical providers required to operate the website (hosting, authentication, database).",
           "li3": "Legal obligations: if required by law.",
-          "li4": "Transactional email delivery providers when needed to route a Contact form request to our team, strictly as required to process that request.",
+          "li4": "Transactional email delivery providers, when needed to route service-related communications (including Contact form requests and configurable email alerts in your account), strictly as required for those deliveries.",
           "li5": "External payment service provider: when you pay for Coach access to the Platform, data strictly necessary for payment and billing may be shared with that provider, which acts as a processor for that part of the processing and applies its own commitments to you during the transaction.",
           "li6": "Authentication providers: including our authentication infrastructure provider (e.g. Supabase) and, when you choose Google, Google as an identity provider. These parties process information strictly necessary for authentication, security, and technical operation of the service, in accordance with their own policies and our contractual instructions, as applicable."
         },
@@ -1918,6 +1926,49 @@
       "dateLabel": "Date",
       "noOffer": "Not specified",
       "ctaLabel": "View request",
+      "homeLink": "Home",
+      "loginLink": "Log in",
+      "notificationsLink": "My notifications",
+      "footerNotificationsPrefix": "Manage email alerts in",
+      "footerNotificationsSuffix": ".",
+      "copyright": "© 2026 My Sport Ally. All rights reserved."
+    }
+  },
+  "athleteNotifications": {
+    "pageTitle": "My notifications",
+    "sections": {
+      "emails": "Emails"
+    },
+    "preferences": {
+      "coachingRequestResponse": {
+        "title": "Response to my coaching request",
+        "description": "Receive an email when a coach accepts or declines your request."
+      }
+    },
+    "saving": "Saving…",
+    "saved": "✓ Preference saved",
+    "errors": {
+      "notAuthenticated": "You must be signed in.",
+      "saveFailed": "Could not save your preference. Please try again."
+    },
+    "email": {
+      "acceptedSubject": "Request accepted — {coachName}",
+      "declinedSubject": "Request declined — {coachName}",
+      "tagline": "Your coaching partner",
+      "acceptedHeading": "Request accepted",
+      "declinedHeading": "Request declined",
+      "greetingWithName": "Hi {athleteFirstName},",
+      "greetingWithoutName": "Hi,",
+      "acceptedIntroSuffix": "accepted your coaching request.",
+      "declinedIntroSuffix": "did not accept your coaching request.",
+      "declinedEncouragement": "Other coaches on My Sport Ally can support you. Browse the directory to find a profile that fits your goals.",
+      "coachLabel": "Coach",
+      "offerLabel": "Offer",
+      "sportsLabel": "Sports",
+      "dateLabel": "Date",
+      "noOffer": "Not specified",
+      "acceptedCtaLabel": "View my coach",
+      "declinedCtaLabel": "Find a coach",
       "homeLink": "Home",
       "loginLink": "Log in",
       "notificationsLink": "My notifications",

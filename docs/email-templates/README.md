@@ -36,6 +36,8 @@ Envoyés par le serveur Next.js via **`lib/resendClient.ts`** (variables **`RESE
 | Cas d’usage | Fichier | Code |
 |-------------|---------|------|
 | Nouvelle demande de coaching (coach) | `coaching-request-coach.html` | `lib/coachRequestNotificationEmail.ts` (déclenché après `createCoachRequest`) |
+| Réponse coach — demande acceptée (athlète) | `coaching-request-response-accepted-athlete.html` | `lib/coachRequestResponseAthleteEmail.ts` (déclenché après `respondToCoachRequest` accept) |
+| Réponse coach — demande refusée (athlète) | `coaching-request-response-declined-athlete.html` | `lib/coachRequestResponseAthleteEmail.ts` (déclenché après `respondToCoachRequest` decline) |
 
 **Configuration :** pas de dashboard Supabase — le HTML est lu depuis ce dossier par **`lib/emailTemplate.ts`**. Même charte visuelle que les e-mails auth (en-tête logo, couleurs design system). **Click tracking Resend :** recommandé **désactivé** (voir **`docs/AUTH_EMAIL_TEMPLATES.md`**).
 

@@ -4,13 +4,17 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
 import { Switch } from '@/components/Switch'
 import { FORM_ERROR_CLASSES } from '@/lib/formStyles'
-import { updateCoachEmailNotifyCoachingRequest } from '@/app/[locale]/dashboard/notifications/actions'
+import type { ApiResult } from '@/lib/errors'
+
+export type NotificationPreferenceFeedbackNamespace = 'coachNotifications' | 'athleteNotifications'
 
 type NotificationPreferenceRowProps = {
   preferenceId: string
   title: string
   description: string
   initialEnabled: boolean
+  feedbackNamespace: NotificationPreferenceFeedbackNamespace
+  onSave: (enabled: boolean, locale: string) => Promise<ApiResult<{ enabled: boolean }>>
 }
 
 const SAVED_FEEDBACK_MS = 2000
@@ -20,9 +24,11 @@ export function NotificationPreferenceRow({
   title,
   description,
   initialEnabled,
+  feedbackNamespace,
+  onSave,
 }: NotificationPreferenceRowProps) {
   const locale = useLocale()
-  const t = useTranslations('coachNotifications')
+  const t = useTranslations(feedbackNamespace)
   const [enabled, setEnabled] = useState(initialEnabled)
   const [serverEnabled, setServerEnabled] = useState(initialEnabled)
   const [saving, setSaving] = useState(false)
@@ -47,7 +53,7 @@ export function NotificationPreferenceRow({
       setError(null)
       setShowSaved(false)
 
-      const result = await updateCoachEmailNotifyCoachingRequest(next, locale)
+      const result = await onSave(next, locale)
 
       setSaving(false)
 
@@ -57,13 +63,13 @@ export function NotificationPreferenceRow({
         return
       }
 
-      setServerEnabled(result.data.emailNotifyCoachingRequest)
-      setEnabled(result.data.emailNotifyCoachingRequest)
+      setServerEnabled(result.data.enabled)
+      setEnabled(result.data.enabled)
       setShowSaved(true)
       if (savedTimeoutRef.current) clearTimeout(savedTimeoutRef.current)
       savedTimeoutRef.current = setTimeout(() => setShowSaved(false), SAVED_FEEDBACK_MS)
     },
-    [locale, serverEnabled],
+    [locale, onSave, serverEnabled],
   )
 
   const handleChange = (next: boolean) => {

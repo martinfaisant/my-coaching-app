@@ -117,7 +117,7 @@ export async function CoachAthletesOnboardingPanel({
               <div className="flex flex-col md:flex-row md:items-start gap-4">
                 <div className="flex items-start gap-3 flex-1 min-w-0">
                   <PendingStepBadge>3</PendingStepBadge>
-                  <div>
+                  <div className="min-w-0">
                     <p className="font-semibold text-stone-900">{t('onboarding.stepRequests.waitingTitle')}</p>
                     <p className="text-sm text-stone-500 mt-1">{t('onboarding.stepRequests.waitingDescription')}</p>
                   </div>
@@ -127,7 +127,7 @@ export async function CoachAthletesOnboardingPanel({
                   state="current"
                   offerPriceSampleLabel={offerPriceSampleLabel}
                   requestPlaceholderLabel={t('onboarding.stepRequests.requestPlaceholder')}
-                  className="!mx-0 w-full lg:w-auto"
+                  className="!mx-0"
                 />
               </div>
             </li>

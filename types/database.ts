@@ -68,6 +68,8 @@ export type Profile = {
   workout_primary_metric_by_sport?: WorkoutPrimaryMetricBySport | null
   /** Coach uniquement : e-mail à chaque nouvelle demande de coaching (défaut true). */
   email_notify_coaching_request?: boolean | null
+  /** Athlète uniquement : e-mail quand un coach accepte ou refuse sa demande (défaut true). */
+  email_notify_coaching_request_response?: boolean | null
 }
 
 export type SportType =

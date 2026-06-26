@@ -11,6 +11,7 @@ import { AvatarImage } from '@/components/AvatarImage'
 import { getDisplayName } from '@/lib/displayName'
 import {
   getAthleteAccountNavItems,
+  getAthleteNotificationsNavItem,
   getAthletePrimaryNavItems,
   getAthleteProfileNavItem,
   getCoachNotificationsNavItem,
@@ -40,6 +41,7 @@ export function DashboardTopBar({ profile }: DashboardTopBarProps) {
   const athletePrimary = isAthlete ? getAthletePrimaryNavItems(profile) : navItems
   const athleteAccount = isAthlete ? getAthleteAccountNavItems(profile) : []
   const athleteProfileItem = isAthlete ? [getAthleteProfileNavItem()] : []
+  const athleteNotificationsItem = isAthlete ? getAthleteNotificationsNavItem() : null
   const contactPublicItem = getContactPublicNavItem()
   const coachMsaItem = getCoachPlatformSubscriptionNavItem()
   const coachNotificationsItem = getCoachNotificationsNavItem()
@@ -221,6 +223,20 @@ export function DashboardTopBar({ profile }: DashboardTopBarProps) {
                   variant="list"
                   onItemClick={closeDrawer}
                 />
+                {athleteNotificationsItem ? (
+                  <Link
+                    href={athleteNotificationsItem.href}
+                    onClick={closeDrawer}
+                    className={`${contactDrawerLinkBase} mx-2 ${
+                      isNavItemActive(pathname, athleteNotificationsItem)
+                        ? contactDrawerActive
+                        : contactDrawerInactive
+                    }`}
+                  >
+                    {getNavIcon(athleteNotificationsItem)}
+                    <span>{t(athleteNotificationsItem.i18nKey)}</span>
+                  </Link>
+                ) : null}
                 <div className="border-t border-stone-200 p-2 shrink-0">
                   <LogoutButton className="w-full justify-start gap-3 rounded-xl font-medium !py-3 hover:bg-palette-danger-light" />
                 </div>
