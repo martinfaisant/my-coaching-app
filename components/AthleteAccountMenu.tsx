@@ -8,6 +8,7 @@ import { LogoutButton } from '@/components/LogoutButton'
 import { getNavIcon } from '@/components/DashboardNavIcons'
 import {
   getAthleteAccountNavItems,
+  getAthleteNotificationsNavItem,
   getAthleteProfileNavItem,
   getContactPublicNavItem,
   isAthleteAccountMenuTriggerActive,
@@ -52,6 +53,7 @@ function AthleteAccountMenuInner({
   const accountItems = getAthleteAccountNavItems(profile)
   const contactItem = getContactPublicNavItem()
   const profileItem = getAthleteProfileNavItem()
+  const notificationsItem = getAthleteNotificationsNavItem()
   const triggerActive = isAthleteAccountMenuTriggerActive(pathname, profile)
 
   useEffect(() => {
@@ -158,6 +160,17 @@ function AthleteAccountMenuInner({
             >
               {getNavIcon(profileItem)}
               <span>{t(profileItem.i18nKey)}</span>
+            </Link>
+            <Link
+              href={notificationsItem.href}
+              role="menuitem"
+              className={`${LINK_ROW} ${
+                isNavItemActive(pathname, notificationsItem) ? LINK_ACTIVE : LINK_INACTIVE
+              }`}
+              onClick={() => setOpen(false)}
+            >
+              {getNavIcon(notificationsItem)}
+              <span>{t(notificationsItem.i18nKey)}</span>
             </Link>
             <div className="px-2 pb-2 pt-1" role="none">
               <LogoutButton className="w-full justify-start gap-3 rounded-xl font-medium !py-3 hover:bg-palette-danger-light" />

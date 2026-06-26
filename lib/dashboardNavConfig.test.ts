@@ -165,6 +165,11 @@ describe('isAthleteAccountMenuTriggerActive', () => {
   it('inactif sur calendrier', () => {
     expect(isAthleteAccountMenuTriggerActive('/dashboard/calendar', athleteWithCoach)).toBe(false)
   })
+  it('actif sur Mes notifications', () => {
+    expect(isAthleteAccountMenuTriggerActive('/dashboard/notifications', athleteWithCoach)).toBe(
+      true,
+    )
+  })
   it('non athlète : false', () => {
     expect(isAthleteAccountMenuTriggerActive('/dashboard/profile', { role: 'coach' })).toBe(false)
   })

@@ -60,6 +60,7 @@ export default async function PrivacyPage({ params }: PrivacyPageProps) {
               <li>{t('privacy.sections.dataCollected.li6')}</li>
               <li>{t('privacy.sections.dataCollected.li7')}</li>
               <li>{t('privacy.sections.dataCollected.li8')}</li>
+              <li>{t('privacy.sections.dataCollected.li9')}</li>
             </ul>
           </section>
 
@@ -76,6 +77,7 @@ export default async function PrivacyPage({ params }: PrivacyPageProps) {
               <li>{t('privacy.sections.useOfData.li6')}</li>
               <li>{t('privacy.sections.useOfData.li7')}</li>
               <li>{t('privacy.sections.useOfData.li8')}</li>
+              <li>{t('privacy.sections.useOfData.li9')}</li>
             </ul>
           </section>
 
@@ -86,6 +88,7 @@ export default async function PrivacyPage({ params }: PrivacyPageProps) {
             <p className="leading-relaxed">{t('privacy.sections.consent.p1')}</p>
             <p className="leading-relaxed">{t('privacy.sections.consent.p2')}</p>
             <p className="leading-relaxed">{t('privacy.sections.consent.p3')}</p>
+            <p className="leading-relaxed">{t('privacy.sections.consent.p4')}</p>
           </section>
 
           <section className="space-y-3">

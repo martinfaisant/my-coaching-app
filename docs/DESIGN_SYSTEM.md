@@ -1,7 +1,7 @@
 # 🎨 Design System
 
-**Version :** 1.48  
-**Dernière mise à jour :** 23 juin 2026 (**graphiques stats athlète #119** — courbe A1 + encart A2 ; précédent : onboarding coach Mes athlètes)
+**Version :** 1.49  
+**Dernière mise à jour :** 25 juin 2026 (**Switch**, **NotificationPreferenceRow** — notifications coach + athlète ; précédent : graphiques stats athlète #119)
 
 ---
 
@@ -2027,7 +2027,7 @@ import { Segments } from '@/components/Segments'
 
 **Fichier :** `components/Switch.tsx`
 
-Interrupteur on/off compact pour préférences (ex. page **Mes notifications** coach). Taille **`h-6 w-11`**, thumb **`h-5 w-5`**. États : `bg-palette-forest-dark` (on), `bg-stone-300` (off). Accessibilité : `role="switch"`, `aria-checked`, `aria-label` = libellé de la préférence (pas de texte « Activé » / « Désactivé » sous le switch).
+Interrupteur on/off compact pour préférences (ex. page **Mes notifications** coach et athlète). Taille **`h-6 w-11`**, thumb **`h-5 w-5`**. États : `bg-palette-forest-dark` (on), `bg-stone-300` (off). Accessibilité : `role="switch"`, `aria-checked`, `aria-label` = libellé de la préférence (pas de texte « Activé » / « Désactivé » sous le switch).
 
 ```tsx
 import { Switch } from '@/components/Switch'
@@ -2046,7 +2046,40 @@ import { Switch } from '@/components/Switch'
 
 **Fichier :** `components/NotificationPreferenceRow.tsx`
 
-Ligne préférence e-mail : titre + description à gauche, **`Switch`** à droite, **auto-save** au toggle (états saving / « ✓ Préférence enregistrée » / erreur). Utilisé sur `/dashboard/notifications` (coach).
+Ligne préférence e-mail : titre + description à gauche, **`Switch`** à droite, **auto-save** au toggle (états saving / « ✓ Préférence enregistrée » / erreur). Utilisé sur **`/dashboard/notifications`** (coach via **`CoachNotificationsPreferences`**, athlète via **`AthleteNotificationsPreferences`** — même route, contenu selon le rôle).
+
+#### Props
+
+```typescript
+type NotificationPreferenceFeedbackNamespace = 'coachNotifications' | 'athleteNotifications'
+
+type NotificationPreferenceRowProps = {
+  preferenceId: string
+  title: string
+  description: string
+  initialEnabled: boolean
+  feedbackNamespace: NotificationPreferenceFeedbackNamespace  // i18n saving / saved / erreurs
+  onSave: (enabled: boolean, locale: string) => Promise<ApiResult<{ enabled: boolean }>>
+}
+```
+
+#### Exemple
+
+```tsx
+import { NotificationPreferenceRow } from '@/components/NotificationPreferenceRow'
+import { updateAthleteEmailNotifyCoachingRequestResponse } from '@/app/[locale]/dashboard/notifications/actions'
+
+<NotificationPreferenceRow
+  preferenceId="coaching-request-response"
+  title={t('preferences.coachingRequestResponse.title')}
+  description={t('preferences.coachingRequestResponse.description')}
+  initialEnabled={initialEnabled}
+  feedbackNamespace="athleteNotifications"
+  onSave={updateAthleteEmailNotifyCoachingRequestResponse}
+/>
+```
+
+**Référence produit :** `Project_context.md` §4.17 (coach), §4.18 (athlète).
 
 ---
 
@@ -2394,7 +2427,8 @@ Actuellement, utiliser un span custom :
 
 - **Tokens couleurs** : `tailwind.config.ts`, `app/globals.css`
 - **Styles formulaires** : `lib/formStyles.ts` (FORM_BASE_CLASSES, FORM_INPUT_TEXT_SIZE, FORM_INPUT_HEIGHT, **FORM_PRIMARY_FIELD_BORDER_CLASSES**, **FORM_PRIMARY_FIELD_ICON_CLASSES**, etc.)
-- **Composants** : `components/Button.tsx`, `components/AuthButtons.tsx` (variants `default`, `hero`, **`drawer`**, **`ctaBand`**), `components/landing/*` (page d'accueil marketing), `components/SocialAuthButtons.tsx`, `components/AuthSubmitButton.tsx`, `components/AuthRolePicker.tsx`, `components/AuthLegalConsent.tsx`, `components/Input.tsx`, `components/PasswordInput.tsx`, `components/PasswordRequirements.tsx`, `components/NewPasswordField.tsx`, `components/SearchInput.tsx`, `components/Textarea.tsx`, `components/Badge.tsx`, `components/Avatar.tsx`, `components/AvatarImage.tsx`, `components/SportTileSelectable.tsx`, `components/ActivityTile.tsx`, `components/Modal.tsx`, `components/CoachReviewsModal.tsx`, `components/workout-modal/CoachWorkoutForm.tsx`, `components/workout-modal/WorkoutFacilityHoursStrip.tsx`, `components/workout-modal/WorkoutTargetActualCards.tsx`, `components/workout-modal/WorkoutFeedbackSummary.tsx`, `components/workout-modal/WorkoutFeedbackSection.tsx`, `components/AthleteFacilityDetails.tsx`, `components/CoachAthleteNotesSection.tsx`, `components/CoachAthleteNoteModal.tsx`, `components/DashboardPageShell.tsx`, `components/DashboardTopBar.tsx`, `components/AthleteAccountMenu.tsx`, `components/CoachAccountMenu.tsx`, `components/ContactForm.tsx`, `components/Drawer.tsx`, `components/PublicOrDashboardHeader.tsx`, `components/PublicHeader.tsx`, `components/EmailValidatedModal.tsx`, `components/HomeEmailConfirmedTrigger.tsx`, `components/Dropdown.tsx`, `components/Segments.tsx`, `components/DatePickerPopup.tsx`, `components/MonthSelector.tsx`, `components/CalendarView.tsx`, `components/CalendarViewWithNavigation.tsx`, `lib/calendarViewDayHeights.ts`, `components/AvailabilityModal.tsx`, `components/AvailabilityDetailModal.tsx`, `components/athlete-logged-activity/AthleteLoggedActivityModal.tsx`, `components/athlete-logged-activity/AthleteLoggedCoachReadOnlyView.tsx`, `lib/athleteLoggedWorkout.ts`, `lib/athleteLoggedActivityValidation.ts`, `components/ChatAthleteListItem.tsx`, `components/ChatConversationSidebar.tsx`, `components/CoachPlatformSubscriptionOffers.tsx`, `components/CoachPlatformBillingAddressSection.tsx`, **`components/CoachPlatformBillingAddressFields.tsx`**, **`components/CoachPlatformCheckoutPrerequisitesForm.tsx`**, **`components/CoachPlatformCheckoutPrerequisitesModal.tsx`**, `components/CoachPlatformOfferGrid.tsx`, `components/CoachPlatformSubscribeOffersModal.tsx`, **`components/CoachPlatformCurrentOfferCard.tsx`**, **`components/CoachPlatformManageSubscriptionFlow.tsx`**, **`components/CoachPlatformSubscriptionStatusSection.tsx`**, **`components/CoachPlatformUnpaidSubscriptionBanner.tsx`**
+- **Composants** : `components/Button.tsx`, `components/AuthButtons.tsx` (variants `default`, `hero`, **`drawer`**, **`ctaBand`**), `components/landing/*` (page d'accueil marketing), `components/SocialAuthButtons.tsx`, `components/AuthSubmitButton.tsx`, `components/AuthRolePicker.tsx`, `components/AuthLegalConsent.tsx`, `components/Input.tsx`, `components/PasswordInput.tsx`, `components/PasswordRequirements.tsx`, `components/NewPasswordField.tsx`, `components/SearchInput.tsx`, `components/Textarea.tsx`, `components/Badge.tsx`, `components/Avatar.tsx`, `components/AvatarImage.tsx`, `components/SportTileSelectable.tsx`, `components/ActivityTile.tsx`, `components/Modal.tsx`, `components/CoachReviewsModal.tsx`, `components/workout-modal/CoachWorkoutForm.tsx`, `components/workout-modal/WorkoutFacilityHoursStrip.tsx`, `components/workout-modal/WorkoutTargetActualCards.tsx`, `components/workout-modal/WorkoutFeedbackSummary.tsx`, `components/workout-modal/WorkoutFeedbackSection.tsx`, `components/AthleteFacilityDetails.tsx`, `components/CoachAthleteNotesSection.tsx`, `components/CoachAthleteNoteModal.tsx`, `components/DashboardPageShell.tsx`, `components/DashboardTopBar.tsx`, `components/AthleteAccountMenu.tsx`, `components/CoachAccountMenu.tsx`, **`components/Switch.tsx`**, **`components/NotificationPreferenceRow.tsx`**, `components/ContactForm.tsx`, `components/Drawer.tsx`, `components/PublicOrDashboardHeader.tsx`, `components/PublicHeader.tsx`, `components/EmailValidatedModal.tsx`, `components/HomeEmailConfirmedTrigger.tsx`, `components/Dropdown.tsx`, `components/Segments.tsx`, `components/DatePickerPopup.tsx`, `components/MonthSelector.tsx`, `components/CalendarView.tsx`, `components/CalendarViewWithNavigation.tsx`, `lib/calendarViewDayHeights.ts`, `components/AvailabilityModal.tsx`, `components/AvailabilityDetailModal.tsx`, `components/athlete-logged-activity/AthleteLoggedActivityModal.tsx`, `components/athlete-logged-activity/AthleteLoggedCoachReadOnlyView.tsx`, `lib/athleteLoggedWorkout.ts`, `lib/athleteLoggedActivityValidation.ts`, `components/ChatAthleteListItem.tsx`, `components/ChatConversationSidebar.tsx`, `components/CoachPlatformSubscriptionOffers.tsx`, `components/CoachPlatformBillingAddressSection.tsx`, **`components/CoachPlatformBillingAddressFields.tsx`**, **`components/CoachPlatformCheckoutPrerequisitesForm.tsx`**, **`components/CoachPlatformCheckoutPrerequisitesModal.tsx`**, `components/CoachPlatformOfferGrid.tsx`, `components/CoachPlatformSubscribeOffersModal.tsx`, **`components/CoachPlatformCurrentOfferCard.tsx`**, **`components/CoachPlatformManageSubscriptionFlow.tsx`**, **`components/CoachPlatformSubscriptionStatusSection.tsx`**, **`components/CoachPlatformUnpaidSubscriptionBanner.tsx`**
+- **Page Mes notifications (coach + athlète)** : `app/[locale]/dashboard/notifications/page.tsx`, `loading.tsx`, `actions.ts` ; `CoachNotificationsPreferences.tsx`, `AthleteNotificationsPreferences.tsx` ; libs **`lib/coachRequestNotificationEmail.ts`**, **`lib/coachRequestResponseAthleteEmail.ts`**, **`lib/emailTemplate.ts`**, **`lib/resendClient.ts`**
 - **Page Mon Abonnement MySportAlly (coach)** : `app/[locale]/dashboard/coach-platform-subscription/page.tsx`, `loading.tsx`, **`coachPlatformBillingAddressActions.ts`**, **`coachPlatformCheckoutPrerequisitesActions.ts`**, **`coachPlatformCancellationActions.ts`** ; libs **`lib/coachPlatformCheckoutPrerequisites.ts`**, **`lib/stripeCoachPlatformCatalog.ts`**, **`lib/coachPlatformSubscriptionTrial.ts`**, **`lib/coachPlatformTrialEligibility.ts`**, **`lib/stripeCoachPlatformBillingHistory.ts`**, **`lib/stripeCoachPlatformBillingAddress.ts`**, **`lib/stripeCoachPlatformCancellation.ts`**, **`lib/coachPlatformSubscriptionSync.ts`**, **`lib/coachPlatformSubscriptionDisplay.ts`**, **`lib/formatMoney.ts`**, **`lib/stripeCoachPlatformCustomer.ts`**, **`lib/coachPlatformCheckoutReturnPath.ts`**, **`lib/coachMsaOfferDisplay.ts`** ; migrations **`075`**, **`076`**
 - **Page Mes athlètes (coach)** : `app/[locale]/dashboard/athletes/page.tsx` (**CoachAthletesOnboardingPanel**, erreur chargement liste), `components/CoachAthletesOnboardingPanel.tsx`, `components/CoachOnboardingStepVisual.tsx`, `components/CoachOnboardingGhostAthleteTiles.tsx`, `lib/coachProfileCompletion.ts`, `components/CoachPlatformStripeBanner.tsx`, `components/CoachPlatformCheckoutVerification.tsx`, `CoachAthletesListWithFilter.tsx`, `PendingRequestTile.tsx` ; actions Checkout **`app/[locale]/dashboard/athletes/coachPlatformActions.ts`**
 - **Sports** : `lib/sportStyles.ts` (`SPORT_CARD_STYLES`, `SPORT_BADGE_STYLES`, **`SPORT_WEEKLY_SUMMARY_BAR`**, `SPORT_ICONS`, `SPORT_TRANSLATION_KEYS`), `lib/sportsRegistry.ts` (`PERSISTED_WORKOUT_SPORT_TYPES`, `workoutIsTimeOnlySport`), `lib/sportsOptions.ts`, `components/SportIcons.tsx`

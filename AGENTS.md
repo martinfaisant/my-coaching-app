@@ -22,6 +22,7 @@
 - Regles de code Cursor: `.cursor/rules/project-core.mdc` + `.cursorrules`
 - Pattern bouton "Enregistrer": `docs/PATTERN_SAVE_BUTTON.md` (+ regle `.cursor/rules/save-button-pattern.mdc`)
 - Index docs (evite les doublons): `DOCS_INDEX.md`
+- Notifications e-mail transactionnelles (Resend): coach nouvelle demande + athlète réponse coach — `Project_context.md` §4.17–§4.18, `docs/email-templates/README.md`
 
 ## 4) Contraintes absolues (ne jamais les casser)
 - Aucun texte visible utilisateur en dur (FR/EN): toujours utiliser next-intl (`useTranslations` / `getTranslations`).

@@ -127,7 +127,7 @@ function RequestsVisual({
 
   return (
     <div
-      className={`w-full lg:w-72 space-y-2 ${isMuted ? 'opacity-45 grayscale-[0.3]' : ''}`}
+      className={`w-full md:w-64 lg:w-72 shrink-0 space-y-2 ${isMuted ? 'opacity-45 grayscale-[0.3]' : ''}`}
     >
       <div className="rounded-lg border border-l-4 border-l-palette-amber border-stone-200 bg-white p-2.5 shadow-sm">
         <div className="flex items-center gap-2">

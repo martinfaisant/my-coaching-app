@@ -8,6 +8,7 @@ import { getTranslations, getLocale } from 'next-intl/server'
 import { getFrozenTitleForLocale } from '@/lib/frozenOfferI18n'
 import { getDisplayName } from '@/lib/displayName'
 import { sendCoachRequestNotificationEmail } from '@/lib/coachRequestNotificationEmail'
+import { sendCoachRequestResponseAthleteEmail } from '@/lib/coachRequestResponseAthleteEmail'
 import {
   getWeeklyVolumeDisplaySports,
   getWeeklyVolumeTileElevationJsonKey,
@@ -463,7 +464,7 @@ export async function respondToCoachRequest(
 
   const { data: req } = await supabase
     .from('coach_requests')
-    .select('id, coach_id, athlete_id, status, frozen_price, frozen_price_type, frozen_title, frozen_description, frozen_title_fr, frozen_title_en, frozen_description_fr, frozen_description_en')
+    .select('id, coach_id, athlete_id, status, sport_practiced, frozen_price, frozen_price_type, frozen_title, frozen_description, frozen_title_fr, frozen_title_en, frozen_description_fr, frozen_description_en')
     .eq('id', requestId)
     .single()
 
@@ -471,6 +472,28 @@ export async function respondToCoachRequest(
   if (req.status !== 'pending') return { error: t('requestNotFound') }
 
   const now = new Date().toISOString()
+
+  // Charger les profils tant que la demande est encore pending (RLS profiles_select_coach_request_athletes).
+  const [{ data: athleteProfileForEmail, error: athleteProfileError }, { data: coachProfileForEmail }] =
+    await Promise.all([
+      supabase
+        .from('profiles')
+        .select('email, first_name, preferred_locale, email_notify_coaching_request_response')
+        .eq('user_id', req.athlete_id)
+        .single(),
+      supabase
+        .from('profiles')
+        .select('first_name, last_name, email')
+        .eq('user_id', user.id)
+        .single(),
+    ])
+
+  if (athleteProfileError) {
+    logger.error('respondToCoachRequest athlete profile load for email failed', athleteProfileError, {
+      requestId,
+      athleteId: req.athlete_id,
+    })
+  }
 
   if (accept) {
     const { data: platformOk, error: platformRpcError } = await supabase.rpc('coach_platform_access_granted', {
@@ -525,5 +548,37 @@ export async function respondToCoachRequest(
 
   revalidatePath('/dashboard')
   revalidatePath('/dashboard/athletes')
+
+  try {
+    if (
+      athleteProfileForEmail?.email_notify_coaching_request_response !== false &&
+      athleteProfileForEmail?.email?.trim()
+    ) {
+      const coachDisplayName = getDisplayName(
+        coachProfileForEmail ?? { first_name: null, last_name: null, email: user.email ?? '' },
+        user.email ?? '',
+      )
+
+      await sendCoachRequestResponseAthleteEmail({
+        outcome: accept ? 'accepted' : 'declined',
+        athleteEmail: athleteProfileForEmail.email,
+        athleteFirstName: athleteProfileForEmail.first_name,
+        athletePreferredLocale: athleteProfileForEmail.preferred_locale,
+        coachDisplayName,
+        sportPracticed: req.sport_practiced ?? '',
+        frozenOffer: {
+          frozen_title: req.frozen_title,
+          frozen_title_fr: req.frozen_title_fr,
+          frozen_title_en: req.frozen_title_en,
+        },
+        respondedAt: new Date(now),
+      })
+    }
+  } catch (emailErr) {
+    logger.error('respondToCoachRequest athlete notification email failed', emailErr, {
+      requestId,
+    })
+  }
+
   return {}
 }

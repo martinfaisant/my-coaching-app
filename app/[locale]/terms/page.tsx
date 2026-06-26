@@ -100,6 +100,14 @@ export default async function TermsPage({ params }: TermsPageProps) {
               </h3>
               <p className="leading-relaxed">{t('terms.sections.authentication.oneAccount.p1')}</p>
             </div>
+
+            <div className="space-y-3">
+              <h3 className="text-lg font-semibold text-stone-900">
+                {t('terms.sections.authentication.communications.title')}
+              </h3>
+              <p className="leading-relaxed">{t('terms.sections.authentication.communications.p1')}</p>
+              <p className="leading-relaxed">{t('terms.sections.authentication.communications.p2')}</p>
+            </div>
           </section>
 
           <section className="space-y-3">

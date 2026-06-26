@@ -1497,7 +1497,7 @@
   "legal": {
     "common": {
       "lastUpdated": "Dernière mise à jour : {date}",
-      "lastUpdatedFull": "Dernière mise à jour : 12 juin 2026"
+      "lastUpdatedFull": "Dernière mise à jour : 25 juin 2026"
     },
     "terms": {
       "title": "Conditions d’utilisation",
@@ -1536,6 +1536,11 @@
           "oneAccount": {
             "title": "3.5 Un compte par personne",
             "p1": "Chaque personne physique ne doit maintenir qu’un seul compte actif sur la Plateforme, sauf autorisation écrite de Mysportally. La création de comptes multiples, y compris par l’utilisation de plusieurs adresses courriel ou de plusieurs comptes Google, pour contourner les présentes conditions (notamment les règles relatives aux essais gratuits ou à l’accès à la Plateforme) est interdite et peut entraîner la suspension ou la fermeture des comptes concernés, conformément à la section 6.3 des présentes."
+          },
+          "communications": {
+            "title": "3.6 Communications par courriel",
+            "p1": "En utilisant la Plateforme, vous acceptez que Mysportally puisse vous contacter à l’adresse courriel associée à votre compte pour des communications relatives au service, notamment concernant la sécurité du compte et le fonctionnement de la Plateforme.",
+            "p2": "Des alertes par courriel relatives à votre activité sur la Plateforme peuvent être proposées. Lorsqu’elles sont configurables, vous pouvez les gérer dans Mes notifications. Mysportally peut faire évoluer les types d’alertes offertes ; les paramètres disponibles dans votre compte prévalent."
           }
         },
         "role": {
@@ -1613,7 +1618,7 @@
     },
     "privacy": {
       "title": "Politique de confidentialité",
-      "lastUpdatedFull": "Dernière mise à jour : 12 juin 2026",
+      "lastUpdatedFull": "Dernière mise à jour : 25 juin 2026",
       "sections": {
         "commitment": {
           "title": "1. NOTRE ENGAGEMENT",
@@ -1628,7 +1633,8 @@
           "li5": "Formulaire Contact (page dédiée, avec ou sans compte) : prénom, nom, adresse courriel, numéro de téléphone le cas échéant, motif de la demande, contenu du message ; attribution d’une référence de suivi ; si vous êtes connecté, un identifiant de compte peut être associé à la demande.",
           "li6": "Données liées à l’abonnement payant des Coachs (accès à la Plateforme) : identifiants techniques de transaction ou d’abonnement, statut d’accès, historique de consommation d’une période d’essai par campagne (le cas échéant), traités lors du paiement via un prestataire de paiement externe ; Mysportally ne conserve pas sur ses propres serveurs vos données complètes de carte bancaire.",
           "li7": "Données de prévention des abus : éléments techniques permettant de détecter des comptes multiples ou un contournement des conditions (ex. adresse courriel, identifiants de compte, données de session ou de connexion, identifiants côté prestataire de paiement), dans la mesure nécessaire à l’application des Conditions d’utilisation.",
-          "li8": "Données d’authentification via Google : lorsque vous utilisez « Continuer avec Google », nous recevons de Google, par l’intermédiaire de notre prestataire d’authentification, votre adresse courriel, votre nom (prénom et nom lorsque Google les communique, notamment sous la forme d’un nom complet), l’URL de votre photo de profil Google lorsqu’elle est disponible, ainsi qu’un identifiant technique permettant de reconnaître votre compte Google. Nous ne recevons pas votre mot de passe Google. L’URL de la photo est enregistrée dans votre profil Mysportally pour afficher votre avatar ; vous pouvez la modifier ou la supprimer depuis Mon profil."
+          "li8": "Données d’authentification via Google : lorsque vous utilisez « Continuer avec Google », nous recevons de Google, par l’intermédiaire de notre prestataire d’authentification, votre adresse courriel, votre nom (prénom et nom lorsque Google les communique, notamment sous la forme d’un nom complet), l’URL de votre photo de profil Google lorsqu’elle est disponible, ainsi qu’un identifiant technique permettant de reconnaître votre compte Google. Nous ne recevons pas votre mot de passe Google. L’URL de la photo est enregistrée dans votre profil Mysportally pour afficher votre avatar ; vous pouvez la modifier ou la supprimer depuis Mon profil.",
+          "li9": "Préférences de notification par courriel : choix enregistrés dans votre compte concernant l’activation ou la désactivation des alertes par courriel proposées sur la Plateforme."
         },
         "useOfData": {
           "title": "3. UTILISATION DES DONNÉES",
@@ -1639,13 +1645,15 @@
           "li5": "Traiter et répondre aux demandes adressées au support via le formulaire Contact, y compris par courriel, et conserver ces demandes le temps nécessaire à leur traitement et au suivi du service client.",
           "li6": "Gérer l’abonnement payant des Coachs à la Plateforme et le statut d’accès associé (y compris via un prestataire de paiement externe, dans la limite nécessaire).",
           "li7": "Prévenir les abus (dont multiplication de comptes ou utilisation non autorisée d’une période d’essai) et faire respecter nos Conditions d’utilisation.",
-          "li8": "Créer, authentifier et sécuriser votre compte, y compris lors d’une connexion ou inscription via Google, et gérer la liaison entre un compte existant et Google."
+          "li8": "Créer, authentifier et sécuriser votre compte, y compris lors d’une connexion ou inscription via Google, et gérer la liaison entre un compte existant et Google.",
+          "li9": "Vous adresser des alertes par courriel portant sur des événements liés à votre utilisation de la Plateforme (par exemple activité concernant une demande ou une relation de coaching), lorsque de telles alertes sont proposées et selon vos préférences lorsqu’elles sont configurables."
         },
         "consent": {
           "title": "4. CONSENTEMENT ET DONNÉES SENSIBLES",
           "p1": "Lorsque vous connectez un service tiers (lorsque cette fonctionnalité est disponible), vous donnez votre consentement exprès au traitement de vos données d’activité. Vous pouvez retirer ce consentement à tout moment via les paramètres de votre compte, ce qui entraînera l'arrêt de l'importation de nouvelles données.",
           "p2": "Pour le formulaire Contact, la soumission vaut consentement au traitement des renseignements fournis aux fins de réponse à votre demande, dans les limites décrites aux sections 2 et 3.",
-          "p3": "Lors d’une première inscription via Google, l’acceptation des présentes conditions et de la Politique de confidentialité, le choix de votre profil (Athlète ou Coach) et la poursuite du processus d’inscription constituent votre consentement au traitement des renseignements reçus de Google aux fins de création et de gestion de votre compte. Vous pouvez retirer ce consentement en supprimant votre compte ou en cessant d’utiliser la Plateforme ; la suppression peut toutefois limiter ou empêcher l’accès au service."
+          "p3": "Lors d’une première inscription via Google, l’acceptation des présentes conditions et de la Politique de confidentialité, le choix de votre profil (Athlète ou Coach) et la poursuite du processus d’inscription constituent votre consentement au traitement des renseignements reçus de Google aux fins de création et de gestion de votre compte. Vous pouvez retirer ce consentement en supprimant votre compte ou en cessant d’utiliser la Plateforme ; la suppression peut toutefois limiter ou empêcher l’accès au service.",
+          "p4": "Courriels de service et alertes. Mysportally peut vous envoyer, à l’adresse courriel associée à votre compte, des communications nécessaires au fonctionnement ou à la sécurité du service (notamment authentification et gestion du compte). Nous pouvons également vous adresser des alertes par courriel concernant des événements liés à votre activité sur la Plateforme. Lorsqu’une alerte est configurable, vous pouvez l’activer ou la désactiver à tout moment dans Mes notifications (menu compte). La désactivation d’une alerte n’affecte pas les courriels strictement nécessaires à la gestion ou à la sécurité de votre compte. Le traitement repose sur l’exécution du contrat (courriels indispensables) et, pour les alertes configurables, sur notre intérêt légitime à vous informer d’événements pertinents pour votre utilisation de la Plateforme, sous réserve de votre droit de vous y opposer via vos préférences."
         },
         "sharing": {
           "title": "5. PARTAGE ET DIVULGATION",
@@ -1654,7 +1662,7 @@
           "li1": "Votre Coach : pour l'exécution du service.",
           "li2": "Fournisseurs techniques nécessaires au fonctionnement du site (hébergement, authentification, base de données).",
           "li3": "Obligations légales : si la loi l'exige.",
-          "li4": "Prestataires d’envoi de courriels transactionnels, lorsque nécessaire pour transmettre une demande du formulaire Contact à notre équipe, dans la limite du traitement de cette demande.",
+          "li4": "Prestataires d’envoi de courriels transactionnels, lorsque nécessaire à l’acheminement de communications liées au service (notamment demandes via le formulaire Contact et alertes par courriel configurables dans votre compte), dans la limite strictement nécessaire à ces envois.",
           "li5": "Prestataire de paiement externe : lorsque vous payez l’abonnement d’accès à la Plateforme pour les Coachs, des données strictement nécessaires au paiement et à la facturation peuvent être communiquées à ce prestataire, qui agit comme sous-traitant pour cette partie du traitement et applique ses propres engagements envers vous lors de la transaction.",
           "li6": "Prestataires d’authentification : notamment notre fournisseur d’infrastructure d’authentification (ex. Supabase) et, lorsque vous choisissez Google, Google en tant que fournisseur d’identité. Ces tiers traitent des renseignements strictement nécessaires à l’authentification, la sécurité et le fonctionnement technique du service, conformément à leurs propres politiques et à nos instructions contractuelles, dans la mesure applicable."
         },
@@ -2044,6 +2052,49 @@
       "dateLabel": "Date",
       "noOffer": "Non précisée",
       "ctaLabel": "Voir la demande",
+      "homeLink": "Accueil",
+      "loginLink": "Connexion",
+      "notificationsLink": "Mes notifications",
+      "footerNotificationsPrefix": "Gérer vos alertes e-mail dans",
+      "footerNotificationsSuffix": ".",
+      "copyright": "© 2026 My Sport Ally. Tous droits réservés."
+    }
+  },
+  "athleteNotifications": {
+    "pageTitle": "Mes notifications",
+    "sections": {
+      "emails": "E-mails"
+    },
+    "preferences": {
+      "coachingRequestResponse": {
+        "title": "Réponse à ma demande de coaching",
+        "description": "Recevez un courriel lorsqu'un coach accepte ou refuse votre demande."
+      }
+    },
+    "saving": "Enregistrement…",
+    "saved": "✓ Préférence enregistrée",
+    "errors": {
+      "notAuthenticated": "Vous devez être connecté.",
+      "saveFailed": "Impossible d'enregistrer la préférence. Réessayez."
+    },
+    "email": {
+      "acceptedSubject": "Demande acceptée — {coachName}",
+      "declinedSubject": "Demande refusée — {coachName}",
+      "tagline": "Votre partenaire coaching",
+      "acceptedHeading": "Demande acceptée",
+      "declinedHeading": "Demande refusée",
+      "greetingWithName": "Bonjour {athleteFirstName},",
+      "greetingWithoutName": "Bonjour,",
+      "acceptedIntroSuffix": "a accepté votre demande de coaching.",
+      "declinedIntroSuffix": "n'a pas donné suite à votre demande de coaching.",
+      "declinedEncouragement": "D'autres coachs sur My Sport Ally peuvent vous accompagner. Parcourez l'annuaire pour trouver un profil qui correspond à vos objectifs.",
+      "coachLabel": "Coach",
+      "offerLabel": "Offre",
+      "sportsLabel": "Sports",
+      "dateLabel": "Date",
+      "noOffer": "Non précisée",
+      "acceptedCtaLabel": "Voir mon coach",
+      "declinedCtaLabel": "Trouver un coach",
       "homeLink": "Accueil",
       "loginLink": "Connexion",
       "notificationsLink": "Mes notifications",

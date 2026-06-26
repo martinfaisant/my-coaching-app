@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>US-ATH-NOTIF-02 — Page Mes notifications athlète</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'palette-forest-dark': '#627e59',
+            'palette-forest-darker': '#506648',
+            'palette-danger': '#c0564b',
+            'palette-danger-light': '#fdf2f1',
+            stone: { 50: '#fafaf9', 100: '#f5f5f4', 200: '#e7e5e4', 400: '#a8a29e', 500: '#78716c', 600: '#57534e', 700: '#44403c', 800: '#292524' },
+          },
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-stone-200 min-h-screen p-4 sm:p-8 space-y-10">
+  <header class="max-w-lg mx-auto text-center space-y-2">
+    <h1 class="text-lg font-bold text-stone-900">US-ATH-NOTIF-02 — Page Mes notifications (athlète)</h1>
+    <p class="text-xs text-stone-600 leading-relaxed">
+      Même layout que coach (<code>CoachNotificationsPreferences</code>) : <code>DashboardPageShell</code>,
+      carte section « E-mails », une ligne <code>NotificationPreferenceRow</code> + <code>Switch</code> (h-6 w-11).
+      Namespace i18n probable : <code>athleteNotifications</code>.
+    </p>
+  </header>
+
+  <section class="max-w-md mx-auto space-y-3">
+    <p class="text-[10px] font-bold uppercase tracking-wider text-palette-forest-darker text-center">Vue principale — athlète</p>
+
+    <div class="rounded-2xl border-2 border-palette-forest-dark/40 bg-white shadow-lg overflow-hidden">
+      <div class="h-11 border-b border-stone-200 flex items-center justify-center px-4 bg-white md:hidden">
+        <span class="text-sm font-bold text-stone-800">Mes notifications</span>
+      </div>
+
+      <div class="p-4 sm:p-5">
+        <h1 class="hidden md:block text-xl font-bold text-stone-900 mb-4">Mes notifications</h1>
+
+        <div class="rounded-2xl border border-stone-200 bg-stone-50/50 overflow-hidden">
+          <div class="px-4 py-3 border-b border-stone-200 bg-white">
+            <h2 class="text-xs font-bold uppercase tracking-wider text-stone-500">E-mails</h2>
+          </div>
+
+          <div class="flex items-center gap-3 px-4 py-3.5 bg-white">
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-semibold text-stone-900">Réponse à ma demande de coaching</p>
+              <p class="text-xs text-stone-500 mt-0.5 leading-snug">E-mail quand un coach accepte ou refuse votre demande.</p>
+            </div>
+
+            <button
+              type="button"
+              role="switch"
+              aria-checked="true"
+              aria-label="Réponse à ma demande de coaching"
+              class="relative inline-flex h-6 w-11 shrink-0 items-center rounded-full bg-palette-forest-dark transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-palette-forest-dark focus-visible:ring-offset-2"
+            >
+              <span class="inline-block h-5 w-5 translate-x-[1.375rem] rounded-full bg-white shadow transition-transform" aria-hidden></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="max-w-md mx-auto grid sm:grid-cols-2 gap-4">
+    <div class="space-y-2">
+      <p class="text-[10px] font-bold uppercase tracking-wider text-stone-500 text-center">ON (défaut)</p>
+      <div class="rounded-xl border border-stone-200 bg-white p-4 flex items-center gap-3">
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-semibold text-stone-800">Réponse à ma demande…</p>
+          <p class="text-xs text-stone-500 mt-0.5">Acceptation ou refus</p>
+        </div>
+        <div class="relative h-6 w-11 shrink-0 rounded-full bg-palette-forest-dark">
+          <span class="absolute top-0.5 right-0.5 h-5 w-5 rounded-full bg-white shadow"></span>
+        </div>
+      </div>
+    </div>
+    <div class="space-y-2">
+      <p class="text-[10px] font-bold uppercase tracking-wider text-stone-500 text-center">OFF</p>
+      <div class="rounded-xl border border-stone-200 bg-white p-4 flex items-center gap-3">
+        <div class="flex-1 text-sm font-semibold text-stone-800">Réponse à ma demande…</div>
+        <div class="relative h-6 w-11 shrink-0 rounded-full bg-stone-300">
+          <span class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="max-w-md mx-auto space-y-6">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-stone-500 text-center">Après clic toggle</h2>
+
+    <div class="rounded-xl border border-stone-200 bg-white p-4 space-y-3">
+      <p class="text-[10px] font-semibold text-stone-500">État — Enregistrement…</p>
+      <div class="flex items-center gap-3 opacity-70">
+        <div class="flex-1 text-sm font-semibold">Réponse à ma demande de coaching</div>
+        <div class="h-6 w-11 rounded-full bg-stone-300 animate-pulse shrink-0"></div>
+      </div>
+      <p class="text-xs text-stone-400 flex items-center gap-2">
+        <span class="w-3 h-3 border-2 border-stone-300 border-t-palette-forest-dark rounded-full animate-spin"></span>
+        Enregistrement…
+      </p>
+      <p class="text-[10px] text-stone-400">Switch désactivé pendant la requête.</p>
+    </div>
+
+    <div class="rounded-xl border border-stone-200 bg-white p-4 space-y-2">
+      <p class="text-[10px] font-semibold text-stone-500">État — Succès (~2 s puis disparaît)</p>
+      <div class="flex items-center gap-3">
+        <div class="flex-1 text-sm font-semibold">Réponse à ma demande de coaching</div>
+        <div class="h-6 w-11 rounded-full bg-stone-300 relative shrink-0"><span class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow"></span></div>
+      </div>
+      <p class="text-xs font-medium text-palette-forest-dark" role="status">✓ Préférence enregistrée</p>
+    </div>
+
+    <div class="rounded-xl border border-stone-200 bg-white p-4 space-y-2">
+      <p class="text-[10px] font-semibold text-stone-500">État — Erreur (rollback switch)</p>
+      <div class="rounded-lg border border-palette-danger/30 bg-palette-danger-light px-3 py-2 text-xs text-palette-danger" role="alert">
+        Impossible d'enregistrer la préférence. Réessayez.
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="flex-1 text-sm font-semibold">Réponse à ma demande de coaching</div>
+        <div class="h-6 w-11 rounded-full bg-palette-forest-dark relative shrink-0"><span class="absolute top-0.5 right-0.5 h-5 w-5 rounded-full bg-white shadow"></span></div>
+      </div>
+      <p class="text-[10px] text-stone-400">Le switch revient à la dernière valeur serveur connue.</p>
+    </div>
+  </section>
+
+  <section class="max-w-md mx-auto rounded-xl border border-stone-200 bg-white p-4 text-xs text-stone-600 space-y-3">
+    <p class="font-semibold text-stone-800">Transitions fonctionnelles (page)</p>
+    <ol class="list-decimal pl-4 space-y-1">
+      <li><strong>Chargement</strong> : skeleton <code>loading.tsx</code> (même pattern que coach).</li>
+      <li><strong>Initial</strong> : toggle reflète <code>email_notify_coaching_request_response</code> (défaut ON).</li>
+      <li><strong>Clic OFF</strong> → saving → succès → plus d'e-mails accept/refus.</li>
+      <li><strong>Clic ON</strong> → idem, réactive les alertes.</li>
+      <li><strong>Coach</strong> sur la même URL : contenu coach inchangé (pas de régression).</li>
+      <li><strong>Non-athlète / non-coach</strong> : redirection dashboard (comportement existant étendu).</li>
+    </ol>
+  </section>
+</body>
+</html>

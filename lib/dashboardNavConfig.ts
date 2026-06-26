@@ -50,9 +50,14 @@ export function getAthleteProfileNavItem(): NavItem {
   return { href: '/dashboard/profile', i18nKey: 'myInformation' }
 }
 
-/** Lien « Mes notifications » (e-mail coach). */
+/** Lien « Mes notifications » (e-mail coach / athlète). */
 export function getCoachNotificationsNavItem(): NavItem {
   return { href: COACH_NOTIFICATIONS_PATH, i18nKey: 'myNotifications' }
+}
+
+/** Lien « Mes notifications » (e-mail athlète) — même route que coach. */
+export function getAthleteNotificationsNavItem(): NavItem {
+  return getCoachNotificationsNavItem()
 }
 
 /** Lien « Mon Abonnement MySportAlly » (abonnement plateforme coach). */
@@ -154,6 +159,7 @@ export function isAthleteAccountMenuTriggerActive(
 ): boolean {
   if (profile.role !== 'athlete') return false
   if (pathname === '/dashboard/profile') return true
+  if (isNavItemActive(pathname, getAthleteNotificationsNavItem())) return true
   return isAthleteAccountSectionActive(pathname, profile, options)
 }
 

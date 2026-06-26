@@ -337,3 +337,20 @@ Ces scripts ne sont **pas nécessaires** pour le déploiement en production, mai
 **Variables d’environnement (Vercel / local) :** **`RESEND_API_KEY`** et **`CONTACT_EMAIL_FROM`** (déjà requis pour le formulaire contact). Recommandation : **désactiver le click tracking Resend** pour ces e-mails transactionnels (comme pour les e-mails auth — voir **`docs/AUTH_EMAIL_TEMPLATES.md`**).
 
 **Référence produit :** **`Project_context.md`** §4.4 (flow demande), **§4.17** ; template : **`docs/email-templates/coaching-request-coach.html`** ; code : **`lib/coachRequestNotificationEmail.ts`**.
+
+---
+
+## Migration 080 — Alertes e-mail athlète (réponse coach)
+
+**Fichier :** `supabase/migrations/080_profiles_email_notify_coaching_request_response.sql`
+
+**Description :**
+
+- Colonne **`profiles.email_notify_coaching_request_response`** : `BOOLEAN NOT NULL DEFAULT true` (athlète uniquement en produit ; opt-out via **Mes notifications**)
+- Aucune policy RLS supplémentaire : la préférence est lue/écrite par l'athlète sur sa propre ligne `profiles` (policies existantes)
+
+**À exécuter en production** avant ou avec le déploiement de la page **`/dashboard/notifications`** (vue athlète) et de l'envoi Resend post-`respondToCoachRequest`.
+
+**Variables d'environnement :** identiques à la migration 079 (**`RESEND_API_KEY`**, **`CONTACT_EMAIL_FROM`**).
+
+**Référence produit :** **`Project_context.md`** §4.4 (flow demande), **§4.18** ; mockups **`docs/archive/design-athlete-notifications/`** ; templates : **`coaching-request-response-accepted-athlete.html`**, **`coaching-request-response-declined-athlete.html`** ; code : **`lib/coachRequestResponseAthleteEmail.ts`**. **Note implémentation :** le profil athlète pour l’e-mail doit être chargé **avant** la mutation du statut de la demande (RLS `profiles_select_coach_request_athletes` = `pending` uniquement).

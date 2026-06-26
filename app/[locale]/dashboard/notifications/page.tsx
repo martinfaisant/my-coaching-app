@@ -5,6 +5,7 @@ import { DashboardPageShell } from '@/components/DashboardPageShell'
 import { getCurrentUserWithProfile } from '@/utils/auth'
 import { pathWithLocale } from '@/lib/pathWithLocale'
 import { CoachNotificationsPreferences } from './CoachNotificationsPreferences'
+import { AthleteNotificationsPreferences } from './AthleteNotificationsPreferences'
 
 export async function generateMetadata({
   params,
@@ -18,23 +19,32 @@ export async function generateMetadata({
 
 export const dynamic = 'force-dynamic'
 
-export default async function CoachNotificationsPage({
+export default async function NotificationsPage({
   params,
 }: {
   params: Promise<{ locale: string }>
 }) {
   const { locale } = await params
   const current = await getCurrentUserWithProfile()
+  const { role } = current.profile
 
-  if (current.profile.role !== 'coach') {
+  if (role !== 'coach' && role !== 'athlete') {
     redirect(pathWithLocale(locale, '/dashboard'))
   }
 
-  const emailNotifyCoachingRequest = current.profile.email_notify_coaching_request !== false
-
   return (
     <DashboardPageShell>
-      <CoachNotificationsPreferences emailNotifyCoachingRequest={emailNotifyCoachingRequest} />
+      {role === 'coach' ? (
+        <CoachNotificationsPreferences
+          emailNotifyCoachingRequest={current.profile.email_notify_coaching_request !== false}
+        />
+      ) : (
+        <AthleteNotificationsPreferences
+          emailNotifyCoachingRequestResponse={
+            current.profile.email_notify_coaching_request_response !== false
+          }
+        />
+      )}
     </DashboardPageShell>
   )
 }
