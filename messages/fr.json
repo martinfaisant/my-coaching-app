@@ -155,7 +155,8 @@
     "publicTerms": "Conditions d'utilisation",
     "resetPasswordPage": "Réinitialiser le mot de passe",
     "coachPlatformSubscription": "Abonnement MySportAlly",
-    "myNotifications": "Mes notifications"
+    "myNotifications": "Mes notifications",
+    "coachingSettings": "Paramètres de coaching"
   },
   "athleteStats": {
     "title": "Statistiques",
@@ -690,7 +691,7 @@
       "paceRequired": "La vitesse (allure ou km/h) est obligatoire pour ce sport.",
       "primaryMetricDistanceRequired": "Indiquez une distance.",
       "primaryMetricTimeRequired": "Indiquez une durée.",
-      "workoutUnitsNotConfigured": "Configurez les unités des séances (profil coach) avant de créer une séance.",
+      "workoutUnitsNotConfigured": "Configurez les unités des séances dans vos paramètres de coaching avant de créer une séance.",
       "actualDurationRequired": "Indiquez un temps réalisé.",
       "actualDistanceRequired": "Indiquez une distance réalisée.",
       "actualElevationRequired": "Indiquez un dénivelé réalisé.",
@@ -1076,6 +1077,7 @@
     "goalsTitle": "Mes Objectifs",
     "profileTitle": "Mon profil",
     "notificationsTitle": "Mes notifications",
+    "coachingSettingsTitle": "Paramètres de coaching",
     "devicesTitle": "Appareils connectés",
     "termsTitle": "Conditions d’utilisation",
     "termsDescription": "Conditions d’utilisation de My Sport Ally : règles d’accès, responsabilités et cadre d’utilisation de la plateforme de coaching sportif.",
@@ -2022,6 +2024,17 @@
       "platformSubscriptionRequired": "Un abonnement coach actif est requis pour accepter une demande."
     }
   },
+  "coachCoachingSettings": {
+    "pageTitle": "Paramètres de coaching",
+    "sections": {
+      "sessionUnits": "Unités des séances"
+    },
+    "sessionUnitsIntro": "Indiquez si vous planifiez d'abord en temps ou en distance pour chaque sport. Utilisé pour vos séances et la synthèse hebdomadaire.",
+    "saved": "Enregistré",
+    "validation": {
+      "invalidSelection": "Sélection invalide pour les unités des séances."
+    }
+  },
   "coachNotifications": {
     "pageTitle": "Mes notifications",
     "sections": {
@@ -2636,7 +2649,7 @@
       "paceRequired": "La vitesse (allure ou km/h) est obligatoire pour ce sport.",
       "primaryMetricDistanceRequired": "Indiquez une distance.",
       "primaryMetricTimeRequired": "Indiquez une durée.",
-      "workoutUnitsNotConfigured": "Configurez les unités des séances (profil coach) avant de créer une séance."
+      "workoutUnitsNotConfigured": "Configurez les unités des séances dans vos paramètres de coaching avant de créer une séance."
     }
   }
 }

@@ -8,6 +8,7 @@ import { LogoutButton } from '@/components/LogoutButton'
 import { getNavIcon } from '@/components/DashboardNavIcons'
 import {
   getAthleteProfileNavItem,
+  getCoachCoachingSettingsNavItem,
   getCoachNotificationsNavItem,
   getCoachPlatformSubscriptionNavItem,
   getContactPublicNavItem,
@@ -62,6 +63,7 @@ function CoachAccountMenuInner({
   const [open, setOpen] = useState(false)
   const wrapRef = useRef<HTMLDivElement>(null)
   const profileItem = getAthleteProfileNavItem()
+  const coachingSettingsItem = getCoachCoachingSettingsNavItem()
   const notificationsItem = getCoachNotificationsNavItem()
   const msaItem = getCoachPlatformSubscriptionNavItem()
   const contactItem = getContactPublicNavItem()
@@ -138,6 +140,17 @@ function CoachAccountMenuInner({
             >
               {getNavIcon(profileItem)}
               <span>{t(profileItem.i18nKey)}</span>
+            </Link>
+            <Link
+              href={coachingSettingsItem.href}
+              role="menuitem"
+              className={`${LINK_ROW} ${
+                isNavItemActive(pathname, coachingSettingsItem) ? LINK_ACTIVE : LINK_INACTIVE
+              }`}
+              onClick={() => setOpen(false)}
+            >
+              {getNavIcon(coachingSettingsItem)}
+              <span>{t(coachingSettingsItem.i18nKey)}</span>
             </Link>
             <Link
               href={notificationsItem.href}

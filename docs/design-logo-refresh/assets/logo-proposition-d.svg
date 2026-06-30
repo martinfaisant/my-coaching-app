@@ -1,0 +1,42 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="d-left" x1="18" y1="10" x2="28" y2="54" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#7a916f"/>
+      <stop offset="100%" stop-color="#506648"/>
+    </linearGradient>
+    <linearGradient id="d-right" x1="46" y1="10" x2="36" y2="54" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#8e9856"/>
+      <stop offset="100%" stop-color="#627e59"/>
+    </linearGradient>
+    <linearGradient id="d-center" x1="32" y1="14" x2="32" y2="50" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#e8d070"/>
+      <stop offset="50%" stop-color="#c9a544"/>
+      <stop offset="100%" stop-color="#8f7330"/>
+    </linearGradient>
+    <radialGradient id="d-center-shine" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(29 26) scale(10)">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="d-shadow" x="2" y="4" width="60" height="58" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#3d5238" flood-opacity="0.22"/>
+    </filter>
+  </defs>
+  <g filter="url(#d-shadow)">
+    <path
+      d="M20 12C14 18 11 28 12 38C13 46 17 52 23 55C26 56.5 29 57 32 57C29 50 27.5 42 27.5 34C27.5 25 29.5 17 32 10C28 10 24 10.5 20 12Z"
+      fill="url(#d-left)"
+    />
+    <path
+      d="M44 12C50 18 53 28 52 38C51 46 47 52 41 55C38 56.5 35 57 32 57C35 50 36.5 42 36.5 34C36.5 25 34.5 17 32 10C36 10 40 10.5 44 12Z"
+      fill="url(#d-right)"
+    />
+    <path
+      d="M32 14C26 22 22 30 22 38C22 44 25 49 29 52C30 53 31 53.5 32 53.8C33 53.5 34 53 35 52C39 49 42 44 42 38C42 30 38 22 32 14Z"
+      fill="url(#d-center)"
+    />
+    <path
+      d="M32 14C26 22 22 30 22 38C22 44 25 49 29 52C30 53 31 53.5 32 53.8C33 53.5 34 53 35 52C39 49 42 44 42 38C42 30 38 22 32 14Z"
+      fill="url(#d-center-shine)"
+    />
+  </g>
+</svg>

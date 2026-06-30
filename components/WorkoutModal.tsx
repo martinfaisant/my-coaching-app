@@ -25,7 +25,7 @@ import type {
   WorkoutPrimaryMetricBySport,
 } from '@/types/database'
 import { isCoachWorkoutPrimaryMetricsComplete } from '@/lib/workoutPrimaryMetric'
-import { saveCoachWorkoutPrimaryMetrics, type ProfileFormState } from '@/app/[locale]/dashboard/profile/actions'
+import { saveCoachWorkoutPrimaryMetrics, type CoachSessionUnitsFormState } from '@/app/[locale]/dashboard/coaching-settings/actions'
 import { Segments } from '@/components/Segments'
 import { Modal } from '@/components/Modal'
 import { Button } from '@/components/Button'
@@ -374,7 +374,7 @@ export function WorkoutModal({
 
   const [unitsState, unitsAction, unitsPending] = useActionState(
     saveCoachWorkoutPrimaryMetrics,
-    {} as ProfileFormState
+    {} as CoachSessionUnitsFormState
   )
   const [unitCourse, setUnitCourse] = useState<'time' | 'distance'>('time')
   const [unitTrail, setUnitTrail] = useState<'time' | 'distance'>('time')

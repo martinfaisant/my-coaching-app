@@ -1,0 +1,31 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="f-bg" x1="16" y1="8" x2="48" y2="56" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#7a916f"/>
+      <stop offset="100%" stop-color="#506648"/>
+    </linearGradient>
+    <radialGradient id="f-shine" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(22 16) scale(24)">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="f-body" x1="20" y1="16" x2="46" y2="52" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#f0f4ef"/>
+      <stop offset="45%" stop-color="#aaaa51"/>
+      <stop offset="100%" stop-color="#c9a544"/>
+    </linearGradient>
+    <filter id="f-shadow" x="4" y="4" width="56" height="58" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="2.5" stdDeviation="2.2" flood-color="#3d5238" flood-opacity="0.24"/>
+    </filter>
+  </defs>
+  <rect x="8" y="8" width="48" height="48" rx="16" fill="url(#f-bg)" filter="url(#f-shadow)"/>
+  <rect x="8" y="8" width="48" height="48" rx="16" fill="url(#f-shine)"/>
+  <circle cx="36" cy="22" r="5.5" fill="url(#f-body)"/>
+  <path
+    d="M30 27.5C24 31 20 36 18 42C17 45 18.5 48 21.5 49.5C26 52 30.5 49 33 44.5C35 41 36.5 37 38 33C39.5 29.5 41.5 26.5 45 24.5C47.5 23 49.5 24.5 49 27C48 31.5 44 35 40 37.5"
+    stroke="url(#f-body)"
+    stroke-width="5.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    fill="none"
+  />
+</svg>

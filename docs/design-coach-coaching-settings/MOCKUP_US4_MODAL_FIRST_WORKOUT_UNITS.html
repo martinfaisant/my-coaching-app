@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CCS-US4 — Modale première séance — Unités (conservée)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { colors: {
+        'palette-forest-dark': '#627e59',
+        stone: { 50: '#fafaf9', 200: '#e7e5e4', 500: '#78716c', 600: '#57534e', 800: '#292524', 900: '#1c1917' }
+      }}}
+    }
+  </script>
+  <style>
+    .state { display: none; }
+    .state.active { display: block; }
+    .tab.active { background: #627e59; color: white; }
+  </style>
+</head>
+<body class="bg-stone-800/80 min-h-screen p-4 flex flex-col items-center gap-4">
+  <p class="text-xs text-stone-300 max-w-lg text-center">
+    <strong>CCS-US4</strong> — Flux onboarding <strong>inchangé</strong> : création séance si unités incomplètes →
+    <code class="bg-stone-700 px-1 rounded">CoachUnitsSetupView</code> dans <code class="bg-stone-700 px-1 rounded">WorkoutModal</code>.
+    Mise à jour copy : plus de renvoi « profil coach » → « paramètres de coaching ».
+  </p>
+
+  <div class="flex gap-2 text-xs">
+    <button type="button" class="tab active px-3 py-1 rounded-lg border border-stone-500 text-white" data-state="blocked">Blocage création</button>
+    <button type="button" class="tab px-3 py-1 rounded-lg border border-stone-500 text-white" data-state="saved">Après enregistrement</button>
+  </div>
+
+  <div id="blocked" class="state active w-full max-w-lg">
+    <div class="bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div class="px-5 py-4 border-b border-stone-200 flex justify-between items-center">
+        <span class="text-sm font-bold text-stone-900">Créer un entraînement</span>
+        <button type="button" class="text-stone-400">✕</button>
+      </div>
+      <div class="overflow-y-auto p-5 space-y-4">
+        <p class="text-sm text-stone-600">Choisissez l’unité principale pour vos séances coaching.</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div class="rounded-xl border border-stone-200 p-3 border-l-4 border-l-palette-forest-dark flex flex-col gap-2">
+            <span class="text-sm font-semibold">Course</span>
+            <div class="flex bg-stone-100 rounded-lg p-0.5 text-xs"><span class="flex-1 py-1.5 text-center bg-palette-forest-dark text-white rounded-md">Temps</span><span class="flex-1 py-1.5 text-center text-stone-600">Distance</span></div>
+          </div>
+          <div class="rounded-xl border border-stone-200 p-3 border-l-4 border-l-palette-olive flex flex-col gap-2">
+            <span class="text-sm font-semibold">Vélo</span>
+            <div class="flex bg-stone-100 rounded-lg p-0.5 text-xs"><span class="flex-1 py-1.5 text-center text-stone-600">Temps</span><span class="flex-1 py-1.5 text-center bg-palette-forest-dark text-white rounded-md">Distance</span></div>
+          </div>
+          <p class="sm:col-span-2 text-xs text-stone-400">… 8 autres sports (grille complète, identique page paramètres) …</p>
+        </div>
+      </div>
+      <div class="border-t border-stone-200 p-4">
+        <button type="button" class="w-full py-3 rounded-xl bg-palette-forest-dark text-white text-sm font-semibold">Enregistrer les unités</button>
+      </div>
+    </div>
+    <p class="text-xs text-stone-400 mt-2 text-center">Formulaire séance masqué tant que les 10 sports ne sont pas configurés.</p>
+  </div>
+
+  <div id="saved" class="state w-full max-w-lg">
+    <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+      <div class="px-5 py-4 border-b border-stone-200"><span class="text-sm font-bold">Créer un entraînement</span></div>
+      <div class="p-5 text-sm text-stone-600">
+        <p class="mb-3 text-emerald-700 font-medium">✓ Unités enregistrées — transition automatique vers le formulaire séance.</p>
+        <div class="h-32 rounded-xl border border-stone-200 bg-stone-50 flex items-center justify-center text-stone-400 text-xs">CoachWorkoutForm (date, sport, objectifs…)</div>
+      </div>
+    </div>
+    <p class="text-xs text-stone-400 mt-2 text-center">Données persistées (même action serveur) · modifiables ensuite via Paramètres de coaching.</p>
+  </div>
+
+  <div class="max-w-lg text-xs text-stone-400 border border-stone-600 rounded-lg p-3">
+    <p class="font-semibold text-stone-300 mb-1">Messages à mettre à jour (i18n)</p>
+    <ul class="list-disc pl-4 space-y-1">
+      <li><code class="bg-stone-700 px-1">workouts.validation.workoutUnitsNotConfigured</code> → mentionner Paramètres de coaching, pas le profil.</li>
+      <li>Pas de lien obligatoire vers la page depuis la modale (saisie inline suffit).</li>
+    </ul>
+  </div>
+
+  <script>
+    document.querySelectorAll('.tab').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach((t) => t.classList.remove('active'));
+        document.querySelectorAll('.state').forEach((s) => s.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.state).classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>

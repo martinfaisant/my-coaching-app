@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CCS-US1 — Page Paramètres de coaching — Unités des séances</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { colors: {
+        'palette-forest-dark': '#627e59',
+        'palette-olive': '#8e9856',
+        'palette-danger': '#dc2626',
+        stone: { 50: '#fafaf9', 100: '#f5f5f4', 200: '#e7e5e4', 400: '#a8a29e', 500: '#78716c', 600: '#57534e', 700: '#44403c', 800: '#292524', 900: '#1c1917' }
+      }}}
+    }
+  </script>
+  <style>
+    .panel { display: none; }
+    .panel.active { display: block; }
+    .tab.active { background: #627e59; color: white; border-color: #627e59; }
+  </style>
+</head>
+<body class="bg-stone-100 min-h-screen p-4 md:p-8">
+  <div class="max-w-3xl mx-auto space-y-6">
+    <p class="text-xs text-stone-500">
+      <strong>CCS-US1</strong> — Route <code class="bg-stone-200 px-1 rounded">/dashboard/coaching-settings</code> · Coach uniquement ·
+      <code class="bg-stone-200 px-1 rounded">DashboardPageShell</code> · Hub carte (pattern Mes notifications) · 10 sports · Pattern save bouton.
+      Onglets = états fonctionnels (non UI produit).
+    </p>
+
+    <div class="flex flex-wrap gap-2 text-xs">
+      <button type="button" class="tab active px-3 py-1.5 rounded-lg border border-stone-300 bg-white font-medium" data-panel="initial">État initial</button>
+      <button type="button" class="tab px-3 py-1.5 rounded-lg border border-stone-300 bg-white font-medium" data-panel="dirty">Modification</button>
+      <button type="button" class="tab px-3 py-1.5 rounded-lg border border-stone-300 bg-white font-medium" data-panel="saved">✓ Enregistré</button>
+      <button type="button" class="tab px-3 py-1.5 rounded-lg border border-stone-300 bg-white font-medium" data-panel="error">Erreur</button>
+      <button type="button" class="tab px-3 py-1.5 rounded-lg border border-stone-300 bg-white font-medium" data-panel="mobile">Mobile (titre barre)</button>
+    </div>
+
+    <!-- État initial -->
+    <div id="initial" class="panel active">
+      <div class="bg-white rounded-2xl border border-stone-200 shadow-sm min-h-[480px] p-4 md:p-6">
+        <div class="max-w-xl w-full mx-auto space-y-4">
+          <h1 class="hidden md:block text-xl font-bold text-stone-900">Paramètres de coaching</h1>
+
+          <div class="rounded-2xl border border-stone-200 bg-stone-50/50 overflow-hidden">
+            <div class="px-4 py-3 border-b border-stone-200 bg-white">
+              <h2 class="text-xs font-bold uppercase tracking-wider text-stone-500">Unités des séances</h2>
+            </div>
+            <div class="p-4 space-y-4 bg-white">
+              <p class="text-sm text-stone-600">Indiquez si vous planifiez d’abord en temps ou en distance pour chaque sport. Utilisé pour vos séances et la synthèse hebdomadaire.</p>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div class="rounded-xl border border-stone-200 bg-white p-3 flex items-center justify-between gap-3 border-l-4 border-l-palette-forest-dark">
+                  <span class="text-sm font-semibold text-stone-800">Course</span>
+                  <div class="flex bg-stone-100 rounded-lg border border-stone-200 p-0.5 gap-0.5 shrink-0">
+                    <span class="px-2.5 py-1 rounded-md text-xs font-medium bg-palette-forest-dark text-white">Temps</span>
+                    <span class="px-2.5 py-1 rounded-md text-xs font-medium text-stone-600">Distance</span>
+                  </div>
+                </div>
+                <div class="rounded-xl border border-stone-200 bg-white p-3 flex items-center justify-between gap-3 border-l-4 border-l-emerald-800">
+                  <span class="text-sm font-semibold text-stone-800">Trail</span>
+                  <div class="flex bg-stone-100 rounded-lg border border-stone-200 p-0.5 gap-0.5 shrink-0">
+                    <span class="px-2.5 py-1 rounded-md text-xs font-medium text-stone-600">Temps</span>
+                    <span class="px-2.5 py-1 rounded-md text-xs font-medium bg-palette-forest-dark text-white">Distance</span>
+                  </div>
+                </div>
+                <div class="rounded-xl border border-stone-200 bg-white p-3 flex items-center justify-between gap-3 border-l-4 border-l-palette-olive">
+                  <span class="text-sm font-semibold text-stone-800">Vélo</span>
+                  <div class="flex bg-stone-100 rounded-lg border border-stone-200 p-0.5 gap-0.5 shrink-0">
+                    <span class="px-2.5 py-1 rounded-md text-xs font-medium bg-palette-forest-dark text-white">Temps</span>
+                    <span class="px-2.5 py-1 rounded-md text-xs font-medium text-stone-600">Distance</span>
+                  </div>
+                </div>
+                <div class="rounded-xl border border-stone-200 bg-white p-3 flex items-center justify-between gap-3 border-l-4 border-l-sky-600">
+                  <span class="text-sm font-semibold text-stone-800">Natation</span>
+                  <div class="flex bg-stone-100 rounded-lg border border-stone-200 p-0.5 gap-0.5 shrink-0">
+                    <span class="px-2.5 py-1 rounded-md text-xs font-medium bg-palette-forest-dark text-white">Temps</span>
+                    <span class="px-2.5 py-1 rounded-md text-xs font-medium text-stone-600">Distance</span>
+                  </div>
+                </div>
+                <div class="rounded-xl border border-stone-200 bg-white p-3 flex items-center justify-between gap-3 border-l-4 border-l-orange-600">
+                  <span class="text-sm font-semibold text-stone-800">Triathlon</span>
+                  <div class="flex bg-stone-100 rounded-lg border border-stone-200 p-0.5 gap-0.5 shrink-0">
+                    <span class="px-2.5 py-1 rounded-md text-xs font-medium text-stone-600">Temps</span>
+                    <span class="px-2.5 py-1 rounded-md text-xs font-medium bg-palette-forest-dark text-white">Distance</span>
+                  </div>
+                </div>
+                <div class="rounded-xl border border-stone-200 bg-white p-3 flex items-center justify-between gap-3 border-l-4 border-l-amber-700">
+                  <span class="text-sm font-semibold text-stone-800">Canot</span>
+                  <div class="flex bg-stone-100 rounded-lg border border-stone-200 p-0.5 gap-0.5 shrink-0">
+                    <span class="px-2.5 py-1 rounded-md text-xs font-medium bg-palette-forest-dark text-white">Temps</span>
+                    <span class="px-2.5 py-1 rounded-md text-xs font-medium text-stone-600">Distance</span>
+                  </div>
+                </div>
+                <div class="rounded-xl border border-stone-200 bg-white p-3 flex items-center justify-between gap-3 border-l-4 border-l-teal-700">
+                  <span class="text-sm font-semibold text-stone-800">Ski de fond</span>
+                  <div class="flex bg-stone-100 rounded-lg border border-stone-200 p-0.5 gap-0.5 shrink-0">
+                    <span class="px-2.5 py-1 rounded-md text-xs font-medium bg-palette-forest-dark text-white">Temps</span>
+                    <span class="px-2.5 py-1 rounded-md text-xs font-medium text-stone-600">Distance</span>
+                  </div>
+                </div>
+                <div class="rounded-xl border border-stone-200 bg-white p-3 flex items-center justify-between gap-3 border-l-4 border-l-slate-600">
+                  <span class="text-sm font-semibold text-stone-800">Ski de randonnée</span>
+                  <div class="flex bg-stone-100 rounded-lg border border-stone-200 p-0.5 gap-0.5 shrink-0">
+                    <span class="px-2.5 py-1 rounded-md text-xs font-medium text-stone-600">Temps</span>
+                    <span class="px-2.5 py-1 rounded-md text-xs font-medium bg-palette-forest-dark text-white">Distance</span>
+                  </div>
+                </div>
+                <div class="rounded-xl border border-stone-200 bg-white p-3 flex items-center justify-between gap-3 border-l-4 border-l-cyan-600">
+                  <span class="text-sm font-semibold text-stone-800">Patinage sur glace</span>
+                  <div class="flex bg-stone-100 rounded-lg border border-stone-200 p-0.5 gap-0.5 shrink-0">
+                    <span class="px-2.5 py-1 rounded-md text-xs font-medium bg-palette-forest-dark text-white">Temps</span>
+                    <span class="px-2.5 py-1 rounded-md text-xs font-medium text-stone-600">Distance</span>
+                  </div>
+                </div>
+                <div class="rounded-xl border border-stone-200 bg-white p-3 flex items-center justify-between gap-3 border-l-4 border-l-lime-700">
+                  <span class="text-sm font-semibold text-stone-800">Randonnée</span>
+                  <div class="flex bg-stone-100 rounded-lg border border-stone-200 p-0.5 gap-0.5 shrink-0">
+                    <span class="px-2.5 py-1 rounded-md text-xs font-medium bg-palette-forest-dark text-white">Temps</span>
+                    <span class="px-2.5 py-1 rounded-md text-xs font-medium text-stone-600">Distance</span>
+                  </div>
+                </div>
+              </div>
+
+              <button type="button" disabled class="w-full py-3 rounded-xl bg-stone-200 text-stone-400 text-sm font-semibold cursor-not-allowed">Enregistrer</button>
+              <p class="text-[10px] text-stone-400 text-center">Bouton désactivé tant qu’aucune modification (pattern save).</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modification -->
+    <div id="dirty" class="panel">
+      <div class="bg-white rounded-2xl border border-stone-200 p-6 max-w-xl mx-auto">
+        <p class="text-sm text-stone-600 mb-4">Après changement d’un <code class="bg-stone-100 px-1 rounded">Segments</code> : bouton actif.</p>
+        <button type="button" class="w-full py-3 rounded-xl bg-palette-forest-dark text-white text-sm font-semibold">Enregistrer</button>
+      </div>
+    </div>
+
+    <!-- Enregistré -->
+    <div id="saved" class="panel">
+      <div class="bg-white rounded-2xl border border-stone-200 p-6 max-w-xl mx-auto">
+        <button type="button" class="w-full py-3 rounded-xl bg-emerald-600 text-white text-sm font-semibold">✓ Enregistré</button>
+        <p class="text-[10px] text-stone-400 text-center mt-2">Feedback 2–2,5 s puis bouton désactivé (pattern <code class="bg-stone-100 px-1">PATTERN_SAVE_BUTTON</code>).</p>
+      </div>
+    </div>
+
+    <!-- Erreur -->
+    <div id="error" class="panel">
+      <div class="bg-white rounded-2xl border border-stone-200 p-6 max-w-xl mx-auto space-y-3">
+        <p class="text-sm text-palette-danger" role="alert">Sélection invalide pour les unités des séances.</p>
+        <button type="button" class="w-full py-3 rounded-xl bg-palette-forest-dark text-white text-sm font-semibold">Enregistrer</button>
+      </div>
+    </div>
+
+    <!-- Mobile -->
+    <div id="mobile" class="panel">
+      <div class="max-w-sm mx-auto border border-stone-300 rounded-2xl overflow-hidden bg-white shadow-lg">
+        <div class="flex items-center justify-between px-3 py-2 border-b border-stone-200 bg-white">
+          <span class="text-xs font-bold text-stone-400">Logo</span>
+          <span class="text-sm font-bold text-stone-900 truncate">Paramètres de coaching</span>
+          <span class="text-xs text-stone-400">☰</span>
+        </div>
+        <div class="p-3 text-xs text-stone-500">Titre page via <code class="bg-stone-100 px-1">getPageTitleI18nKey</code> — pas de <code class="bg-stone-100 px-1">h1</code> visible sous <code class="bg-stone-100 px-1">md</code>.</div>
+      </div>
+    </div>
+
+    <div class="text-xs text-stone-500 space-y-1 border-t border-stone-200 pt-4">
+      <p><strong>Transitions :</strong></p>
+      <ul class="list-disc pl-5 space-y-1">
+        <li>Menu compte → clic « Paramètres de coaching » → cette page (état initial chargé depuis BDD).</li>
+        <li>Modification segment → bouton Enregistrer actif → clic → loading « Enregistrement… » → succès ✓ ou erreur.</li>
+        <li>Athlète / admin sur l’URL → redirection dashboard (hors mockup).</li>
+      </ul>
+    </div>
+  </div>
+  <script>
+    document.querySelectorAll('.tab').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach((t) => t.classList.remove('active'));
+        document.querySelectorAll('.panel').forEach((p) => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.panel).classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>

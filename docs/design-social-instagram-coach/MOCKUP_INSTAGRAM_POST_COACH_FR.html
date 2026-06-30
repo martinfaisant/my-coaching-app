@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Instagram — Post coach FR (1080×1080)</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      background: #1c1917;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      padding: 24px;
+    }
+
+    .hint {
+      max-width: 1080px;
+      color: #a8a29e;
+      font-size: 13px;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    .hint strong { color: #fafaf9; }
+
+    .canvas {
+      width: 1080px;
+      height: 1080px;
+      flex-shrink: 0;
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(165deg, #f0f4ef 0%, #ffffff 50%, #fafaf9 100%);
+      color: #292524;
+    }
+
+    .layout {
+      position: relative;
+      z-index: 1;
+      height: 100%;
+      display: flex;
+      align-items: stretch;
+      gap: 40px;
+      padding: 64px 56px 64px 64px;
+    }
+
+    /* —— Colonne gauche (capture) —— */
+    .content-left {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      padding-top: 8px;
+    }
+
+    .brand-row {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 40px;
+    }
+
+    .logo-main {
+      width: 72px;
+      height: 63px;
+      flex-shrink: 0;
+    }
+
+    .brand-col {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .brand-name {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #506648;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+      padding: 8px 16px 8px 12px;
+      border-radius: 999px;
+      background: #627e59;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 600;
+      width: fit-content;
+      white-space: nowrap;
+    }
+
+    .badge .logo-mini {
+      width: 20px;
+      height: 18px;
+      flex-shrink: 0;
+      display: block;
+    }
+
+    h1 {
+      font-size: 54px;
+      font-weight: 800;
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      color: #1c1917;
+      margin-bottom: 36px;
+    }
+
+    h1 em {
+      font-style: normal;
+      color: #627e59;
+    }
+
+    .bullets {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .bullets li {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      font-size: 24px;
+      line-height: 1.35;
+      color: #44403c;
+    }
+
+    .check {
+      flex-shrink: 0;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #627e59;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 700;
+      margin-top: 3px;
+    }
+
+    .sports {
+      margin-top: auto;
+      padding-top: 48px;
+      font-size: 20px;
+      color: #78716c;
+      line-height: 1.4;
+    }
+
+    /* —— Tuile coach (droite) —— */
+    .content-right {
+      width: 400px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+    }
+
+    .coach-tile {
+      width: 100%;
+      background: #fff;
+      border: 1px solid #e7e5e4;
+      border-radius: 16px;
+      box-shadow: 0 12px 40px -12px rgba(0, 0, 0, 0.14);
+      overflow: hidden;
+    }
+
+    .coach-tile-body {
+      padding: 24px;
+    }
+
+    .coach-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .coach-avatar-fallback {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #8e9856;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 0 0 2px #f5f5f4;
+    }
+
+    .coach-name {
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 1.2;
+      color: #1c1917;
+    }
+
+    .coach-rating {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 5px;
+      font-size: 12px;
+      color: #78716c;
+    }
+
+    .coach-rating .star-line {
+      color: #c9a544;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .coach-rating svg {
+      width: 12px;
+      height: 12px;
+      fill: currentColor;
+    }
+
+    .sport-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-bottom: 14px;
+    }
+
+    .sport-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 500;
+      background: #fff;
+      border: 1px solid;
+    }
+
+    .sport-badge svg {
+      width: 12px;
+      height: 12px;
+      flex-shrink: 0;
+    }
+
+    .sport-badge.course { color: #627e59; border-color: #627e59; }
+    .sport-badge.trail { color: #8e9856; border-color: #8e9856; }
+    .sport-badge.velo { color: #cbb44b; border-color: #cbb44b; }
+    .sport-badge.natation { color: #0369a1; border-color: #0ea5e9; }
+    .sport-badge.triathlon { color: #c9a544; border-color: #c9a544; }
+
+    .coach-bio {
+      font-size: 13px;
+      line-height: 1.55;
+      color: #78716c;
+      margin-bottom: 16px;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .offers-block {
+      background: #fafaf9;
+      border: 1px solid #f5f5f4;
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .offers-title {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #a8a29e;
+      margin-bottom: 10px;
+    }
+
+    .offer-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .offer-row:last-child { margin-bottom: 0; }
+
+    .offer-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .offer-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .offer-dot.featured { background: #10b981; box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2); }
+    .offer-dot.muted { background: #a8a29e; }
+
+    .offer-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: #44403c;
+      line-height: 1.25;
+    }
+
+    .offer-title.featured { color: #292524; }
+
+    .offer-price { flex-shrink: 0; text-align: right; }
+    .offer-price .amount { font-size: 11px; font-weight: 700; color: #1c1917; }
+    .offer-price .unit { font-size: 10px; color: #a8a29e; }
+
+    @media (max-width: 1120px) {
+      .canvas {
+        transform: scale(calc((100vw - 48px) / 1080));
+        transform-origin: top center;
+      }
+      body { padding-top: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <p class="hint">
+    <strong>Capture :</strong> Ctrl+0 → capturez le carré 1080×1080 uniquement.
+  </p>
+
+  <svg width="0" height="0" aria-hidden="true" style="position:absolute">
+    <defs>
+      <symbol id="msa-logo" viewBox="0 0 230 200">
+        <path d="M73 2.75879C73.492 3.52335 74.1208 4.50453 74.8701 5.68555C76.8615 8.82401 79.708 13.371 83.124 19.001C89.9569 30.2624 99.066 45.8495 108.173 63.1562C117.282 80.4672 126.376 99.4757 133.189 117.582C140.015 135.72 144.5 152.82 144.5 166.357C144.5 173.02 142.559 178.266 139.107 182.437C135.634 186.633 130.545 189.841 124.096 192.243C111.157 197.063 93.142 198.5 73 198.5C52.858 198.5 34.843 197.063 21.9043 192.243C15.4547 189.841 10.3662 186.633 6.89258 182.437C3.44066 178.266 1.50006 173.02 1.5 166.357C1.5 152.82 5.98476 135.72 12.8105 117.582C19.6243 99.4757 28.7181 80.4672 37.8271 63.1562C46.934 45.8495 56.0431 30.2624 62.876 19.001C66.292 13.371 69.1385 8.82401 71.1299 5.68555C71.8792 4.50453 72.508 3.52335 73 2.75879Z" fill="#627E59" stroke="white" stroke-width="3"/>
+        <path d="M157.5 2.77246C157.987 3.53447 158.608 4.50966 159.347 5.68164C161.324 8.82005 164.15 13.3674 167.543 18.9971C174.329 30.2585 183.376 45.8464 192.421 63.1533C201.467 80.4641 210.499 99.4717 217.267 117.578C224.046 135.717 228.5 152.818 228.5 166.357C228.5 173.023 226.572 178.27 223.144 182.44C219.694 186.636 214.642 189.843 208.238 192.244C195.392 197.062 177.504 198.5 157.5 198.5C137.496 198.5 119.608 197.062 106.762 192.244C100.358 189.843 95.3057 186.636 91.8564 182.44C88.4283 178.27 86.5001 173.023 86.5 166.357C86.5 152.818 90.9543 135.717 97.7334 117.578C104.501 99.4717 113.533 80.4641 122.579 63.1533C131.624 45.8464 140.671 30.2585 147.457 18.9971C150.85 13.3672 153.677 8.82006 155.654 5.68164C156.393 4.50973 157.013 3.53443 157.5 2.77246Z" fill="#506648" stroke="white" stroke-width="3"/>
+        <path d="M116.438 78.1543L115.198 79C116.367 78.2016 116.433 78.1573 116.438 78.1553C116.438 78.1557 116.439 78.1564 116.439 78.1572C116.441 78.159 116.442 78.1618 116.444 78.165C116.449 78.172 116.457 78.1827 116.466 78.1963C116.484 78.2234 116.511 78.2638 116.547 78.3164C116.618 78.4219 116.724 78.5779 116.861 78.7822C117.136 79.1915 117.539 79.7942 118.05 80.5703C119.072 82.1226 120.53 84.3701 122.28 87.1543C125.779 92.7215 130.447 100.444 135.116 109.057C139.783 117.666 144.465 127.19 147.984 136.358C151.492 145.497 153.896 154.414 153.896 161.767C153.896 180.553 136.358 195.424 115.198 195.424C94.0383 195.424 76.5 180.553 76.5 161.767C76.5 154.414 78.9045 145.497 82.4121 136.358C85.9312 127.19 90.6133 117.666 95.2803 109.057C99.9496 100.444 104.617 92.7215 108.116 87.1543C109.866 84.3701 111.325 82.1226 112.348 80.5703C112.859 79.7943 113.26 79.1915 113.535 78.7822C113.672 78.5779 113.778 78.4219 113.85 78.3164C113.885 78.2639 113.912 78.2234 113.931 78.1963C113.94 78.1827 113.947 78.172 113.952 78.165C113.954 78.1616 113.957 78.1591 113.958 78.1572L113.959 78.1553C113.959 78.1548 113.959 78.1544 114.879 78.7822L113.96 78.1543L115.198 76.3398L116.438 78.1543Z" fill="#C9A544" stroke="white" stroke-width="3"/>
+        <path d="M152.148 157.456C152.311 158.928 152.396 160.348 152.396 161.709C152.396 179.543 135.742 194 115.198 194C94.6545 194 78.0003 179.543 78 161.709C78 160.348 78.0866 158.928 78.249 157.456H152.148Z" fill="#645C3F"/>
+        <path d="M149.985 146.997C151.5 152.35 152.396 157.373 152.396 161.766C152.396 163.923 152.149 166.029 151.681 168.066H78.7158C78.2477 166.029 78 163.923 78 161.766C78 157.373 78.8965 152.35 80.4111 146.997H149.985Z" fill="#C9A544"/>
+      </symbol>
+    </defs>
+  </svg>
+
+  <div class="canvas" id="capture">
+    <div class="layout">
+      <div class="content-left">
+        <div class="brand-row">
+          <svg class="logo-main" aria-hidden="true"><use href="#msa-logo"/></svg>
+          <div class="brand-col">
+            <div class="brand-name">My Sport Ally</div>
+            <span class="badge">
+              <svg class="logo-mini" aria-hidden="true"><use href="#msa-logo"/></svg>
+              Inscription coach gratuite
+            </span>
+          </div>
+        </div>
+
+        <h1>Coachs&nbsp;: soyez <em>visibles</em> gratuitement auprès des athlètes</h1>
+
+        <ul class="bullets">
+          <li><span class="check">✓</span> Présentation de coaching personnalisée</li>
+          <li><span class="check">✓</span> Vos formules en ligne</li>
+          <li><span class="check">✓</span> Alerte à chaque demande</li>
+          <li><span class="check">✓</span> 0&nbsp;$ à l'inscription</li>
+        </ul>
+
+        <p class="sports">Course · Trail · Triathlon · Natation · Vélo et plus</p>
+      </div>
+
+      <div class="content-right">
+        <article class="coach-tile">
+          <div class="coach-tile-body">
+            <div class="coach-header">
+              <div class="coach-avatar-fallback" aria-hidden="true">PD</div>
+              <div>
+                <h3 class="coach-name">Pauline Durant</h3>
+                <div class="coach-rating">
+                  <span class="star-line">
+                    4,0
+                    <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                  </span>
+                  <span>(2 avis)</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="sport-badges">
+              <span class="sport-badge course">
+                <svg viewBox="0 0 640 640" fill="currentColor"><path d="M352.5 32C383.4 32 408.5 57.1 408.5 88C408.5 118.9 383.4 144 352.5 144C321.6 144 296.5 118.9 296.5 88C296.5 57.1 321.6 32 352.5 32zM219.6 240C216.3 240 213.4 242 212.2 245L190.2 299.9C183.6 316.3 165 324.3 148.6 317.7C132.2 311.1 124.2 292.5 130.8 276.1L152.7 221.2C163.7 193.9 190.1 176 219.6 176L316.9 176C345.4 176 371.7 191.1 386 215.7L418.8 272L480.4 272C498.1 272 512.4 286.3 512.4 304C512.4 321.7 498.1 336 480.4 336L418.8 336C396 336 375 323.9 363.5 304.2L353.5 287.1L332.8 357.5L408.2 380.1C435.9 388.4 450 419.1 438.3 445.6L381.7 573C374.5 589.2 355.6 596.4 339.5 589.2C323.4 582 316.1 563.1 323.3 547L372.5 436.2L276.6 407.4C243.9 397.6 224.6 363.7 232.9 330.6L255.6 240L219.7 240z"/></svg>
+                Course
+              </span>
+              <span class="sport-badge trail">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg>
+                Trail
+              </span>
+              <span class="sport-badge velo">
+                <svg viewBox="0 0 640 640" fill="currentColor"><path d="M400 160C426.5 160 448 138.5 448 112C448 85.5 426.5 64 400 64C373.5 64 352 85.5 352 112C352 138.5 373.5 160 400 160zM427.2 224L365.4 175.2C348.1 161.6 323.7 161.4 306.3 174.9L223.2 239.1C192.5 262.9 194.7 309.9 227.5 330.7L288 369.1L288 480C288 497.7 302.3 512 320 512C337.7 512 352 497.7 352 480L352 352C352 341.3 346.7 331.3 337.8 325.4L295 296.9L355.3 248.4L396 281C401.7 285.5 408.7 288 416 288L480 288C497.7 288 512 273.7 512 256C512 238.3 497.7 224 480 224L427.2 224z"/></svg>
+                Vélo
+              </span>
+              <span class="sport-badge natation">
+                <svg viewBox="0 0 640 640" fill="currentColor"><path d="M552 216C552 185.1 526.9 160 496 160C465.1 160 440 185.1 440 216C440 246.9 465.1 272 496 272C526.9 272 552 246.9 552 216zM293.4 262.2L204.8 336.1C205.9 336.1 207 336 208.1 336C241.2 335.8 274.4 346.2 302.5 367.4C324.6 384 331.6 384 353.7 367.4C381.2 346.7 413.6 336.2 446.1 336C450.9 336 455.8 336.2 460.6 336.6C452.3 306.6 436.3 278.9 413.8 256.4C395.4 238 373.2 223.7 348.8 214.6L280.2 188.9C252.8 178.6 222.2 181.4 197.1 196.5L143.6 228.6C128.4 237.7 123.5 257.3 132.6 272.5C141.7 287.7 161.3 292.6 176.5 283.5L230 251.3C238.4 246.3 248.6 245.4 257.7 248.8L293.4 262.2z"/></svg>
+                Natation
+              </span>
+              <span class="sport-badge triathlon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5M12 22V12"/></svg>
+                Triathlon
+              </span>
+            </div>
+
+            <p class="coach-bio">Ancienne athlète professionnelle, je mets aujourd'hui mon expertise au service de vos défis en triathlon. Ma philosophie ? La performance durable passe avant tout.</p>
+
+            <div class="offers-block">
+              <p class="offers-title">Formules disponibles</p>
+              <div class="offer-row">
+                <div class="offer-left">
+                  <span class="offer-dot featured"></span>
+                  <span class="offer-title featured">Suivi Mensuel &amp; Coaching Continu</span>
+                </div>
+                <div class="offer-price">
+                  <span class="amount">30$</span><span class="unit">/mois</span>
+                </div>
+              </div>
+              <div class="offer-row">
+                <div class="offer-left">
+                  <span class="offer-dot muted"></span>
+                  <span class="offer-title">Pack Objectif &amp; Préparation Course</span>
+                </div>
+                <div class="offer-price">
+                  <span class="amount">80$</span><span class="unit">/unique</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

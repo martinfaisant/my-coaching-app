@@ -1,6 +1,6 @@
 # 📚 Index de la Documentation
 
-**Dernière mise à jour :** 25 juin 2026 (**notifications e-mail athlète** — réponse coach acceptée/refusée ; précédent : notifications e-mail coach)
+**Dernière mise à jour :** 30 juin 2026 (**Paramètres de coaching** coach — page unités des séances ; précédent : notifications e-mail athlète)
 
 > ⚠️ **Avant de créer un nouveau document, TOUJOURS vérifier cet index pour éviter les doublons !**
 
@@ -14,7 +14,7 @@
 
 ### **Project_context.md** ⭐
 - **Contenu :** Vision produit, philosophie, rôles (Athlete/Coach/Admin), features actuelles, data model (…), **§4.18 Notifications e-mail athlète** (réponse coach, `/dashboard/notifications`, migration 080), **§4.17 Notifications e-mail coach** (alerte nouvelle demande, `/dashboard/notifications`, migration 079), **§4.16 Annuaire coach public** (`/coaches`, gate visiteur, deep link find-coach), **§4.15 FAQ publiques** (athlète/coach, SEO JSON-LD), **§4.13 Marketing landing** (footer + réseaux sociaux, **`PublicPageShell`** sur pages légales/contact), **§4.14 SEO** (sitemap, robots, **llms.txt** + Social, og:image, JSON-LD **`sameAs`**, noindex, **`buildPublicPageMetadata`**, canonical/hreflang, proxy), **§4.11 Contact** (formulaire, footer partagé), **§4.9 Strava** (…), **§6 Quality gates & CI** (Vitest, parité i18n, GitHub Actions)
-- **Dernière mise à jour :** 25 juin 2026 (§4.18 notifications e-mail athlète ; précédent : §4.17 notifications e-mail coach)
+- **Dernière mise à jour :** 30 juin 2026 (§4.2.0 Paramètres de coaching ; précédent : §4.18 notifications e-mail athlète)
 
 ### **docs/CALENDAR_MONTH_VIEW.md**
 - **Contenu :** Récap **vue mois** (desktop) vs **vue semaine** (mobile), règles semaines ISO / mois civil étendu, **totaux hebdo** (liste sports `PERSISTED_WORKOUT_SPORT_TYPES`, `SPORT_WEEKLY_SUMMARY_BAR`), chargement données, liste des fichiers et tests unitaires, **tuiles disponibilité** (réf. design + `CalendarView`), liens vers maquettes archivées
@@ -24,11 +24,11 @@
 
 ### **docs/DESIGN_SYSTEM.md** ⭐
 - **Contenu :** Tokens (…), composants (…, **Switch**, **NotificationPreferenceRow**, **Landing**, **`components/public/*`** (`PublicPageShell`, `PublicMarketingFooter`, FAQ), …)
-- **Dernière mise à jour :** 25 juin 2026 (Switch, NotificationPreferenceRow — notifications coach + athlète ; précédent : notifications coach seul)
+- **Dernière mise à jour :** 30 juin 2026 (**CoachSessionUnitsGrid**, page Paramètres de coaching ; précédent : Switch, NotificationPreferenceRow)
 
 ### **docs/I18N.md** ⭐
 - **Contenu :** Internationalisation (bilingue FR/EN), next-intl, structure messages, namespaces (dont **`athleteNotifications`** + **`athleteNotifications.email`**, **`coachNotifications`** + **`coachNotifications.email`**, **`navigation.myNotifications`**, **`metadata.notificationsTitle`**, **`publicCoaches`**, **`publicFooter`**, **`faqAthlete`**, **`faqCoach`**, **`metadata.*`** SEO dont **`siteTitle`**, **`termsDescription`**, **`ogImageAlt`**, **`buildPublicPageMetadata`**), **`proxy.ts`** (exclusion sitemap/robots/llms), **checklist nouvelles features**, **parité automatisée FR/EN** (`lib/i18n/*`, `npm run check:i18n`, gate CI via `npm run test`) ; …
-- **Dernière mise à jour :** 25 juin 2026 (namespace **`athleteNotifications`** ; précédent : **`coachNotifications`**)
+- **Dernière mise à jour :** 30 juin 2026 (namespace **`coachCoachingSettings`** ; précédent : **`athleteNotifications`**)
 
 ### **docs/AUTH_EMAIL_TEMPLATES.md**
 - **Contenu :** Guide de configuration des emails d’auth Supabase (sujet, i18n FR/EN, variables, dépannage logo). **Les fichiers HTML des templates** (Confirm signup, puis Magic Link, Reset Password, etc.) sont dans **docs/email-templates/**. Section **e-mails transactionnels Resend** (alerte coach nouvelle demande ; alerte athlète réponse coach acceptée / refusée).
@@ -112,6 +112,16 @@
 - **Contenu :** README + maquettes HTML **MOCKUP_US_NOTIF_01…03** (entrée menu Mes notifications, page préférences états, aperçu e-mail coach).
 - **Utiliser pour :** Contexte UI historique ; détail produit / technique à jour : **`Project_context.md`** §4.17, **`docs/DESIGN_SYSTEM.md`** (Switch, NotificationPreferenceRow), **`docs/email-templates/coaching-request-coach.html`**.
 - **Archivé le :** 25 juin 2026 (fusion vers docs actives ci-dessus).
+
+### **docs/design-coach-coaching-settings/** (design feature — référence UI livrée)
+- **Contenu :** **README.md** ; maquettes HTML **MOCKUP_US1…US4** (page Paramètres de coaching, profil sans unités, menu compte, modale première séance).
+- **Utiliser pour :** Contexte UI livré ; détail produit / technique à jour : **`Project_context.md`** §4.2.0, §4.5, **`docs/DESIGN_SYSTEM.md`** § CoachSessionUnitsGrid, **`docs/I18N.md`** (`coachCoachingSettings`).
+- **Dernière mise à jour :** 30 juin 2026
+
+### **docs/archive/design-coach-workout-units/** (design feature — archivé juin 2026)
+- **Contenu :** Maquettes HTML historiques (unités des séances **sur le profil coach** — périmètre remplacé par `/dashboard/coaching-settings`).
+- **Utiliser pour :** Contexte UI historique uniquement ; ne pas implémenter depuis ces fichiers.
+- **Archivé le :** 30 juin 2026 (fusion vers **`Project_context.md`** §4.2.0 et **`docs/design-coach-coaching-settings/`**).
 
 ### **docs/archive/design-athlete-notifications/** (design feature — archivé juin 2026)
 - **Contenu :** README + maquettes HTML **MOCKUP_US_ATH_NOTIF_01…03** (entrée menu Mes notifications athlète, page préférences, e-mails acceptation / refus).

@@ -1,7 +1,7 @@
 # 🎨 Design System
 
 **Version :** 1.49  
-**Dernière mise à jour :** 25 juin 2026 (**Switch**, **NotificationPreferenceRow** — notifications coach + athlète ; précédent : graphiques stats athlète #119)
+**Dernière mise à jour :** 30 juin 2026 (**CoachSessionUnitsGrid**, page **Paramètres de coaching** ; précédent : **Switch**, **NotificationPreferenceRow**)
 
 ---
 
@@ -59,6 +59,7 @@
    - [Dropdown](#dropdown)
    - [Segments](#segments)
    - [Switch](#switch)
+   - [CoachSessionUnitsGrid](#coachsessionunitsgrid)
    - [NotificationPreferenceRow](#notificationpreferencerow)
    - [DatePickerPopup](#datepickerpopup)
    - [MonthSelector](#monthselector)
@@ -2039,6 +2040,14 @@ import { Switch } from '@/components/Switch'
   disabled={saving}
 />
 ```
+
+---
+
+### CoachSessionUnitsGrid
+
+**Fichier :** `components/coach/CoachSessionUnitsGrid.tsx`
+
+Grille des **10 sports** avec `Segments` temps / distance (`SPORT_CARD_STYLES`). Réutilisée sur **`/dashboard/coaching-settings`** (`variant="page"`) et dans la modale première séance (`CoachUnitsSetupView`, `variant="modal"`).
 
 ---
 

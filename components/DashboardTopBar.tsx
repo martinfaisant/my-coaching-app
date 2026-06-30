@@ -14,6 +14,7 @@ import {
   getAthleteNotificationsNavItem,
   getAthletePrimaryNavItems,
   getAthleteProfileNavItem,
+  getCoachCoachingSettingsNavItem,
   getCoachNotificationsNavItem,
   getCoachPlatformSubscriptionNavItem,
   getContactPublicNavItem,
@@ -44,6 +45,7 @@ export function DashboardTopBar({ profile }: DashboardTopBarProps) {
   const athleteNotificationsItem = isAthlete ? getAthleteNotificationsNavItem() : null
   const contactPublicItem = getContactPublicNavItem()
   const coachMsaItem = getCoachPlatformSubscriptionNavItem()
+  const coachCoachingSettingsItem = getCoachCoachingSettingsNavItem()
   const coachNotificationsItem = getCoachNotificationsNavItem()
 
   const displayName = getDisplayName(profile, '')
@@ -264,6 +266,18 @@ export function DashboardTopBar({ profile }: DashboardTopBarProps) {
                   </Link>
                   {profile.role === 'coach' ? (
                     <>
+                      <Link
+                        href={coachCoachingSettingsItem.href}
+                        onClick={closeDrawer}
+                        className={`${contactDrawerLinkBase} mx-2 ${
+                          isNavItemActive(pathname, coachCoachingSettingsItem)
+                            ? contactDrawerActive
+                            : contactDrawerInactive
+                        }`}
+                      >
+                        {getNavIcon(coachCoachingSettingsItem)}
+                        <span>{t(coachCoachingSettingsItem.i18nKey)}</span>
+                      </Link>
                       <Link
                         href={coachNotificationsItem.href}
                         onClick={closeDrawer}
