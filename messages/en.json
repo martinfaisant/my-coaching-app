@@ -154,7 +154,8 @@
     "publicTerms": "Terms of Use",
     "resetPasswordPage": "Reset password",
     "coachPlatformSubscription": "MySportAlly subscription",
-    "myNotifications": "My notifications"
+    "myNotifications": "My notifications",
+    "coachingSettings": "Coaching settings"
   },
   "athleteStats": {
     "title": "Statistics",
@@ -564,7 +565,7 @@
       "paceRequired": "Pace (or speed) is required for this sport.",
       "primaryMetricDistanceRequired": "Enter a distance.",
       "primaryMetricTimeRequired": "Enter a duration.",
-      "workoutUnitsNotConfigured": "Configure session units in your coach profile before creating a workout.",
+      "workoutUnitsNotConfigured": "Configure session units in Coaching settings before creating a workout.",
       "actualDurationRequired": "Enter completed time.",
       "actualDistanceRequired": "Enter completed distance.",
       "actualElevationRequired": "Enter completed elevation.",
@@ -950,6 +951,7 @@
     "goalsTitle": "My Goals",
     "profileTitle": "My profile",
     "notificationsTitle": "My notifications",
+    "coachingSettingsTitle": "Coaching settings",
     "devicesTitle": "Connected devices",
     "termsTitle": "Terms of Use",
     "termsDescription": "My Sport Ally terms of use: access rules, responsibilities and platform usage guidelines for sports coaching.",
@@ -1896,6 +1898,17 @@
       "platformSubscriptionRequired": "An active coach subscription is required to accept a request."
     }
   },
+  "coachCoachingSettings": {
+    "pageTitle": "Coaching settings",
+    "sections": {
+      "sessionUnits": "Session units"
+    },
+    "sessionUnitsIntro": "Choose whether you plan mainly by time or distance for each sport. Used for your sessions and the weekly summary.",
+    "saved": "Saved",
+    "validation": {
+      "invalidSelection": "Invalid selection for session units."
+    }
+  },
   "coachNotifications": {
     "pageTitle": "My notifications",
     "sections": {
@@ -2510,7 +2523,7 @@
       "paceRequired": "Pace or speed is required for this sport.",
       "primaryMetricDistanceRequired": "Enter a distance.",
       "primaryMetricTimeRequired": "Enter a duration.",
-      "workoutUnitsNotConfigured": "Configure workout units (coach profile) before creating a session."
+      "workoutUnitsNotConfigured": "Configure session units in Coaching settings before creating a session."
     }
   }
 }

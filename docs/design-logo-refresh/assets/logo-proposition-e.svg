@@ -1,0 +1,41 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="e-bg" x1="32" y1="4" x2="32" y2="60" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#8e9856"/>
+      <stop offset="55%" stop-color="#627e59"/>
+      <stop offset="100%" stop-color="#506648"/>
+    </linearGradient>
+    <radialGradient id="e-shine" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(24 18) scale(20)">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.38"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="e-wave-a" x1="14" y1="28" x2="50" y2="40" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#f0f4ef"/>
+      <stop offset="100%" stop-color="#aaaa51"/>
+    </linearGradient>
+    <linearGradient id="e-wave-b" x1="14" y1="40" x2="50" y2="28" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#cbb44b"/>
+    </linearGradient>
+    <filter id="e-shadow" x="2" y="2" width="60" height="62" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="2.5" stdDeviation="2.4" flood-color="#3d5238" flood-opacity="0.26"/>
+    </filter>
+  </defs>
+  <circle cx="32" cy="32" r="28" fill="url(#e-bg)" filter="url(#e-shadow)"/>
+  <circle cx="32" cy="32" r="28" fill="url(#e-shine)"/>
+  <path
+    d="M14 33.5C20 25.5 26 25.5 32 33.5C38 41.5 44 41.5 50 33.5"
+    stroke="url(#e-wave-a)"
+    stroke-width="5.5"
+    stroke-linecap="round"
+    fill="none"
+  />
+  <path
+    d="M14 30.5C20 38.5 26 38.5 32 30.5C38 22.5 44 22.5 50 30.5"
+    stroke="url(#e-wave-b)"
+    stroke-width="5.5"
+    stroke-linecap="round"
+    fill="none"
+  />
+  <circle cx="32" cy="32" r="3.2" fill="#ffffff" fill-opacity="0.85"/>
+</svg>

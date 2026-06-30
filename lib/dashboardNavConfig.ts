@@ -37,6 +37,7 @@ export type NavigationI18nKey =
   | 'resetPasswordPage'
   | 'coachPlatformSubscription'
   | 'myNotifications'
+  | 'coachingSettings'
 
 export type ProfileNavInput = {
   role: string
@@ -44,6 +45,7 @@ export type ProfileNavInput = {
 }
 
 export const COACH_NOTIFICATIONS_PATH = '/dashboard/notifications'
+export const COACH_COACHING_SETTINGS_PATH = '/dashboard/coaching-settings'
 
 /** Lien « Mes informations » (page profil) — menu compte athlète. */
 export function getAthleteProfileNavItem(): NavItem {
@@ -53,6 +55,11 @@ export function getAthleteProfileNavItem(): NavItem {
 /** Lien « Mes notifications » (e-mail coach / athlète). */
 export function getCoachNotificationsNavItem(): NavItem {
   return { href: COACH_NOTIFICATIONS_PATH, i18nKey: 'myNotifications' }
+}
+
+/** Lien « Paramètres de coaching » (unités des séances). */
+export function getCoachCoachingSettingsNavItem(): NavItem {
+  return { href: COACH_COACHING_SETTINGS_PATH, i18nKey: 'coachingSettings' }
 }
 
 /** Lien « Mes notifications » (e-mail athlète) — même route que coach. */
@@ -163,9 +170,10 @@ export function isAthleteAccountMenuTriggerActive(
   return isAthleteAccountSectionActive(pathname, profile, options)
 }
 
-/** Trigger menu compte coach : profil, notifications, abonnement plateforme ou contact. */
+/** Trigger menu compte coach : profil, paramètres coaching, notifications, abonnement plateforme ou contact. */
 export function isCoachAccountMenuTriggerActive(pathname: string): boolean {
   if (pathname === '/dashboard/profile' || pathname === '/contact') return true
+  if (isNavItemActive(pathname, getCoachCoachingSettingsNavItem())) return true
   if (isNavItemActive(pathname, getCoachNotificationsNavItem())) return true
   return isNavItemActive(pathname, getCoachPlatformSubscriptionNavItem())
 }
@@ -194,6 +202,10 @@ export function getPageTitleI18nKey(
     return 'myInformation'
   }
   if (pathname === '/dashboard/profile') return 'profile'
+
+  if (isNavItemActive(pathname, getCoachCoachingSettingsNavItem())) {
+    return 'coachingSettings'
+  }
 
   if (isNavItemActive(pathname, getCoachNotificationsNavItem())) {
     return 'myNotifications'

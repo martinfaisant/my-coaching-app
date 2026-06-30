@@ -146,7 +146,6 @@ const coachBaseProps = {
   presentationFr: '',
   presentationEn: '',
   postalCode: '75001',
-  workoutPrimaryMetricBySport: null,
 }
 
 describe('ProfileForm — sports coachés (coach)', () => {

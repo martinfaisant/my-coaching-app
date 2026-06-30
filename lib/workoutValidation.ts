@@ -97,7 +97,7 @@ export function validateWorkoutFormData(
   if (useCoachPrimary) {
     if (!isCoachWorkoutPrimaryMetricsComplete(prefs)) {
       return {
-        error: 'Configurez les unités des séances dans votre profil.',
+        error: WORKOUT_VALIDATION_ERROR_CODES.WORKOUT_UNITS_NOT_CONFIGURED,
         errorCode: WORKOUT_VALIDATION_ERROR_CODES.WORKOUT_UNITS_NOT_CONFIGURED,
       }
     }

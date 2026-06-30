@@ -185,7 +185,7 @@ type WeekFaitBySport = Record<SportType, { minutes: number; distanceKm: number }
 
 function defaultWeeklyPrimaryMetricForSport(key: SportType): WorkoutPrimaryMetric {
   // Par défaut, on conserve le comportement historique du résumé hebdo.
-  // Le coach peut surcharger sport par sport via son profil (workout_primary_metric_by_sport).
+  // Préférences coach : workout_primary_metric_by_sport (page Paramètres de coaching).
   switch (key) {
     case 'musculation':
       return 'time'

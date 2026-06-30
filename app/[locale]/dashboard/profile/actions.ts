@@ -11,8 +11,6 @@ import {
   getWeeklyVolumeUnit,
   practicedSportsNeedCourseElevationField,
 } from '@/lib/sportStyles'
-import type { WorkoutPrimaryMetricBySport } from '@/types/database'
-import { isCoachWorkoutPrimaryMetricsComplete } from '@/lib/workoutPrimaryMetric'
 import { getStripeServer } from '@/lib/stripeServer'
 import {
   syncCoachPlatformStripeCustomerNameIfPresent,
@@ -57,7 +55,6 @@ export async function updateProfile(
     weekly_current_hours?: number | null
     weekly_target_hours?: number | null
     weekly_volume_by_sport?: Record<string, number>
-    workout_primary_metric_by_sport?: WorkoutPrimaryMetricBySport
   } = {
     first_name: firstName,
     last_name: lastName,
@@ -85,45 +82,6 @@ export async function updateProfile(
     payload.languages = languages
     payload.presentation_fr = presentationFr
     payload.presentation_en = presentationEn
-
-    const mc = (formData.get('workout_primary_metric_course') as string)?.trim()
-    const mt = (formData.get('workout_primary_metric_trail') as string)?.trim()
-    const mv = (formData.get('workout_primary_metric_velo') as string)?.trim()
-    const mn = (formData.get('workout_primary_metric_natation') as string)?.trim()
-    const mns = (formData.get('workout_primary_metric_nordic_ski') as string)?.trim()
-    const mbs = (formData.get('workout_primary_metric_backcountry_ski') as string)?.trim()
-    const mis = (formData.get('workout_primary_metric_ice_skating') as string)?.trim()
-    const mr = (formData.get('workout_primary_metric_randonnee') as string)?.trim()
-    const mtri = (formData.get('workout_primary_metric_triathlon') as string)?.trim()
-    const mcan = (formData.get('workout_primary_metric_canot') as string)?.trim()
-    if (
-      (mc === 'time' || mc === 'distance') &&
-      (mt === 'time' || mt === 'distance') &&
-      (mv === 'time' || mv === 'distance') &&
-      (mn === 'time' || mn === 'distance') &&
-      (mns === 'time' || mns === 'distance') &&
-      (mbs === 'time' || mbs === 'distance') &&
-      (mis === 'time' || mis === 'distance') &&
-      (mr === 'time' || mr === 'distance') &&
-      (mtri === 'time' || mtri === 'distance') &&
-      (mcan === 'time' || mcan === 'distance')
-    ) {
-      const workout_primary_metric_by_sport: WorkoutPrimaryMetricBySport = {
-        course: mc,
-        trail: mt,
-        velo: mv,
-        natation: mn,
-        nordic_ski: mns,
-        backcountry_ski: mbs,
-        ice_skating: mis,
-        randonnee: mr,
-        triathlon: mtri,
-        canot: mcan,
-      }
-      if (isCoachWorkoutPrimaryMetricsComplete(workout_primary_metric_by_sport)) {
-        payload.workout_primary_metric_by_sport = workout_primary_metric_by_sport
-      }
-    }
   }
 
   if (profile?.role === 'athlete') {
@@ -233,73 +191,6 @@ export async function updateProfile(
     await syncCoachPlatformStripeCustomerPreferredLocalesIfPresent(stripe, supabase, user.id, preferredLocale)
   }
 
-  return { success: t('saved') }
-}
-
-/** Enregistrement des unités obligatoires (modale première séance). Coach uniquement. */
-export async function saveCoachWorkoutPrimaryMetrics(
-  _prevState: ProfileFormState,
-  formData: FormData
-): Promise<ProfileFormState> {
-  const locale = (formData.get('locale') as string) || 'fr'
-  const t = await getTranslations({ locale, namespace: 'profile.validation' })
-  const supabase = await createClient()
-  const result = await requireUserWithProfile(supabase, 'role, user_id')
-  if ('error' in result) return { error: result.error }
-  if (result.profile.role !== 'coach') {
-    return { error: (await getTranslations({ locale, namespace: 'profile.validation' }))('workoutPrimaryMetricInvalid') }
-  }
-
-  const mc = (formData.get('workout_primary_metric_course') as string)?.trim()
-  const mt = (formData.get('workout_primary_metric_trail') as string)?.trim()
-  const mv = (formData.get('workout_primary_metric_velo') as string)?.trim()
-  const mn = (formData.get('workout_primary_metric_natation') as string)?.trim()
-  const mns = (formData.get('workout_primary_metric_nordic_ski') as string)?.trim()
-  const mbs = (formData.get('workout_primary_metric_backcountry_ski') as string)?.trim()
-  const mis = (formData.get('workout_primary_metric_ice_skating') as string)?.trim()
-  const mr = (formData.get('workout_primary_metric_randonnee') as string)?.trim()
-  const mtri = (formData.get('workout_primary_metric_triathlon') as string)?.trim()
-  const mcan = (formData.get('workout_primary_metric_canot') as string)?.trim()
-  if (
-    (mc !== 'time' && mc !== 'distance') ||
-    (mt !== 'time' && mt !== 'distance') ||
-    (mv !== 'time' && mv !== 'distance') ||
-    (mn !== 'time' && mn !== 'distance') ||
-    (mns !== 'time' && mns !== 'distance') ||
-    (mbs !== 'time' && mbs !== 'distance') ||
-    (mis !== 'time' && mis !== 'distance') ||
-    (mr !== 'time' && mr !== 'distance') ||
-    (mtri !== 'time' && mtri !== 'distance') ||
-    (mcan !== 'time' && mcan !== 'distance')
-  ) {
-    return { error: t('workoutPrimaryMetricInvalid') }
-  }
-  const workout_primary_metric_by_sport: WorkoutPrimaryMetricBySport = {
-    course: mc,
-    trail: mt,
-    velo: mv,
-    natation: mn,
-    nordic_ski: mns,
-    backcountry_ski: mbs,
-    ice_skating: mis,
-    randonnee: mr,
-    triathlon: mtri,
-    canot: mcan,
-  }
-  if (!isCoachWorkoutPrimaryMetricsComplete(workout_primary_metric_by_sport)) {
-    return { error: t('workoutPrimaryMetricInvalid') }
-  }
-
-  const { error } = await supabase
-    .from('profiles')
-    .update({ workout_primary_metric_by_sport })
-    .eq('user_id', result.user.id)
-
-  if (error) return { error: error.message }
-  revalidatePath('/dashboard')
-  revalidatePath('/dashboard/profile')
-  revalidatePath('/dashboard/coach')
-  revalidatePath('/dashboard/athletes')
   return { success: t('saved') }
 }
 

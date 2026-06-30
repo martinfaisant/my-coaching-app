@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Logo MSA — Propositions C &amp; D (relief, doux)</title>
+  <style>
+    :root {
+      --forest-dark: #627e59;
+      --forest-darker: #506648;
+      --forest-light: #f0f4ef;
+      --stone-50: #fafaf9;
+      --stone-200: #e7e5e4;
+      --stone-600: #57534e;
+      --stone-800: #292524;
+      --stone-900: #1c1917;
+      --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: var(--font); background: var(--stone-50); color: var(--stone-900); line-height: 1.5; }
+    .page { max-width: 1100px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+    h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; margin: 0 0 0.5rem; }
+    .lead { color: var(--stone-600); margin: 0 0 2rem; max-width: 54rem; }
+    .badge { display: inline-block; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; padding: 0.2rem 0.55rem; border-radius: 999px; background: var(--forest-light); color: var(--forest-darker); margin-bottom: 0.75rem; }
+    .feedback { background: #fff; border: 1px solid var(--stone-200); border-left: 4px solid var(--forest-dark); border-radius: 0.75rem; padding: 1rem 1.25rem; margin-bottom: 2rem; font-size: 0.9rem; }
+    .grid-2 { display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+    @media (min-width: 768px) { .grid-2 { grid-template-columns: 1fr 1fr; } }
+    .card { background: #fff; border: 1px solid var(--stone-200); border-radius: 1rem; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.04); }
+    .card-head { padding: 1.25rem 1.25rem 0.75rem; border-bottom: 1px solid var(--stone-200); }
+    .card-head h2 { margin: 0; font-size: 1.1rem; font-weight: 600; }
+    .card-head p { margin: 0.35rem 0 0; font-size: 0.875rem; color: var(--stone-600); }
+    .card-body { padding: 1.25rem; }
+    .logo-hero { display: flex; align-items: center; justify-content: center; padding: 2.5rem 2rem; background: linear-gradient(180deg, #fff 0%, var(--forest-light) 100%); border-radius: 0.75rem; margin-bottom: 1rem; }
+    .logo-hero img { width: 112px; height: 112px; }
+    .logo-hero.dark { background: linear-gradient(180deg, #3d4a38 0%, #2a3327 100%); }
+    .section-title { font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--stone-600); margin: 0 0 0.75rem; }
+    .sizes { display: flex; align-items: flex-end; gap: 1.25rem; flex-wrap: wrap; padding: 1rem; background: var(--stone-50); border-radius: 0.75rem; margin-bottom: 1rem; }
+    .size-item { text-align: center; }
+    .size-item span { display: block; font-size: 0.7rem; color: var(--stone-600); margin-top: 0.35rem; }
+    .header-public { display: flex; align-items: center; justify-content: space-between; height: 4rem; padding: 0 1.5rem; border-bottom: 1px solid var(--stone-200); background: rgba(255,255,255,.95); }
+    .brand { display: flex; align-items: center; gap: 0.5rem; font-size: 1.25rem; font-weight: 600; color: var(--stone-900); letter-spacing: -0.02em; text-decoration: none; }
+    .brand img { height: 36px; width: auto; }
+    .header-mobile { display: flex; align-items: center; height: 3.5rem; padding: 0 1rem; border-bottom: 1px solid var(--stone-200); background: #fff; gap: 0.75rem; }
+    .header-mobile .brand img { height: 28px; }
+    .header-mobile .title { flex: 1; text-align: center; font-size: 0.875rem; font-weight: 600; color: var(--stone-800); }
+    .email-preview { border-radius: 0.75rem; overflow: hidden; border: 1px solid var(--stone-200); }
+    .email-hero { background: linear-gradient(135deg, var(--forest-dark) 0%, var(--forest-darker) 100%); padding: 1.5rem; text-align: center; color: #fff; }
+    .email-hero img { width: 56px; height: 56px; margin-bottom: 0.75rem; filter: drop-shadow(0 3px 8px rgba(0,0,0,.2)); }
+    .email-body { padding: 1.25rem; background: #fff; font-size: 0.875rem; color: var(--stone-600); }
+    .compare-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 2rem; }
+    @media (min-width: 768px) { .compare-row { grid-template-columns: repeat(4, 1fr); } }
+    .compare-cell { background: #fff; border: 1px solid var(--stone-200); border-radius: 0.75rem; padding: 1rem; text-align: center; }
+    .compare-cell img { width: 72px; height: 72px; margin-bottom: 0.5rem; }
+    .compare-cell strong { display: block; font-size: 0.8rem; }
+    .compare-cell span { font-size: 0.7rem; color: var(--stone-600); }
+    .compare-cell.muted { opacity: 0.55; }
+    .traits { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.75rem; }
+    .trait { font-size: 0.65rem; font-weight: 600; padding: 0.15rem 0.5rem; border-radius: 999px; background: var(--forest-light); color: var(--forest-darker); }
+    .note { margin-top: 2rem; padding: 1rem 1.25rem; background: var(--forest-light); border-radius: 0.75rem; font-size: 0.875rem; color: var(--forest-darker); }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <span class="badge">Phase 1 — Designer · iteration 2</span>
+    <h1>Logo relief, doux et arrondi</h1>
+    <p class="lead">Nouvelles propositions suite a votre retour : plus de relief (degrades, reflets, ombre douce), formes organiques arrondies, modernite sans rupture totale avec l identite actuelle.</p>
+
+    <div class="feedback">
+      <strong>Retour PO integre :</strong> pas assez de relief sur A/B · souhait de formes plus douces et arrondies · style moderne conserve.
+    </div>
+
+    <h2 class="section-title">Comparaison des 4 pistes</h2>
+    <div class="compare-row">
+      <div class="compare-cell muted">
+        <img src="assets/logo-actuel-preview.svg" alt="" />
+        <strong>Actuel</strong>
+        <span>Reference</span>
+      </div>
+      <div class="compare-cell muted">
+        <img src="assets/logo-proposition-a.svg" alt="" />
+        <strong>A (ecartee)</strong>
+        <span>Trop plate</span>
+      </div>
+      <div class="compare-cell">
+        <img src="assets/logo-proposition-c.svg" alt="" />
+        <strong>C — Galet allie</strong>
+        <span>1 forme, relief doux</span>
+        <div class="traits"><span class="trait">Relief</span><span class="trait">Arrondi</span></div>
+      </div>
+      <div class="compare-cell">
+        <img src="assets/logo-proposition-d.svg" alt="" />
+        <strong>D — Trio doux</strong>
+        <span>Heritage + modernise</span>
+        <div class="traits"><span class="trait">Relief</span><span class="trait">Arrondi</span></div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <article class="card">
+        <div class="card-head">
+          <h2>Proposition C — Galet allie</h2>
+          <p>Galet arrondi en degrade forêt (olive → forest → darker), reflet lumineux en haut, gemme ambre en relief au centre. Ombre portee douce.</p>
+        </div>
+        <div class="card-body">
+          <div class="logo-hero"><img src="assets/logo-proposition-c.svg" alt="" /></div>
+          <p class="section-title">Sur fond sombre (e-mail, app icon)</p>
+          <div class="logo-hero dark"><img src="assets/logo-proposition-c.svg" alt="" /></div>
+          <p class="section-title">Tailles</p>
+          <div class="sizes">
+            <div class="size-item"><img src="assets/logo-proposition-c.svg" alt="" style="width:16px;height:16px" /><span>16px</span></div>
+            <div class="size-item"><img src="assets/logo-proposition-c.svg" alt="" style="width:28px;height:28px" /><span>28px</span></div>
+            <div class="size-item"><img src="assets/logo-proposition-c.svg" alt="" style="width:36px;height:36px" /><span>36px</span></div>
+            <div class="size-item"><img src="assets/logo-proposition-c.svg" alt="" style="width:48px;height:48px" /><span>48px</span></div>
+          </div>
+          <p class="section-title">Header desktop</p>
+          <div class="header-public">
+            <a class="brand" href="#"><img src="assets/logo-proposition-c.svg" alt="" /> My Sport Ally</a>
+          </div>
+          <p class="section-title" style="margin-top:1rem">E-mail</p>
+          <div class="email-preview">
+            <div class="email-hero">
+              <img src="assets/logo-proposition-c.svg" alt="" />
+              <strong>Nouvelle demande de coaching</strong>
+            </div>
+            <div class="email-body">Exemple de rendu sur bandeau degrade.</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-head">
+          <h2>Proposition D — Trio doux</h2>
+          <p>Evolution du triple bouclier actuel : 3 formes arrondies superposees, degrades et reflets, gemme ambre centrale. Plus proche de l identite historique.</p>
+        </div>
+        <div class="card-body">
+          <div class="logo-hero"><img src="assets/logo-proposition-d.svg" alt="" /></div>
+          <p class="section-title">Sur fond sombre</p>
+          <div class="logo-hero dark"><img src="assets/logo-proposition-d.svg" alt="" /></div>
+          <p class="section-title">Tailles</p>
+          <div class="sizes">
+            <div class="size-item"><img src="assets/logo-proposition-d.svg" alt="" style="width:16px;height:16px" /><span>16px</span></div>
+            <div class="size-item"><img src="assets/logo-proposition-d.svg" alt="" style="width:28px;height:28px" /><span>28px</span></div>
+            <div class="size-item"><img src="assets/logo-proposition-d.svg" alt="" style="width:36px;height:36px" /><span>36px</span></div>
+            <div class="size-item"><img src="assets/logo-proposition-d.svg" alt="" style="width:48px;height:48px" /><span>48px</span></div>
+          </div>
+          <p class="section-title">Header desktop</p>
+          <div class="header-public">
+            <a class="brand" href="#"><img src="assets/logo-proposition-d.svg" alt="" /> My Sport Ally</a>
+          </div>
+          <p class="section-title" style="margin-top:1rem">E-mail</p>
+          <div class="email-preview">
+            <div class="email-hero">
+              <img src="assets/logo-proposition-d.svg" alt="" />
+              <strong>Nouvelle demande de coaching</strong>
+            </div>
+            <div class="email-body">Exemple de rendu sur bandeau degrade.</div>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="note">
+      <strong>Validation attendue :</strong> C (galet unique) ou D (trio adouci) ? Ajustements possibles : plus/moins de relief, gemme plus petite, formes encore plus rondes.
+    </div>
+  </div>
+</body>
+</html>
